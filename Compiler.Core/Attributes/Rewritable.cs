@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes.Operations;
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
 public struct Rewritable<T> : ICyclic<T>
-    where T : class?, IChild?
+    where T : class?, IChildTreeNode?
 {
     private T rawValue;
 

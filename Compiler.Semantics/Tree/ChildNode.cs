@@ -17,7 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal abstract class ChildNode : SemanticNode, IChildNode
 {
     protected virtual bool MayHaveRewrite => false;
-    bool IChild.MayHaveRewrite => MayHaveRewrite;
+    bool IChildTreeNode.MayHaveRewrite => MayHaveRewrite;
 
     private SemanticNode? parent;
 
@@ -40,7 +40,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     {
     }
 
-    void IChild<ISemanticNode>.SetParent(ISemanticNode newParent)
+    void IChildTreeNode<ISemanticNode>.SetParent(ISemanticNode newParent)
     {
         if (newParent is not SemanticNode newParentNode)
             throw new ArgumentException($"Parent must be a {nameof(SemanticNode)}.", nameof(newParent));
@@ -52,7 +52,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected virtual IChildNode? Rewrite() => MayHaveRewrite ? this : throw Child.RewriteNotSupported(this);
 
     // TODO remove call to AttachRewritten once it is all handled by GrammarAttribute
-    IChild? IChild.Rewrite() => Child.AttachRewritten(Parent, Rewrite());
+    IChildTreeNode? IChildTreeNode.Rewrite() => Child.AttachRewritten(Parent, Rewrite());
 
     /// <summary>
     /// The previous node to this one in a preorder traversal of the tree.

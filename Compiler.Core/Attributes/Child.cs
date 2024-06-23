@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
 [StructLayout(LayoutKind.Auto)]
 public struct Child<T>
-    where T : class?, IChild?
+    where T : class?, IChildTreeNode?
 {
     private T value;
     // Declared as an uint to ensure Interlocked can be used on it (without any possible overhead)
@@ -93,8 +93,8 @@ public static class Child
     /// Attach a child that does not support rewriting.
     /// </summary>
     public static TChild Attach<TParent, TChild>(TParent parent, TChild child)
-        where TParent : IParent
-        where TChild : class?, IChild<TParent>?
+        where TParent : ITreeNode
+        where TChild : class?, IChildTreeNode<TParent>?
     {
         if (child is null)
             return child;
@@ -109,8 +109,8 @@ public static class Child
     /// Attach a child that may support rewriting.
     /// </summary>
     public static Rewritable<TChild> CreateRewritable<TParent, TChild>(TParent parent, TChild initialValue)
-        where TParent : IParent
-        where TChild : class?, IChild<TParent>?
+        where TParent : ITreeNode
+        where TChild : class?, IChildTreeNode<TParent>?
     {
         initialValue?.SetParent(parent);
         return new(initialValue);
@@ -120,8 +120,8 @@ public static class Child
     /// Attach a child that is the result of rewriting and hence may support rewriting.
     /// </summary>
     public static TChild AttachRewritten<TParent, TChild>(TParent parent, TChild child)
-        where TParent : IParent
-        where TChild : class?, IChild<TParent>?
+        where TParent : ITreeNode
+        where TChild : class?, IChildTreeNode<TParent>?
     {
         if (child is null)
             return child;
@@ -131,8 +131,8 @@ public static class Child
     }
 
     public static Child<TChild> Create<TParent, TChild>(TParent parent, TChild initialValue)
-        where TParent : IParent
-        where TChild : class?, IChild<TParent>?
+        where TParent : ITreeNode
+        where TChild : class?, IChildTreeNode<TParent>?
     {
         initialValue?.SetParent(parent);
         return new(initialValue);
@@ -140,20 +140,20 @@ public static class Child
 
     // TODO replace with factory for exception
     public static string InheritFailedMessage<TChild>(string attribute, TChild child, TChild descendant)
-        where TChild : IChild
+        where TChild : IChildTreeNode
         => $"{attribute} not implemented for descendant node type {descendant.GetType().GetFriendlyName()} "
            + $"when accessed through child of type {child.GetType().GetFriendlyName()}.";
 
     // TODO replace with factory for exception
-    public static string ParentMissingMessage(IChild child)
+    public static string ParentMissingMessage(IChildTreeNode child)
         => $"Parent of {child.GetType().GetFriendlyName()} is not set.";
 
-    public static NotSupportedException RewriteNotSupported(IChild child)
+    public static NotSupportedException RewriteNotSupported(IChildTreeNode child)
         => new($"Rewrite of {child.GetType().GetFriendlyName()} is not supported.");
 
-    private static string ChildMayHaveRewriteMessage(IChild child)
+    private static string ChildMayHaveRewriteMessage(IChildTreeNode child)
         => $"{child.GetType().GetFriendlyName()} may have rewrites and cannot be used as a fixed child.";
 
-    public static NotImplementedException PreviousFailed(string attribute, IChild before)
+    public static NotImplementedException PreviousFailed(string attribute, IChildTreeNode before)
         => new($"Previous {attribute} of {before.GetType().GetFriendlyName()} not implemented.");
 }

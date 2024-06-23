@@ -9,8 +9,8 @@ public static class ChildSet
     /// Attach a set of children that does not support rewriting.
     /// </summary>
     public static IFixedSet<TChild> Attach<TParent, TChild>(TParent parent, IEnumerable<TChild> children)
-        where TParent : IParent
-        where TChild : class, IChild<TParent>
+        where TParent : ITreeNode
+        where TChild : class, IChildTreeNode<TParent>
     {
         var childSet = children.ToFixedSet();
         foreach (var child in childSet)

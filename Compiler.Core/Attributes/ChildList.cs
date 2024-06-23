@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
 public sealed class ChildList<T> : IFixedList<T>
-    where T : class, IChild
+    where T : class, IChildTreeNode
 {
     // Due to Child<T> being a mutable struct, we use Buffer<T> to force always getting a reference
     // to the struct when accessing it.
@@ -68,8 +68,8 @@ public static class ChildList
     /// Create a list of potentially rewritable children.
     /// </summary>
     public static ChildList<TChild> Create<TParent, TChild>(TParent parent, IEnumerable<TChild> initialValues)
-        where TParent : IParent
-        where TChild : class, IChild<TParent>
+        where TParent : ITreeNode
+        where TChild : class, IChildTreeNode<TParent>
     {
         var children = new ChildList<TChild>(initialValues);
         foreach (var child in children.Current)
@@ -81,8 +81,8 @@ public static class ChildList
     /// Attach a list of children that does not support rewriting.
     /// </summary>
     public static IFixedList<TChild> Attach<TParent, TChild>(TParent parent, IEnumerable<TChild> children)
-        where TParent : IParent
-        where TChild : class, IChild<TParent>
+        where TParent : ITreeNode
+        where TChild : class, IChildTreeNode<TParent>
     {
         var childList = children.ToFixedList();
         foreach (var child in childList)

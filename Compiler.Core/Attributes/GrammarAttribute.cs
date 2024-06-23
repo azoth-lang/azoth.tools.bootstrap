@@ -64,7 +64,7 @@ public static class GrammarAttribute
         IEqualityComparer<T> comparer,
         ref TLock syncLock,
         [CallerMemberName] string attributeName = "")
-        where TNode : class, IParent
+        where TNode : class, ITreeNode
         where TFunc : struct, IAttributeFunction<TNode, T>
         where TOp : IAttributeOperations<T, TLock>
         where TLock : struct
@@ -131,7 +131,7 @@ public static class GrammarAttribute
         TFunc func,
         IEqualityComparer<T> comparer,
         string attributeName)
-        where TNode : class, IParent
+        where TNode : class, ITreeNode
         where TFunc : struct, IAttributeFunction<TNode, T>
         where T : class?
         => node.NonCircular<TNode, T, TFunc, ReferenceOperations<T>, Void>(ref cached, ref value,
@@ -148,7 +148,7 @@ public static class GrammarAttribute
         IEqualityComparer<T> comparer,
         ref AttributeLock syncLock,
         string attributeName)
-        where TNode : class, IParent
+        where TNode : class, ITreeNode
         where TFunc : struct, IAttributeFunction<TNode, T>
         where T : struct
         => node.NonCircular<TNode, T, TFunc, ValueOperations<T>, AttributeLock>(ref cached, ref value,
@@ -165,7 +165,7 @@ public static class GrammarAttribute
         IEqualityComparer<T?> comparer,
         ref AttributeLock syncLock,
         string attributeName)
-        where TNode : class, IParent
+        where TNode : class, ITreeNode
         where TFunc : struct, IAttributeFunction<TNode, T?>
         where T : struct
         => node.NonCircular<TNode, T?, TFunc, ValueOperations<T?>, AttributeLock>(ref cached, ref value,
@@ -186,7 +186,7 @@ public static class GrammarAttribute
         ref T? value,
         Func<TNode, T> compute,
         [CallerMemberName] string attributeName = "")
-        where TNode : class, IParent
+        where TNode : class, ITreeNode
         where T : class?
         => node.NonCircular(ref cached, ref value, AttributeFunction.Create(compute),
             StrictEqualityComparer<T>.Instance, attributeName);
@@ -204,7 +204,7 @@ public static class GrammarAttribute
         Func<TNode, T> compute,
         IEqualityComparer<T> comparer,
         [CallerMemberName] string attributeName = "")
-        where TNode : class, IParent
+        where TNode : class, ITreeNode
         where T : class?
         => node.NonCircular(ref cached, ref value, AttributeFunction.Create(compute), comparer, attributeName);
 
@@ -221,7 +221,7 @@ public static class GrammarAttribute
         ref AttributeLock syncLock,
         Func<TNode, T> compute,
         [CallerMemberName] string attributeName = "")
-        where TNode : class, IParent
+        where TNode : class, ITreeNode
         where T : struct
         => node.NonCircular(ref cached, ref value, AttributeFunction.Create(compute),
             StrictEqualityComparer<T>.Instance, ref syncLock, attributeName);
@@ -239,7 +239,7 @@ public static class GrammarAttribute
         ref AttributeLock syncLock,
         Func<TNode, T?> compute,
         [CallerMemberName] string attributeName = "")
-        where TNode : class, IParent
+        where TNode : class, ITreeNode
         where T : struct
         => node.NonCircular(ref cached, ref value, AttributeFunction.Create(compute),
             StrictEqualityComparer<T?>.Instance, ref syncLock, attributeName);
@@ -258,7 +258,7 @@ public static class GrammarAttribute
         ref T? value,
         Func<IInheritanceContext, T> compute,
         [CallerMemberName] string attributeName = "")
-        where TNode : class, IParent
+        where TNode : class, ITreeNode
         where T : class?
         => node.NonCircular(ref cached, ref value, AttributeFunction.Create<TNode, T>(compute),
             StrictEqualityComparer<T>.Instance, attributeName);
@@ -276,7 +276,7 @@ public static class GrammarAttribute
         Func<IInheritanceContext, T> compute,
         IEqualityComparer<T> comparer,
         [CallerMemberName] string attributeName = "")
-        where TNode : class, IParent
+        where TNode : class, ITreeNode
         where T : class?
         => node.NonCircular(ref cached, ref value, AttributeFunction.Create<TNode, T>(compute),
             comparer, attributeName);
@@ -296,7 +296,7 @@ public static class GrammarAttribute
         ref Circular<T> value,
         Func<TNode, T> compute,
         [CallerMemberName] string attributeName = "")
-        where TNode : class
+        where TNode : class, ITreeNode
         where T : class?
         => node.Cyclic(ref cached, ref value, AttributeFunction.Create(compute), default(Func<TNode, T>),
             StrictEqualityComparer<T>.Instance, attributeName);
@@ -314,7 +314,7 @@ public static class GrammarAttribute
         Func<TNode, T> compute,
         IEqualityComparer<TCompare> comparer,
         [CallerMemberName] string attributeName = "")
-        where TNode : class
+        where TNode : class, ITreeNode
         where T : class?, TCompare
         => node.Cyclic(ref cached, ref value, AttributeFunction.Create(compute), default(Func<TNode, T>),
             comparer, attributeName);
@@ -332,7 +332,7 @@ public static class GrammarAttribute
         Func<TNode, T> compute,
         Func<TNode, T> initializer,
         [CallerMemberName] string attributeName = "")
-        where TNode : class
+        where TNode : class, ITreeNode
         where T : class?
         => node.Cyclic(ref cached, ref value, AttributeFunction.Create(compute), initializer,
             StrictEqualityComparer<T>.Instance, attributeName);
@@ -351,7 +351,7 @@ public static class GrammarAttribute
         Func<TNode, T> initializer,
         IEqualityComparer<TCompare> comparer,
         [CallerMemberName] string attributeName = "")
-        where TNode : class
+        where TNode : class, ITreeNode
         where T : class?, TCompare?
         => node.Cyclic(ref cached, ref value, AttributeFunction.Create(compute), initializer, comparer, attributeName);
     #endregion
@@ -365,8 +365,8 @@ public static class GrammarAttribute
         ref bool cached,
         ref Rewritable<TChild> child,
         [CallerMemberName] string attributeName = "")
-        where TNode : class, IParent
-        where TChild : class?, IChild<TNode>?
+        where TNode : class, ITreeNode
+        where TChild : class?, IChildTreeNode<TNode>?
         => node.Cyclic(ref cached, ref child, AttributeFunction.Rewritable<TNode, TChild>(),
             default(Func<TNode, TChild>), ReferenceEqualityComparer.Instance, attributeName);
     #endregion
@@ -384,7 +384,7 @@ public static class GrammarAttribute
         Func<TNode, T>? initializer,
         IEqualityComparer<TCompare> comparer,
         [CallerMemberName] string attributeName = "")
-        where TNode : class
+        where TNode : class, ITreeNode
         where T : class?, TCompare?
         where TCircular : struct, ICyclic<T>
         where TFunc : ICyclicAttributeFunction<TNode, T>

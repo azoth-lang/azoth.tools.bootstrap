@@ -11,9 +11,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 /// attribute. That will typically happen automatically given that attribute names are generated
 /// through nameof or the <see cref="CallerMemberNameAttribute"/>. Otherwise, callers will need
 /// to use string interning.</remarks>
-internal readonly struct AttributeId(object node, string attributeName) : IEquatable<AttributeId>
+internal readonly struct AttributeId(ITreeNode node, string attributeName) : IEquatable<AttributeId>
 {
-    private readonly object node = node;
+    private readonly ITreeNode node = node;
     private readonly string attributeName = attributeName;
 
     #region Equality

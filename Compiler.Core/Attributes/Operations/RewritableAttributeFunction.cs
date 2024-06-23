@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes.Operations;
 
 public readonly struct RewritableAttributeFunction<TNode, T> : ICyclicAttributeFunction<TNode, T>
-    where T : IChild?
+    where T : IChildTreeNode?
 {
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
