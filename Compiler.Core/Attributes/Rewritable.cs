@@ -8,6 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 public struct Rewritable<T> : ICyclic<T>
     where T : class?, IChildTreeNode?
 {
+    public static bool IsRewritableAttribute => true;
+
     private T rawValue;
 
     public readonly bool IsInitialized => true;

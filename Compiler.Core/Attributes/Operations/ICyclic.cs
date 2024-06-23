@@ -4,6 +4,11 @@ public interface ICyclic<T>
     where T : class?
 {
     /// <summary>
+    /// Whether this is a rewritable attribute.
+    /// </summary>
+    static abstract bool IsRewritableAttribute { get; }
+
+    /// <summary>
     /// Whether the value has been initialized.
     /// </summary>
     bool IsInitialized { get; }
@@ -21,7 +26,17 @@ public interface ICyclic<T>
     /// <remarks>If it is final, it should be immediately cached.</remarks>
     bool IsFinal { get; }
 
+    /// <summary>
+    /// Initializes the value if it isn't already initialized.
+    /// </summary>
+    /// <returns>If the value was changed before it could be initialized, it may not be
+    /// <paramref name="value"/>.</returns>
     internal void Initialize(T value);
 
+    /// <summary>
+    /// Atomically compares the current value with <paramref name="comparand"/> and, if they are equal,
+    /// exchanges the value with <paramref name="value"/>.
+    /// </summary>
+    /// <returns>The original value.</returns>
     internal T CompareExchange(T value, T comparand);
 }

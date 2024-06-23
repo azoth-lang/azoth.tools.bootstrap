@@ -13,12 +13,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 /// to use string interning.</remarks>
 internal readonly struct AttributeId(ITreeNode node, string attributeName) : IEquatable<AttributeId>
 {
-    private readonly ITreeNode node = node;
+    public readonly ITreeNode Node = node;
     private readonly string attributeName = attributeName;
 
     #region Equality
     public bool Equals(AttributeId other)
-        => ReferenceEquals(node, other.node)
+        => ReferenceEquals(Node, other.Node)
            && ReferenceEquals(attributeName, other.attributeName);
 
     public override bool Equals(object? obj) => obj is AttributeId other && Equals(other);
@@ -26,14 +26,14 @@ internal readonly struct AttributeId(ITreeNode node, string attributeName) : IEq
     public override int GetHashCode()
         // Use RuntimeHelpers.GetHashCode to avoid calling GetHashCode on the node and attributeName
         // since they are compared by reference.
-        => HashCode.Combine(RuntimeHelpers.GetHashCode(node), RuntimeHelpers.GetHashCode(attributeName));
+        => HashCode.Combine(RuntimeHelpers.GetHashCode(Node), RuntimeHelpers.GetHashCode(attributeName));
 
     public static bool operator ==(AttributeId left, AttributeId right) => left.Equals(right);
 
     public static bool operator !=(AttributeId left, AttributeId right) => !left.Equals(right);
     #endregion
 
-    public string ToTypeString() => $"{node.GetType().GetFriendlyName()}.{attributeName}";
+    public string ToTypeString() => $"{Node.GetType().GetFriendlyName()}.{attributeName}";
 
-    public override string ToString() => $"{RuntimeHelpers.GetHashCode(node)}.{attributeName}";
+    public override string ToString() => $"{RuntimeHelpers.GetHashCode(Node)}.{attributeName}";
 }
