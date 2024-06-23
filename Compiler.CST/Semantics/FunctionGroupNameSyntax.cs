@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 
-public class FunctionGroupNameSyntax : SyntaxSemantics, IIdentifierNameExpressionSyntaxSemantics,
+public sealed class FunctionGroupNameSyntax : SyntaxSemantics, IIdentifierNameExpressionSyntaxSemantics,
     IMemberAccessSyntaxSemantics
 {
     public new IFixedSet<FunctionSymbol> Symbols { get; }

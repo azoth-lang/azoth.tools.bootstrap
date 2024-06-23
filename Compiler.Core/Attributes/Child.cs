@@ -93,6 +93,7 @@ public static class Child
     /// Attach a child that does not support rewriting.
     /// </summary>
     public static TChild Attach<TParent, TChild>(TParent parent, TChild child)
+        where TParent : IParent
         where TChild : class?, IChild<TParent>?
     {
         if (child is null)
@@ -107,20 +108,19 @@ public static class Child
     /// <summary>
     /// Attach a child that may support rewriting.
     /// </summary>
-    public static TChild AttachRewritable<TParent, TChild>(TParent parent, TChild child)
+    public static Rewritable<TChild> CreateRewritable<TParent, TChild>(TParent parent, TChild initialValue)
+        where TParent : IParent
         where TChild : class?, IChild<TParent>?
     {
-        if (child is null)
-            return child;
-
-        child.SetParent(parent);
-        return child;
+        initialValue?.SetParent(parent);
+        return new(initialValue);
     }
 
     /// <summary>
     /// Attach a child that is the result of rewriting and hence may support rewriting.
     /// </summary>
     public static TChild AttachRewritten<TParent, TChild>(TParent parent, TChild child)
+        where TParent : IParent
         where TChild : class?, IChild<TParent>?
     {
         if (child is null)
@@ -131,10 +131,11 @@ public static class Child
     }
 
     public static Child<TChild> Create<TParent, TChild>(TParent parent, TChild initialValue)
+        where TParent : IParent
         where TChild : class?, IChild<TParent>?
     {
         initialValue?.SetParent(parent);
-        return new Child<TChild>(initialValue);
+        return new(initialValue);
     }
 
     // TODO replace with factory for exception

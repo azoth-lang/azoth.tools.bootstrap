@@ -68,6 +68,7 @@ public static class ChildList
     /// Create a list of potentially rewritable children.
     /// </summary>
     public static ChildList<TChild> Create<TParent, TChild>(TParent parent, IEnumerable<TChild> initialValues)
+        where TParent : IParent
         where TChild : class, IChild<TParent>
     {
         var children = new ChildList<TChild>(initialValues);
@@ -80,6 +81,7 @@ public static class ChildList
     /// Attach a list of children that does not support rewriting.
     /// </summary>
     public static IFixedList<TChild> Attach<TParent, TChild>(TParent parent, IEnumerable<TChild> children)
+        where TParent : IParent
         where TChild : class, IChild<TParent>
     {
         var childList = children.ToFixedList();

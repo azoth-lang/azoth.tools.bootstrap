@@ -1,20 +1,20 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Azoth.Tools.Bootstrap.Compiler.Core.Attributes.Operations;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
-public struct Circular<T>
+public struct Circular<T> : ICyclic<T>
     where T : class?
 {
     private object? rawValue;
 
-    /// <summary>
-    /// Get the value of the attribute.
-    /// </summary>
-    /// <remarks>This property is unsafe if the value has not been initialized. Do not access it
-    /// on uninitialized values.</remarks>
-    public readonly T UnsafeValue => Unsafe.As<T>(rawValue)!;
     public readonly bool IsInitialized => !ReferenceEquals(rawValue, UnsetAttribute.Instance);
+
+    public readonly T UnsafeValue => Unsafe.As<T>(rawValue)!;
+
+    /// <remarks>Circular attribute values are never final. They must be evaluated to see if they </remarks>
+    public readonly bool IsFinal => false;
 
     public Circular(T value)
     {
@@ -32,7 +32,7 @@ public struct Circular<T>
     /// <returns>If the value was changed before it could be initialized, it may not be
     /// <paramref name="value"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal void Initialize(T value)
+    void ICyclic<T>.Initialize(T value)
         => Interlocked.CompareExchange(ref rawValue, value, UnsetAttribute.Instance);
 
     /// <summary>
@@ -41,7 +41,7 @@ public struct Circular<T>
     /// </summary>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal T CompareExchange(T value, T comparand)
+    T ICyclic<T>.CompareExchange(T value, T comparand)
         => Unsafe.As<T>(Interlocked.CompareExchange(ref rawValue, value, comparand))!;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

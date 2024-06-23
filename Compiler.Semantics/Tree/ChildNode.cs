@@ -19,12 +19,6 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected virtual bool MayHaveRewrite => false;
     bool IChild.MayHaveRewrite => MayHaveRewrite;
 
-    private bool isFinal;
-
-    /// <remarks>Child nodes start final if <see cref="MayHaveRewrite"/> is false and their parent
-    /// is final. Otherwise, they start non-final and must be marked final via the rewrite system.</remarks>
-    public override bool IsFinal => Volatile.Read(in isFinal);
-
     private SemanticNode? parent;
 
     protected SemanticNode Parent
@@ -35,14 +29,8 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     }
 
     protected SemanticNode GetParent(IInheritanceContext ctx)
-    {
-        // If this node isn't final, then the parent could be changed by a rewrite. In which case,
-        // attributes depending on the parent must not be cached.
-        if (!IsFinal)
-            ctx.MarkNonFinal();
         // Use volatile read to ensure order of operations as seen by other threads
-        return Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
-    }
+        => Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
 
     ISemanticNode IChildNode.Parent => Parent;
 
@@ -59,21 +47,12 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
         // Use volatile write to ensure order of operations as seen by other threads
         Volatile.Write(ref parent, newParentNode);
-
-        if (newParentNode.IsFinal && !MayHaveRewrite)
-            Volatile.Write(ref isFinal, true);
-
-        // TODO if we could recur and propagate the final state down the tree, that would be better.
-        // but we don't want to access the children and cause then to start rewriting. We would need
-        // a way of getting the current children without causing them to rewrite.
     }
 
     protected virtual IChildNode? Rewrite() => MayHaveRewrite ? this : throw Child.RewriteNotSupported(this);
 
     // TODO remove call to AttachRewritten once it is all handled by GrammarAttribute
     IChild? IChild.Rewrite() => Child.AttachRewritten(Parent, Rewrite());
-
-    void IChild.MarkFinal() => Volatile.Write(ref isFinal, true);
 
     /// <summary>
     /// The previous node to this one in a preorder traversal of the tree.

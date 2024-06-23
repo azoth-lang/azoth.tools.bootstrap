@@ -12,10 +12,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
 {
     public override IIdExpressionSyntax Syntax { get; }
-    private IAmbiguousExpressionNode referent;
+    private Rewritable<IAmbiguousExpressionNode> referent;
+    private bool referentCached;
     public IAmbiguousExpressionNode Referent
-        => GrammarAttribute.IsFinal(referent) ? referent
-            : GrammarAttribute.Child(this, ref referent);
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : GrammarAttribute.Rewritable(this, ref referentCached, ref referent);
     public IExpressionNode? IntermediateReferent => Referent as IExpressionNode;
     public override IMaybeExpressionAntetype Antetype
         => IntermediateReferent?.Antetype ?? IAntetype.Unknown;
@@ -34,7 +35,7 @@ internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
     public IdExpressionNode(IIdExpressionSyntax syntax, IAmbiguousExpressionNode referent)
     {
         Syntax = syntax;
-        this.referent = Child.AttachRewritable(this, referent);
+        this.referent = Child.CreateRewritable(this, referent);
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Referent.GetFlowLexicalScope();

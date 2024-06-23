@@ -42,11 +42,6 @@ public static class GrammarAttribute
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsCached(in bool cached) => Volatile.Read(in cached);
 
-    [Inline] // Not always working
-    [DebuggerStepThrough]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsFinal(IChild? child) => child?.IsFinal ?? true;
-
     /// <summary>
     /// Get the inheritance context for the current thread.
     /// </summary>
@@ -292,6 +287,7 @@ public static class GrammarAttribute
     /// Read the value of a circular attribute that already has an initial value and is
     /// <see cref="IEquatable{T}"/>.
     /// </summary>
+    [Inline] // Not always working
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Circular<TNode, T>(
@@ -302,11 +298,13 @@ public static class GrammarAttribute
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?
-        => node.Circular(ref cached, ref value, compute, null!, StrictEqualityComparer<T>.Instance, attributeName);
+        => node.Cyclic(ref cached, ref value, AttributeFunction.Create(compute), default(Func<TNode, T>),
+            StrictEqualityComparer<T>.Instance, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute that already has an initial value.
     /// </summary>
+    [Inline] // Not always working
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Circular<TNode, T, TCompare>(
@@ -318,11 +316,13 @@ public static class GrammarAttribute
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?, TCompare
-        => node.Circular(ref cached, ref value, compute, null!, comparer, attributeName);
+        => node.Cyclic(ref cached, ref value, AttributeFunction.Create(compute), default(Func<TNode, T>),
+            comparer, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute that is <see cref="IEquatable{T}"/>.
     /// </summary>
+    [Inline] // Not always working
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Circular<TNode, T>(
@@ -334,12 +334,15 @@ public static class GrammarAttribute
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?
-        => node.Circular(ref cached, ref value, compute, initializer, StrictEqualityComparer<T>.Instance, attributeName);
+        => node.Cyclic(ref cached, ref value, AttributeFunction.Create(compute), initializer,
+            StrictEqualityComparer<T>.Instance, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute.
     /// </summary>
+    [Inline] // Not always working
     [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Circular<TNode, T, TCompare>(
         this TNode node,
         ref bool cached,
@@ -350,6 +353,41 @@ public static class GrammarAttribute
         [CallerMemberName] string attributeName = "")
         where TNode : class
         where T : class?, TCompare?
+        => node.Cyclic(ref cached, ref value, AttributeFunction.Create(compute), initializer, comparer, attributeName);
+    #endregion
+
+    #region Rewritable overloads
+    /// <summary>
+    /// Read the value of a rewritable child attribute.
+    /// </summary>
+    public static TChild Rewritable<TNode, TChild>(
+        TNode node,
+        ref bool cached,
+        ref Rewritable<TChild> child,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class, IParent
+        where TChild : class?, IChild<TNode>?
+        => node.Cyclic(ref cached, ref child, AttributeFunction.Rewritable<TNode, TChild>(),
+            default(Func<TNode, TChild>), ReferenceEqualityComparer.Instance, attributeName);
+    #endregion
+
+    #region Cyclic overloads
+    /// <summary>
+    /// Read the value of a circular attribute.
+    /// </summary>
+    [DebuggerStepThrough]
+    public static T Cyclic<TNode, T, TCircular, TFunc, TCompare>(
+        this TNode node,
+        ref bool cached,
+        ref TCircular value,
+        TFunc func,
+        Func<TNode, T>? initializer,
+        IEqualityComparer<TCompare> comparer,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class
+        where T : class?, TCompare?
+        where TCircular : struct, ICyclic<T>
+        where TFunc : ICyclicAttributeFunction<TNode, T>
     {
         if (string.IsNullOrEmpty(attributeName))
             throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
@@ -365,6 +403,12 @@ public static class GrammarAttribute
             value.Initialize(initializer(node)); // initializer may throw
         }
 
+        if (value.IsFinal)
+        {
+            Volatile.Write(ref cached, true);
+            return value.UnsafeValue;
+        }
+
         T current = value.UnsafeValue;
         var threadState = ThreadState();
         var attributeId = new AttributeId(node, attributeName);
@@ -376,7 +420,7 @@ public static class GrammarAttribute
             do
             {
                 threadState.NextIteration();
-                isFinal = ComputeCircular(in cached, node, compute, comparer, ref current, ref value, threadState, attributeId);
+                isFinal = ComputeCyclic(node, in cached, ref value, func, comparer, ref current, threadState, attributeId);
             } while (threadState.Changed && !isFinal);
             Volatile.Write(ref cached, true);
             return current;
@@ -384,7 +428,7 @@ public static class GrammarAttribute
 
         if (!threadState.ObservedInCycle(attributeId))
         {
-            var isFinal = ComputeCircular(in cached, node, compute, comparer, ref current, ref value, threadState, attributeId);
+            var isFinal = ComputeCyclic(node, in cached, ref value, func, comparer, ref current, threadState, attributeId);
             if (isFinal)
             {
                 Volatile.Write(ref cached, true);
@@ -399,17 +443,19 @@ public static class GrammarAttribute
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool ComputeCircular<TNode, T, TCompare>(
-        in bool cached,
+    private static bool ComputeCyclic<TNode, T, TCircular, TFunc, TCompare>(
         TNode node,
-        Func<TNode, T> compute,
+        in bool cached,
+        ref TCircular value,
+        TFunc func,
         IEqualityComparer<TCompare> comparer,
         ref T current,
-        ref Circular<T> value,
         AttributeGrammarThreadState threadState,
         AttributeId attributeId)
         where TNode : class
         where T : class?, TCompare?
+        where TCircular : struct, ICyclic<T>
+        where TFunc : ICyclicAttributeFunction<TNode, T>
     {
         // Set to current iteration before computing so a cycle will use the previous value
         threadState.UpdateIterationFor(attributeId);
@@ -419,7 +465,7 @@ public static class GrammarAttribute
         // possibly non-final attribute value. If it doesn't, then the value can be cached.
         using (var ctx = threadState.DependencyContext())
         {
-            next = compute(node); // may throw
+            next = func.Compute(node, current); // may throw
             isFinal = ctx.IsFinal;
         }
 
@@ -440,7 +486,7 @@ public static class GrammarAttribute
             next = original;
         }
         current = next;
-        return isFinal;
+        return isFinal || value.IsFinal;
     }
     #endregion
 
@@ -449,90 +495,92 @@ public static class GrammarAttribute
     /// Read the value of a circular attribute.
     /// </summary>
     //[DebuggerStepThrough]
-    public static TChild Child<TNode, TChild>(
-        TNode node,
-        ref TChild child,
-        [CallerMemberName] string attributeName = "")
-        where TNode : class, IParent
-        where TChild : class?, IChild<TNode>?
-    {
-        if (string.IsNullOrEmpty(attributeName))
-            throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
+    //public static TChild Child<TNode, TChild>(
+    //    TNode node,
+    //    ref bool cached,
+    //    ref TChild child,
+    //    [CallerMemberName] string attributeName = "")
+    //    where TNode : class, IParent
+    //    where TChild : class?, IChild<TNode>?
+    //{
+    //    if (string.IsNullOrEmpty(attributeName))
+    //        throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
 
-        TChild current = child;
-        if (current is null || current.IsFinal)
-            return current;
+    //    TChild current = child;
+    //    if (current is null || current.IsFinal)
+    //        return current;
 
-        if (!current.MayHaveRewrite)
-        {
-            if (node.IsFinal)
-                current.MarkFinal();
-            // TODO shouldn't `else` mark non-final?
-            return current;
-        }
+    //    if (!current.MayHaveRewrite)
+    //    {
+    //        if (node.IsFinal)
+    //            current.MarkFinal();
+    //        // TODO shouldn't `else` mark non-final?
+    //        return current;
+    //    }
 
-        var threadState = ThreadState();
-        var attributeId = new AttributeId(node, attributeName);
-        if (!threadState.InCircle)
-        {
-            // Using ensures circle is exited when done, making this exception safe.
-            using var _ = threadState.EnterCircle();
-            bool isFinal;
-            do
-            {
-                threadState.NextIteration();
-                isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
-            } while (threadState.Changed && !isFinal && (current?.MayHaveRewrite ?? false));
-            if (node.IsFinal)
-                current?.MarkFinal();
-            return current;
-        }
+    //    var threadState = ThreadState();
+    //    var attributeId = new AttributeId(node, attributeName);
+    //    if (!threadState.InCircle)
+    //    {
+    //        // Using ensures circle is exited when done, making this exception safe.
+    //        using var _ = threadState.EnterCircle();
+    //        bool isFinal;
+    //        do
+    //        {
+    //            threadState.NextIteration();
+    //            isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
+    //        } while (threadState.Changed && !isFinal && (current?.MayHaveRewrite ?? false));
+    //        if (node.IsFinal)
+    //            current?.MarkFinal();
+    //        return current;
+    //    }
 
-        if (!threadState.ObservedInCycle(attributeId))
-        {
-            var isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
-            if (isFinal)
-                return current;
-        }
-        // else reuse current approximation
+    //    if (!threadState.ObservedInCycle(attributeId))
+    //    {
+    //        var isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
+    //        if (isFinal)
+    //            return current;
+    //    }
+    //    // else reuse current approximation
 
-        // The value returned is not the final value, but the value for this cycle
-        threadState.MarkNonFinal();
-        return current;
-    }
+    //    // The value returned is not the final value, but the value for this cycle
+    //    threadState.MarkNonFinal();
+    //    return current;
+    //}
 
-    private static bool ComputeChild<TNode, TChild>(
-        TNode node,
-        ref TChild child,
-        ref TChild current,
-        AttributeGrammarThreadState threadState,
-        AttributeId attributeId)
-        where TChild : class?, IChild<TNode>?
-    {
-        // Set to current iteration before computing so a cycle will use the previous value
-        threadState.UpdateIterationFor(attributeId);
+    //private static bool ComputeChild<TNode, TChild>(
+    //    TNode node,
+    //    ref TChild child,
+    //    ref TChild current,
+    //    AttributeGrammarThreadState threadState,
+    //    AttributeId attributeId)
+    //    where TNode : IParent
+    //    where TChild : class?, IChild<TNode>?
+    //{
+    //    // Set to current iteration before computing so a cycle will use the previous value
+    //    threadState.UpdateIterationFor(attributeId);
 
-        // Rewrites do not use the dependency context because even if they don't depend on something
-        // that is not final, they may still get rewritten again.
+    //    // Rewrites do not use the dependency context because even if they don't depend on something
+    //    // that is not final, they may still get rewritten again.
 
-        var next = (TChild)current!.Rewrite()!; // may throw
+    //    var next = (TChild)current!.Rewrite()!; // may throw
 
-        if (ReferenceEquals(current, next)) // may throw
-            // current == next, so use old value to avoid duplicate objects referenced
-            return next?.IsFinal ?? false;
+    //    if (ReferenceEquals(current, next)) // may throw
+    //        // current == next, so use old value to avoid duplicate objects referenced
+    //        return next?.IsFinal ?? false;
 
-        threadState.MarkChanged();
-        var original = Interlocked.CompareExchange(ref child, next, current);
-        if (!ReferenceEquals(original, current))
-            next = original!; // original should never be null because you can't rewrite to null
-        else
-            Attributes.Child.AttachRewritten(node, next);
-        current = next;
+    //    threadState.MarkChanged();
+    //    var original = Interlocked.CompareExchange(ref child, next, current);
+    //    if (!ReferenceEquals(original, current))
+    //        next = original!; // original should never be null because you can't rewrite to null
+    //    else
+    //        Attributes.Child.AttachRewritten(node, next);
+    //    current = next;
 
-        // If the child is already final (either another thread marked it final or it was marked
-        // final by attaching it to the parent since it can't be rewritten), then it is final. Even
-        // if Rewrite() returns null, the child may not be final if it depends on a non-cached attribute.
-        return next?.IsFinal ?? false;
-    }
+    //    // If the child is already final (either another thread marked it final or it was marked
+    //    // final by attaching it to the parent since it can't be rewritten), then it is final. Even
+    //    // if Rewrite() returns null, the child may not be final if it depends on a non-cached attribute.
+    //    return next?.IsFinal ?? false;
+    //}
     #endregion
 }

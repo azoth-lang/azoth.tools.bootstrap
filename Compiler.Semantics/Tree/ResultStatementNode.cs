@@ -12,10 +12,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
 {
     public override IResultStatementSyntax Syntax { get; }
-    private IAmbiguousExpressionNode expression;
+    private Rewritable<IAmbiguousExpressionNode> expression;
+    private bool expressionCached;
     public IAmbiguousExpressionNode Expression
-        => GrammarAttribute.IsFinal(expression) ? expression
-            : GrammarAttribute.Child(this, ref expression);
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : GrammarAttribute.Rewritable(this, ref expressionCached, ref expression);
     public IExpressionNode? IntermediateExpression => Expression as IExpressionNode;
     private IMaybeAntetype? antetype;
     private bool antetypeCached;
@@ -36,7 +37,7 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
     public ResultStatementNode(IResultStatementSyntax syntax, IAmbiguousExpressionNode expression)
     {
         Syntax = syntax;
-        this.expression = Child.AttachRewritable(this, expression);
+        this.expression = Child.CreateRewritable(this, expression);
     }
 
     public override LexicalScope GetLexicalScope() => InheritedContainingLexicalScope();
