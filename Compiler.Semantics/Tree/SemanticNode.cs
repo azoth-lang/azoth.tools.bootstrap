@@ -15,6 +15,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class SemanticNode : ISemanticNode
 {
+    /// <remarks>Root nodes are always in the final tree</remarks>
+    protected virtual bool InFinalTree => true;
+    bool ITreeNode.InFinalTree => InFinalTree;
+
+    /// <remarks>Root nodes are already final and should never be marked final but since it is not
+    /// an error to mark a node final twice, this is a no-op.</remarks>
+    protected virtual void MarkInFinalTree() { }
+    void ITreeNode.MarkInFinalTree() => MarkInFinalTree();
+
     public abstract ISyntax? Syntax { get; }
 
     protected virtual ITreeNode? PeekParent() => null;

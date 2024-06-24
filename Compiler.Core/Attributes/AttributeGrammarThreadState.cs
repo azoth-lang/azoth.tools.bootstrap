@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
@@ -41,10 +42,9 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
     private ulong? lowLink;
 
     void IInheritanceContext.AccessParent(ITreeNode parentNode)
-        => MinLowLinkWith(rewriteContexts.ContextFor(parentNode).LowLink);
+        => MinLowLinkWith(rewriteContexts.LowLinkFor(parentNode));
 
-    // Note: `[Inline]` attribute errors out on this method.
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Inline]
     private void MinLowLinkWith(ulong? value)
     {
         if (value is null)
@@ -201,7 +201,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
                 {
                     state.currentIteration = 0;
                     state.attributeIterations.Clear();
-                    // TODO should the rewrite context be cleaned up in some way here?
+                    state.rewriteContexts.Clear();
                 }
             }
             else

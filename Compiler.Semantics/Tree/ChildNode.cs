@@ -16,6 +16,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class ChildNode : SemanticNode, IChildNode
 {
+    private bool inFinalTree;
+
+    /// <remarks>Volatile read not necessary because an out-of-order read is not an issue since it
+    /// will just re-figure out the fact that the node is final.</remarks>
+    protected sealed override bool InFinalTree => inFinalTree;
+
     protected virtual bool MayHaveRewrite => false;
     bool IChildTreeNode.MayHaveRewrite => MayHaveRewrite;
 
@@ -60,9 +66,15 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     }
 
     protected virtual IChildNode? Rewrite() => MayHaveRewrite ? this : throw Child.RewriteNotSupported(this);
-
     // TODO remove call to AttachRewritten once it is all handled by GrammarAttribute
     IChildTreeNode? IChildTreeNode.Rewrite() => Child.AttachRewritten(Parent, Rewrite());
+
+    /// <remarks>Volatile write not necessary because an out-of-order read is not an issue since it
+    /// will just re-figure out the fact that the node is final. Does not check the invariant that
+    /// the parent is in the final tree because that would probably require a volatile read and that
+    /// volatile was used in other places too.</remarks>
+    protected sealed override void MarkInFinalTree()
+        => inFinalTree = true;
 
     /// <summary>
     /// The previous node to this one in a preorder traversal of the tree.

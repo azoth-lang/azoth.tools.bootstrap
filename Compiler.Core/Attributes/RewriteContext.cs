@@ -1,5 +1,3 @@
-using System;
-
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
 /// <summary>
@@ -7,13 +5,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 /// </summary>
 internal sealed class RewriteContext
 {
-    public static readonly RewriteContext Root = new();
-
     /// <summary>
-    /// The index of the attribute being rewritten or <see langword="null"/> for nodes which are not
-    /// underneath any rewrite.
+    /// The index of the attribute being rewritten.
     /// </summary>
-    public ulong? LowLink { get; }
+    public ulong LowLink { get; }
 
     /// <summary>
     /// Whether this rewrite context is active.
@@ -25,12 +20,5 @@ internal sealed class RewriteContext
         LowLink = lowLink;
     }
 
-    private RewriteContext() { }
-
-    public void MarkInactive()
-    {
-        if (LowLink is null)
-            throw new InvalidOperationException("Cannot mark the root context as inactive.");
-        IsActive = false;
-    }
+    public void MarkInactive() => IsActive = false;
 }

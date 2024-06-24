@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
@@ -23,8 +25,8 @@ internal sealed class RewriteContexts
     /// already under an existing context.</returns>
     public RewriteContext? NewRewrite(ITreeNode node, ulong index)
     {
-        var currentContext = ContextFor(node);
-        if (currentContext.LowLink is not null)
+        var currentContext = ContextFor(node.PeekParent()!);
+        if (currentContext is not null)
             return null;
         var newContext = new RewriteContext(index);
         contextNodes[node] = newContext;
@@ -35,11 +37,22 @@ internal sealed class RewriteContexts
     {
         if (rewrittenNode is null)
             return;
-        contextNodes[node] = ContextFor(node);
+        contextNodes[node] = ContextFor(node)
+            ?? throw new InvalidOperationException("Existing node should be a rewrite and not in the final tree");
     }
 
-    public RewriteContext ContextFor(ITreeNode node)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ulong? LowLinkFor(ITreeNode node)
+        => ContextFor(node)?.LowLink;
+
+    /// <summary>
+    /// The context for this tree node or <see langword="null"/> for nodes in the final tree.
+    /// </summary>
+    private RewriteContext? ContextFor(ITreeNode node)
     {
+        if (node.InFinalTree)
+            return null;
+
         if (contextNodes.TryGetValue(node, out var ctx) && ctx.IsActive)
             return ctx;
 
@@ -47,14 +60,22 @@ internal sealed class RewriteContexts
         // it will be replaced with a new context below.
 
         var parent = node.PeekParent();
-        ctx = parent is null
-            // This node is the root of the tree and as such is not part of a rewrite context. Track
-            // this by associating it with the root context.
-            ? RewriteContext.Root
+        ctx = parent is not null
             // Recursively search for the context of the parent node and cache the result.
-            : ContextFor(parent);
+            ? ContextFor(parent)
+            // This node is the root of the tree and as such is not part of a rewrite context.
+            : throw new InvalidOperationException($"Root node should already be {nameof(ITreeNode.InFinalTree)}");
 
-        contextNodes[node] = ctx;
+        if (ctx is null)
+        {
+            node.MarkInFinalTree();
+            contextNodes.Remove(node);
+        }
+        else
+            contextNodes[node] = ctx;
         return ctx;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Clear() => contextNodes.Clear();
 }
