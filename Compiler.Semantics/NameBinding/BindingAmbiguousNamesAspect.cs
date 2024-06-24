@@ -176,7 +176,7 @@ internal static class BindingAmbiguousNamesAspect
 
     public static IExpressionNode? AssignmentExpression_Rewrite_PropertyNameLeftOperand(IAssignmentExpressionNode node)
     {
-        if (node.IntermediateLeftOperand is not IPropertyNameNode propertyName)
+        if (node.LeftOperand is not IPropertyNameNode propertyName)
             return null;
 
         var setter = propertyName.ReferencedPropertyAccessors.OfType<ISetterMethodDeclarationNode>().TrySingle();

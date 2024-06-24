@@ -16,14 +16,19 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     protected override bool MayHaveRewrite => true;
 
     public override IAssignmentExpressionSyntax Syntax { get; }
-    private Child<IAssignableExpressionNode> leftOperand;
-    public IAssignableExpressionNode LeftOperand => leftOperand.Value;
-    public IAssignableExpressionNode IntermediateLeftOperand => leftOperand.FinalValue;
+    private RewritableChild<IAssignableExpressionNode> leftOperand;
+    private bool leftOperandCached;
+    public IAssignableExpressionNode LeftOperand
+        => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
+            : this.RewritableChild(ref leftOperandCached, ref leftOperand);
     public AssignmentOperator Operator => Syntax.Operator;
-    private Child<IAmbiguousExpressionNode> rightOperand;
-    public IAmbiguousExpressionNode RightOperand => rightOperand.Value;
-    public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.CurrentValue;
-    public IExpressionNode FinalRightOperand => (IExpressionNode)rightOperand.FinalValue;
+    private RewritableChild<IAmbiguousExpressionNode> rightOperand;
+    private bool rightOperandCached;
+    public IAmbiguousExpressionNode RightOperand
+        => GrammarAttribute.IsCached(in rightOperandCached) ? rightOperand.UnsafeValue
+            : this.RewritableChild(ref rightOperandCached, ref rightOperand);
+    public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
+    public IExpressionNode? IntermediateRightOperand => RightOperand as IExpressionNode;
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
@@ -46,8 +51,8 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
         IAmbiguousExpressionNode rightOperand)
     {
         Syntax = syntax;
-        this.leftOperand = Child.Legacy(this, leftOperand);
-        this.rightOperand = Child.Legacy(this, rightOperand);
+        this.leftOperand = Child.Create(this, leftOperand);
+        this.rightOperand = Child.Create(this, rightOperand);
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope()

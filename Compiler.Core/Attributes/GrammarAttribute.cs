@@ -335,12 +335,12 @@ public static class GrammarAttribute
         => node.Cyclic(ref cached, ref value, AttributeFunction.Create(compute), initializer, comparer, attributeName);
     #endregion
 
-    #region Rewritable overloads
+    #region RewritableChild overloads
     /// <summary>
     /// Read the value of a rewritable child attribute.
     /// </summary>
-    public static TChild Rewritable<TNode, TChild>(
-        TNode node,
+    public static TChild RewritableChild<TNode, TChild>(
+        this TNode node,
         ref bool cached,
         ref RewritableChild<TChild> child,
         [CallerMemberName] string attributeName = "")

@@ -1368,11 +1368,10 @@ public partial interface IAssignmentExpressionNode : ISemanticNode, IExpressionN
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAssignableExpressionNode LeftOperand { get; }
-    IAssignableExpressionNode IntermediateLeftOperand { get; }
     AssignmentOperator Operator { get; }
     IAmbiguousExpressionNode RightOperand { get; }
     IAmbiguousExpressionNode CurrentRightOperand { get; }
-    IExpressionNode FinalRightOperand { get; }
+    IExpressionNode? IntermediateRightOperand { get; }
 }
 
 public partial interface IBinaryOperatorExpressionNode : ISemanticNode, IExpressionNode

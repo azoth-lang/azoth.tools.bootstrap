@@ -16,7 +16,7 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
     private bool expressionCached;
     public IAmbiguousExpressionNode Expression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
-            : GrammarAttribute.Rewritable(this, ref expressionCached, ref expression);
+            : this.RewritableChild(ref expressionCached, ref expression);
     public IExpressionNode? IntermediateExpression => Expression as IExpressionNode;
     private IMaybeAntetype? antetype;
     private bool antetypeCached;

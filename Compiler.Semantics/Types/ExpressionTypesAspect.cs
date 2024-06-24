@@ -290,7 +290,7 @@ public static class ExpressionTypesAspect
         => node.LeftOperand.Type;
 
     public static FlowState AssignmentExpression_FlowStateAfter(IAssignmentExpressionNode node)
-        => node.FinalRightOperand.FlowStateAfter.Combine(node.LeftOperand.ValueId, node.FinalRightOperand.ValueId, node.ValueId);
+        => node.IntermediateRightOperand?.FlowStateAfter.Combine(node.LeftOperand.ValueId, node.IntermediateRightOperand.ValueId, node.ValueId) ?? FlowState.Empty;
 
     public static DataType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
     {

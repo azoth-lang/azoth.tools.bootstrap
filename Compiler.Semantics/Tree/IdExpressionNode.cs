@@ -16,7 +16,7 @@ internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
     private bool referentCached;
     public IAmbiguousExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
-            : GrammarAttribute.Rewritable(this, ref referentCached, ref referent);
+            : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode? IntermediateReferent => Referent as IExpressionNode;
     public override IMaybeExpressionAntetype Antetype
         => IntermediateReferent?.Antetype ?? IAntetype.Unknown;

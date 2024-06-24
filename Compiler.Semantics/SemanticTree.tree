@@ -275,9 +275,9 @@ StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionS
 
 // ---------- Operator Expressions
 AssignmentExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
-    LeftOperand:AssignableExpression IntermediateLeftOperand:`IAssignableExpressionNode`
+    LeftOperand:AssignableExpression
     Operator:`AssignmentOperator`
-    RightOperand:AmbiguousExpression CurrentRightOperand:`IAmbiguousExpressionNode` FinalRightOperand:`IExpressionNode`;
+    RightOperand:AmbiguousExpression CurrentRightOperand:`IAmbiguousExpressionNode` IntermediateRightOperand:`IExpressionNode`?;
 BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax`
     LeftOperand:AmbiguousExpression FinalLeftOperand:`IExpressionNode`
     Operator:`BinaryOperator`
