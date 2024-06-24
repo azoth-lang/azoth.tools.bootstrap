@@ -10,14 +10,14 @@ public struct Rewritable<T> : ICyclic<T>
 {
     public static bool IsRewritableAttribute => true;
 
+    /// <remarks>A rewritable attribute is final if it can't have rewrites or is null.</remarks>
+    public static bool IsFinalValue(T value) => !value?.MayHaveRewrite ?? true;
+
     private T rawValue;
 
     public readonly bool IsInitialized => true;
 
     public readonly T UnsafeValue => rawValue;
-
-    /// <remarks>A rewritable attribute is final if it can't have rewrites or is null.</remarks>
-    public bool IsFinal => !rawValue?.MayHaveRewrite ?? true;
 
     internal Rewritable(T initialValue)
     {

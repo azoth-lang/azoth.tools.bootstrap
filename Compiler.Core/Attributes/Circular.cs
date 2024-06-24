@@ -9,14 +9,14 @@ public struct Circular<T> : ICyclic<T>
 {
     public static bool IsRewritableAttribute => false;
 
+    /// <remarks>Circular attribute values are never final. They must be evaluated to see if they </remarks>
+    public static bool IsFinalValue(T _) => false;
+
     private object? rawValue;
 
     public readonly bool IsInitialized => !ReferenceEquals(rawValue, UnsetAttribute.Instance);
 
     public readonly T UnsafeValue => Unsafe.As<T>(rawValue)!;
-
-    /// <remarks>Circular attribute values are never final. They must be evaluated to see if they </remarks>
-    public readonly bool IsFinal => false;
 
     public Circular(T value)
     {

@@ -98,51 +98,6 @@ public static class GrammarAttribute
         }
 
         return current;
-        //        T next;
-        //        if (threadState.InGraph)
-        //        {
-        //            if (threadState.ObservedInCycle(attributeId))
-        //            {
-        //                // Since the value wasn't cached, it must not be final
-        //                threadState.MarkNonFinal();
-        //                return TOp.Read(in value!, ref syncLock);
-        //            }
-
-        //            // Do not set the iteration until the value is computed and set so that a value from
-        //            // this cycle is used. Note: non-circular attributes don't have valid initial values.
-        //            var previous = TOp.Read(in value, ref syncLock);
-        //            // This context is used to detect whether the attribute depends on a circular or
-        //            // possibly non-final attribute value. If it does, then the value is not cached.
-        //            using (var context = threadState.SubgraphContext())
-        //            {
-        //                next = func.Compute(node, threadState); // may throw
-        //                if (context.IsFinal)
-        //                    return TOp.WriteFinal(ref value, next, ref syncLock, ref cached);
-        //            }
-        //            if (!comparer.Equals(next, previous)) // may throw
-        //            {
-        //                if (!TOp.CompareExchange(ref value, next, previous, comparer, ref syncLock, out var original)) // may throw
-        //                    next = original!;
-        //                else
-        //                    // Value updated for this cycle, so update the iteration
-        //                    threadState.AssignIndex(attributeId);
-        //                previous = next;
-        //            }
-        //            else
-        //            {
-        //                // previous == next, so use old value to avoid duplicate objects referenced. Value
-        //                // is correct for this cycle, so update the iteration.
-        //                threadState.AssignIndex(attributeId);
-        //            }
-
-        //            return previous!;
-        //        }
-
-        //#if DEBUG
-        //        using var _ = threadState.BeginComputing(attributeId);
-        //#endif
-        //        next = func.Compute(node, threadState); // may throw
-        //        return TOp.WriteFinal(ref value, next, ref syncLock, ref cached);
     }
 
     [Inline]
@@ -427,19 +382,20 @@ public static class GrammarAttribute
             value.Initialize(initializer(node)); // initializer may throw
         }
 
-        if (value.IsFinal)
+        T current = value.UnsafeValue;
+
+        if (TCyclic.IsFinalValue(current))
         {
             Volatile.Write(ref cached, true);
-            return value.UnsafeValue;
+            return current;
         }
 
-        T current = value.UnsafeValue;
         var threadState = ThreadState();
         var attributeId = new AttributeId(node, attributeName);
         if (threadState.CheckInStackAndUpdateLowLink(attributeId))
             return current;
 
-        using var attributeScope = threadState.VisitCyclic(attributeId, TCyclic.IsRewritableAttribute, ref cached);
+        using var attributeScope = threadState.VisitCyclic(attributeId, TCyclic.IsRewritableAttribute, current as IChildTreeNode, ref cached);
         do
         {
             attributeScope.NextIteration();
@@ -465,188 +421,21 @@ public static class GrammarAttribute
                 }
                 next = original;
             }
+
+            if (TCyclic.IsRewritableAttribute)
+                attributeScope.AddToRewriteContext(current!, next);
+
             current = next;
+
+            if (TCyclic.IsFinalValue(current))
+                attributeScope.MarkFinal();
+
         } while (attributeScope.RootOfChangedComponent);
 
         if (attributeScope.IsFinal)
             Volatile.Write(ref cached, true);
 
         return current;
-
-        //bool isFinal;
-        //if (!threadState.InGraph)
-        //{
-        //    // Using ensures graph is exited when done, making this exception safe.
-        //    using var _ = threadState.EnterGraph();
-        //    //bool isFinal;
-        //    //do
-        //    //{
-        //    //    threadState.NextIteration();
-        //    //    isFinal = ComputeCyclic(node, in cached, ref value, func, comparer, ref current, threadState, attributeId);
-        //    //} while (threadState.Changed && !isFinal);
-
-        //    isFinal = ComputeCyclic(node, in cached, ref value, func, comparer, ref current, threadState, attributeId);
-        //    if (!isFinal)
-        //        throw new InvalidOperationException("Entry to graph should always end up final.");
-        //    Volatile.Write(ref cached, true);
-        //    return current;
-        //}
-
-        //if (threadState.CheckVisitedAndUpdateLowLink(attributeId))
-        //    return current;
-
-        //isFinal = ComputeCyclic(node, in cached, ref value, func, comparer, ref current, threadState, attributeId);
-        //if (isFinal)
-        //    Volatile.Write(ref cached, true);
-        //return current;
     }
-
-    //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-    //private static bool ComputeCyclic<TNode, T, TCircular, TFunc, TCompare>(
-    //    TNode node,
-    //    in bool cached,
-    //    ref TCircular value,
-    //    TFunc func,
-    //    IEqualityComparer<TCompare> comparer,
-    //    ref T current,
-    //    AttributeGrammarThreadState threadState,
-    //    AttributeId attributeId)
-    //    where TNode : class
-    //    where T : class?, TCompare?
-    //    where TCircular : struct, ICyclic<T>
-    //    where TFunc : ICyclicAttributeFunction<TNode, T>
-    //{
-    //    // Set to current iteration before computing so a cycle will use the previous value
-    //    var index = threadState.AssignIndex(attributeId);
-    //    T? next;
-    //    bool isFinal;
-    //    // This context both manages the low link
-    //    using (var ctx = threadState.SubgraphContext())
-    //    {
-    //        do
-    //        {
-    //            ctx.NextIteration();
-    //            next = func.Compute(node, current); // may throw
-    //            if (comparer.Equals(current, next)) // may throw
-    //            {
-    //                // current == next, so use old value to avoid duplicate objects referenced
-    //                return ctx.LowLink is null;
-    //            }
-
-    //        } while (ctx.LowLink == index && ctx.);
-    //        isFinal = ctx.LowLink is null;
-    //        threadState.MarkChanged();
-    //    }
-
-
-
-    //    var original = value.CompareExchange(next, current);
-    //    if (!ReferenceEquals(original, current))
-    //    {
-    //        // The value was changed by another thread, so use the new value. First though, check
-    //        // whether it is cached and therefore final.
-    //        isFinal = Volatile.Read(in cached);
-    //        if (isFinal)
-    //            // Read again if final to ensure the value is the one that is actually cached
-    //            original = value.UnsafeValue;
-    //        next = original;
-    //    }
-    //    current = next;
-    //    return isFinal || value.IsFinal;
-    //}
-    #endregion
-
-    #region Child
-    /// <summary>
-    /// Read the value of a circular attribute.
-    /// </summary>
-    //[DebuggerStepThrough]
-    //public static TChild Child<TNode, TChild>(
-    //    TNode node,
-    //    ref bool cached,
-    //    ref TChild child,
-    //    [CallerMemberName] string attributeName = "")
-    //    where TNode : class, IParent
-    //    where TChild : class?, IChild<TNode>?
-    //{
-    //    if (string.IsNullOrEmpty(attributeName))
-    //        throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
-
-    //    TChild current = child;
-    //    if (current is null || current.IsFinal)
-    //        return current;
-
-    //    if (!current.MayHaveRewrite)
-    //    {
-    //        if (node.IsFinal)
-    //            current.MarkFinal();
-    //        // TODO shouldn't `else` mark non-final?
-    //        return current;
-    //    }
-
-    //    var threadState = ThreadState();
-    //    var attributeId = new AttributeId(node, attributeName);
-    //    if (!threadState.InCircle)
-    //    {
-    //        // Using ensures circle is exited when done, making this exception safe.
-    //        using var _ = threadState.EnterCircle();
-    //        bool isFinal;
-    //        do
-    //        {
-    //            threadState.NextIteration();
-    //            isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
-    //        } while (threadState.Changed && !isFinal && (current?.MayHaveRewrite ?? false));
-    //        if (node.IsFinal)
-    //            current?.MarkFinal();
-    //        return current;
-    //    }
-
-    //    if (!threadState.ObservedInCycle(attributeId))
-    //    {
-    //        var isFinal = ComputeChild(node, ref child, ref current, threadState, attributeId);
-    //        if (isFinal)
-    //            return current;
-    //    }
-    //    // else reuse current approximation
-
-    //    // The value returned is not the final value, but the value for this cycle
-    //    threadState.MarkNonFinal();
-    //    return current;
-    //}
-
-    //private static bool ComputeChild<TNode, TChild>(
-    //    TNode node,
-    //    ref TChild child,
-    //    ref TChild current,
-    //    AttributeGrammarThreadState threadState,
-    //    AttributeId attributeId)
-    //    where TNode : IParent
-    //    where TChild : class?, IChild<TNode>?
-    //{
-    //    // Set to current iteration before computing so a cycle will use the previous value
-    //    threadState.UpdateIterationFor(attributeId);
-
-    //    // Rewrites do not use the dependency context because even if they don't depend on something
-    //    // that is not final, they may still get rewritten again.
-
-    //    var next = (TChild)current!.Rewrite()!; // may throw
-
-    //    if (ReferenceEquals(current, next)) // may throw
-    //        // current == next, so use old value to avoid duplicate objects referenced
-    //        return next?.IsFinal ?? false;
-
-    //    threadState.MarkChanged();
-    //    var original = Interlocked.CompareExchange(ref child, next, current);
-    //    if (!ReferenceEquals(original, current))
-    //        next = original!; // original should never be null because you can't rewrite to null
-    //    else
-    //        Attributes.Child.AttachRewritten(node, next);
-    //    current = next;
-
-    //    // If the child is already final (either another thread marked it final or it was marked
-    //    // final by attaching it to the parent since it can't be rewritten), then it is final. Even
-    //    // if Rewrite() returns null, the child may not be final if it depends on a non-cached attribute.
-    //    return next?.IsFinal ?? false;
-    //}
     #endregion
 }

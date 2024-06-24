@@ -28,10 +28,20 @@ internal abstract class ChildNode : SemanticNode, IChildNode
         get => Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
     }
 
-    protected SemanticNode GetParent(IInheritanceContext ctx)
+    [DebuggerStepThrough]
+    protected sealed override ITreeNode PeekParent()
         // Use volatile read to ensure order of operations as seen by other threads
         => Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
 
+    protected SemanticNode GetParent(IInheritanceContext ctx)
+    {
+        // Use volatile read to ensure order of operations as seen by other threads
+        var node = Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
+        ctx.AccessParent(node);
+        return node;
+    }
+
+    // TODO this should only be available in the final tree
     ISemanticNode IChildNode.Parent => Parent;
 
     public IPackageDeclarationNode Package => Parent.InheritedPackage(this, this);

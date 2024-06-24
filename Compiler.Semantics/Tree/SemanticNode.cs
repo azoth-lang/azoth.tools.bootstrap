@@ -17,6 +17,9 @@ internal abstract class SemanticNode : ISemanticNode
 {
     public abstract ISyntax? Syntax { get; }
 
+    protected virtual ITreeNode? PeekParent() => null;
+    ITreeNode? ITreeNode.PeekParent() => PeekParent();
+
     internal SemanticNode LastDescendant()
         => ((SemanticNode?)this.Children().LastOrDefault())?.LastDescendant() ?? this;
 

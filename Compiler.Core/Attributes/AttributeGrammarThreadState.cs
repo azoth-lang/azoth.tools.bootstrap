@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -36,11 +37,36 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
     /// The indexes assigned to all cyclic attributes on the <see cref="outstandingAttributes"/> stack.
     /// </summary>
     private readonly Dictionary<AttributeId, ulong> inStackIndexes = new();
-    private readonly Stack<AttributeId> rewritableAttributes = new();
+    private readonly RewriteContexts rewriteContexts = new();
     private ulong? lowLink;
 
+    void IInheritanceContext.AccessParent(ITreeNode parentNode)
+        => MinLowLinkWith(rewriteContexts.ContextFor(parentNode).LowLink);
+
+    // Note: `[Inline]` attribute errors out on this method.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void MinLowLinkWith(ulong? value)
+    {
+        if (value is null)
+            return;
+        lowLink = lowLink is null ? value : Math.Min(lowLink.Value, value.Value);
+    }
+
     #region Cyclic Attributes
-    public CyclicScope VisitCyclic(AttributeId attribute, bool isRewritableAttribute, ref bool cached)
+    public bool CheckInStackAndUpdateLowLink(AttributeId attribute)
+    {
+        if (!inStackIndexes.TryGetValue(attribute, out var index))
+            return false;
+
+        MinLowLinkWith(index);
+        return true;
+    }
+
+    public CyclicScope VisitCyclic(
+        AttributeId attribute,
+        bool isRewritableAttribute,
+        IChildTreeNode? child,
+        ref bool cached)
     {
 #if DEBUG
         // If this is the first attribute, the state ought to already be empty.
@@ -54,41 +80,40 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
                 throw new InvalidOperationException($"{nameof(attributeIterations)} was not empty when entering graph.");
             if (outstandingAttributes.Any())
                 throw new InvalidOperationException($"{nameof(outstandingAttributes)} was not empty when entering graph.");
-            if (rewritableAttributes.Any())
-                throw new InvalidOperationException($"{nameof(rewritableAttributes)} was not empty when entering graph.");
         }
 #endif
 
         var index = nextIndex;
-        inStackIndexes.Add(attribute, index);
-        outstandingAttributes.Push(new(attribute, ref cached));
-        if (isRewritableAttribute)
-            rewritableAttributes.Push(attribute);
         nextIndex += 1;
-        return new(this, attribute, isRewritableAttribute, index);
+        outstandingAttributes.Push(new(attribute, ref cached));
+        var rewriteContext = isRewritableAttribute
+            ? rewriteContexts.NewRewrite(child!, index) : null;
+        return new(this, attribute, rewriteContext, index);
     }
 
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct CyclicScope : IDisposable
     {
         private readonly AttributeGrammarThreadState state;
         private readonly AttributeId attribute;
         private readonly ulong attributeIndex;
         private readonly bool wasChanged;
-        private readonly bool isRewritableAttribute;
+        private readonly RewriteContext? rewriteContext;
         private readonly ulong? previousLowLink;
 
         internal CyclicScope(
             AttributeGrammarThreadState state,
             AttributeId attribute,
-            bool isRewritableAttribute,
+            RewriteContext? rewriteContext,
             ulong attributeIndex)
         {
             this.state = state;
             this.attribute = attribute;
-            this.isRewritableAttribute = isRewritableAttribute;
             this.attributeIndex = attributeIndex;
+            this.rewriteContext = rewriteContext;
             wasChanged = state.Changed;
             previousLowLink = state.lowLink;
+            state.inStackIndexes.Add(attribute, attributeIndex);
         }
 
         public bool RootOfChangedComponent => state.Changed && IsRootOfComponent;
@@ -140,6 +165,9 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void MarkFinal() => state.lowLink = null;
 
+        public void AddToRewriteContext(object current, object? next)
+            => state.rewriteContexts.AddRewriteToContext((ITreeNode)current, (ITreeNode?)next);
+
         public void Dispose()
         {
             if (IsFinal)
@@ -173,6 +201,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
                 {
                     state.currentIteration = 0;
                     state.attributeIterations.Clear();
+                    // TODO should the rewrite context be cleaned up in some way here?
                 }
             }
             else
@@ -182,30 +211,19 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
 
                 state.Changed |= wasChanged;
 
-                if (previousLowLink is ulong previous)
-                    state.lowLink = Math.Min(previous, state.lowLink ?? previous);
+                state.MinLowLinkWith(previousLowLink);
             }
 
-            if (isRewritableAttribute)
-                state.rewritableAttributes.Pop();
+            rewriteContext?.MarkInactive();
         }
     }
-
-    public bool CheckInStackAndUpdateLowLink(AttributeId attribute)
-    {
-        if (!inStackIndexes.TryGetValue(attribute, out var index))
-            return false;
-
-        lowLink = Math.Min(lowLink ?? index, index);
-        return true;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool ComputedInCurrentIteration(AttributeId attribute)
-        => attributeIterations.TryGetValue(attribute, out var i) && i == currentIteration;
     #endregion
 
     #region Non-Circular Attributes
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool ComputedInCurrentIteration(AttributeId attribute)
+        => attributeIterations.TryGetValue(attribute, out var i) && i == currentIteration;
+
 #if DEBUG
     private readonly HashSet<AttributeId> inProgressAttributes = new();
 #endif
@@ -222,6 +240,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         return new(this, attribute);
     }
 
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct NonCircularScope(AttributeGrammarThreadState state, AttributeId attribute) : IDisposable
     {
         public bool IsFinal => state.lowLink is null;

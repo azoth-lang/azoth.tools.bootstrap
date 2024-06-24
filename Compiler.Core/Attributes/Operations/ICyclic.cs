@@ -9,6 +9,12 @@ public interface ICyclic<T>
     static abstract bool IsRewritableAttribute { get; }
 
     /// <summary>
+    /// Whether the value is final and cannot be changed.
+    /// </summary>
+    /// <remarks>If it is final, it should be immediately cached.</remarks>
+    static abstract bool IsFinalValue(T value);
+
+    /// <summary>
     /// Whether the value has been initialized.
     /// </summary>
     bool IsInitialized { get; }
@@ -19,12 +25,6 @@ public interface ICyclic<T>
     /// <remarks>This property is unsafe if the value has not been initialized. Do not access it
     /// on uninitialized values.</remarks>
     T UnsafeValue { get; }
-
-    /// <summary>
-    /// Whether the value is final and cannot be changed.
-    /// </summary>
-    /// <remarks>If it is final, it should be immediately cached.</remarks>
-    bool IsFinal { get; }
 
     /// <summary>
     /// Initializes the value if it isn't already initialized.
