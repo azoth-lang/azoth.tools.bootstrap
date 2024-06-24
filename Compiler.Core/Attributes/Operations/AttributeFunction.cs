@@ -22,7 +22,7 @@ public static class AttributeFunction
     [Inline] // Not always working
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static RewritableAttributeFunction<TNode, T> Rewritable<TNode, T>()
+    public static RewritableChildAttributeFunction<TNode, T> RewritableChild<TNode, T>()
         where TNode : ITreeNode
         where T : IChildTreeNode<TNode>?
         => new();

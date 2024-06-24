@@ -342,11 +342,11 @@ public static class GrammarAttribute
     public static TChild Rewritable<TNode, TChild>(
         TNode node,
         ref bool cached,
-        ref Rewritable<TChild> child,
+        ref RewritableChild<TChild> child,
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
         where TChild : class?, IChildTreeNode<TNode>?
-        => node.Cyclic(ref cached, ref child, AttributeFunction.Rewritable<TNode, TChild>(),
+        => node.Cyclic(ref cached, ref child, AttributeFunction.RewritableChild<TNode, TChild>(),
             default(Func<TNode, TChild>), ReferenceEqualityComparer.Instance, attributeName);
     #endregion
 

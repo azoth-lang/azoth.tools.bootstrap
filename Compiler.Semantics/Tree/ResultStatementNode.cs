@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
 {
     public override IResultStatementSyntax Syntax { get; }
-    private Rewritable<IAmbiguousExpressionNode> expression;
+    private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
     public IAmbiguousExpressionNode Expression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue

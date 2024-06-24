@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
 {
     public override IIdExpressionSyntax Syntax { get; }
-    private Rewritable<IAmbiguousExpressionNode> referent;
+    private RewritableChild<IAmbiguousExpressionNode> referent;
     private bool referentCached;
     public IAmbiguousExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue

@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes.Operations;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
-public struct Rewritable<T> : ICyclic<T>
+public struct RewritableChild<T> : ICyclic<T>
     where T : class?, IChildTreeNode?
 {
     public static bool IsRewritableAttribute => true;
@@ -19,13 +19,13 @@ public struct Rewritable<T> : ICyclic<T>
 
     public readonly T UnsafeValue => rawValue;
 
-    internal Rewritable(T initialValue)
+    internal RewritableChild(T initialValue)
     {
         rawValue = initialValue;
     }
 
     void ICyclic<T>.Initialize(T _)
-        => throw new NotSupportedException($"{nameof(Rewritable<T>)} attributes are always initialized.");
+        => throw new NotSupportedException($"{nameof(RewritableChild<T>)} attributes are always initialized.");
 
     T ICyclic<T>.CompareExchange(T value, T comparand)
         => Unsafe.As<T>(Interlocked.CompareExchange(ref rawValue!, value, comparand));
