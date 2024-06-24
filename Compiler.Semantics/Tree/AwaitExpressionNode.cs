@@ -34,7 +34,7 @@ internal sealed class AwaitExpressionNode : ExpressionNode, IAwaitExpressionNode
     public AwaitExpressionNode(IAwaitExpressionSyntax syntax, IAmbiguousExpressionNode expression)
     {
         Syntax = syntax;
-        this.expression = Child.Create(this, expression);
+        this.expression = Child.Legacy(this, expression);
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Expression.GetFlowLexicalScope();

@@ -49,8 +49,8 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         IAmbiguousExpressionNode rightOperand)
     {
         Syntax = syntax;
-        this.leftOperand = Child.Create(this, leftOperand);
-        this.rightOperand = Child.Create(this, rightOperand);
+        this.leftOperand = Child.Legacy(this, leftOperand);
+        this.rightOperand = Child.Legacy(this, rightOperand);
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope()

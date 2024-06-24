@@ -27,7 +27,7 @@ internal sealed class UnsafeExpressionNode : ExpressionNode, IUnsafeExpressionNo
     public UnsafeExpressionNode(IUnsafeExpressionSyntax syntax, IAmbiguousExpressionNode expression)
     {
         Syntax = syntax;
-        this.expression = Child.Create(this, expression);
+        this.expression = Child.Legacy(this, expression);
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Expression.GetFlowLexicalScope();

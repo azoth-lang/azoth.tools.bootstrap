@@ -24,7 +24,7 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
         IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
-        this.context = Child.Create(this, context);
+        this.context = Child.Legacy(this, context);
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 

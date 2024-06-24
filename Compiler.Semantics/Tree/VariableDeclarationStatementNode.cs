@@ -71,7 +71,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
         Type = Child.Attach(this, type);
-        this.initializer = Child.Create(this, initializer);
+        this.initializer = Child.Legacy(this, initializer);
     }
 
     public override LexicalScope GetLexicalScope() => LexicalScope;

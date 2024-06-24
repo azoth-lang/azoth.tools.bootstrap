@@ -34,7 +34,7 @@ internal sealed class MoveExpressionNode : ExpressionNode, IMoveExpressionNode
     public MoveExpressionNode(IMoveExpressionSyntax syntax, ISimpleNameNode referent)
     {
         Syntax = syntax;
-        this.referent = Child.Create(this, referent);
+        this.referent = Child.Legacy(this, referent);
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Referent.GetFlowLexicalScope();

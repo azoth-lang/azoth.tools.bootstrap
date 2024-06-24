@@ -36,7 +36,7 @@ internal sealed class FunctionNameNode : AmbiguousNameExpressionNode, IFunctionN
         IFunctionLikeDeclarationNode? referencedDeclaration)
     {
         Syntax = syntax;
-        this.functionGroup = Child.Create(this, functionGroup);
+        this.functionGroup = Child.Legacy(this, functionGroup);
         ReferencedDeclaration = referencedDeclaration;
     }
 }

@@ -108,7 +108,7 @@ public static class Child
     /// <summary>
     /// Attach a child that may support rewriting.
     /// </summary>
-    public static RewritableChild<TChild> CreateRewritable<TParent, TChild>(TParent parent, TChild initialValue)
+    public static RewritableChild<TChild> Create<TParent, TChild>(TParent parent, TChild initialValue)
         where TParent : ITreeNode
         where TChild : class?, IChildTreeNode<TParent>?
     {
@@ -130,7 +130,7 @@ public static class Child
         return child;
     }
 
-    public static Child<TChild> Create<TParent, TChild>(TParent parent, TChild initialValue)
+    public static Child<TChild> Legacy<TParent, TChild>(TParent parent, TChild initialValue)
         where TParent : ITreeNode
         where TChild : class?, IChildTreeNode<TParent>?
     {

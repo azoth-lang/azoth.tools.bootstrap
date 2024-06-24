@@ -25,7 +25,7 @@ internal sealed class MethodGroupNameNode : AmbiguousNameExpressionNode, IMethod
         IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
-        this.context = Child.Create(this, context);
+        this.context = Child.Legacy(this, context);
         MethodName = methodName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();

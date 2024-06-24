@@ -35,7 +35,7 @@ internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
     public IdExpressionNode(IIdExpressionSyntax syntax, IAmbiguousExpressionNode referent)
     {
         Syntax = syntax;
-        this.referent = Child.CreateRewritable(this, referent);
+        this.referent = Child.Create(this, referent);
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Referent.GetFlowLexicalScope();

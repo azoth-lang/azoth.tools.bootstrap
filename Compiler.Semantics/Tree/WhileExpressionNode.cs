@@ -39,7 +39,7 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         IBlockExpressionNode block)
     {
         Syntax = syntax;
-        this.condition = Child.Create(this, condition);
+        this.condition = Child.Legacy(this, condition);
         Block = Child.Attach(this, block);
     }
 

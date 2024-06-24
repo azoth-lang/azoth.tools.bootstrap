@@ -19,7 +19,7 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
     public ExpressionStatementNode(IExpressionStatementSyntax syntax, IAmbiguousExpressionNode expression)
     {
         Syntax = syntax;
-        this.expression = Child.Create(this, expression);
+        this.expression = Child.Legacy(this, expression);
     }
 
     public override LexicalScope GetLexicalScope() => InheritedContainingLexicalScope();

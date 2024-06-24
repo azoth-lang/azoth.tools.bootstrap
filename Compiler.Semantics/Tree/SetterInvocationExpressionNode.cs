@@ -53,7 +53,7 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
         Syntax = syntax;
         Context = Child.Attach(this, context);
         PropertyName = propertyName;
-        this.value = Child.Create(this, value);
+        this.value = Child.Legacy(this, value);
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
         ReferencedDeclaration = referencedDeclaration;
     }

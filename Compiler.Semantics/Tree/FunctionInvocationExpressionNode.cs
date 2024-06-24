@@ -56,7 +56,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
-        this.functionGroup = Child.Create(this, functionGroup);
+        this.functionGroup = Child.Legacy(this, functionGroup);
         this.arguments = ChildList.Create(this, arguments);
     }
 

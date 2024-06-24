@@ -37,7 +37,7 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
     public UnaryOperatorExpressionNode(IUnaryOperatorExpressionSyntax syntax, IAmbiguousExpressionNode operand)
     {
         Syntax = syntax;
-        this.operand = Child.Create(this, operand);
+        this.operand = Child.Legacy(this, operand);
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope()

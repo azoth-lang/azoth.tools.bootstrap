@@ -40,7 +40,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         IElseClauseNode? elseClause)
     {
         Syntax = syntax;
-        this.condition = Child.Create(this, condition);
+        this.condition = Child.Legacy(this, condition);
         ThenBlock = Child.Attach(this, thenBlock);
         ElseClause = Child.Attach(this, elseClause);
     }

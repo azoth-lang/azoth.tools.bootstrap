@@ -101,7 +101,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         IBlockExpressionNode block)
     {
         Syntax = syntax;
-        this.inExpression = Child.Create(this, inExpression);
+        this.inExpression = Child.Legacy(this, inExpression);
         DeclaredType = Child.Attach(this, type);
         Block = Child.Attach(this, block);
     }

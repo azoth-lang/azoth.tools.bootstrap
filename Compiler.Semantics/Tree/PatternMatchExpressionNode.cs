@@ -26,7 +26,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
         IPatternNode pattern)
     {
         Syntax = syntax;
-        this.referent = Child.Create(this, referent);
+        this.referent = Child.Legacy(this, referent);
         Pattern = Child.Attach(this, pattern);
     }
 

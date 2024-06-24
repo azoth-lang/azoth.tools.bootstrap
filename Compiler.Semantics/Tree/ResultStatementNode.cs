@@ -37,7 +37,7 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
     public ResultStatementNode(IResultStatementSyntax syntax, IAmbiguousExpressionNode expression)
     {
         Syntax = syntax;
-        this.expression = Child.CreateRewritable(this, expression);
+        this.expression = Child.Create(this, expression);
     }
 
     public override LexicalScope GetLexicalScope() => InheritedContainingLexicalScope();

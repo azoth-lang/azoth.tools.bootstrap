@@ -34,6 +34,6 @@ internal sealed class AsyncStartExpressionNode : ExpressionNode, IAsyncStartExpr
     public AsyncStartExpressionNode(IAsyncStartExpressionSyntax syntax, IAmbiguousExpressionNode expression)
     {
         Syntax = syntax;
-        this.expression = Child.Create(this, expression);
+        this.expression = Child.Legacy(this, expression);
     }
 }

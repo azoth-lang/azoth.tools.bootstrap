@@ -25,7 +25,7 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
-        this.expression = Child.Create(this, expression);
+        this.expression = Child.Legacy(this, expression);
         this.arguments = ChildList.Create(this, arguments);
     }
 

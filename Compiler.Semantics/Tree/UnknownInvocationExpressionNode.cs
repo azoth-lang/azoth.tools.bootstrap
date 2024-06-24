@@ -20,7 +20,7 @@ internal sealed class UnknownInvocationExpressionNode : ExpressionNode, IUnknown
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
-        this.expression = Child.Create(this, expression);
+        this.expression = Child.Legacy(this, expression);
         Arguments = ChildList.Create(this, arguments);
     }
 }

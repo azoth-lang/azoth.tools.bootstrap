@@ -39,7 +39,7 @@ internal sealed class FieldAccessExpressionNode : ExpressionNode, IFieldAccessEx
         IFieldDeclarationNode referencedDeclaration)
     {
         Syntax = syntax;
-        this.context = Child.Create(this, context);
+        this.context = Child.Legacy(this, context);
         FieldName = fieldName;
         ReferencedDeclaration = referencedDeclaration;
     }

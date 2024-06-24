@@ -36,7 +36,7 @@ internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpr
         ITypeNode convertToType)
     {
         Syntax = syntax;
-        this.referent = Child.Create(this, referent);
+        this.referent = Child.Legacy(this, referent);
         ConvertToType = Child.Attach(this, convertToType);
     }
 

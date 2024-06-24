@@ -18,6 +18,6 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
     public ReturnExpressionNode(IReturnExpressionSyntax syntax, IAmbiguousExpressionNode? value)
     {
         Syntax = syntax;
-        this.value = Child.Create(this, value);
+        this.value = Child.Legacy(this, value);
     }
 }
