@@ -111,7 +111,7 @@ internal static class OverloadResolutionAspect
         IInitializerInvocationExpressionNode node)
     {
         var initializingAntetype = node.InitializerGroup.InitializingAntetype;
-        var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
+        var arguments = node.Arguments.Select(AntetypeIfKnown);
         var argumentAntetypes = ArgumentAntetypes.ForInitializer(arguments);
         return node.InitializerGroup.ReferencedDeclarations
                    .Select(d => AntetypeContextualizedOverload.Create(initializingAntetype, d))

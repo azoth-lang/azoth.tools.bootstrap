@@ -13,9 +13,8 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
 {
     public override IInvocationExpressionSyntax Syntax { get; }
     public IInitializerGroupNameNode InitializerGroup { get; }
-    private readonly ChildList<IAmbiguousExpressionNode> arguments;
+    private readonly RewritableChildList<InitializerInvocationExpressionNode, IAmbiguousExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
-    public IEnumerable<IAmbiguousExpressionNode> IntermediateArguments => arguments.Final;
     private ValueAttribute<IFixedSet<IInitializerDeclarationNode>> compatibleDeclarations;
     public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations
         => compatibleDeclarations.TryGetValue(out var value) ? value
@@ -45,6 +44,6 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
     {
         Syntax = syntax;
         InitializerGroup = Child.Attach(this, initializerGroup);
-        this.arguments = ChildList.CreateLegacy(this, arguments);
+        this.arguments = ChildList.Create(this, nameof(Arguments), arguments);
     }
 }
