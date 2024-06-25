@@ -8,7 +8,7 @@ using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
-public class RewritableChildList<TNode, TChild> : IFixedList<TChild>
+internal class RewritableChildList<TNode, TChild> : IRewritableChildList<TChild>
     where TNode : class, ITreeNode
     where TChild : class, IChildTreeNode<TNode>
 {
@@ -62,6 +62,35 @@ public class RewritableChildList<TNode, TChild> : IFixedList<TChild>
         {
             for (int i = 0; i < children.Count; i++)
                 yield return children[i].UnsafeValue;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+}
+
+internal sealed class RewritableChildList<TNode, TChild, TFinal> : RewritableChildList<TNode, TChild>, IRewritableChildList<TChild, TFinal>
+    where TNode : class, ITreeNode
+    where TChild : class, IChildTreeNode<TNode>
+    where TFinal : class, IChildTreeNode
+{
+    public IFixedList<TFinal?> Intermediate { get; }
+
+    internal RewritableChildList(TNode node, string attributeName, IEnumerable<TChild> initialValues)
+        : base(node, attributeName, initialValues)
+    {
+        Intermediate = new IntermediateList(this);
+    }
+
+    private sealed class IntermediateList(RewritableChildList<TNode, TChild> children) : IFixedList<TFinal?>
+    {
+        public int Count => children.Count;
+
+        public TFinal? this[int index] => children[index] as TFinal;
+
+        public IEnumerator<TFinal?> GetEnumerator()
+        {
+            foreach (var child in children)
+                yield return child as TFinal;
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

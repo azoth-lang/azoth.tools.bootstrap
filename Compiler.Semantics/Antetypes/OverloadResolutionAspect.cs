@@ -73,7 +73,7 @@ internal static class OverloadResolutionAspect
                    .Select(o => o.Declaration).ToFixedSet();
     }
 
-    private static IMaybeExpressionAntetype AntetypeIfKnown(IAmbiguousExpressionNode node)
+    private static IMaybeExpressionAntetype AntetypeIfKnown(IAmbiguousExpressionNode? node)
     {
         if (node is IExpressionNode expression && !expression.ShouldNotBeExpression())
             return expression.Antetype;

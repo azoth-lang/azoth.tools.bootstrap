@@ -1521,8 +1521,7 @@ public partial interface IFunctionInvocationExpressionNode : ISemanticNode, IExp
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IFunctionGroupNameNode FunctionGroup { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
-    IEnumerable<IAmbiguousExpressionNode> IntermediateArguments { get; }
-    IEnumerable<IExpressionNode> FinalArguments { get; }
+    IFixedList<IExpressionNode?> IntermediateArguments { get; }
     IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { get; }
     IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload<IFunctionLikeDeclarationNode>? ContextualizedOverload { get; }

@@ -118,8 +118,8 @@ public static class ExpressionTypesAspect
     public static FlowState FunctionInvocationExpression_FlowStateAfter(IFunctionInvocationExpressionNode node)
     {
         // The flow state just before the function is called is the state after all arguments have evaluated
-        var flowState = node.FinalArguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.FinalArguments);
+        var flowState = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.IntermediateArguments);
         return flowState.CombineArguments(argumentValueIds, node.ValueId);
     }
 
@@ -216,11 +216,11 @@ public static class ExpressionTypesAspect
     private static IEnumerable<ArgumentValueId> ArgumentValueIds(
         ContextualizedOverload? overload,
         IExpressionNode? selfArgument,
-        IEnumerable<IExpressionNode> arguments)
+        IEnumerable<IExpressionNode?> arguments)
     {
-        arguments = selfArgument.YieldValue().Concat(arguments);
+        var allArguments = arguments.Prepend(selfArgument).WhereNotNull();
         if (overload is null)
-            return arguments.Select(a => new ArgumentValueId(false, a.ValueId));
+            return allArguments.Select(a => new ArgumentValueId(false, a.ValueId));
 
         var parameterTypes = overload.ParameterTypes.AsEnumerable();
         if (selfArgument is not null)
@@ -229,7 +229,7 @@ public static class ExpressionTypesAspect
                 throw new InvalidOperationException("Self argument provided for overload without self parameter");
             parameterTypes = parameterTypes.Prepend(selfParameterType.ToUpperBound());
         }
-        return parameterTypes.EquiZip(arguments)
+        return parameterTypes.EquiZip(allArguments)
                              .Select((p, a) => new ArgumentValueId(p.IsLent, a.ValueId));
     }
 

@@ -13,7 +13,7 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
 {
     public override IInvocationExpressionSyntax Syntax { get; }
     public IInitializerGroupNameNode InitializerGroup { get; }
-    private readonly RewritableChildList<InitializerInvocationExpressionNode, IAmbiguousExpressionNode> arguments;
+    private readonly IRewritableChildList<IAmbiguousExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     private ValueAttribute<IFixedSet<IInitializerDeclarationNode>> compatibleDeclarations;
     public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations

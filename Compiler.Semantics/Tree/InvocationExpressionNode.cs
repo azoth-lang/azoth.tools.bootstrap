@@ -18,7 +18,7 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
             : this.RewritableChild(ref expressionCached, ref expression);
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
 
-    private readonly RewritableChildList<InvocationExpressionNode, IAmbiguousExpressionNode> arguments;
+    private readonly IRewritableChildList<IAmbiguousExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
 

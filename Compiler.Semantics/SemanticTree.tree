@@ -317,7 +317,7 @@ InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSynta
     Arguments:AmbiguousExpression* CurrentArguments:`IAmbiguousExpressionNode`*;
 FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
-    IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>` FinalArguments:`IEnumerable<IExpressionNode>`
+    IntermediateArguments:`IExpressionNode?`*
     CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload<IFunctionLikeDeclarationNode>`?;
 MethodInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
