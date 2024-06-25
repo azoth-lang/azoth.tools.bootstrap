@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -21,10 +20,9 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     public override INewObjectExpressionSyntax Syntax { get; }
     public ITypeNameNode ConstructingType { get; }
     public IdentifierName? ConstructorName => Syntax.ConstructorName;
-    private readonly ChildList<IAmbiguousExpressionNode> arguments;
+    private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
-    public IEnumerable<IAmbiguousExpressionNode> IntermediateArguments => arguments.Final;
-    public IEnumerable<IExpressionNode> FinalArguments => arguments.Final.Cast<IExpressionNode>();
+    public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     private ValueAttribute<IMaybeAntetype> constructingAntetype;
     public IMaybeAntetype ConstructingAntetype
         => constructingAntetype.TryGetValue(out var value) ? value
@@ -68,7 +66,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     {
         Syntax = syntax;
         ConstructingType = Child.Attach(this, type);
-        this.arguments = ChildList.CreateLegacy(this, arguments);
+        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
@@ -101,8 +99,8 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         IInheritanceContext ctx)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
-            && arguments.IndexOfCurrent(ambiguousExpression) is int index and > 0)
-            return ((IExpressionNode)arguments.FinalAt(index - 1)).FlowStateAfter;
+            && arguments.Current.IndexOf(ambiguousExpression) is int index and > 0)
+            return IntermediateArguments[index - 1]?.FlowStateAfter ?? FlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

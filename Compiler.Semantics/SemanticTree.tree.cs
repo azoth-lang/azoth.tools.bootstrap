@@ -1285,8 +1285,7 @@ public partial interface INewObjectExpressionNode : ISemanticNode, IExpressionNo
     ITypeNameNode ConstructingType { get; }
     IdentifierName? ConstructorName { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
-    IEnumerable<IAmbiguousExpressionNode> IntermediateArguments { get; }
-    IEnumerable<IExpressionNode> FinalArguments { get; }
+    IFixedList<IExpressionNode?> IntermediateArguments { get; }
     IMaybeAntetype ConstructingAntetype { get; }
     IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { get; }
     IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
@@ -1534,8 +1533,7 @@ public partial interface IMethodInvocationExpressionNode : ISemanticNode, IExpre
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IMethodGroupNameNode MethodGroup { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
-    IEnumerable<IAmbiguousExpressionNode> IntermediateArguments { get; }
-    IEnumerable<IExpressionNode> FinalArguments { get; }
+    IFixedList<IExpressionNode?> IntermediateArguments { get; }
     IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload<IStandardMethodDeclarationNode>? ContextualizedOverload { get; }

@@ -172,8 +172,8 @@ public static class ExpressionTypesAspect
     public static FlowState MethodInvocationExpression_FlowStateAfter(IMethodInvocationExpressionNode node)
     {
         // The flow state just before the method is called is the state after all arguments have evaluated
-        var flowState = node.FinalArguments.LastOrDefault()?.FlowStateAfter ?? node.MethodGroup.Context.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.MethodGroup.Context, node.FinalArguments);
+        var flowState = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.MethodGroup.Context.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.MethodGroup.Context, node.IntermediateArguments);
         return flowState.CombineArguments(argumentValueIds, node.ValueId);
     }
 
@@ -262,8 +262,8 @@ public static class ExpressionTypesAspect
     public static FlowState NewObjectExpression_FlowStateAfter(INewObjectExpressionNode node)
     {
         // The flow state just before the constructor is called is the state after all arguments have evaluated
-        var flowState = node.FinalArguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.FinalArguments);
+        var flowState = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.IntermediateArguments);
         return flowState.CombineArguments(argumentValueIds, node.ValueId);
     }
 

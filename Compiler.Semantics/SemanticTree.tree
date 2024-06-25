@@ -258,7 +258,7 @@ AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax`
     ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression*
-    IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>` FinalArguments:`IEnumerable<IExpressionNode>`
+    IntermediateArguments:`IExpressionNode?`*
     ConstructingAntetype:`IMaybeAntetype` ReferencedConstructors:{`IConstructorDeclarationNode`}
     CompatibleConstructors:{`IConstructorDeclarationNode`} ReferencedConstructor:`IConstructorDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload<IConstructorDeclarationNode>`?;
@@ -321,8 +321,7 @@ FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax
     CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload<IFunctionLikeDeclarationNode>`?;
 MethodInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
-    MethodGroup:MethodGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>`
-    FinalArguments:`IEnumerable<IExpressionNode>`
+    MethodGroup:MethodGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IExpressionNode?`*
     CompatibleDeclarations:{`IStandardMethodDeclarationNode`} ReferencedDeclaration:`IStandardMethodDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload<IStandardMethodDeclarationNode>`?;
 GetterInvocationExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax`

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -15,12 +14,9 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
 {
     public override IInvocationExpressionSyntax Syntax { get; }
     public IMethodGroupNameNode MethodGroup { get; }
-    private readonly ChildList<IAmbiguousExpressionNode> arguments;
+    private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
-    // TODO Don't make this require every argument to be final
-    public IEnumerable<IAmbiguousExpressionNode> IntermediateArguments => arguments.Final;
-    // TODO Don't make this require every argument to be final
-    public IEnumerable<IExpressionNode> FinalArguments => arguments.Final.Cast<IExpressionNode>();
+    public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     private ValueAttribute<IFixedSet<IStandardMethodDeclarationNode>> compatibleDeclarations;
     public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations
         => compatibleDeclarations.TryGetValue(out var value) ? value
@@ -56,7 +52,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     {
         Syntax = syntax;
         MethodGroup = Child.Attach(this, methodGroup);
-        this.arguments = ChildList.CreateLegacy(this, arguments);
+        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
     internal override FlowState InheritedFlowStateBefore(
@@ -65,11 +61,11 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         IInheritanceContext ctx)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
-            && arguments.IndexOfCurrent(ambiguousExpression) is int index)
+            && arguments.Current.IndexOf(ambiguousExpression) is int index)
         {
             if (index == 0)
                 return MethodGroup.FlowStateAfter;
-            return ((IExpressionNode)arguments.FinalAt(index - 1)).FlowStateAfter;
+            return IntermediateArguments[index - 1]?.FlowStateAfter ?? FlowState.Empty;
         }
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
