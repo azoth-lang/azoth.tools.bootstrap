@@ -1511,7 +1511,7 @@ public partial interface IInvocationExpressionNode : IAmbiguousExpressionNode
     IAmbiguousExpressionNode Expression { get; }
     IAmbiguousExpressionNode CurrentExpression { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
-    IEnumerable<IAmbiguousExpressionNode> CurrentArguments { get; }
+    IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
 }
 
 public partial interface IFunctionInvocationExpressionNode : ISemanticNode, IExpressionNode

@@ -38,6 +38,6 @@ internal sealed class FunctionReferenceInvocationNode : ExpressionNode, IFunctio
         Syntax = syntax;
         Expression = Child.Attach(this, expression);
         FunctionAntetype = (FunctionAntetype)expression.Antetype;
-        Arguments = ChildList.Create(this, arguments);
+        Arguments = ChildList.CreateLegacy(this, arguments);
     }
 }

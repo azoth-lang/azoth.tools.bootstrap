@@ -51,7 +51,7 @@ public static class FixedList
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     private sealed class Of<T> : IFixedList<T>
     {
-        public static readonly Of<T> Empty = new(Enumerable.Empty<T>());
+        public static readonly Of<T> Empty = new([]);
 
         private readonly IReadOnlyList<T> items;
 

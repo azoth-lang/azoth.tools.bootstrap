@@ -314,7 +314,7 @@ ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Valu
 // ---------- Invocation Expressions
 InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
-    Arguments:AmbiguousExpression* CurrentArguments:`IEnumerable<IAmbiguousExpressionNode>`;
+    Arguments:AmbiguousExpression* CurrentArguments:`IAmbiguousExpressionNode`*;
 FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
     IntermediateArguments:`IEnumerable<IAmbiguousExpressionNode>` FinalArguments:`IEnumerable<IExpressionNode>`

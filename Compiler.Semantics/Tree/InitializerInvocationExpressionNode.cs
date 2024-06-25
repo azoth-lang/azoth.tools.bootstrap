@@ -45,6 +45,6 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
     {
         Syntax = syntax;
         InitializerGroup = Child.Attach(this, initializerGroup);
-        this.arguments = ChildList.Create(this, arguments);
+        this.arguments = ChildList.CreateLegacy(this, arguments);
     }
 }

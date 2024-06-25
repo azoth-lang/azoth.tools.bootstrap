@@ -24,6 +24,6 @@ internal sealed class UnknownInvocationExpressionNode : ExpressionNode, IUnknown
     {
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
-        Arguments = ChildList.Create(this, arguments);
+        Arguments = ChildList.CreateLegacy(this, arguments);
     }
 }

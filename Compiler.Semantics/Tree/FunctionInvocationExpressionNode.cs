@@ -60,7 +60,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     {
         Syntax = syntax;
         this.functionGroup = Child.Create(this, functionGroup);
-        this.arguments = ChildList.Create(this, arguments);
+        this.arguments = ChildList.CreateLegacy(this, arguments);
     }
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)

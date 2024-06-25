@@ -83,7 +83,7 @@ public static class GrammarAttribute
         var next = func.Compute(node, threadState); // may throw
         if (attributeScope.IsFinal)
         {
-            attributeScope.RemoveComputedInIteration(attributeId);
+            attributeScope.RemoveComputedInIteration();
             return TOp.WriteFinal(ref value, next, ref syncLock, ref cached);
         }
 
@@ -93,7 +93,7 @@ public static class GrammarAttribute
                 next = original!;
             else
                 // Value updated for this cycle, so update the iteration
-                attributeScope.MarkComputedInCurrentIteration(attributeId);
+                attributeScope.MarkComputedInCurrentIteration();
             current = next;
         }
 
@@ -355,7 +355,7 @@ public static class GrammarAttribute
     /// <summary>
     /// Read the value of a circular attribute.
     /// </summary>
-    //[DebuggerStepThrough]
+    [DebuggerStepThrough]
     public static T Cyclic<TNode, T, TCyclic, TFunc, TCompare>(
         this TNode node,
         ref bool cached,
@@ -371,7 +371,27 @@ public static class GrammarAttribute
     {
         if (string.IsNullOrEmpty(attributeName))
             throw new ArgumentException("The attribute name must be provided.", nameof(attributeName));
+        return Cyclic(node, ref cached, ref value, func, initializer, comparer, new AttributeId(node, attributeName));
+    }
 
+    /// <summary>
+    /// Read the value of a circular attribute.
+    /// </summary>
+    //[DebuggerStepThrough]
+    internal static T Cyclic<TNode, T, TCyclic, TFunc, TCompare>(
+        TNode node,
+        ref bool cached,
+        ref TCyclic value,
+        TFunc func,
+        Func<TNode, T>? initializer,
+        IEqualityComparer<TCompare> comparer,
+        AttributeId attributeId,
+        object? cachedOwner = null)
+        where TNode : class, ITreeNode
+        where T : class?, TCompare?
+        where TCyclic : struct, ICyclic<T>
+        where TFunc : ICyclicAttributeFunction<TNode, T>
+    {
         // Since we must read `value`, go ahead and check the `cached` again in case it was set to true
         if (Volatile.Read(in cached))
             return value.UnsafeValue;
@@ -392,11 +412,11 @@ public static class GrammarAttribute
         }
 
         var threadState = ThreadState();
-        var attributeId = new AttributeId(node, attributeName);
         if (threadState.CheckInStackAndUpdateLowLink(attributeId))
             return current;
 
-        using var attributeScope = threadState.VisitCyclic(attributeId, TCyclic.IsRewritableAttribute, current as IChildTreeNode, ref cached);
+        var cachedRef = InteriorRef.Create(cachedOwner ?? node, ref cached);
+        using var attributeScope = threadState.VisitCyclic(attributeId, cachedRef, TCyclic.IsRewritableAttribute, current as IChildTreeNode);
         do
         {
             attributeScope.NextIteration();

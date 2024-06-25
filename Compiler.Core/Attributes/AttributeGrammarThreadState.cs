@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Azoth.Tools.Bootstrap.Framework;
 using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -53,7 +54,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
     }
 
     #region Cyclic Attributes
-    public bool CheckInStackAndUpdateLowLink(AttributeId attribute)
+    public bool CheckInStackAndUpdateLowLink(in AttributeId attribute)
     {
         if (!inStackIndexes.TryGetValue(attribute, out var index))
             return false;
@@ -63,10 +64,10 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
     }
 
     public CyclicScope VisitCyclic(
-        AttributeId attribute,
+        in AttributeId attribute,
+        InteriorRef<bool> cached,
         bool isRewritableAttribute,
-        IChildTreeNode? child,
-        ref bool cached)
+        IChildTreeNode? child)
     {
 #if DEBUG
         // If this is the first attribute, the state ought to already be empty.
@@ -85,7 +86,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
 
         var index = nextIndex;
         nextIndex += 1;
-        outstandingAttributes.Push(new(attribute, ref cached));
+        outstandingAttributes.Push(new(attribute, cached));
         var rewriteContext = isRewritableAttribute
             ? rewriteContexts.NewRewrite(child!, index) : null;
         return new(this, attribute, rewriteContext, index);
@@ -103,7 +104,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
 
         internal CyclicScope(
             AttributeGrammarThreadState state,
-            AttributeId attribute,
+            in AttributeId attribute,
             RewriteContext? rewriteContext,
             ulong attributeIndex)
         {
@@ -221,7 +222,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
 
     #region Non-Circular Attributes
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool ComputedInCurrentIteration(AttributeId attribute)
+    public bool ComputedInCurrentIteration(in AttributeId attribute)
         => attributeIterations.TryGetValue(attribute, out var i) && i == currentIteration;
 
 #if DEBUG
@@ -230,7 +231,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
     /// <summary>
     /// Track which attributes are currently being computed to detect circular dependencies.
     /// </summary>
-    public NonCircularScope VisitNonCircular(AttributeId attribute)
+    public NonCircularScope VisitNonCircular(in AttributeId attribute)
     {
 #if DEBUG
         if (!InGraph)
@@ -241,12 +242,14 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
     }
 
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct NonCircularScope(AttributeGrammarThreadState state, AttributeId attribute) : IDisposable
+    public readonly struct NonCircularScope(AttributeGrammarThreadState state, in AttributeId attribute) : IDisposable
     {
+        private readonly AttributeId attribute = attribute;
+
         public bool IsFinal => state.lowLink is null;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void MarkComputedInCurrentIteration(AttributeId attribute)
+        public void MarkComputedInCurrentIteration()
         {
             // If current iteration is zero, we are outside a cyclic attribute computation.
             if (state.currentIteration != 0)
@@ -254,11 +257,11 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void RemoveComputedInIteration(AttributeId attributeId)
+        public void RemoveComputedInIteration()
         {
             // If current iteration is zero, we are outside a cyclic attribute computation.
             if (state.currentIteration != 0)
-                state.attributeIterations.Remove(attributeId);
+                state.attributeIterations.Remove(attribute);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

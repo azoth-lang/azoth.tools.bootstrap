@@ -17,9 +17,10 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
-    private readonly ChildList<IAmbiguousExpressionNode> arguments;
+
+    private readonly RewritableChildList<InvocationExpressionNode, IAmbiguousExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
-    public IEnumerable<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
 
     public InvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
@@ -28,7 +29,7 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
     {
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
-        this.arguments = ChildList.Create(this, arguments);
+        this.arguments = ChildList.Create(this, nameof(Arguments), arguments);
     }
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
@@ -51,6 +52,5 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
         ?? OverloadResolutionAspect.InvocationExpression_Rewrite_InitializerGroupNameExpression(this)
         ?? OverloadResolutionAspect.InvocationExpression_Rewrite_TypeNameExpression(this)
         ?? OverloadResolutionAspect.InvocationExpression_Rewrite_FunctionReferenceExpression(this)
-        ?? OverloadResolutionAspect.InvocationExpression_Rewrite_ToUnknown(this)
-        ?? base.Rewrite();
+        ?? OverloadResolutionAspect.InvocationExpression_Rewrite_ToUnknown(this);
 }

@@ -67,11 +67,24 @@ public static class ChildList
     /// <summary>
     /// Create a list of potentially rewritable children.
     /// </summary>
-    public static ChildList<TChild> Create<TParent, TChild>(TParent parent, IEnumerable<TChild> initialValues)
+    public static ChildList<TChild> CreateLegacy<TParent, TChild>(TParent parent, IEnumerable<TChild> initialValues)
         where TParent : ITreeNode
         where TChild : class, IChildTreeNode<TParent>
     {
         var children = new ChildList<TChild>(initialValues);
+        foreach (var child in children.Current)
+            child.SetParent(parent);
+        return children;
+    }
+
+    /// <summary>
+    /// Create a list of potentially rewritable children.
+    /// </summary>
+    public static RewritableChildList<TParent, TChild> Create<TParent, TChild>(TParent parent, string attributeName, IEnumerable<TChild> initialValues)
+        where TParent : class, ITreeNode
+        where TChild : class, IChildTreeNode<TParent>
+    {
+        var children = new RewritableChildList<TParent, TChild>(parent, attributeName, initialValues);
         foreach (var child in children.Current)
             child.SetParent(parent);
         return children;

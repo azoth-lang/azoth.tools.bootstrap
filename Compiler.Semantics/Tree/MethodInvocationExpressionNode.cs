@@ -56,7 +56,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     {
         Syntax = syntax;
         MethodGroup = Child.Attach(this, methodGroup);
-        this.arguments = ChildList.Create(this, arguments);
+        this.arguments = ChildList.CreateLegacy(this, arguments);
     }
 
     internal override FlowState InheritedFlowStateBefore(
