@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Framework;
 /// </summary>
 /// <remarks>If the type does not implement <see cref="IEquatable{T}"/> then the comparer throws
 /// <see cref="NotSupportedException"/>.</remarks>
-public class StrictEqualityComparer<T>
+public static class StrictEqualityComparer<T>
 {
     public static readonly IEqualityComparer<T> Instance = StrictEqualityComparer.Create<T>();
 }

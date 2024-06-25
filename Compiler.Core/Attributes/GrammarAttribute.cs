@@ -26,7 +26,7 @@ public static class GrammarAttribute
     /// <summary>
     /// Get the thread state for the current thread.
     /// </summary>
-    [Inline] // Not always working
+    [Inline]
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static AttributeGrammarThreadState ThreadState()
@@ -37,7 +37,7 @@ public static class GrammarAttribute
     /// Safely check whether the attribute has been cached. If it has been, then it is safe to
     /// simply read the attribute value from the backing field.
     /// </summary>
-    [Inline] // Not always working
+    [Inline(export: true)]
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsCached(in bool cached) => Volatile.Read(in cached);
@@ -47,7 +47,7 @@ public static class GrammarAttribute
     /// </summary>
     /// <remarks>This should only be used for nodes that directly expose a function that calls the
     /// inherited member.</remarks>
-    [Inline] // Not always working
+    [Inline(export: true)]
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IInheritanceContext CurrentInheritanceContext() => ThreadState();
@@ -100,10 +100,10 @@ public static class GrammarAttribute
         return current;
     }
 
-    [Inline]
+    [Inline(export: true)]
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static T NonCircular<TNode, T, TFunc>(
+    public static T NonCircular<TNode, T, TFunc>(
         this TNode node,
         ref bool cached,
         ref T? value,
@@ -116,7 +116,7 @@ public static class GrammarAttribute
         => node.NonCircular<TNode, T, TFunc, ReferenceOperations<T>, Void>(ref cached, ref value,
             func, comparer, ref _noLock, attributeName);
 
-    [Inline]
+    [Inline(export: true)]
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static T NonCircular<TNode, T, TFunc>(
@@ -133,7 +133,7 @@ public static class GrammarAttribute
         => node.NonCircular<TNode, T, TFunc, ValueOperations<T>, AttributeLock>(ref cached, ref value,
             func, comparer, ref syncLock, attributeName);
 
-    [Inline]
+    [Inline(export: true)]
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static T? NonCircular<TNode, T, TFunc>(
@@ -339,6 +339,7 @@ public static class GrammarAttribute
     /// <summary>
     /// Read the value of a rewritable child attribute.
     /// </summary>
+    [Inline] // Not always working
     [DebuggerStepThrough]
     public static TChild RewritableChild<TNode, TChild>(
         this TNode node,
