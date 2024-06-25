@@ -1138,7 +1138,7 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     ICapabilityNode? Capability { get; }
     ITypeNode? Type { get; }
     IAmbiguousExpressionNode? Initializer { get; }
-    IExpressionNode? FinalInitializer { get; }
+    IExpressionNode? IntermediateInitializer { get; }
     LexicalScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
     NamedVariableSymbol Symbol { get; }
@@ -1300,7 +1300,7 @@ public partial interface IUnsafeExpressionNode : ISemanticNode, IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
-    IExpressionNode FinalExpression { get; }
+    IExpressionNode? IntermediateExpression { get; }
 }
 
 [Closed(
@@ -1380,10 +1380,10 @@ public partial interface IBinaryOperatorExpressionNode : ISemanticNode, IExpress
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode LeftOperand { get; }
-    IExpressionNode FinalLeftOperand { get; }
+    IExpressionNode? IntermediateLeftOperand { get; }
     BinaryOperator Operator { get; }
     IAmbiguousExpressionNode RightOperand { get; }
-    IExpressionNode FinalRightOperand { get; }
+    IExpressionNode? IntermediateRightOperand { get; }
     LexicalScope ContainingLexicalScope { get; }
 }
 
@@ -1395,7 +1395,7 @@ public partial interface IUnaryOperatorExpressionNode : ISemanticNode, IExpressi
     UnaryOperatorFixity Fixity { get; }
     UnaryOperator Operator { get; }
     IAmbiguousExpressionNode Operand { get; }
-    IExpressionNode FinalOperand { get; }
+    IExpressionNode? IntermediateOperand { get; }
 }
 
 public partial interface IIdExpressionNode : ISemanticNode, IExpressionNode
@@ -1413,7 +1413,7 @@ public partial interface IConversionExpressionNode : ISemanticNode, IExpressionN
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Referent { get; }
-    IExpressionNode FinalReferent { get; }
+    IExpressionNode? IntermediateReferent { get; }
     ConversionOperator Operator { get; }
     ITypeNode ConvertToType { get; }
 }
@@ -1424,7 +1424,7 @@ public partial interface IPatternMatchExpressionNode : ISemanticNode, IExpressio
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Referent { get; }
-    IExpressionNode FinalReferent { get; }
+    IExpressionNode? IntermediateReferent { get; }
     IPatternNode Pattern { get; }
 }
 
@@ -1435,7 +1435,7 @@ public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Condition { get; }
-    IExpressionNode FinalCondition { get; }
+    IExpressionNode? IntermediateCondition { get; }
     IBlockOrResultNode ThenBlock { get; }
     IElseClauseNode? ElseClause { get; }
 }
@@ -1454,7 +1454,7 @@ public partial interface IWhileExpressionNode : ISemanticNode, IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Condition { get; }
-    IExpressionNode FinalCondition { get; }
+    IExpressionNode? IntermediateCondition { get; }
     IBlockExpressionNode Block { get; }
 }
 
@@ -1468,7 +1468,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, INamedBinding
     bool IsMutableBinding { get; }
     IdentifierName VariableName { get; }
     IAmbiguousExpressionNode InExpression { get; }
-    IExpressionNode FinalInExpression { get; }
+    IExpressionNode? IntermediateInExpression { get; }
     ITypeNode? DeclaredType { get; }
     IBlockExpressionNode Block { get; }
     LexicalScope ContainingLexicalScope { get; }
@@ -1510,7 +1510,6 @@ public partial interface IInvocationExpressionNode : IAmbiguousExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
     IAmbiguousExpressionNode CurrentExpression { get; }
-    IAmbiguousExpressionNode IntermediateExpression { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     IEnumerable<IAmbiguousExpressionNode> CurrentArguments { get; }
 }
@@ -1563,7 +1562,7 @@ public partial interface ISetterInvocationExpressionNode : ISemanticNode, IExpre
     IExpressionNode Context { get; }
     StandardName PropertyName { get; }
     IAmbiguousExpressionNode Value { get; }
-    IExpressionNode FinalValue { get; }
+    IExpressionNode? IntermediateValue { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload<ISetterMethodDeclarationNode>? ContextualizedOverload { get; }
@@ -1930,7 +1929,7 @@ public partial interface IMoveExpressionNode : ISemanticNode, IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ISimpleNameNode Referent { get; }
-    INameExpressionNode FinalReferent { get; }
+    INameExpressionNode? IntermediateReferent { get; }
 }
 
 public partial interface IFreezeExpressionNode : ISemanticNode, IExpressionNode
@@ -1939,7 +1938,7 @@ public partial interface IFreezeExpressionNode : ISemanticNode, IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ISimpleNameNode Referent { get; }
-    INameExpressionNode FinalReferent { get; }
+    INameExpressionNode? IntermediateReferent { get; }
 }
 
 public partial interface IAsyncBlockExpressionNode : ISemanticNode, IExpressionNode
@@ -1957,7 +1956,7 @@ public partial interface IAsyncStartExpressionNode : ISemanticNode, IExpressionN
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     bool Scheduled { get; }
     IAmbiguousExpressionNode Expression { get; }
-    IExpressionNode FinalExpression { get; }
+    IExpressionNode? IntermediateExpression { get; }
 }
 
 public partial interface IAwaitExpressionNode : ISemanticNode, IExpressionNode
@@ -1966,7 +1965,7 @@ public partial interface IAwaitExpressionNode : ISemanticNode, IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
-    IExpressionNode FinalExpression { get; }
+    IExpressionNode? IntermediateExpression { get; }
 }
 
 [Closed(

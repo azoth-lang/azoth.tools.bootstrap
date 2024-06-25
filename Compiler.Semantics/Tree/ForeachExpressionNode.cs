@@ -16,9 +16,12 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     bool IBindingNode.IsLentBinding => false;
     public bool IsMutableBinding => Syntax.IsMutableBinding;
     public IdentifierName VariableName => Syntax.VariableName;
-    private Child<IAmbiguousExpressionNode> inExpression;
-    public IAmbiguousExpressionNode InExpression => inExpression.Value;
-    public IExpressionNode FinalInExpression => (IExpressionNode)inExpression.FinalValue;
+    private RewritableChild<IAmbiguousExpressionNode> inExpression;
+    private bool inExpressionCached;
+    public IAmbiguousExpressionNode InExpression
+        => GrammarAttribute.IsCached(in inExpressionCached) ? inExpression.UnsafeValue
+            : this.RewritableChild(ref inExpressionCached, ref inExpression);
+    public IExpressionNode? IntermediateInExpression => InExpression as IExpressionNode;
     public ITypeNode? DeclaredType { get; }
     public IBlockExpressionNode Block { get; }
     private ValueAttribute<LexicalScope> containingLexicalScope;
@@ -101,7 +104,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         IBlockExpressionNode block)
     {
         Syntax = syntax;
-        this.inExpression = Child.Legacy(this, inExpression);
+        this.inExpression = Child.Create(this, inExpression);
         DeclaredType = Child.Attach(this, type);
         Block = Child.Attach(this, block);
     }

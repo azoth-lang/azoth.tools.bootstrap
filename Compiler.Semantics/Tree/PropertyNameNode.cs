@@ -29,5 +29,5 @@ internal sealed class PropertyNameNode : AmbiguousNameExpressionNode, IPropertyN
     }
 
     protected override IChildNode? Rewrite()
-        => BindingAmbiguousNamesAspect.PropertyName_Rewrite(this);
+        => BindingAmbiguousNamesAspect.PropertyName_Rewrite(this) ?? base.Rewrite();
 }

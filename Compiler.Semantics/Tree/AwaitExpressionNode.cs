@@ -12,9 +12,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class AwaitExpressionNode : ExpressionNode, IAwaitExpressionNode
 {
     public override IAwaitExpressionSyntax Syntax { get; }
-    private Child<IAmbiguousExpressionNode> expression;
-    public IAmbiguousExpressionNode Expression => expression.Value;
-    public IExpressionNode FinalExpression => (IExpressionNode)expression.FinalValue;
+    private RewritableChild<IAmbiguousExpressionNode> expression;
+    private bool expressionCached;
+    public IAmbiguousExpressionNode Expression
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : this.RewritableChild(ref expressionCached, ref expression);
+    public IExpressionNode? IntermediateExpression => Expression as IExpressionNode;
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
@@ -34,7 +37,7 @@ internal sealed class AwaitExpressionNode : ExpressionNode, IAwaitExpressionNode
     public AwaitExpressionNode(IAwaitExpressionSyntax syntax, IAmbiguousExpressionNode expression)
     {
         Syntax = syntax;
-        this.expression = Child.Legacy(this, expression);
+        this.expression = Child.Create(this, expression);
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Expression.GetFlowLexicalScope();

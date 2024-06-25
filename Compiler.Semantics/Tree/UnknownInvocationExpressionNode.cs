@@ -9,8 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class UnknownInvocationExpressionNode : ExpressionNode, IUnknownInvocationExpressionNode
 {
     public override IInvocationExpressionSyntax Syntax { get; }
-    private Child<IAmbiguousExpressionNode> expression;
-    public IAmbiguousExpressionNode Expression => expression.Value;
+    private RewritableChild<IAmbiguousExpressionNode> expression;
+    private bool expressionCached;
+    public IAmbiguousExpressionNode Expression
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : this.RewritableChild(ref expressionCached, ref expression);
     public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     public override IMaybeExpressionAntetype Antetype => IAntetype.Unknown;
 
@@ -20,7 +23,7 @@ internal sealed class UnknownInvocationExpressionNode : ExpressionNode, IUnknown
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
-        this.expression = Child.Legacy(this, expression);
+        this.expression = Child.Create(this, expression);
         Arguments = ChildList.Create(this, arguments);
     }
 }

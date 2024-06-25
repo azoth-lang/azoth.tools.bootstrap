@@ -12,8 +12,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class FieldAccessExpressionNode : ExpressionNode, IFieldAccessExpressionNode
 {
     public override IMemberAccessExpressionSyntax Syntax { get; }
-    private Child<IExpressionNode> context;
-    public IExpressionNode Context => context.Value;
+    private RewritableChild<IExpressionNode> context;
+    private bool contextCached;
+    public IExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
     public IdentifierName FieldName { get; }
     public IFieldDeclarationNode ReferencedDeclaration { get; }
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
@@ -39,7 +42,7 @@ internal sealed class FieldAccessExpressionNode : ExpressionNode, IFieldAccessEx
         IFieldDeclarationNode referencedDeclaration)
     {
         Syntax = syntax;
-        this.context = Child.Legacy(this, context);
+        this.context = Child.Create(this, context);
         FieldName = fieldName;
         ReferencedDeclaration = referencedDeclaration;
     }

@@ -13,8 +13,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class FunctionNameNode : AmbiguousNameExpressionNode, IFunctionNameNode
 {
     public override INameExpressionSyntax Syntax { get; }
-    private Child<IFunctionGroupNameNode> functionGroup;
-    public IFunctionGroupNameNode FunctionGroup => functionGroup.Value;
+    private RewritableChild<IFunctionGroupNameNode> functionGroup;
+    private bool functionGroupCached;
+    public IFunctionGroupNameNode FunctionGroup
+        => GrammarAttribute.IsCached(in functionGroupCached) ? functionGroup.UnsafeValue
+            : this.RewritableChild(ref functionGroupCached, ref functionGroup);
     public StandardName FunctionName => FunctionGroup.FunctionName;
     public IFixedList<ITypeNode> TypeArguments => FunctionGroup.TypeArguments;
     public IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
@@ -36,7 +39,7 @@ internal sealed class FunctionNameNode : AmbiguousNameExpressionNode, IFunctionN
         IFunctionLikeDeclarationNode? referencedDeclaration)
     {
         Syntax = syntax;
-        this.functionGroup = Child.Legacy(this, functionGroup);
+        this.functionGroup = Child.Create(this, functionGroup);
         ReferencedDeclaration = referencedDeclaration;
     }
 }

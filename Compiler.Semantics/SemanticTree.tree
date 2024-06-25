@@ -236,7 +236,7 @@ ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax`
 BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
 VariableDeclarationStatement <: BodyStatement, NamedBinding = Syntax:`IVariableDeclarationStatementSyntax`
     IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type? Initializer:AmbiguousExpression?
-    FinalInitializer:`IExpressionNode`?
+    IntermediateInitializer:`IExpressionNode`?
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
     // TODO remove variable symbols
     Symbol:`NamedVariableSymbol` DeclarationNumber:`int`?;
@@ -262,7 +262,7 @@ NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax`
     ConstructingAntetype:`IMaybeAntetype` ReferencedConstructors:{`IConstructorDeclarationNode`}
     CompatibleConstructors:{`IConstructorDeclarationNode`} ReferencedConstructor:`IConstructorDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload<IConstructorDeclarationNode>`?;
-UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression FinalExpression:`IExpressionNode`;
+UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
 NeverTypedExpression <: Expression = Syntax:`INeverTypedExpressionSyntax` Type:`NeverType`;
 
 // ---------- Literal Expressions
@@ -279,28 +279,28 @@ AssignmentExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
     Operator:`AssignmentOperator`
     RightOperand:AmbiguousExpression CurrentRightOperand:`IAmbiguousExpressionNode` IntermediateRightOperand:`IExpressionNode`?;
 BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax`
-    LeftOperand:AmbiguousExpression FinalLeftOperand:`IExpressionNode`
+    LeftOperand:AmbiguousExpression IntermediateLeftOperand:`IExpressionNode`?
     Operator:`BinaryOperator`
-    RightOperand:AmbiguousExpression FinalRightOperand:`IExpressionNode`
+    RightOperand:AmbiguousExpression IntermediateRightOperand:`IExpressionNode`?
     ContainingLexicalScope:`LexicalScope`;
 UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` Fixity:`UnaryOperatorFixity`
-    Operator:`UnaryOperator` Operand:AmbiguousExpression FinalOperand:`IExpressionNode`;
+    Operator:`UnaryOperator` Operand:AmbiguousExpression IntermediateOperand:`IExpressionNode`?;
 IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression IntermediateReferent:`IExpressionNode`?;
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax`
-    Referent:AmbiguousExpression FinalReferent:`IExpressionNode`
+    Referent:AmbiguousExpression IntermediateReferent:`IExpressionNode?`
     Operator:`ConversionOperator` ConvertToType:Type;
 PatternMatchExpression <: Expression = Syntax:`IPatternMatchExpressionSyntax`
-    Referent:AmbiguousExpression FinalReferent:`IExpressionNode` Pattern;
+    Referent:AmbiguousExpression IntermediateReferent:`IExpressionNode`? Pattern;
 
 // ---------- Control Flow Expressions
 IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax`
-    Condition:AmbiguousExpression FinalCondition:`IExpressionNode` ThenBlock:BlockOrResult ElseClause?;
+    Condition:AmbiguousExpression IntermediateCondition:`IExpressionNode`? ThenBlock:BlockOrResult ElseClause?;
 LoopExpression <: Expression = Syntax:`ILoopExpressionSyntax` Block:BlockExpression;
 WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax`
-    Condition:AmbiguousExpression FinalCondition:`IExpressionNode` Block:BlockExpression;
+    Condition:AmbiguousExpression IntermediateCondition:`IExpressionNode`? Block:BlockExpression;
 ForeachExpression <: Expression, NamedBinding = Syntax:`IForeachExpressionSyntax`
     IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:AmbiguousExpression
-    FinalInExpression:`IExpressionNode` DeclaredType:Type? Block:BlockExpression
+    IntermediateInExpression:`IExpressionNode`? DeclaredType:Type? Block:BlockExpression
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
     ReferencedIterableDeclaration:`ITypeDeclarationNode`? ReferencedIterateMethod:`IStandardMethodDeclarationNode`?
     IteratorAntetype:`IMaybeExpressionAntetype` IteratorType:`DataType`
@@ -313,7 +313,7 @@ ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Valu
 
 // ---------- Invocation Expressions
 InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
-    Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode` IntermediateExpression:`IAmbiguousExpressionNode`
+    Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
     Arguments:AmbiguousExpression* CurrentArguments:`IEnumerable<IAmbiguousExpressionNode>`;
 FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
@@ -330,7 +330,7 @@ GetterInvocationExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`IGetterMethodDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload<IGetterMethodDeclarationNode>`?;
 SetterInvocationExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
-    Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression FinalValue:`IExpressionNode`
+    Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression IntermediateValue:`IExpressionNode`?
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`ISetterMethodDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload<ISetterMethodDeclarationNode>`?;
 FunctionReferenceInvocation <: Expression = Syntax:`IInvocationExpressionSyntax`
@@ -406,15 +406,15 @@ UnknownMemberAccessExpression <: UnknownNameExpression, AssignableExpression
     ReferencedMembers:{`IDeclarationNode`};
 
 // ---------- Capability Expressions
-MoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName FinalReferent:`INameExpressionNode`;
-FreezeExpression <: Expression = Syntax:`IFreezeExpressionSyntax` Referent:SimpleName FinalReferent:`INameExpressionNode`;
+MoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
+FreezeExpression <: Expression = Syntax:`IFreezeExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
 
 // ---------- Async Expressions
 AsyncBlockExpression <: Expression = Syntax:`IAsyncBlockExpressionSyntax` Block:BlockExpression;
 AsyncStartExpression <: Expression = Syntax:`IAsyncStartExpressionSyntax` Scheduled:`bool`
-    Expression:AmbiguousExpression FinalExpression:`IExpressionNode`;
+    Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
 AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax`
-    Expression:AmbiguousExpression  FinalExpression:`IExpressionNode`;
+    Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
 
 
 // -------------------------------------------------------------------------------------------------

@@ -13,9 +13,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
 {
     public override IWhileExpressionSyntax Syntax { get; }
-    private Child<IAmbiguousExpressionNode> condition;
-    public IAmbiguousExpressionNode Condition => condition.Value;
-    public IExpressionNode FinalCondition => (IExpressionNode)condition.FinalValue;
+    private RewritableChild<IAmbiguousExpressionNode> condition;
+    private bool conditionCached;
+    public IAmbiguousExpressionNode Condition
+        => GrammarAttribute.IsCached(in conditionCached) ? condition.UnsafeValue
+            : this.RewritableChild(ref conditionCached, ref condition);
+    public IExpressionNode? IntermediateCondition => Condition as IExpressionNode;
     public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
@@ -39,7 +42,7 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         IBlockExpressionNode block)
     {
         Syntax = syntax;
-        this.condition = Child.Legacy(this, condition);
+        this.condition = Child.Create(this, condition);
         Block = Child.Attach(this, block);
     }
 
@@ -56,7 +59,7 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         IInheritanceContext ctx)
     {
         if (child == Block)
-            return FinalCondition.FlowStateAfter;
+            return IntermediateCondition?.FlowStateAfter ?? FlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

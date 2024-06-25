@@ -15,9 +15,12 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
     public override IUnaryOperatorExpressionSyntax Syntax { get; }
     public UnaryOperatorFixity Fixity => Syntax.Fixity;
     public UnaryOperator Operator => Syntax.Operator;
-    private Child<IAmbiguousExpressionNode> operand;
-    public IAmbiguousExpressionNode Operand => operand.Value;
-    public IExpressionNode FinalOperand => (IExpressionNode)operand.FinalValue;
+    private RewritableChild<IAmbiguousExpressionNode> operand;
+    private bool operandCached;
+    public IAmbiguousExpressionNode Operand
+        => GrammarAttribute.IsCached(in operandCached) ? operand.UnsafeValue
+            : this.RewritableChild(ref operandCached, ref operand);
+    public IExpressionNode? IntermediateOperand => Operand as IExpressionNode;
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
          => antetype.TryGetValue(out var value) ? value
@@ -37,7 +40,7 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
     public UnaryOperatorExpressionNode(IUnaryOperatorExpressionSyntax syntax, IAmbiguousExpressionNode operand)
     {
         Syntax = syntax;
-        this.operand = Child.Legacy(this, operand);
+        this.operand = Child.Create(this, operand);
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope()

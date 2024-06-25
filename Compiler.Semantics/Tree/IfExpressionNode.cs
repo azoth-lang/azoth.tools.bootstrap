@@ -12,9 +12,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
 {
     public override IIfExpressionSyntax Syntax { get; }
-    private Child<IAmbiguousExpressionNode> condition;
-    public IAmbiguousExpressionNode Condition => condition.Value;
-    public IExpressionNode FinalCondition => (IExpressionNode)condition.FinalValue;
+    private RewritableChild<IAmbiguousExpressionNode> condition;
+    private bool conditionCached;
+    public IAmbiguousExpressionNode Condition
+        => GrammarAttribute.IsCached(in conditionCached) ? condition.UnsafeValue
+            : this.RewritableChild(ref conditionCached, ref condition);
+    public IExpressionNode? IntermediateCondition => Condition as IExpressionNode;
     public IBlockOrResultNode ThenBlock { get; }
     public IElseClauseNode? ElseClause { get; }
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
@@ -40,7 +43,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         IElseClauseNode? elseClause)
     {
         Syntax = syntax;
-        this.condition = Child.Legacy(this, condition);
+        this.condition = Child.Create(this, condition);
         ThenBlock = Child.Attach(this, thenBlock);
         ElseClause = Child.Attach(this, elseClause);
     }
@@ -60,7 +63,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         IInheritanceContext ctx)
     {
         if (child == ThenBlock || child == ElseClause)
-            return FinalCondition.FlowStateAfter;
+            return IntermediateCondition?.FlowStateAfter ?? FlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

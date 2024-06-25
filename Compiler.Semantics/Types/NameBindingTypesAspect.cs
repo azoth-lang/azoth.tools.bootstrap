@@ -13,12 +13,12 @@ internal static class NameBindingTypesAspect
         IVariableDeclarationStatementNode node,
         ICapabilityNode? capability)
     {
-        if (node.FinalInitializer?.Type.ToNonConstValueType() is not NonEmptyType type)
+        if (node.IntermediateInitializer?.Type.ToNonConstValueType() is not NonEmptyType type)
             return null;
 
         if (capability is null)
         {
-            if (node.FinalInitializer is IMoveExpressionNode)
+            if (node.IntermediateInitializer is IMoveExpressionNode)
                 // If no capability is specified and it is an explicit move, then take the mutable type.
                 return type;
 
@@ -34,7 +34,7 @@ internal static class NameBindingTypesAspect
 
     public static FlowState VariableDeclarationStatement_FlowStateAfter(IVariableDeclarationStatementNode node)
     {
-        var flowStateBefore = node.FinalInitializer?.FlowStateAfter ?? node.FlowStateBefore();
+        var flowStateBefore = node.IntermediateInitializer?.FlowStateAfter ?? node.FlowStateBefore();
         return flowStateBefore.Declare(node);
     }
 
@@ -48,7 +48,7 @@ internal static class NameBindingTypesAspect
         => node.FlowStateBefore().Declare(node);
 
     public static DataType PatternMatchExpression_InheritedBindingType_Pattern(IPatternMatchExpressionNode node)
-        => node.FinalReferent.Type.ToNonConstValueType();
+        => node.IntermediateReferent?.Type.ToNonConstValueType() ?? DataType.Unknown;
 
     public static DataType OptionalPattern_InheritedBindingType_Pattern(IOptionalPatternNode node)
     {

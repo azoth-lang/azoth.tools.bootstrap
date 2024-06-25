@@ -16,9 +16,12 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     public override IAssignmentExpressionSyntax Syntax { get; }
     public IExpressionNode Context { get; }
     public StandardName PropertyName { get; }
-    private Child<IAmbiguousExpressionNode> value;
-    public IAmbiguousExpressionNode Value => value.Value;
-    public IExpressionNode FinalValue => (IExpressionNode)value.FinalValue;
+    private RewritableChild<IAmbiguousExpressionNode> value;
+    private bool valueCached;
+    public IAmbiguousExpressionNode Value
+        => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
+            : this.RewritableChild(ref valueCached, ref value);
+    public IExpressionNode? IntermediateValue => Value as IExpressionNode;
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     public ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
@@ -53,7 +56,7 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
         Syntax = syntax;
         Context = Child.Attach(this, context);
         PropertyName = propertyName;
-        this.value = Child.Legacy(this, value);
+        this.value = Child.Create(this, value);
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
         ReferencedDeclaration = referencedDeclaration;
     }

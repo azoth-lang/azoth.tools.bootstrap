@@ -7,7 +7,7 @@ internal static class ForeachExpressionTypeAspect
 {
     public static DataType ForeachExpression_IteratorType(IForeachExpressionNode node)
     {
-        var iterableType = node.FinalInExpression.Type;
+        var iterableType = node.IntermediateInExpression?.Type ?? DataType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
         var iteratorAntetype = iterableType is NonEmptyType nonEmptyIterableType && iterateMethod is not null
             ? nonEmptyIterableType.ReplaceTypeParametersIn(iterateMethod.MethodGroupType.Return.Type)
@@ -29,7 +29,7 @@ internal static class ForeachExpressionTypeAspect
 
     public static FlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)
     {
-        var flowState = node.FinalInExpression.FlowStateAfter;
+        var flowState = node.IntermediateInExpression?.FlowStateAfter ?? FlowState.Empty;
         return flowState.Declare(node);
     }
 
@@ -38,5 +38,5 @@ internal static class ForeachExpressionTypeAspect
         => DataType.Void;
 
     public static FlowState ForeachExpression_FlowStateAfter(IForeachExpressionNode node)
-        => node.FinalInExpression.FlowStateAfter.Merge(node.Block.FlowStateAfter);
+        => node.IntermediateInExpression?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? FlowState.Empty;
 }

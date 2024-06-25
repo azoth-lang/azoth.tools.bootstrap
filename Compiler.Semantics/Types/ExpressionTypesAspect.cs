@@ -104,7 +104,7 @@ public static class ExpressionTypesAspect
         => node.PreviousValueId().CreateNext();
 
     public static DataType UnsafeExpression_Type(IUnsafeExpressionNode node)
-        => node.FinalExpression.Type;
+        => node.IntermediateExpression?.Type ?? DataType.Unknown;
 
     public static DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
         => node.ReferencedDeclaration?.Type.Return.Type ?? DataType.Unknown;
@@ -205,9 +205,11 @@ public static class ExpressionTypesAspect
 
     public static FlowState SetterInvocationExpression_FlowStateAfter(ISetterInvocationExpressionNode node)
     {
+        if (node.IntermediateValue is not IExpressionNode value)
+            return FlowState.Empty;
         // The flow state just before the setter is called is the state after the argument has been evaluated
-        var flowState = node.FinalValue.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Context, [node.FinalValue]);
+        var flowState = value.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Context, [value]);
         return flowState.CombineArguments(argumentValueIds, node.ValueId);
     }
 
@@ -299,8 +301,8 @@ public static class ExpressionTypesAspect
         if (node.Antetype is UnknownAntetype)
             return DataType.Unknown;
 
-        var leftType = node.FinalLeftOperand.Type;
-        var rightType = node.FinalRightOperand.Type;
+        var leftType = node.IntermediateLeftOperand?.Type ?? DataType.Unknown;
+        var rightType = node.IntermediateRightOperand?.Type ?? DataType.Unknown;
         return (leftType, node.Operator, rightType) switch
         {
             (_, BinaryOperator.DotDot, _)
@@ -333,7 +335,7 @@ public static class ExpressionTypesAspect
     }
 
     public static FlowState BinaryOperatorExpression_FlowStateAfter(IBinaryOperatorExpressionNode node)
-        => node.FinalRightOperand.FlowStateAfter;
+        => node.IntermediateRightOperand?.FlowStateAfter ?? FlowState.Empty;
 
     public static DataType IfExpression_Type(IIfExpressionNode node)
     {
@@ -349,7 +351,7 @@ public static class ExpressionTypesAspect
     public static FlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
     {
         var thenPath = node.ThenBlock.FlowStateAfter;
-        var elsePath = node.ElseClause?.FlowStateAfter ?? node.FinalCondition.FlowStateAfter;
+        var elsePath = node.ElseClause?.FlowStateAfter ?? node.IntermediateCondition?.FlowStateAfter ?? FlowState.Empty;
         var flowState = thenPath.Merge(elsePath);
         return flowState.Combine(node.ThenBlock.ValueId, node.ElseClause?.ValueId, node.ValueId);
     }
@@ -375,7 +377,7 @@ public static class ExpressionTypesAspect
     public static FlowState WhileExpression_FlowStateAfter(IWhileExpressionNode node)
         // TODO loop flow state
         // Merge condition with block flow state because the body may not be executed
-        => node.FinalCondition.FlowStateAfter.Merge(node.Block.FlowStateAfter);
+        => node.IntermediateCondition?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? FlowState.Empty;
 
     public static DataType LoopExpression_Type(ILoopExpressionNode _)
         // TODO assign correct type to the expression
@@ -395,15 +397,15 @@ public static class ExpressionTypesAspect
     }
 
     public static DataType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
-        => Intrinsic.PromiseOf(node.FinalExpression.Type);
+        => Intrinsic.PromiseOf(node.IntermediateExpression?.Type ?? DataType.Unknown);
 
     public static FlowState AsyncStartExpression_FlowStateAfter(IAsyncStartExpressionNode node)
         // TODO this isn't correct, async start can act like a delayed lambda
-        => node.FinalExpression.FlowStateAfter.Combine(node.FinalExpression.ValueId, null, node.ValueId);
+        => node.IntermediateExpression?.FlowStateAfter.Combine(node.IntermediateExpression.ValueId, null, node.ValueId) ?? FlowState.Empty;
 
     public static DataType AwaitExpression_Type(IAwaitExpressionNode node)
     {
-        if (node.FinalExpression.Type is CapabilityType { DeclaredType: var declaredType } type
+        if (node.IntermediateExpression?.Type is CapabilityType { DeclaredType: var declaredType } type
             && Intrinsic.PromiseType.Equals(declaredType))
             return type.TypeArguments[0];
 
@@ -411,7 +413,7 @@ public static class ExpressionTypesAspect
     }
 
     public static FlowState AwaitExpression_FlowStateAfter(IAwaitExpressionNode node)
-        => node.FinalExpression.FlowStateAfter.Combine(node.FinalExpression.ValueId, null, node.ValueId);
+        => node.IntermediateExpression?.FlowStateAfter.Combine(node.IntermediateExpression.ValueId, null, node.ValueId) ?? FlowState.Empty;
 
     public static DataType UnaryOperatorExpression_Type(IUnaryOperatorExpressionNode node)
         => node.Antetype switch
@@ -422,11 +424,11 @@ public static class ExpressionTypesAspect
         };
 
     public static FlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)
-        => node.FinalOperand.FlowStateAfter.Combine(node.FinalOperand.ValueId, null, node.ValueId);
+        => node.IntermediateOperand?.FlowStateAfter.Combine(node.IntermediateOperand.ValueId, null, node.ValueId) ?? FlowState.Empty;
 
     public static DataType FreezeExpression_Type(IFreezeExpressionNode node)
     {
-        if (node.FinalReferent.Type is not CapabilityType capabilityType)
+        if (node.IntermediateReferent?.Type is not CapabilityType capabilityType)
             return DataType.Unknown;
 
         if (!capabilityType.AllowsFreeze) return capabilityType;
@@ -435,14 +437,14 @@ public static class ExpressionTypesAspect
     }
 
     public static FlowState FreezeExpression_FlowStateAfter(IFreezeExpressionNode node)
-        => node.FinalReferent.FlowStateAfter.Freeze(node.FinalReferent.ValueId, node.ValueId);
+        => node.IntermediateReferent?.FlowStateAfter.Freeze(node.IntermediateReferent.ValueId, node.ValueId) ?? FlowState.Empty;
 
     public static DataType FunctionName_Type(IFunctionNameNode node)
         => node.ReferencedDeclaration?.Type ?? DataType.Unknown;
 
     public static DataType MoveExpression_Type(IMoveExpressionNode node)
     {
-        if (node.FinalReferent.Type is not CapabilityType capabilityType)
+        if (node.IntermediateReferent?.Type is not CapabilityType capabilityType)
             return DataType.Unknown;
 
         if (!capabilityType.AllowsMove)
@@ -452,5 +454,5 @@ public static class ExpressionTypesAspect
     }
 
     public static FlowState MoveExpression_FlowStateAfter(IMoveExpressionNode node)
-        => node.FinalReferent.FlowStateAfter.Move(node.FinalReferent.ValueId, node.ValueId);
+        => node.IntermediateReferent?.FlowStateAfter.Move(node.IntermediateReferent.ValueId, node.ValueId) ?? FlowState.Empty;
 }

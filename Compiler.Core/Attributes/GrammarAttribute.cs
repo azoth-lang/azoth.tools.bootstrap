@@ -339,6 +339,7 @@ public static class GrammarAttribute
     /// <summary>
     /// Read the value of a rewritable child attribute.
     /// </summary>
+    [DebuggerStepThrough]
     public static TChild RewritableChild<TNode, TChild>(
         this TNode node,
         ref bool cached,
@@ -399,6 +400,12 @@ public static class GrammarAttribute
         do
         {
             attributeScope.NextIteration();
+            if (TCyclic.IsRewritableAttribute)
+            {
+                // Rewrites inherently depend on themselves. The low link should be at least that of the
+                // rewrite. The compute function on the next line will actually use `current`.
+                attributeScope.RewritableDependsOnSelf();
+            }
             var next = func.Compute(node, current); // may throw
             if (comparer.Equals(current, next)) // may throw
                 // current == next, so use old value to avoid duplicate objects referenced
@@ -428,6 +435,8 @@ public static class GrammarAttribute
             current = next;
 
             if (TCyclic.IsFinalValue(current))
+                // TODO there are issues with this. This node may be final, but if dependencies
+                // changed or were cycles, then the parent needs to know that
                 attributeScope.MarkFinal();
 
         } while (attributeScope.RootOfChangedComponent);

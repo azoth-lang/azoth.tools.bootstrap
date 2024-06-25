@@ -37,7 +37,7 @@ internal sealed class RewriteContexts
     {
         if (rewrittenNode is null)
             return;
-        contextNodes[node] = ContextFor(node)
+        contextNodes[rewrittenNode] = ContextFor(node)
             ?? throw new InvalidOperationException("Existing node should be a rewrite and not in the final tree");
     }
 

@@ -10,8 +10,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatementNode
 {
     public override IExpressionStatementSyntax Syntax { get; }
-    private Child<IAmbiguousExpressionNode> expression;
-    public IAmbiguousExpressionNode Expression => expression.Value;
+    private RewritableChild<IAmbiguousExpressionNode> expression;
+    private bool expressionCached;
+    public IAmbiguousExpressionNode Expression
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : this.RewritableChild(ref expressionCached, ref expression);
     public override IMaybeAntetype? ResultAntetype => null;
     public override DataType? ResultType => null;
     public override FlowState FlowStateAfter => ((IExpressionNode)Expression).FlowStateAfter;
@@ -19,7 +22,7 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
     public ExpressionStatementNode(IExpressionStatementSyntax syntax, IAmbiguousExpressionNode expression)
     {
         Syntax = syntax;
-        this.expression = Child.Legacy(this, expression);
+        this.expression = Child.Create(this, expression);
     }
 
     public override LexicalScope GetLexicalScope() => InheritedContainingLexicalScope();

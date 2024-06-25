@@ -12,7 +12,7 @@ internal static class OverloadResolutionAspect
 {
     public static IExpressionNode? InvocationExpression_Rewrite_FunctionGroupNameExpression(IInvocationExpressionNode node)
     {
-        if (node.IntermediateExpression is not IFunctionGroupNameNode function) return null;
+        if (node.Expression is not IFunctionGroupNameNode function) return null;
 
         return new FunctionInvocationExpressionNode(node.Syntax, function, node.CurrentArguments);
     }
@@ -56,7 +56,7 @@ internal static class OverloadResolutionAspect
 
     public static IExpressionNode? InvocationExpression_Rewrite_MethodGroupNameExpression(IInvocationExpressionNode node)
     {
-        if (node.IntermediateExpression is not IMethodGroupNameNode method) return null;
+        if (node.Expression is not IMethodGroupNameNode method) return null;
 
         return new MethodInvocationExpressionNode(node.Syntax, method, node.CurrentArguments);
     }
@@ -87,7 +87,7 @@ internal static class OverloadResolutionAspect
     public static IAmbiguousExpressionNode? InvocationExpression_Rewrite_TypeNameExpression(
         IInvocationExpressionNode node)
     {
-        if (node.IntermediateExpression is not ITypeNameExpressionNode context) return null;
+        if (node.Expression is not ITypeNameExpressionNode context) return null;
 
         // Rewrite to insert an initializer group name node between the type name expression and the
         // invocation expression.
@@ -101,7 +101,7 @@ internal static class OverloadResolutionAspect
     public static IAmbiguousExpressionNode? InvocationExpression_Rewrite_InitializerGroupNameExpression(
         IInvocationExpressionNode node)
     {
-        if (node.IntermediateExpression is not IInitializerGroupNameNode initializer)
+        if (node.Expression is not IInitializerGroupNameNode initializer)
             return null;
 
         return new InitializerInvocationExpressionNode(node.Syntax, initializer, node.CurrentArguments);
@@ -125,7 +125,7 @@ internal static class OverloadResolutionAspect
 
     public static IExpressionNode? InvocationExpression_Rewrite_FunctionReferenceExpression(IInvocationExpressionNode node)
     {
-        if (node.IntermediateExpression is not IExpressionNode { Antetype: FunctionAntetype } expression)
+        if (node.Expression is not IExpressionNode { Antetype: FunctionAntetype } expression)
             return null;
 
         return new FunctionReferenceInvocationNode(node.Syntax, expression, node.CurrentArguments);

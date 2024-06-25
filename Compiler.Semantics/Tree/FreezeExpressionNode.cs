@@ -12,9 +12,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class FreezeExpressionNode : ExpressionNode, IFreezeExpressionNode
 {
     public override IFreezeExpressionSyntax Syntax { get; }
-    private Child<ISimpleNameNode> referent;
-    public ISimpleNameNode Referent => referent.Value;
-    public INameExpressionNode FinalReferent => (INameExpressionNode)referent.FinalValue;
+    private RewritableChild<ISimpleNameNode> referent;
+    private bool referentCached;
+    public ISimpleNameNode Referent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
+    public INameExpressionNode? IntermediateReferent => Referent as INameExpressionNode;
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
@@ -34,7 +37,7 @@ internal sealed class FreezeExpressionNode : ExpressionNode, IFreezeExpressionNo
     public FreezeExpressionNode(IFreezeExpressionSyntax syntax, ISimpleNameNode referent)
     {
         Syntax = syntax;
-        this.referent = Child.Legacy(this, referent);
+        this.referent = Child.Create(this, referent);
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Referent.GetFlowLexicalScope();

@@ -14,15 +14,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOperatorExpressionNode
 {
     public override IBinaryOperatorExpressionSyntax Syntax { get; }
-    private Child<IAmbiguousExpressionNode> leftOperand;
-    public IAmbiguousExpressionNode LeftOperand => leftOperand.Value;
-    public IAmbiguousExpressionNode CurrentLeftOperand => leftOperand.CurrentValue;
-    public IExpressionNode FinalLeftOperand => (IExpressionNode)leftOperand.FinalValue;
+    private RewritableChild<IAmbiguousExpressionNode> leftOperand;
+    private bool leftOperandCached;
+    public IAmbiguousExpressionNode LeftOperand
+        => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
+            : this.RewritableChild(ref leftOperandCached, ref leftOperand);
+    public IAmbiguousExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
+    public IExpressionNode? IntermediateLeftOperand => LeftOperand as IExpressionNode;
     public BinaryOperator Operator => Syntax.Operator;
-    private Child<IAmbiguousExpressionNode> rightOperand;
-    public IAmbiguousExpressionNode RightOperand => rightOperand.Value;
-    public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.CurrentValue;
-    public IExpressionNode FinalRightOperand => (IExpressionNode)rightOperand.FinalValue;
+    private RewritableChild<IAmbiguousExpressionNode> rightOperand;
+    private bool rightOperandCached;
+    public IAmbiguousExpressionNode RightOperand
+        => GrammarAttribute.IsCached(in rightOperandCached) ? rightOperand.UnsafeValue
+            : this.RewritableChild(ref rightOperandCached, ref rightOperand);
+    public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
+    public IExpressionNode? IntermediateRightOperand => RightOperand as IExpressionNode;
     private ValueAttribute<LexicalScope> containingLexicalScope;
     public LexicalScope ContainingLexicalScope
         => containingLexicalScope.TryGetValue(out var value) ? value
@@ -49,8 +55,8 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         IAmbiguousExpressionNode rightOperand)
     {
         Syntax = syntax;
-        this.leftOperand = Child.Legacy(this, leftOperand);
-        this.rightOperand = Child.Legacy(this, rightOperand);
+        this.leftOperand = Child.Create(this, leftOperand);
+        this.rightOperand = Child.Create(this, rightOperand);
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope()
@@ -71,7 +77,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         IInheritanceContext ctx)
     {
         if (child == CurrentRightOperand)
-            return FinalLeftOperand.FlowStateAfter;
+            return IntermediateLeftOperand?.FlowStateAfter ?? FlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

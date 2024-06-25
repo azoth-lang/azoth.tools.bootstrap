@@ -10,8 +10,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class MethodGroupNameNode : AmbiguousNameExpressionNode, IMethodGroupNameNode
 {
     public override IMemberAccessExpressionSyntax Syntax { get; }
-    private Child<IExpressionNode> context;
-    public IExpressionNode Context => context.Value;
+    private RewritableChild<IExpressionNode> context;
+    private bool contextCached;
+    public IExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
     public StandardName MethodName { get; }
     public IFixedList<ITypeNode> TypeArguments { get; }
     public IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
@@ -25,7 +28,7 @@ internal sealed class MethodGroupNameNode : AmbiguousNameExpressionNode, IMethod
         IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
-        this.context = Child.Legacy(this, context);
+        this.context = Child.Create(this, context);
         MethodName = methodName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();

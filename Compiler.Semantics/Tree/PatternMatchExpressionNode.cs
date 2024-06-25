@@ -12,9 +12,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatchExpressionNode
 {
     public override IPatternMatchExpressionSyntax Syntax { get; }
-    private Child<IAmbiguousExpressionNode> referent;
-    public IAmbiguousExpressionNode Referent => referent.Value;
-    public IExpressionNode FinalReferent => (IExpressionNode)referent.FinalValue;
+    private RewritableChild<IAmbiguousExpressionNode> referent;
+    private bool referentCached;
+    public IAmbiguousExpressionNode Referent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
+    public IExpressionNode? IntermediateReferent => Referent as IExpressionNode;
     public IPatternNode Pattern { get; }
     public override IMaybeExpressionAntetype Antetype => IAntetype.Bool;
     public override DataType Type => DataType.Bool;
@@ -26,7 +29,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
         IPatternNode pattern)
     {
         Syntax = syntax;
-        this.referent = Child.Legacy(this, referent);
+        this.referent = Child.Create(this, referent);
         Pattern = Child.Attach(this, pattern);
     }
 
@@ -59,7 +62,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
         IInheritanceContext ctx)
     {
         if (child == Pattern)
-            return FinalReferent.FlowStateAfter;
+            return IntermediateReferent?.FlowStateAfter ?? FlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

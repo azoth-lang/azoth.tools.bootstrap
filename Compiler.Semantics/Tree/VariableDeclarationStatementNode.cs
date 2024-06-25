@@ -21,9 +21,12 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public IdentifierName Name => Syntax.Name;
     public ICapabilityNode? Capability { get; }
     public ITypeNode? Type { get; }
-    private Child<IAmbiguousExpressionNode?> initializer;
-    public IAmbiguousExpressionNode? Initializer => initializer.Value;
-    public IExpressionNode? FinalInitializer => (IExpressionNode?)initializer.FinalValue;
+    private RewritableChild<IAmbiguousExpressionNode?> initializer;
+    private bool initializerCached;
+    public IAmbiguousExpressionNode? Initializer
+        => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
+            : this.RewritableChild(ref initializerCached, ref initializer);
+    public IExpressionNode? IntermediateInitializer => Initializer as IExpressionNode;
     private ValueAttribute<LexicalScope> containingLexicalScope;
     public LexicalScope ContainingLexicalScope
         => containingLexicalScope.TryGetValue(out var value) ? value
@@ -71,7 +74,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
         Type = Child.Attach(this, type);
-        this.initializer = Child.Legacy(this, initializer);
+        this.initializer = Child.Create(this, initializer);
     }
 
     public override LexicalScope GetLexicalScope() => LexicalScope;

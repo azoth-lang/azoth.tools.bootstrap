@@ -11,10 +11,12 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
 {
     protected override bool MayHaveRewrite => true;
     public override IInvocationExpressionSyntax Syntax { get; }
-    private Child<IAmbiguousExpressionNode> expression;
-    public IAmbiguousExpressionNode Expression => expression.Value;
-    public IAmbiguousExpressionNode CurrentExpression => expression.CurrentValue;
-    public IAmbiguousExpressionNode IntermediateExpression => expression.FinalValue;
+    private RewritableChild<IAmbiguousExpressionNode> expression;
+    private bool expressionCached;
+    public IAmbiguousExpressionNode Expression
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : this.RewritableChild(ref expressionCached, ref expression);
+    public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     private readonly ChildList<IAmbiguousExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IEnumerable<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
@@ -25,7 +27,7 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
-        this.expression = Child.Legacy(this, expression);
+        this.expression = Child.Create(this, expression);
         this.arguments = ChildList.Create(this, arguments);
     }
 

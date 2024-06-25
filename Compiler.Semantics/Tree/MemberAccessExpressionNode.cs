@@ -13,8 +13,11 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
     protected override bool MayHaveRewrite => true;
 
     public override IMemberAccessExpressionSyntax Syntax { get; }
-    private Child<IAmbiguousExpressionNode> context;
-    public IAmbiguousExpressionNode Context => context.Value;
+    private RewritableChild<IAmbiguousExpressionNode> context;
+    private bool contextCached;
+    public IAmbiguousExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
     public StandardName MemberName => Syntax.MemberName;
     public IFixedList<ITypeNode> TypeArguments { get; }
 
@@ -24,7 +27,7 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
         IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
-        this.context = Child.Legacy(this, context);
+        this.context = Child.Create(this, context);
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 

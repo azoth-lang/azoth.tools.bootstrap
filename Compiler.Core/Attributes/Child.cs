@@ -130,14 +130,6 @@ public static class Child
         return child;
     }
 
-    public static Child<TChild> Legacy<TParent, TChild>(TParent parent, TChild initialValue)
-        where TParent : ITreeNode
-        where TChild : class?, IChildTreeNode<TParent>?
-    {
-        initialValue?.SetParent(parent);
-        return new(initialValue);
-    }
-
     // TODO replace with factory for exception
     public static string InheritFailedMessage<TChild>(string attribute, TChild child, TChild descendant)
         where TChild : IChildTreeNode

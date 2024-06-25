@@ -160,6 +160,9 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RewritableDependsOnSelf() => state.MinLowLinkWith(attributeIndex);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void MarkChanged() => state.Changed = true;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -172,24 +175,21 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         {
             if (IsFinal)
             {
-                if (IsRootOfComponent)
-                {
-                    // If there were changes, then this attribute was marked final by another thread,
-                    // and we shouldn't mark any attributes in the SCC as final.
-                    var markFinal = !state.Changed;
-                    // Remove attributes off the stack up to and including the current attribute.
-                    AttributeCachedRef popped;
-                    while ((popped = state.outstandingAttributes.Pop()).Attribute != attribute)
-                    {
-                        if (!state.inStackIndexes.Remove(popped.Attribute))
-                            throw new InvalidOperationException("Attribute was not on stack.");
+                // If there were changes, then this attribute was marked final by another thread OR
+                // is final because it doesn't support anymore rewrites. So shouldn't mark any
+                // attributes below it as.
+                var markFinal = !state.Changed;
 
-                        if (markFinal)
-                            Volatile.Write(ref popped.Cached, true);
-                    }
+                // Remove attributes off the stack up to and including the current attribute.
+                AttributeCachedRef popped;
+                while ((popped = state.outstandingAttributes.Pop()).Attribute != attribute)
+                {
+                    if (!state.inStackIndexes.Remove(popped.Attribute))
+                        throw new InvalidOperationException("Attribute was not on stack.");
+
+                    if (markFinal)
+                        Volatile.Write(ref popped.Cached, true);
                 }
-                else if (state.outstandingAttributes.Pop().Attribute != attribute)
-                    throw new InvalidOperationException("Non-root attribute not on top of stack");
 
                 if (!state.inStackIndexes.Remove(attribute))
                     throw new InvalidOperationException("Attribute was not on stack.");
