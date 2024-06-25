@@ -88,6 +88,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ISelfExpressionNode),
     typeof(IUnknownStandardNameExpressionNode),
     typeof(IMoveExpressionNode),
+    typeof(IImplicitMoveExpressionNode),
     typeof(IFreezeExpressionNode),
     typeof(IAsyncBlockExpressionNode),
     typeof(IAsyncStartExpressionNode),
@@ -1239,6 +1240,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     typeof(IUnknownInvocationExpressionNode),
     typeof(INameExpressionNode),
     typeof(IMoveExpressionNode),
+    typeof(IImplicitMoveExpressionNode),
     typeof(IFreezeExpressionNode),
     typeof(IAsyncBlockExpressionNode),
     typeof(IAsyncStartExpressionNode),
@@ -1533,6 +1535,7 @@ public partial interface IMethodInvocationExpressionNode : ISemanticNode, IExpre
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IMethodGroupNameNode MethodGroup { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     IFixedList<IExpressionNode?> IntermediateArguments { get; }
     IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
@@ -1926,6 +1929,14 @@ public partial interface IMoveExpressionNode : ISemanticNode, IExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ISimpleNameNode Referent { get; }
     INameExpressionNode? IntermediateReferent { get; }
+}
+
+public partial interface IImplicitMoveExpressionNode : ISemanticNode, IExpressionNode
+{
+    new IExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    IExpressionNode Referent { get; }
 }
 
 public partial interface IFreezeExpressionNode : ISemanticNode, IExpressionNode

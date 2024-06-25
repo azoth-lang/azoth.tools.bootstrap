@@ -46,14 +46,16 @@ internal class SemanticTreeTypeValidator
             && node is not IChildNode { Parent: IFreezeExpressionNode or IMoveExpressionNode })
         {
             _ = expression.ValueId;
-            var expectedType = expressionSyntax.DataType.Result;
+            var isConversion = expression is IImplicitMoveExpressionNode;
+            var expectedType = isConversion ? expressionSyntax.ConvertedDataType : expressionSyntax.DataType.Result;
             // Sometimes the new analysis can come up with types when the old one couldn't. So
             // if the expected type is UnknownType, we don't care what the actual type is.
             if (expectedType is not UnknownType)
             {
                 var type = expression.Type;
                 if (type != expectedType)
-                    throw new InvalidOperationException($"Expected type `{expectedType?.ToILString()}`, but got `{type.ToILString()}`");
+                    throw new InvalidOperationException(
+                        $"Expected type `{expectedType?.ToILString()}`, but got `{type.ToILString()}`");
             }
         }
     }

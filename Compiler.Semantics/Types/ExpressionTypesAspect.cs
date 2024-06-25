@@ -4,10 +4,12 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -159,6 +161,29 @@ public static class ExpressionTypesAspect
         => node.ReferencedDeclaration is not null
             ? ContextualizedOverload.Create(node.MethodGroup.Context.Type, node.ReferencedDeclaration)
             : null;
+
+    public static IAmbiguousExpressionNode? MethodInvocationExpression_Rewrite_ImplicitMove(
+        IMethodInvocationExpressionNode node)
+    {
+        var expectedSelfType = node.ReferencedDeclaration?.Symbol.SelfParameterType.Type ?? DataType.Unknown;
+        if (expectedSelfType is not CapabilityType { Capability: var expectedCapability }
+            || expectedCapability != Capability.Isolated)
+            return null;
+
+        var selfType = node.MethodGroup.Context.Type;
+        if (selfType is CapabilityType { Capability: var capability }
+            && (capability == Capability.Isolated || !capability.AllowsFreeze))
+            return null;
+
+        // TODO what if selfType is not a capability type?
+
+        var context = node.MethodGroup.Context;
+        var implicitFreeze = new ImplicitMoveExpressionNode((ITypedExpressionSyntax)context.Syntax, context);
+        var methodGroup = node.MethodGroup;
+        var newMethodGroup = new MethodGroupNameNode(methodGroup.Syntax, implicitFreeze,
+            methodGroup.MethodName, methodGroup.TypeArguments, methodGroup.ReferencedDeclarations);
+        return new MethodInvocationExpressionNode(node.Syntax, newMethodGroup, node.CurrentArguments);
+    }
 
     public static DataType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
     {
@@ -450,9 +475,27 @@ public static class ExpressionTypesAspect
         if (!capabilityType.AllowsMove)
             return capabilityType;
 
-        return capabilityType.IsTemporarilyIsolatedReference ? capabilityType : capabilityType.With(Capability.Isolated);
+        return capabilityType.IsTemporarilyIsolatedReference
+            ? capabilityType : capabilityType.With(Capability.Isolated);
     }
 
     public static FlowState MoveExpression_FlowStateAfter(IMoveExpressionNode node)
         => node.IntermediateReferent?.FlowStateAfter.Move(node.IntermediateReferent.ValueId, node.ValueId) ?? FlowState.Empty;
+
+    public static DataType ImplicitMoveExpression_Type(IImplicitMoveExpressionNode node)
+    {
+        // TODO this code is duplicated with move expression
+        if (node.Referent.Type is not CapabilityType capabilityType)
+            return DataType.Unknown;
+
+        if (!capabilityType.AllowsMove)
+            return capabilityType;
+
+        return capabilityType.IsTemporarilyIsolatedReference
+            ? capabilityType : capabilityType.With(Capability.Isolated);
+    }
+
+    public static FlowState ImplicitMoveExpression_FlowStateAfter(IImplicitMoveExpressionNode node)
+        // TODO this code is duplicated with move expression
+        => node.Referent.FlowStateAfter.Move(node.Referent.ValueId, node.ValueId);
 }

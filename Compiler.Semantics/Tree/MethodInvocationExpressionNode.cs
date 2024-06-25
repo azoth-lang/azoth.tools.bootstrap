@@ -12,10 +12,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodInvocationExpressionNode
 {
+    protected override bool MayHaveRewrite => true;
+
     public override IInvocationExpressionSyntax Syntax { get; }
     public IMethodGroupNameNode MethodGroup { get; }
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     private ValueAttribute<IFixedSet<IStandardMethodDeclarationNode>> compatibleDeclarations;
     public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations
@@ -61,7 +64,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         IInheritanceContext ctx)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
-            && arguments.Current.IndexOf(ambiguousExpression) is int index)
+            && CurrentArguments.IndexOf(ambiguousExpression) is int index)
         {
             if (index == 0)
                 return MethodGroup.FlowStateAfter;
@@ -69,4 +72,8 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         }
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
+
+    protected override IChildNode? Rewrite()
+        => ExpressionTypesAspect.MethodInvocationExpression_Rewrite_ImplicitMove(this)
+        ?? base.Rewrite();
 }

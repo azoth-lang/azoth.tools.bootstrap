@@ -1,5 +1,3 @@
-using System;
-
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
 internal sealed class BeforeFirstValueId : IPreviousValueId
@@ -11,11 +9,5 @@ internal sealed class BeforeFirstValueId : IPreviousValueId
         this.scope = scope;
     }
 
-    public ValueId CreateNext()
-    {
-        var first = scope.CreateValueId();
-        if (first.Value != 0)
-            throw new InvalidOperationException("First value Id must be 0.");
-        return first;
-    }
+    public ValueId CreateNext() => scope.First;
 }
