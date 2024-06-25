@@ -47,7 +47,7 @@ public static class GrammarAttribute
     /// </summary>
     /// <remarks>This should only be used for nodes that directly expose a function that calls the
     /// inherited member.</remarks>
-    [Inline(export: true)]
+    [Inline]
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IInheritanceContext CurrentInheritanceContext() => ThreadState();
