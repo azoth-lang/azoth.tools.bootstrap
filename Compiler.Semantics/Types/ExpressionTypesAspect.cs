@@ -472,9 +472,9 @@ public static class ExpressionTypesAspect
         if (node.IntermediateReferent?.Type is not CapabilityType capabilityType)
             return DataType.Unknown;
 
-        if (!capabilityType.AllowsMove)
-            return capabilityType;
-
+        // Even if the capability doesn't allow move, a move expression always results in an
+        // isolated reference. A diagnostic is generated if the capability doesn't allow move.
+        // TODO maybe `temp iso` should require `temp move`?
         return capabilityType.IsTemporarilyIsolatedReference
             ? capabilityType : capabilityType.With(Capability.Isolated);
     }
