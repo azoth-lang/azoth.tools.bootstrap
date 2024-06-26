@@ -1938,6 +1938,7 @@ public partial interface IImplicitMoveExpressionNode : ISemanticNode, IExpressio
     new IExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    bool IsTemporary { get; }
     IExpressionNode Referent { get; }
 }
 
@@ -1955,6 +1956,7 @@ public partial interface IImplicitFreezeExpressionNode : ISemanticNode, IExpress
     new IExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    bool IsTemporary { get; }
     IExpressionNode Referent { get; }
 }
 

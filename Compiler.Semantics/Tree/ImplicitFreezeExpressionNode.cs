@@ -10,6 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class ImplicitFreezeExpressionNode : ExpressionNode, IImplicitFreezeExpressionNode
 {
     public override ITypedExpressionSyntax Syntax { get; }
+    public bool IsTemporary { get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
     public IExpressionNode Referent
@@ -29,9 +30,10 @@ internal sealed class ImplicitFreezeExpressionNode : ExpressionNode, IImplicitFr
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ImplicitFreezeExpression_FlowStateAfter);
 
-    public ImplicitFreezeExpressionNode(ITypedExpressionSyntax syntax, IExpressionNode referent)
+    public ImplicitFreezeExpressionNode(ITypedExpressionSyntax syntax, bool isTemporary, IExpressionNode referent)
     {
         Syntax = syntax;
+        IsTemporary = isTemporary;
         this.referent = Child.Create(this, referent);
     }
 }

@@ -167,18 +167,20 @@ public static class ExpressionTypesAspect
     {
         var expectedSelfType = node.ReferencedDeclaration?.Symbol.SelfParameterType.Type ?? DataType.Unknown;
         if (expectedSelfType is not CapabilityType { Capability: var expectedCapability }
-            || expectedCapability != Capability.Isolated)
+            || (expectedCapability != Capability.Isolated && expectedCapability != Capability.TemporarilyIsolated))
             return null;
+
+        var isTemporary = expectedCapability == Capability.TemporarilyIsolated;
 
         var selfType = node.MethodGroup.Context.Type;
         if (selfType is CapabilityType { Capability: var capability }
-            && (capability == Capability.Isolated || !capability.AllowsMove))
+            && capability == expectedCapability)
             return null;
 
         // TODO what if selfType is not a capability type?
 
         var context = node.MethodGroup.Context;
-        var implicitFreeze = new ImplicitMoveExpressionNode((ITypedExpressionSyntax)context.Syntax, context);
+        var implicitFreeze = new ImplicitMoveExpressionNode((ITypedExpressionSyntax)context.Syntax, isTemporary, context);
         var methodGroup = node.MethodGroup;
         var newMethodGroup = new MethodGroupNameNode(methodGroup.Syntax, implicitFreeze,
             methodGroup.MethodName, methodGroup.TypeArguments, methodGroup.ReferencedDeclarations);
@@ -190,18 +192,20 @@ public static class ExpressionTypesAspect
     {
         var expectedSelfType = node.ReferencedDeclaration?.Symbol.SelfParameterType.Type ?? DataType.Unknown;
         if (expectedSelfType is not CapabilityType { Capability: var expectedCapability }
-            || expectedCapability != Capability.Constant)
+            || (expectedCapability != Capability.Constant && expectedCapability != Capability.TemporarilyConstant))
             return null;
+
+        var isTemporary = expectedCapability == Capability.TemporarilyConstant;
 
         var selfType = node.MethodGroup.Context.Type;
         if (selfType is CapabilityType { Capability: var capability }
-            && (capability == Capability.Constant || !capability.AllowsFreeze))
+            && capability == expectedCapability)
             return null;
 
         // TODO what if selfType is not a capability type?
 
         var context = node.MethodGroup.Context;
-        var implicitFreeze = new ImplicitFreezeExpressionNode((ITypedExpressionSyntax)context.Syntax, context);
+        var implicitFreeze = new ImplicitFreezeExpressionNode((ITypedExpressionSyntax)context.Syntax, isTemporary, context);
         var methodGroup = node.MethodGroup;
         var newMethodGroup = new MethodGroupNameNode(methodGroup.Syntax, implicitFreeze, methodGroup.MethodName,
             methodGroup.TypeArguments, methodGroup.ReferencedDeclarations);
@@ -482,7 +486,8 @@ public static class ExpressionTypesAspect
         if (node.IntermediateReferent?.Type is not CapabilityType capabilityType)
             return DataType.Unknown;
 
-        if (!capabilityType.AllowsFreeze) return capabilityType;
+        // Even if the capability doesn't allow freeze, a freeze expression always results in a
+        // constant reference. A diagnostic is generated if the capability doesn't allow freeze.
 
         return capabilityType.With(Capability.Constant);
     }
@@ -493,17 +498,24 @@ public static class ExpressionTypesAspect
     public static DataType ImplicitFreezeExpression_Type(IImplicitFreezeExpressionNode node)
     {
         // TODO this code is duplicated with freeze expression
-        if (node.Referent?.Type is not CapabilityType capabilityType)
+        if (node.Referent.Type is not CapabilityType capabilityType)
             return DataType.Unknown;
 
-        if (!capabilityType.AllowsFreeze) return capabilityType;
+        // Even if the capability doesn't allow freeze, a freeze expression always results in a
+        // constant reference. A diagnostic is generated if the capability doesn't allow freeze.
 
-        return capabilityType.With(Capability.Constant);
+        var capability = node.IsTemporary ? Capability.TemporarilyConstant : Capability.Constant;
+        return capabilityType.With(capability);
     }
 
     public static FlowState ImplicitFreezeExpression_FlowStateAfter(IImplicitFreezeExpressionNode node)
-        // TODO this code is duplicated with freeze expression
-        => node.Referent.FlowStateAfter.Freeze(node.Referent.ValueId, node.ValueId);
+    // TODO this code is duplicated with freeze expression
+    {
+        var flowStateBefore = node.Referent.FlowStateAfter;
+        if (node.IsTemporary)
+            throw new NotImplementedException("Temporarily constant references are not implemented yet.");
+        return flowStateBefore.Freeze(node.Referent.ValueId, node.ValueId);
+    }
 
     public static DataType MoveExpression_Type(IMoveExpressionNode node)
     {
@@ -526,14 +538,19 @@ public static class ExpressionTypesAspect
         if (node.Referent.Type is not CapabilityType capabilityType)
             return DataType.Unknown;
 
-        if (!capabilityType.AllowsMove)
-            return capabilityType;
+        // Even if the capability doesn't allow move, a move expression always results in an
+        // isolated reference. A diagnostic is generated if the capability doesn't allow move.
 
-        return capabilityType.IsTemporarilyIsolatedReference
-            ? capabilityType : capabilityType.With(Capability.Isolated);
+        var capability = node.IsTemporary ? Capability.TemporarilyIsolated : Capability.Isolated;
+        return capabilityType.With(capability);
     }
 
     public static FlowState ImplicitMoveExpression_FlowStateAfter(IImplicitMoveExpressionNode node)
-        // TODO this code is duplicated with move expression
-        => node.Referent.FlowStateAfter.Move(node.Referent.ValueId, node.ValueId);
+    // TODO this code is duplicated with move expression
+    {
+        var flowStateBefore = node.Referent.FlowStateAfter;
+        if (node.IsTemporary)
+            throw new NotImplementedException("Temporarily isolated references are not implemented yet.");
+        return flowStateBefore.Move(node.Referent.ValueId, node.ValueId);
+    }
 }
