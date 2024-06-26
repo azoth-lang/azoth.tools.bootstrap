@@ -409,6 +409,7 @@ UnknownMemberAccessExpression <: UnknownNameExpression, AssignableExpression
 MoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
 ImplicitMoveExpression <: Expression = Syntax:`IExpressionSyntax` Referent:Expression;
 FreezeExpression <: Expression = Syntax:`IFreezeExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
+ImplicitFreezeExpression <: Expression = Syntax:`IExpressionSyntax` Referent:Expression;
 
 // ---------- Async Expressions
 AsyncBlockExpression <: Expression = Syntax:`IAsyncBlockExpressionSyntax` Block:BlockExpression;

@@ -75,5 +75,6 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
 
     protected override IChildNode? Rewrite()
         => ExpressionTypesAspect.MethodInvocationExpression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.MethodInvocationExpression_Rewrite_ImplicitFreeze(this)
         ?? base.Rewrite();
 }

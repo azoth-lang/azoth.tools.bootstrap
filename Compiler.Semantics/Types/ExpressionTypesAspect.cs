@@ -172,7 +172,7 @@ public static class ExpressionTypesAspect
 
         var selfType = node.MethodGroup.Context.Type;
         if (selfType is CapabilityType { Capability: var capability }
-            && (capability == Capability.Isolated || !capability.AllowsFreeze))
+            && (capability == Capability.Isolated || !capability.AllowsMove))
             return null;
 
         // TODO what if selfType is not a capability type?
@@ -182,6 +182,29 @@ public static class ExpressionTypesAspect
         var methodGroup = node.MethodGroup;
         var newMethodGroup = new MethodGroupNameNode(methodGroup.Syntax, implicitFreeze,
             methodGroup.MethodName, methodGroup.TypeArguments, methodGroup.ReferencedDeclarations);
+        return new MethodInvocationExpressionNode(node.Syntax, newMethodGroup, node.CurrentArguments);
+    }
+
+    public static IAmbiguousExpressionNode? MethodInvocationExpression_Rewrite_ImplicitFreeze(
+        IMethodInvocationExpressionNode node)
+    {
+        var expectedSelfType = node.ReferencedDeclaration?.Symbol.SelfParameterType.Type ?? DataType.Unknown;
+        if (expectedSelfType is not CapabilityType { Capability: var expectedCapability }
+            || expectedCapability != Capability.Constant)
+            return null;
+
+        var selfType = node.MethodGroup.Context.Type;
+        if (selfType is CapabilityType { Capability: var capability }
+            && (capability == Capability.Constant || !capability.AllowsFreeze))
+            return null;
+
+        // TODO what if selfType is not a capability type?
+
+        var context = node.MethodGroup.Context;
+        var implicitFreeze = new ImplicitFreezeExpressionNode((ITypedExpressionSyntax)context.Syntax, context);
+        var methodGroup = node.MethodGroup;
+        var newMethodGroup = new MethodGroupNameNode(methodGroup.Syntax, implicitFreeze, methodGroup.MethodName,
+            methodGroup.TypeArguments, methodGroup.ReferencedDeclarations);
         return new MethodInvocationExpressionNode(node.Syntax, newMethodGroup, node.CurrentArguments);
     }
 
@@ -451,6 +474,9 @@ public static class ExpressionTypesAspect
     public static FlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)
         => node.IntermediateOperand?.FlowStateAfter.Combine(node.IntermediateOperand.ValueId, null, node.ValueId) ?? FlowState.Empty;
 
+    public static DataType FunctionName_Type(IFunctionNameNode node)
+        => node.ReferencedDeclaration?.Type ?? DataType.Unknown;
+
     public static DataType FreezeExpression_Type(IFreezeExpressionNode node)
     {
         if (node.IntermediateReferent?.Type is not CapabilityType capabilityType)
@@ -464,8 +490,20 @@ public static class ExpressionTypesAspect
     public static FlowState FreezeExpression_FlowStateAfter(IFreezeExpressionNode node)
         => node.IntermediateReferent?.FlowStateAfter.Freeze(node.IntermediateReferent.ValueId, node.ValueId) ?? FlowState.Empty;
 
-    public static DataType FunctionName_Type(IFunctionNameNode node)
-        => node.ReferencedDeclaration?.Type ?? DataType.Unknown;
+    public static DataType ImplicitFreezeExpression_Type(IImplicitFreezeExpressionNode node)
+    {
+        // TODO this code is duplicated with freeze expression
+        if (node.Referent?.Type is not CapabilityType capabilityType)
+            return DataType.Unknown;
+
+        if (!capabilityType.AllowsFreeze) return capabilityType;
+
+        return capabilityType.With(Capability.Constant);
+    }
+
+    public static FlowState ImplicitFreezeExpression_FlowStateAfter(IImplicitFreezeExpressionNode node)
+        // TODO this code is duplicated with freeze expression
+        => node.Referent.FlowStateAfter.Freeze(node.Referent.ValueId, node.ValueId);
 
     public static DataType MoveExpression_Type(IMoveExpressionNode node)
     {
