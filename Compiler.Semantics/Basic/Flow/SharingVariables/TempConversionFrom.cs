@@ -13,7 +13,7 @@ public class TempConversionFrom : ISharingVariable
     /// <remarks>The from side is affected by any restrictions.</remarks>
     public CapabilityRestrictions RestrictionsImposed => TempConversion.RestrictionsImposed;
     public bool SharingIsTracked => true;
-    public bool KeepsSetAlive => true;
+    public bool KeepsSetAlive => false;
     public TempConversionTo To => TempConversion.To;
 
     public TempConversionFrom(TempConversion tempConversion)

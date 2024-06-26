@@ -35,11 +35,6 @@ internal sealed class ExternalReference : IValue
 
     private readonly CapabilityIndex index;
 
-    public bool IsVariableOrParameter => false;
-    public CapabilityRestrictions RestrictionsImposed => CapabilityRestrictions.None;
-    public bool SharingIsTracked => true;
-    public bool KeepsSetAlive => false;
-
     private ExternalReference(ulong number, CapabilityIndex index)
     {
         this.number = number;

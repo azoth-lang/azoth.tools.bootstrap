@@ -17,11 +17,6 @@ internal sealed class ResultValue : ICapabilityValue
 
     private readonly ulong number;
 
-    public bool IsVariableOrParameter => false;
-    public CapabilityRestrictions RestrictionsImposed => CapabilityRestrictions.None;
-    public bool SharingIsTracked => true;
-    public bool KeepsSetAlive => true;
-
     private ResultValue(ulong number)
     {
         this.number = number;
@@ -34,7 +29,6 @@ internal sealed class ResultValue : ICapabilityValue
     public override bool Equals(object? obj) => obj is ResultValue other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(number);
-
     #endregion
 
     public override string ToString() => $"⧼result{number}⧽";

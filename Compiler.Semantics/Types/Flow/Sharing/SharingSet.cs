@@ -29,22 +29,32 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
 
     public bool IsLent { get; }
     private readonly ImmutableHashSet<IValue> values;
+    private readonly ImmutableHashSet<IConversion> conversions;
 
     public SharingSet(bool isLent, IValue value)
     {
         IsLent = isLent;
         values = [value];
+        conversions = ImmutableHashSet<IConversion>.Empty;
     }
 
     public SharingSet(bool isLent, IValue value, params IValue?[] values)
     {
         IsLent = isLent;
         this.values = ImmutableHashSet.Create(values.WhereNotNull().Append(value).ToArray());
+        conversions = ImmutableHashSet<IConversion>.Empty;
     }
 
     public SharingSet(bool isLent, IEnumerable<IValue> values)
-        : this(isLent, values.ToImmutableHashSet())
+        : this(isLent, values.ToImmutableHashSet(), ImmutableHashSet<IConversion>.Empty)
     {
+    }
+
+    public SharingSet(bool isLent, ResultValue value, IConversion conversion)
+    {
+        IsLent = isLent;
+        values = [value];
+        conversions = [conversion];
     }
 
     public SharingSet(SharingSet other)
@@ -52,13 +62,17 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
     {
     }
 
-    public SharingSet(bool isLent, ImmutableHashSet<IValue> values)
+    public SharingSet(bool isLent, ImmutableHashSet<IValue> values, ImmutableHashSet<IConversion> conversions)
     {
         if (values.IsEmpty)
             throw new ArgumentException("Sharing set must contain at least one value", nameof(values));
         IsLent = isLent;
         this.values = values;
+        this.conversions = conversions;
     }
+
+    public CapabilityRestrictions Restrictions
+        => conversions.Select(c => c.RestrictionsImposed).Append(CapabilityRestrictions.None).Max();
 
     public SharingSet Declare(ResultValue value)
         => new(IsLent, values.Add(value));
@@ -79,7 +93,10 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
         return new(IsLent, builder.ToImmutable());
     }
 
-    // TODO what if this eliminates the set?
+    public SharingSet Replace(IValue oldValue, IConversion conversion)
+        => new(IsLent, values.Remove(oldValue), conversions.Add(conversion));
+
+    // TODO what if this makes the set empty?
     public SharingSet Drop(IValue value)
         => new(IsLent, values.Remove(value));
 
@@ -88,6 +105,7 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public int Count => values.Count;
+
     public bool Contains(IValue item) => values.Contains(item);
 
     #region Equality
@@ -97,7 +115,9 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
             return false;
         if (ReferenceEquals(this, other))
             return true;
-        return IsLent == other.IsLent && values.SetEquals(other.values);
+        return IsLent == other.IsLent
+               && values.SetEquals(other.values)
+               && conversions.SetEquals(other.conversions);
     }
 
     public override bool Equals(object? obj)
@@ -106,7 +126,7 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
     public override int GetHashCode()
         // Note GetHashCode isn't implemented for ImmutableHashSet, so we don't include the values.
         // To do so, we'd need to sort them and the cache the hash code.
-        => HashCode.Combine(IsLent, values.Count);
+        => HashCode.Combine(IsLent, values.Count, conversions.Count);
     #endregion
 
     public override string ToString()

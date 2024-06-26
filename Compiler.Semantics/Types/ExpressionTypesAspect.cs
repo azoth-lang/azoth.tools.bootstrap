@@ -512,9 +512,9 @@ public static class ExpressionTypesAspect
     // TODO this code is duplicated with freeze expression
     {
         var flowStateBefore = node.Referent.FlowStateAfter;
-        if (node.IsTemporary)
-            throw new NotImplementedException("Temporarily constant references are not implemented yet.");
-        return flowStateBefore.Freeze(node.Referent.ValueId, node.ValueId);
+        return node.IsTemporary
+            ? flowStateBefore.TempFreeze(node.Referent.ValueId, node.ValueId)
+            : flowStateBefore.Freeze(node.Referent.ValueId, node.ValueId);
     }
 
     public static DataType MoveExpression_Type(IMoveExpressionNode node)
@@ -549,8 +549,8 @@ public static class ExpressionTypesAspect
     // TODO this code is duplicated with move expression
     {
         var flowStateBefore = node.Referent.FlowStateAfter;
-        if (node.IsTemporary)
-            throw new NotImplementedException("Temporarily isolated references are not implemented yet.");
-        return flowStateBefore.Move(node.Referent.ValueId, node.ValueId);
+        return node.IsTemporary
+            ? flowStateBefore.TempMove(node.Referent.ValueId, node.ValueId)
+            : flowStateBefore.Move(node.Referent.ValueId, node.ValueId);
     }
 }

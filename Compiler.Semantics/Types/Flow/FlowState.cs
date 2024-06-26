@@ -307,6 +307,7 @@ public sealed class FlowState : IEquatable<FlowState>
     {
         var oldValue = ResultValue.Create(valueId);
         if (TrySetFor(oldValue) is not SharingSet oldSet)
+            // TODO shouldn't this be an error?
             return this;
 
         var builder = ToBuilder();
@@ -335,6 +336,30 @@ public sealed class FlowState : IEquatable<FlowState>
         // Old binding values are now `id` and no longer need tracked
         var removeValues = oldSet.OfType<BindingValue>().Append<IValue>(oldValue);
         builder.UpdateSet(oldSet, oldSet.Replace(removeValues, newValue));
+        return builder.ToFlowState();
+    }
+
+    public FlowState TempFreeze(ValueId valueId, ValueId intoValueId)
+        => TemporarilyConvert(valueId, intoValueId, TempConversionTo.Constant(intoValueId));
+
+    public FlowState TempMove(ValueId valueId, ValueId intoValueId)
+        => TemporarilyConvert(valueId, intoValueId, TempConversionTo.Isolated(intoValueId));
+
+    private FlowState TemporarilyConvert(ValueId valueId, ValueId intoValueId, TempConversionTo to)
+    {
+        var oldValue = ResultValue.Create(valueId);
+        if (TrySetFor(oldValue) is not SharingSet oldSet)
+            // TODO shouldn't this be an error?
+            return this;
+
+        var builder = ToBuilder();
+        var currentFlowCapabilities = builder.CapabilityFor(oldValue);
+        var newValue = ResultValue.Create(intoValueId);
+        builder.TrackFlowCapability(newValue, currentFlowCapabilities.With(to.Capability));
+        var newSet = oldSet.Replace(oldValue, to.From);
+        builder.UpdateSet(oldSet, newSet);
+        builder.AddSet(new(true, newValue, to));
+        builder.ApplyRestrictions(newSet);
         return builder.ToFlowState();
     }
 
@@ -457,6 +482,15 @@ public sealed class FlowState : IEquatable<FlowState>
             // Update all items in the union to point to the new set
             foreach (IValue value in union)
                 setFor[value] = union;
+        }
+
+        public void ApplyRestrictions(SharingSet set)
+        {
+            var restrictions = set.Restrictions;
+            if (restrictions == CapabilityRestrictions.None)
+                return;
+            foreach (var value in set.OfType<ICapabilityValue>())
+                capabilities[value] = capabilities[value].WithRestrictions(restrictions);
         }
     }
 
