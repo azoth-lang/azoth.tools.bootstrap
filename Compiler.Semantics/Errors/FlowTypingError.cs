@@ -6,10 +6,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 /// <remarks><see cref="ErrorCodeRange"/> for the ranges of various kinds of error codes.</remarks>
 public static class FlowTypingError
 {
-    public static Diagnostic CannotMoveValue(CodeFile file, IMoveExpressionSyntax expression)
+    public static Diagnostic CannotMoveValue(CodeFile file, IExpressionSyntax moveExpression, IExpressionSyntax referent)
     {
-        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            4001, $"Cannot move value `{file.Code[expression.Referent.Span]}`");
+        return new(file, moveExpression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            4001, $"Cannot move value `{file.Code[referent.Span]}`");
     }
 
     public static Diagnostic CannotFreezeValue(CodeFile file, IFreezeExpressionSyntax expression)

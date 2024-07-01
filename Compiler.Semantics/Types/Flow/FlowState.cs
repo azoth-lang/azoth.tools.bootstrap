@@ -211,10 +211,21 @@ public sealed class FlowState : IEquatable<FlowState>
         return ((CapabilityType)binding.BindingType.ToUpperBound()).With(transform(current));
     }
 
+    public bool IsIsolated(IBindingNode? binding)
+        => binding is null || (TrySetFor(BindingValue.TopLevel(binding))?.IsIsolated ?? false);
+
+    public bool IsIsolatedExceptFor(IBindingNode? binding, ValueId? valueId)
+    {
+        return binding is null
+               || (valueId is ValueId v ? TrySetFor(BindingValue.TopLevel(binding))?.IsIsolatedExceptFor(ResultValue.Create(v)) ?? false
+                   : IsIsolated(binding));
+    }
+
     /// <summary>
     /// Combine the non-lent values representing the arguments into one sharing set with the return
     /// value id and drop the values for all arguments.
     /// </summary>
+    // TODO should storage of return value be based on whether the return type requires tracking?
     public FlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId)
     {
         // TODO what about independent parameters?
@@ -393,6 +404,14 @@ public sealed class FlowState : IEquatable<FlowState>
         // TODO what about independent parameters?
         var bindingValues = bindings.Select(BindingValue.TopLevel);
         builder.Drop(bindingValues);
+        return builder.ToFlowState();
+    }
+
+    public FlowState DropValue(ValueId valueId)
+    {
+        var builder = ToBuilder();
+        var value = ResultValue.Create(valueId);
+        builder.Drop(value);
         return builder.ToFlowState();
     }
 

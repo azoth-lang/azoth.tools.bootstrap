@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -79,12 +80,13 @@ public static class ExpressionTypesAspect
 
     public static void IdExpression_ContributeDiagnostics(IIdExpressionNode node, Diagnostics diagnostics)
     {
-        //if (node.Type is not UnknownType)
-        //    return;
+        if (node.Type is not UnknownType)
+            return;
 
-        //var referentType = ((IExpressionNode)node.Referent).Type;
-        //if (referentType is not CapabilityType)
-        //    diagnostics.Add(TypeError.CannotIdNonReferenceType(node.File, node.Syntax.Span, referentType));
+        var referentType = node.IntermediateReferent?.Type
+                           ?? throw new UnreachableException("Final referent should already be assigned");
+        if (referentType is not CapabilityType)
+            diagnostics.Add(TypeError.CannotIdNonReferenceType(node.File, node.Syntax.Span, referentType));
     }
 
     public static DataType VariableNameExpression_Type(IVariableNameExpressionNode node)
@@ -558,6 +560,17 @@ public static class ExpressionTypesAspect
         return flowStateBefore.MoveVariable(node.Referent.ReferencedDefinition, node.Referent.ValueId, node.ValueId);
     }
 
+    public static void MoveVariableExpression_ContributeDiagnostics(IMoveVariableExpressionNode node, Diagnostics diagnostics)
+    {
+        if (node.Referent.Type is not CapabilityType capabilityType)
+            return;
+
+        if (!capabilityType.AllowsMove)
+            diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow moving"));
+        else if (!node.Referent.FlowStateAfter.IsIsolatedExceptFor(node.Referent.ReferencedDefinition, node.Referent.ValueId))
+            diagnostics.Add(FlowTypingError.CannotMoveValue(node.File, node.Syntax, node.Referent.Syntax));
+    }
+
     public static FlowState MoveValueExpression_FlowStateAfter(IMoveValueExpressionNode node)
     {
         var flowStateBefore = node.Referent.FlowStateAfter;
@@ -578,5 +591,14 @@ public static class ExpressionTypesAspect
     {
         var flowStateBefore = node.Referent.FlowStateAfter;
         return flowStateBefore.TempMove(node.Referent.ValueId, node.ValueId);
+    }
+
+    public static FlowState ExpressionStatement_FlowStateAfter(IExpressionStatementNode node)
+    {
+        var intermediateExpression = node.IntermediateExpression;
+        if (intermediateExpression is null)
+            return FlowState.Empty;
+
+        return intermediateExpression.FlowStateAfter.DropValue(intermediateExpression.ValueId);
     }
 }

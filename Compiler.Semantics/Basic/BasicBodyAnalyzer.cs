@@ -468,24 +468,22 @@ public class BasicBodyAnalyzer
                 return null;
             case IIdExpressionSyntax exp:
             {
-                // TODO do not allow `id mut T`
                 var result = InferType(exp.Referent, flow);
                 DataType type;
                 if (result.Type is CapabilityType referenceType)
                     type = referenceType.With(Capability.Identity);
                 else
-                {
-                    diagnostics.Add(TypeError.CannotIdNonReferenceType(file, exp.Span, result.Type));
                     type = DataType.Unknown;
-                }
+                if (exp.DataType.Result != type)
+                    throw new InvalidOperationException("Id expression type should be set by semantics");
                 // Don't need to alias the symbol or union with result in flow because ids don't matter
-                exp.DataType.Fulfill(type);
                 flow.Drop(result.Variable); // drop the previous result variable
                 return new ExpressionResult(exp);
             }
             case IMoveExpressionSyntax exp:
             {
-                var semantics = InferSemantics(exp.Referent);
+                // Semantics already assigned by SemanticsApplier
+                var semantics = exp.Referent.Semantics.Result;
                 switch (semantics)
                 {
                     default:
@@ -509,7 +507,8 @@ public class BasicBodyAnalyzer
             }
             case IFreezeExpressionSyntax exp:
             {
-                var semantics = InferSemantics(exp.Referent);
+                // Semantics already assigned by SemanticsApplier
+                var semantics = exp.Referent.Semantics.Result;
                 switch (semantics)
                 {
                     default:
@@ -1015,7 +1014,7 @@ public class BasicBodyAnalyzer
         }
     }
 
-    private ExpressionResult InferMoveExpressionType(
+    private static ExpressionResult InferMoveExpressionType(
         IMoveExpressionSyntax exp,
         VariableNameSyntax semantics,
         FlowStateMutable flow)
@@ -1025,10 +1024,6 @@ public class BasicBodyAnalyzer
         switch (type)
         {
             case CapabilityType capabilityType:
-                if (!capabilityType.AllowsMove)
-                    diagnostics.Add(TypeError.NotImplemented(file, exp.Span, "Reference capability does not allow moving"));
-                else if (!flow.IsIsolated(symbol))
-                    diagnostics.Add(FlowTypingError.CannotMoveValue(file, exp));
                 type = capabilityType.IsTemporarilyIsolatedReference ? type : capabilityType.With(Capability.Isolated);
                 flow.Move(symbol);
                 break;
@@ -1042,11 +1037,14 @@ public class BasicBodyAnalyzer
 
         exp.ReferencedSymbol.Fulfill(symbol);
 
-        semantics.Type.Fulfill(type);
-        if (semantics is SelfExpressionSyntax selfExpression)
-            selfExpression.Pseudotype.Fulfill(type);
-        exp.DataType.Fulfill(type);
-        return new ExpressionResult(exp);
+        if (semantics.Type.Result != type)
+            throw new InvalidOperationException("Move expression type should be set by semantics");
+        if (semantics is SelfExpressionSyntax selfExpression && !selfExpression.Pseudotype.Result.Equals(type))
+            throw new InvalidOperationException("Move expression type should be set by semantics");
+        if (exp.DataType.Result != type)
+            throw new InvalidOperationException("Move expression type should be set by semantics");
+
+        return new(exp);
     }
 
     private ExpressionResult InferFreezeExpressionType(
@@ -1660,10 +1658,6 @@ public class BasicBodyAnalyzer
                 return InferType(result.Expression, flow);
         }
     }
-
-    private static ISimpleNameExpressionSyntaxSemantics InferSemantics(ISimpleNameSyntax expression)
-        // Semantics already assigned by SemanticsApplier
-        => expression.Semantics.Result;
 
     private static IIdentifierNameExpressionSyntaxSemantics InferSemantics(IIdentifierNameExpressionSyntax expression)
         // Semantics already assigned by SemanticsApplier

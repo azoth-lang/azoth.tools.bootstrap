@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -33,5 +34,11 @@ internal sealed class MoveVariableExpressionNode : ExpressionNode, IMoveVariable
         Syntax = syntax;
         Referent = Child.Attach(this, referent);
         IsImplicit = isImplicit;
+    }
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        ExpressionTypesAspect.MoveVariableExpression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

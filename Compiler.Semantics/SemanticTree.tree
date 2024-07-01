@@ -240,7 +240,8 @@ VariableDeclarationStatement <: BodyStatement, NamedBinding = Syntax:`IVariableD
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
     // TODO remove variable symbols
     Symbol:`NamedVariableSymbol` DeclarationNumber:`int`?;
-ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax` Expression:AmbiguousExpression;
+ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax`
+    Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
 
 // ---------- Patterns
 Pattern <: Code = Syntax:`IPatternSyntax` FlowStateAfter:`FlowState`;

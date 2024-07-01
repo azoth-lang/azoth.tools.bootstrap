@@ -66,6 +66,9 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
     public bool IsLent { get; }
     private readonly ImmutableHashSet<IValue> values;
     public ImmutableHashSet<IConversion> Conversions { get; }
+    public CapabilityRestrictions Restrictions
+        => Conversions.Select(c => c.RestrictionsImposed).Append(CapabilityRestrictions.None).Max();
+    public bool IsIsolated => values.Count == 1;
 
     public static SharingSet Declare(bool isLent, IValue value)
         => new(isLent, [value], ImmutableHashSet<IConversion>.Empty);
@@ -88,8 +91,8 @@ internal sealed class SharingSet : IReadOnlyCollection<IValue>, IEquatable<Shari
         Conversions = conversions;
     }
 
-    public CapabilityRestrictions Restrictions
-        => Conversions.Select(c => c.RestrictionsImposed).Append(CapabilityRestrictions.None).Max();
+    public bool IsIsolatedExceptFor(IValue value)
+        => values.Count <= 2 && values.Except(value).Count() == 1;
 
     public SharingSet Declare(ResultValue value)
         => new(IsLent, values.Add(value), Conversions);

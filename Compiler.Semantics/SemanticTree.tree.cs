@@ -1151,6 +1151,7 @@ public partial interface IExpressionStatementNode : IBodyStatementNode
     new IExpressionStatementSyntax Syntax { get; }
     IBodyStatementSyntax IBodyStatementNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
+    IExpressionNode? IntermediateExpression { get; }
 }
 
 [Closed(

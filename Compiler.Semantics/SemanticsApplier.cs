@@ -785,7 +785,11 @@ internal class SemanticsApplier
     private static void UnaryOperatorExpression(IUnaryOperatorExpressionNode node)
         => AmbiguousExpression(node.Operand);
 
-    private static void IdExpression(IIdExpressionNode node) => AmbiguousExpression(node.Referent);
+    private static void IdExpression(IIdExpressionNode node)
+    {
+        AmbiguousExpression(node.Referent);
+        node.Syntax.DataType.Fulfill(node.Type);
+    }
 
     private static void ConversionExpression(IConversionExpressionNode node)
     {
@@ -1167,7 +1171,20 @@ internal class SemanticsApplier
         => SimpleName(node.Referent);
 
     private static void MoveVariableExpression(IMoveVariableExpressionNode node)
-        => Expression(node.Referent);
+    {
+        Expression(node.Referent);
+        if (node.Syntax is not IMoveExpressionSyntax moveSyntax)
+            return;
+
+        var nodeType = node.Type;
+        if (moveSyntax.Referent.Semantics.Result is VariableNameSyntax semantics)
+        {
+            semantics.Type.Fulfill(nodeType);
+            if (semantics is SelfExpressionSyntax selfSemantics)
+                selfSemantics.Pseudotype.Fulfill(nodeType);
+        }
+        moveSyntax.DataType.Fulfill(nodeType);
+    }
 
     private static void MoveValueExpression(IMoveValueExpressionNode node)
         => Expression(node.Referent);

@@ -37,7 +37,7 @@ public class SharingSetMutable : IReadOnlySharingSet
     public SharingSetMutable(ISharingVariable variable, bool isLent)
     {
         IsLent = isLent;
-        variables = new HashSet<ISharingVariable> { variable };
+        variables = [variable];
     }
 
     public bool IsIsolatedExceptFor(ResultVariable result)
