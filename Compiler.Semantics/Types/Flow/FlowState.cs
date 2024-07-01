@@ -538,6 +538,8 @@ public sealed class FlowState : IEquatable<FlowState>
                 if (set is null) continue;
                 var newSet = set.Drop(group);
                 UpdateSet(set, newSet);
+                foreach (var capabilityValue in group.OfType<ICapabilityValue>())
+                    capabilities.Remove(capabilityValue);
                 if (newSet is null)
                     (conversionsRemoved ??= []).AddRange(set.Conversions.OfType<TempConversionTo>()
                                                             .Select(c => c.From));
@@ -564,6 +566,8 @@ public sealed class FlowState : IEquatable<FlowState>
             if (TrySetFor(value) is not SharingSet set) return;
             var newSet = set.Drop(value);
             UpdateSet(set, newSet);
+            if (value is ICapabilityValue capabilityValue)
+                capabilities.Remove(capabilityValue);
             if (newSet is not null)
                 return;
 
