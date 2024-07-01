@@ -631,8 +631,8 @@ internal class SemanticsApplier
             case IUnknownInvocationExpressionNode n:
                 UnknownInvocationExpression(n);
                 break;
-            case IMoveExpressionNode n:
-                MoveExpression(n);
+            case IAmbiguousMoveExpressionNode n:
+                AmbiguousMoveExpression(n);
                 break;
             case IImplicitMoveExpressionNode n:
                 ImplicitMoveExpression(n);
@@ -1157,7 +1157,7 @@ internal class SemanticsApplier
     #endregion
 
     #region Capability Expressions
-    private static void MoveExpression(IMoveExpressionNode node)
+    private static void AmbiguousMoveExpression(IAmbiguousMoveExpressionNode node)
         => SimpleName(node.Referent);
 
     private static void ImplicitMoveExpression(IImplicitMoveExpressionNode node)

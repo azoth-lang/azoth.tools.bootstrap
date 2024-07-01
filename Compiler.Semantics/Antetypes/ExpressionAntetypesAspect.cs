@@ -15,7 +15,7 @@ internal static class ExpressionAntetypesAspect
     public static IMaybeExpressionAntetype UnsafeExpression_Antetype(IUnsafeExpressionNode node)
         => node.IntermediateExpression?.Antetype ?? IAntetype.Unknown;
 
-    public static IMaybeExpressionAntetype MoveExpression_Antetype(IMoveExpressionNode node)
+    public static IMaybeExpressionAntetype MoveExpression_Antetype(IAmbiguousMoveExpressionNode node)
         => node.IntermediateReferent?.Antetype ?? IAntetype.Unknown;
 
     public static IMaybeExpressionAntetype FunctionInvocationExpression_Antetype(IFunctionInvocationExpressionNode node)

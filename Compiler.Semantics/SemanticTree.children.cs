@@ -413,7 +413,7 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
-            case IMoveExpressionNode n:
+            case IAmbiguousMoveExpressionNode n:
                 yield return n.Referent;
                 yield break;
             case IImplicitMoveExpressionNode n:

@@ -18,7 +18,7 @@ internal static class NameBindingTypesAspect
 
         if (capability is null)
         {
-            if (node.IntermediateInitializer is IMoveExpressionNode)
+            if (node.IntermediateInitializer is IAmbiguousMoveExpressionNode)
                 // If no capability is specified and it is an explicit move, then take the mutable type.
                 return type;
 

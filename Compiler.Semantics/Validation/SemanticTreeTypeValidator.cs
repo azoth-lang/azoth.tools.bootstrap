@@ -43,7 +43,7 @@ internal class SemanticTreeTypeValidator
         // The handling of freeze and move expressions has changed. So skip validating their child
         // expressions.
         if (ValidateTypes
-            && node is not IChildNode { Parent: IFreezeExpressionNode or IMoveExpressionNode })
+            && node is not IChildNode { Parent: IFreezeExpressionNode or IAmbiguousMoveExpressionNode })
         {
             _ = expression.ValueId;
             var isConversion = expression is IFreezeExpressionNode { IsImplicit: true } or IImplicitMoveExpressionNode;

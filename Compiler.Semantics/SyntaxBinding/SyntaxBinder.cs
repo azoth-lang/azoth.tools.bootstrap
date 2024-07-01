@@ -607,8 +607,8 @@ internal static class SyntaxBinder
     #endregion
 
     #region Capability Expressions
-    private static IMoveExpressionNode MoveExpression(IMoveExpressionSyntax syntax)
-        => new MoveExpressionNode(syntax, SimpleName(syntax.Referent));
+    private static IAmbiguousMoveExpressionNode MoveExpression(IMoveExpressionSyntax syntax)
+        => new AmbiguousMoveExpressionNode(syntax, SimpleName(syntax.Referent));
 
     private static IAmbiguousFreezeExpressionNode FreezeExpression(IFreezeExpressionSyntax syntax)
         => new AmbiguousFreezeExpressionNode(syntax, SimpleName(syntax.Referent));

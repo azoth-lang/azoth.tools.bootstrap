@@ -406,7 +406,7 @@ UnknownMemberAccessExpression <: UnknownNameExpression, AssignableExpression
     ReferencedMembers:{`IDeclarationNode`};
 
 // ---------- Capability Expressions
-MoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
+AmbiguousMoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
 ImplicitMoveExpression <: Expression = Syntax:`IExpressionSyntax` IsTemporary:`bool` Referent:Expression;
 AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
 FreezeExpression <: Expression = Syntax:`IExpressionSyntax` Referent:Expression IsTemporary:`bool` IsImplicit:`bool`;

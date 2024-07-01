@@ -87,7 +87,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IQualifiedTypeNameExpressionNode),
     typeof(ISelfExpressionNode),
     typeof(IUnknownStandardNameExpressionNode),
-    typeof(IMoveExpressionNode),
+    typeof(IAmbiguousMoveExpressionNode),
     typeof(IImplicitMoveExpressionNode),
     typeof(IFreezeExpressionNode),
     typeof(IAsyncBlockExpressionNode),
@@ -1240,7 +1240,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     typeof(IInitializerInvocationExpressionNode),
     typeof(IUnknownInvocationExpressionNode),
     typeof(INameExpressionNode),
-    typeof(IMoveExpressionNode),
+    typeof(IAmbiguousMoveExpressionNode),
     typeof(IImplicitMoveExpressionNode),
     typeof(IFreezeExpressionNode),
     typeof(IAsyncBlockExpressionNode),
@@ -1923,7 +1923,7 @@ public partial interface IUnknownMemberAccessExpressionNode : IUnknownNameExpres
     IFixedSet<IDeclarationNode> ReferencedMembers { get; }
 }
 
-public partial interface IMoveExpressionNode : ISemanticNode, IExpressionNode
+public partial interface IAmbiguousMoveExpressionNode : ISemanticNode, IExpressionNode
 {
     new IMoveExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;

@@ -516,7 +516,7 @@ public static class ExpressionTypesAspect
             : flowStateBefore.FreezeValue(referentValueId, node.ValueId);
     }
 
-    public static DataType MoveExpression_Type(IMoveExpressionNode node)
+    public static DataType MoveExpression_Type(IAmbiguousMoveExpressionNode node)
     {
         if (node.IntermediateReferent?.Type is not CapabilityType capabilityType)
             return DataType.Unknown;
@@ -528,7 +528,7 @@ public static class ExpressionTypesAspect
             ? capabilityType : capabilityType.With(Capability.Isolated);
     }
 
-    public static FlowState MoveExpression_FlowStateAfter(IMoveExpressionNode node)
+    public static FlowState MoveExpression_FlowStateAfter(IAmbiguousMoveExpressionNode node)
         => node.IntermediateReferent?.FlowStateAfter.Move(node.IntermediateReferent.ValueId, node.ValueId) ?? FlowState.Empty;
 
     public static DataType ImplicitMoveExpression_Type(IImplicitMoveExpressionNode node)

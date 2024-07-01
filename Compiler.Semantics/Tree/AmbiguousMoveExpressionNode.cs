@@ -9,7 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class MoveExpressionNode : ExpressionNode, IMoveExpressionNode
+internal sealed class AmbiguousMoveExpressionNode : ExpressionNode, IAmbiguousMoveExpressionNode
 {
     public override IMoveExpressionSyntax Syntax { get; }
     private RewritableChild<ISimpleNameNode> referent;
@@ -34,7 +34,7 @@ internal sealed class MoveExpressionNode : ExpressionNode, IMoveExpressionNode
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.MoveExpression_FlowStateAfter);
 
-    public MoveExpressionNode(IMoveExpressionSyntax syntax, ISimpleNameNode referent)
+    public AmbiguousMoveExpressionNode(IMoveExpressionSyntax syntax, ISimpleNameNode referent)
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
