@@ -545,6 +545,9 @@ internal class SemanticsApplier
             case IInvocationExpressionNode n:
                 InvocationExpression(n);
                 break;
+            case IAmbiguousFreezeExpressionNode n:
+                AmbiguousFreezeExpression(n);
+                break;
         }
     }
 
@@ -634,11 +637,11 @@ internal class SemanticsApplier
             case IImplicitMoveExpressionNode n:
                 ImplicitMoveExpression(n);
                 break;
-            case IFreezeExpressionNode n:
-                FreezeExpression(n);
+            case IFreezeVariableExpressionNode n:
+                FreezeVariableExpression(n);
                 break;
-            case IImplicitFreezeExpressionNode n:
-                ImplicitFreezeExpression(n);
+            case IFreezeValueExpressionNode n:
+                FreezeValueExpression(n);
                 break;
             case IAsyncBlockExpressionNode n:
                 AsyncBlockExpression(n);
@@ -1160,10 +1163,13 @@ internal class SemanticsApplier
     private static void ImplicitMoveExpression(IImplicitMoveExpressionNode node)
         => Expression(node.Referent);
 
-    private static void FreezeExpression(IFreezeExpressionNode node)
+    private static void AmbiguousFreezeExpression(IAmbiguousFreezeExpressionNode node)
         => SimpleName(node.Referent);
 
-    private static void ImplicitFreezeExpression(IImplicitFreezeExpressionNode node)
+    private static void FreezeVariableExpression(IFreezeVariableExpressionNode node)
+        => Expression(node.Referent);
+
+    private static void FreezeValueExpression(IFreezeValueExpressionNode node)
         => Expression(node.Referent);
     #endregion
 

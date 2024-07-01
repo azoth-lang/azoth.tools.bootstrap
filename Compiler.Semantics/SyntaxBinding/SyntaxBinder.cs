@@ -610,8 +610,8 @@ internal static class SyntaxBinder
     private static IMoveExpressionNode MoveExpression(IMoveExpressionSyntax syntax)
         => new MoveExpressionNode(syntax, SimpleName(syntax.Referent));
 
-    private static IFreezeExpressionNode FreezeExpression(IFreezeExpressionSyntax syntax)
-        => new FreezeExpressionNode(syntax, SimpleName(syntax.Referent));
+    private static IAmbiguousFreezeExpressionNode FreezeExpression(IFreezeExpressionSyntax syntax)
+        => new AmbiguousFreezeExpressionNode(syntax, SimpleName(syntax.Referent));
     #endregion
 
     #region Async Expressions

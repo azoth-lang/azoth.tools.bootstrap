@@ -408,8 +408,10 @@ UnknownMemberAccessExpression <: UnknownNameExpression, AssignableExpression
 // ---------- Capability Expressions
 MoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
 ImplicitMoveExpression <: Expression = Syntax:`IExpressionSyntax` IsTemporary:`bool` Referent:Expression;
-FreezeExpression <: Expression = Syntax:`IFreezeExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
-ImplicitFreezeExpression <: Expression = Syntax:`IExpressionSyntax` IsTemporary:`bool` Referent:Expression;
+AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
+FreezeExpression <: Expression = Syntax:`IExpressionSyntax` Referent:Expression IsTemporary:`bool` IsImplicit:`bool`;
+FreezeVariableExpression <: FreezeExpression = Referent:VariableNameExpression;
+FreezeValueExpression <: FreezeExpression = Referent:Expression;
 
 // ---------- Async Expressions
 AsyncBlockExpression <: Expression = Syntax:`IAsyncBlockExpressionSyntax` Block:BlockExpression;

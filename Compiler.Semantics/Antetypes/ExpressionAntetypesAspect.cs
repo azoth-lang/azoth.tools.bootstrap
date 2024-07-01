@@ -18,9 +18,6 @@ internal static class ExpressionAntetypesAspect
     public static IMaybeExpressionAntetype MoveExpression_Antetype(IMoveExpressionNode node)
         => node.IntermediateReferent?.Antetype ?? IAntetype.Unknown;
 
-    public static IMaybeExpressionAntetype FreezeExpression_Antetype(IFreezeExpressionNode node)
-        => node.IntermediateReferent?.Antetype ?? IAntetype.Unknown;
-
     public static IMaybeExpressionAntetype FunctionInvocationExpression_Antetype(IFunctionInvocationExpressionNode node)
         // TODO should probably use Antetype on the declaration
         => node.ReferencedDeclaration?.Type.Return.Type.ToAntetype() ?? IAntetype.Unknown;

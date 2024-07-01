@@ -90,7 +90,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IMoveExpressionNode),
     typeof(IImplicitMoveExpressionNode),
     typeof(IFreezeExpressionNode),
-    typeof(IImplicitFreezeExpressionNode),
     typeof(IAsyncBlockExpressionNode),
     typeof(IAsyncStartExpressionNode),
     typeof(IAwaitExpressionNode),
@@ -1207,7 +1206,8 @@ public partial interface IOptionalPatternNode : ISemanticNode, IOptionalOrBindin
 [Closed(
     typeof(IExpressionNode),
     typeof(IInvocationExpressionNode),
-    typeof(IAmbiguousNameExpressionNode))]
+    typeof(IAmbiguousNameExpressionNode),
+    typeof(IAmbiguousFreezeExpressionNode))]
 public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
 {
     new IExpressionSyntax Syntax { get; }
@@ -1243,7 +1243,6 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     typeof(IMoveExpressionNode),
     typeof(IImplicitMoveExpressionNode),
     typeof(IFreezeExpressionNode),
-    typeof(IImplicitFreezeExpressionNode),
     typeof(IAsyncBlockExpressionNode),
     typeof(IAsyncStartExpressionNode),
     typeof(IAwaitExpressionNode))]
@@ -1942,22 +1941,35 @@ public partial interface IImplicitMoveExpressionNode : ISemanticNode, IExpressio
     IExpressionNode Referent { get; }
 }
 
-public partial interface IFreezeExpressionNode : ISemanticNode, IExpressionNode
+public partial interface IAmbiguousFreezeExpressionNode : IAmbiguousExpressionNode
 {
     new IFreezeExpressionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ISimpleNameNode Referent { get; }
     INameExpressionNode? IntermediateReferent { get; }
 }
 
-public partial interface IImplicitFreezeExpressionNode : ISemanticNode, IExpressionNode
+[Closed(
+    typeof(IFreezeVariableExpressionNode),
+    typeof(IFreezeValueExpressionNode))]
+public partial interface IFreezeExpressionNode : ISemanticNode, IExpressionNode
 {
     new IExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    bool IsTemporary { get; }
     IExpressionNode Referent { get; }
+    bool IsTemporary { get; }
+    bool IsImplicit { get; }
+}
+
+public partial interface IFreezeVariableExpressionNode : IFreezeExpressionNode
+{
+    new IVariableNameExpressionNode Referent { get; }
+    IExpressionNode IFreezeExpressionNode.Referent => Referent;
+}
+
+public partial interface IFreezeValueExpressionNode : IFreezeExpressionNode
+{
 }
 
 public partial interface IAsyncBlockExpressionNode : ISemanticNode, IExpressionNode

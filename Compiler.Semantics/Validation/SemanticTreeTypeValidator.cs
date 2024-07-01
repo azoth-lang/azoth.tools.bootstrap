@@ -46,7 +46,7 @@ internal class SemanticTreeTypeValidator
             && node is not IChildNode { Parent: IFreezeExpressionNode or IMoveExpressionNode })
         {
             _ = expression.ValueId;
-            var isConversion = expression is IImplicitFreezeExpressionNode or IImplicitMoveExpressionNode;
+            var isConversion = expression is IFreezeExpressionNode { IsImplicit: true } or IImplicitMoveExpressionNode;
             var expectedType = isConversion ? expressionSyntax.ConvertedDataType : expressionSyntax.DataType.Result;
             // Sometimes the new analysis can come up with types when the old one couldn't. So
             // if the expected type is UnknownType, we don't care what the actual type is.

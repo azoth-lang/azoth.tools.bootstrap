@@ -205,7 +205,8 @@ public static class ExpressionTypesAspect
         // TODO what if selfType is not a capability type?
 
         var context = node.MethodGroup.Context;
-        var implicitFreeze = new ImplicitFreezeExpressionNode((ITypedExpressionSyntax)context.Syntax, isTemporary, context);
+        var implicitFreeze = new FreezeValueExpressionNode((ITypedExpressionSyntax)context.Syntax, context,
+            isTemporary, isImplicit: true);
         var methodGroup = node.MethodGroup;
         var newMethodGroup = new MethodGroupNameNode(methodGroup.Syntax, implicitFreeze, methodGroup.MethodName,
             methodGroup.TypeArguments, methodGroup.ReferencedDeclarations);
@@ -484,21 +485,6 @@ public static class ExpressionTypesAspect
 
     public static DataType FreezeExpression_Type(IFreezeExpressionNode node)
     {
-        if (node.IntermediateReferent?.Type is not CapabilityType capabilityType)
-            return DataType.Unknown;
-
-        // Even if the capability doesn't allow freeze, a freeze expression always results in a
-        // constant reference. A diagnostic is generated if the capability doesn't allow freeze.
-
-        return capabilityType.With(Capability.Constant);
-    }
-
-    public static FlowState FreezeExpression_FlowStateAfter(IFreezeExpressionNode node)
-        => node.IntermediateReferent?.FlowStateAfter.Freeze(node.IntermediateReferent.ValueId, node.ValueId) ?? FlowState.Empty;
-
-    public static DataType ImplicitFreezeExpression_Type(IImplicitFreezeExpressionNode node)
-    {
-        // TODO this code is duplicated with freeze expression
         if (node.Referent.Type is not CapabilityType capabilityType)
             return DataType.Unknown;
 
@@ -509,8 +495,7 @@ public static class ExpressionTypesAspect
         return capabilityType.With(capability);
     }
 
-    public static FlowState ImplicitFreezeExpression_FlowStateAfter(IImplicitFreezeExpressionNode node)
-    // TODO this code is duplicated with freeze expression
+    public static FlowState FreezeValueExpression_FlowStateAfter(IFreezeValueExpressionNode node)
     {
         var flowStateBefore = node.Referent.FlowStateAfter;
         return node.IsTemporary
