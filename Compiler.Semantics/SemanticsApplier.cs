@@ -545,6 +545,9 @@ internal class SemanticsApplier
             case IInvocationExpressionNode n:
                 InvocationExpression(n);
                 break;
+            case IAmbiguousMoveExpressionNode n:
+                AmbiguousMoveExpression(n);
+                break;
             case IAmbiguousFreezeExpressionNode n:
                 AmbiguousFreezeExpression(n);
                 break;
@@ -631,11 +634,14 @@ internal class SemanticsApplier
             case IUnknownInvocationExpressionNode n:
                 UnknownInvocationExpression(n);
                 break;
-            case IAmbiguousMoveExpressionNode n:
-                AmbiguousMoveExpression(n);
+            case IMoveVariableExpressionNode n:
+                MoveVariableExpression(n);
                 break;
-            case IImplicitMoveExpressionNode n:
-                ImplicitMoveExpression(n);
+            case IMoveValueExpressionNode n:
+                MoveValueExpression(n);
+                break;
+            case IImplicitTempMoveExpressionNode n:
+                ImplicitTempMoveExpression(n);
                 break;
             case IFreezeVariableExpressionNode n:
                 FreezeVariableExpression(n);
@@ -1056,7 +1062,7 @@ internal class SemanticsApplier
     private static void VariableNameExpression(IVariableNameExpressionNode node)
     {
         var syntax = node.Syntax;
-        syntax.Semantics.Fulfill(new NamedVariableNameSyntax(node.ReferencedDeclaration.Syntax.Symbol));
+        syntax.Semantics.Fulfill(new NamedVariableNameSyntax(node.ReferencedDefinition.Syntax.Symbol));
     }
 
     private static void StandardTypeNameExpression(IStandardTypeNameExpressionNode node)
@@ -1160,7 +1166,13 @@ internal class SemanticsApplier
     private static void AmbiguousMoveExpression(IAmbiguousMoveExpressionNode node)
         => SimpleName(node.Referent);
 
-    private static void ImplicitMoveExpression(IImplicitMoveExpressionNode node)
+    private static void MoveVariableExpression(IMoveVariableExpressionNode node)
+        => Expression(node.Referent);
+
+    private static void MoveValueExpression(IMoveValueExpressionNode node)
+        => Expression(node.Referent);
+
+    private static void ImplicitTempMoveExpression(IImplicitTempMoveExpressionNode node)
         => Expression(node.Referent);
 
     private static void AmbiguousFreezeExpression(IAmbiguousFreezeExpressionNode node)

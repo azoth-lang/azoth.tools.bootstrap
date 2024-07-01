@@ -7,33 +7,32 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class ImplicitMoveExpressionNode : ExpressionNode, IImplicitMoveExpressionNode
+internal sealed class MoveValueExpressionNode : ExpressionNode, IMoveValueExpressionNode
 {
     public override ITypedExpressionSyntax Syntax { get; }
-    public bool IsTemporary { get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
     public IExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
+    public bool IsImplicit { get; }
     public override IMaybeExpressionAntetype Antetype => Referent.Antetype;
     private DataType? type;
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.ImplicitMoveExpression_Type);
+            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.MoveExpression_Type);
     private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.ImplicitMoveExpression_FlowStateAfter);
+                ExpressionTypesAspect.MoveValueExpression_FlowStateAfter);
 
-    public ImplicitMoveExpressionNode(ITypedExpressionSyntax syntax, bool isTemporary, IExpressionNode referent)
+    public MoveValueExpressionNode(ITypedExpressionSyntax syntax, IExpressionNode referent, bool isImplicit)
     {
         Syntax = syntax;
-        IsTemporary = isTemporary;
         this.referent = Child.Create(this, referent);
+        IsImplicit = isImplicit;
     }
 }

@@ -13,7 +13,7 @@ internal sealed class VariableNameExpressionNode : AmbiguousNameExpressionNode, 
 {
     public override IIdentifierNameExpressionSyntax Syntax { get; }
     public IdentifierName Name => Syntax.Name;
-    public INamedBindingNode ReferencedDeclaration { get; }
+    public INamedBindingNode ReferencedDefinition { get; }
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
@@ -31,10 +31,10 @@ internal sealed class VariableNameExpressionNode : AmbiguousNameExpressionNode, 
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.VariableNameExpression_FlowStateAfter);
 
-    public VariableNameExpressionNode(IIdentifierNameExpressionSyntax syntax, INamedBindingNode referencedDeclaration)
+    public VariableNameExpressionNode(IIdentifierNameExpressionSyntax syntax, INamedBindingNode referencedDefinition)
     {
         Syntax = syntax;
-        ReferencedDeclaration = referencedDeclaration;
+        ReferencedDefinition = referencedDefinition;
     }
 
     public FlowState FlowStateBefore()

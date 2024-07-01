@@ -21,15 +21,15 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
     public IExecutableDefinitionNode ContainingDeclaration
         => containingDeclaration.TryGetValue(out var value) ? value
         : containingDeclaration.GetValue(() => (IExecutableDefinitionNode)InheritedContainingDeclaration());
-    private ValueAttribute<ISelfParameterNode?> referencedParameter;
-    public ISelfParameterNode? ReferencedParameter
-        => referencedParameter.TryGetValue(out var value) ? value
-        : referencedParameter.GetValue(this, BindingNamesAspect.SelfExpression_ReferencedParameter);
+    private ValueAttribute<ISelfParameterNode?> referencedDefinition;
+    public ISelfParameterNode? ReferencedDefinition
+        => referencedDefinition.TryGetValue(out var value) ? value
+            : referencedDefinition.GetValue(this, BindingNamesAspect.SelfExpression_ReferencedDefinition);
     // TODO remove parameter symbols
     private ValueAttribute<SelfParameterSymbol?> referencedSymbol;
     public SelfParameterSymbol? ReferencedSymbol
         => referencedSymbol.TryGetValue(out var value) ? value
-        : referencedSymbol.GetValue(this, SymbolAspect.SelfExpression_ReferencedSymbol);
+            : referencedSymbol.GetValue(this, SymbolAspect.SelfExpression_ReferencedSymbol);
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value

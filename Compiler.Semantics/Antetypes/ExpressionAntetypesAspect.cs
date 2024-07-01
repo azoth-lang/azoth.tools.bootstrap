@@ -31,10 +31,10 @@ internal static class ExpressionAntetypesAspect
     }
 
     public static IMaybeExpressionAntetype VariableNameExpression_Antetype(IVariableNameExpressionNode node)
-        => node.ReferencedDeclaration.BindingAntetype;
+        => node.ReferencedDefinition.BindingAntetype;
 
     public static IMaybeExpressionAntetype SelfExpression_Antetype(ISelfExpressionNode node)
-        => node.ReferencedParameter?.BindingAntetype ?? IAntetype.Unknown;
+        => node.ReferencedDefinition?.BindingAntetype ?? IAntetype.Unknown;
 
     public static IMaybeExpressionAntetype FieldAccessExpression_Antetype(IFieldAccessExpressionNode node)
     {

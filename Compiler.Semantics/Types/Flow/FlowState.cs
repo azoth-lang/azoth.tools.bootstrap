@@ -304,7 +304,7 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState FreezeVariable(IBindingNode binding, ValueId valueId, ValueId intoValueId)
+    public FlowState FreezeVariable(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
         => Freeze(binding, valueId, intoValueId);
 
     public FlowState FreezeValue(ValueId valueId, ValueId intoValueId)
@@ -332,19 +332,33 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState Move(ValueId valueId, ValueId intoValueId)
+    public FlowState MoveVariable(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
+        => Move(binding, valueId, intoValueId);
+
+    public FlowState MoveValue(ValueId valueId, ValueId intoValueId)
+        => Move(null, valueId, intoValueId);
+
+    private FlowState Move(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
     {
         var oldValue = ResultValue.Create(valueId);
         if (TrySetFor(oldValue) is not SharingSet oldSet)
             return this;
 
         var builder = ToBuilder();
-        foreach (var bindingValue in oldSet.OfType<BindingValue>())
-            builder.SetFlowCapability(bindingValue, capabilities[bindingValue].AfterMove());
+        IEnumerable<IValue> removeValues = oldValue.Yield();
+        if (binding is not null)
+        {
+            var bindingValues = BindingValue.ForType(binding.ValueId, (CapabilityType)binding.BindingType.ToUpperBound())
+                                            .Select(p => p.Key).Cast<BindingValue>().ToList();
+            foreach (var bindingValue in bindingValues)
+                builder.SetFlowCapability(bindingValue, capabilities[bindingValue].AfterMove());
+
+            // Old binding values are now `id` and no longer need tracked
+            // TODO this may not properly remove independent parameters
+            removeValues = removeValues.Concat(bindingValues);
+        }
 
         var newValue = ResultValue.Create(intoValueId);
-        // Old binding values are now `id` and no longer need tracked
-        var removeValues = oldSet.OfType<BindingValue>().Append<IValue>(oldValue);
         builder.UpdateSet(oldSet, oldSet.Replace(removeValues, newValue));
         return builder.ToFlowState();
     }

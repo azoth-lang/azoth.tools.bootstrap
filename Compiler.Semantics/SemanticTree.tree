@@ -361,6 +361,7 @@ PropertyName <: AmbiguousName, AssignableExpression
 
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression = Syntax:`INameExpressionSyntax`;
+LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
 // TODO Name <: NameExpression
 NamespaceName <: NameExpression = Type:`UnknownType` ReferencedDeclarations:`INamespaceDeclarationNode`*;
 UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
@@ -373,8 +374,8 @@ MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax` Conte
     ReferencedDeclarations:{`IStandardMethodDeclarationNode`};
 FieldAccessExpression <: NameExpression, AssignableExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
-VariableNameExpression <: NameExpression, AssignableExpression, SimpleName
-    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDeclaration:`INamedBindingNode`;
+VariableNameExpression <: LocalBindingNameExpression, AssignableExpression, SimpleName
+    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDefinition:`INamedBindingNode`;
 TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
     Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`
     NamedAntetype:`IMaybeAntetype` NamedBareType:`BareType`?;
@@ -389,9 +390,9 @@ SpecialTypeNameExpression <: NameExpression
     = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol` Type:`UnknownType`;
 InstanceExpression <: NameExpression, SimpleName; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
-SelfExpression <: InstanceExpression
+SelfExpression <: InstanceExpression, LocalBindingNameExpression
     = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype`
-    ContainingDeclaration:`IExecutableDefinitionNode` ReferencedParameter:`ISelfParameterNode`? ReferencedSymbol:`SelfParameterSymbol`?;
+    ContainingDeclaration:`IExecutableDefinitionNode` ReferencedDefinition:`ISelfParameterNode`? ReferencedSymbol:`SelfParameterSymbol`?;
 MissingNameExpression <: NameExpression, SimpleName, AssignableExpression
     = Syntax:`IMissingNameSyntax` Type:`UnknownType`;
 UnknownNameExpression <: NameExpression = Syntax:`INameExpressionSyntax` Type:`UnknownType`;
@@ -406,11 +407,14 @@ UnknownMemberAccessExpression <: UnknownNameExpression, AssignableExpression
     ReferencedMembers:{`IDeclarationNode`};
 
 // ---------- Capability Expressions
-AmbiguousMoveExpression <: Expression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
-ImplicitMoveExpression <: Expression = Syntax:`IExpressionSyntax` IsTemporary:`bool` Referent:Expression;
+AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
+MoveExpression <: Expression = Syntax:`IExpressionSyntax` Referent:Expression IsImplicit:`bool`;
+MoveVariableExpression <: MoveExpression = Referent:LocalBindingNameExpression;
+MoveValueExpression <: MoveExpression = Referent:Expression;
+ImplicitTempMoveExpression <: Expression = Syntax:`IExpressionSyntax` Referent:Expression;
 AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
 FreezeExpression <: Expression = Syntax:`IExpressionSyntax` Referent:Expression IsTemporary:`bool` IsImplicit:`bool`;
-FreezeVariableExpression <: FreezeExpression = Referent:VariableNameExpression;
+FreezeVariableExpression <: FreezeExpression = Referent:LocalBindingNameExpression;
 FreezeValueExpression <: FreezeExpression = Referent:Expression;
 
 // ---------- Async Expressions

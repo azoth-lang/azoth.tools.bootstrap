@@ -88,10 +88,10 @@ public static class ExpressionTypesAspect
     }
 
     public static DataType VariableNameExpression_Type(IVariableNameExpressionNode node)
-        => node.FlowStateAfter.AliasType(node.ReferencedDeclaration);
+        => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
 
     public static FlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
-        => node.FlowStateBefore().Alias(node.ReferencedDeclaration, node.ValueId);
+        => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
 
     public static FlowState NamedParameter_FlowStateAfter(INamedParameterNode node)
         => node.FlowStateBefore().Declare(node);
@@ -180,7 +180,12 @@ public static class ExpressionTypesAspect
         // TODO what if selfType is not a capability type?
 
         var context = node.MethodGroup.Context;
-        var implicitFreeze = new ImplicitMoveExpressionNode((ITypedExpressionSyntax)context.Syntax, isTemporary, context);
+        var contextSyntax = (ITypedExpressionSyntax)context.Syntax;
+        var implicitFreeze = isTemporary
+            ? new ImplicitTempMoveExpressionNode(contextSyntax, context)
+            : (IExpressionNode)(context is IVariableNameExpressionNode variableName
+                ? new MoveVariableExpressionNode(contextSyntax, variableName, isImplicit: true)
+                : new MoveValueExpressionNode(contextSyntax, context, isImplicit: true));
         var methodGroup = node.MethodGroup;
         var newMethodGroup = new MethodGroupNameNode(methodGroup.Syntax, implicitFreeze,
             methodGroup.MethodName, methodGroup.TypeArguments, methodGroup.ReferencedDeclarations);
@@ -307,10 +312,10 @@ public static class ExpressionTypesAspect
         => node.Context.FlowStateAfter.AccessMember(node.Context.ValueId, node.ValueId, node.Type);
 
     public static FlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node)
-        => node.FlowStateBefore().Alias(node.ReferencedParameter, node.ValueId);
+        => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
 
     public static DataType SelfExpression_Type(ISelfExpressionNode node)
-        => node.FlowStateAfter.AliasType(node.ReferencedParameter);
+        => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
     public static Pseudotype SelfExpression_Pseudotype(ISelfExpressionNode node)
         => node.ReferencedSymbol?.Type ?? DataType.Unknown;
 
@@ -504,7 +509,7 @@ public static class ExpressionTypesAspect
         return node.IsTemporary
             // TODO this implies that temp freeze is a fundamentally different operation and ought to have its own node type
             ? flowStateBefore.TempFreeze(referentValueId, node.ValueId)
-            : flowStateBefore.FreezeVariable(node.Referent.ReferencedDeclaration, referentValueId, node.ValueId);
+            : flowStateBefore.FreezeVariable(node.Referent.ReferencedDefinition, referentValueId, node.ValueId);
     }
 
     public static FlowState FreezeValueExpression_FlowStateAfter(IFreezeValueExpressionNode node)
@@ -516,40 +521,43 @@ public static class ExpressionTypesAspect
             : flowStateBefore.FreezeValue(referentValueId, node.ValueId);
     }
 
-    public static DataType MoveExpression_Type(IAmbiguousMoveExpressionNode node)
+    public static DataType MoveExpression_Type(IMoveExpressionNode node)
     {
-        if (node.IntermediateReferent?.Type is not CapabilityType capabilityType)
-            return DataType.Unknown;
-
-        // Even if the capability doesn't allow move, a move expression always results in an
-        // isolated reference. A diagnostic is generated if the capability doesn't allow move.
-        // TODO maybe `temp iso` should require `temp move`?
-        return capabilityType.IsTemporarilyIsolatedReference
-            ? capabilityType : capabilityType.With(Capability.Isolated);
-    }
-
-    public static FlowState MoveExpression_FlowStateAfter(IAmbiguousMoveExpressionNode node)
-        => node.IntermediateReferent?.FlowStateAfter.Move(node.IntermediateReferent.ValueId, node.ValueId) ?? FlowState.Empty;
-
-    public static DataType ImplicitMoveExpression_Type(IImplicitMoveExpressionNode node)
-    {
-        // TODO this code is duplicated with move expression
         if (node.Referent.Type is not CapabilityType capabilityType)
             return DataType.Unknown;
 
         // Even if the capability doesn't allow move, a move expression always results in an
         // isolated reference. A diagnostic is generated if the capability doesn't allow move.
-
-        var capability = node.IsTemporary ? Capability.TemporarilyIsolated : Capability.Isolated;
-        return capabilityType.With(capability);
+        // TODO maybe `temp iso` should require `temp move`?
+        return capabilityType.IsTemporarilyIsolatedReference ? capabilityType
+            : capabilityType.With(Capability.Isolated);
     }
 
-    public static FlowState ImplicitMoveExpression_FlowStateAfter(IImplicitMoveExpressionNode node)
-    // TODO this code is duplicated with move expression
+    public static FlowState MoveVariableExpression_FlowStateAfter(IMoveVariableExpressionNode node)
     {
         var flowStateBefore = node.Referent.FlowStateAfter;
-        return node.IsTemporary
-            ? flowStateBefore.TempMove(node.Referent.ValueId, node.ValueId)
-            : flowStateBefore.Move(node.Referent.ValueId, node.ValueId);
+        return flowStateBefore.MoveVariable(node.Referent.ReferencedDefinition, node.Referent.ValueId, node.ValueId);
+    }
+
+    public static FlowState MoveValueExpression_FlowStateAfter(IMoveValueExpressionNode node)
+    {
+        var flowStateBefore = node.Referent.FlowStateAfter;
+        return flowStateBefore.MoveValue(node.Referent.ValueId, node.ValueId);
+    }
+
+    public static DataType ImplicitTempMoveExpression_Type(IImplicitTempMoveExpressionNode node)
+    {
+        if (node.Referent.Type is not CapabilityType capabilityType)
+            return DataType.Unknown;
+
+        // Even if the capability doesn't allow move, a temp move expression always results in a
+        // temp isolated reference. A diagnostic is generated if the capability doesn't allow move.
+        return capabilityType.With(Capability.TemporarilyIsolated);
+    }
+
+    public static FlowState ImplicitTempMoveExpression_FlowStateAfter(IImplicitTempMoveExpressionNode node)
+    {
+        var flowStateBefore = node.Referent.FlowStateAfter;
+        return flowStateBefore.TempMove(node.Referent.ValueId, node.ValueId);
     }
 }

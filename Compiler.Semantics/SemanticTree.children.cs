@@ -416,7 +416,13 @@ public static class ISemanticNodeExtensions
             case IAmbiguousMoveExpressionNode n:
                 yield return n.Referent;
                 yield break;
-            case IImplicitMoveExpressionNode n:
+            case IMoveVariableExpressionNode n:
+                yield return n.Referent;
+                yield break;
+            case IMoveValueExpressionNode n:
+                yield return n.Referent;
+                yield break;
+            case IImplicitTempMoveExpressionNode n:
                 yield return n.Referent;
                 yield break;
             case IAmbiguousFreezeExpressionNode n:

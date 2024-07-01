@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
 internal static class BindingNamesAspect
 {
-    public static ISelfParameterNode? SelfExpression_ReferencedParameter(ISelfExpressionNode node)
+    public static ISelfParameterNode? SelfExpression_ReferencedDefinition(ISelfExpressionNode node)
         => node.ContainingDeclaration switch
         {
             IConcreteMethodDefinitionNode n => n.SelfParameter,
