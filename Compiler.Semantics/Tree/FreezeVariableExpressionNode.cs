@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -19,6 +20,13 @@ internal sealed class FreezeVariableExpressionNode : ExpressionNode, IFreezeVari
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 ExpressionTypesAspect.FreezeExpression_Type);
+    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private bool flowStateAfterCached;
+    public override FlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.FreezeVariableExpression_FlowStateAfter);
+
     public FreezeVariableExpressionNode(
         ITypedExpressionSyntax syntax,
         IVariableNameExpressionNode referent,

@@ -205,8 +205,10 @@ public static class ExpressionTypesAspect
         // TODO what if selfType is not a capability type?
 
         var context = node.MethodGroup.Context;
-        var implicitFreeze = new FreezeValueExpressionNode((ITypedExpressionSyntax)context.Syntax, context,
-            isTemporary, isImplicit: true);
+        var contextSyntax = (ITypedExpressionSyntax)context.Syntax;
+        IFreezeExpressionNode implicitFreeze = context is IVariableNameExpressionNode variableName
+            ? new FreezeVariableExpressionNode(contextSyntax, variableName, isTemporary, isImplicit: true)
+            : new FreezeValueExpressionNode(contextSyntax, context, isTemporary, isImplicit: true);
         var methodGroup = node.MethodGroup;
         var newMethodGroup = new MethodGroupNameNode(methodGroup.Syntax, implicitFreeze, methodGroup.MethodName,
             methodGroup.TypeArguments, methodGroup.ReferencedDeclarations);
@@ -495,12 +497,23 @@ public static class ExpressionTypesAspect
         return capabilityType.With(capability);
     }
 
+    public static FlowState FreezeVariableExpression_FlowStateAfter(IFreezeVariableExpressionNode node)
+    {
+        var flowStateBefore = node.Referent.FlowStateAfter;
+        var referentValueId = node.Referent.ValueId;
+        return node.IsTemporary
+            // TODO this implies that temp freeze is a fundamentally different operation and ought to have its own node type
+            ? flowStateBefore.TempFreeze(referentValueId, node.ValueId)
+            : flowStateBefore.FreezeVariable(node.Referent.ReferencedDeclaration, referentValueId, node.ValueId);
+    }
+
     public static FlowState FreezeValueExpression_FlowStateAfter(IFreezeValueExpressionNode node)
     {
         var flowStateBefore = node.Referent.FlowStateAfter;
+        var referentValueId = node.Referent.ValueId;
         return node.IsTemporary
-            ? flowStateBefore.TempFreeze(node.Referent.ValueId, node.ValueId)
-            : flowStateBefore.Freeze(node.Referent.ValueId, node.ValueId);
+            ? flowStateBefore.TempFreeze(referentValueId, node.ValueId)
+            : flowStateBefore.FreezeValue(referentValueId, node.ValueId);
     }
 
     public static DataType MoveExpression_Type(IMoveExpressionNode node)

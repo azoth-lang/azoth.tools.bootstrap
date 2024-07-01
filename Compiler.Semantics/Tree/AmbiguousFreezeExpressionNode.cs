@@ -16,17 +16,6 @@ internal sealed class AmbiguousFreezeExpressionNode : AmbiguousExpressionNode, I
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public INameExpressionNode? IntermediateReferent => Referent as INameExpressionNode;
-    //private DataType? type;
-    //private bool typeCached;
-    //public override DataType Type
-    //    => GrammarAttribute.IsCached(in typeCached) ? type!
-    //        : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.FreezeExpression_Type);
-    //private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
-    //private bool flowStateAfterCached;
-    //public override FlowState FlowStateAfter
-    //    => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-    //        : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-    //            ExpressionTypesAspect.FreezeExpression_FlowStateAfter);
 
     public AmbiguousFreezeExpressionNode(IFreezeExpressionSyntax syntax, ISimpleNameNode referent)
     {

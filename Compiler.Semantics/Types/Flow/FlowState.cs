@@ -304,7 +304,13 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState Freeze(ValueId valueId, ValueId intoValueId)
+    public FlowState FreezeVariable(IBindingNode binding, ValueId valueId, ValueId intoValueId)
+        => Freeze(binding, valueId, intoValueId);
+
+    public FlowState FreezeValue(ValueId valueId, ValueId intoValueId)
+        => Freeze(null, valueId, intoValueId);
+
+    private FlowState Freeze(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
     {
         var oldValue = ResultValue.Create(valueId);
         if (TrySetFor(oldValue) is not SharingSet oldSet)
@@ -312,8 +318,12 @@ public sealed class FlowState : IEquatable<FlowState>
             return this;
 
         var builder = ToBuilder();
-        foreach (var bindingValue in oldSet.OfType<BindingValue>())
-            builder.SetFlowCapability(bindingValue, capabilities[bindingValue].AfterFreeze());
+        if (binding is not null)
+        {
+            var bindingValuePairs = BindingValue.ForType(binding.ValueId, (CapabilityType)binding.BindingType.ToUpperBound());
+            foreach (var bindingValue in bindingValuePairs.Select(p => p.Key).Cast<BindingValue>())
+                builder.SetFlowCapability(bindingValue, capabilities[bindingValue].AfterFreeze());
+        }
 
         var newValue = ResultValue.Create(intoValueId);
         // If the value could reference `temp const` data, then it needs to be tracked. (However,
