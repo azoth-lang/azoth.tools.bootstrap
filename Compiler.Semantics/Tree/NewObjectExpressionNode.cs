@@ -39,8 +39,8 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     public IConstructorDeclarationNode? ReferencedConstructor
         => referencedConstructor.TryGetValue(out var value) ? value
             : referencedConstructor.GetValue(this, OverloadResolutionAspect.NewObjectExpression_ReferencedConstructor);
-    private ValueAttribute<ContextualizedOverload<IConstructorDeclarationNode>?> contextualizedOverload;
-    public ContextualizedOverload<IConstructorDeclarationNode>? ContextualizedOverload
+    private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
+    public ContextualizedOverload? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value
             : contextualizedOverload.GetValue(this, ExpressionTypesAspect.NewObjectExpression_ContextualizedOverload);
     private ValueAttribute<IMaybeExpressionAntetype> antetype;

@@ -261,7 +261,7 @@ NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax`
     IntermediateArguments:`IExpressionNode?`*
     ConstructingAntetype:`IMaybeAntetype` ReferencedConstructors:{`IConstructorDeclarationNode`}
     CompatibleConstructors:{`IConstructorDeclarationNode`} ReferencedConstructor:`IConstructorDeclarationNode`?
-    ContextualizedOverload:`ContextualizedOverload<IConstructorDeclarationNode>`?;
+    ContextualizedOverload:`ContextualizedOverload`?;
 UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
 NeverTypedExpression <: Expression = Syntax:`INeverTypedExpressionSyntax` Type:`NeverType`;
 
@@ -319,27 +319,27 @@ FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax
     FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
     IntermediateArguments:`IExpressionNode?`*
     CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?
-    ContextualizedOverload:`ContextualizedOverload<IFunctionLikeDeclarationNode>`?;
+    ContextualizedOverload:`ContextualizedOverload`?;
 MethodInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     MethodGroup:MethodGroupName Arguments:AmbiguousExpression* CurrentArguments:`IAmbiguousExpressionNode`*
     IntermediateArguments:`IExpressionNode?`*
     CompatibleDeclarations:{`IStandardMethodDeclarationNode`} ReferencedDeclaration:`IStandardMethodDeclarationNode`?
-    ContextualizedOverload:`ContextualizedOverload<IStandardMethodDeclarationNode>`?;
+    ContextualizedOverload:`ContextualizedOverload`?;
 GetterInvocationExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression PropertyName:`StandardName`
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`IGetterMethodDeclarationNode`?
-    ContextualizedOverload:`ContextualizedOverload<IGetterMethodDeclarationNode>`?;
+    ContextualizedOverload:`ContextualizedOverload`?;
 SetterInvocationExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
     Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression IntermediateValue:`IExpressionNode`?
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`ISetterMethodDeclarationNode`?
-    ContextualizedOverload:`ContextualizedOverload<ISetterMethodDeclarationNode>`?;
+    ContextualizedOverload:`ContextualizedOverload`?;
 FunctionReferenceInvocation <: Expression = Syntax:`IInvocationExpressionSyntax`
-    Expression:Expression Arguments:AmbiguousExpression*
+    Expression:Expression Arguments:AmbiguousExpression* IntermediateArguments:`IExpressionNode?`*
     FunctionAntetype:`FunctionAntetype` FunctionType:`FunctionType`;
 InitializerInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression*
     CompatibleDeclarations:{`IInitializerDeclarationNode`} ReferencedDeclaration:`IInitializerDeclarationNode`?
-    ContextualizedOverload:`ContextualizedOverload<IInitializerDeclarationNode>`?;
+    ContextualizedOverload:`ContextualizedOverload`?;
 UnknownInvocationExpression: Expression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 

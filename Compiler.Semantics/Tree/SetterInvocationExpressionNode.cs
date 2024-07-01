@@ -28,8 +28,8 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.SetterInvocationExpression_Antetype);
-    private ValueAttribute<ContextualizedOverload<ISetterMethodDeclarationNode>?> contextualizedOverload;
-    public ContextualizedOverload<ISetterMethodDeclarationNode>? ContextualizedOverload
+    private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
+    public ContextualizedOverload? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value
             : contextualizedOverload.GetValue(this, ExpressionTypesAspect.SetterInvocationExpression_ContextualizedOverload);
     private DataType? type;

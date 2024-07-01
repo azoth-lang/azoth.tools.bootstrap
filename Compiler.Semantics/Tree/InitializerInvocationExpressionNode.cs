@@ -27,8 +27,8 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.InitializerInvocationExpression_Antetype);
-    private ValueAttribute<ContextualizedOverload<IInitializerDeclarationNode>?> contextualizedOverload;
-    public ContextualizedOverload<IInitializerDeclarationNode>? ContextualizedOverload
+    private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
+    public ContextualizedOverload? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value
             : contextualizedOverload.GetValue(this, ExpressionTypesAspect.InitializerInvocationExpression_ContextualizedOverload);
     private DataType? type;

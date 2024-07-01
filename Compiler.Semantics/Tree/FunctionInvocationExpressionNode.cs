@@ -40,8 +40,8 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.FunctionInvocationExpression_Type);
-    private ValueAttribute<ContextualizedOverload<IFunctionLikeDeclarationNode>?> contextualizedOverload;
-    public ContextualizedOverload<IFunctionLikeDeclarationNode>? ContextualizedOverload
+    private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
+    public ContextualizedOverload? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value
             : contextualizedOverload.GetValue(this, ExpressionTypesAspect.FunctionInvocationExpression_ContextualizedOverload);
     private Circular<FlowState> flowStateAfter = new(FlowState.Empty);

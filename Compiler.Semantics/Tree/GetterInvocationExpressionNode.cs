@@ -21,8 +21,8 @@ internal sealed class GetterInvocationExpressionNode : ExpressionNode, IGetterIn
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.GetterInvocationExpression_Antetype);
-    private ValueAttribute<ContextualizedOverload<IGetterMethodDeclarationNode>?> contextualizedOverload;
-    public ContextualizedOverload<IGetterMethodDeclarationNode>? ContextualizedOverload
+    private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
+    public ContextualizedOverload? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value
             : contextualizedOverload.GetValue(this, ExpressionTypesAspect.GetterInvocationExpression_ContextualizedOverload);
     private DataType? type;

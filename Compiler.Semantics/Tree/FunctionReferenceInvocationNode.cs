@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -14,7 +15,9 @@ internal sealed class FunctionReferenceInvocationNode : ExpressionNode, IFunctio
     public override IInvocationExpressionSyntax Syntax { get; }
     public IExpressionNode Expression { get; }
     public FunctionAntetype FunctionAntetype { get; }
-    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
@@ -29,6 +32,12 @@ internal sealed class FunctionReferenceInvocationNode : ExpressionNode, IFunctio
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.FunctionReferenceInvocation_Type);
+    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private bool flowStateAfterCached;
+    public override FlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.FunctionReferenceInvocation_FlowStateAfter);
 
     public FunctionReferenceInvocationNode(
         IInvocationExpressionSyntax syntax,
@@ -38,6 +47,15 @@ internal sealed class FunctionReferenceInvocationNode : ExpressionNode, IFunctio
         Syntax = syntax;
         Expression = Child.Attach(this, expression);
         FunctionAntetype = (FunctionAntetype)expression.Antetype;
-        Arguments = ChildList.Create(this, nameof(Arguments), arguments);
+        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+    }
+
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child is IAmbiguousExpressionNode ambiguousExpression
+            && arguments.Current.IndexOf(ambiguousExpression) is int index and > 0)
+            return IntermediateArguments[index - 1]?.FlowStateAfter ?? Expression.FlowStateAfter;
+
+        return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

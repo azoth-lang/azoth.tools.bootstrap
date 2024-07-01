@@ -1294,7 +1294,7 @@ public partial interface INewObjectExpressionNode : ISemanticNode, IExpressionNo
     IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { get; }
     IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
     IConstructorDeclarationNode? ReferencedConstructor { get; }
-    ContextualizedOverload<IConstructorDeclarationNode>? ContextualizedOverload { get; }
+    ContextualizedOverload? ContextualizedOverload { get; }
 }
 
 public partial interface IUnsafeExpressionNode : ISemanticNode, IExpressionNode
@@ -1527,7 +1527,7 @@ public partial interface IFunctionInvocationExpressionNode : ISemanticNode, IExp
     IFixedList<IExpressionNode?> IntermediateArguments { get; }
     IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { get; }
     IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
-    ContextualizedOverload<IFunctionLikeDeclarationNode>? ContextualizedOverload { get; }
+    ContextualizedOverload? ContextualizedOverload { get; }
 }
 
 public partial interface IMethodInvocationExpressionNode : ISemanticNode, IExpressionNode
@@ -1541,7 +1541,7 @@ public partial interface IMethodInvocationExpressionNode : ISemanticNode, IExpre
     IFixedList<IExpressionNode?> IntermediateArguments { get; }
     IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
-    ContextualizedOverload<IStandardMethodDeclarationNode>? ContextualizedOverload { get; }
+    ContextualizedOverload? ContextualizedOverload { get; }
 }
 
 public partial interface IGetterInvocationExpressionNode : ISemanticNode, IExpressionNode
@@ -1553,7 +1553,7 @@ public partial interface IGetterInvocationExpressionNode : ISemanticNode, IExpre
     StandardName PropertyName { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
-    ContextualizedOverload<IGetterMethodDeclarationNode>? ContextualizedOverload { get; }
+    ContextualizedOverload? ContextualizedOverload { get; }
 }
 
 public partial interface ISetterInvocationExpressionNode : ISemanticNode, IExpressionNode
@@ -1567,7 +1567,7 @@ public partial interface ISetterInvocationExpressionNode : ISemanticNode, IExpre
     IExpressionNode? IntermediateValue { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
-    ContextualizedOverload<ISetterMethodDeclarationNode>? ContextualizedOverload { get; }
+    ContextualizedOverload? ContextualizedOverload { get; }
 }
 
 public partial interface IFunctionReferenceInvocationNode : ISemanticNode, IExpressionNode
@@ -1577,6 +1577,7 @@ public partial interface IFunctionReferenceInvocationNode : ISemanticNode, IExpr
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IExpressionNode Expression { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IFixedList<IExpressionNode?> IntermediateArguments { get; }
     FunctionAntetype FunctionAntetype { get; }
     FunctionType FunctionType { get; }
 }
@@ -1590,7 +1591,7 @@ public partial interface IInitializerInvocationExpressionNode : ISemanticNode, I
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
     IInitializerDeclarationNode? ReferencedDeclaration { get; }
-    ContextualizedOverload<IInitializerDeclarationNode>? ContextualizedOverload { get; }
+    ContextualizedOverload? ContextualizedOverload { get; }
 }
 
 public partial interface IUnknownInvocationExpressionNode : IExpressionNode

@@ -7,96 +7,65 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-public sealed class ContextualizedOverload<TDeclaration> : ContextualizedOverload
-    where TDeclaration : IInvocableDeclarationNode
+public sealed class ContextualizedOverload
 {
-    public TDeclaration Declaration { get; }
-
-    internal ContextualizedOverload(
-        TDeclaration declaration,
-        SelfParameterType? selfParameterType,
-        IEnumerable<ParameterType> parameterTypes,
-        ReturnType returnType)
-        : base(selfParameterType, parameterTypes, returnType)
-    {
-        Declaration = declaration;
-    }
-
-    //public bool CompatibleWith(ArgumentAntetypes arguments)
-    //{
-    //    if (Arity != arguments.Arity)
-    //        return false;
-
-    //    if (SelfParameterType is not null
-    //        // Self is null for constructors and initializers where the type is definitely compatible
-    //        && arguments.Self is not null)
-    //    {
-    //        if (!arguments.Self.IsAssignableTo(SelfParameterType))
-    //            return false;
-    //    }
-
-    //    return ParameterTypes.EquiZip(arguments.Arguments).All((p, a) => a.IsAssignableTo(p));
-    //}
-}
-
-public abstract class ContextualizedOverload
-{
-    public static ContextualizedOverload<IFunctionLikeDeclarationNode> Create(
+    public static ContextualizedOverload Create(
         IFunctionLikeDeclarationNode function)
     {
         var symbol = function.Symbol;
         var parameterTypes = symbol.Parameters;
-        var returnAntetype = symbol.Return;
-        return new(function, null, parameterTypes, returnAntetype);
+        var returnType = symbol.Return;
+        return new(null, parameterTypes, returnType);
     }
 
-    public static ContextualizedOverload<IConstructorDeclarationNode> Create(
+    public static ContextualizedOverload Create(
         DataType constructingType,
         IConstructorDeclarationNode constructor)
     {
         var symbol = constructor.Symbol;
-        return Create(constructingType, constructor, symbol, new(false, symbol.SelfParameterType));
+        return Create(constructingType, symbol, new(false, symbol.SelfParameterType));
     }
 
-    public static ContextualizedOverload<IInitializerDeclarationNode> Create(
+    public static ContextualizedOverload Create(
         DataType initializingAntetype, IInitializerDeclarationNode initializer)
     {
         var symbol = initializer.Symbol;
-        return Create(initializingAntetype, initializer, symbol, new(false, symbol.SelfParameterType));
+        return Create(initializingAntetype, symbol, new(false, symbol.SelfParameterType));
     }
 
-    public static ContextualizedOverload<IStandardMethodDeclarationNode> Create(
+    public static ContextualizedOverload Create(
         DataType contextType,
         IStandardMethodDeclarationNode method)
     {
         var symbol = method.Symbol;
-        return Create(contextType, method, symbol, symbol.SelfParameterType);
+        return Create(contextType, symbol, symbol.SelfParameterType);
     }
 
-    public static ContextualizedOverload<T> Create<T>(
+    public static ContextualizedOverload Create<T>(
         DataType contextType,
         T propertyAccessor)
         where T : IPropertyAccessorDeclarationNode
     {
         var symbol = propertyAccessor.Symbol;
-        return Create(contextType, propertyAccessor, symbol, symbol.SelfParameterType);
+        return Create(contextType, symbol, symbol.SelfParameterType);
     }
 
-    private static ContextualizedOverload<TDeclaration> Create<TDeclaration>(
+    public static ContextualizedOverload Create(FunctionType functionType)
+        => new(null, functionType.Parameters, functionType.Return);
+
+    private static ContextualizedOverload Create(
         DataType contextType,
-        TDeclaration declaration,
         InvocableSymbol symbol,
         SelfParameterType selfParameterType)
-        where TDeclaration : IInvocableDeclarationNode
     {
         if (contextType is NonEmptyType nonEmptyContextType)
         {
             selfParameterType = CreateSelfParameterType(nonEmptyContextType, selfParameterType);
             var parameterTypes = CreateParameterTypes(nonEmptyContextType, symbol);
             var returnType = CreateReturnType(nonEmptyContextType, symbol);
-            return new(declaration, selfParameterType, parameterTypes, returnType);
+            return new(selfParameterType, parameterTypes, returnType);
         }
-        return new(declaration, selfParameterType, symbol.Parameters, symbol.Return);
+        return new(selfParameterType, symbol.Parameters, symbol.Return);
     }
 
     private static SelfParameterType CreateSelfParameterType(
@@ -121,7 +90,7 @@ public abstract class ContextualizedOverload
     public int Arity => ParameterTypes.Count;
     public ReturnType ReturnType { get; }
 
-    private protected ContextualizedOverload(
+    private ContextualizedOverload(
         SelfParameterType? selfParameterType,
         IEnumerable<ParameterType> parameterTypes,
         ReturnType returnType)

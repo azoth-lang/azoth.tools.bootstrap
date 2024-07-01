@@ -111,7 +111,7 @@ public static class ExpressionTypesAspect
     public static DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
         => node.ReferencedDeclaration?.Type.Return.Type ?? DataType.Unknown;
 
-    public static ContextualizedOverload<IFunctionLikeDeclarationNode>? FunctionInvocationExpression_ContextualizedOverload(
+    public static ContextualizedOverload? FunctionInvocationExpression_ContextualizedOverload(
         IFunctionInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
             ? ContextualizedOverload.Create(node.ReferencedDeclaration)
@@ -130,6 +130,16 @@ public static class ExpressionTypesAspect
 
     public static DataType FunctionReferenceInvocation_Type(IFunctionReferenceInvocationNode node)
         => node.FunctionType.Return.Type;
+
+    public static FlowState FunctionReferenceInvocation_FlowStateAfter(IFunctionReferenceInvocationNode node)
+    {
+        // The flow state just before the function is called is the state after all arguments have evaluated
+        var flowState = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.Expression.FlowStateAfter;
+        // TODO handle the fact that the function reference itself must be combined too
+        var contextualizedOverload = ContextualizedOverload.Create(node.FunctionType);
+        var argumentValueIds = ArgumentValueIds(contextualizedOverload, null, node.IntermediateArguments);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId);
+    }
 
     public static BoolConstValueType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
         => node.Value ? DataType.True : DataType.False;
@@ -156,7 +166,7 @@ public static class ExpressionTypesAspect
 
     private static readonly IdentifierName StringTypeName = "String";
 
-    public static ContextualizedOverload<IStandardMethodDeclarationNode>? MethodInvocationExpression_ContextualizedOverload(
+    public static ContextualizedOverload? MethodInvocationExpression_ContextualizedOverload(
         IMethodInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
             ? ContextualizedOverload.Create(node.MethodGroup.Context.Type, node.ReferencedDeclaration)
@@ -237,7 +247,7 @@ public static class ExpressionTypesAspect
         return flowState.CombineArguments(argumentValueIds, node.ValueId);
     }
 
-    public static ContextualizedOverload<IGetterMethodDeclarationNode>? GetterInvocationExpression_ContextualizedOverload(
+    public static ContextualizedOverload? GetterInvocationExpression_ContextualizedOverload(
         IGetterInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
             ? ContextualizedOverload.Create(node.Context.Type, node.ReferencedDeclaration)
@@ -250,7 +260,7 @@ public static class ExpressionTypesAspect
         return boundType ?? DataType.Unknown;
     }
 
-    public static ContextualizedOverload<ISetterMethodDeclarationNode>? SetterInvocationExpression_ContextualizedOverload(ISetterInvocationExpressionNode node)
+    public static ContextualizedOverload? SetterInvocationExpression_ContextualizedOverload(ISetterInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
             ? ContextualizedOverload.Create(node.Context.Type, node.ReferencedDeclaration)
             : null;
@@ -327,7 +337,7 @@ public static class ExpressionTypesAspect
         return flowState.CombineArguments(argumentValueIds, node.ValueId);
     }
 
-    public static ContextualizedOverload<IConstructorDeclarationNode>? NewObjectExpression_ContextualizedOverload(
+    public static ContextualizedOverload? NewObjectExpression_ContextualizedOverload(
         INewObjectExpressionNode node)
         => node.ReferencedConstructor is not null
             ? ContextualizedOverload.Create(node.ConstructingType.NamedType, node.ReferencedConstructor)
@@ -337,7 +347,7 @@ public static class ExpressionTypesAspect
         // TODO does this need to be modified by flow typing?
         => node.ContextualizedOverload?.ReturnType.Type ?? DataType.Unknown;
 
-    public static ContextualizedOverload<IInitializerDeclarationNode>?
+    public static ContextualizedOverload?
         InitializerInvocationExpression_ContextualizedOverload(IInitializerInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
            && node.InitializerGroup.Context.NamedBareType is not null and var initializingType

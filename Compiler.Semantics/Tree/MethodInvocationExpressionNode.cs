@@ -28,8 +28,8 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     public IStandardMethodDeclarationNode? ReferencedDeclaration
         => referencedDeclaration.TryGetValue(out var value) ? value
             : referencedDeclaration.GetValue(this, OverloadResolutionAspect.MethodInvocationExpression_ReferencedDeclaration);
-    private ValueAttribute<ContextualizedOverload<IStandardMethodDeclarationNode>?> contextualizedOverload;
-    public ContextualizedOverload<IStandardMethodDeclarationNode>? ContextualizedOverload
+    private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
+    public ContextualizedOverload? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value
             : contextualizedOverload.GetValue(this, ExpressionTypesAspect.MethodInvocationExpression_ContextualizedOverload);
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
