@@ -526,7 +526,9 @@ public sealed class FlowState : IEquatable<FlowState>
             var restrictions = set.Restrictions;
             if (restrictions == CapabilityRestrictions.None) return;
             foreach (var value in set.OfType<ICapabilityValue>())
-                capabilities[value] = capabilities[value].WithRestrictions(restrictions);
+                // TODO it might be a bug if the value is not in the capabilities dictionary
+                if (capabilities.TryGetValue(value, out var flowCapability))
+                    capabilities[value] = flowCapability.WithRestrictions(restrictions);
         }
 
         public void Drop(IEnumerable<IValue> values)
