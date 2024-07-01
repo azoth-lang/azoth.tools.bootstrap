@@ -329,13 +329,6 @@ public static class ExpressionTypesAspect
     public static Pseudotype SelfExpression_Pseudotype(ISelfExpressionNode node)
         => node.ReferencedSymbol?.Type ?? DataType.Unknown;
 
-    public static FlowState NewObjectExpression_FlowStateAfter(INewObjectExpressionNode node)
-    {
-        // The flow state just before the constructor is called is the state after all arguments have evaluated
-        var flowState = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.IntermediateArguments);
-        return flowState.CombineArguments(argumentValueIds, node.ValueId);
-    }
 
     public static ContextualizedOverload? NewObjectExpression_ContextualizedOverload(
         INewObjectExpressionNode node)
@@ -347,6 +340,14 @@ public static class ExpressionTypesAspect
         // TODO does this need to be modified by flow typing?
         => node.ContextualizedOverload?.ReturnType.Type ?? DataType.Unknown;
 
+    public static FlowState NewObjectExpression_FlowStateAfter(INewObjectExpressionNode node)
+    {
+        // The flow state just before the constructor is called is the state after all arguments have evaluated
+        var flowState = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.IntermediateArguments);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId);
+    }
+
     public static ContextualizedOverload?
         InitializerInvocationExpression_ContextualizedOverload(IInitializerInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
@@ -357,6 +358,14 @@ public static class ExpressionTypesAspect
     public static DataType InitializerInvocationExpression_Type(IInitializerInvocationExpressionNode node)
         // TODO does this need to be modified by flow typing?
         => node.ContextualizedOverload?.ReturnType.Type ?? DataType.Unknown;
+
+    public static FlowState InitializerInvocationExpression_FlowStateAfter(IInitializerInvocationExpressionNode node)
+    {
+        // The flow state just before the initializer is called is the state after all arguments have evaluated
+        var flowState = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.IntermediateArguments);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId);
+    }
 
     public static DataType AssignmentExpression_Type(IAssignmentExpressionNode node)
         => node.LeftOperand.Type;

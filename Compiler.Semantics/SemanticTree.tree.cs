@@ -1589,6 +1589,7 @@ public partial interface IInitializerInvocationExpressionNode : ISemanticNode, I
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IInitializerGroupNameNode InitializerGroup { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IFixedList<IExpressionNode?> IntermediateArguments { get; }
     IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
     IInitializerDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }

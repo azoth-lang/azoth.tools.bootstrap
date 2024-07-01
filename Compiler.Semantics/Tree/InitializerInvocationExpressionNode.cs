@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -13,8 +14,9 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
 {
     public override IInvocationExpressionSyntax Syntax { get; }
     public IInitializerGroupNameNode InitializerGroup { get; }
-    private readonly IRewritableChildList<IAmbiguousExpressionNode> arguments;
+    private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     private ValueAttribute<IFixedSet<IInitializerDeclarationNode>> compatibleDeclarations;
     public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations
         => compatibleDeclarations.TryGetValue(out var value) ? value
@@ -36,6 +38,12 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.InitializerInvocationExpression_Type);
+    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private bool flowStateAfterCached;
+    public override FlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.InitializerInvocationExpression_FlowStateAfter);
 
     public InitializerInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
@@ -44,6 +52,9 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
     {
         Syntax = syntax;
         InitializerGroup = Child.Attach(this, initializerGroup);
-        this.arguments = ChildList.Create(this, nameof(Arguments), arguments);
+        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
+
+    public FlowState FlowStateBefore()
+        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 }

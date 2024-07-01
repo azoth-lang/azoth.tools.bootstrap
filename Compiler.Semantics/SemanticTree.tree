@@ -337,7 +337,7 @@ FunctionReferenceInvocation <: Expression = Syntax:`IInvocationExpressionSyntax`
     Expression:Expression Arguments:AmbiguousExpression* IntermediateArguments:`IExpressionNode?`*
     FunctionAntetype:`FunctionAntetype` FunctionType:`FunctionType`;
 InitializerInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
-    InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression*
+    InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IExpressionNode?`*
     CompatibleDeclarations:{`IInitializerDeclarationNode`} ReferencedDeclaration:`IInitializerDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
 UnknownInvocationExpression: Expression = Syntax:`IInvocationExpressionSyntax`

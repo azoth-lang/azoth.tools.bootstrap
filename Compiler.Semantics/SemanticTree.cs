@@ -160,7 +160,13 @@ public partial interface IFunctionInvocationExpressionNode
 {
     FlowState FlowStateBefore();
 }
+
+public partial interface IInitializerInvocationExpressionNode
+{
+    FlowState FlowStateBefore();
+}
 #endregion
+
 #region Ambiguous Name Expressions
 public partial interface IMemberAccessExpressionNode
 {
