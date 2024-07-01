@@ -420,7 +420,8 @@ public static class ExpressionTypesAspect
     }
 
     public static FlowState BlockExpression_FlowStateAfter(IBlockExpressionNode node)
-        => node.Statements.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        => (node.Statements.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore())
+            .DropBindings(node.Statements.OfType<IVariableDeclarationStatementNode>());
 
     public static DataType WhileExpression_Type(IWhileExpressionNode _)
         // TODO assign correct type to the expression

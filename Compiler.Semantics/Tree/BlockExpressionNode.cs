@@ -28,8 +28,7 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
     private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
     private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached)
-            ? flowStateAfter.UnsafeValue
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.BlockExpression_FlowStateAfter);
 

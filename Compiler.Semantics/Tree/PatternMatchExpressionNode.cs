@@ -56,13 +56,17 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
         return base.InheritedBindingType(child, descendant);
     }
 
-    internal override FlowState InheritedFlowStateBefore(
-        IChildNode child,
-        IChildNode descendant,
-        IInheritanceContext ctx)
+    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Pattern)
             return IntermediateReferent?.FlowStateAfter ?? FlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
+
+    internal override ValueId? InheritedMatchReferentValueId(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child == Pattern)
+            return IntermediateReferent?.ValueId;
+        return base.InheritedMatchReferentValueId(child, descendant, ctx);
     }
 }

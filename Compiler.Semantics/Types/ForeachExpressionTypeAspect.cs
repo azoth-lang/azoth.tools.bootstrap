@@ -30,7 +30,7 @@ internal static class ForeachExpressionTypeAspect
     public static FlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)
     {
         var flowState = node.IntermediateInExpression?.FlowStateAfter ?? FlowState.Empty;
-        return flowState.Declare(node);
+        return flowState.Declare(node, node.IntermediateInExpression?.ValueId);
     }
 
     public static DataType ForeachExpression_Type(IForeachExpressionNode _)

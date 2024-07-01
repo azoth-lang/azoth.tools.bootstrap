@@ -170,6 +170,12 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected DataType InheritedBindingType()
         => Parent.InheritedBindingType(this, this);
 
+    internal override ValueId? InheritedMatchReferentValueId(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).InheritedMatchReferentValueId(this, descendant, ctx);
+
+    protected ValueId? InheritedMatchReferentValueId(IInheritanceContext ctx)
+        => GetParent(ctx).InheritedMatchReferentValueId(this, this, ctx);
+
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => Previous(ctx).PreviousValueId(before, ctx);
 

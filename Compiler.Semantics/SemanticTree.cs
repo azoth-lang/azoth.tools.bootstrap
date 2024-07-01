@@ -91,6 +91,7 @@ public partial interface IPatternNode
     IPreviousValueId PreviousValueId();
     IMaybeAntetype InheritedBindingAntetype();
     DataType InheritedBindingType();
+    ValueId? MatchReferentValueId { get; }
 }
 
 public partial interface IBindingPatternNode

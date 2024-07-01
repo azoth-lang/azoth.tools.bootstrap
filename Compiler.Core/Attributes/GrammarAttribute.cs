@@ -257,8 +257,44 @@ public static class GrammarAttribute
         [CallerMemberName] string attributeName = "")
         where TNode : class, ITreeNode
         where T : class?
+        => node.NonCircular(ref cached, ref value, AttributeFunction.Create<TNode, T>(compute), comparer,
+            attributeName);
+
+    /// <summary>
+    /// Read the value of a non-circular inherited attribute that is <see cref="IEquatable{T}"/>.
+    /// </summary>
+    [Inline]
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T Inherited<TNode, T>(
+        this TNode node,
+        ref bool cached,
+        ref T value,
+        ref AttributeLock syncLock,
+        Func<IInheritanceContext, T> compute,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class, ITreeNode
+        where T : struct
         => node.NonCircular(ref cached, ref value, AttributeFunction.Create<TNode, T>(compute),
-            comparer, attributeName);
+            StrictEqualityComparer<T>.Instance, ref syncLock, attributeName);
+
+    /// <summary>
+    /// Read the value of a non-circular inherited attribute that is <see cref="IEquatable{T}"/>.
+    /// </summary>
+    [Inline]
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T? Inherited<TNode, T>(
+        this TNode node,
+        ref bool cached,
+        ref T? value,
+        ref AttributeLock syncLock,
+        Func<IInheritanceContext, T?> compute,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class, ITreeNode
+        where T : struct
+        => node.NonCircular(ref cached, ref value, AttributeFunction.Create<TNode, T?>(compute),
+            StrictEqualityComparer<T?>.Instance, ref syncLock, attributeName);
     #endregion
 
     #region Circular overloads

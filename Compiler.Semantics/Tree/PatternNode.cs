@@ -9,9 +9,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class PatternNode : CodeNode, IPatternNode
 {
+    protected AttributeLock SyncLock;
+
     public abstract override IPatternSyntax Syntax { get; }
 
     public abstract FlowState FlowStateAfter { get; }
+
+    private ValueId? matchReferentValueId;
+    private bool matchReferentValueIdCached;
+    public ValueId? MatchReferentValueId
+        => GrammarAttribute.IsCached(in matchReferentValueIdCached) ? matchReferentValueId
+            : this.Inherited(ref matchReferentValueIdCached, ref matchReferentValueId, ref SyncLock, InheritedMatchReferentValueId);
 
     private protected PatternNode() { }
 

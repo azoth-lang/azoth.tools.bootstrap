@@ -35,7 +35,7 @@ internal static class NameBindingTypesAspect
     public static FlowState VariableDeclarationStatement_FlowStateAfter(IVariableDeclarationStatementNode node)
     {
         var flowStateBefore = node.IntermediateInitializer?.FlowStateAfter ?? node.FlowStateBefore();
-        return flowStateBefore.Declare(node);
+        return flowStateBefore.Declare(node, node.IntermediateInitializer?.ValueId);
     }
 
     public static DataType ForeachExpression_BindingType(IForeachExpressionNode node)
@@ -45,7 +45,8 @@ internal static class NameBindingTypesAspect
         => node.InheritedBindingType();
 
     public static FlowState BindingPattern_FlowStateAfter(IBindingPatternNode node)
-        => node.FlowStateBefore().Declare(node);
+        // TODO the match referent value id could be used multiple times and perhaps shouldn't be removed here
+        => node.FlowStateBefore().Declare(node, node.MatchReferentValueId);
 
     public static DataType PatternMatchExpression_InheritedBindingType_Pattern(IPatternMatchExpressionNode node)
         => node.IntermediateReferent?.Type.ToNonConstValueType() ?? DataType.Unknown;

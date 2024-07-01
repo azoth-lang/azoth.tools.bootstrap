@@ -95,7 +95,7 @@ public sealed class FlowState : IEquatable<FlowState>
                                      && capability != Capability.Identity;
         if (!needsExternalReference)
         {
-            var newSharingSets = bindingValuePairs.Select(p => new SharingSet(isLent, p.Key))
+            var newSharingSets = bindingValuePairs.Select(p => SharingSet.Declare(isLent, p.Key))
                                                   .ToFixedList();
             builder.AddSets(newSharingSets);
         }
@@ -103,14 +103,14 @@ public sealed class FlowState : IEquatable<FlowState>
         {
             // Lent parameters each have their own external reference
             var newSharingSets = bindingValuePairs
-                .Select(p => new SharingSet(isLent, p.Key, ExternalReference.CreateLentParameter((BindingValue)p.Key)))
+                .Select(p => SharingSet.Declare(isLent, p.Key, ExternalReference.CreateLentParameter((BindingValue)p.Key)))
                 .ToFixedList();
             builder.AddSets(newSharingSets);
         }
         else
         {
             // Non-lent parameters share the same external reference
-            var newSharingSet = new SharingSet(isLent, bindingValuePairs.Select(p => p.Key));
+            var newSharingSet = SharingSet.Declare(isLent, bindingValuePairs.Select(p => p.Key));
             builder.AddSet(newSharingSet);
             builder.Union([newSharingSet, builder.NonLentParametersSet()]);
         }
@@ -118,11 +118,19 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState Declare(INamedBindingNode binding)
+    public FlowState Declare(INamedBindingNode binding, ValueId? initializerValueId)
     {
+        var initializerValue = initializerValueId is ValueId v ? ResultValue.Create(v) : null;
         // TODO other types besides CapabilityType might participate in sharing
         if (binding.BindingType is not CapabilityType capabilityType)
-            return this;
+        {
+            if (initializerValue is null)
+                return this;
+            // TODO is this needed? Or does the fact that it isn't a capability type mean the initializer is already untracked?
+            var b = ToBuilder();
+            b.Drop(initializerValue);
+            return b.ToFlowState();
+        }
 
         var bindingValuePairs = BindingValue.ForType(binding.ValueId, capabilityType);
         var builder = ToBuilder();
@@ -131,9 +139,18 @@ public sealed class FlowState : IEquatable<FlowState>
         if (!binding.BindingType.SharingIsTracked())
             return builder.ToFlowState();
 
-        var newSharingSets = bindingValuePairs.Select(p => new SharingSet(false, p.Key))
+        var initializerSet = initializerValue is not null ? builder.TrySetFor(initializerValue) : null;
+        var isLent = initializerSet?.IsLent ?? false;
+        var newSharingSets = bindingValuePairs.Select(p => SharingSet.Declare(isLent, p.Key))
                                               .ToFixedList();
         builder.AddSets(newSharingSets);
+
+        if (initializerValue is not null)
+        {
+            // NOTE: this is assuming that the top level value is always first
+            builder.Union(initializerSet.YieldValue().Append(newSharingSets.First()));
+            builder.Drop(initializerValue);
+        }
 
         return builder.ToFlowState();
     }
@@ -198,21 +215,21 @@ public sealed class FlowState : IEquatable<FlowState>
     /// Combine the non-lent values representing the arguments into one sharing set with the return
     /// value id and drop the values for all arguments.
     /// </summary>
-    public FlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId valueId)
+    public FlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId)
     {
+        // TODO what about independent parameters?
         var argumentResults = arguments.Select(a => new ArgumentResultValue(a.IsLent, a.ValueId)).ToFixedList();
 
         var builder = ToBuilder();
         var existingSets = argumentResults.Where(a => !a.IsLent)
                                           .Select(a => builder.TrySetFor(a.Value))
                                           .WhereNotNull().ToList();
-        var unionIsLent = existingSets.Any(s => s.IsLent);
-        var values = existingSets.SelectMany(Functions.Identity).Append(ResultValue.Create(valueId))
-                                 .Except(argumentResults.Select(a => a.Value));
-        var combinedSet = new SharingSet(unionIsLent, values);
+        var argumentValues = argumentResults.Select(a => a.Value);
 
-        builder.ReplaceSets(existingSets, combinedSet);
+        var resultSet = SharingSet.CombineArguments(existingSets, returnValueId, argumentValues);
 
+        builder.ReplaceSets(existingSets, resultSet);
+        builder.Drop(argumentResults.Where(a => a.IsLent).Select(a => a.Value));
         return builder.ToFlowState();
     }
 
@@ -225,7 +242,7 @@ public sealed class FlowState : IEquatable<FlowState>
             return this;
 
         var builder = ToBuilder();
-        SharingSet newSet;
+        SharingSet? newSet;
         if (memberType.SharingIsTracked())
         {
             var resultValue = ResultValue.Create(valueId);
@@ -250,27 +267,17 @@ public sealed class FlowState : IEquatable<FlowState>
         var builder = ToBuilder();
         foreach (var otherSet in other.sets)
         {
-            var valueLookup = otherSet.ToLookup(builder.Contains);
-            if (valueLookup[true].IsEmpty())
+            if (!otherSet.Any(builder.Contains))
             {
                 // Whole set is missing, add it to the flow state (safe because it is immutable)
                 builder.AddSet(otherSet);
                 continue;
             }
 
-            var setsToUnion = valueLookup[true].Select(builder.SetFor);
-
-            var newValues = valueLookup[false].ToImmutableHashSet();
-            if (newValues.Any())
-            {
-                // Add all the values that are not already in the flow state at once to optimize
-                var newSet = new SharingSet(otherSet.IsLent, newValues);
-                builder.AddSet(newSet);
-                setsToUnion = setsToUnion.Append(newSet);
-            }
-
-            // Union all the sets together since they are all contain items in the same set in the
-            // other flow state. (Doing this as a single operation is more efficient).
+            // Union all the sets together since they all contain items in the same set in the
+            // other flow state. (Doing this as a single operation is more efficient). Also include
+            // the other set for any values or conversions that don't exist in the current flow state.
+            var setsToUnion = otherSet.Select(builder.TrySetFor).WhereNotNull().Append(otherSet);
             builder.Union(setsToUnion);
         }
 
@@ -288,17 +295,11 @@ public sealed class FlowState : IEquatable<FlowState>
     public FlowState Combine(ValueId left, ValueId? right, ValueId intoValueId)
     {
         var resultValues = right.YieldValue().Prepend(left).Select(ResultValue.Create).ToFixedList();
-        var existingSets = resultValues.Select(TrySetFor).WhereNotNull().ToList();
-        if (existingSets.IsEmpty())
-            return this;
 
         var builder = ToBuilder();
-        var unionIsLent = existingSets.Any(s => s.IsLent);
-        var values = existingSets.SelectMany(Functions.Identity).Append(ResultValue.Create(intoValueId))
-                                 .Except(resultValues);
-        var combinedSet = new SharingSet(unionIsLent, values);
-
-        builder.ReplaceSets(existingSets, combinedSet);
+        var existingSets = resultValues.Select(TrySetFor).WhereNotNull().ToList();
+        var resultSet = SharingSet.CombineArguments(existingSets, intoValueId, resultValues);
+        builder.ReplaceSets(existingSets, resultSet);
 
         return builder.ToFlowState();
     }
@@ -315,9 +316,8 @@ public sealed class FlowState : IEquatable<FlowState>
             builder.SetFlowCapability(bindingValue, capabilities[bindingValue].AfterFreeze());
 
         var newValue = ResultValue.Create(intoValueId);
-        // TODO is this needed? Can we just stop tracking the value? The old code has a comment about
-        // how it could reference `lent const` data but that doesn't seem right now that there is
-        // `temp const`.
+        // If the value could reference `temp const` data, then it needs to be tracked. (However,
+        // that could be detected by looking at whether the set is lent or not, correct?)
         builder.UpdateSet(oldSet, oldSet.Replace(oldValue, newValue));
         return builder.ToFlowState();
     }
@@ -358,8 +358,17 @@ public sealed class FlowState : IEquatable<FlowState>
         builder.TrackFlowCapability(newValue, currentFlowCapabilities.With(to.Capability));
         var newSet = oldSet.Replace(oldValue, to.From);
         builder.UpdateSet(oldSet, newSet);
-        builder.AddSet(new(true, newValue, to));
+        builder.AddSet(SharingSet.DeclareConversion(true, newValue, to));
         builder.ApplyRestrictions(newSet);
+        return builder.ToFlowState();
+    }
+
+    public FlowState DropBindings(IEnumerable<INamedBindingNode> bindings)
+    {
+        var builder = ToBuilder();
+        // TODO what about independent parameters?
+        var bindingValues = bindings.Select(BindingValue.TopLevel);
+        builder.Drop(bindingValues);
         return builder.ToFlowState();
     }
 
@@ -415,51 +424,55 @@ public sealed class FlowState : IEquatable<FlowState>
             return set;
         }
 
-        public SharingSet? TrySetFor(IValue value)
-            => setFor.GetValueOrDefault(value);
+        public SharingSet? TrySetFor(IValue value) => setFor.GetValueOrDefault(value);
 
         public SharingSet NonLentParametersSet()
         {
-            if (TrySetFor(ExternalReference.NonLentParameters) is not null and var set)
-                return set;
+            if (TrySetFor(ExternalReference.NonLentParameters) is not null and var set) return set;
 
-            set = new(false, ExternalReference.NonLentParameters);
+            set = SharingSet.Declare(false, ExternalReference.NonLentParameters);
             AddSet(set);
             return set;
         }
 
-        public bool Contains(IValue value)
-            => setFor.ContainsKey(value);
+        public bool Contains(IValue value) => setFor.ContainsKey(value);
 
-        public void UpdateSet(SharingSet oldSet, SharingSet newSet)
+        public void UpdateSet(SharingSet oldSet, SharingSet? newSet)
         {
+            if (newSet is null)
+            {
+                RemoveSet(oldSet);
+                return;
+            }
+
             sets.Remove(oldSet);
             // Remove items that have been removed from the set
-            foreach (IValue value in oldSet.Except(newSet))
-                setFor.Remove(value);
+            foreach (IValue value in oldSet.Except(newSet)) setFor.Remove(value);
             sets.Add(newSet);
             // Add or update items that have been added or updated
-            foreach (IValue value in newSet)
-                setFor[value] = newSet;
+            foreach (IValue value in newSet) setFor[value] = newSet;
+        }
+
+        private void RemoveSet(SharingSet set)
+        {
+            sets.Remove(set);
+            foreach (IValue value in set) setFor.Remove(value);
         }
 
         public void ReplaceSets(IReadOnlyCollection<SharingSet> oldSets, SharingSet newSet)
         {
             sets.ExceptWith(oldSets);
             // Remove items that have been removed from the sets
-            foreach (IValue value in oldSets.SelectMany(Functions.Identity).Except(newSet))
-                setFor.Remove(value);
+            foreach (IValue value in oldSets.SelectMany(Functions.Identity).Except(newSet)) setFor.Remove(value);
             sets.Add(newSet);
             // Add or update items that have been added or updated
-            foreach (IValue value in newSet)
-                setFor[value] = newSet;
+            foreach (IValue value in newSet) setFor[value] = newSet;
         }
 
         public void AddSet(SharingSet set)
         {
             sets.Add(set);
-            foreach (IValue value in set)
-                setFor.Add(value, set);
+            foreach (IValue value in set) setFor.Add(value, set);
         }
 
         public void AddSets(IReadOnlyCollection<SharingSet> sets)
@@ -480,18 +493,75 @@ public sealed class FlowState : IEquatable<FlowState>
             sets.Add(union);
 
             // Update all items in the union to point to the new set
-            foreach (IValue value in union)
-                setFor[value] = union;
+            foreach (IValue value in union) setFor[value] = union;
         }
 
-        public void ApplyRestrictions(SharingSet set)
+        public void ApplyRestrictions(SharingSet? set)
         {
+            if (set is null) return;
             var restrictions = set.Restrictions;
-            if (restrictions == CapabilityRestrictions.None)
-                return;
+            if (restrictions == CapabilityRestrictions.None) return;
             foreach (var value in set.OfType<ICapabilityValue>())
                 capabilities[value] = capabilities[value].WithRestrictions(restrictions);
         }
+
+        public void Drop(IEnumerable<IValue> values)
+        {
+            List<IConversion>? conversionsRemoved = null;
+            foreach (var group in values.GroupBy(TrySetFor))
+            {
+                var set = group.Key;
+                if (set is null) continue;
+                var newSet = set.Drop(group);
+                UpdateSet(set, newSet);
+                if (newSet is null)
+                    (conversionsRemoved ??= []).AddRange(set.Conversions.OfType<TempConversionTo>()
+                                                            .Select(c => c.From));
+            }
+            if (conversionsRemoved is not null && conversionsRemoved.Any())
+                DropConversions(conversionsRemoved);
+        }
+
+        private void DropConversions(IEnumerable<IConversion> conversionsRemoved)
+        {
+            var setForConversion = GetSetsForConversion();
+            foreach (var conversions in conversionsRemoved.GroupBy(c => setForConversion[c]))
+            {
+                var oldSet = conversions.Key;
+                sets.Remove(oldSet);
+                var newSet = oldSet.Drop(conversions);
+                sets.Add(newSet);
+                LiftRemovedRestrictions(newSet);
+            }
+        }
+
+        public void Drop(IValue value)
+        {
+            if (TrySetFor(value) is not SharingSet set) return;
+            var newSet = set.Drop(value);
+            UpdateSet(set, newSet);
+            if (newSet is not null)
+                return;
+
+            var conversionsRemoved = set.Conversions.OfType<TempConversionTo>().Select(c => c.From).ToList();
+            if (conversionsRemoved.Any())
+                DropConversions(conversionsRemoved);
+        }
+
+        private void LiftRemovedRestrictions(SharingSet set)
+            // Don't apply read/write restrictions since they have already been applied
+            => SetRestrictions(set, applyReadWriteRestriction: false);
+
+        private void SetRestrictions(SharingSet sharingSet, bool applyReadWriteRestriction)
+        {
+            var restrictions = sharingSet.Restrictions;
+            if (!applyReadWriteRestriction && restrictions == CapabilityRestrictions.ReadWrite) return;
+            foreach (var value in sharingSet.OfType<ICapabilityValue>())
+                capabilities[value] = capabilities[value].WithRestrictions(restrictions);
+        }
+
+        private Dictionary<IConversion, SharingSet> GetSetsForConversion()
+            => sets.SelectMany(s => s.Conversions.Select(c => (c, s))).ToDictionary();
     }
 
     #region Equality
