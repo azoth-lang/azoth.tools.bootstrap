@@ -30,8 +30,12 @@ internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpr
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.ConversionExpression_Type);
+    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private bool flowStateAfterCached;
     public override FlowState FlowStateAfter
-        => IntermediateReferent?.FlowStateAfter ?? FlowState.Empty;
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.ConversionExpression_FlowStateAfter);
 
     public ConversionExpressionNode(
         IConversionExpressionSyntax syntax,

@@ -478,6 +478,15 @@ public static class ExpressionTypesAspect
         return convertToType;
     }
 
+    public static FlowState ConversionExpression_FlowStateAfter(IConversionExpressionNode node)
+    {
+        var intermediateReferent = node.IntermediateReferent;
+        if (intermediateReferent is null)
+            return FlowState.Empty;
+        return intermediateReferent.FlowStateAfter
+            .Transform(node.IntermediateReferent?.ValueId, node.ValueId, node.Type);
+    }
+
     public static DataType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
         => Intrinsic.PromiseOf(node.IntermediateExpression?.Type ?? DataType.Unknown);
 
@@ -540,6 +549,17 @@ public static class ExpressionTypesAspect
         return node.IsTemporary
             ? flowStateBefore.TempFreeze(referentValueId, node.ValueId)
             : flowStateBefore.FreezeValue(referentValueId, node.ValueId);
+    }
+
+    public static void FreezeVariableExpression_ContributeDiagnostics(IFreezeVariableExpressionNode node, Diagnostics diagnostics)
+    {
+        if (node.Referent.Type is not CapabilityType capabilityType)
+            return;
+
+        if (!capabilityType.AllowsFreeze)
+            diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow freezing"));
+        else if (!node.Referent.FlowStateAfter.CanFreezeExceptFor(node.Referent.ReferencedDefinition, node.Referent.ValueId))
+            diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
     }
 
     public static DataType MoveExpression_Type(IMoveExpressionNode node)

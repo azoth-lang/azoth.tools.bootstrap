@@ -12,10 +12,10 @@ public static class FlowTypingError
             4001, $"Cannot move value `{file.Code[referent.Span]}`");
     }
 
-    public static Diagnostic CannotFreezeValue(CodeFile file, IFreezeExpressionSyntax expression)
+    public static Diagnostic CannotFreezeValue(CodeFile file, IExpressionSyntax expression, IExpressionSyntax referent)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            4002, $"Cannot freeze the value `{file.Code[expression.Referent.Span]}`");
+            4002, $"Cannot freeze the value `{file.Code[referent.Span]}`");
     }
 
     public static Diagnostic UseOfPossiblyMovedValue(CodeFile file, TextSpan span)

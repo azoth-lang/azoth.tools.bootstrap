@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -37,5 +38,11 @@ internal sealed class FreezeVariableExpressionNode : ExpressionNode, IFreezeVari
         Referent = Child.Attach(this, referent);
         IsTemporary = isTemporary;
         IsImplicit = isImplicit;
+    }
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        ExpressionTypesAspect.FreezeVariableExpression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

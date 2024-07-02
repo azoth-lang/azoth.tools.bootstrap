@@ -502,7 +502,8 @@ public class BasicBodyAnalyzer
                         break;
                 }
 
-                exp.DataType.Fulfill(DataType.Unknown);
+                if (exp.DataType.Result != DataType.Unknown)
+                    throw new InvalidOperationException("Move expression type should be set by semantics");
                 return new ExpressionResult(exp);
             }
             case IFreezeExpressionSyntax exp:
@@ -1035,6 +1036,7 @@ public class BasicBodyAnalyzer
         }
         // Don't need to alias the symbol or union with result in flow because it will be moved
 
+        // Symbol cannot be assigned by semantic tree because it doesn't have symbols for locals
         exp.ReferencedSymbol.Fulfill(symbol);
 
         if (semantics.Type.Result != type)
@@ -1057,12 +1059,6 @@ public class BasicBodyAnalyzer
         switch (type)
         {
             case CapabilityType capabilityType:
-                if (!capabilityType.AllowsFreeze)
-                    diagnostics.Add(TypeError.NotImplemented(file, exp.Span,
-                        "Reference capability does not allow freezing"));
-                if (!flow.CanFreeze(symbol))
-                    diagnostics.Add(FlowTypingError.CannotFreezeValue(file, exp));
-
                 type = capabilityType.With(Capability.Constant);
                 flow.Freeze(symbol);
                 break;
@@ -1074,13 +1070,17 @@ public class BasicBodyAnalyzer
         }
         // Alias not needed because it is already `const`
 
+        // Symbol cannot be assigned by semantic tree because it doesn't have symbols for locals
         exp.ReferencedSymbol.Fulfill(symbol);
 
-        semantics.Type.Fulfill(type);
-        if (semantics is SelfExpressionSyntax selfExpression)
-            selfExpression.Pseudotype.Fulfill(type);
-        exp.DataType.Fulfill(type);
-        return new ExpressionResult(exp);
+        if (semantics.Type.Result != type)
+            throw new InvalidOperationException("Freeze expression type should be set by semantics");
+        if (semantics is SelfExpressionSyntax selfExpression && !selfExpression.Pseudotype.Result.Equals(type))
+            throw new InvalidOperationException("Freeze expression type should be set by semantics");
+        if (exp.DataType.Result != type)
+            throw new InvalidOperationException("Freeze expression type should be set by semantics");
+
+        return new(exp);
     }
 
     private void ResolveTypes(

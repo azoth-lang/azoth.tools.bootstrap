@@ -221,6 +221,31 @@ public sealed class FlowState : IEquatable<FlowState>
                    : IsIsolated(binding));
     }
 
+    public bool CanFreezeExceptFor(IBindingNode? binding, ValueId? valueId)
+    {
+        if (binding is null) return true;
+        var bindingValue = BindingValue.TopLevel(binding);
+        var set = TrySetFor(bindingValue);
+        if (set is null) return false;
+        if (set.IsIsolated) return true;
+
+        var exceptValue = valueId is ValueId v ? ResultValue.Create(v) : null;
+        foreach (var value in set.Except(bindingValue).Except(exceptValue))
+        {
+            if (value is ICapabilityValue capabilityValue)
+            {
+                // The modified capability is what matters because lending can go out of scope later
+                var capability = capabilities[capabilityValue].Modified;
+                if (capability.AllowsWrite) return false;
+            }
+            else
+                // All other sharing variable types prevent freezing
+                return false;
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// Combine the non-lent values representing the arguments into one sharing set with the return
     /// value id and drop the values for all arguments.
@@ -300,6 +325,38 @@ public sealed class FlowState : IEquatable<FlowState>
             else if (existingCapability != flowCapability)
                 throw new InvalidOperationException($"Flow capability for {value} changed from {existingCapability} to {flowCapability}.");
         }
+        return builder.ToFlowState();
+    }
+
+    public FlowState Transform(ValueId? valueId, ValueId intoValueId, DataType withType)
+    {
+        if (valueId is not ValueId fromValueId)
+            return this;
+
+        var fromValue = ResultValue.Create(fromValueId);
+        var oldSet = TrySetFor(fromValue);
+        if (oldSet is null)
+            return this;
+
+        var builder = ToBuilder();
+        SharingSet? newSet;
+        if (withType.SharingIsTracked())
+        {
+            var intoValue = ResultValue.Create(intoValueId);
+            newSet = oldSet.Replace(fromValue, intoValue);
+            if (withType is CapabilityType withCapabilityType)
+            {
+                var maybeOldCapability = builder.TryCapabilityFor(fromValue);
+                if (maybeOldCapability is FlowCapability oldCapability)
+                    builder.TrackFlowCapability(intoValue, oldCapability.With(withCapabilityType.Capability));
+            }
+        }
+        else
+        {
+            newSet = oldSet.Drop(fromValue);
+        }
+        builder.UpdateSet(oldSet, newSet);
+        builder.RemoveCapability(fromValue);
         return builder.ToFlowState();
     }
 
@@ -560,7 +617,7 @@ public sealed class FlowState : IEquatable<FlowState>
                 var newSet = set.Drop(group);
                 UpdateSet(set, newSet);
                 foreach (var capabilityValue in group.OfType<ICapabilityValue>())
-                    capabilities.Remove(capabilityValue);
+                    RemoveCapability(capabilityValue);
                 if (newSet is null)
                     (conversionsRemoved ??= []).AddRange(set.Conversions.OfType<TempConversionTo>()
                                                             .Select(c => c.From));
@@ -587,8 +644,7 @@ public sealed class FlowState : IEquatable<FlowState>
             if (TrySetFor(value) is not SharingSet set) return;
             var newSet = set.Drop(value);
             UpdateSet(set, newSet);
-            if (value is ICapabilityValue capabilityValue)
-                capabilities.Remove(capabilityValue);
+            RemoveCapability(value);
             if (newSet is not null)
                 return;
 
@@ -596,6 +652,15 @@ public sealed class FlowState : IEquatable<FlowState>
             if (conversionsRemoved.Any())
                 DropConversions(conversionsRemoved);
         }
+
+        public void RemoveCapability(IValue value)
+        {
+            if (value is ICapabilityValue capabilityValue)
+                capabilities.Remove(capabilityValue);
+        }
+
+        public void RemoveCapability(ICapabilityValue value)
+            => capabilities.Remove(value);
 
         private void LiftRemovedRestrictions(SharingSet set)
             // Don't apply read/write restrictions since they have already been applied

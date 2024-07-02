@@ -37,12 +37,12 @@ internal static class SharingIsTrackedExtensions
     public static bool SharingIsTracked(this Pseudotype pseudotype)
         => pseudotype.ToUpperBound().SharingIsTracked();
 
-    public static bool SharingIsTracked(this DataType pseudotype)
+    public static bool SharingIsTracked(this DataType type)
     {
         // TODO this isn't correct since optional types and function types need tracked
 
         // If it isn't a capability type, then no need to track it
-        if (pseudotype is not CapabilityType { Capability: var capability })
+        if (type is not CapabilityType { Capability: var capability })
             return false;
 
         // Constant and Identity capabilities never need tracked

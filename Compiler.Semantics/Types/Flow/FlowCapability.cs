@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using ExhaustiveMatching;
 
@@ -10,6 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 /// <remarks>Typically, this applies only to the outermost capability of a type. However, if a type
 /// has independent type parameters, then this may apply to the type parameters as well.</remarks>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
+[StructLayout(LayoutKind.Auto)]
 public readonly record struct FlowCapability(Capability Original)
 {
     /// <summary>
@@ -19,7 +21,7 @@ public readonly record struct FlowCapability(Capability Original)
     public Capability Modified { get; init; } = Original;
 
     /// <summary>
-    /// Any temporary restrictions on the capability (i.e. from a temporarily freeze or move).
+    /// Any temporary restrictions on the capability (i.e. from a temporary freeze or move).
     /// </summary>
     public CapabilityRestrictions Restrictions { get; init; } = CapabilityRestrictions.None;
 
