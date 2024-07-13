@@ -15,9 +15,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 /// Wraps up all the state that changes with the flow of the code to make it easy to attach to each
 /// node in the semantic tree.
 /// </summary>
-public sealed class FlowState : IFlowState
+public sealed class LegacyFlowState : IFlowState
 {
-    public static readonly FlowState Empty = new();
+    public static readonly LegacyFlowState Empty = new();
 
     private readonly ImmutableDictionary<ICapabilityValue, FlowCapability> capabilities;
 
@@ -35,14 +35,14 @@ public sealed class FlowState : IFlowState
         => ReferenceEquals(this, Empty)
            || (capabilities.IsEmpty && sets.IsEmpty && setFor.IsEmpty);
 
-    private FlowState()
+    private LegacyFlowState()
     {
         capabilities = ImmutableDictionary<ICapabilityValue, FlowCapability>.Empty;
         sets = ImmutableHashSet<SharingSet>.Empty;
         setFor = ImmutableDictionary<IValue, SharingSet>.Empty;
     }
 
-    private FlowState(
+    private LegacyFlowState(
         ImmutableDictionary<ICapabilityValue, FlowCapability> capabilities,
         ImmutableHashSet<SharingSet> sets,
         ImmutableDictionary<IValue, SharingSet> setFor)
@@ -71,7 +71,7 @@ public sealed class FlowState : IFlowState
         return Declare(parameter, bindingType, sharingIsTracked, parameter.IsLentBinding);
     }
 
-    private FlowState Declare(
+    private LegacyFlowState Declare(
         IParameterNode parameter,
         Pseudotype bindingType,
         bool sharingIsTracked, bool isLent)
@@ -300,7 +300,7 @@ public sealed class FlowState : IFlowState
         if (IsEmpty)
             return other;
 
-        if (other is not FlowState otherFlowState)
+        if (other is not LegacyFlowState otherFlowState)
             throw new InvalidOperationException($"Cannot merge flow state of type {other.GetType()}.");
 
         var builder = ToBuilder();
@@ -381,7 +381,7 @@ public sealed class FlowState : IFlowState
     public IFlowState FreezeValue(ValueId valueId, ValueId intoValueId)
         => Freeze(null, valueId, intoValueId);
 
-    private FlowState Freeze(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
+    private LegacyFlowState Freeze(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
     {
         var oldValue = ResultValue.Create(valueId);
         if (TrySetFor(oldValue) is not SharingSet oldSet)
@@ -409,7 +409,7 @@ public sealed class FlowState : IFlowState
     public IFlowState MoveValue(ValueId valueId, ValueId intoValueId)
         => Move(null, valueId, intoValueId);
 
-    private FlowState Move(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
+    private LegacyFlowState Move(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
     {
         var oldValue = ResultValue.Create(valueId);
         if (TrySetFor(oldValue) is not SharingSet oldSet)
@@ -440,7 +440,7 @@ public sealed class FlowState : IFlowState
     public IFlowState TempMove(ValueId valueId, ValueId intoValueId)
         => TemporarilyConvert(valueId, intoValueId, TempConversionTo.Isolated(intoValueId));
 
-    private FlowState TemporarilyConvert(ValueId valueId, ValueId intoValueId, TempConversionTo to)
+    private LegacyFlowState TemporarilyConvert(ValueId valueId, ValueId intoValueId, TempConversionTo to)
     {
         var oldValue = ResultValue.Create(valueId);
         if (TrySetFor(oldValue) is not SharingSet oldSet)
@@ -496,8 +496,8 @@ public sealed class FlowState : IFlowState
             this.setFor = setFor;
         }
 
-        public FlowState ToFlowState()
-            => new FlowState(capabilities.ToImmutable(), sets.ToImmutable(), setFor.ToImmutable());
+        public LegacyFlowState ToFlowState()
+            => new LegacyFlowState(capabilities.ToImmutable(), sets.ToImmutable(), setFor.ToImmutable());
 
         public void AddFlowCapabilities(IEnumerable<KeyValuePair<ICapabilityValue, FlowCapability>> valueCapability)
             => capabilities.AddRange(valueCapability);
@@ -682,7 +682,7 @@ public sealed class FlowState : IFlowState
     }
 
     #region Equality
-    public bool Equals(FlowState? other)
+    public bool Equals(LegacyFlowState? other)
     {
         if (other is null)
             return false;
@@ -704,10 +704,10 @@ public sealed class FlowState : IFlowState
     }
 
     public bool Equals(IFlowState? obj)
-        => ReferenceEquals(this, obj) || obj is FlowState other && Equals(other);
+        => ReferenceEquals(this, obj) || obj is LegacyFlowState other && Equals(other);
 
     public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is FlowState other && Equals(other);
+        => ReferenceEquals(this, obj) || obj is LegacyFlowState other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(capabilities.Count, sets.Count, setFor.Count);
     #endregion
