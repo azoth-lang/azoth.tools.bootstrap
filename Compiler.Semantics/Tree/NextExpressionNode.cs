@@ -10,7 +10,7 @@ internal sealed class NextExpressionNode : ExpressionNode, INextExpressionNode
     public override INextExpressionSyntax Syntax { get; }
     public override IMaybeExpressionAntetype Antetype => IAntetype.Never;
     public override NeverType Type => DataType.Never;
-    public override FlowState FlowStateAfter => FlowState.Empty;
+    public override IFlowState FlowStateAfter => IFlowState.Empty;
 
     public NextExpressionNode(INextExpressionSyntax syntax)
     {

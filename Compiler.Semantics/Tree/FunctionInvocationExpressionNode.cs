@@ -44,9 +44,9 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     public ContextualizedOverload? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value
             : contextualizedOverload.GetValue(this, ExpressionTypesAspect.FunctionInvocationExpression_ContextualizedOverload);
-    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public override FlowState FlowStateAfter
+    public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.FunctionInvocationExpression_FlowStateAfter);
@@ -79,18 +79,18 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
         base.CollectDiagnostics(diagnostics);
     }
 
-    internal override FlowState InheritedFlowStateBefore(
+    internal override IFlowState InheritedFlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
             && arguments.Current.IndexOf(ambiguousExpression) is int index and > 0)
-            return IntermediateArguments[index - 1]?.FlowStateAfter ?? FlowState.Empty;
+            return IntermediateArguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
 
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 
-    public FlowState FlowStateBefore()
+    public IFlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 }

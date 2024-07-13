@@ -49,7 +49,7 @@ public partial interface ICapabilityNode
 public partial interface IParameterNode
 {
     IPreviousValueId PreviousValueId();
-    FlowState FlowStateBefore();
+    IFlowState FlowStateBefore();
 }
 
 public partial interface INamedParameterNode
@@ -80,7 +80,7 @@ public partial interface IStatementNode
 
 public partial interface IVariableDeclarationStatementNode
 {
-    FlowState FlowStateBefore();
+    IFlowState FlowStateBefore();
 }
 #endregion
 
@@ -96,7 +96,7 @@ public partial interface IPatternNode
 
 public partial interface IBindingPatternNode
 {
-    FlowState FlowStateBefore();
+    IFlowState FlowStateBefore();
 }
 #endregion
 
@@ -127,14 +127,14 @@ public partial interface IBlockExpressionNode
     new DataType Type { get; }
     DataType IBlockOrResultNode.Type => Type;
     DataType IExpressionNode.Type => Type;
-    FlowState FlowStateBefore();
-    new FlowState FlowStateAfter { get; }
+    IFlowState FlowStateBefore();
+    new IFlowState FlowStateAfter { get; }
 }
 
 public partial interface INewObjectExpressionNode
 {
     PackageNameScope InheritedPackageNameScope();
-    FlowState FlowStateBefore();
+    IFlowState FlowStateBefore();
 }
 #endregion
 
@@ -158,12 +158,12 @@ public partial interface IForeachExpressionNode
 #region Invocation Expressions
 public partial interface IFunctionInvocationExpressionNode
 {
-    FlowState FlowStateBefore();
+    IFlowState FlowStateBefore();
 }
 
 public partial interface IInitializerInvocationExpressionNode
 {
-    FlowState FlowStateBefore();
+    IFlowState FlowStateBefore();
 }
 #endregion
 
@@ -177,12 +177,12 @@ public partial interface IMemberAccessExpressionNode
 #region Name Expressions
 public partial interface IVariableNameExpressionNode
 {
-    FlowState FlowStateBefore();
+    IFlowState FlowStateBefore();
 }
 
 public partial interface ISelfExpressionNode
 {
-    FlowState FlowStateBefore();
+    IFlowState FlowStateBefore();
 }
 #endregion
 

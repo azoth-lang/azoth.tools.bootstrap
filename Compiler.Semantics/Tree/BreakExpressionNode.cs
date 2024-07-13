@@ -12,7 +12,7 @@ internal sealed class BreakExpressionNode : ExpressionNode, IBreakExpressionNode
     public IAmbiguousExpressionNode? Value { get; }
     public override IMaybeExpressionAntetype Antetype => IAntetype.Never;
     public override NeverType Type => DataType.Never;
-    public override FlowState FlowStateAfter => FlowState.Empty;
+    public override IFlowState FlowStateAfter => IFlowState.Empty;
 
     public BreakExpressionNode(IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? value)
     {

@@ -32,7 +32,7 @@ internal static class NameBindingTypesAspect
         return capabilityType.With(capability.Capability);
     }
 
-    public static FlowState VariableDeclarationStatement_FlowStateAfter(IVariableDeclarationStatementNode node)
+    public static IFlowState VariableDeclarationStatement_FlowStateAfter(IVariableDeclarationStatementNode node)
     {
         var flowStateBefore = node.IntermediateInitializer?.FlowStateAfter ?? node.FlowStateBefore();
         return flowStateBefore.Declare(node, node.IntermediateInitializer?.ValueId);
@@ -44,7 +44,7 @@ internal static class NameBindingTypesAspect
     public static DataType BindingPattern_BindingType(IBindingPatternNode node)
         => node.InheritedBindingType();
 
-    public static FlowState BindingPattern_FlowStateAfter(IBindingPatternNode node)
+    public static IFlowState BindingPattern_FlowStateAfter(IBindingPatternNode node)
         // TODO the match referent value id could be used multiple times and perhaps shouldn't be removed here
         => node.FlowStateBefore().Declare(node, node.MatchReferentValueId);
 

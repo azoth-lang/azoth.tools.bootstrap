@@ -25,9 +25,9 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.BlockExpression_Type);
-    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public override FlowState FlowStateAfter
+    public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.BlockExpression_FlowStateAfter);
@@ -41,7 +41,7 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
         => LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, Statements.IndexOf(child)!.Value);
 
-    internal override FlowState InheritedFlowStateBefore(
+    internal override IFlowState InheritedFlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
@@ -51,6 +51,6 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 
-    public FlowState FlowStateBefore()
+    public IFlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 }

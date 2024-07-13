@@ -32,9 +32,9 @@ internal sealed class FunctionReferenceInvocationNode : ExpressionNode, IFunctio
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.FunctionReferenceInvocation_Type);
-    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public override FlowState FlowStateAfter
+    public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.FunctionReferenceInvocation_FlowStateAfter);
@@ -50,7 +50,7 @@ internal sealed class FunctionReferenceInvocationNode : ExpressionNode, IFunctio
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
-    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IFlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
             && arguments.Current.IndexOf(ambiguousExpression) is int index and > 0)

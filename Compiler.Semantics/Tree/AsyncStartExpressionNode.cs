@@ -27,9 +27,9 @@ internal sealed class AsyncStartExpressionNode : ExpressionNode, IAsyncStartExpr
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.AsyncStartExpression_Type);
-    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public override FlowState FlowStateAfter
+    public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.AsyncStartExpression_FlowStateAfter);

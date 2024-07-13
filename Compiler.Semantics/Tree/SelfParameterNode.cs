@@ -37,9 +37,9 @@ internal abstract class SelfParameterNode : ParameterNode, ISelfParameterNode
     public SelfParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value
             : parameterType.GetValue(this, TypeMemberDeclarationsAspect.SelfParameter_ParameterType);
-    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public override FlowState FlowStateAfter
+    public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.SelfParameter_FlowStateAfter);

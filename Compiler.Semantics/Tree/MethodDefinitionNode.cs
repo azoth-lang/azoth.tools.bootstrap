@@ -48,13 +48,13 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
         base.CollectDiagnostics(diagnostics);
     }
 
-    public FlowState FlowStateBefore()
+    public IFlowState FlowStateBefore()
         => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore((IConcreteInvocableDefinitionNode)this);
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
 
-    internal override FlowState InheritedFlowStateBefore(
+    internal override IFlowState InheritedFlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)

@@ -13,7 +13,7 @@ internal abstract class PatternNode : CodeNode, IPatternNode
 
     public abstract override IPatternSyntax Syntax { get; }
 
-    public abstract FlowState FlowStateAfter { get; }
+    public abstract IFlowState FlowStateAfter { get; }
 
     private ValueId? matchReferentValueId;
     private bool matchReferentValueIdCached;

@@ -29,7 +29,7 @@ Child <: `IChildTreeNode<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPack
 
 // ---------- Special Parts
 BodyOrBlock <: Code = Statements:`IStatementNode`*;
-ElseClause <: Code = FlowStateAfter:`FlowState` ValueId:`ValueId`;
+ElseClause <: Code = FlowStateAfter:`IFlowState` ValueId:`ValueId`;
 BlockOrResult: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings
@@ -182,7 +182,7 @@ Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capa
 
 // ---------- Parameters
 Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
-    BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype` ValueId:`ValueId` FlowStateAfter:`FlowState`;
+    BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype` ValueId:`ValueId` FlowStateAfter:`IFlowState`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`
     BindingType:`DataType` ParameterType:`ParameterType`;
@@ -205,7 +205,7 @@ FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyn
     ContainingTypeDefinition:`ITypeDefinitionNode` ReferencedField:`IFieldDefinitionNode`?;
 
 // ---------- Function Parts
-Body: BodyOrBlock = FlowStateAfter:`FlowState`;
+Body: BodyOrBlock = FlowStateAfter:`IFlowState`;
 BlockBody: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
 ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 
@@ -230,7 +230,7 @@ CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSynta
 SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type NamedSelfType:`Pseudotype`?;
 
 // ---------- Statements
-Statement <: Code = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`? ResultType:`DataType`? FlowStateAfter:`FlowState`;
+Statement <: Code = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`? ResultType:`DataType`? FlowStateAfter:`IFlowState`;
 ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax`
     Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
 BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
@@ -244,7 +244,7 @@ ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax`
     Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
 
 // ---------- Patterns
-Pattern <: Code = Syntax:`IPatternSyntax` FlowStateAfter:`FlowState`;
+Pattern <: Code = Syntax:`IPatternSyntax` FlowStateAfter:`IFlowState`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
 BindingPattern <: OptionalOrBindingPattern, NamedBinding = Syntax:`IBindingPatternSyntax`
@@ -254,7 +254,7 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 // ---------- Expressions
 AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
 Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId` Antetype:`IMaybeExpressionAntetype`
-    Type:`DataType` FlowStateAfter:`FlowState`;
+    Type:`DataType` FlowStateAfter:`IFlowState`;
 AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax`
@@ -307,7 +307,7 @@ ForeachExpression <: Expression, NamedBinding = Syntax:`IForeachExpressionSyntax
     IteratorAntetype:`IMaybeExpressionAntetype` IteratorType:`DataType`
     ReferencedIteratorDeclaration:`ITypeDeclarationNode`? ReferencedNextMethod:`IStandardMethodDeclarationNode`?
     IteratedAntetype:`IMaybeAntetype` IteratedType:`DataType`
-    FlowStateBeforeBlock:`FlowState`;
+    FlowStateBeforeBlock:`IFlowState`;
 BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax` Value:AmbiguousExpression?;
 NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;
 ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Value:AmbiguousExpression?;

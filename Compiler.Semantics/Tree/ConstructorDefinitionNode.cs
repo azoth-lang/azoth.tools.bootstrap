@@ -35,13 +35,13 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
         Parameters = ChildList.Attach(this, parameters);
     }
 
-    public FlowState FlowStateBefore()
+    public IFlowState FlowStateBefore()
         => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore(this);
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
 
-    internal override FlowState InheritedFlowStateBefore(
+    internal override IFlowState InheritedFlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)

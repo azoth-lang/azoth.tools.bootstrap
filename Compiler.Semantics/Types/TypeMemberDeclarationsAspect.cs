@@ -230,8 +230,8 @@ internal static class TypeMemberDeclarationsAspect
         => FunctionType(node.Parameters, node.Return);
 
     // TODO maybe this should be initial flow state?
-    public static FlowState ConcreteInvocable_FlowStateBefore(IConcreteInvocableDefinitionNode _)
-        => FlowState.Empty;
+    public static IFlowState ConcreteInvocable_FlowStateBefore(IConcreteInvocableDefinitionNode _)
+        => IFlowState.Empty;
 
     public static ValueIdScope Invocable_ValueIdScope(IInvocableDefinitionNode _)
         => new ValueIdScope();

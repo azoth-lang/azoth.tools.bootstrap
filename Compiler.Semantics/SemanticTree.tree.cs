@@ -149,7 +149,7 @@ public partial interface IBodyOrBlockNode : ISemanticNode, ICodeNode
     typeof(IIfExpressionNode))]
 public partial interface IElseClauseNode : ISemanticNode, ICodeNode
 {
-    FlowState FlowStateAfter { get; }
+    IFlowState FlowStateAfter { get; }
     ValueId ValueId { get; }
 }
 
@@ -812,7 +812,7 @@ public partial interface IParameterNode : ISemanticNode, ICodeNode
     IMaybeAntetype BindingAntetype { get; }
     Pseudotype BindingType { get; }
     ValueId ValueId { get; }
-    FlowState FlowStateAfter { get; }
+    IFlowState FlowStateAfter { get; }
 }
 
 [Closed(
@@ -918,7 +918,7 @@ public partial interface IFieldParameterNode : ISemanticNode, IConstructorOrInit
     typeof(IExpressionBodyNode))]
 public partial interface IBodyNode : IBodyOrBlockNode
 {
-    FlowState FlowStateAfter { get; }
+    IFlowState FlowStateAfter { get; }
 }
 
 public partial interface IBlockBodyNode : IBodyNode
@@ -1105,7 +1105,7 @@ public partial interface IStatementNode : ISemanticNode, ICodeNode
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IMaybeAntetype? ResultAntetype { get; }
     DataType? ResultType { get; }
-    FlowState FlowStateAfter { get; }
+    IFlowState FlowStateAfter { get; }
 }
 
 public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNode
@@ -1162,7 +1162,7 @@ public partial interface IPatternNode : ISemanticNode, ICodeNode
     new IPatternSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    FlowState FlowStateAfter { get; }
+    IFlowState FlowStateAfter { get; }
 }
 
 public partial interface IBindingContextPatternNode : IPatternNode
@@ -1253,7 +1253,7 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode
     ValueId ValueId { get; }
     IMaybeExpressionAntetype Antetype { get; }
     DataType Type { get; }
-    FlowState FlowStateAfter { get; }
+    IFlowState FlowStateAfter { get; }
 }
 
 [Closed(
@@ -1485,7 +1485,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, INamedBinding
     IStandardMethodDeclarationNode? ReferencedNextMethod { get; }
     IMaybeAntetype IteratedAntetype { get; }
     DataType IteratedType { get; }
-    FlowState FlowStateBeforeBlock { get; }
+    IFlowState FlowStateBeforeBlock { get; }
 }
 
 public partial interface IBreakExpressionNode : INeverTypedExpressionNode

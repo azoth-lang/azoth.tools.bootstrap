@@ -15,9 +15,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 /// Wraps up all the state that changes with the flow of the code to make it easy to attach to each
 /// node in the semantic tree.
 /// </summary>
-public sealed class FlowState : IEquatable<FlowState>
+public sealed class FlowState : IFlowState
 {
-    public static readonly FlowState Empty = new FlowState();
+    public static readonly FlowState Empty = new();
 
     private readonly ImmutableDictionary<ICapabilityValue, FlowCapability> capabilities;
 
@@ -55,7 +55,7 @@ public sealed class FlowState : IEquatable<FlowState>
     /// <summary>
     /// Declare the given parameter as part of the flow state including any independent parameters.
     /// </summary>
-    public FlowState Declare(INamedParameterNode parameter)
+    public IFlowState Declare(INamedParameterNode parameter)
     {
         var bindingType = parameter.BindingType;
         bool sharingIsTracked = parameter.ParameterType.SharingIsTracked();
@@ -63,7 +63,7 @@ public sealed class FlowState : IEquatable<FlowState>
         return Declare(parameter, bindingType, sharingIsTracked, parameter.IsLentBinding);
     }
 
-    public FlowState Declare(ISelfParameterNode parameter)
+    public IFlowState Declare(ISelfParameterNode parameter)
     {
         var bindingType = parameter.BindingType;
         bool sharingIsTracked = parameter.ParameterType.SharingIsTracked();
@@ -118,7 +118,7 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState Declare(INamedBindingNode binding, ValueId? initializerValueId)
+    public IFlowState Declare(INamedBindingNode binding, ValueId? initializerValueId)
     {
         var initializerValue = initializerValueId is ValueId v ? ResultValue.Create(v) : null;
         // TODO other types besides CapabilityType might participate in sharing
@@ -162,7 +162,7 @@ public sealed class FlowState : IEquatable<FlowState>
     /// to the top level object has been created. For example, if <c>iso List[iso Foo]</c> is aliased
     /// the list elements are still isolated. Only the list itself has been aliased and is now
     /// <c>mut</c>.</remarks>
-    public FlowState Alias(IBindingNode? binding, ValueId valueId)
+    public IFlowState Alias(IBindingNode? binding, ValueId valueId)
     {
         if (binding is null || !binding.SharingIsTracked())
             // If the binding isn't tracked, then the alias isn't either
@@ -251,7 +251,7 @@ public sealed class FlowState : IEquatable<FlowState>
     /// value id and drop the values for all arguments.
     /// </summary>
     // TODO should storage of return value be based on whether the return type requires tracking?
-    public FlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId)
+    public IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId)
     {
         // TODO what about independent parameters?
         var argumentResults = arguments.Select(a => new ArgumentResultValue(a.IsLent, a.ValueId)).ToFixedList();
@@ -269,7 +269,7 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState AccessMember(ValueId contextValueId, ValueId valueId, DataType memberType)
+    public IFlowState AccessMember(ValueId contextValueId, ValueId valueId, DataType memberType)
     {
         var contextResultValue = ResultValue.Create(contextValueId);
         // If accessing from non-tracked type, then it's not tracked
@@ -291,7 +291,7 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState Merge(FlowState? other)
+    public IFlowState Merge(IFlowState? other)
     {
         if (other is null
             || ReferenceEquals(this, other)
@@ -300,8 +300,11 @@ public sealed class FlowState : IEquatable<FlowState>
         if (IsEmpty)
             return other;
 
+        if (other is not FlowState otherFlowState)
+            throw new InvalidOperationException($"Cannot merge flow state of type {other.GetType()}.");
+
         var builder = ToBuilder();
-        foreach (var otherSet in other.sets)
+        foreach (var otherSet in otherFlowState.sets)
         {
             if (!otherSet.Any(builder.Contains))
             {
@@ -317,7 +320,7 @@ public sealed class FlowState : IEquatable<FlowState>
             builder.Union(setsToUnion);
         }
 
-        foreach (var (value, flowCapability) in other.capabilities)
+        foreach (var (value, flowCapability) in otherFlowState.capabilities)
         {
             var existingCapability = builder.TryCapabilityFor(value);
             if (existingCapability is null)
@@ -328,7 +331,7 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState Transform(ValueId? valueId, ValueId intoValueId, DataType withType)
+    public IFlowState Transform(ValueId? valueId, ValueId intoValueId, DataType withType)
     {
         if (valueId is not ValueId fromValueId)
             return this;
@@ -360,7 +363,7 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState Combine(ValueId left, ValueId? right, ValueId intoValueId)
+    public IFlowState Combine(ValueId left, ValueId? right, ValueId intoValueId)
     {
         var resultValues = right.YieldValue().Prepend(left).Select(ResultValue.Create).ToFixedList();
 
@@ -372,10 +375,10 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState FreezeVariable(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
+    public IFlowState FreezeVariable(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
         => Freeze(binding, valueId, intoValueId);
 
-    public FlowState FreezeValue(ValueId valueId, ValueId intoValueId)
+    public IFlowState FreezeValue(ValueId valueId, ValueId intoValueId)
         => Freeze(null, valueId, intoValueId);
 
     private FlowState Freeze(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
@@ -400,10 +403,10 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState MoveVariable(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
+    public IFlowState MoveVariable(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
         => Move(binding, valueId, intoValueId);
 
-    public FlowState MoveValue(ValueId valueId, ValueId intoValueId)
+    public IFlowState MoveValue(ValueId valueId, ValueId intoValueId)
         => Move(null, valueId, intoValueId);
 
     private FlowState Move(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
@@ -431,10 +434,10 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState TempFreeze(ValueId valueId, ValueId intoValueId)
+    public IFlowState TempFreeze(ValueId valueId, ValueId intoValueId)
         => TemporarilyConvert(valueId, intoValueId, TempConversionTo.Constant(intoValueId));
 
-    public FlowState TempMove(ValueId valueId, ValueId intoValueId)
+    public IFlowState TempMove(ValueId valueId, ValueId intoValueId)
         => TemporarilyConvert(valueId, intoValueId, TempConversionTo.Isolated(intoValueId));
 
     private FlowState TemporarilyConvert(ValueId valueId, ValueId intoValueId, TempConversionTo to)
@@ -455,7 +458,7 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState DropBindings(IEnumerable<INamedBindingNode> bindings)
+    public IFlowState DropBindings(IEnumerable<INamedBindingNode> bindings)
     {
         var builder = ToBuilder();
         // TODO what about independent parameters?
@@ -464,7 +467,7 @@ public sealed class FlowState : IEquatable<FlowState>
         return builder.ToFlowState();
     }
 
-    public FlowState DropValue(ValueId valueId)
+    public IFlowState DropValue(ValueId valueId)
     {
         var builder = ToBuilder();
         var value = ResultValue.Create(valueId);
@@ -699,6 +702,9 @@ public sealed class FlowState : IEquatable<FlowState>
                // entries in one are in the other.
                && capabilities.All(p => other.capabilities.TryGetValue(p.Key, out var value) && p.Value.Equals(value));
     }
+
+    public bool Equals(IFlowState? obj)
+        => ReferenceEquals(this, obj) || obj is FlowState other && Equals(other);
 
     public override bool Equals(object? obj)
         => ReferenceEquals(this, obj) || obj is FlowState other && Equals(other);

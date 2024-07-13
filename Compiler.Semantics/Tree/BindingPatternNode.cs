@@ -36,9 +36,9 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     public DataType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType, NameBindingTypesAspect.BindingPattern_BindingType);
-    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public override FlowState FlowStateAfter
+    public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 NameBindingTypesAspect.BindingPattern_FlowStateAfter);
@@ -57,6 +57,6 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
 
-    public FlowState FlowStateBefore()
+    public IFlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 }

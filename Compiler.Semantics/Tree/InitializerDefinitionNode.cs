@@ -51,13 +51,13 @@ internal sealed class InitializerDefinitionNode : TypeMemberDefinitionNode, IIni
         return base.InheritedContainingLexicalScope(child, descendant);
     }
 
-    public FlowState FlowStateBefore()
+    public IFlowState FlowStateBefore()
         => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore(this);
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
 
-    internal override FlowState InheritedFlowStateBefore(
+    internal override IFlowState InheritedFlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)

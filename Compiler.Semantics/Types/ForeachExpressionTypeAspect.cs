@@ -27,9 +27,9 @@ internal static class ForeachExpressionTypeAspect
         return nonEmptyIteratorType.ReplaceTypeParametersIn(iteratedType).ToNonConstValueType();
     }
 
-    public static FlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)
+    public static IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)
     {
-        var flowState = node.IntermediateInExpression?.FlowStateAfter ?? FlowState.Empty;
+        var flowState = node.IntermediateInExpression?.FlowStateAfter ?? IFlowState.Empty;
         return flowState.Declare(node, node.IntermediateInExpression?.ValueId);
     }
 
@@ -37,6 +37,6 @@ internal static class ForeachExpressionTypeAspect
         // TODO assign correct type to the expression
         => DataType.Void;
 
-    public static FlowState ForeachExpression_FlowStateAfter(IForeachExpressionNode node)
-        => node.IntermediateInExpression?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? FlowState.Empty;
+    public static IFlowState ForeachExpression_FlowStateAfter(IForeachExpressionNode node)
+        => node.IntermediateInExpression?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty;
 }

@@ -21,7 +21,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     public IPatternNode Pattern { get; }
     public override IMaybeExpressionAntetype Antetype => IAntetype.Bool;
     public override DataType Type => DataType.Bool;
-    public override FlowState FlowStateAfter => Pattern.FlowStateAfter;
+    public override IFlowState FlowStateAfter => Pattern.FlowStateAfter;
 
     public PatternMatchExpressionNode(
         IPatternMatchExpressionSyntax syntax,
@@ -56,10 +56,10 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
         return base.InheritedBindingType(child, descendant);
     }
 
-    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IFlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Pattern)
-            return IntermediateReferent?.FlowStateAfter ?? FlowState.Empty;
+            return IntermediateReferent?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 

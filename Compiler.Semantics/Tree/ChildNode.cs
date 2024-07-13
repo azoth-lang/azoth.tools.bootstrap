@@ -152,10 +152,10 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected ISymbolTree InheritedSymbolTree()
         => Parent.InheritedSymbolTree(this, this);
 
-    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IFlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => GetParent(ctx).InheritedFlowStateBefore(this, descendant, ctx);
 
-    protected FlowState InheritedFlowStateBefore(IInheritanceContext ctx)
+    protected IFlowState InheritedFlowStateBefore(IInheritanceContext ctx)
         => GetParent(ctx).InheritedFlowStateBefore(this, this, ctx);
 
     internal override IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)

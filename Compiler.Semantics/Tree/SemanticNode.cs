@@ -76,7 +76,7 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedFacet), child, descendant));
 
-    internal virtual FlowState InheritedFlowStateBefore(
+    internal virtual IFlowState InheritedFlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)

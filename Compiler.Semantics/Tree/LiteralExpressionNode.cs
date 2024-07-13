@@ -7,6 +7,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal abstract class LiteralExpressionNode : ExpressionNode, ILiteralExpressionNode
 {
     public abstract override ILiteralExpressionSyntax Syntax { get; }
-    public override FlowState FlowStateAfter
+    public override IFlowState FlowStateAfter
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 }

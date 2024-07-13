@@ -15,7 +15,7 @@ internal sealed class BindingContextPatternNode : PatternNode, IBindingContextPa
     public bool IsMutableBinding => Syntax.IsMutableBinding;
     public IPatternNode Pattern { get; }
     public ITypeNode? Type { get; }
-    public override FlowState FlowStateAfter => Pattern.FlowStateAfter;
+    public override IFlowState FlowStateAfter => Pattern.FlowStateAfter;
 
     public BindingContextPatternNode(
         IBindingContextPatternSyntax syntax,

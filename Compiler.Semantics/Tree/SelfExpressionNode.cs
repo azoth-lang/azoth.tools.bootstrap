@@ -34,9 +34,9 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
             : antetype.GetValue(this, ExpressionAntetypesAspect.SelfExpression_Antetype);
-    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public override FlowState FlowStateAfter
+    public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.SelfExpression_FlowStateAfter);
@@ -62,6 +62,6 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
         base.CollectDiagnostics(diagnostics);
     }
 
-    public FlowState FlowStateBefore()
+    public IFlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 }

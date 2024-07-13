@@ -19,9 +19,9 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
     public IExpressionNode? IntermediateExpression => Expression as IExpressionNode;
     public override IMaybeAntetype? ResultAntetype => null;
     public override DataType? ResultType => null;
-    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public override FlowState FlowStateAfter
+    public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached)
             ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,

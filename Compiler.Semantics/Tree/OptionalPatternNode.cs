@@ -13,7 +13,7 @@ internal sealed class OptionalPatternNode : PatternNode, IOptionalPatternNode
 {
     public override IOptionalPatternSyntax Syntax { get; }
     public IOptionalOrBindingPatternNode Pattern { get; }
-    public override FlowState FlowStateAfter => Pattern.FlowStateAfter;
+    public override IFlowState FlowStateAfter => Pattern.FlowStateAfter;
 
     public OptionalPatternNode(IOptionalPatternSyntax syntax, IOptionalOrBindingPatternNode pattern)
     {

@@ -18,7 +18,7 @@ internal sealed class MethodGroupNameNode : AmbiguousNameExpressionNode, IMethod
     public StandardName MethodName { get; }
     public IFixedList<ITypeNode> TypeArguments { get; }
     public IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
-    public override FlowState FlowStateAfter => Context.FlowStateAfter;
+    public override IFlowState FlowStateAfter => Context.FlowStateAfter;
 
     public MethodGroupNameNode(
         IMemberAccessExpressionSyntax syntax,

@@ -30,8 +30,8 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.ResultStatement_Type);
     public override DataType ResultType => Type;
-    public override FlowState FlowStateAfter
-        => IntermediateExpression?.FlowStateAfter ?? FlowState.Empty;
+    public override IFlowState FlowStateAfter
+        => IntermediateExpression?.FlowStateAfter ?? IFlowState.Empty;
     public ValueId ValueId => IntermediateExpression?.ValueId ?? default;
 
     public ResultStatementNode(IResultStatementSyntax syntax, IAmbiguousExpressionNode expression)

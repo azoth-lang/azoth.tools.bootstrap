@@ -41,9 +41,9 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.MethodInvocationExpression_Type);
-    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public override FlowState FlowStateAfter
+    public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.MethodInvocationExpression_FlowStateAfter);
@@ -58,7 +58,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
-    internal override FlowState InheritedFlowStateBefore(
+    internal override IFlowState InheritedFlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
@@ -68,7 +68,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         {
             if (index == 0)
                 return MethodGroup.FlowStateAfter;
-            return IntermediateArguments[index - 1]?.FlowStateAfter ?? FlowState.Empty;
+            return IntermediateArguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
         }
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }

@@ -26,7 +26,7 @@ internal abstract class AmbiguousNameExpressionNode : AmbiguousExpressionNode, I
     public virtual DataType Type
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Type)} not implemented.");
     // TODO make this abstract once all expressions have flow state implemented (also, not all names should have flow state)
-    public virtual FlowState FlowStateAfter
+    public virtual IFlowState FlowStateAfter
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
 
     private protected AmbiguousNameExpressionNode() { }

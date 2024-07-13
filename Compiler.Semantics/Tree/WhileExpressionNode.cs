@@ -29,9 +29,9 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.WhileExpression_Type);
-    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public override FlowState FlowStateAfter
+    public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.WhileExpression_FlowStateAfter);
@@ -53,13 +53,13 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         return base.InheritedContainingLexicalScope(child, descendant);
     }
 
-    internal override FlowState InheritedFlowStateBefore(
+    internal override IFlowState InheritedFlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
     {
         if (child == Block)
-            return IntermediateCondition?.FlowStateAfter ?? FlowState.Empty;
+            return IntermediateCondition?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

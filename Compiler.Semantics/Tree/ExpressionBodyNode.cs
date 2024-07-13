@@ -14,7 +14,7 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
     private readonly IFixedList<IStatementNode> statements;
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements => statements;
     public ValueId? ValueId => throw new NotImplementedException();
-    public FlowState FlowStateAfter => throw new NotImplementedException();
+    public IFlowState FlowStateAfter => throw new NotImplementedException();
 
     public ExpressionBodyNode(IExpressionBodySyntax syntax, IResultStatementNode resultStatement)
     {
@@ -31,5 +31,5 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
         return LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, statementIndex);
     }
 
-    public FlowState FlowStateBefore() => throw new NotImplementedException();
+    public IFlowState FlowStateBefore() => throw new NotImplementedException();
 }

@@ -39,7 +39,7 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
         => parameterType.TryGetValue(out var value) ? value
             : parameterType.GetValue(this, TypeMemberDeclarationsAspect.FieldParameter_ParameterType);
 
-    public override FlowState FlowStateAfter => FlowStateBefore();
+    public override IFlowState FlowStateAfter => FlowStateBefore();
 
     public FieldParameterNode(IFieldParameterSyntax syntax)
     {

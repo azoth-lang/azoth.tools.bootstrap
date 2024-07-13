@@ -22,11 +22,11 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref SyncLock,
                 TypeMemberDeclarationsAspect.Parameter_ValueId);
-    public abstract FlowState FlowStateAfter { get; }
+    public abstract IFlowState FlowStateAfter { get; }
 
     private protected ParameterNode() { }
 
-    public FlowState FlowStateBefore()
+    public IFlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
     public IPreviousValueId PreviousValueId()

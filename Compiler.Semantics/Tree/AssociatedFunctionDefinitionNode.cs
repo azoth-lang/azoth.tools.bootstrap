@@ -60,13 +60,13 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
         return base.InheritedContainingLexicalScope(child, descendant);
     }
 
-    public FlowState FlowStateBefore()
+    public IFlowState FlowStateBefore()
         => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore(this);
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
 
-    internal override FlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IFlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Body)
             return Parameters.LastOrDefault()?.FlowStateAfter ?? FlowStateBefore();

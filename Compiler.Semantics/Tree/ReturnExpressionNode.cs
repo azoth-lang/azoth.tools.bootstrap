@@ -16,7 +16,7 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
             : this.RewritableChild(ref valueCached, ref value);
     public override IMaybeExpressionAntetype Antetype => IAntetype.Never;
     public override NeverType Type => DataType.Never;
-    public override FlowState FlowStateAfter => FlowState.Empty;
+    public override IFlowState FlowStateAfter => IFlowState.Empty;
 
     public ReturnExpressionNode(IReturnExpressionSyntax syntax, IAmbiguousExpressionNode? value)
     {

@@ -75,9 +75,9 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public DataType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType, NameBindingTypesAspect.ForeachExpression_BindingType);
-    private Circular<FlowState> flowStateBeforeBlock = new(FlowState.Empty);
+    private Circular<IFlowState> flowStateBeforeBlock = new(IFlowState.Empty);
     private bool flowStateBeforeBlockCached;
-    public FlowState FlowStateBeforeBlock
+    public IFlowState FlowStateBeforeBlock
         => GrammarAttribute.IsCached(in flowStateBeforeBlockCached) ? flowStateBeforeBlock.UnsafeValue
             : this.Circular(ref flowStateBeforeBlockCached, ref flowStateBeforeBlock,
                 ForeachExpressionTypeAspect.ForeachExpression_FlowStateBeforeBlock);
@@ -90,9 +90,9 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type, ForeachExpressionTypeAspect.ForeachExpression_Type);
-    private Circular<FlowState> flowStateAfter = new(FlowState.Empty);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public override FlowState FlowStateAfter
+    public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ForeachExpressionTypeAspect.ForeachExpression_FlowStateAfter);
@@ -114,7 +114,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
 
     public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();
 
-    internal override FlowState InheritedFlowStateBefore(
+    internal override IFlowState InheritedFlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
