@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
@@ -5,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Framework.Collections;
 
 internal class ImmutableDisjointHashSetBuilder<TItem, TSetData> : IImmutableDisjointSetBuilder<TItem, TSetData>
     where TItem : notnull
-    where TSetData : IMergeable<TSetData>
+    where TSetData : IMergeable<TSetData>, IEquatable<TSetData>
 {
     private readonly ImmutableHashSet<TItem>.Builder values;
     public TSetData Data { get; private set; }
@@ -21,6 +22,12 @@ internal class ImmutableDisjointHashSetBuilder<TItem, TSetData> : IImmutableDisj
     {
         values.UnionWith(other);
         Data = Data.Merge(other.Data);
+        return this;
+    }
+
+    public IImmutableDisjointSetBuilder<TItem, TSetData> Add(TItem item)
+    {
+        values.Add(item);
         return this;
     }
 

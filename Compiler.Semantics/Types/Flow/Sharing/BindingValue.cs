@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
@@ -22,11 +23,11 @@ internal sealed class BindingValue : ICapabilityValue
     public static BindingValue TopLevel(IBindingNode node)
         => TopLevelCache.GetOrAdd(node.ValueId, TopLevelFactory);
 
-    public static List<KeyValuePair<ICapabilityValue, FlowCapability>> ForType(ValueId id, CapabilityType type)
+    public static List<KeyValuePair<BindingValue, FlowCapability>> ForType(ValueId id, Pseudotype type)
     {
         var index = new Stack<int>();
-        var bindingValues = new List<KeyValuePair<ICapabilityValue, FlowCapability>>();
-        ForType(id, type, index, true, bindingValues);
+        var bindingValues = new List<KeyValuePair<BindingValue, FlowCapability>>();
+        ForType(id, type.ToUpperBound(), index, true, bindingValues);
         return bindingValues;
     }
 
@@ -35,7 +36,7 @@ internal sealed class BindingValue : ICapabilityValue
         DataType type,
         Stack<int> index,
         bool capture,
-        List<KeyValuePair<ICapabilityValue, FlowCapability>> bindingValues)
+        List<KeyValuePair<BindingValue, FlowCapability>> bindingValues)
     {
         if (capture && type is CapabilityType t)
             bindingValues.Add(new(new BindingValue(id, new(index)), t.Capability));

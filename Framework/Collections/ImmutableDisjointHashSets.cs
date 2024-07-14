@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -8,8 +9,10 @@ namespace Azoth.Tools.Bootstrap.Framework.Collections;
 
 public sealed class ImmutableDisjointHashSets<TItem, TItemData, TSetData> : IImmutableDisjointSets<TItem, TItemData, TSetData>
     where TItem : notnull
-    where TSetData : IMergeable<TSetData>
+    where TSetData : IMergeable<TSetData>, IEquatable<TSetData>
 {
+    public static ImmutableDisjointHashSets<TItem, TItemData, TSetData> Empty { get; } = new();
+
     private readonly ImmutableDictionary<TItem, ItemData<TItemData>> items;
     private readonly ImmutableArray<ImmutableDisjointHashSet<TItem, TSetData>?> sets;
     private readonly int setCount;
@@ -31,6 +34,11 @@ public sealed class ImmutableDisjointHashSets<TItem, TItemData, TSetData> : IImm
         this.sets = sets;
         this.setCount = setCount;
         Sets = new SetCollection(this);
+    }
+
+    private ImmutableDisjointHashSets()
+        : this(ImmutableDictionary<TItem, ItemData<TItemData>>.Empty, ImmutableArray<ImmutableDisjointHashSet<TItem, TSetData>?>.Empty, 0)
+    {
     }
 
     public TItemData this[TItem item] => items[item].Data;

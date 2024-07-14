@@ -26,9 +26,11 @@ public interface IImmutableDisjointSets<TItem, TItemData, TSetData>
 
     public interface IBuilder
     {
+        int? TrySetFor(TItem item);
         int Union(TItem item1, TItem item2);
         void Remove(TItem item);
-        int Add(TItem item, TSetData data);
+        int AddSet(TSetData setData, TItem item, TItemData itemData);
+        void AddToSet(int setIndex, TItem item, TItemData itemData);
 
         IImmutableDisjointSets<TItem, TItemData, TSetData> ToImmutable();
     }

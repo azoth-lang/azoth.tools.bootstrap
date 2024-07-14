@@ -59,7 +59,6 @@ public sealed class LegacyFlowState : IFlowState
     {
         var bindingType = parameter.BindingType;
         bool sharingIsTracked = parameter.ParameterType.SharingIsTracked();
-
         return Declare(parameter, bindingType, sharingIsTracked, parameter.IsLentBinding);
     }
 
@@ -67,7 +66,6 @@ public sealed class LegacyFlowState : IFlowState
     {
         var bindingType = parameter.BindingType;
         bool sharingIsTracked = parameter.ParameterType.SharingIsTracked();
-
         return Declare(parameter, bindingType, sharingIsTracked, parameter.IsLentBinding);
     }
 
@@ -499,8 +497,8 @@ public sealed class LegacyFlowState : IFlowState
         public LegacyFlowState ToFlowState()
             => new LegacyFlowState(capabilities.ToImmutable(), sets.ToImmutable(), setFor.ToImmutable());
 
-        public void AddFlowCapabilities(IEnumerable<KeyValuePair<ICapabilityValue, FlowCapability>> valueCapability)
-            => capabilities.AddRange(valueCapability);
+        public void AddFlowCapabilities(IEnumerable<KeyValuePair<BindingValue, FlowCapability>> valueCapability)
+            => capabilities.AddRange(valueCapability.Select(p => KeyValuePair.Create((ICapabilityValue)p.Key, p.Value)));
 
         public FlowCapability SetFlowCapability(ICapabilityValue value, FlowCapability flowCapability)
         {

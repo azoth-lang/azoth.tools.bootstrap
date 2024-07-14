@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Framework.Collections;
 internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
     : IImmutableDisjointSets<TItem, TItemData, TSetData>.IBuilder
     where TItem : notnull
-    where TSetData : IMergeable<TSetData>
+    where TSetData : IMergeable<TSetData>, IEquatable<TSetData>
 {
     private readonly ImmutableDictionary<TItem, ItemData<TItemData>>.Builder items;
     private readonly List<IImmutableDisjointSetBuilder<TItem, TSetData>?> sets;
@@ -31,6 +31,9 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
                 setCount -= 1;
             }
     }
+
+    public int? TrySetFor(TItem item)
+        => items.TryGetValue(item, out var data) ? data.SetIndex : null;
 
     public int Union(TItem item1, TItem item2)
         => Union(items[item1].SetIndex, items[item2].SetIndex);
@@ -110,24 +113,51 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
         items.Remove(item);
     }
 
-    public void AddToSet(TItem item, int setIndex) => throw new System.NotImplementedException();
+    public int AddSet(TSetData setData, TItem item, TItemData itemData)
+    {
+        var builder = ImmutableHashSet.CreateBuilder<TItem>();
+        builder.Add(item);
+        var set = new ImmutableDisjointHashSetBuilder<TItem, TSetData>(setData, builder);
 
-    public int Add(TItem item, TSetData data) => throw new System.NotImplementedException();
+        if (emptySets is not null && emptySets.TryDequeue(out var setIndex))
+            sets[setIndex] = set;
+        else
+        {
+            setIndex = sets.Count;
+            sets.Add(set);
+        }
+
+        items.Add(item, new(itemData, setIndex));
+        setCount += 1;
+        return setIndex;
+    }
+
+    public void AddToSet(int setIndex, TItem item, TItemData itemData)
+    {
+        var set = sets[setIndex] ?? throw new ArgumentException("Invalid set index.", nameof(setIndex));
+        items.Add(item, new(itemData, setIndex));
+        var updatedSet = set.Add(item);
+        if (!ReferenceEquals(set, updatedSet))
+            sets[setIndex] = updatedSet;
+    }
 
     public IImmutableDisjointSets<TItem, TItemData, TSetData> ToImmutable()
     {
-        TrimSets();
-        var immutableSets = ImmutableArray.CreateBuilder<ImmutableDisjointHashSet<TItem, TSetData>?>(sets.Count);
+        var setsLength = MinSetsLength();
+        var immutableSets = ImmutableArray.CreateBuilder<ImmutableDisjointHashSet<TItem, TSetData>?>(setsLength);
 
-        foreach (var set in sets)
-            immutableSets.Add(set?.ToImmutable());
+        for (int i = 0; i < setsLength; i++)
+            immutableSets.Add(sets[i]?.ToImmutable());
+
         return new ImmutableDisjointHashSets<TItem, TItemData, TSetData>(
                        items.ToImmutable(), immutableSets.ToImmutable(), setCount);
     }
 
-    private void TrimSets()
+    private int MinSetsLength()
     {
-        while (sets.Count > 0 && sets[^1] is null)
-            sets.RemoveAt(sets.Count - 1);
+        var lastIndex = sets.Count - 1;
+        while (lastIndex >= 0 && sets[lastIndex] is null)
+            lastIndex -= 1;
+        return lastIndex + 1;
     }
 }
