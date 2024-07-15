@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Azoth.Tools.Bootstrap.Framework.Collections;
 
@@ -14,6 +16,11 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
     private readonly List<IImmutableDisjointSetBuilder<TItem, TSetData>?> sets;
     private int setCount;
     private PriorityQueue<int>? emptySets;
+    public int Count => items.Count;
+
+    public IEnumerable<TItem> Items => items.Keys;
+    IEnumerable<TItem> IReadOnlyDictionary<TItem, TItemData>.Keys => items.Keys;
+    IEnumerable<TItemData> IReadOnlyDictionary<TItem, TItemData>.Values => items.Values.Select(d => d.Data);
 
     public ImmutableDisjointHashSetsBuilder(
         ImmutableDictionary<TItem, ItemData<TItemData>> items,
@@ -30,6 +37,32 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
                 emptySets.Enqueue(i);
                 setCount -= 1;
             }
+    }
+
+    public TItemData this[TItem item]
+    {
+        get => items[item].Data;
+        set
+        {
+            // TODO it isn't very efficient to have them read and then we must read again
+            if (items.TryGetValue(item, out var data))
+                items[item] = new(data.Data, data.SetIndex);
+            else
+                throw new ArgumentException("Item not found.", nameof(item));
+        }
+    }
+
+    public bool Contains(TItem item) => items.ContainsKey(item);
+    public bool TryGetValue(TItem key, [MaybeNullWhen(false)] out TItemData value)
+    {
+        if (items.TryGetValue(key, out var data))
+        {
+            value = data.Data;
+            return true;
+        }
+
+        value = default;
+        return false;
     }
 
     public int? TrySetFor(TItem item)
@@ -140,6 +173,10 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
         if (!ReferenceEquals(set, updatedSet))
             sets[setIndex] = updatedSet;
     }
+
+    public IEnumerator<KeyValuePair<TItem, TItemData>> GetEnumerator()
+        // ReSharper disable once NotDisposedResourceIsReturned
+        => items.Select(p => KeyValuePair.Create(p.Key, p.Value.Data)).GetEnumerator();
 
     public IImmutableDisjointSets<TItem, TItemData, TSetData> ToImmutable()
     {

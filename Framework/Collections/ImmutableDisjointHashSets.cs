@@ -70,6 +70,10 @@ public sealed class ImmutableDisjointHashSets<TItem, TItemData, TSetData> : IImm
         public IImmutableDisjointSet<TItem, TSetData> this[TItem item]
             => disjointSets.sets[disjointSets.items[item].SetIndex]!;
 
+        public IImmutableDisjointSet<TItem, TSetData>? TrySetFor(TItem item)
+            => disjointSets.items.TryGetValue(item, out var data)
+                ? disjointSets.sets[data.SetIndex] : null;
+
         public IEnumerator<IImmutableDisjointSet<TItem, TSetData>> GetEnumerator()
             // ReSharper disable once NotDisposedResourceIsReturned
             => disjointSets.sets.WhereNotNull().GetEnumerator();

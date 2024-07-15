@@ -27,13 +27,39 @@ public interface IFlowState : IEquatable<IFlowState>
     // TODO should be a type that doesn't include INamedParameterNode
     IFlowState Declare(INamedBindingNode binding, ValueId? initializerValueId);
 
+    /// <summary>
+    /// Make <paramref name="valueId"/> an alias to the <paramref name="binding"/>.
+    /// </summary>
+    /// <remarks>This does not alias any independent parameters of the binding because only an alias
+    /// to the top level object has been created. For example, if <c>iso List[iso Foo]</c> is aliased
+    /// the list elements are still isolated. Only the list itself has been aliased and is now
+    /// <c>mut</c>.</remarks>
     IFlowState Alias(IBindingNode? binding, ValueId valueId);
+
+    /// <summary>
+    /// Gives the current flow type of the symbol.
+    /// </summary>
+    /// <remarks>This is named for it to be used as <c>flow.Type(symbol)</c></remarks>
     DataType Type(IBindingNode? binding);
+
+
+    /// <summary>
+    /// Gives the type of an alias to the symbol
+    /// </summary>
+    /// <remarks>This is named for it to be used as <c>flow.AliasType(symbol)</c></remarks>
     DataType AliasType(IBindingNode? binding);
+
     bool IsIsolated(IBindingNode? binding);
     bool IsIsolatedExceptFor(IBindingNode? binding, ValueId? valueId);
     bool CanFreezeExceptFor(IBindingNode? binding, ValueId? valueId);
+
+    /// <summary>
+    /// Combine the non-lent values representing the arguments into one sharing set with the return
+    /// value id and drop the values for all arguments.
+    /// </summary>
+    // TODO should storage of return value be based on whether the return type requires tracking?
     IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId);
+
     IFlowState AccessMember(ValueId contextValueId, ValueId valueId, DataType memberType);
     IFlowState Merge(IFlowState? other);
     IFlowState Transform(ValueId? valueId, ValueId intoValueId, DataType withType);
