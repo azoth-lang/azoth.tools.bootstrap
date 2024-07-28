@@ -472,7 +472,9 @@ public static class ExpressionTypesAspect
     public static IFlowState WhileExpression_FlowStateAfter(IWhileExpressionNode node)
         // TODO loop flow state
         // Merge condition with block flow state because the body may not be executed
-        => node.IntermediateCondition?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty;
+        => (node.IntermediateCondition?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty)
+            // TODO when the `while` has a type other than void, correctly handle the value id
+            .Constant(node.ValueId);
 
     public static DataType LoopExpression_Type(ILoopExpressionNode _)
         // TODO assign correct type to the expression
@@ -481,7 +483,9 @@ public static class ExpressionTypesAspect
     public static IFlowState LoopExpression_FlowStateAfter(ILoopExpressionNode node)
         // Body is always executes at least once
         // TODO loop flow state
-        => node.Block.FlowStateAfter;
+        => node.Block.FlowStateAfter
+               // TODO when the `loop` has a type other than void, correctly handle the value id
+               .Constant(node.ValueId);
 
     public static DataType ConversionExpression_Type(IConversionExpressionNode node)
     {
@@ -640,6 +644,10 @@ public static class ExpressionTypesAspect
     }
 
     public static IFlowState ReturnExpression_FlowStateAfter(IReturnExpressionNode node)
+        // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
+        => IFlowState.Empty.Constant(node.ValueId);
+
+    public static IFlowState BreakExpression_FlowStateAfter(IBreakExpressionNode node)
         // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
         => IFlowState.Empty.Constant(node.ValueId);
 }

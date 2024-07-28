@@ -39,6 +39,6 @@ internal static class ForeachExpressionTypeAspect
 
     public static IFlowState ForeachExpression_FlowStateAfter(IForeachExpressionNode node)
         => (node.IntermediateInExpression?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty)
-            // TODO when the foreach has a type other than void, correctly handle the value id
+            // TODO when the `foreach` has a type other than void, correctly handle the value id
             .Constant(node.ValueId);
 }
