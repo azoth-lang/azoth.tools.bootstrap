@@ -38,9 +38,9 @@ public class Diagnostics : IReadOnlyCollection<Diagnostic>
 
 public static class DiagnosticsExtensions
 {
-    public static void ThrowIfFatalErrors(this IReadOnlyCollection<Diagnostic> items)
+    public static void ThrowIfFatalErrors(this Diagnostics items)
     {
         if (items.Any(i => i.IsFatal))
-            throw new FatalCompilationErrorException(items.ToFixedList());
+            throw new FatalCompilationErrorException(items.Build());
     }
 }
