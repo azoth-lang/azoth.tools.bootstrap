@@ -21,6 +21,7 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     public IAmbiguousExpressionNode Value
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
+    public IAmbiguousExpressionNode CurrentValue => value.UnsafeValue;
     public IExpressionNode? IntermediateValue => Value as IExpressionNode;
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     public ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
@@ -59,5 +60,14 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
         this.value = Child.Create(this, value);
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
         ReferencedDeclaration = referencedDeclaration;
+    }
+
+    internal override IFlowState InheritedFlowStateBefore(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+    {
+        if (child == CurrentValue) return Context.FlowStateAfter;
+        return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 }

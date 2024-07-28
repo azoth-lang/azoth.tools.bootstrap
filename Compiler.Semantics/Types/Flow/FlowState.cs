@@ -191,7 +191,8 @@ internal sealed class FlowState : IFlowState
 
         var builder = ToBuilder();
         // Union sets for all non-lent arguments
-        int? set = builder.Union(argumentResults.Where(a => !a.IsLent).Select(a => a.Value));
+        int? set = builder.Union(argumentResults.Where(a => !a.IsLent && !untrackedValues.Contains(a.Value))
+                                                .Select(a => a.Value));
 
         // Add the return value to the unioned set
         // TODO what is the correct flow capability for the result?

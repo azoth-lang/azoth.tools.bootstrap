@@ -650,4 +650,12 @@ public static class ExpressionTypesAspect
     public static IFlowState BreakExpression_FlowStateAfter(IBreakExpressionNode node)
         // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
         => IFlowState.Empty.Constant(node.ValueId);
+
+    public static IFlowState NextExpression_FlowStateAfter(INextExpressionNode node)
+        // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
+        => IFlowState.Empty.Constant(node.ValueId);
+
+    public static IFlowState PatternMatchExpression_FlowStateAfter(IPatternMatchExpressionNode node)
+        // Constant for the boolean result of the pattern match
+        => node.Pattern.FlowStateAfter.Constant(node.ValueId);
 }

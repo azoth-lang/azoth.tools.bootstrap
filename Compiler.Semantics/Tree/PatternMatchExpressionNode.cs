@@ -21,7 +21,13 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     public IPatternNode Pattern { get; }
     public override IMaybeExpressionAntetype Antetype => IAntetype.Bool;
     public override DataType Type => DataType.Bool;
-    public override IFlowState FlowStateAfter => Pattern.FlowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public override IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached)
+            ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.PatternMatchExpression_FlowStateAfter);
 
     public PatternMatchExpressionNode(
         IPatternMatchExpressionSyntax syntax,
