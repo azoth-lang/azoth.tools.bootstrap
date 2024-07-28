@@ -158,8 +158,8 @@ public partial interface IForeachExpressionNode
 {
     // TODO some way to code gen this hiding
     IdentifierName INamedBindingDeclarationNode.Name => VariableName;
-
     PackageNameScope InheritedPackageNameScope();
+    new ValueId ValueId { get; }
 }
 #endregion
 

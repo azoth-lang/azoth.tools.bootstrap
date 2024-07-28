@@ -233,35 +233,31 @@ internal sealed class FlowState : IFlowState
             throw new InvalidOperationException($"Cannot merge flow state of type {other.GetType()}.");
 
         var builder = ToBuilder();
-        throw new NotImplementedException();
+        foreach (var otherSet in otherFlowState.values.Sets)
+        {
+            int? set = null;
+            foreach (var value in otherSet.OfType<ICapabilityValue>())
+            {
+                var valueSet = builder.TrySetFor(value);
+                if (valueSet is null)
+                {
+                    // Add any value that doesn't exist in the current flow state
+                    valueSet = builder.AddSet(otherSet.Data.IsLent, value, otherFlowState.values[value]);
+                    builder.MarkTracked(value); // In case it was untracked, mark it as tracked
+                }
+                // TODO else merge capabilities
 
-        //foreach (var otherSet in otherFlowState.sets)
-        //{
-        //    if (!otherSet.Any(builder.Contains))
-        //    {
-        //        // Whole set is missing, add it to the flow state (safe because it is immutable)
-        //        builder.AddSet(otherSet);
-        //        continue;
-        //    }
+                set = builder.Union(set, valueSet);
+            }
+            // TODO marge "lent" state
+        }
 
-        //    // Union all the sets together since they all contain items in the same set in the
-        //    // other flow state. (Doing this as a single operation is more efficient). Also include
-        //    // the other set for any values or conversions that don't exist in the current flow state.
-        //    var setsToUnion = otherSet.Select(builder.TrySetFor).WhereNotNull().Append(otherSet);
-        //    builder.Union(setsToUnion);
-        //}
+        // Add any untracked values that don't exist in the current flow state
+        foreach (var value in otherFlowState.untrackedValues)
+            if (!values.Contains(value))
+                builder.AddUntracked(value);
 
-        //foreach (var (value, flowCapability) in otherFlowState.capabilities)
-        //{
-        //    var existingCapability = builder.TryCapabilityFor(value);
-        //    if (existingCapability is null)
-        //        builder.TrackFlowCapability(value, flowCapability);
-        //    else if (existingCapability != flowCapability)
-        //        throw new InvalidOperationException(
-        //            $"Flow capability for {value} changed from {existingCapability} to {flowCapability}.");
-        //}
-
-        //return builder.ToImmutable();
+        return builder.ToImmutable();
     }
 
     public IFlowState Transform(ValueId? valueId, ValueId intoValueId, DataType withType)
@@ -489,6 +485,8 @@ internal sealed class FlowState : IFlowState
 
         public void AddUntracked(IValue value) => untrackedValues.Add(value);
 
+        public void MarkTracked(ICapabilityValue value) => untrackedValues.Remove(value);
+
         public int AddSet(bool isLent, ICapabilityValue value, FlowCapability flowCapability)
             => values.AddSet(new(isLent), value, flowCapability);
 
@@ -543,7 +541,10 @@ internal sealed class FlowState : IFlowState
             int? set = null;
             foreach (var value in values)
             {
-                var valueSet = this.values.TrySetFor(value);
+                if (untrackedValues.Contains(value))
+                    continue;
+                var valueSet = this.values.TrySetFor(value)
+                               ?? throw new InvalidOperationException("Attempt to union value that is not in flow state");
                 set = Union(set, valueSet);
             }
             return set;
