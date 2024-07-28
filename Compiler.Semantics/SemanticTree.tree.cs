@@ -1105,6 +1105,7 @@ public partial interface IStatementNode : ISemanticNode, ICodeNode
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IMaybeAntetype? ResultAntetype { get; }
     DataType? ResultType { get; }
+    ValueId? ResultValueId { get; }
     IFlowState FlowStateAfter { get; }
 }
 

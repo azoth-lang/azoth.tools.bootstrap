@@ -153,7 +153,7 @@ public sealed class LegacyFlowState : IFlowState
         return builder.ToFlowState();
     }
 
-    public IFlowState Literal(ILiteralExpressionNode literal)
+    public IFlowState Constant(ValueId valueId)
         // Constants are not tracked at all in this implementation
         => this;
 

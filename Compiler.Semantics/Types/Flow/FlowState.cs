@@ -98,10 +98,10 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IFlowState Literal(ILiteralExpressionNode literal)
+    public IFlowState Constant(ValueId valueId)
     {
         var builder = ToBuilder();
-        var value = ResultValue.Create(literal.ValueId);
+        var value = ResultValue.Create(valueId);
         builder.AddUntracked(value);
         return builder.ToImmutable();
     }
@@ -271,6 +271,7 @@ internal sealed class FlowState : IFlowState
         var builder = ToBuilder();
         var fromValue = ResultValue.Create(fromValueId);
         var intoValue = ResultValue.Create(intoValueId);
+        // TODO if the original value was untracked, does that meant the result should be untracked?
         if (withType.SharingIsTracked())
         {
             FlowCapability flowCapability = default;
@@ -311,11 +312,6 @@ internal sealed class FlowState : IFlowState
 
     private FlowState Freeze(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
     {
-        var oldValue = ResultValue.Create(valueId);
-        if (!values.Contains(oldValue))
-            // TODO shouldn't this be an error?
-            return this;
-
         var builder = ToBuilder();
         if (binding is not null)
         {
@@ -325,6 +321,7 @@ internal sealed class FlowState : IFlowState
                 builder.UpdateCapability(bindingValue, c => c.AfterFreeze());
         }
 
+        var oldValue = ResultValue.Create(valueId);
         var newValue = ResultValue.Create(intoValueId);
         // If the value could reference `temp const` data, then it needs to be tracked. (However,
         // that could be detected by looking at whether the set is lent or not, correct?)
@@ -342,30 +339,26 @@ internal sealed class FlowState : IFlowState
 
     private FlowState Move(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
     {
-        var oldValue = ResultValue.Create(valueId);
-        if (!values.Contains(oldValue)) return this;
-
         var builder = ToBuilder();
-
+        var oldValue = ResultValue.Create(valueId);
         var newValue = ResultValue.Create(intoValueId);
-        var set = builder.TrySetFor(oldValue) ?? throw new InvalidOperationException();
-        builder.AddToSet(set, newValue, default); // TODO what is the correct flow capability for the result?
+        if (builder.TrySetFor(oldValue) is int set)
+            builder.AddToSet(set, newValue, default); // TODO what is the correct flow capability for the result?
+        else
+            builder.AddUntracked(newValue);
 
         if (binding is not null)
         {
             var bindingValues = BindingValue
                                 .ForType(binding.ValueId, (CapabilityType)binding.BindingType.ToUpperBound())
+                                .Where(p => p.Value.Original.SharingIsTracked())
                                 .Select(p => p.Key);
             foreach (var bindingValue in bindingValues)
-            {
+                // TODO these are now `id`, doesn't that mean they no longer need tracked?
                 builder.UpdateCapability(bindingValue, c => c.AfterMove());
-            }
-
-            // Old binding values are now `id` and no longer need tracked
-            // TODO but then why update them?
-            builder.Remove(oldValue);
         }
 
+        // Old binding values are now `id` and no longer need tracked
         builder.Remove(oldValue);
         return builder.ToImmutable();
     }
@@ -422,6 +415,7 @@ internal sealed class FlowState : IFlowState
         // Check collection sizes first to avoid iterating over the collections
         if (values.Count != other.values.Count
             || values.Sets.Count != other.values.Sets.Count
+            || untrackedValues.Count != other.untrackedValues.Count
             // Check the hash code first since it is cached
             || GetHashCode() != other.GetHashCode())
             return false;
@@ -429,6 +423,7 @@ internal sealed class FlowState : IFlowState
         // Already checked that the sizes are the same, so it suffices to check that all the
         // entries in one are in the other and equal.
         return values.All(p => other.values.TryGetValue(p.Key, out var value) && p.Value.Equals(value))
+               && untrackedValues.SetEquals(other.untrackedValues)
                // Check the sets last since they are the most expensive to compare
                && AreEqual(values.Sets, other.values.Sets);
     }
@@ -468,6 +463,7 @@ internal sealed class FlowState : IFlowState
         hash.Add(values.Sets.Count);
         foreach (var set in values.Sets.OrderByDescending(s => s.Count))
             hash.Add(set.Count);
+        hash.Add(untrackedValues.Count);
         return hash.ToHashCode();
     }
     #endregion

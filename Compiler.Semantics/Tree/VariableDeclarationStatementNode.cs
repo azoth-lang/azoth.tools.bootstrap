@@ -57,6 +57,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
             : this.Synthetic(ref bindingTypeCached, ref bindingType, NameBindingTypesAspect.VariableDeclarationStatement_BindingType);
     public override IMaybeAntetype? ResultAntetype => null;
     public override DataType? ResultType => null;
+    public override ValueId? ResultValueId => null;
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter

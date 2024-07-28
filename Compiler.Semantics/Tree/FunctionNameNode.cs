@@ -30,8 +30,13 @@ internal sealed class FunctionNameNode : AmbiguousNameExpressionNode, IFunctionN
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.FunctionName_Type);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter
-        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+        => GrammarAttribute.IsCached(in flowStateAfterCached)
+            ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.FunctionName_FlowStateAfter);
 
     public FunctionNameNode(
         INameExpressionSyntax syntax,
@@ -42,4 +47,7 @@ internal sealed class FunctionNameNode : AmbiguousNameExpressionNode, IFunctionN
         this.functionGroup = Child.Create(this, functionGroup);
         ReferencedDeclaration = referencedDeclaration;
     }
+
+    public IFlowState FlowStateBefore()
+        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 }

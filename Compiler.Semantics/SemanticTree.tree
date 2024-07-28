@@ -230,7 +230,8 @@ CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSynta
 SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type NamedSelfType:`Pseudotype`?;
 
 // ---------- Statements
-Statement <: Code = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`? ResultType:`DataType`? FlowStateAfter:`IFlowState`;
+Statement <: Code = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?
+    ResultType:`DataType`? ResultValueId:`ValueId`? FlowStateAfter:`IFlowState`;
 ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax`
     Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
 BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;

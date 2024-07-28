@@ -19,6 +19,7 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
     public IExpressionNode? IntermediateExpression => Expression as IExpressionNode;
     public override IMaybeAntetype? ResultAntetype => null;
     public override DataType? ResultType => null;
+    public override ValueId? ResultValueId => null;
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter

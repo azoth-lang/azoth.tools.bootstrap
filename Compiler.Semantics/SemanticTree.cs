@@ -127,6 +127,7 @@ public partial interface IBlockExpressionNode
     new DataType Type { get; }
     DataType IBlockOrResultNode.Type => Type;
     DataType IExpressionNode.Type => Type;
+    new ValueId ValueId { get; }
     IFlowState FlowStateBefore();
     new IFlowState FlowStateAfter { get; }
 }
@@ -136,7 +137,9 @@ public partial interface INewObjectExpressionNode
     PackageNameScope InheritedPackageNameScope();
     IFlowState FlowStateBefore();
 }
+#endregion
 
+#region Literal Expressions
 public partial interface ILiteralExpressionNode
 {
     IFlowState FlowStateBefore();
@@ -180,6 +183,11 @@ public partial interface IMemberAccessExpressionNode
 #endregion
 
 #region Name Expressions
+public partial interface IFunctionNameNode
+{
+    IFlowState FlowStateBefore();
+}
+
 public partial interface IVariableNameExpressionNode
 {
     IFlowState FlowStateBefore();

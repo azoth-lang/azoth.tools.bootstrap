@@ -12,6 +12,7 @@ internal abstract class StatementNode : CodeNode, IStatementNode
     public abstract override IStatementSyntax Syntax { get; }
     public abstract IMaybeAntetype? ResultAntetype { get; }
     public abstract DataType? ResultType { get; }
+    public abstract ValueId? ResultValueId { get; }
     public abstract IFlowState FlowStateAfter { get; }
 
     private protected StatementNode() { }

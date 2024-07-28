@@ -75,7 +75,7 @@ public static class ExpressionTypesAspect
         var intermediateReferent = node.IntermediateReferent;
         if (intermediateReferent is null)
             return IFlowState.Empty;
-        return intermediateReferent.FlowStateAfter.Combine(intermediateReferent.ValueId, null, node.ValueId);
+        return intermediateReferent.FlowStateAfter.Transform(intermediateReferent.ValueId, node.ValueId, node.Type);
     }
 
     public static void IdExpression_ContributeDiagnostics(IIdExpressionNode node, Diagnostics diagnostics)
@@ -159,7 +159,7 @@ public static class ExpressionTypesAspect
     }
 
     public static IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node)
-        => node.FlowStateBefore().Literal(node);
+        => node.FlowStateBefore().Constant(node.ValueId);
 
     public static void StringLiteralExpression_ContributeDiagnostics(
         IStringLiteralExpressionNode node,
@@ -419,7 +419,10 @@ public static class ExpressionTypesAspect
     }
 
     public static IFlowState BinaryOperatorExpression_FlowStateAfter(IBinaryOperatorExpressionNode node)
-        => node.IntermediateRightOperand?.FlowStateAfter ?? IFlowState.Empty;
+        // Left and right are swapped here because right is known to not be null while left may be null and order doesn't matter to combine
+        => node.IntermediateRightOperand?.FlowStateAfter.Combine(
+            node.IntermediateRightOperand.ValueId, node.IntermediateLeftOperand?.ValueId, node.ValueId)
+           ?? IFlowState.Empty;
 
     public static DataType IfExpression_Type(IIfExpressionNode node)
     {
@@ -452,8 +455,15 @@ public static class ExpressionTypesAspect
     }
 
     public static IFlowState BlockExpression_FlowStateAfter(IBlockExpressionNode node)
-        => (node.Statements.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore())
-            .DropBindings(node.Statements.OfType<IVariableDeclarationStatementNode>());
+    {
+        var flowState = (node.Statements.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore()).DropBindings(
+            node.Statements.OfType<IVariableDeclarationStatementNode>());
+        foreach (var statement in node.Statements)
+            if (statement.ResultValueId is ValueId resultValueId)
+                return flowState.Transform(resultValueId, node.ValueId, node.Type);
+
+        return flowState.Constant(node.ValueId);
+    }
 
     public static DataType WhileExpression_Type(IWhileExpressionNode _)
         // TODO assign correct type to the expression
@@ -518,10 +528,14 @@ public static class ExpressionTypesAspect
         };
 
     public static IFlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)
-        => node.IntermediateOperand?.FlowStateAfter.Combine(node.IntermediateOperand.ValueId, null, node.ValueId) ?? IFlowState.Empty;
+        => node.IntermediateOperand?.FlowStateAfter.Transform(node.IntermediateOperand.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
 
     public static DataType FunctionName_Type(IFunctionNameNode node)
         => node.ReferencedDeclaration?.Type ?? DataType.Unknown;
+
+    public static IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node)
+        => node.FlowStateBefore().Constant(node.ValueId);
+
 
     public static DataType FreezeExpression_Type(IFreezeExpressionNode node)
     {
@@ -624,4 +638,8 @@ public static class ExpressionTypesAspect
 
         return intermediateExpression.FlowStateAfter.DropValue(intermediateExpression.ValueId);
     }
+
+    public static IFlowState ReturnExpression_FlowStateAfter(IReturnExpressionNode node)
+        // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
+        => IFlowState.Empty.Constant(node.ValueId);
 }
