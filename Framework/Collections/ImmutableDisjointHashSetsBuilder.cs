@@ -46,7 +46,7 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
         {
             // TODO it isn't very efficient to have them read and then we must read again
             if (items.TryGetValue(item, out var data))
-                items[item] = new(data.Data, data.SetIndex);
+                items[item] = data with { Data = value };
             else
                 throw new ArgumentException("Item not found.", nameof(item));
         }

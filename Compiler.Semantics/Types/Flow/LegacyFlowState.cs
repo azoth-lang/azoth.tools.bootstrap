@@ -153,6 +153,10 @@ public sealed class LegacyFlowState : IFlowState
         return builder.ToFlowState();
     }
 
+    public IFlowState Literal(ILiteralExpressionNode literal)
+        // Constants are not tracked at all in this implementation
+        => this;
+
     /// <summary>
     /// Make <paramref name="valueId"/> an alias to the <paramref name="binding"/>.
     /// </summary>
@@ -390,7 +394,7 @@ public sealed class LegacyFlowState : IFlowState
         if (binding is not null)
         {
             var bindingValuePairs = BindingValue.ForType(binding.ValueId, (CapabilityType)binding.BindingType.ToUpperBound());
-            foreach (var bindingValue in bindingValuePairs.Select(p => p.Key).Cast<BindingValue>())
+            foreach (var bindingValue in bindingValuePairs.Select(p => p.Key))
                 builder.SetFlowCapability(bindingValue, capabilities[bindingValue].AfterFreeze());
         }
 
@@ -418,7 +422,7 @@ public sealed class LegacyFlowState : IFlowState
         if (binding is not null)
         {
             var bindingValues = BindingValue.ForType(binding.ValueId, (CapabilityType)binding.BindingType.ToUpperBound())
-                                            .Select(p => p.Key).Cast<BindingValue>().ToList();
+                                            .Select(p => p.Key).ToList();
             foreach (var bindingValue in bindingValues)
                 builder.SetFlowCapability(bindingValue, capabilities[bindingValue].AfterMove());
 

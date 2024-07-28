@@ -27,6 +27,8 @@ public interface IFlowState : IEquatable<IFlowState>
     // TODO should be a type that doesn't include INamedParameterNode
     IFlowState Declare(INamedBindingNode binding, ValueId? initializerValueId);
 
+    IFlowState Literal(ILiteralExpressionNode literal);
+
     /// <summary>
     /// Make <paramref name="valueId"/> an alias to the <paramref name="binding"/>.
     /// </summary>

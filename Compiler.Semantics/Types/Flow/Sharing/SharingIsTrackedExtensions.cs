@@ -45,9 +45,12 @@ internal static class SharingIsTrackedExtensions
         if (type is not CapabilityType { Capability: var capability })
             return false;
 
-        // Constant and Identity capabilities never need tracked
-        return capability != Capability.Constant && capability != Capability.Identity;
+        return capability.SharingIsTracked();
     }
+
+    public static bool SharingIsTracked(this Capability capability)
+        // Constant and Identity capabilities never need tracked
+        => capability != Capability.Constant && capability != Capability.Identity;
 
     public static bool SharingIsTracked(this IBindingNode node, FlowCapability flowCapability)
     {

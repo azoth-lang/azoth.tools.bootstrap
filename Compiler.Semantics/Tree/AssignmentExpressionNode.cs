@@ -58,6 +58,15 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     public override ConditionalLexicalScope GetFlowLexicalScope()
         => LexicalScopingAspect.AssignmentExpression_GetFlowLexicalScope(this);
 
+    internal override IFlowState InheritedFlowStateBefore(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+    {
+        if (child == CurrentRightOperand) return LeftOperand.FlowStateAfter;
+        return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
+
     protected override IChildNode? Rewrite()
         => BindingAmbiguousNamesAspect.AssignmentExpression_Rewrite_PropertyNameLeftOperand(this) ?? base.Rewrite();
 }

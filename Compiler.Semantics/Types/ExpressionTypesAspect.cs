@@ -158,6 +158,9 @@ public static class ExpressionTypesAspect
         return typeSymbolNode?.Symbol.GetDeclaredType()?.With(Capability.Constant, FixedList.Empty<DataType>()) ?? DataType.Unknown;
     }
 
+    public static IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node)
+        => node.FlowStateBefore().Literal(node);
+
     public static void StringLiteralExpression_ContributeDiagnostics(
         IStringLiteralExpressionNode node,
         Diagnostics diagnostics)

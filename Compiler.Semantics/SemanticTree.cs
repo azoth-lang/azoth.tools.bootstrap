@@ -136,6 +136,11 @@ public partial interface INewObjectExpressionNode
     PackageNameScope InheritedPackageNameScope();
     IFlowState FlowStateBefore();
 }
+
+public partial interface ILiteralExpressionNode
+{
+    IFlowState FlowStateBefore();
+}
 #endregion
 
 #region Control Flow Expressions
