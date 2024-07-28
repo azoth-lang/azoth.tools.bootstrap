@@ -558,8 +558,7 @@ public static class ExpressionTypesAspect
 
         if (!capabilityType.AllowsFreeze)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow freezing"));
-        // TODO the condition below may need to be added since temp freeze can just restrict all references
-        else if (/*!node.IsTemporary &&*/ !node.Referent.FlowStateAfter.CanFreezeExceptFor(node.Referent.ReferencedDefinition, node.Referent.ValueId))
+        else if (!node.IsTemporary && !node.Referent.FlowStateAfter.CanFreezeExceptFor(node.Referent.ReferencedDefinition, node.Referent.ValueId))
             diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
     }
 
