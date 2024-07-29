@@ -57,4 +57,15 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
 
     public IFlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+
+    internal override IFlowState InheritedFlowStateBefore(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+    {
+        if (child is IAmbiguousExpressionNode ambiguousExpression
+            && arguments.Current.IndexOf(ambiguousExpression) is int index and > 0)
+            return IntermediateArguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
+        return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
 }
