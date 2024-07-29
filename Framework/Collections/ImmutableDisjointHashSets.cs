@@ -61,7 +61,11 @@ public sealed class ImmutableDisjointHashSets<TItem, TItemData, TSetData> : IImm
         => items.Select(p => KeyValuePair.Create(p.Key, p.Value.Data)).GetEnumerator();
 
     public IImmutableDisjointSets<TItem, TItemData, TSetData>.IBuilder ToBuilder()
-        => new ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>(items, sets);
+        => new ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>(items, sets, null);
+
+    public IImmutableDisjointSets<TItem, TItemData, TSetData>.IBuilder ToBuilder(
+        Action<IImmutableDisjointSets<TItem, TItemData, TSetData>.IBuilder, TSetData> setRemoved)
+        => new ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>(items, sets, setRemoved);
 
     private sealed class SetCollection(ImmutableDisjointHashSets<TItem, TItemData, TSetData> disjointSets) : IImmutableDisjointSets<TItem, TItemData, TSetData>.ISetCollection
     {

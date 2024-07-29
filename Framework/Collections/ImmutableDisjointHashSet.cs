@@ -48,6 +48,13 @@ internal sealed class ImmutableDisjointHashSet<TItem, TSetData>
         return new ImmutableDisjointHashSetBuilder<TItem, TSetData>(Data, builder);
     }
 
+    public IImmutableDisjointSetBuilder<TItem, TSetData> Update(Func<TSetData, TSetData> update)
+    {
+        var data = update(Data);
+        var builder = values.ToBuilder();
+        return new ImmutableDisjointHashSetBuilder<TItem, TSetData>(data, builder);
+    }
+
     public IEnumerator<TItem> GetEnumerator()
         // ReSharper disable once NotDisposedResourceIsReturned
         => values.GetEnumerator();

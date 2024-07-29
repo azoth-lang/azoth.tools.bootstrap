@@ -35,6 +35,8 @@ internal class RewritableChildList<TNode, TChild> : IRewritableChildList<TChild>
 
     public int Count => children.Count;
 
+    public bool IsEmpty => Count == 0;
+
     public TChild this[int index] => Get(index);
 
     [Inline]
@@ -55,6 +57,8 @@ internal class RewritableChildList<TNode, TChild> : IRewritableChildList<TChild>
     private sealed class CurrentList(Buffer<RewritableChild<TChild>> children) : IFixedList<TChild>
     {
         public int Count => children.Count;
+
+        public bool IsEmpty => Count == 0;
 
         public TChild this[int index] => children[index].UnsafeValue;
 
@@ -84,6 +88,8 @@ internal sealed class RewritableChildList<TNode, TChild, TFinal> : RewritableChi
     private sealed class IntermediateList(RewritableChildList<TNode, TChild> children) : IFixedList<TFinal?>
     {
         public int Count => children.Count;
+
+        public bool IsEmpty => Count == 0;
 
         public TFinal? this[int index] => children[index] as TFinal;
 

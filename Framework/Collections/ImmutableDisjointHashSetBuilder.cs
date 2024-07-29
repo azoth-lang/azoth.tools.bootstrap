@@ -37,6 +37,12 @@ internal class ImmutableDisjointHashSetBuilder<TItem, TSetData> : IImmutableDisj
         return values.Count == 0 ? null : this;
     }
 
+    public IImmutableDisjointSetBuilder<TItem, TSetData> Update(Func<TSetData, TSetData> update)
+    {
+        Data = update(Data);
+        return this;
+    }
+
     public IEnumerator<TItem> GetEnumerator()
         // ReSharper disable once NotDisposedResourceIsReturned
         => values.GetEnumerator();

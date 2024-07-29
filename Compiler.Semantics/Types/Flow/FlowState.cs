@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Framework.Collections;
+using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
@@ -368,24 +369,17 @@ internal sealed class FlowState : IFlowState
 
     private FlowState TemporarilyConvert(ValueId valueId, ValueId intoValueId, TempConversionTo to)
     {
-        var oldValue = ResultValue.Create(valueId);
-        if (!values.Contains(oldValue))
-            // TODO shouldn't this be an error?
-            return this;
-
         var builder = ToBuilder();
+        var oldValue = ResultValue.Create(valueId);
         var currentFlowCapabilities = builder[oldValue];
+        var oldSet = builder.Remove(oldValue)!.Value;
+        builder.UpdateSet(oldSet, state => state.Add(to.From));
+        builder.ApplyRestrictions(oldSet);
+
         var newValue = ResultValue.Create(intoValueId);
-        builder.UpdateCapability(newValue, c => c.With(to.Capability));
-        throw new NotImplementedException();
-        //var currentFlowCapabilities = builder.CapabilityFor(oldValue);
-        //var newValue = ResultValue.Create(intoValueId);
-        //builder.TrackFlowCapability(newValue, currentFlowCapabilities.With(to.Capability));
-        //var newSet = oldSet.Replace(oldValue, to.From);
-        //builder.UpdateSet(oldSet, newSet);
-        //builder.AddSet(SharingSet.DeclareConversion(true, newValue, to));
-        //builder.ApplyRestrictions(newSet);
-        //return builder.ToImmutable();
+        var newFlowCapabilities = currentFlowCapabilities.With(to.Capability);
+        builder.AddSet(new SharingSetState(true, to), newValue, newFlowCapabilities);
+        return builder.ToImmutable();
     }
 
     public IFlowState DropBindings(IEnumerable<INamedBindingNode> bindings)
@@ -476,9 +470,38 @@ internal sealed class FlowState : IFlowState
         public Builder(IImmutableDisjointSets<IValue, FlowCapability, SharingSetState> values,
             ImmutableHashSet<IValue> untrackedValues)
         {
-            this.values = values.ToBuilder();
+            this.values = values.ToBuilder(SetRemoved);
             this.untrackedValues = untrackedValues.ToBuilder();
         }
+
+        private static void SetRemoved(
+            IImmutableDisjointSets<IValue, FlowCapability, SharingSetState>.IBuilder values,
+            SharingSetState state)
+        {
+            if (!state.Conversions.IsEmpty)
+                DropConversions(values, state.Conversions.OfType<TempConversionTo>().Select(c => c.From));
+        }
+
+        private static void DropConversions(
+            IImmutableDisjointSets<IValue, FlowCapability, SharingSetState>.IBuilder values,
+            IEnumerable<IConversion> conversionsRemoved)
+        {
+            var conversionsRemovedList = conversionsRemoved.ToFixedList();
+            if (conversionsRemovedList.IsEmpty)
+                // Avoid calling GetSetsForConversions if there are no conversions
+                return;
+            var setForConversion = GetSetsForConversions(values);
+            foreach (var conversions in conversionsRemovedList.GroupBy(c => setForConversion[c]))
+            {
+                var setIndex = conversions.Key;
+                values.UpdateSet(setIndex, d => d.Remove(conversions));
+                LiftRemovedRestrictions(values, setIndex);
+            }
+        }
+
+        private static Dictionary<IConversion, int> GetSetsForConversions(
+            IImmutableDisjointSets<IValue, FlowCapability, SharingSetState>.IBuilder values)
+            => values.SetData().SelectMany(p => p.Value.Conversions.Select(c => (c, p.Key))).ToDictionary();
 
         public FlowCapability this[ICapabilityValue value] => values[value];
 
@@ -491,12 +514,16 @@ internal sealed class FlowState : IFlowState
         public int AddSet(bool isLent, ICapabilityValue value, FlowCapability flowCapability)
             => values.AddSet(new(isLent), value, flowCapability);
 
+        public int AddSet(SharingSetState setState, ICapabilityValue value, FlowCapability flowCapability)
+            => values.AddSet(setState, value, flowCapability);
+
         public void AddSet(bool isLent, BindingValue value, FlowCapability flowCapability, ExternalReference reference)
         {
             var setId = values.AddSet(new(isLent), value, flowCapability);
             values.AddToSet(setId, reference, default);
         }
 
+        [Inline]
         private int NonLentParametersSet()
         {
             if (values.TrySetFor(ExternalReference.NonLentParameters) is int set) return set;
@@ -518,11 +545,8 @@ internal sealed class FlowState : IFlowState
                 AddSet(isLent, value, flowCapability);
         }
 
-        public void Remove(IValue value)
-        {
-            if (!untrackedValues.Remove(value))
-                values.Remove(value);
-        }
+        public int? Remove(IValue value)
+            => untrackedValues.Remove(value) ? null : values.Remove(value);
 
         public void Remove(IEnumerable<IValue> values)
         {
@@ -551,8 +575,32 @@ internal sealed class FlowState : IFlowState
             return set;
         }
 
+        public void UpdateSet(int set, Func<SharingSetState, SharingSetState> update)
+            => values.UpdateSet(set, update);
+
         public void UpdateCapability(ICapabilityValue value, Func<FlowCapability, FlowCapability> transform)
             => values[value] = transform(values[value]);
+
+        public void ApplyRestrictions(int set)
+            => ApplyRestrictions(values, set, applyReadWriteRestriction: true);
+
+        private static void ApplyRestrictions(
+            IImmutableDisjointSets<IValue, FlowCapability, SharingSetState>.IBuilder values,
+            int set,
+            bool applyReadWriteRestriction)
+        {
+            var restrictions = values.SetData(set).Restrictions;
+            if (!applyReadWriteRestriction && restrictions == CapabilityRestrictions.ReadWrite) return;
+            foreach (var value in values.SetItems(set))
+                values[value] = values[value].WithRestrictions(restrictions);
+        }
+
+        [Inline]
+        private static void LiftRemovedRestrictions(
+                IImmutableDisjointSets<IValue, FlowCapability, SharingSetState>.IBuilder values,
+                int set)
+            // Don't apply read/write restrictions since they have already been applied
+            => ApplyRestrictions(values, set, applyReadWriteRestriction: false);
 
         public FlowState ToImmutable()
             => new(values.ToImmutable(), untrackedValues.ToImmutable());

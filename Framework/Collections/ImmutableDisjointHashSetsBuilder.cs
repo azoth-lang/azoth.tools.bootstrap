@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Framework.Collections;
 
@@ -16,6 +17,7 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
     private readonly List<IImmutableDisjointSetBuilder<TItem, TSetData>?> sets;
     private int setCount;
     private PriorityQueue<int>? emptySets;
+    private readonly Action<IImmutableDisjointSets<TItem, TItemData, TSetData>.IBuilder, TSetData>? setRemoved;
     public int Count => items.Count;
 
     public IEnumerable<TItem> Items => items.Keys;
@@ -24,7 +26,8 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
 
     public ImmutableDisjointHashSetsBuilder(
         ImmutableDictionary<TItem, ItemData<TItemData>> items,
-        ImmutableArray<ImmutableDisjointHashSet<TItem, TSetData>?> sets)
+        ImmutableArray<ImmutableDisjointHashSet<TItem, TSetData>?> sets,
+        Action<IImmutableDisjointSets<TItem, TItemData, TSetData>.IBuilder, TSetData>? setRemoved)
     {
         Requires.That(nameof(sets), sets.Length == 0 || sets[^1] is not null, "Must not be empty sets at end");
         this.items = items.ToBuilder();
@@ -37,6 +40,7 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
                 emptySets.Enqueue(i);
                 setCount -= 1;
             }
+        this.setRemoved = setRemoved;
     }
 
     public TItemData this[TItem item]
@@ -68,6 +72,21 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
     public int? TrySetFor(TItem item)
         => items.TryGetValue(item, out var data) ? data.SetIndex : null;
 
+
+    [Inline]
+    private IImmutableDisjointSetBuilder<TItem, TSetData> Set(int setIndex, string? paramName = null)
+        => sets[setIndex] ?? throw new ArgumentException("Invalid set index.", paramName ?? nameof(setIndex));
+
+    public IEnumerable<KeyValuePair<int, TSetData>> SetData()
+        => sets.Enumerate().Where(p => p.Value is not null)
+               .Select(p => KeyValuePair.Create(p.Index, p.Value!.Data));
+
+    public TSetData SetData(int setIndex)
+        => Set(setIndex).Data;
+
+    public IEnumerable<TItem> SetItems(int setIndex)
+        => Set(setIndex);
+
     public int Union(TItem item1, TItem item2)
         => Union(items[item1].SetIndex, items[item2].SetIndex);
 
@@ -75,8 +94,8 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
     {
         if (setIndex1 == setIndex2)
             return setIndex1;
-        var set1 = sets[setIndex1] ?? throw new ArgumentException("Must be a valid set index", nameof(setIndex1));
-        var set2 = sets[setIndex2] ?? throw new ArgumentException("Must be a valid set index", nameof(setIndex2));
+        var set1 = Set(setIndex1, nameof(setIndex1));
+        var set2 = Set(setIndex2, nameof(setIndex2));
 
         // Merge the smaller set into the larger set. If same size, prefer lower index.
         var mergeIntoSet1 = set1.Count > set2.Count || (set1.Count == set2.Count && setIndex1 < setIndex2);
@@ -133,17 +152,21 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
             _ => throw new UnreachableException("Invalid set types."),
         };
 
-    public void Remove(TItem item)
+    public int? Remove(TItem item)
     {
         int setIndex = items[item].SetIndex;
         var set = sets[setIndex] ?? throw new UnreachableException("Set of item is not valid.");
         var updatedSet = set.Remove(item);
         if (updatedSet is null)
+        {
             DropSet(setIndex);
+            setRemoved?.Invoke(this, set.Data);
+        }
         else if (!ReferenceEquals(set, updatedSet))
             sets[setIndex] = updatedSet;
 
         items.Remove(item);
+        return updatedSet is null ? null : setIndex;
     }
 
     public int AddSet(TSetData setData, TItem item, TItemData itemData)
@@ -167,9 +190,17 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
 
     public void AddToSet(int setIndex, TItem item, TItemData itemData)
     {
-        var set = sets[setIndex] ?? throw new ArgumentException("Invalid set index.", nameof(setIndex));
+        var set = Set(setIndex);
         items.Add(item, new(itemData, setIndex));
         var updatedSet = set.Add(item);
+        if (!ReferenceEquals(set, updatedSet))
+            sets[setIndex] = updatedSet;
+    }
+
+    public void UpdateSet(int setIndex, Func<TSetData, TSetData> update)
+    {
+        var set = Set(setIndex);
+        var updatedSet = set.Update(update);
         if (!ReferenceEquals(set, updatedSet))
             sets[setIndex] = updatedSet;
     }

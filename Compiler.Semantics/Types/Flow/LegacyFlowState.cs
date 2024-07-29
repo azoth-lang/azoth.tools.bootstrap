@@ -451,12 +451,14 @@ public sealed class LegacyFlowState : IFlowState
 
         var builder = ToBuilder();
         var currentFlowCapabilities = builder.CapabilityFor(oldValue);
-        var newValue = ResultValue.Create(intoValueId);
-        builder.TrackFlowCapability(newValue, currentFlowCapabilities.With(to.Capability));
+        // This is the new version of the old set, not the set with the new value
         var newSet = oldSet.Replace(oldValue, to.From);
         builder.UpdateSet(oldSet, newSet);
-        builder.AddSet(SharingSet.DeclareConversion(true, newValue, to));
         builder.ApplyRestrictions(newSet);
+
+        var newValue = ResultValue.Create(intoValueId);
+        builder.TrackFlowCapability(newValue, currentFlowCapabilities.With(to.Capability));
+        builder.AddSet(SharingSet.DeclareConversion(true, newValue, to));
         return builder.ToFlowState();
     }
 
@@ -633,7 +635,7 @@ public sealed class LegacyFlowState : IFlowState
 
         private void DropConversions(IEnumerable<IConversion> conversionsRemoved)
         {
-            var setForConversion = GetSetsForConversion();
+            var setForConversion = GetSetsForConversions();
             foreach (var conversions in conversionsRemoved.GroupBy(c => setForConversion[c]))
             {
                 var oldSet = conversions.Key;
@@ -679,7 +681,7 @@ public sealed class LegacyFlowState : IFlowState
                 capabilities[value] = capabilities[value].WithRestrictions(restrictions);
         }
 
-        private Dictionary<IConversion, SharingSet> GetSetsForConversion()
+        private Dictionary<IConversion, SharingSet> GetSetsForConversions()
             => sets.SelectMany(s => s.Conversions.Select(c => (c, s))).ToDictionary();
     }
 

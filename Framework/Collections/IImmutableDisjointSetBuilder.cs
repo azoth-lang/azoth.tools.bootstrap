@@ -16,5 +16,7 @@ internal interface IImmutableDisjointSetBuilder<TItem, TSetData> : IReadOnlyColl
 
     IImmutableDisjointSetBuilder<TItem, TSetData>? Remove(TItem item);
 
+    IImmutableDisjointSetBuilder<TItem, TSetData> Update(Func<TSetData, TSetData> update);
+
     ImmutableDisjointHashSet<TItem, TSetData> ToImmutable();
 }

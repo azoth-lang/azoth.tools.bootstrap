@@ -8,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Framework;
 
 public interface IFixedList<out T> : IReadOnlyList<T>
 {
+    bool IsEmpty { get; }
 }
 
 public static class FixedList
@@ -74,6 +75,8 @@ public static class FixedList
             [DebuggerStepThrough]
             get => items.Count;
         }
+
+        public bool IsEmpty => Count == 0;
 
         public T this[int index]
         {
