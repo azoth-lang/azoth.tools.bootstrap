@@ -385,8 +385,7 @@ internal sealed class FlowState : IFlowState
     public IFlowState DropBindings(IEnumerable<INamedBindingNode> bindings)
     {
         var builder = ToBuilder();
-        // TODO what about independent parameters?
-        builder.Remove(bindings.Select(BindingValue.TopLevel));
+        builder.Remove(bindings.SelectMany(b => BindingValue.ForType(b.ValueId, b.BindingType).Select(p => p.Key)));
         return builder.ToImmutable();
     }
 

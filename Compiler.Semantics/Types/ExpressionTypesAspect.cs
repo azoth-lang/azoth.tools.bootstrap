@@ -456,8 +456,8 @@ public static class ExpressionTypesAspect
 
     public static IFlowState BlockExpression_FlowStateAfter(IBlockExpressionNode node)
     {
-        var flowState = (node.Statements.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore()).DropBindings(
-            node.Statements.OfType<IVariableDeclarationStatementNode>());
+        var flowState = node.Statements.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        flowState = flowState.DropBindings(node.Statements.OfType<IVariableDeclarationStatementNode>());
         foreach (var statement in node.Statements)
             if (statement.ResultValueId is ValueId resultValueId)
                 return flowState.Transform(resultValueId, node.ValueId, node.Type);

@@ -41,6 +41,14 @@ internal sealed class BindingValue : ICapabilityValue
         if (capture && type is CapabilityType t)
             bindingValues.Add(new(new BindingValue(id, new(index)), t.Capability));
 
+        if (type is OptionalType optionalType)
+        {
+            index.Push(0);
+            ForType(id, optionalType.Referent, index, true, bindingValues);
+            index.Pop();
+            return;
+        }
+
         if (!type.HasIndependentTypeArguments)
             return;
 
