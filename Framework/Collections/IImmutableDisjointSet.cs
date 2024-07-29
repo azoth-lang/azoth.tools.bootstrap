@@ -8,6 +8,8 @@ namespace Azoth.Tools.Bootstrap.Framework.Collections;
 /// </summary>
 public interface IImmutableDisjointSet<TItem, TSetData> : IReadOnlyCollection<TItem>
 {
+    bool IsEmpty => Count == 0;
+
     TSetData Data { get; }
 
     bool Contains(TItem item);

@@ -10,6 +10,7 @@ namespace Azoth.Tools.Bootstrap.Framework.Collections;
 public interface IImmutableDisjointSets<TItem, TItemData, TSetData>
     : IReadOnlyDictionary<TItem, TItemData>
 {
+    bool IsEmpty => Count == 0;
     IEnumerable<TItem> Items { get; }
     ISetCollection Sets { get; }
 
