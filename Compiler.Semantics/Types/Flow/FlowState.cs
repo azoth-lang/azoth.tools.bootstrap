@@ -315,7 +315,7 @@ internal sealed class FlowState : IFlowState
         {
             var bindingValuePairs
                 = BindingValue.ForType(binding.ValueId, (CapabilityType)binding.BindingType.ToUpperBound());
-            foreach (var bindingValue in bindingValuePairs.Select(p => p.Key))
+            foreach (var bindingValue in bindingValuePairs.Select(p => p.Value))
                 builder.UpdateCapability(bindingValue, c => c.AfterFreeze());
         }
 
@@ -349,8 +349,8 @@ internal sealed class FlowState : IFlowState
         {
             var bindingValues = BindingValue
                                 .ForType(binding.ValueId, (CapabilityType)binding.BindingType.ToUpperBound())
-                                .Where(p => p.Value.Original.SharingIsTracked())
-                                .Select(p => p.Key);
+                                .Where(p => p.FlowCapability.Original.SharingIsTracked())
+                                .Select(p => p.Value);
             foreach (var bindingValue in bindingValues)
                 // TODO these are now `id`, doesn't that mean they no longer need tracked?
                 builder.UpdateCapability(bindingValue, c => c.AfterMove());
@@ -385,7 +385,7 @@ internal sealed class FlowState : IFlowState
     public IFlowState DropBindings(IEnumerable<INamedBindingNode> bindings)
     {
         var builder = ToBuilder();
-        builder.Remove(bindings.SelectMany(b => BindingValue.ForType(b.ValueId, b.BindingType).Select(p => p.Key)));
+        builder.Remove(bindings.SelectMany(b => BindingValue.ForType(b.ValueId, b.BindingType).Select(p => p.Value)));
         return builder.ToImmutable();
     }
 

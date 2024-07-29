@@ -23,10 +23,10 @@ internal sealed class BindingValue : ICapabilityValue
     public static BindingValue TopLevel(IBindingNode node)
         => TopLevelCache.GetOrAdd(node.ValueId, TopLevelFactory);
 
-    public static List<KeyValuePair<BindingValue, FlowCapability>> ForType(ValueId id, Pseudotype type)
+    public static List<(BindingValue Value, FlowCapability FlowCapability)> ForType(ValueId id, Pseudotype type)
     {
         var index = new Stack<int>();
-        var bindingValues = new List<KeyValuePair<BindingValue, FlowCapability>>();
+        var bindingValues = new List<(BindingValue Value, FlowCapability FlowCapability)>();
         ForType(id, type.ToUpperBound(), index, true, bindingValues);
         return bindingValues;
     }
@@ -36,10 +36,10 @@ internal sealed class BindingValue : ICapabilityValue
         DataType type,
         Stack<int> index,
         bool capture,
-        List<KeyValuePair<BindingValue, FlowCapability>> bindingValues)
+        List<(BindingValue Value, FlowCapability FlowCapability)> bindingValues)
     {
         if (capture && type is CapabilityType t)
-            bindingValues.Add(new(new BindingValue(id, new(index)), t.Capability));
+            bindingValues.Add((new(id, new(index)), t.Capability));
 
         if (type is OptionalType optionalType)
         {
