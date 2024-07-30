@@ -66,6 +66,12 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public DataType IteratedType
         => GrammarAttribute.IsCached(in iteratedTypeCached) ? iteratedType!
             : this.Synthetic(ref iteratedTypeCached, ref iteratedType, ForeachExpressionTypeAspect.ForeachExpression_IteratedType);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref SyncLock,
+                ExpressionTypesAspect.ForeachExpression_BindingValueId);
     private ValueAttribute<IMaybeAntetype> bindingAntetype;
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
@@ -123,4 +129,8 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
             return FlowStateBeforeBlock;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
+
+    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
+        // Include the BindingValueId in the value id flow
+        => BindingValueId;
 }

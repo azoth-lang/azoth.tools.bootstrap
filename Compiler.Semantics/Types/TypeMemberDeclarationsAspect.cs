@@ -54,7 +54,7 @@ internal static class TypeMemberDeclarationsAspect
             diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(node.File, node.Return!.Syntax, returnType));
     }
 
-    public static ValueId Parameter_ValueId(IParameterNode node)
+    public static ValueId Parameter_BindingValueId(IParameterNode node)
         => node.PreviousValueId().CreateNext();
 
     public static IMaybeAntetype NamedParameter_BindingAntetype(INamedParameterNode node)

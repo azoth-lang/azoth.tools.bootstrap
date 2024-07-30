@@ -55,9 +55,9 @@ public partial interface IParameterNode
 public partial interface INamedParameterNode
 {
     new DataType BindingType { get; }
-    new ValueId ValueId { get; }
-    ValueId IParameterNode.ValueId => ValueId;
-    ValueId IBindingNode.ValueId => ValueId;
+    new ValueId BindingValueId { get; }
+    ValueId IParameterNode.BindingValueId => BindingValueId;
+    ValueId IBindingNode.BindingValueId => BindingValueId;
 }
 
 public partial interface ISelfParameterNode

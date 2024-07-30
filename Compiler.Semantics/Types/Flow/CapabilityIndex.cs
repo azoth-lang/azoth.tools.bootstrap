@@ -22,6 +22,8 @@ public readonly struct CapabilityIndex : IEquatable<CapabilityIndex>
 
     public IFixedList<int> TreeIndex { get; }
 
+    public bool IsTopLevel => TreeIndex.IsEmpty;
+
     public CapabilityIndex(IEnumerable<int> treeIndex)
     {
         TreeIndex = treeIndex.ToFixedList();

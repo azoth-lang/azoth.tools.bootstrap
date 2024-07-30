@@ -169,7 +169,7 @@ public partial interface IBlockOrResultNode : IElseClauseNode
 public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 {
     bool IsLentBinding { get; }
-    ValueId ValueId { get; }
+    ValueId BindingValueId { get; }
     IMaybeAntetype BindingAntetype { get; }
     Pseudotype BindingType { get; }
 }
@@ -811,7 +811,7 @@ public partial interface IParameterNode : ISemanticNode, ICodeNode
     bool Unused { get; }
     IMaybeAntetype BindingAntetype { get; }
     Pseudotype BindingType { get; }
-    ValueId ValueId { get; }
+    ValueId BindingValueId { get; }
     IFlowState FlowStateAfter { get; }
 }
 

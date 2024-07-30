@@ -40,12 +40,12 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.VariableDeclarationStatement_Symbol);
     public int? DeclarationNumber => Syntax.DeclarationNumber.Result;
-    private ValueId valueId;
-    private bool valueIdCached;
-    public ValueId ValueId
-        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
-                ExpressionTypesAspect.VariableDeclarationStatement_ValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ExpressionTypesAspect.VariableDeclarationStatement_BindingValueId);
     private ValueAttribute<IMaybeAntetype> bindingAntetype;
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
@@ -80,7 +80,8 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
 
     public override LexicalScope GetLexicalScope() => LexicalScope;
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
+    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
+        => BindingValueId;
 
     public IFlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());

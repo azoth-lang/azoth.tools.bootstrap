@@ -54,6 +54,11 @@ public readonly record struct FlowCapability(Capability Original)
 
     public override string ToString()
     {
+        if (Original is null
+           && Modified is null
+           && Restrictions == CapabilityRestrictions.None)
+            return "N/A";
+
         if (Original == Current)
             return Original.ToILString();
 
@@ -64,6 +69,6 @@ public readonly record struct FlowCapability(Capability Original)
             CapabilityRestrictions.ReadWrite => "-rw ",
             _ => throw ExhaustiveMatch.Failed(Restrictions)
         };
-        return $"{Original.ToILString()} {restricted}-> {Current.ToILString()}";
+        return $"{Original!.ToILString()} {restricted}-> {Current.ToILString()}";
     }
 }

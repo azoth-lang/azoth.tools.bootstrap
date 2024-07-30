@@ -30,6 +30,7 @@ internal static class ForeachExpressionTypeAspect
     public static IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)
     {
         var flowState = node.IntermediateInExpression?.FlowStateAfter ?? IFlowState.Empty;
+        // This uses the node.BindingValueId so it doesn't conflict with the `foreach` expression result
         return flowState.Declare(node, node.IntermediateInExpression?.ValueId);
     }
 
@@ -38,6 +39,7 @@ internal static class ForeachExpressionTypeAspect
         => DataType.Void;
 
     public static IFlowState ForeachExpression_FlowStateAfter(IForeachExpressionNode node)
+        // TODO loop flow state
         => (node.IntermediateInExpression?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty)
             // TODO when the `foreach` has a type other than void, correctly handle the value id
             .Constant(node.ValueId);

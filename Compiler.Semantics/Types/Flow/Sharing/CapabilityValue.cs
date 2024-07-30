@@ -1,34 +1,32 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 
-/// <summary>
-/// A value for a binding (i.e. a variable, parameter, or field).
-/// </summary>
-[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-internal sealed class BindingValue : ICapabilityValue
+internal sealed class CapabilityValue : ICapabilityValue
 {
     #region Cache
-    private static readonly ConcurrentDictionary<ulong, BindingValue> TopLevelCache = new();
+    private static readonly ConcurrentDictionary<ulong, CapabilityValue> TopLevelCache = new();
 
-    private static BindingValue TopLevelFactory(ulong value) => new(value, CapabilityIndex.TopLevel);
+    private static CapabilityValue TopLevelFactory(ulong number) => new(number, CapabilityIndex.TopLevel);
     #endregion
 
-    public static BindingValue TopLevel(IBindingNode node)
-        => TopLevelCache.GetOrAdd(node.BindingValueId.Value, TopLevelFactory);
+    public static CapabilityValue Create(ValueId id, CapabilityIndex index)
+        => index.IsTopLevel ? TopLevelCache.GetOrAdd(id.Value, TopLevelFactory) : new(id.Value, index);
 
-    public static List<(BindingValue Value, FlowCapability FlowCapability)> ForType(ValueId id, Pseudotype type)
+    public static CapabilityValue CreateTopLevel(ValueId id)
+        => TopLevelCache.GetOrAdd(id.Value, TopLevelFactory);
+
+    public static List<(CapabilityValue Value, FlowCapability FlowCapability)> ForType(ValueId id, Pseudotype type)
     {
         var index = new Stack<int>();
-        var bindingValues = new List<(BindingValue Value, FlowCapability FlowCapability)>();
-        ForType(id, type.ToUpperBound(), index, true, bindingValues);
-        return bindingValues;
+        var capabilityValues = new List<(CapabilityValue Value, FlowCapability FlowCapability)>();
+        ForType(id, type.ToUpperBound(), index, true, capabilityValues);
+        return capabilityValues;
     }
 
     private static void ForType(
@@ -36,10 +34,10 @@ internal sealed class BindingValue : ICapabilityValue
         DataType type,
         Stack<int> index,
         bool capture,
-        List<(BindingValue Value, FlowCapability FlowCapability)> bindingValues)
+        List<(CapabilityValue Value, FlowCapability FlowCapability)> bindingValues)
     {
         if (capture && type is CapabilityType t)
-            bindingValues.Add((new(id.Value, new(index)), t.Capability));
+            bindingValues.Add((Create(id, new(index)), t.Capability));
 
         if (type is OptionalType optionalType)
         {
@@ -67,7 +65,7 @@ internal sealed class BindingValue : ICapabilityValue
     public ulong Value { get; }
     public CapabilityIndex Index { get; }
 
-    private BindingValue(ulong value, CapabilityIndex index)
+    private CapabilityValue(ulong value, CapabilityIndex index)
     {
         Value = value;
         Index = index;

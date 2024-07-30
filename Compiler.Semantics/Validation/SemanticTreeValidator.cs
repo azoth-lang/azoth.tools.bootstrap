@@ -34,7 +34,7 @@ internal class SemanticTreeValidator
         }
         if (node is IParameterNode parameter)
         {
-            _ = parameter.ValueId;
+            _ = parameter.BindingValueId;
         }
         if (node is IExpressionNode expression)
         {
@@ -106,7 +106,7 @@ internal class SemanticTreeValidator
                 //_ = n.Type;
                 break;
             case IVariableDeclarationStatementNode n:
-                _ = n.ValueId;
+                _ = n.BindingValueId;
                 break;
         }
 

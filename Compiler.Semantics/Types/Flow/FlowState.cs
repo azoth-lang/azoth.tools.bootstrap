@@ -16,6 +16,12 @@ internal sealed class FlowState : IFlowState
     public static FlowState Empty { get; } = new FlowState();
 
     /// <summary>
+    /// A mapping of <see cref="ValueId"/>s to the values in scope. This includes both tracked and
+    /// <i>untracked</i> values.
+    /// </summary>
+    private readonly ImmutableDictionary<ValueId, IFixedSet<ICapabilityValue>> valuesForId;
+
+    /// <summary>
     /// All the values that are tracked in scope in disjoint sharing sets with associated flow
     /// capabilities.
     /// </summary>
@@ -29,20 +35,35 @@ internal sealed class FlowState : IFlowState
 
     private int hashCode;
 
-    public bool IsEmpty => values.Count == 0 && untrackedValues.Count == 0;
+    public bool IsEmpty => valuesForId.IsEmpty && values.IsEmpty && untrackedValues.IsEmpty;
 
     private FlowState()
     {
+        valuesForId = ImmutableDictionary<ValueId, IFixedSet<ICapabilityValue>>.Empty;
         values = ImmutableDisjointHashSets<IValue, FlowCapability, SharingSetState>.Empty;
         untrackedValues = ImmutableHashSet<IValue>.Empty;
     }
 
-    private FlowState(IImmutableDisjointSets<IValue, FlowCapability, SharingSetState> values,
+    private FlowState(
+        ImmutableDictionary<ValueId, IFixedSet<ICapabilityValue>> valuesForId,
+        IImmutableDisjointSets<IValue, FlowCapability, SharingSetState> values,
         ImmutableHashSet<IValue> untrackedValues)
     {
+        this.valuesForId = valuesForId;
         this.values = values;
         this.untrackedValues = untrackedValues;
     }
+
+    #region Value Lookup
+    private IEnumerable<ICapabilityValue> TrackedValues(IFixedList<ValueId> valueIds)
+        => valueIds.SelectMany(id => valuesForId[id]).Where(v => !untrackedValues.Contains(v));
+
+    private IEnumerable<ICapabilityValue> TrackedValues(IEnumerable<ArgumentValueId> argumentValueIds)
+        => argumentValueIds.SelectMany(a => valuesForId[a.ValueId]).Where(v => !untrackedValues.Contains(v));
+
+    private IReadOnlyDictionary<ICapabilityValue, CapabilityValue> ValueMapping(ValueId oldValueId, ValueId newValueId)
+        => valuesForId[oldValueId].ToDictionaryWithValue(v => CapabilityValue.Create(newValueId, v.Index)).AsReadOnly();
+    #endregion
 
     public IFlowState Declare(INamedParameterNode parameter)
         => Declare(parameter, parameter.IsLentBinding);
@@ -53,7 +74,8 @@ internal sealed class FlowState : IFlowState
     private FlowState Declare(IParameterNode parameter, bool isLent)
     {
         var builder = ToBuilder();
-        var bindingValuePairs = BindingValue.ForType(parameter.ValueId, parameter.BindingType);
+        var bindingValuePairs = BindingValue.ForType(parameter.BindingValueId, parameter.BindingType);
+        builder.AddValueId(parameter.BindingValueId, bindingValuePairs.Select(p => p.Value));
         foreach (var (value, flowCapability) in bindingValuePairs)
         {
             var capability = flowCapability.Original;
@@ -80,9 +102,11 @@ internal sealed class FlowState : IFlowState
     public IFlowState Declare(INamedBindingNode binding, ValueId? initializerValueId)
     {
         var builder = ToBuilder();
+        // TODO the initializer can have a set of values
         var initializerValue = initializerValueId is ValueId v ? ResultValue.Create(v) : null;
         var initializerSet = initializerValue is not null ? builder.TrySetFor(initializerValue) : null;
-        var bindingValuePairs = BindingValue.ForType(binding.ValueId, binding.BindingType);
+        var bindingValuePairs = BindingValue.ForType(binding.BindingValueId, binding.BindingType);
+        builder.AddValueId(binding.BindingValueId, bindingValuePairs.Select(p => p.Value));
         foreach (var (value, flowCapability) in bindingValuePairs)
         {
             if (!flowCapability.Original.SharingIsTracked())
@@ -93,8 +117,8 @@ internal sealed class FlowState : IFlowState
                 builder.AddSet(false, value, flowCapability);
         }
 
-        if (initializerValue is not null)
-            builder.Remove(initializerValue);
+        if (initializerValueId is ValueId id)
+            builder.Remove(id);
 
         return builder.ToImmutable();
     }
@@ -102,27 +126,32 @@ internal sealed class FlowState : IFlowState
     public IFlowState Constant(ValueId valueId)
     {
         var builder = ToBuilder();
-        var value = ResultValue.Create(valueId);
+        var value = CapabilityValue.CreateTopLevel(valueId);
+        builder.AddValueId(valueId, value);
         builder.AddUntracked(value);
         return builder.ToImmutable();
     }
 
-    public IFlowState Alias(IBindingNode? binding, ValueId valueId)
+    public IFlowState Alias(IBindingNode? binding, ValueId aliasValueId)
     {
         // TODO maybe sharing should be tracked even in this case? Or should it be treated as untracked?
         if (binding is null) return this;
 
         var builder = ToBuilder();
-        var bindingValue = BindingValue.TopLevel(binding);
-        var result = ResultValue.Create(valueId);
-        if (binding.SharingIsTracked())
+        var valueMap = ValueMapping(binding.BindingValueId, aliasValueId);
+        foreach (var (bindingValue, aliasValue) in valueMap)
         {
-            var set = builder.TrySetFor(bindingValue) ?? throw new InvalidOperationException();
-            var flowCapability = builder[bindingValue].WhenAliased();
-            builder.AddToSet(set, result, flowCapability);
+            // TODO this should be for the specific capability for this value
+            if (binding.SharingIsTracked())
+            {
+                var set = builder.TrySetFor(bindingValue) ?? throw new InvalidOperationException();
+                var flowCapability = builder[bindingValue].WhenAliased();
+                builder.AddToSet(set, aliasValue, flowCapability);
+            }
+            else
+                builder.AddUntracked(aliasValue);
         }
-        else
-            builder.AddUntracked(result);
+        builder.AddValueId(aliasValueId, valueMap.Values);
 
         return builder.ToImmutable();
     }
@@ -153,7 +182,7 @@ internal sealed class FlowState : IFlowState
     public bool IsIsolatedExceptFor(IBindingNode? binding, ValueId? valueId)
     {
         return binding is null || (valueId is ValueId v
-            ? IsIsolatedExceptFor(values.Sets.TrySetFor(BindingValue.TopLevel(binding)), ResultValue.Create(v))
+            ? IsIsolatedExceptFor(values.Sets.TrySetFor(BindingValue.TopLevel(binding)), CapabilityValue.CreateTopLevel(v))
             : IsIsolated(binding));
     }
 
@@ -168,7 +197,7 @@ internal sealed class FlowState : IFlowState
         if (set is null) return false;
         if (IsIsolated(set)) return true;
 
-        var exceptValue = valueId is ValueId v ? ResultValue.Create(v) : null;
+        var exceptValue = valueId is ValueId v ? CapabilityValue.CreateTopLevel(v) : null;
         foreach (var value in set.Except(bindingValue).Except(exceptValue))
         {
             if (value is ICapabilityValue capabilityValue)
@@ -187,20 +216,21 @@ internal sealed class FlowState : IFlowState
 
     public IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId)
     {
-        // TODO what about independent parameters?
-        var argumentResults = arguments.Select(a => new ArgumentResultValue(a.IsLent, a.ValueId)).ToFixedList();
+        var argumentsList = arguments.ToFixedList();
 
         var builder = ToBuilder();
+        // TODO properly handle the correlation between the arguments and the return value
         // Union sets for all non-lent arguments
-        int? set = builder.Union(argumentResults.Where(a => !a.IsLent && !untrackedValues.Contains(a.Value))
-                                                .Select(a => a.Value));
+        int? set = builder.Union(TrackedValues(argumentsList.Where(a => !a.IsLent)));
 
         // Add the return value to the unioned set
         // TODO what is the correct flow capability for the result?
-        builder.AddToSet(set, false, ResultValue.Create(returnValueId), default);
+        var returnValue = CapabilityValue.CreateTopLevel(returnValueId);
+        builder.AddToSet(set, false, returnValue, default);
+        builder.AddValueId(returnValueId, returnValue);
 
         // Now remove all the arguments
-        builder.Remove(argumentResults.Select(a => a.Value));
+        builder.Remove(argumentsList.Select(a => a.ValueId));
 
         return builder.ToImmutable();
     }
@@ -208,18 +238,23 @@ internal sealed class FlowState : IFlowState
     public IFlowState AccessMember(ValueId contextValueId, ValueId valueId, DataType memberType)
     {
         var builder = ToBuilder();
-        var contextResultValue = ResultValue.Create(contextValueId);
-        var resultValue = ResultValue.Create(valueId);
-        if (memberType.SharingIsTracked())
+        var valueMap = ValueMapping(contextValueId, valueId);
+        foreach (var (contextValue, resultValue) in valueMap)
         {
-            var set = builder.TrySetFor(contextResultValue) ?? throw new InvalidOperationException();
-            // TODO what is the correct flow capability for the result?
-            builder.AddToSet(set, resultValue, default);
+            // TODO properly handle the mapping to independent parameters when accessing a member
+            // TODO this should be for the specific capability for this value
+            if (memberType.SharingIsTracked())
+            {
+                var set = builder.TrySetFor(contextValue) ?? throw new InvalidOperationException();
+                // TODO what is the correct flow capability for the result?
+                builder.AddToSet(set, resultValue, default);
+            }
+            else
+                builder.AddUntracked(resultValue);
         }
-        else
-            builder.AddUntracked(resultValue);
 
-        builder.Remove(contextResultValue);
+        builder.AddValueId(valueId, valueMap.Values);
+        builder.Remove(contextValueId);
 
         return builder.ToImmutable();
     }
@@ -235,6 +270,9 @@ internal sealed class FlowState : IFlowState
             throw new InvalidOperationException($"Cannot merge flow state of type {other.GetType()}.");
 
         var builder = ToBuilder();
+        foreach (var (valueId, values) in otherFlowState.valuesForId)
+            builder.AddOrMergeValueId(valueId, values);
+
         foreach (var otherSet in otherFlowState.values.Sets)
         {
             int? set = null;
@@ -262,42 +300,46 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IFlowState Transform(ValueId? valueId, ValueId intoValueId, DataType withType)
+    public IFlowState Transform(ValueId? valueId, ValueId toValueId, DataType withType)
     {
         if (valueId is not ValueId fromValueId) return this;
 
         var builder = ToBuilder();
-        var fromValue = ResultValue.Create(fromValueId);
-        var intoValue = ResultValue.Create(intoValueId);
-        // TODO if the original value was untracked, does that meant the result should be untracked?
-        if (withType.SharingIsTracked())
+        var valueMap = ValueMapping(fromValueId, toValueId);
+        foreach (var (fromValue, toValue) in valueMap)
         {
-            FlowCapability flowCapability = default;
-            if (withType is CapabilityType withCapabilityType)
-                flowCapability = builder[fromValue].With(withCapabilityType.Capability);
-            var set = builder.TrySetFor(fromValue) ?? throw new InvalidOperationException();
-            builder.AddToSet(set, intoValue, flowCapability);
+            // TODO if the original value was untracked, does that meant the result should be untracked?
+            if (withType.SharingIsTracked())
+            {
+                FlowCapability flowCapability = default;
+                if (withType is CapabilityType withCapabilityType)
+                    flowCapability = builder[fromValue].With(withCapabilityType.Capability);
+                var set = builder.TrySetFor(fromValue) ?? throw new InvalidOperationException();
+                builder.AddToSet(set, toValue, flowCapability);
+            }
+            else
+                builder.AddUntracked(toValue);
         }
-        else
-            builder.AddUntracked(intoValue);
-
-        builder.Remove(fromValue);
+        builder.AddValueId(toValueId, valueMap.Values);
+        builder.Remove(fromValueId);
         return builder.ToImmutable();
     }
 
     public IFlowState Combine(ValueId left, ValueId? right, ValueId intoValueId)
     {
-        var resultValues = right.YieldValue().Prepend(left).Select(ResultValue.Create).ToFixedList();
-
         var builder = ToBuilder();
-        int? set = builder.Union(resultValues);
+        var valueIds = right.YieldValue().Prepend(left).ToFixedList();
+        int? set = builder.Union(TrackedValues(valueIds));
 
+        // TODO properly handle or restrict independent parameters
         // Add the return value to the unioned set
         // TODO what is the correct flow capability for the result?
-        builder.AddToSet(set, false, ResultValue.Create(intoValueId), default);
+        var capabilityValue = CapabilityValue.CreateTopLevel(intoValueId);
+        builder.AddToSet(set, false, capabilityValue, default);
+        builder.AddValueId(intoValueId, capabilityValue);
 
         // Now remove all the inputs
-        builder.Remove(resultValues);
+        builder.Remove(valueIds);
 
         return builder.ToImmutable();
     }
@@ -314,18 +356,23 @@ internal sealed class FlowState : IFlowState
         if (binding is not null)
         {
             var bindingValuePairs
-                = BindingValue.ForType(binding.ValueId, (CapabilityType)binding.BindingType.ToUpperBound());
+                = BindingValue.ForType(binding.BindingValueId, (CapabilityType)binding.BindingType.ToUpperBound());
             foreach (var bindingValue in bindingValuePairs.Select(p => p.Value))
                 builder.UpdateCapability(bindingValue, c => c.AfterFreeze());
         }
 
-        var oldValue = ResultValue.Create(valueId);
-        var newValue = ResultValue.Create(intoValueId);
-        // If the value could reference `temp const` data, then it needs to be tracked. (However,
-        // that could be detected by looking at whether the set is lent or not, correct?)
-        var set = builder.TrySetFor(oldValue) ?? throw new InvalidOperationException();
-        builder.AddToSet(set, newValue, default);  // TODO what is the correct flow capability for the result?
-        builder.Remove(oldValue);
+        var valueMap = ValueMapping(valueId, intoValueId);
+        foreach (var (oldValue, newValue) in valueMap)
+        {
+            // If the value could reference `temp const` data, then it needs to be tracked. (However,
+            // that could be detected by looking at whether the set is lent or not, correct?)
+            var set = builder.TrySetFor(oldValue) ?? throw new InvalidOperationException();
+            builder.AddToSet(set, newValue, default); // TODO what is the correct flow capability for the result?
+        }
+
+        builder.AddValueId(intoValueId, valueMap.Values);
+        builder.Remove(valueId);
+
         return builder.ToImmutable();
     }
 
@@ -338,26 +385,32 @@ internal sealed class FlowState : IFlowState
     private FlowState Move(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
     {
         var builder = ToBuilder();
-        var oldValue = ResultValue.Create(valueId);
-        var newValue = ResultValue.Create(intoValueId);
-        if (builder.TrySetFor(oldValue) is int set)
-            builder.AddToSet(set, newValue, default); // TODO what is the correct flow capability for the result?
-        else
-            builder.AddUntracked(newValue);
+        var valueMap = ValueMapping(valueId, intoValueId);
+        foreach (var (oldValue, newValue) in valueMap)
+        {
+            if (builder.TrySetFor(oldValue) is int set)
+                builder.AddToSet(set, newValue, default); // TODO what is the correct flow capability for the result?
+            else
+                builder.AddUntracked(newValue);
+        }
 
         if (binding is not null)
         {
             var bindingValues = BindingValue
-                                .ForType(binding.ValueId, (CapabilityType)binding.BindingType.ToUpperBound())
+                                .ForType(binding.BindingValueId, (CapabilityType)binding.BindingType.ToUpperBound())
                                 .Where(p => p.FlowCapability.Original.SharingIsTracked())
                                 .Select(p => p.Value);
             foreach (var bindingValue in bindingValues)
                 // TODO these are now `id`, doesn't that mean they no longer need tracked?
                 builder.UpdateCapability(bindingValue, c => c.AfterMove());
+
+            // Old binding values are now `id` and no longer need tracked
+            //builder.Remove(binding.ValueId);
         }
 
-        // Old binding values are now `id` and no longer need tracked
-        builder.Remove(oldValue);
+        builder.AddValueId(intoValueId, valueMap.Values);
+        builder.Remove(valueId);
+
         return builder.ToImmutable();
     }
 
@@ -370,29 +423,35 @@ internal sealed class FlowState : IFlowState
     private FlowState TemporarilyConvert(ValueId valueId, ValueId intoValueId, TempConversionTo to)
     {
         var builder = ToBuilder();
-        var oldValue = ResultValue.Create(valueId);
-        var currentFlowCapabilities = builder[oldValue];
-        var oldSet = builder.Remove(oldValue)!.Value;
-        builder.UpdateSet(oldSet, state => state.Add(to.From));
-        builder.ApplyRestrictions(oldSet);
+        var valueMap = ValueMapping(valueId, intoValueId);
+        foreach (var (oldValue, newValue) in valueMap)
+        {
+            var currentFlowCapabilities = builder[oldValue];
+            var oldSet = builder.TrySetFor(oldValue) ?? throw new InvalidOperationException();
+            builder.UpdateSet(oldSet, state => state.Add(to.From));
+            builder.ApplyRestrictions(oldSet);
 
-        var newValue = ResultValue.Create(intoValueId);
-        var newFlowCapabilities = currentFlowCapabilities.With(to.Capability);
-        builder.AddSet(new SharingSetState(true, to), newValue, newFlowCapabilities);
+            var newFlowCapabilities = currentFlowCapabilities.With(to.Capability);
+            builder.AddSet(new SharingSetState(true, to), newValue, newFlowCapabilities);
+        }
+
+        builder.AddValueId(intoValueId, valueMap.Values);
+        builder.Remove(valueId);
+
         return builder.ToImmutable();
     }
 
     public IFlowState DropBindings(IEnumerable<INamedBindingNode> bindings)
     {
         var builder = ToBuilder();
-        builder.Remove(bindings.SelectMany(b => BindingValue.ForType(b.ValueId, b.BindingType).Select(p => p.Value)));
+        builder.Remove(bindings.Select(b => b.BindingValueId));
         return builder.ToImmutable();
     }
 
     public IFlowState DropValue(ValueId valueId)
     {
         var builder = ToBuilder();
-        builder.Remove(ResultValue.Create(valueId));
+        builder.Remove(valueId);
         return builder.ToImmutable();
     }
 
@@ -403,7 +462,8 @@ internal sealed class FlowState : IFlowState
         if (ReferenceEquals(this, other)) return true;
 
         // Check collection sizes first to avoid iterating over the collections
-        if (values.Count != other.values.Count
+        if (valuesForId.Count != other.valuesForId.Count
+            || values.Count != other.values.Count
             || values.Sets.Count != other.values.Sets.Count
             || untrackedValues.Count != other.untrackedValues.Count
             // Check the hash code first since it is cached
@@ -414,6 +474,7 @@ internal sealed class FlowState : IFlowState
         // entries in one are in the other and equal.
         return values.All(p => other.values.TryGetValue(p.Key, out var value) && p.Value.Equals(value))
                && untrackedValues.SetEquals(other.untrackedValues)
+               // TODO check for valuesForId equality
                // Check the sets last since they are the most expensive to compare
                && AreEqual(values.Sets, other.values.Sets);
     }
@@ -449,6 +510,7 @@ internal sealed class FlowState : IFlowState
     private int ComputeHashCode()
     {
         var hash = new HashCode();
+        hash.Add(valuesForId.Count);
         hash.Add(values.Count);
         hash.Add(values.Sets.Count);
         foreach (var set in values.Sets.OrderByDescending(s => s.Count))
@@ -459,16 +521,20 @@ internal sealed class FlowState : IFlowState
     #endregion
 
     private Builder ToBuilder()
-        => new Builder(values, untrackedValues);
+        => new Builder(valuesForId, values, untrackedValues);
 
     private readonly struct Builder
     {
+        private readonly ImmutableDictionary<ValueId, IFixedSet<ICapabilityValue>>.Builder valuesForId;
         private readonly IImmutableDisjointSets<IValue, FlowCapability, SharingSetState>.IBuilder values;
         private readonly ImmutableHashSet<IValue>.Builder untrackedValues;
 
-        public Builder(IImmutableDisjointSets<IValue, FlowCapability, SharingSetState> values,
+        public Builder(
+            ImmutableDictionary<ValueId, IFixedSet<ICapabilityValue>> valuesForId,
+            IImmutableDisjointSets<IValue, FlowCapability, SharingSetState> values,
             ImmutableHashSet<IValue> untrackedValues)
         {
+            this.valuesForId = valuesForId.ToBuilder();
             this.values = values.ToBuilder(SetRemoved);
             this.untrackedValues = untrackedValues.ToBuilder();
         }
@@ -503,6 +569,20 @@ internal sealed class FlowState : IFlowState
             => values.SetData().SelectMany(p => p.Value.Conversions.Select(c => (c, p.Key))).ToDictionary();
 
         public FlowCapability this[ICapabilityValue value] => values[value];
+
+        public void AddValueId(ValueId valueId, IEnumerable<ICapabilityValue> values)
+            => valuesForId.Add(valueId, values.ToFixedSet());
+
+        public void AddValueId(ValueId valueId, ICapabilityValue value)
+            => valuesForId.Add(valueId, [value]);
+
+        public void AddOrMergeValueId(ValueId valueId, IFixedSet<ICapabilityValue> values)
+        {
+            if (valuesForId.TryGetValue(valueId, out var existingValues))
+                valuesForId[valueId] = existingValues.Union(values);
+            else
+                valuesForId.Add(valueId, values);
+        }
 
         public int? TrySetFor(IValue value) => values.TrySetFor(value);
 
@@ -544,12 +624,19 @@ internal sealed class FlowState : IFlowState
                 AddSet(isLent, value, flowCapability);
         }
 
-        public int? Remove(IValue value)
+        public void Remove(ValueId valueId)
+        {
+            foreach (var value in valuesForId[valueId])
+                Remove(value);
+            valuesForId.Remove(valueId);
+        }
+
+        private int? Remove(IValue value)
             => untrackedValues.Remove(value) ? null : values.Remove(value);
 
-        public void Remove(IEnumerable<IValue> values)
+        public void Remove(IEnumerable<ValueId> valueIds)
         {
-            foreach (var value in values)
+            foreach (var value in valueIds)
                 Remove(value);
         }
 
@@ -602,6 +689,6 @@ internal sealed class FlowState : IFlowState
             => ApplyRestrictions(values, set, applyReadWriteRestriction: false);
 
         public FlowState ToImmutable()
-            => new(values.ToImmutable(), untrackedValues.ToImmutable());
+            => new(valuesForId.ToImmutable(), values.ToImmutable(), untrackedValues.ToImmutable());
     }
 }

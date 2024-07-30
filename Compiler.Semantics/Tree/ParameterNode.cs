@@ -16,12 +16,12 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
     public bool Unused => Syntax.Unused;
     public abstract IMaybeAntetype BindingAntetype { get; }
     public abstract Pseudotype BindingType { get; }
-    private ValueId valueId;
-    private bool valueIdCached;
-    public ValueId ValueId
-        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : this.Synthetic(ref valueIdCached, ref valueId, ref SyncLock,
-                TypeMemberDeclarationsAspect.Parameter_ValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref SyncLock,
+                TypeMemberDeclarationsAspect.Parameter_BindingValueId);
     public abstract IFlowState FlowStateAfter { get; }
 
     private protected ParameterNode() { }
@@ -32,5 +32,6 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
     public IPreviousValueId PreviousValueId()
         => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
+    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
+        => BindingValueId;
 }

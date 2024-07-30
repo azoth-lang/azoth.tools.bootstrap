@@ -5,4 +5,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 /// </summary>
 public interface ICapabilityValue : IValue
 {
+    ulong Value { get; }
+    CapabilityIndex Index { get; }
 }

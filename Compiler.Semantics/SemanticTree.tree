@@ -33,7 +33,7 @@ ElseClause <: Code = FlowStateAfter:`IFlowState` ValueId:`ValueId`;
 BlockOrResult: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings
-Binding <: Code, BindingDeclaration = IsLentBinding:`bool` ValueId:`ValueId` BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
+Binding <: Code, BindingDeclaration = IsLentBinding:`bool` BindingValueId:`ValueId` BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
 NamedBinding <: Binding, NamedBindingDeclaration = Syntax:`ILocalBindingSyntax` BindingType:`DataType`;
 
 // ---------- Packages
@@ -182,7 +182,7 @@ Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capa
 
 // ---------- Parameters
 Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
-    BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype` ValueId:`ValueId` FlowStateAfter:`IFlowState`;
+    BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype` BindingValueId:`ValueId` FlowStateAfter:`IFlowState`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`
     BindingType:`DataType` ParameterType:`ParameterType`;
@@ -249,7 +249,7 @@ Pattern <: Code = Syntax:`IPatternSyntax` FlowStateAfter:`IFlowState`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
 BindingPattern <: OptionalOrBindingPattern, NamedBinding = Syntax:`IBindingPatternSyntax`
-    IsMutableBinding:`bool` Name:`IdentifierName` ContainingLexicalScope:`LexicalScope` ValueId:`ValueId`;
+    IsMutableBinding:`bool` Name:`IdentifierName` ContainingLexicalScope:`LexicalScope` BindingValueId:`ValueId`;
 OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions

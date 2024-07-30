@@ -15,7 +15,7 @@ internal sealed class ExternalReference : IValue
 
     private static ExternalReference Create(BindingValue value) => Cache.GetOrAdd(value, Factory);
 
-    private static ExternalReference Factory(BindingValue value) => new(value.Id.Value, value.Index);
+    private static ExternalReference Factory(BindingValue value) => new(value.Value, value.Index);
     #endregion
 
     /// <summary>

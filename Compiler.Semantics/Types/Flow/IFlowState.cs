@@ -30,13 +30,13 @@ public interface IFlowState : IEquatable<IFlowState>
     IFlowState Constant(ValueId valueId);
 
     /// <summary>
-    /// Make <paramref name="valueId"/> an alias to the <paramref name="binding"/>.
+    /// Make <paramref name="aliasValueId"/> an alias to the <paramref name="binding"/>.
     /// </summary>
     /// <remarks>This does not alias any independent parameters of the binding because only an alias
     /// to the top level object has been created. For example, if <c>iso List[iso Foo]</c> is aliased
     /// the list elements are still isolated. Only the list itself has been aliased and is now
     /// <c>mut</c>.</remarks>
-    IFlowState Alias(IBindingNode? binding, ValueId valueId);
+    IFlowState Alias(IBindingNode? binding, ValueId aliasValueId);
 
     /// <summary>
     /// Gives the current flow type of the symbol.
@@ -64,7 +64,9 @@ public interface IFlowState : IEquatable<IFlowState>
 
     IFlowState AccessMember(ValueId contextValueId, ValueId valueId, DataType memberType);
     IFlowState Merge(IFlowState? other);
-    IFlowState Transform(ValueId? valueId, ValueId intoValueId, DataType withType);
+    IFlowState Transform(ValueId? valueId, ValueId toValueId, DataType withType);
+
+    // TODO make parameters non-nullable
     IFlowState Combine(ValueId left, ValueId? right, ValueId intoValueId);
     IFlowState FreezeVariable(IBindingNode? binding, ValueId valueId, ValueId intoValueId);
     IFlowState FreezeValue(ValueId valueId, ValueId intoValueId);

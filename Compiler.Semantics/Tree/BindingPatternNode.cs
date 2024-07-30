@@ -21,12 +21,12 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     public LexicalScope ContainingLexicalScope
         => containingLexicalScope.TryGetValue(out var value) ? value
             : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
-    private ValueId valueId;
-    private bool valueIdCached;
-    public ValueId ValueId
-        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
-                ExpressionTypesAspect.BindingPattern_ValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ExpressionTypesAspect.BindingPattern_BindingValueId);
     private ValueAttribute<IMaybeAntetype> bindingAntetype;
     public IMaybeAntetype BindingAntetype
         => bindingAntetype.TryGetValue(out var value) ? value
@@ -55,7 +55,8 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
         return new(variableScope, containingLexicalScope);
     }
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
+    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
+        => BindingValueId;
 
     public IFlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());

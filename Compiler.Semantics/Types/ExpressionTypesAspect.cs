@@ -28,6 +28,12 @@ public static class ExpressionTypesAspect
     public static ValueId Expression_ValueId(IExpressionNode node)
         => node.PreviousValueId().CreateNext();
 
+    public static ValueId ForeachExpression_BindingValueId(IForeachExpressionNode node)
+        // Since value ids are in preorder, to makes some sense that the expression value id is
+        // before the binding value id. However, this is also because it would be hard to change the
+        // value id of the expression to depend on the binding value id, but it is easy to do this.
+        => node.ValueId.CreateNext();
+
     public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, Diagnostics diagnostics)
         => CheckConstructingType(node.ConstructingType, diagnostics);
 
@@ -101,10 +107,10 @@ public static class ExpressionTypesAspect
     public static IFlowState SelfParameter_FlowStateAfter(ISelfParameterNode node)
         => node.FlowStateBefore().Declare(node);
 
-    public static ValueId VariableDeclarationStatement_ValueId(IVariableDeclarationStatementNode node)
+    public static ValueId VariableDeclarationStatement_BindingValueId(IVariableDeclarationStatementNode node)
         => node.PreviousValueId().CreateNext();
 
-    public static ValueId BindingPattern_ValueId(IBindingPatternNode node)
+    public static ValueId BindingPattern_BindingValueId(IBindingPatternNode node)
         => node.PreviousValueId().CreateNext();
 
     public static DataType UnsafeExpression_Type(IUnsafeExpressionNode node)

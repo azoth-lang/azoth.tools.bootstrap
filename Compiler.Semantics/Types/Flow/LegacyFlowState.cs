@@ -78,7 +78,7 @@ public sealed class LegacyFlowState : IFlowState
         if (bindingType.ToUpperBound() is not CapabilityType capabilityType)
             return this;
 
-        var bindingValuePairs = BindingValue.ForType(parameter.ValueId, capabilityType);
+        var bindingValuePairs = BindingValue.ForType(parameter.BindingValueId, capabilityType);
         var builder = ToBuilder();
         builder.AddFlowCapabilities(bindingValuePairs);
 
@@ -130,7 +130,7 @@ public sealed class LegacyFlowState : IFlowState
             return b.ToFlowState();
         }
 
-        var bindingValuePairs = BindingValue.ForType(binding.ValueId, capabilityType);
+        var bindingValuePairs = BindingValue.ForType(binding.BindingValueId, capabilityType);
         var builder = ToBuilder();
         builder.AddFlowCapabilities(bindingValuePairs);
 
@@ -158,13 +158,13 @@ public sealed class LegacyFlowState : IFlowState
         => this;
 
     /// <summary>
-    /// Make <paramref name="valueId"/> an alias to the <paramref name="binding"/>.
+    /// Make <paramref name="aliasValueId"/> an alias to the <paramref name="binding"/>.
     /// </summary>
     /// <remarks>This does not alias any independent parameters of the binding because only an alias
     /// to the top level object has been created. For example, if <c>iso List[iso Foo]</c> is aliased
     /// the list elements are still isolated. Only the list itself has been aliased and is now
     /// <c>mut</c>.</remarks>
-    public IFlowState Alias(IBindingNode? binding, ValueId valueId)
+    public IFlowState Alias(IBindingNode? binding, ValueId aliasValueId)
     {
         if (binding is null || !binding.SharingIsTracked())
             // If the binding isn't tracked, then the alias isn't either
@@ -178,7 +178,7 @@ public sealed class LegacyFlowState : IFlowState
         {
             var set = builder.SetFor(bindingValue);
 
-            var result = ResultValue.Create(valueId);
+            var result = ResultValue.Create(aliasValueId);
             var newSet = set.Declare(result);
             builder.UpdateSet(set, newSet);
 
@@ -333,7 +333,7 @@ public sealed class LegacyFlowState : IFlowState
         return builder.ToFlowState();
     }
 
-    public IFlowState Transform(ValueId? valueId, ValueId intoValueId, DataType withType)
+    public IFlowState Transform(ValueId? valueId, ValueId toValueId, DataType withType)
     {
         if (valueId is not ValueId fromValueId)
             return this;
@@ -347,7 +347,7 @@ public sealed class LegacyFlowState : IFlowState
         SharingSet? newSet;
         if (withType.SharingIsTracked())
         {
-            var intoValue = ResultValue.Create(intoValueId);
+            var intoValue = ResultValue.Create(toValueId);
             newSet = oldSet.Replace(fromValue, intoValue);
             if (withType is CapabilityType withCapabilityType)
             {
@@ -393,7 +393,7 @@ public sealed class LegacyFlowState : IFlowState
         var builder = ToBuilder();
         if (binding is not null)
         {
-            var bindingValuePairs = BindingValue.ForType(binding.ValueId, (CapabilityType)binding.BindingType.ToUpperBound());
+            var bindingValuePairs = BindingValue.ForType(binding.BindingValueId, (CapabilityType)binding.BindingType.ToUpperBound());
             foreach (var bindingValue in bindingValuePairs.Select(p => p.Value))
                 builder.SetFlowCapability(bindingValue, capabilities[bindingValue].AfterFreeze());
         }
@@ -421,7 +421,7 @@ public sealed class LegacyFlowState : IFlowState
         IEnumerable<IValue> removeValues = oldValue.Yield();
         if (binding is not null)
         {
-            var bindingValues = BindingValue.ForType(binding.ValueId, (CapabilityType)binding.BindingType.ToUpperBound())
+            var bindingValues = BindingValue.ForType(binding.BindingValueId, (CapabilityType)binding.BindingType.ToUpperBound())
                                             .Select(p => p.Value).ToList();
             foreach (var bindingValue in bindingValues)
                 builder.SetFlowCapability(bindingValue, capabilities[bindingValue].AfterMove());
