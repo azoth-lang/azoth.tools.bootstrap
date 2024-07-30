@@ -447,13 +447,18 @@ internal sealed class FlowState : IFlowState
         var valueMap = ValueMapping(valueId, intoValueId);
         foreach (var (oldValue, newValue) in valueMap)
         {
-            var currentFlowCapabilities = builder[oldValue];
-            var oldSet = builder.TrySetFor(oldValue) ?? throw new InvalidOperationException();
-            builder.UpdateSet(oldSet, state => state.Add(to.From));
-            builder.ApplyRestrictions(oldSet);
+            if (untrackedValues.Contains(oldValue))
+                builder.AddUntracked(newValue);
+            else
+            {
+                var currentFlowCapabilities = builder[oldValue];
+                var oldSet = builder.TrySetFor(oldValue) ?? throw new InvalidOperationException();
+                builder.UpdateSet(oldSet, state => state.Add(to.From));
+                builder.ApplyRestrictions(oldSet);
 
-            var newFlowCapabilities = currentFlowCapabilities.With(to.Capability);
-            builder.AddSet(new SharingSetState(true, to), newValue, newFlowCapabilities);
+                var newFlowCapabilities = currentFlowCapabilities.With(to.Capability);
+                builder.AddSet(new SharingSetState(true, to), newValue, newFlowCapabilities);
+            }
         }
 
         builder.AddValueId(intoValueId, valueMap.Values);
