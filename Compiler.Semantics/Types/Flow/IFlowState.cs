@@ -60,7 +60,7 @@ public interface IFlowState : IEquatable<IFlowState>
     /// value id and drop the values for all arguments.
     /// </summary>
     // TODO should storage of return value be based on whether the return type requires tracking?
-    IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId);
+    IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId, DataType returnType);
 
     IFlowState AccessMember(ValueId contextValueId, ValueId valueId, DataType memberType);
     IFlowState Merge(IFlowState? other);

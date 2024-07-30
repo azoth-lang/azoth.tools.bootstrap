@@ -253,7 +253,7 @@ public sealed class LegacyFlowState : IFlowState
     /// value id and drop the values for all arguments.
     /// </summary>
     // TODO should storage of return value be based on whether the return type requires tracking?
-    public IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId)
+    public IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId, DataType returnType)
     {
         // TODO what about independent parameters?
         var argumentResults = arguments.Select(a => new ArgumentResultValue(a.IsLent, a.ValueId)).ToFixedList();

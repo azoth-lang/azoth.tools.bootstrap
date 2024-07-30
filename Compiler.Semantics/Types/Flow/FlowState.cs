@@ -230,7 +230,7 @@ internal sealed class FlowState : IFlowState
         return true;
     }
 
-    public IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId)
+    public IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId, DataType returnType)
     {
         var argumentsList = arguments.ToFixedList();
 
@@ -239,11 +239,16 @@ internal sealed class FlowState : IFlowState
         // Union sets for all non-lent arguments
         int? set = builder.Union(TrackedValues(argumentsList.Where(a => !a.IsLent)));
 
-        // Add the return value to the unioned set
-        // TODO what is the correct flow capability for the result?
-        var returnValue = CapabilityValue.CreateTopLevel(returnValueId);
-        builder.AddToSet(set, false, returnValue, default);
-        builder.AddValueId(returnValueId, returnValue);
+        // Add the return value(s) to the unioned set
+        var capabilityValuePairs = CapabilityValue.ForType(returnValueId, returnType);
+        foreach (var (returnValue, flowCapability) in capabilityValuePairs)
+        {
+            if (flowCapability.Original.SharingIsTracked())
+                builder.AddToSet(set, false, returnValue, default);
+            else
+                builder.AddUntracked(returnValue);
+        }
+        builder.AddValueId(returnValueId, capabilityValuePairs.Select(p => p.Value));
 
         // Now remove all the arguments
         builder.Remove(argumentsList.Select(a => a.ValueId));

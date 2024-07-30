@@ -130,7 +130,7 @@ public static class ExpressionTypesAspect
         // The flow state just before the function is called is the state after all arguments have evaluated
         var flowState = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.IntermediateArguments);
-        return flowState.CombineArguments(argumentValueIds, node.ValueId);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
     public static FunctionType FunctionReferenceInvocation_FunctionType(IFunctionReferenceInvocationNode node)
@@ -146,7 +146,7 @@ public static class ExpressionTypesAspect
         // TODO handle the fact that the function reference itself must be combined too
         var contextualizedOverload = ContextualizedOverload.Create(node.FunctionType);
         var argumentValueIds = ArgumentValueIds(contextualizedOverload, null, node.IntermediateArguments);
-        return flowState.CombineArguments(argumentValueIds, node.ValueId);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
     public static BoolConstValueType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
@@ -255,7 +255,7 @@ public static class ExpressionTypesAspect
         // The flow state just before the method is called is the state after all arguments have evaluated
         var flowState = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.MethodGroup.Context.FlowStateAfter;
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.MethodGroup.Context, node.IntermediateArguments);
-        return flowState.CombineArguments(argumentValueIds, node.ValueId);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
     public static ContextualizedOverload? GetterInvocationExpression_ContextualizedOverload(
@@ -291,7 +291,7 @@ public static class ExpressionTypesAspect
         // The flow state just before the setter is called is the state after the argument has been evaluated
         var flowState = value.FlowStateAfter;
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Context, [value]);
-        return flowState.CombineArguments(argumentValueIds, node.ValueId);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
     private static IEnumerable<ArgumentValueId> ArgumentValueIds(
@@ -356,7 +356,7 @@ public static class ExpressionTypesAspect
         // The flow state just before the constructor is called is the state after all arguments have evaluated
         var flowState = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.IntermediateArguments);
-        return flowState.CombineArguments(argumentValueIds, node.ValueId);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
     public static ContextualizedOverload?
@@ -375,7 +375,7 @@ public static class ExpressionTypesAspect
         // The flow state just before the initializer is called is the state after all arguments have evaluated
         var flowState = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.IntermediateArguments);
-        return flowState.CombineArguments(argumentValueIds, node.ValueId);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
     public static DataType AssignmentExpression_Type(IAssignmentExpressionNode node)
