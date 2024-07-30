@@ -76,9 +76,9 @@ internal sealed class BindingValue : ICapabilityValue
     #region Equality
     public bool Equals(IValue? other)
         => ReferenceEquals(this, other)
-           || other is BindingValue bindingValue
-                && Value.Equals(bindingValue.Value)
-                && Index.Equals(bindingValue.Index);
+           || other is BindingValue value
+                && Value.Equals(value.Value)
+                && Index.Equals(value.Index);
 
     public override bool Equals(object? obj)
         => ReferenceEquals(this, obj) || obj is BindingValue other && Equals(other);
