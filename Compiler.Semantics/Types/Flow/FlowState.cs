@@ -183,14 +183,14 @@ internal sealed class FlowState : IFlowState
             // Other types don't have capabilities and don't need to be tracked
             return binding.BindingType.ToUpperBound();
 
-        var bindingValue = BindingValue.TopLevel(binding);
+        var bindingValue = BindingValue.CreateTopLevel(binding);
         var current = values[bindingValue].Current;
         // TODO what about independent parameters?
         return ((CapabilityType)binding.BindingType.ToUpperBound()).With(transform(current));
     }
 
     public bool IsIsolated(IBindingNode? binding)
-        => binding is null || IsIsolated(values.Sets.TrySetFor(BindingValue.TopLevel(binding)));
+        => binding is null || IsIsolated(values.Sets.TrySetFor(BindingValue.CreateTopLevel(binding)));
 
     private static bool IsIsolated(IImmutableDisjointSet<IValue, SharingSetState>? set)
         => set?.Count == 1;
@@ -198,7 +198,7 @@ internal sealed class FlowState : IFlowState
     public bool IsIsolatedExceptFor(IBindingNode? binding, ValueId? valueId)
     {
         return binding is null || (valueId is ValueId v
-            ? IsIsolatedExceptFor(values.Sets.TrySetFor(BindingValue.TopLevel(binding)), CapabilityValue.CreateTopLevel(v))
+            ? IsIsolatedExceptFor(values.Sets.TrySetFor(BindingValue.CreateTopLevel(binding)), CapabilityValue.CreateTopLevel(v))
             : IsIsolated(binding));
     }
 
@@ -208,7 +208,7 @@ internal sealed class FlowState : IFlowState
     public bool CanFreezeExceptFor(IBindingNode? binding, ValueId? valueId)
     {
         if (binding is null) return true;
-        var bindingValue = BindingValue.TopLevel(binding);
+        var bindingValue = BindingValue.CreateTopLevel(binding);
         var set = values.Sets.TrySetFor(bindingValue);
         if (set is null) return false;
         if (IsIsolated(set)) return true;

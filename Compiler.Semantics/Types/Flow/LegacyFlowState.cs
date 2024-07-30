@@ -171,7 +171,7 @@ public sealed class LegacyFlowState : IFlowState
             return this;
 
         var builder = ToBuilder();
-        var bindingValue = BindingValue.TopLevel(binding);
+        var bindingValue = BindingValue.CreateTopLevel(binding);
         var flowCapability = builder.SetFlowCapability(bindingValue, capabilities[bindingValue].WhenAliased());
 
         if (binding.SharingIsTracked(flowCapability))
@@ -207,26 +207,26 @@ public sealed class LegacyFlowState : IFlowState
             // Other types don't have capabilities and don't need to be tracked
             return binding.BindingType.ToUpperBound();
 
-        var bindingValue = BindingValue.TopLevel(binding);
+        var bindingValue = BindingValue.CreateTopLevel(binding);
         var current = capabilities[bindingValue].Current;
         // TODO what about independent parameters?
         return ((CapabilityType)binding.BindingType.ToUpperBound()).With(transform(current));
     }
 
     public bool IsIsolated(IBindingNode? binding)
-        => binding is null || (TrySetFor(BindingValue.TopLevel(binding))?.IsIsolated ?? false);
+        => binding is null || (TrySetFor(BindingValue.CreateTopLevel(binding))?.IsIsolated ?? false);
 
     public bool IsIsolatedExceptFor(IBindingNode? binding, ValueId? valueId)
     {
         return binding is null
-               || (valueId is ValueId v ? TrySetFor(BindingValue.TopLevel(binding))?.IsIsolatedExceptFor(ResultValue.Create(v)) ?? false
+               || (valueId is ValueId v ? TrySetFor(BindingValue.CreateTopLevel(binding))?.IsIsolatedExceptFor(ResultValue.Create(v)) ?? false
                    : IsIsolated(binding));
     }
 
     public bool CanFreezeExceptFor(IBindingNode? binding, ValueId? valueId)
     {
         if (binding is null) return true;
-        var bindingValue = BindingValue.TopLevel(binding);
+        var bindingValue = BindingValue.CreateTopLevel(binding);
         var set = TrySetFor(bindingValue);
         if (set is null) return false;
         if (set.IsIsolated) return true;
@@ -466,7 +466,7 @@ public sealed class LegacyFlowState : IFlowState
     {
         var builder = ToBuilder();
         // TODO what about independent parameters?
-        var bindingValues = bindings.Select(BindingValue.TopLevel);
+        var bindingValues = bindings.Select(BindingValue.CreateTopLevel);
         builder.Drop(bindingValues);
         return builder.ToFlowState();
     }
