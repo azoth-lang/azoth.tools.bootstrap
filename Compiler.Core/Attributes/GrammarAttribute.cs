@@ -393,7 +393,7 @@ public static class GrammarAttribute
     /// Read the value of a circular attribute.
     /// </summary>
     [DebuggerStepThrough]
-    public static T Cyclic<TNode, T, TCyclic, TFunc, TCompare>(
+    internal static T Cyclic<TNode, T, TCyclic, TFunc, TCompare>(
         this TNode node,
         ref bool cached,
         ref TCyclic value,

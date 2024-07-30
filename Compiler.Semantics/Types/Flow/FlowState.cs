@@ -102,19 +102,31 @@ internal sealed class FlowState : IFlowState
     public IFlowState Declare(INamedBindingNode binding, ValueId? initializerValueId)
     {
         var builder = ToBuilder();
-        // TODO the initializer can have a set of values
-        var initializerValue = initializerValueId is ValueId v ? ResultValue.Create(v) : null;
-        var initializerSet = initializerValue is not null ? builder.TrySetFor(initializerValue) : null;
         var bindingValuePairs = BindingValue.ForType(binding.BindingValueId, binding.BindingType);
         builder.AddValueId(binding.BindingValueId, bindingValuePairs.Select(p => p.Value));
         foreach (var (value, flowCapability) in bindingValuePairs)
         {
             if (!flowCapability.Original.SharingIsTracked())
+            {
                 builder.AddUntracked(value);
-            else if (initializerSet is int set)
-                builder.AddToSet(set, value, flowCapability);
-            else
-                builder.AddSet(false, value, flowCapability);
+                continue;
+            }
+
+            if (initializerValueId is ValueId valueId)
+            {
+                // TODO this isn't correct. If the value is upcast there may not be a direct correspondence
+                var initializerValue = CapabilityValue.Create(valueId, value.Index);
+                if (!untrackedValues.Contains(initializerValue))
+                {
+                    var initializerSet = builder.TrySetFor(initializerValue)
+                                         ?? throw new InvalidOperationException("Value should be in a set");
+                    builder.AddToSet(initializerSet, value, flowCapability);
+                    continue;
+                }
+            }
+
+            // Otherwise, add the value to a new set
+            builder.AddSet(false, value, flowCapability);
         }
 
         if (initializerValueId is ValueId id)
@@ -141,15 +153,19 @@ internal sealed class FlowState : IFlowState
         var valueMap = ValueMapping(binding.BindingValueId, aliasValueId);
         foreach (var (bindingValue, aliasValue) in valueMap)
         {
-            // TODO this should be for the specific capability for this value
-            if (binding.SharingIsTracked())
-            {
-                var set = builder.TrySetFor(bindingValue) ?? throw new InvalidOperationException();
-                var flowCapability = builder[bindingValue].WhenAliased();
-                builder.AddToSet(set, aliasValue, flowCapability);
-            }
-            else
+            // Aliases match the tracking of the original value
+            if (untrackedValues.Contains(bindingValue))
                 builder.AddUntracked(aliasValue);
+            else
+            {
+                // Add the alias to the same set as the original value
+                var set = builder.TrySetFor(bindingValue) ?? throw new InvalidOperationException();
+                var aliasCapability = builder[bindingValue].OfAlias();
+                builder.AddToSet(set, aliasValue, aliasCapability);
+
+                // Update the capability of the original value to reflect that an alias exists
+                builder.UpdateCapability(bindingValue, c => c.WhenAliased());
+            }
         }
         builder.AddValueId(aliasValueId, valueMap.Values);
 

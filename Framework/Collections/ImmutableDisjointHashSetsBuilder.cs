@@ -72,7 +72,6 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
     public int? TrySetFor(TItem item)
         => items.TryGetValue(item, out var data) ? data.SetIndex : null;
 
-
     [Inline]
     private IImmutableDisjointSetBuilder<TItem, TSetData> Set(int setIndex, string? paramName = null)
         => sets[setIndex] ?? throw new ArgumentException("Invalid set index.", paramName ?? nameof(setIndex));

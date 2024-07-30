@@ -26,8 +26,7 @@ internal sealed class VariableNameExpressionNode : AmbiguousNameExpressionNode, 
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached)
-            ? flowStateAfter.UnsafeValue
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.VariableNameExpression_FlowStateAfter);
 
