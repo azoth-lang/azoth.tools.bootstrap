@@ -87,7 +87,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.Benchmarks", "Comp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.Antetypes", "Compiler.Antetypes\Compiler.Antetypes.csproj", "{4B86B15A-F9DF-42A9-A891-F089219D954B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler.Semantics.Interpreter", "Compiler.Semantics.Interpreter\Compiler.Semantics.Interpreter.csproj", "{D0DA5828-C8B6-4A24-AF73-34230AFCFA0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.Semantics.Interpreter", "Compiler.Semantics.Interpreter\Compiler.Semantics.Interpreter.csproj", "{D0DA5828-C8B6-4A24-AF73-34230AFCFA0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Unit.Compiler.Semantics.Interpreter", "Tests.Unit.Compiler.Semantics.Interpreter\Tests.Unit.Compiler.Semantics.Interpreter.csproj", "{1B39BB7A-B823-49E5-BB98-73F69822C6EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -227,6 +229,10 @@ Global
 		{D0DA5828-C8B6-4A24-AF73-34230AFCFA0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0DA5828-C8B6-4A24-AF73-34230AFCFA0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0DA5828-C8B6-4A24-AF73-34230AFCFA0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B39BB7A-B823-49E5-BB98-73F69822C6EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B39BB7A-B823-49E5-BB98-73F69822C6EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B39BB7A-B823-49E5-BB98-73F69822C6EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B39BB7A-B823-49E5-BB98-73F69822C6EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
