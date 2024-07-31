@@ -28,8 +28,14 @@ internal class SemanticTreeTypeValidator
             // These nodes should not be expressions and should not have types
             return;
 
-        var expressionSyntax = expression.Syntax;
-        var expectedAntetype = expressionSyntax.DataType.Result?.ToAntetype();
+        ValidateAntetype(expression);
+
+        ValidateType(node, expression);
+    }
+
+    private static void ValidateAntetype(IExpressionNode expression)
+    {
+        var expectedAntetype = expression.Syntax.DataType.Result?.ToAntetype();
         // Sometimes the new analysis can come up with types when the old one couldn't. So
         // if the expected antetype is UnknownAntetype, we don't care what the actual antetype is.
         if (expectedAntetype is not UnknownAntetype)
@@ -39,7 +45,10 @@ internal class SemanticTreeTypeValidator
                 throw new InvalidOperationException(
                     $"Expected antetype {expectedAntetype}, but got {antetype}");
         }
+    }
 
+    private static void ValidateType(ISemanticNode node, IExpressionNode expression)
+    {
         // The handling of freeze and move expressions has changed. So skip validating their child
         // expressions.
         if (ValidateTypes
@@ -48,6 +57,7 @@ internal class SemanticTreeTypeValidator
             _ = expression.ValueId;
             var isConversion = expression is IFreezeExpressionNode { IsImplicit: true }
                 or IMoveExpressionNode { IsImplicit: true } or IImplicitTempMoveExpressionNode;
+            var expressionSyntax = expression.Syntax;
             var expectedType = isConversion ? expressionSyntax.ConvertedDataType : expressionSyntax.DataType.Result;
             // Sometimes the new analysis can come up with types when the old one couldn't. So
             // if the expected type is UnknownType, we don't care what the actual type is.
