@@ -1,6 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
@@ -12,26 +11,6 @@ internal static class SharingIsTrackedExtensions
         // Any lent parameter needs tracked to prevent sharing with it
         if (node.IsLentBinding) return true;
         return SharingIsTracked(node.BindingType);
-    }
-
-    /// <summary>
-    /// Whether value sharing is tracked for this parameter type.
-    /// </summary>
-    public static bool SharingIsTracked(this ParameterType parameter)
-    {
-        // Any lent parameter needs tracked to prevent sharing with it
-        if (parameter.IsLent) return true;
-        return SharingIsTracked(parameter.Type);
-    }
-
-    /// <summary>
-    /// Whether value sharing is tracked for this parameter type.
-    /// </summary>
-    public static bool SharingIsTracked(this SelfParameterType parameter)
-    {
-        // Any lent parameter needs tracked to prevent sharing with it
-        if (parameter.IsLent) return true;
-        return SharingIsTracked(parameter.Type);
     }
 
     public static bool SharingIsTracked(this Pseudotype pseudotype)
@@ -51,10 +30,4 @@ internal static class SharingIsTrackedExtensions
     public static bool SharingIsTracked(this Capability capability)
         // Constant and Identity capabilities never need tracked
         => capability != Capability.Constant && capability != Capability.Identity;
-
-    public static bool SharingIsTracked(this IBindingNode node, FlowCapability flowCapability)
-    {
-        if (flowCapability.Modified == Capability.Identity) return false;
-        return node.SharingIsTracked();
-    }
 }

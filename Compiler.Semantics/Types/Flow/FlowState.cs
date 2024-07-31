@@ -352,7 +352,7 @@ internal sealed class FlowState : IFlowState
         var mapping = new MultiMapHashSet<CapabilityValue, ICapabilityValue>();
         foreach (var newValue in newValues)
         {
-            var typeAtIndex = newValue.Index.TypeAt(bindingType);
+            var typeAtIndex = bindingType.TypeAt(newValue.Index);
             // If the value corresponds to an independent parameter of the containing class, then
             // map to corresponding in independent value. Otherwise, map to the root value.
             CapabilityValue mapFromValue;
