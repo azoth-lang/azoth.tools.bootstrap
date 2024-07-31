@@ -24,7 +24,7 @@ internal sealed class BindingValue : ICapabilityValue
     public static BindingValue CreateTopLevel(IBindingNode node)
         => TopLevelCache.GetOrAdd(node.BindingValueId.Value, TopLevelFactory);
 
-    public static List<(BindingValue Value, FlowCapability FlowCapability)> ForType(ValueId id, Pseudotype type)
+    public static IReadOnlyDictionary<BindingValue, FlowCapability> ForType(ValueId id, Pseudotype type)
         => ICapabilityValue.ForType(id, type, Create);
 
     public ulong Value { get; }

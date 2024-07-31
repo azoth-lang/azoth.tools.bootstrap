@@ -14,13 +14,13 @@ public interface ICapabilityValue : IValue
     ulong Value { get; }
     CapabilityIndex Index { get; }
 
-    protected static List<(T Value, FlowCapability FlowCapability)> ForType<T>(ValueId id, Pseudotype type, Func<ValueId, CapabilityIndex, T> create)
+    protected static IReadOnlyDictionary<T, FlowCapability> ForType<T>(ValueId id, Pseudotype type, Func<ValueId, CapabilityIndex, T> create)
         where T : ICapabilityValue
     {
         var index = new Stack<int>();
-        var values = new List<(T Value, FlowCapability FlowCapability)>();
+        var values = new Dictionary<T, FlowCapability>();
         ForType(id, type.ToUpperBound(), index, true, values, create);
-        return values;
+        return values.AsReadOnly();
     }
 
     private static void ForType<T>(
@@ -28,12 +28,12 @@ public interface ICapabilityValue : IValue
         DataType type,
         Stack<int> index,
         bool capture,
-        List<(T Value, FlowCapability FlowCapability)> values,
+        Dictionary<T, FlowCapability> values,
         Func<ValueId, CapabilityIndex, T> create)
         where T : ICapabilityValue
     {
         if (capture && type is CapabilityType t)
-            values.Add((create(id, new(index)), t.Capability));
+            values.Add(create(id, new(index)), t.Capability);
 
         if (type is OptionalType optionalType)
         {

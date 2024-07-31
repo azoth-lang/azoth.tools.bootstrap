@@ -123,7 +123,7 @@ internal sealed class FlowState : IFlowState
     {
         var builder = ToBuilder();
         var bindingValuePairs = BindingValue.ForType(parameter.BindingValueId, parameter.BindingType);
-        builder.AddValueId(parameter.BindingValueId, bindingValuePairs.Select(p => p.Value));
+        builder.AddValueId(parameter.BindingValueId, bindingValuePairs.Keys);
         foreach (var (value, flowCapability) in bindingValuePairs)
         {
             var capability = flowCapability.Original;
@@ -151,7 +151,7 @@ internal sealed class FlowState : IFlowState
     {
         var builder = ToBuilder();
         var bindingValuePairs = BindingValue.ForType(binding.BindingValueId, binding.BindingType);
-        builder.AddValueId(binding.BindingValueId, bindingValuePairs.Select(p => p.Value));
+        builder.AddValueId(binding.BindingValueId, bindingValuePairs.Keys);
         foreach (var (value, flowCapability) in bindingValuePairs)
         {
             if (!flowCapability.Original.SharingIsTracked())
@@ -298,7 +298,7 @@ internal sealed class FlowState : IFlowState
             else
                 builder.AddUntracked(returnValue);
         }
-        builder.AddValueId(returnValueId, capabilityValuePairs.Select(p => p.Value));
+        builder.AddValueId(returnValueId, capabilityValuePairs.Keys);
 
         // Now remove all the arguments
         builder.Remove(argumentsList.Select(a => a.ValueId));
@@ -452,7 +452,7 @@ internal sealed class FlowState : IFlowState
         {
             var bindingValuePairs
                 = BindingValue.ForType(binding.BindingValueId, (CapabilityType)binding.BindingType.ToUpperBound());
-            foreach (var bindingValue in bindingValuePairs.Select(p => p.Value))
+            foreach (var bindingValue in bindingValuePairs.Keys)
                 builder.UpdateCapability(bindingValue, c => c.AfterFreeze());
         }
 
@@ -493,8 +493,8 @@ internal sealed class FlowState : IFlowState
         {
             var bindingValues = BindingValue
                                 .ForType(binding.BindingValueId, (CapabilityType)binding.BindingType.ToUpperBound())
-                                .Where(p => p.FlowCapability.Original.SharingIsTracked())
-                                .Select(p => p.Value);
+                                .Where(p => p.Value.Original.SharingIsTracked())
+                                .Select(p => p.Key);
             foreach (var bindingValue in bindingValues)
                 // TODO these are now `id`, doesn't that mean they no longer need tracked?
                 builder.UpdateCapability(bindingValue, c => c.AfterMove());

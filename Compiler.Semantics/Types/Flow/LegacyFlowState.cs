@@ -93,7 +93,7 @@ public sealed class LegacyFlowState : IFlowState
                                      && capability != Capability.Identity;
         if (!needsExternalReference)
         {
-            var newSharingSets = bindingValuePairs.Select(p => SharingSet.Declare(isLent, p.Value))
+            var newSharingSets = bindingValuePairs.Select(p => SharingSet.Declare(isLent, p.Key))
                                                   .ToFixedList();
             builder.AddSets(newSharingSets);
         }
@@ -101,14 +101,14 @@ public sealed class LegacyFlowState : IFlowState
         {
             // Lent parameters each have their own external reference
             var newSharingSets = bindingValuePairs
-                .Select(p => SharingSet.Declare(isLent, p.Value, ExternalReference.CreateLentParameter(p.Value)))
+                .Select(p => SharingSet.Declare(isLent, p.Key, ExternalReference.CreateLentParameter(p.Key)))
                 .ToFixedList();
             builder.AddSets(newSharingSets);
         }
         else
         {
             // Non-lent parameters share the same external reference
-            var newSharingSet = SharingSet.Declare(isLent, bindingValuePairs.Select(p => p.Value));
+            var newSharingSet = SharingSet.Declare(isLent, bindingValuePairs.Keys);
             builder.AddSet(newSharingSet);
             builder.Union([newSharingSet, builder.NonLentParametersSet()]);
         }
@@ -139,7 +139,7 @@ public sealed class LegacyFlowState : IFlowState
 
         var initializerSet = initializerValue is not null ? builder.TrySetFor(initializerValue) : null;
         var isLent = initializerSet?.IsLent ?? false;
-        var newSharingSets = bindingValuePairs.Select(p => SharingSet.Declare(isLent, p.Value))
+        var newSharingSets = bindingValuePairs.Select(p => SharingSet.Declare(isLent, p.Key))
                                               .ToFixedList();
         builder.AddSets(newSharingSets);
 
@@ -397,7 +397,7 @@ public sealed class LegacyFlowState : IFlowState
         if (binding is not null)
         {
             var bindingValuePairs = BindingValue.ForType(binding.BindingValueId, (CapabilityType)binding.BindingType.ToUpperBound());
-            foreach (var bindingValue in bindingValuePairs.Select(p => p.Value))
+            foreach (var bindingValue in bindingValuePairs.Keys)
                 builder.SetFlowCapability(bindingValue, capabilities[bindingValue].AfterFreeze());
         }
 
@@ -425,7 +425,7 @@ public sealed class LegacyFlowState : IFlowState
         if (binding is not null)
         {
             var bindingValues = BindingValue.ForType(binding.BindingValueId, (CapabilityType)binding.BindingType.ToUpperBound())
-                                            .Select(p => p.Value).ToList();
+                                            .Select(p => p.Key).ToList();
             foreach (var bindingValue in bindingValues)
                 builder.SetFlowCapability(bindingValue, capabilities[bindingValue].AfterMove());
 
@@ -506,8 +506,8 @@ public sealed class LegacyFlowState : IFlowState
         public LegacyFlowState ToFlowState()
             => new LegacyFlowState(capabilities.ToImmutable(), sets.ToImmutable(), setFor.ToImmutable());
 
-        public void AddFlowCapabilities(IEnumerable<(BindingValue Value, FlowCapability FlowCapability)> valueCapability)
-            => capabilities.AddRange(valueCapability.Select(p => KeyValuePair.Create((ICapabilityValue)p.Value, p.FlowCapability)));
+        public void AddFlowCapabilities(IEnumerable<KeyValuePair<BindingValue, FlowCapability>> valueCapabilities)
+            => capabilities.AddRange(valueCapabilities.Select(p => KeyValuePair.Create((ICapabilityValue)p.Key, p.Value)));
 
         public FlowCapability SetFlowCapability(ICapabilityValue value, FlowCapability flowCapability)
         {
