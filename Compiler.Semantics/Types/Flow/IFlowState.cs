@@ -62,7 +62,7 @@ public interface IFlowState : IEquatable<IFlowState>
     // TODO should storage of return value be based on whether the return type requires tracking?
     IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId, DataType returnType);
 
-    IFlowState AccessMember(ValueId contextValueId, ValueId valueId, DataType memberType);
+    IFlowState AccessField(IFieldAccessExpressionNode node);
     IFlowState Merge(IFlowState? other);
     IFlowState Transform(ValueId? valueId, ValueId toValueId, DataType withType);
 

@@ -271,8 +271,11 @@ public sealed class LegacyFlowState : IFlowState
         return builder.ToFlowState();
     }
 
-    public IFlowState AccessMember(ValueId contextValueId, ValueId valueId, DataType memberType)
+    public IFlowState AccessField(IFieldAccessExpressionNode node)
     {
+        var contextValueId = node.Context.ValueId;
+        var valueId = node.ValueId;
+        var memberType = node.Type;
         var contextResultValue = ResultValue.Create(contextValueId);
         // If accessing from non-tracked type, then it's not tracked
         // TODO this might be bug prone if the value was accidentally not in the flow state

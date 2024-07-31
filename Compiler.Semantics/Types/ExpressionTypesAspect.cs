@@ -330,7 +330,7 @@ public static class ExpressionTypesAspect
     }
 
     public static IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node)
-        => node.Context.FlowStateAfter.AccessMember(node.Context.ValueId, node.ValueId, node.Type);
+        => node.Context.FlowStateAfter.AccessField(node);
 
     public static IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node)
         => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);

@@ -150,6 +150,8 @@ internal sealed class FlowState : IFlowState
         if (binding is null) return this;
 
         var builder = ToBuilder();
+        // An alias has the same type (modulo aliasing) as the original value and as such the same
+        // capability values. Thus, we can simply map the original values to the alias values.
         var valueMap = ValueMapping(binding.BindingValueId, aliasValueId);
         foreach (var (bindingValue, aliasValue) in valueMap)
         {
@@ -256,9 +258,13 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IFlowState AccessMember(ValueId contextValueId, ValueId valueId, DataType memberType)
+    public IFlowState AccessField(IFieldAccessExpressionNode node)
     {
+        var contextValueId = node.Context.ValueId;
+        var valueId = node.ValueId;
+        var memberType = node.Type;
         var builder = ToBuilder();
+        // TODO map the context capability values to the result capability values
         var valueMap = ValueMapping(contextValueId, valueId);
         foreach (var (contextValue, resultValue) in valueMap)
         {
@@ -326,6 +332,7 @@ internal sealed class FlowState : IFlowState
         if (valueId is not ValueId fromValueId) return this;
 
         var builder = ToBuilder();
+        // TODO map the original capability values to the result capability values
         var valueMap = ValueMapping(fromValueId, toValueId);
         foreach (var (fromValue, toValue) in valueMap)
         {
