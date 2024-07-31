@@ -5,8 +5,10 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Framework.Collections;
+using DotNet.Collections.Generic;
 using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -61,8 +63,54 @@ internal sealed class FlowState : IFlowState
     private IEnumerable<ICapabilityValue> TrackedValues(IEnumerable<ArgumentValueId> argumentValueIds)
         => argumentValueIds.SelectMany(a => valuesForId[a.ValueId]).Where(v => !untrackedValues.Contains(v));
 
-    private IReadOnlyDictionary<ICapabilityValue, CapabilityValue> ValueMapping(ValueId oldValueId, ValueId newValueId)
-        => valuesForId[oldValueId].ToDictionaryWithValue(v => CapabilityValue.Create(newValueId, v.Index)).AsReadOnly();
+    // TODO replace with AliasValueMapping
+    private IReadOnlyDictionary<ICapabilityValue, CapabilityValue> LegacyAliasValueMapping(ValueId oldValueId, ValueId newValueId)
+         => valuesForId[oldValueId].ToDictionaryWithValue(v => CapabilityValue.Create(newValueId, v.Index)).AsReadOnly();
+
+    /// <summary>
+    /// Build a mapping from new <see cref="CapabilityValue"/>s to the old <see cref="ICapabilityValue"/>s.
+    /// </summary>
+    /// <remarks>Since this is an alias, all old values can be mapped directly to new values without
+    /// concern for the types involved.</remarks>
+    private IReadOnlyDictionary<CapabilityValue, ICapabilityValue> AliasValueMapping(ValueId oldValueId, ValueId newValueId)
+        => valuesForId[oldValueId].ToDictionary(v => CapabilityValue.Create(newValueId, v.Index)).AsReadOnly();
+
+    /// <summary>
+    /// Build a mapping from new <see cref="CapabilityValue"/>s to the old <see cref="ICapabilityValue"/>s.
+    /// Return that mapping as a <see cref="MultiMapHashSet{TKey,TValue}"/> even though it has only
+    /// one value per key so that it can be the starting point for mappings that have multiple values.
+    /// </summary>
+    /// <remarks>Since this is an alias, all old values can be mapped directly to new values without
+    /// concern for the types involved.</remarks>
+    private MultiMapHashSet<CapabilityValue, ICapabilityValue> AliasValueMultiMapping(ValueId oldValueId, ValueId newValueId)
+    {
+        var valueMap = new MultiMapHashSet<CapabilityValue, ICapabilityValue>();
+        foreach (var oldValue in valuesForId[oldValueId])
+        {
+            var newValue = CapabilityValue.Create(newValueId, oldValue.Index);
+            valueMap.TryToAddMapping(newValue, oldValue);
+        }
+        return valueMap;
+    }
+
+    /// <summary>
+    /// Create a mapping of new <see cref="CapabilityValue"/>s to the old <see cref="ICapabilityValue"/>s
+    /// that handles upcasting/supertype relationships.
+    /// </summary>
+    private MultiMapHashSet<CapabilityValue, ICapabilityValue> SupertypeValueMapping(
+        ValueId oldValueId,
+        CapabilityType oldValueType,
+        ValueId newValueId,
+        CapabilityType newValueType)
+    {
+        Requires.That(nameof(newValueType), newValueType.IsAssignableFrom(newValueType),
+            $"Must be a supertype of {nameof(oldValueType)}");
+
+        var valueMap = AliasValueMultiMapping(oldValueId, newValueId);
+        if (oldValueType.Equals(newValueType)) return valueMap;
+
+        throw new NotImplementedException("Mapping actual upcast");
+    }
     #endregion
 
     public IFlowState Declare(INamedParameterNode parameter)
@@ -152,7 +200,7 @@ internal sealed class FlowState : IFlowState
         var builder = ToBuilder();
         // An alias has the same type (modulo aliasing) as the original value and as such the same
         // capability values. Thus, we can simply map the original values to the alias values.
-        var valueMap = ValueMapping(binding.BindingValueId, aliasValueId);
+        var valueMap = LegacyAliasValueMapping(binding.BindingValueId, aliasValueId);
         foreach (var (bindingValue, aliasValue) in valueMap)
         {
             // Aliases match the tracking of the original value
@@ -264,26 +312,45 @@ internal sealed class FlowState : IFlowState
         var valueId = node.ValueId;
         var memberType = node.Type;
         var builder = ToBuilder();
-        // TODO map the context capability values to the result capability values
-        var valueMap = ValueMapping(contextValueId, valueId);
-        foreach (var (contextValue, resultValue) in valueMap)
+        var contextType = (CapabilityType)node.Context.Type;
+        var containingDeclaredType = node.ReferencedDeclaration.Symbol.ContainingSymbol.DeclaresType.AsDeclaredType();
+        var bindingType = node.ReferencedDeclaration.BindingType;
+
+        var valueMap = AccessFieldValueMapping(contextValueId, contextType, containingDeclaredType, bindingType, valueId);
+        foreach (var (resultValue, contextValues) in valueMap)
         {
             // TODO properly handle the mapping to independent parameters when accessing a member
             // TODO this should be for the specific capability for this value
             if (memberType.SharingIsTracked())
             {
-                var set = builder.TrySetFor(contextValue) ?? throw new InvalidOperationException();
+                var set = builder.Union(contextValues);
+                // TODO is `isLent: false` correct?
                 // TODO what is the correct flow capability for the result?
-                builder.AddToSet(set, resultValue, default);
+                builder.AddToSet(set, isLent: false, resultValue, default);
             }
             else
                 builder.AddUntracked(resultValue);
         }
 
-        builder.AddValueId(valueId, valueMap.Values);
+        builder.AddValueId(valueId, valueMap.Keys);
         builder.Remove(contextValueId);
 
         return builder.ToImmutable();
+    }
+
+    private MultiMapHashSet<CapabilityValue, ICapabilityValue> AccessFieldValueMapping(
+        ValueId contextValueId,
+        CapabilityType contextType,
+        DeclaredType containingDeclaredType,
+        DataType bindingType,
+        ValueId valueId)
+    {
+        var effectiveContextType = contextType.UpcastTo(containingDeclaredType);
+        var valueMap = SupertypeValueMapping(contextValueId, contextType, valueId, effectiveContextType);
+
+        // TODO actually map the context capability values to the result capability values
+
+        return valueMap;
     }
 
     public IFlowState Merge(IFlowState? other)
@@ -333,7 +400,7 @@ internal sealed class FlowState : IFlowState
 
         var builder = ToBuilder();
         // TODO map the original capability values to the result capability values
-        var valueMap = ValueMapping(fromValueId, toValueId);
+        var valueMap = LegacyAliasValueMapping(fromValueId, toValueId);
         foreach (var (fromValue, toValue) in valueMap)
         {
             // TODO if the original value was untracked, does that meant the result should be untracked?
@@ -389,7 +456,7 @@ internal sealed class FlowState : IFlowState
                 builder.UpdateCapability(bindingValue, c => c.AfterFreeze());
         }
 
-        var valueMap = ValueMapping(valueId, intoValueId);
+        var valueMap = LegacyAliasValueMapping(valueId, intoValueId);
         foreach (var (oldValue, newValue) in valueMap)
         {
             // If the value could reference `temp const` data, then it needs to be tracked. (However,
@@ -413,7 +480,7 @@ internal sealed class FlowState : IFlowState
     private FlowState Move(IBindingNode? binding, ValueId valueId, ValueId intoValueId)
     {
         var builder = ToBuilder();
-        var valueMap = ValueMapping(valueId, intoValueId);
+        var valueMap = LegacyAliasValueMapping(valueId, intoValueId);
         foreach (var (oldValue, newValue) in valueMap)
         {
             if (builder.TrySetFor(oldValue) is int set)
@@ -451,7 +518,7 @@ internal sealed class FlowState : IFlowState
     private FlowState TemporarilyConvert(ValueId valueId, ValueId intoValueId, TempConversionTo to)
     {
         var builder = ToBuilder();
-        var valueMap = ValueMapping(valueId, intoValueId);
+        var valueMap = LegacyAliasValueMapping(valueId, intoValueId);
         foreach (var (oldValue, newValue) in valueMap)
         {
             if (untrackedValues.Contains(oldValue))

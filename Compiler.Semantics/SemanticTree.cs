@@ -112,6 +112,10 @@ public partial interface IExpressionNode
 {
     IPreviousValueId PreviousValueId();
 
+    /// <summary>
+    /// Indicates that this node type should not actually be counted as an expression. (i.e. it
+    /// should implement <see cref="IExpressionNode"/>.
+    /// </summary>
     // TODO change inheritance so these are not expressions
     public bool ShouldNotBeExpression()
         => this is INamespaceNameNode or IFunctionGroupNameNode or IMethodGroupNameNode

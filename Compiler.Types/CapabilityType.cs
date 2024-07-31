@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -152,6 +153,18 @@ public abstract class CapabilityType : NonEmptyType
             default:
                 throw ExhaustiveMatch.Failed(capability);
         }
+    }
+
+    public CapabilityType UpcastTo(DeclaredType target)
+    {
+        if (DeclaredType.Equals(target))
+            return this;
+
+        var supertype = Supertypes.Where(s => s.DeclaredType == target).TrySingle();
+        if (supertype is null)
+            throw new ArgumentException($"The type {target} is not a supertype of {this}.");
+
+        return supertype.With(Capability);
     }
 
     #region Equality
