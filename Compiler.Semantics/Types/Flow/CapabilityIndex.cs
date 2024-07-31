@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -28,6 +29,26 @@ public readonly struct CapabilityIndex : IEquatable<CapabilityIndex>
     {
         TreeIndex = treeIndex.ToFixedList();
     }
+
+    /// <summary>
+    /// Get the type at this index in the given type.
+    /// </summary>
+    /// <remarks>The given type must be either the type that the index was created on or the basis
+    /// for that type. For example, the index could be from a type constructed by substituting type
+    /// parameters into the given type.</remarks>
+    public DataType TypeAt(DataType type) => TypeAt(type, 0);
+
+    private DataType TypeAt(DataType type, int depth)
+        => type switch
+        {
+            OptionalType t => TypeAt(t.Referent, depth),
+            _ when depth == TreeIndex.Count => type,
+            CapabilityType t => TypeAt(t.TypeArguments[TreeIndex[depth]], depth + 1),
+            _ => throw new InvalidOperationException("The index is invalid for the given type.")
+        };
+
+    public CapabilityIndex Append(int index)
+        => new(TreeIndex.Append(index));
 
     #region Equality
     public bool Equals(CapabilityIndex other) => TreeIndex.ItemsEqual(other.TreeIndex);

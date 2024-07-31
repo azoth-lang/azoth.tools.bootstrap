@@ -32,14 +32,15 @@ public interface ICapabilityValue : IValue
         Func<ValueId, CapabilityIndex, T> create)
         where T : ICapabilityValue
     {
-        if (capture && type is CapabilityType t)
-            values.Add(create(id, new(index)), t.Capability);
-
-        if (type is OptionalType optionalType)
+        switch (type)
         {
-            // Traverse into optional types
-            ForType(id, optionalType.Referent, index, capture, values, create);
-            return;
+            case CapabilityType t when capture:
+                values.Add(create(id, new(index)), t.Capability);
+                break;
+            case OptionalType optionalType:
+                // Traverse into optional types
+                ForType(id, optionalType.Referent, index, capture, values, create);
+                return;
         }
 
         if (!type.HasIndependentTypeArguments)

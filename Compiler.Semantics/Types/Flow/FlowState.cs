@@ -316,23 +316,22 @@ internal sealed class FlowState : IFlowState
         var containingDeclaredType = node.ReferencedDeclaration.Symbol.ContainingSymbol.DeclaresType.AsDeclaredType();
         var bindingType = node.ReferencedDeclaration.BindingType;
 
-        var valueMap = AccessFieldValueMapping(contextValueId, contextType, containingDeclaredType, bindingType, valueId);
-        foreach (var (resultValue, contextValues) in valueMap)
+        var newValueCapabilities = CapabilityValue.ForType(valueId, memberType);
+        var valueMap = AccessFieldValueMapping(contextValueId, contextType, containingDeclaredType,
+            bindingType, valueId, newValueCapabilities.Keys);
+        foreach (var (newValue, flowCapability) in newValueCapabilities)
         {
-            // TODO properly handle the mapping to independent parameters when accessing a member
-            // TODO this should be for the specific capability for this value
-            if (memberType.SharingIsTracked())
+            if (flowCapability.Original.SharingIsTracked())
             {
-                var set = builder.Union(contextValues);
+                var set = builder.Union(valueMap[newValue]);
                 // TODO is `isLent: false` correct?
-                // TODO what is the correct flow capability for the result?
-                builder.AddToSet(set, isLent: false, resultValue, default);
+                builder.AddToSet(set, isLent: false, newValue, flowCapability);
             }
             else
-                builder.AddUntracked(resultValue);
+                builder.AddUntracked(newValue);
         }
 
-        builder.AddValueId(valueId, valueMap.Keys);
+        builder.AddValueId(valueId, newValueCapabilities.Keys);
         builder.Remove(contextValueId);
 
         return builder.ToImmutable();
@@ -343,14 +342,35 @@ internal sealed class FlowState : IFlowState
         CapabilityType contextType,
         DeclaredType containingDeclaredType,
         DataType bindingType,
-        ValueId valueId)
+        ValueId valueId,
+        IEnumerable<CapabilityValue> newValues)
     {
         var effectiveContextType = contextType.UpcastTo(containingDeclaredType);
         var valueMap = SupertypeValueMapping(contextValueId, contextType, valueId, effectiveContextType);
 
-        // TODO actually map the context capability values to the result capability values
+        var rootValue = CapabilityValue.CreateTopLevel(valueId);
+        var mapping = new MultiMapHashSet<CapabilityValue, ICapabilityValue>();
+        foreach (var newValue in newValues)
+        {
+            var typeAtIndex = newValue.Index.TypeAt(bindingType);
+            // If the value corresponds to an independent parameter of the containing class, then
+            // map to corresponding in independent value. Otherwise, map to the root value.
+            CapabilityValue mapFromValue;
+            if (typeAtIndex is GenericParameterType { Parameter.HasIndependence: true } t)
+            {
+                var parameterIndex = containingDeclaredType.GenericParameters.IndexOf(t.Parameter)
+                    // Types nested in a type with independent parameters are not implemented
+                    ?? throw new NotImplementedException("Independent parameter not from containing type.");
+                // Find the corresponding value in the context
+                mapFromValue = CapabilityValue.Create(valueId, newValue.Index.Append(parameterIndex));
+            }
+            else
+                mapFromValue = rootValue;
 
-        return valueMap;
+            mapping.Add(newValue, valueMap[mapFromValue]);
+        }
+
+        return mapping;
     }
 
     public IFlowState Merge(IFlowState? other)

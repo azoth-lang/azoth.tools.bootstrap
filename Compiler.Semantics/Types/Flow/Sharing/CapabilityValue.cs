@@ -39,7 +39,7 @@ internal sealed class CapabilityValue : ICapabilityValue
                 && Index.Equals(value.Index);
 
     public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is BindingValue other && Equals(other);
+        => ReferenceEquals(this, obj) || obj is CapabilityValue other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(Value, Index);
     #endregion
