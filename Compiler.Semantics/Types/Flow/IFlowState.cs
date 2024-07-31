@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 /// </summary>
 public interface IFlowState : IEquatable<IFlowState>
 {
-    public static IFlowState Empty => LegacyFlowState.Empty;
+    public static IFlowState Empty => FlowState.Empty;
 
     bool IsEmpty { get; }
 
