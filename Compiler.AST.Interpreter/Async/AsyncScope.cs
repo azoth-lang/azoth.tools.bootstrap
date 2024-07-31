@@ -12,10 +12,13 @@ internal class AsyncScope
     public void Add(Task<AzothValue> task)
     {
         if (task.IsCompleted) return;
-        task.ContinueWith(t => tasks.TryRemove(t, out _), TaskContinuationOptions.ExecuteSynchronously);
+
         tasks.TryAdd(task, default);
-        // In case it completed before we could add it to the collection, remove it
-        if (task.IsCompleted) tasks.TryRemove(task, out _);
+
+        // Attach a continuation to remove the task from the collection when it completes. Do so
+        // after adding it to the collection so that if it completed before we added it, it will be
+        // removed immediately.
+        task.ContinueWith(t => tasks.TryRemove(t, out _), TaskContinuationOptions.ExecuteSynchronously);
     }
 
     public async ValueTask ExitAsync() => await Task.WhenAll(tasks.Keys);
