@@ -33,7 +33,7 @@ internal static class DefaultMembersAspect
         if (node.SourceMembers.Any(m => m is IInitializerDefinitionNode))
             return null;
 
-        throw new System.NotImplementedException();
+        return Child.Attach(node, new DefaultInitializerDefinitionNode());
     }
 
     public static IFixedSet<IStructMemberDefinitionNode> StructDefinition_Members(IStructDefinitionNode node)
