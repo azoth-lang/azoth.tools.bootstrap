@@ -36,7 +36,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     private ValueAttribute<FieldSymbol> symbol;
     public override FieldSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAspect.FieldDeclaration);
+            : symbol.GetValue(this, SymbolAspect.FieldDefinition_Symbol);
     public IAmbiguousExpressionNode? Initializer { get; }
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope

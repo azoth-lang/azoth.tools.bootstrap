@@ -24,7 +24,7 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
         => referencedDeclaration.TryGetValue(out var value) ? value
             : referencedDeclaration.GetValue(this, SymbolNodeAspect.StandardTypeName_ReferencedDeclaration);
     public override TypeSymbol? ReferencedSymbol
-        => SymbolAspect.StandardTypeName(this);
+        => SymbolAspect.StandardTypeName_ReferencedSymbol(this);
     private ValueAttribute<IMaybeAntetype> antetype;
     public override IMaybeAntetype NamedAntetype
         => antetype.TryGetValue(out var value) ? value

@@ -128,7 +128,7 @@ internal static class OverloadResolutionAspect
         if (node.Expression is not IExpressionNode { Antetype: FunctionAntetype } expression)
             return null;
 
-        return new FunctionReferenceInvocationNode(node.Syntax, expression, node.CurrentArguments);
+        return new FunctionReferenceInvocationExpressionNode(node.Syntax, expression, node.CurrentArguments);
     }
 
     public static IAmbiguousExpressionNode InvocationExpression_Rewrite_ToUnknown(IInvocationExpressionNode node)

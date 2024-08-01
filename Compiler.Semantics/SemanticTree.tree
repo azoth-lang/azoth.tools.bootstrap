@@ -110,12 +110,13 @@ ClassDefinition <: TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSy
     BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName*
     DeclaredType:`ObjectType`
     SourceMembers:`IClassMemberDefinitionNode`* Members:{ClassMemberDefinition}
-    DefaultConstructor:`IDefaultConstructorDefinitionNode`?;
+    DefaultConstructor:DefaultConstructorDefinition?;
 StructDefinition <: TypeDefinition, StructDeclaration = Syntax:`IStructDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName*
     DeclaredType:`StructType`
-    Members:{StructMemberDefinition};
+    SourceMembers:`IStructMemberDefinitionNode`* Members:{StructMemberDefinition}
+    DefaultInitializer:DefaultInitializerDefinition?;
 TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName*
@@ -163,8 +164,13 @@ SourceConstructorDefinition <: ConstructorDefinition
     = Syntax:`IConstructorDefinitionSyntax`
     SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
 InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, InitializerDeclaration
-    = Syntax:`IInitializerDefinitionSyntax` Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter*
-    Symbol:`InitializerSymbol` Body:BlockBody;
+    = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*
+    Symbol:`InitializerSymbol`;
+DefaultInitializerDefinition <: InitializerDefinition
+    = Parameters:ConstructorOrInitializerParameter*;
+SourceInitializerDefinition <: InitializerDefinition
+    = Syntax:`IInitializerDefinitionSyntax`
+    SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
 FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding, FieldDeclaration, ExecutableDefinition
     = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type BindingAntetype:`IMaybeAntetype` BindingType:`DataType`
     Symbol:`FieldSymbol` Initializer:AmbiguousExpression?;
@@ -309,9 +315,11 @@ ForeachExpression <: Expression, NamedBinding = Syntax:`IForeachExpressionSyntax
     ReferencedIteratorDeclaration:`ITypeDeclarationNode`? ReferencedNextMethod:`IStandardMethodDeclarationNode`?
     IteratedAntetype:`IMaybeAntetype` IteratedType:`DataType`
     FlowStateBeforeBlock:`IFlowState`;
-BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax` Value:AmbiguousExpression?;
+BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax`
+    Value:AmbiguousExpression? IntermediateValue:`IExpressionNode`?;
 NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;
-ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax` Value:AmbiguousExpression?;
+ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax`
+    Value:AmbiguousExpression? IntermediateValue:`IExpressionNode`?;
 
 // ---------- Invocation Expressions
 InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
@@ -335,7 +343,7 @@ SetterInvocationExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
     Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression IntermediateValue:`IExpressionNode`?
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`ISetterMethodDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
-FunctionReferenceInvocation <: Expression = Syntax:`IInvocationExpressionSyntax`
+FunctionReferenceInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     Expression:Expression Arguments:AmbiguousExpression* IntermediateArguments:`IExpressionNode?`*
     FunctionAntetype:`FunctionAntetype` FunctionType:`FunctionType`;
 InitializerInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`

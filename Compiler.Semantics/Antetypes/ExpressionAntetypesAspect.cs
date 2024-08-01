@@ -256,7 +256,7 @@ internal static class ExpressionAntetypesAspect
         return boundAntetype;
     }
 
-    public static IMaybeExpressionAntetype FunctionReferenceInvocation_Antetype(IFunctionReferenceInvocationNode node)
+    public static IMaybeExpressionAntetype FunctionReferenceInvocation_Antetype(IFunctionReferenceInvocationExpressionNode node)
         => node.FunctionAntetype.Return;
 
     public static IMaybeExpressionAntetype InitializerInvocationExpression_Antetype(

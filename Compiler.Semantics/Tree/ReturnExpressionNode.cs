@@ -15,6 +15,7 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
     public IAmbiguousExpressionNode? Value
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
+    public IExpressionNode? IntermediateValue => Value as IExpressionNode;
     public override IMaybeExpressionAntetype Antetype => IAntetype.Never;
     public override NeverType Type => DataType.Never;
     private IFlowState? flowStateAfter;

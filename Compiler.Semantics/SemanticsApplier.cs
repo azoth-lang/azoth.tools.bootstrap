@@ -202,6 +202,21 @@ internal class SemanticsApplier
 
     private static void InitializerDefinition(IInitializerDefinitionNode node)
     {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case ISourceInitializerDefinitionNode n:
+                SourceInitializerDefinition(n);
+                break;
+            case IDefaultInitializerDefinitionNode n:
+                DefaultInitializerDefinition(n);
+                break;
+        }
+    }
+
+    private static void SourceInitializerDefinition(ISourceInitializerDefinitionNode node)
+    {
         var symbol = node.Syntax.Symbol;
         symbol.BeginFulfilling();
         symbol.Fulfill(node.Symbol);
@@ -209,6 +224,8 @@ internal class SemanticsApplier
         ConstructorOrInitializerParameters(node.Parameters);
         BlockBody(node.Body);
     }
+
+    private static void DefaultInitializerDefinition(IDefaultInitializerDefinitionNode node) { }
 
     private static void FieldDefinition(IFieldDefinitionNode node)
     {
@@ -625,7 +642,7 @@ internal class SemanticsApplier
             case ISetterInvocationExpressionNode n:
                 SetterInvocationExpression(n);
                 break;
-            case IFunctionReferenceInvocationNode n:
+            case IFunctionReferenceInvocationExpressionNode n:
                 FunctionReferenceInvocation(n);
                 break;
             case IInitializerInvocationExpressionNode n:
@@ -842,7 +859,7 @@ internal class SemanticsApplier
         AmbiguousExpression(node.Value);
     }
 
-    private static void FunctionReferenceInvocation(IFunctionReferenceInvocationNode node)
+    private static void FunctionReferenceInvocation(IFunctionReferenceInvocationExpressionNode node)
     {
         Expression(node.Expression);
         AmbiguousExpressions(node.Arguments);

@@ -25,7 +25,7 @@ internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinition
     private ValueAttribute<IFixedSet<IClassMemberDefinitionNode>> members;
     public override IFixedSet<IClassMemberDefinitionNode> Members
         => members.TryGetValue(out var value) ? value
-            : members.GetValue(this, DefaultMembersAspect.ClassDeclaration_Members);
+            : members.GetValue(this, DefaultMembersAspect.ClassDefinition_Members);
     private ValueAttribute<IFixedSet<IClassMemberDeclarationNode>> inclusiveMembers;
     public override IFixedSet<IClassMemberDeclarationNode> InclusiveMembers
         => inclusiveMembers.TryGetValue(out var value) ? value
@@ -33,7 +33,7 @@ internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinition
     private ValueAttribute<IDefaultConstructorDefinitionNode?> defaultConstructor;
     public IDefaultConstructorDefinitionNode? DefaultConstructor
         => defaultConstructor.TryGetValue(out var value) ? value
-            : defaultConstructor.GetValue(this, DefaultMembersAspect.ClassDeclaration_DefaultConstructor);
+            : defaultConstructor.GetValue(this, DefaultMembersAspect.ClassDefinition_DefaultConstructor);
 
     public ClassDefinitionNode(
         IClassDefinitionSyntax syntax,

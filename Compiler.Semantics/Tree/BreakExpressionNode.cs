@@ -10,7 +10,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class BreakExpressionNode : ExpressionNode, IBreakExpressionNode
 {
     public override IBreakExpressionSyntax Syntax { get; }
-    public IAmbiguousExpressionNode? Value { get; }
+    private RewritableChild<IAmbiguousExpressionNode?> value;
+    private bool valueCached;
+    public IAmbiguousExpressionNode? Value
+        => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
+            : this.RewritableChild(ref valueCached, ref value);
+    public IExpressionNode? IntermediateValue => Value as IExpressionNode;
     public override IMaybeExpressionAntetype Antetype => IAntetype.Never;
     public override NeverType Type => DataType.Never;
     private IFlowState? flowStateAfter;
@@ -23,6 +28,6 @@ internal sealed class BreakExpressionNode : ExpressionNode, IBreakExpressionNode
     public BreakExpressionNode(IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? value)
     {
         Syntax = syntax;
-        Value = Child.Attach(this, value);
+        this.value = Child.Create(this, value);
     }
 }

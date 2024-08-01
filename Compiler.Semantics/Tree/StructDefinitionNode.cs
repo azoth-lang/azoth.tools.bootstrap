@@ -16,20 +16,29 @@ internal sealed class StructDefinitionNode : TypeDefinitionNode, IStructDefiniti
     public override StructType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
             : this.Synthetic(ref declaredTypeCached, ref declaredType, TypeDeclarationsAspect.StructDefinition_DeclaredType);
-    public override IFixedSet<IStructMemberDefinitionNode> Members { get; }
+
+    public IFixedList<IStructMemberDefinitionNode> SourceMembers { get; }
+    private ValueAttribute<IFixedSet<IStructMemberDefinitionNode>> members;
+    public override IFixedSet<IStructMemberDefinitionNode> Members
+        => members.TryGetValue(out var value) ? value
+            : members.GetValue(this, DefaultMembersAspect.StructDefinition_Members);
     private ValueAttribute<IFixedSet<IStructMemberDeclarationNode>> inclusiveMembers;
     public override IFixedSet<IStructMemberDeclarationNode> InclusiveMembers
         => inclusiveMembers.TryGetValue(out var value) ? value
             : inclusiveMembers.GetValue(this, InheritanceAspect.StructDefinition_InclusiveMembers);
+    private ValueAttribute<IDefaultInitializerDefinitionNode?> defaultInitializer;
+    public IDefaultInitializerDefinitionNode? DefaultInitializer
+        => defaultInitializer.TryGetValue(out var value) ? value
+            : defaultInitializer.GetValue(this, DefaultMembersAspect.StructDefinition_DefaultInitializer);
 
     public StructDefinitionNode(
         IStructDefinitionSyntax syntax,
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<IStandardTypeNameNode> supertypeNames,
-        IEnumerable<IStructMemberDefinitionNode> members)
+        IEnumerable<IStructMemberDefinitionNode> sourceMembers)
         : base(genericParameters, supertypeNames)
     {
         Syntax = syntax;
-        Members = ChildSet.Attach(this, members);
+        SourceMembers = ChildList.Attach(this, sourceMembers);
     }
 }

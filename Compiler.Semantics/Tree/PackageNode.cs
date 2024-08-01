@@ -21,7 +21,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
 
     private ValueAttribute<PackageSymbol> symbol;
     public PackageSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolAspect.Package);
+        => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolAspect.Package_Symbol);
     private ValueAttribute<FixedDictionary<IdentifierName, IPackageDeclarationNode>> packageDeclarations;
     public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
         => packageDeclarations.TryGetValue(out var value) ? value

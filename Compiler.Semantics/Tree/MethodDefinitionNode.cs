@@ -26,7 +26,7 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
     private ValueAttribute<MethodSymbol> symbol;
     public override MethodSymbol Symbol
     => symbol.TryGetValue(out var value) ? value
-        : symbol.GetValue(this, SymbolAspect.MethodDeclaration);
+        : symbol.GetValue(this, SymbolAspect.MethodDefinition_Symbol);
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value

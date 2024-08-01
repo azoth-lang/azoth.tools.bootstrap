@@ -16,7 +16,9 @@ internal static class BindingNamesAspect
             ISourceConstructorDefinitionNode n => n.SelfParameter,
             IDefaultConstructorDefinitionNode _
                 => throw new UnreachableException("A `self` expression cannot occur here because it has an empty body."),
-            IInitializerDefinitionNode n => n.SelfParameter,
+            ISourceInitializerDefinitionNode n => n.SelfParameter,
+            IDefaultInitializerDefinitionNode _
+                => throw new UnreachableException("A `self` expression cannot occur here because it has an empty body."),
             IFieldDefinitionNode _ => null,
             IAssociatedFunctionDefinitionNode _ => null,
             IFunctionDefinitionNode _ => null,

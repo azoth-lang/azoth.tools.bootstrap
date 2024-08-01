@@ -26,7 +26,7 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     private ValueAttribute<FunctionSymbol> symbol;
     public override FunctionSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAspect.AssociatedFunctionDeclaration);
+            : symbol.GetValue(this, SymbolAspect.AssociatedFunctionDefinition_Symbol);
     private FunctionType? type;
     private bool typeCached;
     public FunctionType Type

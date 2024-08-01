@@ -13,44 +13,47 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 internal static class SymbolAspect
 {
-    public static PackageSymbol Package(IPackageNode node) => new(node.Name);
+    public static PackageSymbol Package_Symbol(IPackageNode node) => new(node.Name);
 
-    public static UserTypeSymbol TypeDeclaration_Symbol(ITypeDefinitionNode node)
+    public static UserTypeSymbol TypeDefinition_Symbol(ITypeDefinitionNode node)
         => new(node.ContainingSymbol, node.DeclaredType);
 
     public static GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node)
         => new(node.ContainingSymbol, node.DeclaredType);
 
-    public static TypeSymbol? StandardTypeName(IStandardTypeNameNode node)
+    public static TypeSymbol? StandardTypeName_ReferencedSymbol(IStandardTypeNameNode node)
         => node.ReferencedDeclaration?.Symbol;
 
     public static TypeSymbol SpecialTypeName_ReferencedSymbol(ISpecialTypeNameNode node)
         => Primitive.SymbolTree.LookupSymbol(node.Name);
 
-    public static FunctionSymbol FunctionDeclaration(IFunctionDefinitionNode node)
+    public static FunctionSymbol FunctionDefinition_Symbol(IFunctionDefinitionNode node)
         => new(node.ContainingSymbol, node.Name, node.Type);
 
-    public static MethodSymbol MethodDeclaration(IMethodDefinitionNode node)
+    public static MethodSymbol MethodDefinition_Symbol(IMethodDefinitionNode node)
         => new MethodSymbol(node.ContainingSymbol, node.Kind, node.Name,
             node.SelfParameter.ParameterType,
             node.Parameters.Select(p => p.ParameterType).ToFixedList(),
             new(node.Return?.NamedType ?? DataType.Void));
 
-    public static ConstructorSymbol SourceConstructorDefinition(ISourceConstructorDefinitionNode node)
+    public static ConstructorSymbol SourceConstructorDefinition_Symbol(ISourceConstructorDefinitionNode node)
         => new ConstructorSymbol(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType,
             node.Parameters.Select(p => p.ParameterType).ToFixedList());
 
-    public static ConstructorSymbol DefaultConstructorDefinition(IDefaultConstructorDefinitionNode node)
+    public static ConstructorSymbol DefaultConstructorDefinition_Symbol(IDefaultConstructorDefinitionNode node)
         => ConstructorSymbol.CreateDefault(node.ContainingSymbol);
 
-    public static FieldSymbol FieldDeclaration(IFieldDefinitionNode node)
+    public static FieldSymbol FieldDefinition_Symbol(IFieldDefinitionNode node)
         => new FieldSymbol(node.ContainingSymbol, node.Name, node.IsMutableBinding, ((IFieldDeclarationNode)node).BindingType);
 
-    public static InitializerSymbol InitializerDeclaration(IInitializerDefinitionNode node)
+    public static InitializerSymbol SourceInitializerDefinition_Symbol(ISourceInitializerDefinitionNode node)
         => new InitializerSymbol(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType,
             node.Parameters.Select(p => p.ParameterType).ToFixedList());
 
-    public static FunctionSymbol AssociatedFunctionDeclaration(IAssociatedFunctionDefinitionNode node)
+    public static InitializerSymbol DefaultInitializerDefinition_Symbol(IDefaultInitializerDefinitionNode node)
+        => InitializerSymbol.CreateDefault(node.ContainingSymbol);
+
+    public static FunctionSymbol AssociatedFunctionDefinition_Symbol(IAssociatedFunctionDefinitionNode node)
         => new(node.ContainingSymbol, node.Name, node.Type);
 
     public static ConstructorSymbol? Attribute_ReferencedSymbol(IAttributeNode node)
@@ -104,7 +107,9 @@ internal static class SymbolAspect
             ISourceConstructorDefinitionNode n => n.SelfParameter.Symbol,
             IDefaultConstructorDefinitionNode _
                 => throw new UnreachableException("A `self` expression cannot occur here because it has an empty body."),
-            IInitializerDefinitionNode n => n.SelfParameter.Symbol,
+            ISourceInitializerDefinitionNode n => n.SelfParameter.Symbol,
+            IDefaultInitializerDefinitionNode _
+                => throw new UnreachableException("A `self` expression cannot occur here because it has an empty body."),
             IFieldDefinitionNode _ => null,
             IAssociatedFunctionDefinitionNode _ => null,
             IFunctionDefinitionNode _ => null,

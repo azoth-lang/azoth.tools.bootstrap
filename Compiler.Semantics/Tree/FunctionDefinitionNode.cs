@@ -26,7 +26,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     private ValueAttribute<FunctionSymbol> symbol;
     public override FunctionSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAspect.FunctionDeclaration);
+            : symbol.GetValue(this, SymbolAspect.FunctionDefinition_Symbol);
     public IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     public ITypeNode? Return { get; }

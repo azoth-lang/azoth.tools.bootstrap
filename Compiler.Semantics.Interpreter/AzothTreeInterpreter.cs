@@ -1,15 +1,15 @@
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Azoth.Tools.Bootstrap.Compiler.AST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 
 public class AzothTreeInterpreter
 {
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-    public InterpreterProcess Execute(Package package)
-        => InterpreterProcess.StartEntryPoint(package);
+    public InterpreterProcess Execute(IPackageNode package, IEnumerable<IPackageNode> referencedPackages)
+        => InterpreterProcess.StartEntryPoint(package, referencedPackages);
 
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-    public InterpreterProcess ExecuteTests(Package package)
-        => InterpreterProcess.StartTests(package);
+    public InterpreterProcess ExecuteTests(IPackageNode package, IEnumerable<IPackageNode> referencedPackages)
+        => InterpreterProcess.StartTests(package, referencedPackages);
 }

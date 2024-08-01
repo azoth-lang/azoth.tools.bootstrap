@@ -133,13 +133,13 @@ public static class ExpressionTypesAspect
         return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static FunctionType FunctionReferenceInvocation_FunctionType(IFunctionReferenceInvocationNode node)
+    public static FunctionType FunctionReferenceInvocation_FunctionType(IFunctionReferenceInvocationExpressionNode node)
         => (FunctionType)node.Expression.Type;
 
-    public static DataType FunctionReferenceInvocation_Type(IFunctionReferenceInvocationNode node)
+    public static DataType FunctionReferenceInvocation_Type(IFunctionReferenceInvocationExpressionNode node)
         => node.FunctionType.Return.Type;
 
-    public static IFlowState FunctionReferenceInvocation_FlowStateAfter(IFunctionReferenceInvocationNode node)
+    public static IFlowState FunctionReferenceInvocation_FlowStateAfter(IFunctionReferenceInvocationExpressionNode node)
     {
         // The flow state just before the function is called is the state after all arguments have evaluated
         var flowState = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.Expression.FlowStateAfter;

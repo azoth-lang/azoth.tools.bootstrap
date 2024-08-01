@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.Async;
@@ -24,83 +24,86 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 
 public class InterpreterProcess
 {
-    public static InterpreterProcess StartEntryPoint(Package package)
+    public static InterpreterProcess StartEntryPoint(IPackageNode package, IEnumerable<IPackageNode> referencedPackages)
     {
         if (package.EntryPoint is null)
             throw new ArgumentException("Cannot execute package without an entry point");
 
-        return new InterpreterProcess(package, runTests: false);
+        return new InterpreterProcess(package, referencedPackages, runTests: false);
     }
 
-    public static InterpreterProcess StartTests(Package package)
-        => new(package, runTests: true);
+    public static InterpreterProcess StartTests(IPackageNode package, IEnumerable<IPackageNode> referencedPackages)
+        => new(package, referencedPackages, runTests: true);
 
-    private readonly Package package;
+    private readonly IPackageNode package;
     private readonly Task executionTask;
-    private readonly FixedDictionary<FunctionSymbol, IConcreteFunctionInvocableDeclaration> functions;
-    private readonly FixedDictionary<MethodSymbol, IMethodDeclaration> structMethods;
-    private readonly FixedDictionary<ConstructorSymbol, IConstructorDeclaration?> constructors;
-    private readonly FixedDictionary<InitializerSymbol, IInitializerDeclaration?> initializers;
-    private readonly FixedDictionary<UserTypeSymbol, IClassOrStructDeclaration> classesOrStructs;
-    private readonly IClassDeclaration stringClass;
-    private readonly IConstructorDeclaration stringConstructor;
-    private readonly IStructDeclaration? rangeStruct;
+    private readonly FixedDictionary<FunctionSymbol, IFunctionDefinitionNode> functions;
+    private readonly FixedDictionary<MethodSymbol, IMethodDefinitionNode> structMethods;
+    private readonly FixedDictionary<ConstructorSymbol, ISourceConstructorDefinitionNode?> constructors;
+    private readonly FixedDictionary<InitializerSymbol, ISourceInitializerDefinitionNode?> initializers;
+    private readonly FixedDictionary<UserTypeSymbol, ITypeDefinitionNode> userTypes;
+    private readonly IClassDefinitionNode stringClass;
+    private readonly ISourceConstructorDefinitionNode stringConstructor;
+    private readonly IStructDefinitionNode? rangeStruct;
     private readonly InitializerSymbol? rangeInitializer;
     private byte? exitCode;
     private readonly MemoryStream standardOutput = new();
     private readonly TextWriter standardOutputWriter;
     private readonly MethodSignatureCache methodSignatures = new();
-    private readonly ConcurrentDictionary<IClassDeclaration, VTable> vTables = new();
+    private readonly ConcurrentDictionary<IClassDefinitionNode, VTable> vTables = new();
 
-    private InterpreterProcess(Package package, bool runTests)
+    private InterpreterProcess(IPackageNode package, IEnumerable<IPackageNode> referencedPackages, bool runTests)
     {
         this.package = package;
-        var allDeclarations = GetAllDeclarations(package, runTests ? r => r.Declarations.Concat(r.TestingDeclarations) : r => r.Declarations);
-        functions = allDeclarations
-                    .OfType<IConcreteFunctionInvocableDeclaration>()
+        var allDefinitions = GetAllDeclarations(package, referencedPackages,
+            runTests ? r => r.MainFacet.Definitions.Concat(r.TestingFacet.Definitions) : r => r.MainFacet.Definitions);
+        functions = allDefinitions
+                    .OfType<IFunctionDefinitionNode>()
                     .ToFixedDictionary(f => f.Symbol);
 
-        structMethods = allDeclarations
-                        .OfType<IMethodDeclaration>()
+        structMethods = allDefinitions
+                        .OfType<IMethodDefinitionNode>()
                         .Where(m => m.Symbol.ContextTypeSymbol is UserTypeSymbol { DeclaresType: StructType })
                         .ToFixedDictionary(m => m.Symbol);
 
-        classesOrStructs = allDeclarations.OfType<IClassOrStructDeclaration>()
+        userTypes = allDefinitions.OfType<ITypeDefinitionNode>()
                                  .ToFixedDictionary(c => c.Symbol);
-        stringClass = classesOrStructs.Values.OfType<IClassDeclaration>().Single(c => c.Symbol.Name == "String");
-        stringConstructor = stringClass.Members.OfType<IConstructorDeclaration>().Single(c => c.Parameters.Count == 3);
-        rangeStruct = classesOrStructs.Values.OfType<IStructDeclaration>().SingleOrDefault(c => c.Symbol.Name == "range");
-        rangeInitializer = rangeStruct?.Members.OfType<IInitializerDeclaration>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
-        var defaultConstructorSymbols = allDeclarations
-                                        .OfType<IClassDeclaration>()
-                                        .Select(c => c.DefaultConstructorSymbol).WhereNotNull();
+        stringClass = userTypes.Values.OfType<IClassDefinitionNode>().Single(c => c.Symbol.Name == "String");
+        stringConstructor = stringClass.Members.OfType<ISourceConstructorDefinitionNode>().Single(c => c.Parameters.Count == 3);
+        rangeStruct = userTypes.Values.OfType<IStructDefinitionNode>().SingleOrDefault(c => c.Symbol.Name == "range");
+        rangeInitializer = rangeStruct?.Members.OfType<IInitializerDefinitionNode>().SingleOrDefault(c => c.Parameters.Count == 2)?.Symbol;
+        var defaultConstructorSymbols = allDefinitions
+                                        .OfType<IClassDefinitionNode>()
+                                        .Select(c => c.DefaultConstructor?.Symbol).WhereNotNull();
         constructors = defaultConstructorSymbols
-                       .Select(c => (c, default(IConstructorDeclaration)))
-                       .Concat(allDeclarations
-                               .OfType<IConstructorDeclaration>()
-                               .Select(c => (c.Symbol, (IConstructorDeclaration?)c)))
+                       .Select(c => (c, default(ISourceConstructorDefinitionNode)))
+                       .Concat(allDefinitions
+                               .OfType<ISourceConstructorDefinitionNode>()
+                               .Select(c => (c.Symbol, (ISourceConstructorDefinitionNode?)c)))
                        .ToFixedDictionary();
 
-        var defaultInitializerSymbols = allDeclarations
-                                       .OfType<IStructDeclaration>()
-                                       .Select(c => c.DefaultInitializerSymbol).WhereNotNull();
+        var defaultInitializerSymbols = allDefinitions
+                                       .OfType<IStructDefinitionNode>()
+                                       .Select(c => c.DefaultInitializer?.Symbol).WhereNotNull();
         initializers = defaultInitializerSymbols
-                       .Select(c => (c, default(IInitializerDeclaration)))
-                       .Concat(allDeclarations
-                               .OfType<IInitializerDeclaration>()
-                               .Select(c => (c.Symbol, (IInitializerDeclaration?)c)))
+                       .Select(c => (c, default(ISourceInitializerDefinitionNode)))
+                       .Concat(allDefinitions
+                               .OfType<ISourceInitializerDefinitionNode>()
+                               .Select(c => (c.Symbol, (ISourceInitializerDefinitionNode?)c)))
                        .ToFixedDictionary();
 
         // TODO pointing both of these to a memory stream is probably wrong. Need something that acts like a pipe.
         standardOutputWriter = new StreamWriter(standardOutput, Encoding.UTF8, leaveOpen: true);
         StandardOutput = new StreamReader(standardOutput, Encoding.UTF8);
 
-
         executionTask = runTests ? Task.Run(RunTestsAsync) : Task.Run(CallEntryPointAsync);
     }
 
-    private static List<IDeclaration> GetAllDeclarations(Package package, Func<Package, IEnumerable<IDeclaration>> getDeclarations)
-        => getDeclarations(package).Concat(package.References.SelectMany(getDeclarations)).ToList();
+    private static List<IDefinitionNode> GetAllDeclarations(
+        IPackageNode package,
+        IEnumerable<IPackageNode> referencedPackages,
+        Func<IPackageNode, IEnumerable<IDefinitionNode>> getDeclarations)
+        => referencedPackages.Prepend(package).SelectMany(getDeclarations).ToList();
 
     private async Task CallEntryPointAsync()
     {
@@ -133,7 +136,7 @@ public class InterpreterProcess
     {
         try
         {
-            var testFunctions = package.TestingDeclarations.OfType<IFunctionDeclaration>()
+            var testFunctions = package.TestingFacet.Definitions.OfType<IFunctionDefinitionNode>()
                                        .Where(f => f.Attributes.Any(IsTestAttribute)).ToFixedSet();
 
             await standardOutputWriter.WriteLineAsync($"Testing {package.Symbol.Name} package...");
@@ -149,7 +152,7 @@ public class InterpreterProcess
                 await standardOutputWriter.WriteLineAsync($"{symbol.ContainingSymbol.ToILString()}.{symbol.Name} ...");
                 try
                 {
-                    await CallFunctionAsync(function, Enumerable.Empty<AzothValue>()).ConfigureAwait(false);
+                    await CallFunctionAsync(function, []).ConfigureAwait(false);
                     await standardOutputWriter.WriteLineAsync("  passed");
                 }
                 catch (Abort ex)
@@ -173,8 +176,8 @@ public class InterpreterProcess
         }
     }
 
-    private static bool IsTestAttribute(IAttribute attribute1)
-        => attribute1.ReferencedSymbol.Name.Text == "Test_Attribute";
+    private static bool IsTestAttribute(IAttributeNode attribute)
+        => attribute.TypeName.ReferencedDeclaration!.Name.Text == "Test_Attribute";
 
     private async Task<AzothValue> ConstructMainParameterAsync(DataType parameterType)
     {
@@ -184,20 +187,20 @@ public class InterpreterProcess
 
         // TODO further restrict what can be passed to main
 
-        var @class = classesOrStructs.Values.OfType<IClassDeclaration>().Single(c => c.Symbol.DeclaresType.Equals(type.DeclaredType));
-        var constructorSymbol = @class.DefaultConstructorSymbol
-            ?? @class.Members.OfType<IConstructorDeclaration>().Select(c => c.Symbol)
+        var @class = userTypes.Values.OfType<IClassDefinitionNode>().Single(c => c.Symbol.DeclaresType.Equals(type.DeclaredType));
+        var constructorSymbol = @class.DefaultConstructor?.Symbol
+            ?? @class.Members.OfType<IConstructorDefinitionNode>().Select(c => c.Symbol)
                      .Single(c => c.Arity == 0);
-        return await ConstructClass(@class, constructorSymbol, Enumerable.Empty<AzothValue>());
+        return await ConstructClass(@class, constructorSymbol, []);
     }
 
-    internal async Task<AzothValue> CallFunctionAsync(IConcreteFunctionInvocableDeclaration function, IEnumerable<AzothValue> arguments)
+    internal async Task<AzothValue> CallFunctionAsync(IFunctionDefinitionNode function, IEnumerable<AzothValue> arguments)
     {
         try
         {
             var variables = new LocalVariableScope();
-            foreach (var (arg, symbol) in arguments.EquiZip(function.Parameters.Select(p => p.Symbol)))
-                variables.Add(symbol, arg);
+            foreach (var (arg, parameter) in arguments.EquiZip(function.Parameters))
+                variables.Add(parameter, arg);
 
             foreach (var statement in function.Body.Statements)
                 await ExecuteAsync(statement, variables).ConfigureAwait(false);
@@ -210,7 +213,7 @@ public class InterpreterProcess
     }
 
     private async Task<AzothValue> ConstructClass(
-        IClassDeclaration @class,
+        IClassDefinitionNode @class,
         ConstructorSymbol constructorSymbol,
         IEnumerable<AzothValue> arguments)
     {
@@ -220,7 +223,7 @@ public class InterpreterProcess
     }
 
     private async Task<AzothValue> CallConstructorAsync(
-        IClassDeclaration @class,
+        IClassDefinitionNode @class,
         ConstructorSymbol constructorSymbol,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
@@ -233,24 +236,24 @@ public class InterpreterProcess
     }
 
     private async ValueTask<AzothValue> CallConstructorAsync(
-        IConstructorDeclaration constructor,
+        ISourceConstructorDefinitionNode constructor,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
     {
         try
         {
             var variables = new LocalVariableScope();
-            variables.Add(constructor.SelfParameter.Symbol, self);
+            variables.Add(constructor.SelfParameter, self);
             foreach (var (arg, parameter) in arguments.EquiZip(constructor.Parameters))
                 switch (parameter)
                 {
                     default:
                         throw ExhaustiveMatch.Failed(parameter);
-                    case IFieldParameter fieldParameter:
-                        self.ObjectValue[fieldParameter.ReferencedSymbol.Name] = arg;
+                    case IFieldParameterNode fieldParameter:
+                        self.ObjectValue[fieldParameter.ReferencedField!.Symbol.Name] = arg;
                         break;
-                    case INamedParameter p:
-                        variables.Add(p.Symbol, arg);
+                    case INamedParameterNode p:
+                        variables.Add(p, arg);
                         break;
                 }
 
@@ -267,31 +270,32 @@ public class InterpreterProcess
     /// <summary>
     /// Call the implicit default constructor for a type that has no constructors.
     /// </summary>
-    private async ValueTask<AzothValue> CallDefaultConstructorAsync(IClassDeclaration @class, AzothValue self)
+    private async ValueTask<AzothValue> CallDefaultConstructorAsync(IClassDefinitionNode @class, AzothValue self)
     {
         // Initialize fields to default values
-        var fields = @class.Members.OfType<IFieldDeclaration>();
+        var fields = @class.Members.OfType<IFieldDefinitionNode>();
         foreach (var field in fields)
             self.ObjectValue[field.Symbol.Name] = new AzothValue();
 
-        if (@class.BaseClass is IClassDeclaration baseClass)
+        if (@class.BaseTypeName?.ReferencedSymbol is UserTypeSymbol baseClassSymbol)
         {
+            var baseClass = (IClassDefinitionNode)userTypes[baseClassSymbol];
             var noArgConstructorSymbol = NoArgConstructorSymbol(baseClass);
-            await CallConstructorAsync(baseClass, noArgConstructorSymbol, self, Enumerable.Empty<AzothValue>());
+            await CallConstructorAsync(baseClass, noArgConstructorSymbol, self, []);
         }
 
         return self;
     }
 
-    private static ConstructorSymbol NoArgConstructorSymbol(IClassDeclaration baseClass)
+    private static ConstructorSymbol NoArgConstructorSymbol(IClassDefinitionNode baseClass)
     {
-        return baseClass.DefaultConstructorSymbol
-               ?? baseClass.Members.OfType<IConstructorDeclaration>().Select(c => c.Symbol)
+        return baseClass.DefaultConstructor?.Symbol
+               ?? baseClass.Members.OfType<ISourceConstructorDefinitionNode>().Select(c => c.Symbol)
                            .Single(c => c.Arity == 0);
     }
 
     private async Task<AzothValue> InitializeStruct(
-        IStructDeclaration @struct,
+        IStructDefinitionNode @struct,
         InitializerSymbol initializerSymbol,
         IEnumerable<AzothValue> arguments)
     {
@@ -300,7 +304,7 @@ public class InterpreterProcess
     }
 
     private async Task<AzothValue> CallInitializerAsync(
-        IStructDeclaration @struct,
+        IStructDefinitionNode @struct,
         InitializerSymbol initializerSymbol,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
@@ -313,24 +317,24 @@ public class InterpreterProcess
     }
 
     private async ValueTask<AzothValue> CallInitializerAsync(
-        IInitializerDeclaration initializer,
+        ISourceInitializerDefinitionNode initializer,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
     {
         try
         {
             var variables = new LocalVariableScope();
-            variables.Add(initializer.SelfParameter.Symbol, self);
+            variables.Add(initializer.SelfParameter, self);
             foreach (var (arg, parameter) in arguments.EquiZip(initializer.Parameters))
                 switch (parameter)
                 {
                     default:
                         throw ExhaustiveMatch.Failed(parameter);
-                    case IFieldParameter fieldParameter:
-                        self.ObjectValue[fieldParameter.ReferencedSymbol.Name] = arg;
+                    case IFieldParameterNode fieldParameter:
+                        self.ObjectValue[fieldParameter.ReferencedField!.Symbol.Name] = arg;
                         break;
-                    case INamedParameter p:
-                        variables.Add(p.Symbol, arg);
+                    case INamedParameterNode p:
+                        variables.Add(p, arg);
                         break;
                 }
 
@@ -347,10 +351,10 @@ public class InterpreterProcess
     /// <summary>
     /// Call the implicit default initializer for a type that has no constructors.
     /// </summary>
-    private static ValueTask<AzothValue> CallDefaultInitializerAsync(IStructDeclaration @struct, AzothValue self)
+    private static ValueTask<AzothValue> CallDefaultInitializerAsync(IStructDefinitionNode @struct, AzothValue self)
     {
         // Initialize fields to default values
-        var fields = @struct.Members.OfType<IFieldDeclaration>();
+        var fields = @struct.Members.OfType<IFieldDefinitionNode>();
         foreach (var field in fields)
             self.ObjectValue[field.Symbol.Name] = new AzothValue();
 
@@ -397,19 +401,19 @@ public class InterpreterProcess
     }
 
     private async ValueTask<AzothValue> CallMethodAsync(
-        IMethodDeclaration method,
+        IMethodDefinitionNode method,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
     {
-        if (method is not IConcreteMethodDeclaration concreteMethod)
+        if (method is not IConcreteMethodDefinitionNode concreteMethod)
             throw new InvalidOperationException($"Can't call abstract method {method}");
 
         try
         {
             var variables = new LocalVariableScope();
-            variables.Add(method.SelfParameter.Symbol, self);
-            foreach (var (arg, symbol) in arguments.EquiZip(method.Parameters.Select(p => p.Symbol)))
-                variables.Add(symbol, arg);
+            variables.Add(method.SelfParameter, self);
+            foreach (var (arg, parameter) in arguments.EquiZip(method.Parameters))
+                variables.Add(parameter, arg);
 
             foreach (var statement in concreteMethod.Body.Statements)
                 await ExecuteAsync(statement, variables).ConfigureAwait(false);
@@ -421,111 +425,104 @@ public class InterpreterProcess
         }
     }
 
-    private async ValueTask<AzothValue> ExecuteAsync(IStatement statement, LocalVariableScope variables)
+    private async ValueTask<AzothValue> ExecuteAsync(IStatementNode statement, LocalVariableScope variables)
     {
         switch (statement)
         {
             default:
                 throw ExhaustiveMatch.Failed(statement);
-            case IExpressionStatement s:
-                await ExecuteAsync(s.Expression, variables).ConfigureAwait(false);
+            case IExpressionStatementNode s:
+                await ExecuteAsync(s.IntermediateExpression!, variables).ConfigureAwait(false);
                 break;
-            case IVariableDeclarationStatement d:
+            case IVariableDeclarationStatementNode d:
             {
-                var initialValue = d.Initializer is null
+                var initialValue = d.IntermediateInitializer is null
                     ? AzothValue.None
-                    : await ExecuteAsync(d.Initializer, variables).ConfigureAwait(false);
-                variables.Add(d.Symbol, initialValue);
+                    : await ExecuteAsync(d.IntermediateInitializer, variables).ConfigureAwait(false);
+                variables.Add(d, initialValue);
                 break;
             }
-            case IResultStatement r:
-                return await ExecuteAsync(r.Expression, variables).ConfigureAwait(false);
+            case IResultStatementNode r:
+                return await ExecuteAsync(r.IntermediateExpression!, variables).ConfigureAwait(false);
         }
         return AzothValue.None;
     }
 
-    private async ValueTask<AzothValue> ExecuteAsync(IExpression expression, LocalVariableScope variables)
+    private async ValueTask<AzothValue> ExecuteAsync(IExpressionNode expression, LocalVariableScope variables)
     {
         switch (expression)
         {
             default:
                 throw ExhaustiveMatch.Failed(expression);
-            case IIdExpression exp:
+            case IIdExpressionNode exp:
+                return await ExecuteAsync(exp.IntermediateReferent!, variables);
+            case IMoveExpressionNode exp:
                 return await ExecuteAsync(exp.Referent, variables);
-            case IMoveExpression exp:
+            case IImplicitTempMoveExpressionNode exp:
                 return await ExecuteAsync(exp.Referent, variables);
-            case ITempMoveExpression exp:
+            case IFreezeExpressionNode exp:
                 return await ExecuteAsync(exp.Referent, variables);
-            case IFreezeExpression exp:
-                return await ExecuteAsync(exp.Referent, variables);
-            case ITempFreezeExpression exp:
-                return await ExecuteAsync(exp.Referent, variables);
-            case INoneLiteralExpression _:
+            case INoneLiteralExpressionNode _:
                 return AzothValue.None;
-            case IReturnExpression exp:
-                if (exp.Value is null) throw new Return();
-                throw new Return(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));
-            case IImplicitSimpleTypeConversionExpression exp:
+            case IReturnExpressionNode exp:
+                if (exp.IntermediateValue is null) throw new Return();
+                throw new Return(await ExecuteAsync(exp.IntermediateValue, variables).ConfigureAwait(false));
+            case IConversionExpressionNode exp:
             {
-                var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
-                return value.Convert(exp.Expression.DataType, exp.ConvertToType.Type, false);
+                var value = await ExecuteAsync(exp.IntermediateReferent!, variables).ConfigureAwait(false);
+                return value.Convert(exp.IntermediateReferent!.Type, (CapabilityType)exp.ConvertToType.NamedType, false);
             }
-            case IExplicitSimpleTypeConversionExpression exp:
-            {
-                var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
-                return value.Convert(exp.Expression.DataType, exp.ConvertToType.Type, exp.IsOptional);
-            }
-            case IIntegerLiteralExpression exp:
+            case IIntegerLiteralExpressionNode exp:
                 return AzothValue.Int(exp.Value);
-            case IFunctionInvocationExpression exp:
+            case IFunctionInvocationExpressionNode exp:
             {
-                var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
-                var functionSymbol = exp.ReferencedSymbol;
+                var arguments = await ExecuteArgumentsAsync(exp.IntermediateArguments!, variables).ConfigureAwait(false);
+                var functionSymbol = exp.ReferencedDeclaration!.Symbol;
                 if (functionSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(functionSymbol, arguments).ConfigureAwait(false);
                 return await CallFunctionAsync(functions[functionSymbol], arguments).ConfigureAwait(false);
             }
-            case IFunctionReferenceInvocationExpression exp:
+            case IFunctionReferenceInvocationExpressionNode exp:
             {
-                var function = await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
-                var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
+                var function = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
+                var arguments = await ExecuteArgumentsAsync(exp.IntermediateArguments!, variables).ConfigureAwait(false);
                 return await function.FunctionReferenceValue.CallAsync(arguments).ConfigureAwait(false);
             }
-            case IInitializerInvocationExpression exp:
+            case IInitializerInvocationExpressionNode exp:
             {
-                var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
-                var initializerSymbol = exp.ReferencedSymbol;
-                var @struct = (IStructDeclaration)classesOrStructs[initializerSymbol.ContextTypeSymbol];
+                var arguments = await ExecuteArgumentsAsync(exp.IntermediateArguments!, variables).ConfigureAwait(false);
+                var initializerSymbol = exp.ReferencedDeclaration!.Symbol;
+                var @struct = (IStructDefinitionNode)userTypes[initializerSymbol.ContextTypeSymbol];
                 return await InitializeStruct(@struct, initializerSymbol, arguments).ConfigureAwait(false);
             }
-            case IBoolLiteralExpression exp:
+            case IBoolLiteralExpressionNode exp:
                 return AzothValue.Bool(exp.Value);
-            case IIfExpression exp:
+            case IIfExpressionNode exp:
             {
-                var condition = await ExecuteAsync(exp.Condition, variables).ConfigureAwait(false);
+                var condition = await ExecuteAsync(exp.IntermediateCondition!, variables).ConfigureAwait(false);
                 if (condition.BoolValue)
                     return await ExecuteBlockOrResultAsync(exp.ThenBlock, variables).ConfigureAwait(false);
                 if (exp.ElseClause is not null)
                     return await ExecuteElseAsync(exp.ElseClause, variables).ConfigureAwait(false);
                 return AzothValue.None;
             }
-            case IVariableNameExpression exp:
-                return variables[exp.ReferencedSymbol];
-            case IFunctionNameExpression exp:
-                return AzothValue.FunctionReference(new ConcreteFunctionReference(this, functions[exp.ReferencedSymbol]));
-            case IBlockExpression block:
+            case IVariableNameExpressionNode exp:
+                return variables[exp.ReferencedDefinition];
+            case IFunctionNameNode exp:
+                return AzothValue.FunctionReference(new ConcreteFunctionReference(this, functions[exp.ReferencedDeclaration!.Symbol]));
+            case IBlockExpressionNode block:
             {
                 var blockVariables = new LocalVariableScope(variables);
                 AzothValue lastValue = AzothValue.None;
                 foreach (var statement in block.Statements)
                 {
-                    if (statement is IResultStatement resultStatement)
-                        return await ExecuteAsync(resultStatement.Expression, blockVariables).ConfigureAwait(false);
+                    if (statement is IResultStatementNode resultStatement)
+                        return await ExecuteAsync(resultStatement.IntermediateExpression!, blockVariables).ConfigureAwait(false);
                     lastValue = await ExecuteAsync(statement, blockVariables).ConfigureAwait(false);
                 }
                 return lastValue;
             }
-            case ILoopExpression exp:
+            case ILoopExpressionNode exp:
                 try
                 {
                     for (; ; )
@@ -544,14 +541,14 @@ public class InterpreterProcess
                 {
                     return @break.Value;
                 }
-            case IWhileExpression exp:
+            case IWhileExpressionNode exp:
                 try
                 {
                     for (; ; )
                     {
                         // Create a variable scope in case a variable is declared by a pattern in the condition
                         var loopVariables = new LocalVariableScope(variables);
-                        var condition = await ExecuteAsync(exp.Condition, loopVariables).ConfigureAwait(false);
+                        var condition = await ExecuteAsync(exp.IntermediateCondition!, loopVariables).ConfigureAwait(false);
                         if (!condition.BoolValue)
                             return AzothValue.None;
                         try
@@ -568,112 +565,112 @@ public class InterpreterProcess
                 {
                     return @break.Value;
                 }
-            case IBreakExpression exp:
-                if (exp.Value is null) throw new Break();
-                throw new Break(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));
-            case INextExpression _:
+            case IBreakExpressionNode exp:
+                if (exp.IntermediateValue is null) throw new Break();
+                throw new Break(await ExecuteAsync(exp.IntermediateValue, variables).ConfigureAwait(false));
+            case INextExpressionNode _:
                 throw new Next();
-            case IAssignmentExpression exp:
+            case IAssignmentExpressionNode exp:
             {
                 // TODO this evaluates the left hand side twice for compound operators
                 var value = exp.Operator switch
                 {
                     AssignmentOperator.Simple =>
                         // TODO the expression being assigned into is supposed to be evaluated first
-                        await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false),
+                        await ExecuteAsync(exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
                     AssignmentOperator.Plus
-                        => await AddAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false),
+                        => await AddAsync(exp.LeftOperand, exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
                     AssignmentOperator.Minus
-                        => await SubtractAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false),
+                        => await SubtractAsync(exp.LeftOperand, exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
                     AssignmentOperator.Asterisk
-                        => await MultiplyAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false),
+                        => await MultiplyAsync(exp.LeftOperand, exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
                     AssignmentOperator.Slash
-                        => await DivideAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false),
+                        => await DivideAsync(exp.LeftOperand, exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
                     _ => throw ExhaustiveMatch.Failed(exp.Operator)
                 };
                 await ExecuteAssignmentAsync(exp.LeftOperand, value, variables).ConfigureAwait(false);
                 return value;
             }
-            case IBinaryOperatorExpression exp:
+            case IBinaryOperatorExpressionNode exp:
                 switch (exp.Operator)
                 {
                     default:
                         throw ExhaustiveMatch.Failed();
                     case BinaryOperator.Plus:
-                        return await AddAsync(exp.LeftOperand, exp.RightOperand, variables).ConfigureAwait(false);
+                        return await AddAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables).ConfigureAwait(false);
                     case BinaryOperator.Minus:
-                        return await SubtractAsync(exp.LeftOperand, exp.RightOperand, variables)
+                        return await SubtractAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables)
                             .ConfigureAwait(false);
                     case BinaryOperator.Asterisk:
-                        return await MultiplyAsync(exp.LeftOperand, exp.RightOperand, variables)
+                        return await MultiplyAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables)
                             .ConfigureAwait(false);
                     case BinaryOperator.Slash:
-                        return await DivideAsync(exp.LeftOperand, exp.RightOperand, variables)
+                        return await DivideAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables)
                             .ConfigureAwait(false);
                     case BinaryOperator.EqualsEquals:
-                        return AzothValue.Bool(await EqualsAsync(exp.LeftOperand, exp.RightOperand, variables)
+                        return AzothValue.Bool(await EqualsAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables)
                             .ConfigureAwait(false));
                     case BinaryOperator.NotEqual:
-                        return AzothValue.Bool(!await EqualsAsync(exp.LeftOperand, exp.RightOperand, variables)
+                        return AzothValue.Bool(!await EqualsAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables)
                             .ConfigureAwait(false));
                     case BinaryOperator.LessThan:
-                        return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables)
+                        return AzothValue.Bool(await CompareAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables)
                             .ConfigureAwait(false) < 0);
                     case BinaryOperator.LessThanOrEqual:
-                        return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables)
+                        return AzothValue.Bool(await CompareAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables)
                             .ConfigureAwait(false) <= 0);
                     case BinaryOperator.GreaterThan:
-                        return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables)
+                        return AzothValue.Bool(await CompareAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables)
                             .ConfigureAwait(false) > 0);
                     case BinaryOperator.GreaterThanOrEqual:
-                        return AzothValue.Bool(await CompareAsync(exp.LeftOperand, exp.RightOperand, variables)
+                        return AzothValue.Bool(await CompareAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables)
                             .ConfigureAwait(false) >= 0);
                     case BinaryOperator.And:
                     {
-                        var left = await ExecuteAsync(exp.LeftOperand, variables).ConfigureAwait(false);
+                        var left = await ExecuteAsync(exp.IntermediateLeftOperand!, variables).ConfigureAwait(false);
                         if (!left.BoolValue) return AzothValue.Bool(false);
-                        return await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false);
+                        return await ExecuteAsync(exp.IntermediateRightOperand!, variables).ConfigureAwait(false);
                     }
                     case BinaryOperator.Or:
                     {
-                        var left = await ExecuteAsync(exp.LeftOperand, variables).ConfigureAwait(false);
+                        var left = await ExecuteAsync(exp.IntermediateLeftOperand!, variables).ConfigureAwait(false);
                         if (left.BoolValue) return AzothValue.Bool(true);
-                        return await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false);
+                        return await ExecuteAsync(exp.IntermediateRightOperand!, variables).ConfigureAwait(false);
                     }
                     case BinaryOperator.DotDot:
                     case BinaryOperator.LessThanDotDot:
                     case BinaryOperator.DotDotLessThan:
                     case BinaryOperator.LessThanDotDotLessThan:
                     {
-                        var left = await ExecuteAsync(exp.LeftOperand, variables).ConfigureAwait(false);
+                        var left = await ExecuteAsync(exp.IntermediateLeftOperand!, variables).ConfigureAwait(false);
                         if (!exp.Operator.RangeInclusiveOfStart()) left = left.Increment(DataType.Int);
-                        var right = await ExecuteAsync(exp.RightOperand, variables).ConfigureAwait(false);
+                        var right = await ExecuteAsync(exp.IntermediateRightOperand!, variables).ConfigureAwait(false);
                         if (exp.Operator.RangeInclusiveOfEnd()) right = right.Increment(DataType.Int);
-                        return await InitializeStruct(rangeStruct!, rangeInitializer!, new[] { left, right });
+                        return await InitializeStruct(rangeStruct!, rangeInitializer!, [left, right]);
                     }
                     case BinaryOperator.QuestionQuestion:
                         throw new NotImplementedException($"Operator `{exp.Operator}`");
                 }
-            case IUnaryOperatorExpression exp:
+            case IUnaryOperatorExpressionNode exp:
                 return exp.Operator switch
                 {
                     UnaryOperator.Not => AzothValue.Bool(
-                        !(await ExecuteAsync(exp.Operand, variables).ConfigureAwait(false)).BoolValue),
-                    UnaryOperator.Minus => await NegateAsync(exp.Operand, variables).ConfigureAwait(false),
-                    UnaryOperator.Plus => await ExecuteAsync(exp.Operand, variables).ConfigureAwait(false),
+                        !(await ExecuteAsync(exp.IntermediateOperand!, variables).ConfigureAwait(false)).BoolValue),
+                    UnaryOperator.Minus => await NegateAsync(exp.IntermediateOperand!, variables).ConfigureAwait(false),
+                    UnaryOperator.Plus => await ExecuteAsync(exp.IntermediateOperand!, variables).ConfigureAwait(false),
                     _ => throw ExhaustiveMatch.Failed(exp.Operator)
                 };
-            case IMethodInvocationExpression exp:
+            case IMethodInvocationExpressionNode exp:
             {
-                var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
-                var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
-                var methodSymbol = exp.ReferencedSymbol;
+                var self = await ExecuteAsync(exp.MethodGroup.Context, variables).ConfigureAwait(false);
+                var arguments = await ExecuteArgumentsAsync(exp.IntermediateArguments!, variables).ConfigureAwait(false);
+                var methodSymbol = exp.ReferencedDeclaration!.Symbol;
                 if (methodSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(methodSymbol, self, arguments);
                 if (methodSymbol == Primitive.IdentityHash)
                     return IdentityHash(self);
 
-                var selfType = exp.Context.DataType;
+                var selfType = exp.MethodGroup.Context.Type;
                 switch (selfType)
                 {
                     case EmptyType _:
@@ -691,57 +688,60 @@ public class InterpreterProcess
                         throw ExhaustiveMatch.Failed(selfType);
                 }
             }
-            case INewObjectExpression exp:
+            case IGetterInvocationExpressionNode _:
+            case ISetterInvocationExpressionNode _:
+                throw new NotImplementedException();
+            case INewObjectExpressionNode exp:
             {
-                var arguments = await ExecuteArgumentsAsync(exp.Arguments, variables).ConfigureAwait(false);
-                var constructorSymbol = exp.ReferencedSymbol;
+                var arguments = await ExecuteArgumentsAsync(exp.IntermediateArguments!, variables).ConfigureAwait(false);
+                var constructorSymbol = exp.ReferencedConstructor!.Symbol;
                 var objectTypeSymbol = constructorSymbol.ContainingSymbol;
                 if (objectTypeSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(constructorSymbol, arguments).ConfigureAwait(false);
-                var @class = (IClassDeclaration)classesOrStructs[objectTypeSymbol];
+                var @class = (IClassDefinitionNode)userTypes[objectTypeSymbol];
                 return await ConstructClass(@class, constructorSymbol, arguments);
             }
-            case ISelfExpression exp:
-                return variables[exp.ReferencedSymbol];
-            case IImplicitOptionalConversionExpression exp:
-                return await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
-            case IStringLiteralExpression exp:
+            case ISelfExpressionNode exp:
+                return variables[exp.ReferencedDefinition!];
+            case IStringLiteralExpressionNode exp:
             {
                 // Call the constructor of the string class
                 var value = exp.Value;
                 return await ConstructStringAsync(value);
             }
-            case IUnsafeExpression exp:
-                return await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
-            case IFieldAccessExpression exp:
+            case IUnsafeExpressionNode exp:
+                return await ExecuteAsync(exp.IntermediateExpression!, variables).ConfigureAwait(false);
+            case IFieldAccessExpressionNode exp:
             {
                 var obj = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
-                return obj.ObjectValue[exp.ReferencedSymbol.Name];
+                return obj.ObjectValue[exp.ReferencedDeclaration.Name];
             }
-            case IForeachExpression exp:
+            case IForeachExpressionNode exp:
             {
-                var iterable = await ExecuteAsync(exp.InExpression, variables).ConfigureAwait(false);
-                var loopVariable = exp.Symbol;
+                var iterable = await ExecuteAsync(exp.IntermediateInExpression!, variables).ConfigureAwait(false);
+                IBindingNode loopVariable = exp;
                 // Call `iterable.iterate()` if it exists
                 AzothValue iterator;
                 CapabilityType iteratorType;
-                if (exp.IterateMethod is not null)
+                if (exp.ReferencedIterateMethod is not null)
                 {
-                    var selfType = (CapabilityType)exp.InExpression.DataType;
-                    iterator = await CallMethodAsync(exp.IterateMethod, selfType, iterable, Enumerable.Empty<AzothValue>()).ConfigureAwait(false);
-                    iteratorType = (CapabilityType)exp.IterateMethod.Return.Type;
+                    var selfType = (CapabilityType)exp.IntermediateInExpression!.Type;
+                    var iterateMethod = exp.ReferencedIterateMethod!.Symbol;
+                    iterator = await CallMethodAsync(iterateMethod, selfType, iterable, []).ConfigureAwait(false);
+                    iteratorType = (CapabilityType)iterateMethod.Return.Type;
                 }
                 else
                 {
                     iterator = iterable;
-                    iteratorType = (CapabilityType)exp.InExpression.DataType;
+                    iteratorType = (CapabilityType)exp.IntermediateInExpression!.Type;
                 }
 
                 try
                 {
+                    var nextMethod = exp.ReferencedNextMethod!.Symbol;
                     while (true)
                     {
-                        var value = await CallMethodAsync(exp.NextMethod, iteratorType, iterator, Enumerable.Empty<AzothValue>()).ConfigureAwait(false);
+                        var value = await CallMethodAsync(nextMethod, iteratorType, iterator, []).ConfigureAwait(false);
                         if (value.IsNone) break;
                         try
                         {
@@ -761,21 +761,12 @@ public class InterpreterProcess
                     return @break.Value;
                 }
             }
-            case IRecoverExpression exp:
-                return await ExecuteAsync(exp.Value, variables).ConfigureAwait(false);
-            case IImplicitLiftedConversionExpression exp:
+            case IPatternMatchExpressionNode exp:
             {
-                var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
-                if (value.IsNone) return value;
-                // TODO handle other lifted conversions
-                return value.Convert(exp.Expression.DataType, (CapabilityType)exp.ConvertToType.Referent, false);
-            }
-            case IPatternMatchExpression exp:
-            {
-                var value = await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
+                var value = await ExecuteAsync(exp.IntermediateReferent!, variables).ConfigureAwait(false);
                 return await ExecuteMatchAsync(value, exp.Pattern, variables);
             }
-            case IAsyncBlockExpression exp:
+            case IAsyncBlockExpressionNode exp:
             {
                 var asyncScope = new AsyncScope();
                 var blockVariables = new LocalVariableScope(variables, asyncScope);
@@ -788,43 +779,52 @@ public class InterpreterProcess
                     await asyncScope.ExitAsync();
                 }
             }
-            case IAsyncStartExpression exp:
+            case IAsyncStartExpressionNode exp:
             {
                 if (variables.AsyncScope is not AsyncScope asyncScope)
                     throw new InvalidOperationException("Cannot execute `go` or `do` expression outside of an async scope.");
 
                 var task = exp.Scheduled
-                    ? Task.Run(async () => await ExecuteAsync(exp.Expression, variables))
-                    : ExecuteAsync(exp.Expression, variables).AsTask();
+                    ? Task.Run(async () => await ExecuteAsync(exp.IntermediateExpression!, variables))
+                    : ExecuteAsync(exp.IntermediateExpression!, variables).AsTask();
 
                 asyncScope.Add(task);
 
                 return AzothValue.Promise(task);
             }
-            case IAwaitExpression exp:
+            case IAwaitExpressionNode exp:
             {
-                var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
+                var value = await ExecuteAsync(exp.IntermediateExpression!, variables).ConfigureAwait(false);
 
                 return await value.PromiseValue.ConfigureAwait(false);
             }
+            case IUnknownInvocationExpressionNode _:
+            case IUnknownNameExpressionNode _:
+            case IMissingNameExpressionNode _:
+            case IMemberAccessExpressionNode _:
+                throw new UnreachableException($"Node type {expression.GetType().GetFriendlyName()} won't be in final tree.");
+            case INameExpressionNode _:
+            case IPropertyNameNode _:
+            case IIdentifierNameExpressionNode _:
+                throw new UnreachableException($"Name node type {expression.GetType().GetFriendlyName()} won't be traversed.");
         }
     }
 
     private static async ValueTask<AzothValue> ExecuteMatchAsync(
         AzothValue value,
-        IPattern pattern,
+        IPatternNode pattern,
         LocalVariableScope variables)
     {
         switch (pattern)
         {
             default:
                 throw ExhaustiveMatch.Failed(pattern);
-            case IBindingContextPattern pat:
+            case IBindingContextPatternNode pat:
                 throw new NotImplementedException();
-            case IBindingPattern pat:
-                variables.Add(pat.Symbol, value);
+            case IBindingPatternNode pat:
+                variables.Add(pat, value);
                 return AzothValue.Bool(true);
-            case IOptionalPattern pat:
+            case IOptionalPatternNode pat:
                 if (value.IsNone)
                     return AzothValue.Bool(false);
                 return await ExecuteMatchAsync(value, pat.Pattern, variables);
@@ -920,10 +920,10 @@ public class InterpreterProcess
         throw new NotImplementedException($"Intrinsic {method}");
     }
 
-    private VTable CreateVTable(IClassDeclaration @class)
-        => new(@class, methodSignatures);
+    private VTable CreateVTable(IClassDefinitionNode @class)
+        => new(@class, methodSignatures, userTypes);
 
-    private async ValueTask<List<AzothValue>> ExecuteArgumentsAsync(IFixedList<IExpression> arguments, LocalVariableScope variables)
+    private async ValueTask<List<AzothValue>> ExecuteArgumentsAsync(IFixedList<IExpressionNode> arguments, LocalVariableScope variables)
     {
         var values = new List<AzothValue>(arguments.Count);
         // Execute arguments in order
@@ -932,14 +932,14 @@ public class InterpreterProcess
         return values;
     }
 
-    private async ValueTask<AzothValue> AddAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+    private async ValueTask<AzothValue> AddAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (leftExp.DataType != rightExp.DataType)
+        if (leftExp.Type != rightExp.Type)
             throw new InvalidOperationException(
-                $"Can't add expressions of type {leftExp.DataType.ToILString()} and {rightExp.DataType.ToILString()}");
+                $"Can't add expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var type = leftExp.DataType;
+        var type = leftExp.Type;
         if (type == DataType.Int) return AzothValue.Int(left.IntValue + right.IntValue);
         if (type == DataType.UInt) return AzothValue.Int(left.IntValue + right.IntValue);
         if (type == DataType.Int8) return AzothValue.I8((sbyte)(left.I8Value + right.I8Value));
@@ -957,15 +957,15 @@ public class InterpreterProcess
         throw new NotImplementedException($"Add {type.ToILString()}");
     }
 
-    private async ValueTask<AzothValue> SubtractAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+    private async ValueTask<AzothValue> SubtractAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
         // TODO check for negative values when subtracting unsigned
-        if (leftExp.DataType != rightExp.DataType)
+        if (leftExp.Type != rightExp.Type)
             throw new InvalidOperationException(
-                $"Can't subtract expressions of type {leftExp.DataType} and {rightExp.DataType}");
+                $"Can't subtract expressions of type {leftExp.Type} and {rightExp.Type}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var type = leftExp.DataType;
+        var type = leftExp.Type;
         if (type == DataType.Int) return AzothValue.Int(left.IntValue - right.IntValue);
         if (type == DataType.UInt) return AzothValue.Int(left.IntValue - right.IntValue);
         if (type == DataType.Int8) return AzothValue.I8((sbyte)(left.I8Value - right.I8Value));
@@ -983,14 +983,14 @@ public class InterpreterProcess
         throw new NotImplementedException($"Subtract {type.ToILString()}");
     }
 
-    private async ValueTask<AzothValue> MultiplyAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+    private async ValueTask<AzothValue> MultiplyAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (leftExp.DataType != rightExp.DataType)
+        if (leftExp.Type != rightExp.Type)
             throw new InvalidOperationException(
-                $"Can't multiply expressions of type {leftExp.DataType.ToILString()} and {rightExp.DataType.ToILString()}");
+                $"Can't multiply expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var type = leftExp.DataType;
+        var type = leftExp.Type;
         if (type == DataType.Int) return AzothValue.Int(left.IntValue * right.IntValue);
         if (type == DataType.UInt) return AzothValue.Int(left.IntValue * right.IntValue);
         if (type == DataType.Int8) return AzothValue.I8((sbyte)(left.I8Value * right.I8Value));
@@ -1008,14 +1008,14 @@ public class InterpreterProcess
         throw new NotImplementedException($"Multiply {type.ToILString()}");
     }
 
-    private async ValueTask<AzothValue> DivideAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+    private async ValueTask<AzothValue> DivideAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (leftExp.DataType != rightExp.DataType)
+        if (leftExp.Type != rightExp.Type)
             throw new InvalidOperationException(
-                $"Can't divide expressions of type {leftExp.DataType} and {rightExp.DataType}");
+                $"Can't divide expressions of type {leftExp.Type} and {rightExp.Type}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var type = leftExp.DataType;
+        var type = leftExp.Type;
         if (type == DataType.Int) return AzothValue.Int(left.IntValue / right.IntValue);
         if (type == DataType.UInt) return AzothValue.Int(left.IntValue / right.IntValue);
         if (type == DataType.Int8) return AzothValue.I8((sbyte)(left.I8Value / right.I8Value));
@@ -1033,14 +1033,14 @@ public class InterpreterProcess
         throw new NotImplementedException($"Divide {type.ToILString()}");
     }
 
-    private async ValueTask<bool> EqualsAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+    private async ValueTask<bool> EqualsAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (leftExp.DataType != rightExp.DataType && leftExp.DataType is not CapabilityType { IsIdentityReference: true })
+        if (leftExp.Type != rightExp.Type && leftExp.Type is not CapabilityType { IsIdentityReference: true })
             throw new InvalidOperationException(
-                $"Can't compare expressions of type {leftExp.DataType.ToILString()} and {rightExp.DataType.ToILString()} for equality.");
+                $"Can't compare expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()} for equality.");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var type = leftExp.DataType;
+        var type = leftExp.Type;
         if (type is OptionalType optionalType)
         {
             if (left.IsNone && right.IsNone) return true;
@@ -1072,14 +1072,14 @@ public class InterpreterProcess
         throw new NotImplementedException($"Compare equality of `{type.ToILString()}`.");
     }
 
-    private async ValueTask<int> CompareAsync(IExpression leftExp, IExpression rightExp, LocalVariableScope variables)
+    private async ValueTask<int> CompareAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (leftExp.DataType != rightExp.DataType)
+        if (leftExp.Type != rightExp.Type)
             throw new InvalidOperationException(
-                $"Can't compare expressions of type {leftExp.DataType.ToILString()} and {rightExp.DataType.ToILString()}.");
+                $"Can't compare expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()}.");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var type = leftExp.DataType;
+        var type = leftExp.Type;
         if (type is OptionalType optionalType)
         {
             if (left.IsNone && right.IsNone) return 0;
@@ -1108,10 +1108,10 @@ public class InterpreterProcess
         throw new NotImplementedException($"Compare `{type.ToILString()}`.");
     }
 
-    private async ValueTask<AzothValue> NegateAsync(IExpression expression, LocalVariableScope variables)
+    private async ValueTask<AzothValue> NegateAsync(IExpressionNode expression, LocalVariableScope variables)
     {
         var value = await ExecuteAsync(expression, variables).ConfigureAwait(false);
-        var dataType = expression.DataType;
+        var dataType = expression.Type;
         if (dataType == DataType.Int) return AzothValue.Int(-value.IntValue);
         if (dataType == DataType.Int8) return AzothValue.I8((sbyte)-value.I8Value);
         if (dataType == DataType.Int16) return AzothValue.I16((short)-value.I16Value);
@@ -1166,31 +1166,31 @@ public class InterpreterProcess
     }
 
     private async ValueTask<AzothValue> ExecuteBlockOrResultAsync(
-        IBlockOrResult statement,
+        IBlockOrResultNode statement,
         LocalVariableScope variables)
     {
         return statement switch
         {
-            IBlockExpression b => await ExecuteAsync(b, variables).ConfigureAwait(false),
-            IResultStatement s => await ExecuteAsync(s.Expression, variables).ConfigureAwait(false),
+            IBlockExpressionNode b => await ExecuteAsync(b, variables).ConfigureAwait(false),
+            IResultStatementNode s => await ExecuteAsync(s.IntermediateExpression!, variables).ConfigureAwait(false),
             _ => throw ExhaustiveMatch.Failed(statement)
         };
     }
 
     private async ValueTask<AzothValue> ExecuteElseAsync(
-        IElseClause elseClause,
+        IElseClauseNode elseClause,
         LocalVariableScope variables)
     {
         return elseClause switch
         {
-            IBlockOrResult exp => await ExecuteBlockOrResultAsync(exp, variables).ConfigureAwait(false),
-            IIfExpression exp => await ExecuteAsync(exp, variables).ConfigureAwait(false),
+            IBlockOrResultNode exp => await ExecuteBlockOrResultAsync(exp, variables).ConfigureAwait(false),
+            IIfExpressionNode exp => await ExecuteAsync(exp, variables).ConfigureAwait(false),
             _ => throw ExhaustiveMatch.Failed(elseClause)
         };
     }
 
     private async ValueTask ExecuteAssignmentAsync(
-        IAssignableExpression expression,
+        IAssignableExpressionNode expression,
         AzothValue value,
         LocalVariableScope variables)
     {
@@ -1198,13 +1198,13 @@ public class InterpreterProcess
         {
             default:
                 throw new NotImplementedException($"Can't interpret assignment into {expression.GetType().Name}");
-            case IVariableNameExpression exp:
-                variables[exp.ReferencedSymbol] = value;
+            case IVariableNameExpressionNode exp:
+                variables[exp.ReferencedDefinition] = value;
                 break;
-            case IFieldAccessExpression exp:
+            case IFieldAccessExpressionNode exp:
                 var obj = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                 // TODO handle the access operator
-                obj.ObjectValue[exp.ReferencedSymbol.Name] = value;
+                obj.ObjectValue[exp.ReferencedDeclaration!.Name] = value;
                 break;
         }
     }

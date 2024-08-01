@@ -1,26 +1,32 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.AST;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 
 internal class VTable
 {
+    public IClassDefinitionNode Class { get; }
     private readonly MethodSignatureCache methodSignatures;
-    public IClassDeclaration Class { get; }
-    private readonly ConcurrentDictionary<MethodSignature, IMethodDeclaration> methods = new();
+    private readonly FixedDictionary<UserTypeSymbol, ITypeDefinitionNode> types;
+    private readonly ConcurrentDictionary<MethodSignature, IMethodDefinitionNode> methods = new();
 
-    public VTable(IClassDeclaration @class, MethodSignatureCache methodSignatures)
+    public VTable(
+        IClassDefinitionNode @class,
+        MethodSignatureCache methodSignatures,
+        FixedDictionary<UserTypeSymbol, ITypeDefinitionNode> types)
     {
-        this.methodSignatures = methodSignatures;
         Class = @class;
+        this.methodSignatures = methodSignatures;
+        this.types = types;
     }
 
-    public IMethodDeclaration this[MethodSignature signature]
+    public IMethodDefinitionNode this[MethodSignature signature]
         => methods.GetOrAdd(signature, LookupMethod);
 
-    private IMethodDeclaration LookupMethod(MethodSignature signature)
+    private IMethodDefinitionNode LookupMethod(MethodSignature signature)
     {
         var method = LookupMethod(Class, signature);
         if (method is not null) return method;
@@ -28,21 +34,16 @@ internal class VTable
         throw new InvalidOperationException($"No method found for {signature} on {Class}");
     }
 
-    private IMethodDeclaration? LookupMethod(ITypeDeclaration type, MethodSignature signature)
+    private IMethodDefinitionNode? LookupMethod(ITypeDefinitionNode type, MethodSignature signature)
     {
-        foreach (var method in type.Members.OfType<IMethodDeclaration>())
+        foreach (var method in type.Members.OfType<IMethodDefinitionNode>())
             if (methodSignatures[method.Symbol].EqualsOrOverrides(signature))
                 return method;
 
-        foreach (var supertype in type.Supertypes)
+        foreach (var supertypeName in type.AllSupertypeNames)
         {
+            var supertype = types[(UserTypeSymbol)supertypeName.ReferencedDeclaration!.Symbol];
             var method = LookupMethod(supertype, signature);
-            if (method is not null) return method;
-        }
-
-        if (type is IClassDeclaration { BaseClass: not null and var baseClass })
-        {
-            var method = LookupMethod(baseClass, signature);
             if (method is not null) return method;
         }
 

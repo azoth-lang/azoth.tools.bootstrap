@@ -10,7 +10,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class FunctionReferenceInvocationNode : ExpressionNode, IFunctionReferenceInvocationNode
+internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode, IFunctionReferenceInvocationExpressionNode
 {
     public override IInvocationExpressionSyntax Syntax { get; }
     public IExpressionNode Expression { get; }
@@ -39,7 +39,7 @@ internal sealed class FunctionReferenceInvocationNode : ExpressionNode, IFunctio
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.FunctionReferenceInvocation_FlowStateAfter);
 
-    public FunctionReferenceInvocationNode(
+    public FunctionReferenceInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
         IExpressionNode expression,
         IEnumerable<IAmbiguousExpressionNode> arguments)

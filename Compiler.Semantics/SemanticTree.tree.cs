@@ -76,7 +76,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IMethodInvocationExpressionNode),
     typeof(IGetterInvocationExpressionNode),
     typeof(ISetterInvocationExpressionNode),
-    typeof(IFunctionReferenceInvocationNode),
+    typeof(IFunctionReferenceInvocationExpressionNode),
     typeof(IInitializerInvocationExpressionNode),
     typeof(IAmbiguousNameNode),
     typeof(IGenericNameExpressionNode),
@@ -463,9 +463,11 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
     new StructType DeclaredType { get; }
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
+    IFixedList<IStructMemberDefinitionNode> SourceMembers { get; }
     new IFixedSet<IStructMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
     IFixedSet<IStructMemberDeclarationNode> IStructDeclarationNode.Members => Members;
+    IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
 }
 
 public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDeclarationNode
@@ -698,9 +700,12 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     IBlockBodyNode Body { get; }
 }
 
+[Closed(
+    typeof(IDefaultInitializerDefinitionNode),
+    typeof(ISourceInitializerDefinitionNode))]
 public partial interface IInitializerDefinitionNode : ISemanticNode, IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IStructMemberDefinitionNode, IInitializerDeclarationNode
 {
-    new IInitializerDefinitionSyntax Syntax { get; }
+    new IInitializerDefinitionSyntax? Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
@@ -709,12 +714,22 @@ public partial interface IInitializerDefinitionNode : ISemanticNode, IConcreteIn
     new IdentifierName? Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IInitializerDeclarationNode.Name => Name;
-    IInitializerSelfParameterNode SelfParameter { get; }
     new InitializerSymbol Symbol { get; }
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     InitializerSymbol IInitializerDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
+}
+
+public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinitionNode
+{
+}
+
+public partial interface ISourceInitializerDefinitionNode : IInitializerDefinitionNode
+{
+    new IInitializerDefinitionSyntax Syntax { get; }
+    IInitializerDefinitionSyntax? IInitializerDefinitionNode.Syntax => Syntax;
+    IInitializerSelfParameterNode SelfParameter { get; }
     IBlockBodyNode Body { get; }
 }
 
@@ -1240,7 +1255,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     typeof(IMethodInvocationExpressionNode),
     typeof(IGetterInvocationExpressionNode),
     typeof(ISetterInvocationExpressionNode),
-    typeof(IFunctionReferenceInvocationNode),
+    typeof(IFunctionReferenceInvocationExpressionNode),
     typeof(IInitializerInvocationExpressionNode),
     typeof(IUnknownInvocationExpressionNode),
     typeof(INameExpressionNode),
@@ -1495,6 +1510,7 @@ public partial interface IBreakExpressionNode : INeverTypedExpressionNode
     new IBreakExpressionSyntax Syntax { get; }
     INeverTypedExpressionSyntax INeverTypedExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode? Value { get; }
+    IExpressionNode? IntermediateValue { get; }
 }
 
 public partial interface INextExpressionNode : INeverTypedExpressionNode
@@ -1508,6 +1524,7 @@ public partial interface IReturnExpressionNode : INeverTypedExpressionNode
     new IReturnExpressionSyntax Syntax { get; }
     INeverTypedExpressionSyntax INeverTypedExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode? Value { get; }
+    IExpressionNode? IntermediateValue { get; }
 }
 
 public partial interface IInvocationExpressionNode : IAmbiguousExpressionNode
@@ -1573,7 +1590,7 @@ public partial interface ISetterInvocationExpressionNode : ISemanticNode, IExpre
     ContextualizedOverload? ContextualizedOverload { get; }
 }
 
-public partial interface IFunctionReferenceInvocationNode : ISemanticNode, IExpressionNode
+public partial interface IFunctionReferenceInvocationExpressionNode : ISemanticNode, IExpressionNode
 {
     new IInvocationExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;

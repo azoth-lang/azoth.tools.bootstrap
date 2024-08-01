@@ -68,6 +68,8 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 foreach (var child in n.Members)
                     yield return child;
+                if (n.DefaultConstructor is not null)
+                    yield return n.DefaultConstructor;
                 yield break;
             case IStructDefinitionNode n:
                 foreach (var child in n.Attributes)
@@ -78,6 +80,8 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 foreach (var child in n.Members)
                     yield return child;
+                if (n.DefaultInitializer is not null)
+                    yield return n.DefaultInitializer;
                 yield break;
             case ITraitDefinitionNode n:
                 foreach (var child in n.Attributes)
@@ -134,7 +138,11 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield return n.Body;
                 yield break;
-            case IInitializerDefinitionNode n:
+            case IDefaultInitializerDefinitionNode n:
+                foreach (var child in n.Parameters)
+                    yield return child;
+                yield break;
+            case ISourceInitializerDefinitionNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
@@ -331,7 +339,7 @@ public static class ISemanticNodeExtensions
                 yield return n.Context;
                 yield return n.Value;
                 yield break;
-            case IFunctionReferenceInvocationNode n:
+            case IFunctionReferenceInvocationExpressionNode n:
                 yield return n.Expression;
                 foreach (var child in n.Arguments)
                     yield return child;
