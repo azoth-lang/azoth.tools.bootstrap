@@ -18,8 +18,16 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         => GrammarAttribute.IsCached(in conditionCached) ? condition.UnsafeValue
             : this.RewritableChild(ref conditionCached, ref condition);
     public IExpressionNode? IntermediateCondition => Condition as IExpressionNode;
-    public IBlockOrResultNode ThenBlock { get; }
-    public IElseClauseNode? ElseClause { get; }
+    private RewritableChild<IBlockOrResultNode> thenBlock;
+    private bool thenBlockCached;
+    public IBlockOrResultNode ThenBlock
+        => GrammarAttribute.IsCached(in thenBlockCached) ? thenBlock.UnsafeValue
+            : this.RewritableChild(ref thenBlockCached, ref thenBlock);
+    private RewritableChild<IElseClauseNode?> elseClause;
+    private bool elseClauseCached;
+    public IElseClauseNode? ElseClause
+        => GrammarAttribute.IsCached(in elseClauseCached) ? elseClause.UnsafeValue
+            : this.RewritableChild(ref elseClauseCached, ref elseClause);
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
@@ -44,8 +52,8 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     {
         Syntax = syntax;
         this.condition = Child.Create(this, condition);
-        ThenBlock = Child.Attach(this, thenBlock);
-        ElseClause = Child.Attach(this, elseClause);
+        this.thenBlock = Child.Create(this, thenBlock);
+        this.elseClause = Child.Create(this, elseClause);
     }
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)

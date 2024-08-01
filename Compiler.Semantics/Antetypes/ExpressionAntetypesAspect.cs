@@ -273,4 +273,7 @@ internal static class ExpressionAntetypesAspect
     public static IMaybeExpressionAntetype FunctionName_Antetype(IFunctionNameNode node)
         // TODO should probably use Antetype on the declaration
         => node.ReferencedDeclaration?.Type.ToAntetype() ?? IAntetype.Unknown;
+
+    public static IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node)
+        => null;
 }

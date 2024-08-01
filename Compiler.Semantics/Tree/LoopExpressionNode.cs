@@ -11,7 +11,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class LoopExpressionNode : ExpressionNode, ILoopExpressionNode
 {
     public override ILoopExpressionSyntax Syntax { get; }
-    public IBlockExpressionNode Block { get; }
+    private RewritableChild<IBlockExpressionNode> block;
+    private bool blockCached;
+    public IBlockExpressionNode Block
+        => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
+            : this.RewritableChild(ref blockCached, ref block);
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
@@ -31,6 +35,6 @@ internal sealed class LoopExpressionNode : ExpressionNode, ILoopExpressionNode
     public LoopExpressionNode(ILoopExpressionSyntax syntax, IBlockExpressionNode block)
     {
         Syntax = syntax;
-        Block = Child.Attach(this, block);
+        this.block = Child.Create(this, block);
     }
 }

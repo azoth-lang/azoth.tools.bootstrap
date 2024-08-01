@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -19,7 +18,11 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         => GrammarAttribute.IsCached(in conditionCached) ? condition.UnsafeValue
             : this.RewritableChild(ref conditionCached, ref condition);
     public IExpressionNode? IntermediateCondition => Condition as IExpressionNode;
-    public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
+    private RewritableChild<IBlockExpressionNode> block;
+    private bool blockCached;
+    public IBlockExpressionNode Block
+        => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
+            : this.RewritableChild(ref blockCached, ref block);
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
@@ -43,7 +46,7 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
     {
         Syntax = syntax;
         this.condition = Child.Create(this, condition);
-        Block = Child.Attach(this, block);
+        this.block = Child.Create(this, block);
     }
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)

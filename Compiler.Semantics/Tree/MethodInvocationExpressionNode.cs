@@ -12,8 +12,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodInvocationExpressionNode
 {
-    protected override bool MayHaveRewrite => true;
-
     public override IInvocationExpressionSyntax Syntax { get; }
     public IMethodGroupNameNode MethodGroup { get; }
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;

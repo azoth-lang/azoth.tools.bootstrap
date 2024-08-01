@@ -7,8 +7,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class AmbiguousMoveExpressionNode : ExpressionNode, IAmbiguousMoveExpressionNode
 {
-    protected override bool MayHaveRewrite => true;
-
     public override IMoveExpressionSyntax Syntax { get; }
     private RewritableChild<ISimpleNameNode> referent;
     private bool referentCached;

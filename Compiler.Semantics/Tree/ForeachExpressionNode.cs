@@ -23,7 +23,11 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
             : this.RewritableChild(ref inExpressionCached, ref inExpression);
     public IExpressionNode? IntermediateInExpression => InExpression as IExpressionNode;
     public ITypeNode? DeclaredType { get; }
-    public IBlockExpressionNode Block { get; }
+    private RewritableChild<IBlockExpressionNode> block;
+    private bool blockCached;
+    public IBlockExpressionNode Block
+        => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
+            : this.RewritableChild(ref blockCached, ref block);
     private ValueAttribute<LexicalScope> containingLexicalScope;
     public LexicalScope ContainingLexicalScope
         => containingLexicalScope.TryGetValue(out var value) ? value
@@ -112,7 +116,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         Syntax = syntax;
         this.inExpression = Child.Create(this, inExpression);
         DeclaredType = Child.Attach(this, type);
-        Block = Child.Attach(this, block);
+        this.block = Child.Create(this, block);
     }
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)

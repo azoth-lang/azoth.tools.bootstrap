@@ -13,7 +13,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode, IFunctionReferenceInvocationExpressionNode
 {
     public override IInvocationExpressionSyntax Syntax { get; }
-    public IExpressionNode Expression { get; }
+    private RewritableChild<IExpressionNode> expression;
+    private bool expressionCached;
+    public IExpressionNode Expression
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : this.RewritableChild(ref expressionCached, ref expression);
     public FunctionAntetype FunctionAntetype { get; }
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
@@ -45,7 +49,7 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
-        Expression = Child.Attach(this, expression);
+        this.expression = Child.Create(this, expression);
         FunctionAntetype = (FunctionAntetype)expression.Antetype;
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }

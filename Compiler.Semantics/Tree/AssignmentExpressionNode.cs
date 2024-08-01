@@ -13,8 +13,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpressionNode
 {
-    protected override bool MayHaveRewrite => true;
-
     public override IAssignmentExpressionSyntax Syntax { get; }
     private RewritableChild<IAssignableExpressionNode> leftOperand;
     private bool leftOperandCached;
@@ -68,5 +66,6 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     }
 
     protected override IChildNode? Rewrite()
-        => BindingAmbiguousNamesAspect.AssignmentExpression_Rewrite_PropertyNameLeftOperand(this) ?? base.Rewrite();
+        => BindingAmbiguousNamesAspect.AssignmentExpression_Rewrite_PropertyNameLeftOperand(this)
+        ?? base.Rewrite();
 }
