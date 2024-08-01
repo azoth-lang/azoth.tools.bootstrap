@@ -194,6 +194,9 @@ internal static class ExpressionAntetypesAspect
         return convertToAntetype;
     }
 
+    public static IMaybeExpressionAntetype ImplicitConversionExpression_Antetype(IImplicitConversionExpressionNode node)
+        => node.ConvertToType.NamedAntetype;
+
     public static IMaybeExpressionAntetype NoneLiteralExpression_Antetype(INoneLiteralExpressionNode _)
         => IAntetype.None;
 

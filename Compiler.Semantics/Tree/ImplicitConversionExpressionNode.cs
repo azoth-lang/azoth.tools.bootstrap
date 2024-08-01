@@ -1,6 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
-using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -10,40 +9,38 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpressionNode
+internal class ImplicitConversionExpressionNode : ExpressionNode, IImplicitConversionExpressionNode
 {
-    public override IConversionExpressionSyntax Syntax { get; }
-    private RewritableChild<IAmbiguousExpressionNode> referent;
+    public override ITypedExpressionSyntax Syntax => null!;
+
+    private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
-    public IAmbiguousExpressionNode Referent
+    public IExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
-    public IExpressionNode? IntermediateReferent => Referent as IExpressionNode;
-    public ConversionOperator Operator => Syntax.Operator;
     public ITypeNode ConvertToType { get; }
     private ValueAttribute<IMaybeExpressionAntetype> antetype;
     public override IMaybeExpressionAntetype Antetype
         => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.ConversionExpression_Antetype);
+            : antetype.GetValue(this,
+                ExpressionAntetypesAspect.ImplicitConversionExpression_Antetype);
     private DataType? type;
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.ConversionExpression_Type);
+                ExpressionTypesAspect.ImplicitConversionExpression_Type);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.ConversionExpression_FlowStateAfter);
+                ExpressionTypesAspect.ImplicitConversionExpression_FlowStateAfter);
 
-    public ConversionExpressionNode(
-        IConversionExpressionSyntax syntax,
-        IAmbiguousExpressionNode referent,
+    public ImplicitConversionExpressionNode(
+        IExpressionNode referent,
         ITypeNode convertToType)
     {
-        Syntax = syntax;
         this.referent = Child.Create(this, referent);
         ConvertToType = Child.Attach(this, convertToType);
     }

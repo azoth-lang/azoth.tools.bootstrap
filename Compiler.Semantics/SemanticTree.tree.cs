@@ -69,6 +69,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IUnaryOperatorExpressionNode),
     typeof(IIdExpressionNode),
     typeof(IConversionExpressionNode),
+    typeof(IImplicitConversionExpressionNode),
     typeof(IPatternMatchExpressionNode),
     typeof(ILoopExpressionNode),
     typeof(IWhileExpressionNode),
@@ -1264,6 +1265,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     typeof(IUnaryOperatorExpressionNode),
     typeof(IIdExpressionNode),
     typeof(IConversionExpressionNode),
+    typeof(IImplicitConversionExpressionNode),
     typeof(IPatternMatchExpressionNode),
     typeof(IIfExpressionNode),
     typeof(ILoopExpressionNode),
@@ -1455,6 +1457,12 @@ public partial interface IConversionExpressionNode : ISemanticNode, IExpressionN
     IAmbiguousExpressionNode Referent { get; }
     IExpressionNode? IntermediateReferent { get; }
     ConversionOperator Operator { get; }
+    ITypeNode ConvertToType { get; }
+}
+
+public partial interface IImplicitConversionExpressionNode : ISemanticNode, IExpressionNode
+{
+    IExpressionNode Referent { get; }
     ITypeNode ConvertToType { get; }
 }
 

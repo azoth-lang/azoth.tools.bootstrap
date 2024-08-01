@@ -612,6 +612,9 @@ internal class SemanticsApplier
             case IConversionExpressionNode n:
                 ConversionExpression(n);
                 break;
+            case IImplicitConversionExpressionNode n:
+                ImplicitConversionExpression(n);
+                break;
             case IPatternMatchExpressionNode n:
                 PatternMatchExpression(n);
                 break;
@@ -811,6 +814,12 @@ internal class SemanticsApplier
     private static void ConversionExpression(IConversionExpressionNode node)
     {
         AmbiguousExpression(node.Referent);
+        Type(node.ConvertToType);
+    }
+
+    private static void ImplicitConversionExpression(IImplicitConversionExpressionNode node)
+    {
+        Expression(node.Referent);
         Type(node.ConvertToType);
     }
 

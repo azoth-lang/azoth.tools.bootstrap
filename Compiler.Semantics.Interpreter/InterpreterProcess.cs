@@ -524,6 +524,11 @@ public class InterpreterProcess
                 var value = await ExecuteAsync(exp.IntermediateReferent!, variables).ConfigureAwait(false);
                 return value.Convert(exp.IntermediateReferent!.Type, (CapabilityType)exp.ConvertToType.NamedType, false);
             }
+            case IImplicitConversionExpressionNode exp:
+            {
+                var value = await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
+                return value.Convert(exp.Referent.Type, (CapabilityType)exp.ConvertToType.NamedType, true);
+            }
             case IIntegerLiteralExpressionNode exp:
                 return AzothValue.Int(exp.Value);
             case IFunctionInvocationExpressionNode exp:
