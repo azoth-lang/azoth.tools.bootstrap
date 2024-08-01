@@ -29,10 +29,12 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public IBlockExpressionNode Block
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
-    private ValueAttribute<LexicalScope> containingLexicalScope;
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public LexicalScope ContainingLexicalScope
-        => containingLexicalScope.TryGetValue(out var value) ? value
-            : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
     public LexicalScope LexicalScope
@@ -127,7 +129,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         this.block = Child.Create(this, block);
     }
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => child == Block ? LexicalScope : ContainingLexicalScope;
 
     public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();

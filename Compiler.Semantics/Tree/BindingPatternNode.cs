@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -17,10 +18,12 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     bool IBindingNode.IsLentBinding => false;
     public bool IsMutableBinding => Syntax.IsMutableBinding;
     public IdentifierName Name => Syntax.Name;
-    private ValueAttribute<LexicalScope> containingLexicalScope;
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public LexicalScope ContainingLexicalScope
-        => containingLexicalScope.TryGetValue(out var value) ? value
-            : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
     public ValueId BindingValueId

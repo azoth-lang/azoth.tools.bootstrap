@@ -48,7 +48,7 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedPackageNameScope), child, descendant));
 
-    internal virtual LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal virtual LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedContainingLexicalScope), child, descendant));
 

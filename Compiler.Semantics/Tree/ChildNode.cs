@@ -113,10 +113,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected PackageNameScope InheritedPackageNameScope() => Parent.InheritedPackageNameScope(this, this);
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
-        => Parent.InheritedContainingLexicalScope(this, descendant);
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).InheritedContainingLexicalScope(this, descendant, ctx);
 
-    protected LexicalScope InheritedContainingLexicalScope() => Parent.InheritedContainingLexicalScope(this, this);
+    protected LexicalScope InheritedContainingLexicalScope(IInheritanceContext ctx)
+        => GetParent(ctx).InheritedContainingLexicalScope(this, this, ctx);
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => Parent.InheritedContainingDeclaredType(this, descendant, ctx);

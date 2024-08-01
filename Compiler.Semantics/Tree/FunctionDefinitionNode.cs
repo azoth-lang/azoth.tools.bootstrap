@@ -62,11 +62,11 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     internal override bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
         => SymbolNodeAspect.FunctionDeclaration_InheritedIsAttributeType(this);
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Body)
             return LexicalScope;
-        return base.InheritedContainingLexicalScope(child, descendant);
+        return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }
 
     public IFlowState FlowStateBefore()

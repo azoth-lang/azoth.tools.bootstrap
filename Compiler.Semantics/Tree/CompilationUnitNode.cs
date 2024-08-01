@@ -29,7 +29,8 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     public NamespaceSymbol ImplicitNamespaceSymbol => ImplicitNamespace.Symbol;
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
-    public NamespaceScope ContainingLexicalScope => (NamespaceScope)Parent.InheritedContainingLexicalScope(this, this);
+    public NamespaceScope ContainingLexicalScope
+        => (NamespaceScope)InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
     public LexicalScope LexicalScope
@@ -56,7 +57,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     internal override CodeFile InheritedFile(IChildNode child, IChildNode descendant)
         => FileAspect.CompilationUnit_InheritedFile(this);
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LexicalScope;
 
     private IFixedList<Diagnostic> GetDiagnostics()

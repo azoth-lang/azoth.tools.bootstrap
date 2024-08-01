@@ -37,10 +37,10 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
     internal override Pseudotype InheritedSelfType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => TypeExpressionsAspect.ConcreteMethodDeclaration_InheritedSelfType(this);
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Body) return LexicalScope;
-        return base.InheritedContainingLexicalScope(child, descendant);
+        return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

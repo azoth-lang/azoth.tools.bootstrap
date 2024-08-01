@@ -58,13 +58,13 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         this.elseClause = Child.Create(this, elseClause);
     }
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == ThenBlock)
             return Condition.GetFlowLexicalScope().True;
         if (child == ElseClause)
             return Condition.GetFlowLexicalScope().False;
-        return base.InheritedContainingLexicalScope(child, descendant);
+        return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }
 
     internal override IFlowState InheritedFlowStateBefore(

@@ -47,7 +47,8 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
         this.expression = Child.Create(this, expression);
     }
 
-    public override LexicalScope GetLexicalScope() => InheritedContainingLexicalScope();
+    public override LexicalScope GetLexicalScope()
+        => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {

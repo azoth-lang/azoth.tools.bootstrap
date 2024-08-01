@@ -29,10 +29,12 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
             : this.RewritableChild(ref initializerCached, ref initializer);
     public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
     public IExpressionNode? IntermediateInitializer => Initializer as IExpressionNode;
-    private ValueAttribute<LexicalScope> containingLexicalScope;
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public LexicalScope ContainingLexicalScope
-        => containingLexicalScope.TryGetValue(out var value) ? value
-            : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
     public LexicalScope LexicalScope

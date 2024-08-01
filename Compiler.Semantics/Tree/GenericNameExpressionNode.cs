@@ -13,10 +13,12 @@ internal sealed class GenericNameExpressionNode : AmbiguousNameExpressionNode, I
     public override IGenericNameExpressionSyntax Syntax { get; }
     public GenericName Name => Syntax.Name;
     public IFixedList<ITypeNode> TypeArguments { get; }
-    private ValueAttribute<LexicalScope> containingLexicalScope;
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public LexicalScope ContainingLexicalScope
-        => containingLexicalScope.TryGetValue(out var value) ? value
-            : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
     private ValueAttribute<IFixedList<IDeclarationNode>> referencedDeclarations;
     public IFixedList<IDeclarationNode> ReferencedDeclarations
         => referencedDeclarations.TryGetValue(out var value) ? value

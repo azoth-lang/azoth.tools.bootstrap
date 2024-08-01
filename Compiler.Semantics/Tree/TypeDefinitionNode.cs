@@ -66,7 +66,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => ContainingDeclaredTypeAspect.TypeDeclaration_InheritedContainingDeclaredType(this);
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (GenericParameters.Contains(child))
             return ContainingLexicalScope;

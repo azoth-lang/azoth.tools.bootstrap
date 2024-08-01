@@ -39,7 +39,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
         Pattern = Child.Attach(this, pattern);
     }
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Pattern)
             return Referent.GetFlowLexicalScope().True;

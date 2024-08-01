@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
@@ -29,10 +30,12 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
             : this.RewritableChild(ref rightOperandCached, ref rightOperand);
     public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
     public IExpressionNode? IntermediateRightOperand => RightOperand as IExpressionNode;
-    private ValueAttribute<LexicalScope> containingLexicalScope;
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public LexicalScope ContainingLexicalScope
-        => containingLexicalScope.TryGetValue(out var value) ? value
-            : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
@@ -64,7 +67,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     public override ConditionalLexicalScope GetFlowLexicalScope()
         => LexicalScopingAspect.BinaryOperatorExpression_GetFlowLexicalScope(this);
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == CurrentLeftOperand)
             return GetContainingLexicalScope();

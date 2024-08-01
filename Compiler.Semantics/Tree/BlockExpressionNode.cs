@@ -40,7 +40,7 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
         Statements = ChildList.Attach(this, statements);
     }
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, Statements.IndexOf(child)!.Value);
 
     internal override IFlowState InheritedFlowStateBefore(

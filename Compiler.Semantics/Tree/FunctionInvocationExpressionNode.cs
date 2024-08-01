@@ -69,7 +69,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (Arguments.IndexOf(child) is int argumentIndex)
         {
@@ -78,7 +78,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
             return Arguments[argumentIndex - 1].GetFlowLexicalScope().True;
         }
 
-        return base.InheritedContainingLexicalScope(child, descendant);
+        return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)

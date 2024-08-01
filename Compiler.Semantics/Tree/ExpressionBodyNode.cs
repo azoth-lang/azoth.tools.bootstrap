@@ -28,9 +28,10 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
         statements = FixedList.Create(ResultStatement);
     }
 
-    public LexicalScope GetContainingLexicalScope() => InheritedContainingLexicalScope();
+    public LexicalScope GetContainingLexicalScope()
+        => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         var statementIndex = child == ResultStatement ? 0 : throw new InvalidOperationException("Caller is not a child");
         return LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, statementIndex);

@@ -91,7 +91,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         base.CollectDiagnostics(diagnostics);
     }
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == ConstructingType)
             return GetContainingLexicalScope();

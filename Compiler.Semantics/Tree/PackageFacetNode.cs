@@ -43,7 +43,7 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
     internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => this;
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => PackageNameScope.PackageGlobalScope;
 
     internal override IPackageFacetDeclarationNode InheritedFacet(IChildNode child, IChildNode descendant)

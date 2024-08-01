@@ -51,11 +51,11 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         this.block = Child.Create(this, block);
     }
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Block)
             return Condition.GetFlowLexicalScope().True;
-        return base.InheritedContainingLexicalScope(child, descendant);
+        return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }
 
     internal override IFlowState InheritedFlowStateBefore(

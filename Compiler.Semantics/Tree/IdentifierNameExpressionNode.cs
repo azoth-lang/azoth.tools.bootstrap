@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -12,10 +13,12 @@ internal sealed class IdentifierNameExpressionNode : AmbiguousNameExpressionNode
     protected override bool MayHaveRewrite => true;
     public override IIdentifierNameExpressionSyntax Syntax { get; }
     public IdentifierName Name => Syntax.Name;
-    private ValueAttribute<LexicalScope> containingLexicalScope;
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public LexicalScope ContainingLexicalScope
-        => containingLexicalScope.TryGetValue(out var value) ? value
-            : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
     private ValueAttribute<IFixedList<IDeclarationNode>> referencedDeclarations;
     public IFixedList<IDeclarationNode> ReferencedDeclarations
         => referencedDeclarations.TryGetValue(out var value) ? value

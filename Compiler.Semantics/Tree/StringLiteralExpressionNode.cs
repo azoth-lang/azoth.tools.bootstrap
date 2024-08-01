@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -13,10 +14,12 @@ internal sealed class StringLiteralExpressionNode : LiteralExpressionNode, IStri
 {
     public override IStringLiteralExpressionSyntax Syntax { get; }
     public string Value => Syntax.Value;
-    private ValueAttribute<LexicalScope> containingLexicalScope;
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public LexicalScope ContainingLexicalScope
-        => containingLexicalScope.TryGetValue(out var value) ? value
-            : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype

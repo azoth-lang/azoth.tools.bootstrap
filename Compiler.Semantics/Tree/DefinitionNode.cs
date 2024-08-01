@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -16,10 +17,12 @@ internal abstract class DefinitionNode : CodeNode, IDefinitionNode
     public virtual ISymbolDeclarationNode ContainingDeclaration
         => InheritedContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public virtual Symbol ContainingSymbol => ContainingDeclaration.Symbol;
-    private ValueAttribute<LexicalScope> containingLexicalScope;
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
     public virtual LexicalScope ContainingLexicalScope
-        => containingLexicalScope.TryGetValue(out var value) ? value
-            : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
     public abstract LexicalScope LexicalScope { get; }
     public abstract Symbol Symbol { get; }
 }

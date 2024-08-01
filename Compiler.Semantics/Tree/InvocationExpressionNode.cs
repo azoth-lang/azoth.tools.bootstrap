@@ -33,7 +33,7 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
         this.arguments = ChildList.Create(this, nameof(Arguments), arguments);
     }
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Expression)
             return GetContainingLexicalScope();
@@ -44,7 +44,7 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
 
             return Arguments[argumentIndex - 1].GetFlowLexicalScope().True;
         }
-        return base.InheritedContainingLexicalScope(child, descendant);
+        return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

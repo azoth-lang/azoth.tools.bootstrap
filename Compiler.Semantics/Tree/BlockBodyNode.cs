@@ -20,9 +20,10 @@ internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
         Statements = ChildList.Attach(this, statements);
     }
 
-    public LexicalScope GetContainingLexicalScope() => InheritedContainingLexicalScope();
+    public LexicalScope GetContainingLexicalScope()
+        => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant)
+    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, Statements.IndexOf(child)!.Value);
 
     internal override IFlowState InheritedFlowStateBefore(
