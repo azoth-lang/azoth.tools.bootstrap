@@ -160,7 +160,7 @@ internal class ProjectSet : IEnumerable<Project>
         if (compileResult is not var (package, packageNode)) return null;
 
         var cacheDir = PrepareCacheDir(project);
-        var codePath = EmitIL(project, package, outputTests, cacheDir);
+        var codePath = EmitIL(project, packageNode, outputTests, cacheDir);
 
         using (await consoleLock.LockAsync())
         {
@@ -285,7 +285,7 @@ internal class ProjectSet : IEnumerable<Project>
         return true;
     }
 
-    private static string EmitIL(Project project, Package package, bool outputTests, string cacheDir)
+    private static string EmitIL(Project project, IPackageNode package, bool outputTests, string cacheDir)
     {
 #pragma warning disable IDE0022
         throw new NotImplementedException();
