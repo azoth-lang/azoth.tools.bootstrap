@@ -376,6 +376,30 @@ public class InterpreterProcess
 
     private async ValueTask<AzothValue> CallMethodAsync(
         MethodSymbol methodSymbol,
+        DataType selfType,
+        AzothValue self,
+        IEnumerable<AzothValue> arguments)
+    {
+        switch (selfType)
+        {
+            case EmptyType _:
+            case UnknownType _:
+            case OptionalType _:
+            case GenericParameterType _:
+            case FunctionType _:
+            case ViewpointType _:
+            case ConstValueType _:
+                var methodSignature = methodSignatures[methodSymbol];
+                throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
+            case CapabilityType capabilityType:
+                return await CallMethodAsync(methodSymbol, capabilityType, self, arguments);
+            default:
+                throw ExhaustiveMatch.Failed(selfType);
+        }
+    }
+
+    private async ValueTask<AzothValue> CallMethodAsync(
+        MethodSymbol methodSymbol,
         CapabilityType selfType,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
@@ -692,26 +716,27 @@ public class InterpreterProcess
                     return IdentityHash(self);
 
                 var selfType = exp.MethodGroup.Context.Type;
-                switch (selfType)
-                {
-                    case EmptyType _:
-                    case UnknownType _:
-                    case OptionalType _:
-                    case GenericParameterType _:
-                    case FunctionType _:
-                    case ViewpointType _:
-                    case ConstValueType _:
-                        var methodSignature = methodSignatures[methodSymbol];
-                        throw new InvalidOperationException($"Can't call {methodSignature} on {selfType}");
-                    case CapabilityType capabilityType:
-                        return await CallMethodAsync(methodSymbol, capabilityType, self, arguments);
-                    default:
-                        throw ExhaustiveMatch.Failed(selfType);
-                }
+                return await CallMethodAsync(methodSymbol, selfType, self, arguments);
             }
-            case IGetterInvocationExpressionNode _:
-            case ISetterInvocationExpressionNode _:
-                throw new NotImplementedException();
+            case IGetterInvocationExpressionNode exp:
+            {
+                var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
+                var getterSymbol = exp.ReferencedDeclaration!.Symbol;
+                if (getterSymbol.Package == Intrinsic.SymbolTree.Package)
+                    return await CallIntrinsicAsync(getterSymbol, self, []);
+                var selfType = exp.Context.Type;
+                return await CallMethodAsync(getterSymbol, selfType, self, []).ConfigureAwait(false);
+            }
+            case ISetterInvocationExpressionNode exp:
+            {
+                var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
+                var value = await ExecuteAsync(exp.IntermediateValue!, variables).ConfigureAwait(false);
+                var setterSymbol = exp.ReferencedDeclaration!.Symbol;
+                if (setterSymbol.Package == Intrinsic.SymbolTree.Package)
+                    return await CallIntrinsicAsync(setterSymbol, self, [value]);
+                var selfType = exp.Context.Type;
+                return await CallMethodAsync(setterSymbol, selfType, self, [value]);
+            }
             case INewObjectExpressionNode exp:
             {
                 var arguments = await ExecuteArgumentsAsync(exp.IntermediateArguments!, variables).ConfigureAwait(false);
