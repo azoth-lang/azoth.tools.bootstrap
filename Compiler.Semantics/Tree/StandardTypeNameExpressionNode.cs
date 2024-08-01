@@ -16,10 +16,12 @@ internal sealed class StandardTypeNameExpressionNode : AmbiguousNameExpressionNo
     public StandardName Name => Syntax.Name;
     public IFixedList<ITypeNode> TypeArguments { get; }
     public ITypeDeclarationNode ReferencedDeclaration { get; }
-    private ValueAttribute<IMaybeAntetype> namedAntetype;
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
     public IMaybeAntetype NamedAntetype
-        => namedAntetype.TryGetValue(out var value) ? value
-            : namedAntetype.GetValue(this, TypeExpressionsAntetypesAspect.TypeNameExpression_NamedAntetype);
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.TypeNameExpression_NamedAntetype);
     private BareType? namedBareType;
     private bool namedBareTypeCached;
     public BareType? NamedBareType

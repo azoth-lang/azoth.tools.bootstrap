@@ -25,10 +25,12 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
             : referencedDeclaration.GetValue(this, SymbolNodeAspect.StandardTypeName_ReferencedDeclaration);
     public override TypeSymbol? ReferencedSymbol
         => SymbolAspect.StandardTypeName_ReferencedSymbol(this);
-    private ValueAttribute<IMaybeAntetype> antetype;
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
     public override IMaybeAntetype NamedAntetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.IdentifierTypeName_NamedAntetype);
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.IdentifierTypeName_NamedAntetype);
     private BareType? namedBareType;
     private bool namedBareTypeCached;
     public override BareType? NamedBareType

@@ -11,10 +11,12 @@ internal sealed class OptionalTypeNode : TypeNode, IOptionalTypeNode
 {
     public override IOptionalTypeSyntax Syntax { get; }
     public ITypeNode Referent { get; }
-    private ValueAttribute<IMaybeAntetype> namedAntetype;
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
     public override IMaybeAntetype NamedAntetype
-        => namedAntetype.TryGetValue(out var value) ? value
-            : namedAntetype.GetValue(this, TypeExpressionsAntetypesAspect.OptionalType_NamedAntetype);
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.OptionalType_NamedAntetype);
     private DataType? namedType;
     private bool namedTypeCached;
     public override DataType NamedType

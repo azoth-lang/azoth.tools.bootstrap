@@ -13,10 +13,12 @@ internal sealed class CapabilityTypeNode : TypeNode, ICapabilityTypeNode
     public override ICapabilityTypeSyntax Syntax { get; }
     public ICapabilityNode Capability { get; }
     public ITypeNode Referent { get; }
-    private ValueAttribute<IMaybeAntetype> antetype;
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
     public override IMaybeAntetype NamedAntetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.CapabilityType_NamedAntetype);
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.CapabilityType_NamedAntetype);
     private DataType? namedType;
     private bool namedTypeCached;
     public override DataType NamedType

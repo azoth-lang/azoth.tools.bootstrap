@@ -16,10 +16,12 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
 {
     public override IBlockExpressionSyntax Syntax { get; }
     public IFixedList<IStatementNode> Statements { get; }
-    private ValueAttribute<IMaybeAntetype> antetype;
+    private IMaybeAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.BlockExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.BlockExpression_Antetype);
     private DataType? type;
     private bool typeCached;
     public override DataType Type

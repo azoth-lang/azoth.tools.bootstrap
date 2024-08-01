@@ -17,10 +17,12 @@ internal sealed class QualifiedTypeNameExpression : AmbiguousNameExpressionNode,
     public StandardName Name => Syntax.MemberName;
     public IFixedList<ITypeNode> TypeArguments { get; }
     public ITypeDeclarationNode ReferencedDeclaration { get; }
-    private ValueAttribute<IMaybeAntetype> namedAntetype;
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
     public IMaybeAntetype NamedAntetype
-        => namedAntetype.TryGetValue(out var value) ? value
-            : namedAntetype.GetValue(this, TypeExpressionsAntetypesAspect.TypeNameExpression_NamedAntetype);
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.TypeNameExpression_NamedAntetype);
     private BareType? namedBareType;
     private bool namedBareTypeCached;
     public BareType? NamedBareType
