@@ -27,10 +27,12 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
                 ExpressionTypesAspect.BindingPattern_BindingValueId);
-    private ValueAttribute<IMaybeAntetype> bindingAntetype;
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
     public IMaybeAntetype BindingAntetype
-        => bindingAntetype.TryGetValue(out var value) ? value
-            : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.BindingPattern_BindingAntetype);
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                NameBindingAntetypesAspect.BindingPattern_BindingAntetype);
     private DataType? bindingType;
     private bool bindingTypeCached;
     public DataType BindingType

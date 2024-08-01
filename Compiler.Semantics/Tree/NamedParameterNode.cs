@@ -20,10 +20,13 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     public override IdentifierName Name => Syntax.Name;
     public int? DeclarationNumber => Syntax.DeclarationNumber.Result;
     public ITypeNode TypeNode { get; }
-    private ValueAttribute<IMaybeAntetype> bindingAntetype;
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
     public override IMaybeAntetype BindingAntetype
-        => bindingAntetype.TryGetValue(out var value) ? value
-            : bindingAntetype.GetValue(this, TypeMemberDeclarationsAspect.NamedParameter_BindingAntetype);
+        => GrammarAttribute.IsCached(in bindingAntetypeCached)
+            ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                TypeMemberDeclarationsAspect.NamedParameter_BindingAntetype);
     private DataType? bindingType;
     private bool bindingTypeCached;
     public override DataType BindingType

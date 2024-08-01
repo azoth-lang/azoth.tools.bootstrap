@@ -76,10 +76,12 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref SyncLock,
                 ExpressionTypesAspect.ForeachExpression_BindingValueId);
-    private ValueAttribute<IMaybeAntetype> bindingAntetype;
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
     public IMaybeAntetype BindingAntetype
-        => bindingAntetype.TryGetValue(out var value) ? value
-            : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.ForeachExpression_BindingAntetype);
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                NameBindingAntetypesAspect.ForeachExpression_BindingAntetype);
     private DataType? bindingType;
     private bool bindingTypeCached;
     public DataType BindingType

@@ -29,10 +29,12 @@ internal abstract class SelfParameterNode : ParameterNode, ISelfParameterNode
     public SelfParameterSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.SelfParameter_Symbol);
-    private ValueAttribute<IMaybeAntetype> bindingAntetype;
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
     public override IMaybeAntetype BindingAntetype
-        => bindingAntetype.TryGetValue(out var value) ? value
-            : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.SelfParameter_BindingAntetype);
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                NameBindingAntetypesAspect.SelfParameter_BindingAntetype);
     private ValueAttribute<SelfParameterType> parameterType;
     public SelfParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value

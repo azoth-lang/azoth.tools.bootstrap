@@ -24,10 +24,12 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
         => referencedField.TryGetValue(out var value) ? value
             : referencedField.GetValue(this, SymbolNodeAspect.FieldParameter_ReferencedField);
     // TODO this is strange because this isn't a binding
-    private ValueAttribute<IMaybeAntetype> bindingAntetype;
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
     public override IMaybeAntetype BindingAntetype
-        => bindingAntetype.TryGetValue(out var value) ? value
-            : bindingAntetype.GetValue(this, NameBindingAntetypesAspect.FieldParameter_BindingAntetype);
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                NameBindingAntetypesAspect.FieldParameter_BindingAntetype);
     // TODO this is strange because this isn't a binding
     private DataType? bindingType;
     private bool bindingTypeCached;

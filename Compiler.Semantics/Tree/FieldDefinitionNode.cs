@@ -23,10 +23,12 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public override IdentifierName Name => Syntax.Name;
     TypeName INamedDeclarationNode.Name => Name;
     public ITypeNode TypeNode { get; }
-    private ValueAttribute<IMaybeAntetype> bindingAntetype;
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
     public IMaybeAntetype BindingAntetype
-        => bindingAntetype.TryGetValue(out var value) ? value
-            : bindingAntetype.GetValue(this, DeclarationsAntetypesAspect.FieldDefinition_BindingAntetype);
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                DeclarationsAntetypesAspect.FieldDefinition_BindingAntetype);
     private DataType? bindingType;
     private bool bindingTypeCached;
     public DataType BindingType
