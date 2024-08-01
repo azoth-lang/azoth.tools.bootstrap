@@ -202,7 +202,7 @@ public class InterpreterProcess
                 await ExecuteAsync(statement, variables).ConfigureAwait(false);
             return default;
         }
-        catch (ControlFlow.Return @return)
+        catch (Return @return)
         {
             return @return.Value;
         }
@@ -337,7 +337,7 @@ public class InterpreterProcess
                 await ExecuteAsync(statement, variables).ConfigureAwait(false);
             return self;
         }
-        catch (ControlFlow.Return)
+        catch (Return)
         {
             return self;
         }
@@ -414,7 +414,7 @@ public class InterpreterProcess
                 await ExecuteAsync(statement, variables).ConfigureAwait(false);
             return default;
         }
-        catch (ControlFlow.Return @return)
+        catch (Return @return)
         {
             return @return.Value;
         }
@@ -462,8 +462,8 @@ public class InterpreterProcess
             case INoneLiteralExpression _:
                 return AzothValue.None;
             case IReturnExpression exp:
-                if (exp.Value is null) throw new ControlFlow.Return();
-                throw new ControlFlow.Return(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));
+                if (exp.Value is null) throw new Return();
+                throw new Return(await ExecuteAsync(exp.Value, variables).ConfigureAwait(false));
             case IImplicitSimpleTypeConversionExpression exp:
             {
                 var value = await ExecuteAsync(exp.Expression, variables).ConfigureAwait(false);
