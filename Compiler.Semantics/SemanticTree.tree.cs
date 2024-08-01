@@ -203,6 +203,7 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IFixedList<Diagnostic> Diagnostics { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
     IFunctionDefinitionNode? EntryPoint { get; }
+    IPackageSymbols PackageSymbols { get; }
 }
 
 public partial interface IPackageReferenceNode : IChildNode

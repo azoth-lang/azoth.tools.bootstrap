@@ -41,6 +41,11 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public IFunctionDefinitionNode? EntryPoint
         => GrammarAttribute.IsCached(in entryPointCached) ? entryPoint
             : this.Synthetic(ref entryPointCached, ref entryPoint, DefinitionAspect.Package_EntryPoint);
+    private IPackageSymbols? packageSymbols;
+    private bool packageSymbolsCached;
+    public IPackageSymbols PackageSymbols
+        => GrammarAttribute.IsCached(in packageSymbolsCached) ? packageSymbols!
+            : this.Synthetic(ref packageSymbolsCached, ref packageSymbols, SymbolAspect.Package_PackageSymbols);
     public IFixedSet<IPackageReferenceNode> References { get; }
     private ValueAttribute<IPackageReferenceNode> intrinsicsReference;
     public IPackageReferenceNode IntrinsicsReference

@@ -13,6 +13,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 internal static class SymbolAspect
 {
+    /// <summary>
+    /// All the symbols of this package in a form suitable for other packages to reference.
+    /// </summary>
+    public static IPackageSymbols Package_PackageSymbols(IPackageNode node)
+        => new PackageSymbols(node.Symbol, node.MainFacet, node.TestingFacet);
+
     public static PackageSymbol Package_Symbol(IPackageNode node) => new(node.Name);
 
     public static UserTypeSymbol TypeDefinition_Symbol(ITypeDefinitionNode node)
