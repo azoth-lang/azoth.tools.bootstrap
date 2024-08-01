@@ -1,7 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -11,25 +10,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal class ImplicitConversionExpressionNode : ExpressionNode, IImplicitConversionExpressionNode
 {
-    public override ITypedExpressionSyntax Syntax => null!;
-
+    public override ITypedExpressionSyntax Syntax => (ITypedExpressionSyntax)Referent.Syntax;
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
     public IExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
-    public ITypeNode ConvertToType { get; }
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
-    public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this,
-                ExpressionAntetypesAspect.ImplicitConversionExpression_Antetype);
-    private DataType? type;
-    private bool typeCached;
-    public override DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.ImplicitConversionExpression_Type);
+    public IExpressionNode CurrentReferent => referent.UnsafeValue;
+    public override SimpleAntetype Antetype { get; }
+    public override DataType Type { get; }
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter
@@ -39,11 +28,20 @@ internal class ImplicitConversionExpressionNode : ExpressionNode, IImplicitConve
 
     public ImplicitConversionExpressionNode(
         IExpressionNode referent,
-        ITypeNode convertToType)
+        SimpleAntetype convertToAntetype)
     {
         this.referent = Child.Create(this, referent);
-        ConvertToType = Child.Attach(this, convertToType);
+        Antetype = convertToAntetype;
+        Type = convertToAntetype.ToType();
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Referent.GetFlowLexicalScope();
+
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentReferent)
+            // No expected antetype for the referent. If one were given, it could cause another implicit conversion.
+            return null;
+        return base.InheritedExpectedAntetype(child, descendant, ctx);
+    }
 }

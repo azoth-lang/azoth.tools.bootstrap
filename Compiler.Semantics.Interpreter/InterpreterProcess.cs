@@ -527,7 +527,7 @@ public class InterpreterProcess
             case IImplicitConversionExpressionNode exp:
             {
                 var value = await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
-                return value.Convert(exp.Referent.Type, (CapabilityType)exp.ConvertToType.NamedType, true);
+                return value.Convert(exp.Referent.Type, (CapabilityType)exp.Type, true);
             }
             case IIntegerLiteralExpressionNode exp:
                 return AzothValue.Int(exp.Value);

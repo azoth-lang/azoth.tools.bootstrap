@@ -305,7 +305,8 @@ IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpr
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax`
     Referent:AmbiguousExpression IntermediateReferent:`IExpressionNode?`
     Operator:`ConversionOperator` ConvertToType:Type;
-ImplicitConversionExpression <: Expression = Referent:Expression ConvertToType:Type;
+ImplicitConversionExpression <: Expression = Referent:Expression CurrentReferent:`IExpressionNode`
+    Antetype:`SimpleAntetype`;
 PatternMatchExpression <: Expression = Syntax:`IPatternMatchExpressionSyntax`
     Referent:AmbiguousExpression IntermediateReferent:`IExpressionNode`? Pattern;
 

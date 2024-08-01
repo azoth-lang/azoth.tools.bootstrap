@@ -286,7 +286,6 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IImplicitConversionExpressionNode n:
                 yield return n.Referent;
-                yield return n.ConvertToType;
                 yield break;
             case IPatternMatchExpressionNode n:
                 yield return n.Referent;

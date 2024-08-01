@@ -818,10 +818,7 @@ internal class SemanticsApplier
     }
 
     private static void ImplicitConversionExpression(IImplicitConversionExpressionNode node)
-    {
-        Expression(node.Referent);
-        Type(node.ConvertToType);
-    }
+        => Expression(node.Referent);
 
     private static void PatternMatchExpression(IPatternMatchExpressionNode node)
     {

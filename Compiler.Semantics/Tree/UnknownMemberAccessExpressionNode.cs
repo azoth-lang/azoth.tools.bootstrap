@@ -11,7 +11,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal class UnknownMemberAccessExpressionNode : UnknownNameExpressionNode, IUnknownMemberAccessExpressionNode
 {
     public override IMemberAccessExpressionSyntax Syntax { get; }
-    public IExpressionNode Context { get; }
+    private RewritableChild<IExpressionNode> context;
+    private bool contextCached;
+    public IExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
     public StandardName MemberName => Syntax.MemberName;
     public IFixedList<ITypeNode> TypeArguments { get; }
     public IFixedSet<IDeclarationNode> ReferencedMembers { get; }
@@ -24,7 +28,7 @@ internal class UnknownMemberAccessExpressionNode : UnknownNameExpressionNode, IU
     {
         Syntax = syntax;
 
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedMembers = referencedMembers.ToFixedSet();
     }

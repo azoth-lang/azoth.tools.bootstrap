@@ -510,9 +510,6 @@ public static class ExpressionTypesAspect
             .Transform(node.IntermediateReferent?.ValueId, node.ValueId, node.Type);
     }
 
-    public static DataType ImplicitConversionExpression_Type(IImplicitConversionExpressionNode node)
-        => node.ConvertToType.NamedType;
-
     public static IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node)
         => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
 

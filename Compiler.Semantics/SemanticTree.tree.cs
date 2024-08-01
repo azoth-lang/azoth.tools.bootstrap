@@ -1469,7 +1469,9 @@ public partial interface IConversionExpressionNode : ISemanticNode, IExpressionN
 public partial interface IImplicitConversionExpressionNode : ISemanticNode, IExpressionNode
 {
     IExpressionNode Referent { get; }
-    ITypeNode ConvertToType { get; }
+    IExpressionNode CurrentReferent { get; }
+    new SimpleAntetype Antetype { get; }
+    IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
 }
 
 public partial interface IPatternMatchExpressionNode : ISemanticNode, IExpressionNode
