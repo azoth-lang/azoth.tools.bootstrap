@@ -36,7 +36,7 @@ public class SemanticAnalyzer
     /// </summary>
     public bool SaveReachabilityGraphs { get; set; }
 
-    public (Package, IPackageNode) Check(PackageSyntax<Package> packageSyntax)
+    public (Package, IPackageNode) Check(IPackageSyntax packageSyntax)
     {
         // If there are errors from the lex and parse phase, don't continue on
         packageSyntax.Diagnostics.ThrowIfFatalErrors();
@@ -83,7 +83,7 @@ public class SemanticAnalyzer
         return packageNode;
     }
 
-    private static PackageBuilder CheckSemantics(PackageSyntax<Package> packageSyntax, IPackageNode packageNode)
+    private static PackageBuilder CheckSemantics(IPackageSyntax packageSyntax, IPackageNode packageNode)
     {
         // Resolve symbols for the entities
         EntitySymbolBuilder.BuildFor(packageSyntax);

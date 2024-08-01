@@ -24,7 +24,7 @@ internal class ASTBuilder
 {
     // ReSharper disable once UnusedMember.Global
     [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "OO")]
-    public PackageBuilder BuildPackage(PackageSyntax<Package> packageSyntax)
+    public PackageBuilder BuildPackage(IPackageSyntax packageSyntax)
     {
         var declarations = BuildNonMemberDeclarations(packageSyntax.EntityDeclarations, FixedSet.Empty<INonMemberDeclaration>());
         var testingDeclarations = BuildNonMemberDeclarations(packageSyntax.TestingEntityDeclarations, declarations);
