@@ -11,6 +11,6 @@ public sealed class PackageReferenceAsync(IdentifierName nameOrAlias, Task<Packa
     public Task<Package> Package { get; } = package;
     public bool IsTrusted { get; } = isTrusted;
 
-    internal async Task<IPackageReferenceSyntax<Package>> ToSyntaxAsync()
+    internal async Task<IPackageReferenceSyntax> ToSyntaxAsync()
         => new PackageReference(NameOrAlias, await Package.ConfigureAwait(false), IsTrusted).ToSyntax();
 }

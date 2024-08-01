@@ -50,7 +50,7 @@ public class AzothCompiler
             references.Select(r => r.ToSyntaxAsync())).ConfigureAwait(false)).ToFixedSet();
 
         // TODO add the references to the package syntax
-        var packageSyntax = new PackageSyntax<Package>(name, compilationUnits, testingCompilationUnits, referenceSyntax);
+        var packageSyntax = new PackageSyntax(name, compilationUnits, testingCompilationUnits, referenceSyntax);
 
         var analyzer = new SemanticAnalyzer()
         {
@@ -101,7 +101,7 @@ public class AzothCompiler
         var compilationUnits = ParseFiles(files);
         var testingCompilationUnits = ParseFiles(testingFiles);
         var referenceSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
-        var packageSyntax = new PackageSyntax<Package>(name, compilationUnits, testingCompilationUnits, referenceSyntax);
+        var packageSyntax = new PackageSyntax(name, compilationUnits, testingCompilationUnits, referenceSyntax);
 
         var analyzer = new SemanticAnalyzer()
         {

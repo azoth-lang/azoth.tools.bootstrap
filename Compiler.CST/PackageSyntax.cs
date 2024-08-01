@@ -20,8 +20,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 /// Currently, references are stored as ASTs. To avoid referencing the AST
 /// project from the CST project, a generic type is used.
 /// </remarks>
-public class PackageSyntax<TPackage> : IPackageSyntax
-    where TPackage : IPackageSymbols
+public class PackageSyntax : IPackageSyntax
 {
     public IdentifierName Name => Symbol.Name;
     public PackageSymbol Symbol { get; }
@@ -39,16 +38,15 @@ public class PackageSyntax<TPackage> : IPackageSyntax
     /// All the entity declarations including both regular code and testing code.
     /// </summary>
     public IFixedSet<IEntityDefinitionSyntax> AllEntityDeclarations { get; }
-    public IFixedSet<IPackageReferenceSyntax<TPackage>> References { get; }
-    IFixedSet<IPackageReferenceSyntax> IPackageSyntax.References => References;
-    public IEnumerable<TPackage> ReferencedPackages => References.Select(r => r.Package);
+    public IFixedSet<IPackageReferenceSyntax> References { get; }
+    public IEnumerable<IPackageSymbols> ReferencedPackages => References.Select(r => r.Package);
     public Diagnostics Diagnostics { get; }
 
     public PackageSyntax(
         IdentifierName name,
         IFixedSet<ICompilationUnitSyntax> compilationUnits,
         IFixedSet<ICompilationUnitSyntax> testingCompilationUnits,
-        IFixedSet<IPackageReferenceSyntax<TPackage>> references)
+        IFixedSet<IPackageReferenceSyntax> references)
     {
         Symbol = new PackageSymbol(name);
         var symbolTree = new SymbolTreeBuilder(Symbol);

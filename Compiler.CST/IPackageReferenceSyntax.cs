@@ -9,11 +9,3 @@ public interface IPackageReferenceSyntax : ISyntax
     IPackageSymbols Package { get; }
     bool IsTrusted { get; }
 }
-
-
-public interface IPackageReferenceSyntax<out TPackage> : IPackageReferenceSyntax
-    where TPackage : IPackageSymbols
-{
-    new TPackage Package { get; }
-    IPackageSymbols IPackageReferenceSyntax.Package => Package;
-}
