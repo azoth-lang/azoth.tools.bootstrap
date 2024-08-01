@@ -18,14 +18,20 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
-    private ValueAttribute<IFixedSet<IStandardMethodDeclarationNode>> compatibleDeclarations;
+    private IFixedSet<IStandardMethodDeclarationNode>? compatibleDeclarations;
+    private bool compatibleDeclarationsCached;
     public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations
-        => compatibleDeclarations.TryGetValue(out var value) ? value
-            : compatibleDeclarations.GetValue(this, OverloadResolutionAspect.MethodInvocationExpression_CompatibleDeclarations);
-    private ValueAttribute<IStandardMethodDeclarationNode?> referencedDeclaration;
+        => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
+            : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
+                OverloadResolutionAspect.MethodInvocationExpression_CompatibleDeclarations,
+                FixedSet.ObjectEqualityComparer);
+    private IStandardMethodDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
     public IStandardMethodDeclarationNode? ReferencedDeclaration
-        => referencedDeclaration.TryGetValue(out var value) ? value
-            : referencedDeclaration.GetValue(this, OverloadResolutionAspect.MethodInvocationExpression_ReferencedDeclaration);
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration!
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                OverloadResolutionAspect.MethodInvocationExpression_ReferencedDeclaration,
+                ReferenceEqualityComparer.Instance);
     private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
     public ContextualizedOverload? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value

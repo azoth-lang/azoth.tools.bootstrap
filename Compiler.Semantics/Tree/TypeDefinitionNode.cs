@@ -37,7 +37,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     public IFixedSet<BareReferenceType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
-                TypeDeclarationsAspect.TypeDefinition_Supertypes, FixedSet.ItemComparer<BareType>());
+                TypeDeclarationsAspect.TypeDefinition_Supertypes, FixedSet.EqualityComparer<BareType>());
     public abstract IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;
@@ -52,13 +52,13 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         IEnumerable<IGenericParameterNode> genericParameters,
         IEnumerable<IStandardTypeNameNode> supertypeNames)
         // TODO support attributes on type declarations
-        : base(Enumerable.Empty<IAttributeNode>())
+        : base([])
     {
         GenericParameters = ChildList.Attach(this, genericParameters);
         SupertypeNames = ChildList.Attach(this, supertypeNames);
     }
 
-    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
+    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => SymbolNodeAspect.TypeDeclaration_InheritedContainingDeclaration(this);
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

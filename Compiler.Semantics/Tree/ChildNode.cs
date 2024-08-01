@@ -94,11 +94,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
         throw new UnreachableException("Node is not a child of its parent.");
     }
 
-    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
-        => Parent.InheritedContainingDeclaration(this, descendant);
+    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).InheritedContainingDeclaration(this, descendant, ctx);
 
-    protected ISymbolDeclarationNode InheritedContainingDeclaration()
-        => Parent.InheritedContainingDeclaration(this, this);
+    protected ISymbolDeclarationNode InheritedContainingDeclaration(IInheritanceContext ctx)
+        => GetParent(ctx).InheritedContainingDeclaration(this, this, ctx);
 
     internal override IPackageDeclarationNode InheritedPackage(IChildNode child, IChildNode descendant)
         => Parent.InheritedPackage(this, descendant);

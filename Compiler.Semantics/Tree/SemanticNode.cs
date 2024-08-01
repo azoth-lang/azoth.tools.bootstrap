@@ -32,7 +32,7 @@ internal abstract class SemanticNode : ISemanticNode
     internal SemanticNode LastDescendant()
         => ((SemanticNode?)this.Children().LastOrDefault())?.LastDescendant() ?? this;
 
-    internal virtual ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant)
+    internal virtual ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedContainingDeclaration), child, descendant));
 

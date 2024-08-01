@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -17,14 +18,20 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
 {
     public override ISelfExpressionSyntax Syntax { get; }
     public bool IsImplicit => Syntax.IsImplicit;
-    private ValueAttribute<IExecutableDefinitionNode> containingDeclaration;
+    private IExecutableDefinitionNode? containingDeclaration;
+    private bool containingDeclarationCached;
     public IExecutableDefinitionNode ContainingDeclaration
-        => containingDeclaration.TryGetValue(out var value) ? value
-        : containingDeclaration.GetValue(() => (IExecutableDefinitionNode)InheritedContainingDeclaration());
-    private ValueAttribute<ISelfParameterNode?> referencedDefinition;
+        => GrammarAttribute.IsCached(in containingDeclarationCached) ? containingDeclaration!
+            : this.Inherited(ref containingDeclarationCached, ref containingDeclaration,
+                ctx => (IExecutableDefinitionNode)InheritedContainingDeclaration(ctx),
+                ReferenceEqualityComparer.Instance);
+    private ISelfParameterNode? referencedDefinition;
+    private bool referencedDefinitionCached;
     public ISelfParameterNode? ReferencedDefinition
-        => referencedDefinition.TryGetValue(out var value) ? value
-            : referencedDefinition.GetValue(this, BindingNamesAspect.SelfExpression_ReferencedDefinition);
+        => GrammarAttribute.IsCached(in referencedDefinitionCached) ? referencedDefinition
+            : this.Synthetic(ref referencedDefinitionCached, ref referencedDefinition,
+                BindingNamesAspect.SelfExpression_ReferencedDefinition,
+                ReferenceEqualityComparer.Instance);
     // TODO remove parameter symbols
     private ValueAttribute<SelfParameterSymbol?> referencedSymbol;
     public SelfParameterSymbol? ReferencedSymbol

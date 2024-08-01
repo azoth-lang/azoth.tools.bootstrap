@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -41,7 +40,7 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
         => declaredType.TryGetValue(out var value) ? value
             : declaredType.GetValue(this, TypeDeclarationsAspect.GenericParameter_DeclaredType);
     public IUserTypeDeclarationNode ContainingDeclaration
-        => (IUserTypeDeclarationNode)InheritedContainingDeclaration();
+        => (IUserTypeDeclarationNode)InheritedContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public UserTypeSymbol ContainingSymbol => ContainingDeclaration.Symbol;
     private GenericParameterTypeSymbol? symbol;
     private bool symbolCached;
@@ -62,9 +61,9 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
 
     public IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named)
         // TODO should look up members based on generic constraints
-        => Enumerable.Empty<IInstanceMemberDeclarationNode>();
+        => [];
 
     public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)
         // TODO should look up members based on generic constraints
-        => Enumerable.Empty<IAssociatedMemberDeclarationNode>();
+        => [];
 }

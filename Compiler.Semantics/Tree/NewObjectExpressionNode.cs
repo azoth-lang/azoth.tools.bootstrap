@@ -23,26 +23,38 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
-    private ValueAttribute<IMaybeAntetype> constructingAntetype;
+    private IMaybeAntetype? constructingAntetype;
+    private bool constructingAntetypeCached;
     public IMaybeAntetype ConstructingAntetype
-        => constructingAntetype.TryGetValue(out var value) ? value
-            : constructingAntetype.GetValue(this, NameBindingAntetypesAspect.NewObjectExpression_ConstructingAntetype);
-    private ValueAttribute<IFixedSet<IConstructorDeclarationNode>> referencedConstructors;
+        => GrammarAttribute.IsCached(in constructingAntetypeCached) ? constructingAntetype!
+            : this.Synthetic(ref constructingAntetypeCached, ref constructingAntetype,
+                NameBindingAntetypesAspect.NewObjectExpression_ConstructingAntetype);
+    private IFixedSet<IConstructorDeclarationNode>? referencedConstructors;
+    private bool referencedConstructorsCached;
     public IFixedSet<IConstructorDeclarationNode> ReferencedConstructors
-        => referencedConstructors.TryGetValue(out var value) ? value
-            : referencedConstructors.GetValue(this, BindingNamesAspect.NewObjectExpression_ReferencedConstructors);
-    private ValueAttribute<IFixedSet<IConstructorDeclarationNode>> compatibleConstructors;
+        => GrammarAttribute.IsCached(in referencedConstructorsCached) ? referencedConstructors!
+            : this.Synthetic(ref referencedConstructorsCached, ref referencedConstructors,
+                BindingNamesAspect.NewObjectExpression_ReferencedConstructors,
+                FixedSet.ObjectEqualityComparer);
+    private IFixedSet<IConstructorDeclarationNode>? compatibleConstructors;
+    private bool compatibleConstructorsCached;
     public IFixedSet<IConstructorDeclarationNode> CompatibleConstructors
-        => compatibleConstructors.TryGetValue(out var value) ? value
-            : compatibleConstructors.GetValue(this, OverloadResolutionAspect.NewObjectExpression_CompatibleConstructors);
-    private ValueAttribute<IConstructorDeclarationNode?> referencedConstructor;
+        => GrammarAttribute.IsCached(in compatibleConstructorsCached) ? compatibleConstructors!
+            : this.Synthetic(ref compatibleConstructorsCached, ref compatibleConstructors,
+                OverloadResolutionAspect.NewObjectExpression_CompatibleConstructors,
+                FixedSet.ObjectEqualityComparer);
+    private IConstructorDeclarationNode? referencedConstructor;
+    private bool referencedConstructorCached;
     public IConstructorDeclarationNode? ReferencedConstructor
-        => referencedConstructor.TryGetValue(out var value) ? value
-            : referencedConstructor.GetValue(this, OverloadResolutionAspect.NewObjectExpression_ReferencedConstructor);
+        => GrammarAttribute.IsCached(in referencedConstructorCached) ? referencedConstructor!
+            : this.Synthetic(ref referencedConstructorCached, ref referencedConstructor,
+                OverloadResolutionAspect.NewObjectExpression_ReferencedConstructor,
+                ReferenceEqualityComparer.Instance);
     private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
     public ContextualizedOverload? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value
-            : contextualizedOverload.GetValue(this, ExpressionTypesAspect.NewObjectExpression_ContextualizedOverload);
+            : contextualizedOverload.GetValue(this,
+                ExpressionTypesAspect.NewObjectExpression_ContextualizedOverload);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
@@ -53,7 +65,8 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.NewObjectExpression_Type);
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.NewObjectExpression_Type);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter

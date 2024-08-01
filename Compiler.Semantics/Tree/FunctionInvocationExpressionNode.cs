@@ -23,14 +23,20 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
-    private ValueAttribute<IFixedSet<IFunctionLikeDeclarationNode>> compatibleDeclarations;
+    private IFixedSet<IFunctionLikeDeclarationNode>? compatibleDeclarations;
+    private bool compatibleDeclarationsCached;
     public IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations
-        => compatibleDeclarations.TryGetValue(out var value) ? value
-            : compatibleDeclarations.GetValue(this, OverloadResolutionAspect.FunctionInvocationExpression_CompatibleDeclarations);
-    private ValueAttribute<IFunctionLikeDeclarationNode?> referencedDeclaration;
+        => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
+            : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
+                OverloadResolutionAspect.FunctionInvocationExpression_CompatibleDeclarations,
+                FixedSet.ObjectEqualityComparer);
+    private IFunctionLikeDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
     public IFunctionLikeDeclarationNode? ReferencedDeclaration
-        => referencedDeclaration.TryGetValue(out var value) ? value
-            : referencedDeclaration.GetValue(this, OverloadResolutionAspect.FunctionInvocationExpression_ReferencedDeclaration);
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                OverloadResolutionAspect.FunctionInvocationExpression_ReferencedDeclaration,
+                ReferenceEqualityComparer.Instance);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype

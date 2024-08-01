@@ -11,6 +11,8 @@ namespace Azoth.Tools.Bootstrap.Framework;
 public interface IFixedSet<out T> : IReadOnlyCollection<T>
 {
     bool IsEmpty { get; }
+
+    static IEqualityComparer<IFixedSet<T>> EqualityComparer => EqualityComparer<IFixedSet<T>>.Default;
 }
 
 public static class FixedSet
@@ -20,7 +22,8 @@ public static class FixedSet
     public static IFixedSet<T> Create<T>(ReadOnlySpan<T> items)
         => items.IsEmpty ? Of<T>.Empty : new(items);
 
-    public static IFixedSet<T> Create<T>(IEnumerable<T> items) => new Of<T>(items);
+    public static IFixedSet<T> Create<T>(IEnumerable<T> items)
+        => new Of<T>(items);
 
     public static IFixedSet<T> Create<T>(params T[] items)
         => items.IsEmpty() ? Of<T>.Empty : new(items.AsSpan());
@@ -40,9 +43,12 @@ public static class FixedSet
     public static bool Contains<T>(this IFixedSet<T> set, T value)
         => ((Of)set).Contains(value);
 
-    public static IEqualityComparer<IFixedSet<T>> ItemComparer<T>()
+    public static IEqualityComparer<IFixedSet<object?>> ObjectEqualityComparer
+        => System.Collections.Generic.EqualityComparer<IFixedSet<object?>>.Default;
+
+    public static IEqualityComparer<IFixedSet<T>> EqualityComparer<T>()
         where T : IEquatable<T>
-        => ItemEqualityComparer<T>.Instance;
+        => System.Collections.Generic.EqualityComparer<IFixedSet<T>>.Default;
 
     public static IFixedSet<T> Union<T>(this IFixedSet<T> set, IEnumerable<T> other)
     {
@@ -112,26 +118,34 @@ public static class FixedSet
         public bool IsEmpty => items.Count == 0;
 
         public override bool Contains(object? item) => item is T value && items.Contains(value);
-    }
 
-    private static class ItemEqualityComparer<T>
-        where T : IEquatable<T>
-    {
-        public static readonly IEqualityComparer<IFixedSet<T>> Instance
-            = EqualityComparer<IFixedSet<T>>.Create((l, r) => ReferenceEquals(l, r) || (l?.ItemsEqual(r) ?? false),
-                GetHashCode);
-
-        private static int GetHashCode(IFixedSet<T> set)
+        #region Equality
+        public bool Equals(IFixedSet<T>? other)
         {
-            var comparer = StrictEqualityComparer<T>.Instance;
+            if (ReferenceEquals(this, other)) return true;
+            if (other is null) return false;
+            if (Count != other.Count) return false;
+
+            foreach (var item in this)
+                if (!other.Contains(item))
+                    return false;
+            return true;
+        }
+
+        public override bool Equals(object? obj)
+            => ReferenceEquals(this, obj) || obj is IFixedSet<T> other && Equals(other);
+
+        public override int GetHashCode()
+        {
             HashCode hash = new HashCode();
-            hash.Add(set.Count);
+            hash.Add(Count);
             // Xor the hash codes so the order doesn't matter
             int itemHash = 0;
-            foreach (var item in set)
-                itemHash ^= comparer.GetHashCode(item);
+            foreach (var item in this)
+                itemHash ^= item?.GetHashCode() ?? 0;
             hash.Add(itemHash);
             return hash.ToHashCode();
         }
+        #endregion
     }
 }
