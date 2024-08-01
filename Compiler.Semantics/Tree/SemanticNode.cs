@@ -76,10 +76,7 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedFacet), child, descendant));
 
-    internal virtual IFlowState InheritedFlowStateBefore(
-        IChildNode child,
-        IChildNode descendant,
-        IInheritanceContext ctx)
+    internal virtual IFlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedFlowStateBefore), child, descendant));
 
@@ -94,6 +91,10 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual ValueId? InheritedMatchReferentValueId(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedBindingType), child, descendant));
+
+    internal virtual IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedExpectedAntetype), child, descendant));
 
     internal virtual IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => throw Child.PreviousFailed(nameof(PreviousValueId), before);
