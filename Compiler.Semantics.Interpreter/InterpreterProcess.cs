@@ -217,9 +217,7 @@ public class InterpreterProcess
             foreach (var (arg, parameter) in arguments.EquiZip(function.Parameters))
                 variables.Add(parameter, arg);
 
-            foreach (var statement in function.Body.Statements)
-                await ExecuteAsync(statement, variables).ConfigureAwait(false);
-            return default;
+            return await ExecuteAsync(function.Body.Statements, variables).ConfigureAwait(false);
         }
         catch (Return @return)
         {
@@ -430,9 +428,7 @@ public class InterpreterProcess
             foreach (var (arg, parameter) in arguments.EquiZip(method.Parameters))
                 variables.Add(parameter, arg);
 
-            foreach (var statement in concreteMethod.Body.Statements)
-                await ExecuteAsync(statement, variables).ConfigureAwait(false);
-            return default;
+            return await ExecuteAsync(concreteMethod.Body.Statements, variables).ConfigureAwait(false);
         }
         catch (Return @return)
         {
@@ -440,7 +436,24 @@ public class InterpreterProcess
         }
     }
 
-    private async ValueTask<AzothValue> ExecuteAsync(IStatementNode statement, LocalVariableScope variables)
+    private async Task<AzothValue> ExecuteAsync(IFixedList<IStatementNode> statements, LocalVariableScope variables)
+    {
+        foreach (var statement in statements)
+            switch (statement)
+            {
+                default:
+                    throw ExhaustiveMatch.Failed(statement);
+                case IResultStatementNode resultStatement:
+                    return await ExecuteAsync(resultStatement.IntermediateExpression!, variables).ConfigureAwait(false);
+                case IBodyStatementNode bodyStatement:
+                    await ExecuteAsync(bodyStatement, variables).ConfigureAwait(false);
+                    break;
+            }
+
+        return AzothValue.None;
+    }
+
+    private async ValueTask ExecuteAsync(IBodyStatementNode statement, LocalVariableScope variables)
     {
         switch (statement)
         {
@@ -457,11 +470,11 @@ public class InterpreterProcess
                 variables.Add(d, initialValue);
                 break;
             }
-            case IResultStatementNode r:
-                return await ExecuteAsync(r.IntermediateExpression!, variables).ConfigureAwait(false);
         }
-        return AzothValue.None;
     }
+
+    private ValueTask<AzothValue> ExecuteAsync(IResultStatementNode statement, LocalVariableScope variables)
+        => ExecuteAsync(statement.IntermediateExpression!, variables);
 
     private async ValueTask<AzothValue> ExecuteAsync(IExpressionNode expression, LocalVariableScope variables)
     {
@@ -528,14 +541,7 @@ public class InterpreterProcess
             case IBlockExpressionNode block:
             {
                 var blockVariables = new LocalVariableScope(variables);
-                AzothValue lastValue = AzothValue.None;
-                foreach (var statement in block.Statements)
-                {
-                    if (statement is IResultStatementNode resultStatement)
-                        return await ExecuteAsync(resultStatement.IntermediateExpression!, blockVariables).ConfigureAwait(false);
-                    lastValue = await ExecuteAsync(statement, blockVariables).ConfigureAwait(false);
-                }
-                return lastValue;
+                return await ExecuteAsync(block.Statements, blockVariables);
             }
             case ILoopExpressionNode exp:
                 try
@@ -1183,14 +1189,12 @@ public class InterpreterProcess
     private async ValueTask<AzothValue> ExecuteBlockOrResultAsync(
         IBlockOrResultNode statement,
         LocalVariableScope variables)
-    {
-        return statement switch
+        => statement switch
         {
             IBlockExpressionNode b => await ExecuteAsync(b, variables).ConfigureAwait(false),
-            IResultStatementNode s => await ExecuteAsync(s.IntermediateExpression!, variables).ConfigureAwait(false),
+            IResultStatementNode s => await ExecuteAsync(s, variables).ConfigureAwait(false),
             _ => throw ExhaustiveMatch.Failed(statement)
         };
-    }
 
     private async ValueTask<AzothValue> ExecuteElseAsync(
         IElseClauseNode elseClause,
