@@ -20,10 +20,13 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     public override IdentifierName Name => Syntax.Name;
     public override INamespaceDeclarationNode ContainingDeclaration => (INamespaceDeclarationNode)base.ContainingDeclaration;
     public override NamespaceSymbol ContainingSymbol => (NamespaceSymbol)base.ContainingSymbol;
-    private ValueAttribute<LexicalScope> lexicalScope;
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
     public override LexicalScope LexicalScope
-        => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopingAspect.FunctionDefinition_LexicalScope);
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.FunctionDefinition_LexicalScope,
+                ReferenceEqualityComparer.Instance);
     private ValueAttribute<FunctionSymbol> symbol;
     public override FunctionSymbol Symbol
         => symbol.TryGetValue(out var value) ? value

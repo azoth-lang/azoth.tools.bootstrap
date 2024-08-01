@@ -30,11 +30,12 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
     public NamespaceScope ContainingLexicalScope => (NamespaceScope)Parent.InheritedContainingLexicalScope(this, this);
-    private ValueAttribute<LexicalScope> lexicalScope;
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
     public LexicalScope LexicalScope
-        => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopingAspect.CompilationUnit_LexicalScope);
-
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.CompilationUnit_LexicalScope, ReferenceEqualityComparer.Instance);
     private ValueAttribute<IFixedList<Diagnostic>> diagnostics;
     public IFixedList<Diagnostic> Diagnostics
         => diagnostics.TryGetValue(out var value) ? value : diagnostics.GetValue(GetDiagnostics);

@@ -43,10 +43,12 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;
     public abstract IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
     private MultiMapHashSet<StandardName, IInstanceMemberDeclarationNode>? inclusiveInstanceMembersByName;
-    private ValueAttribute<LexicalScope> lexicalScope;
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
     public override LexicalScope LexicalScope
-        => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopingAspect.TypeDefinition_LexicalScope);
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.TypeDefinition_LexicalScope, ReferenceEqualityComparer.Instance);
 
     protected TypeDefinitionNode(
         IEnumerable<IGenericParameterNode> genericParameters,

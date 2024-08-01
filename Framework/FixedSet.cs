@@ -28,18 +28,6 @@ public static class FixedSet
     public static IFixedSet<T> Create<T>(params T[] items)
         => items.IsEmpty() ? Of<T>.Empty : new(items.AsSpan());
 
-    public static bool ItemsEqual<T>(this IFixedSet<T> first, IFixedSet<T>? second)
-        where T : IEquatable<T>
-    {
-        if (ReferenceEquals(first, second)) return true;
-        if (first.Count != second?.Count) return false;
-
-        foreach (var item in first)
-            if (!second.Contains(item))
-                return false;
-        return true;
-    }
-
     public static bool Contains<T>(this IFixedSet<T> set, T value)
         => ((Of)set).Contains(value);
 

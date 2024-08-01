@@ -15,10 +15,12 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
     public int Arity => Parameters.Count;
     public FunctionType MethodGroupType => Symbol.MethodGroupType;
     public override IBodyNode Body { get; }
-    private ValueAttribute<LexicalScope> lexicalScope;
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
     public override LexicalScope LexicalScope
-        => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopingAspect.ConcreteMethod_LexicalScope);
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.ConcreteMethod_LexicalScope, ReferenceEqualityComparer.Instance);
 
     public StandardMethodDefinitionNode(
         IStandardMethodDefinitionSyntax syntax,

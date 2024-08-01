@@ -19,10 +19,13 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
     public abstract IConstructorSelfParameterNode? SelfParameter { get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
     public abstract IBodyNode? Body { get; }
-    private ValueAttribute<LexicalScope> lexicalScope;
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
     public override LexicalScope LexicalScope
-        => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopingAspect.ConstructorDefinition_LexicalScope);
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.ConstructorDefinition_LexicalScope,
+                ReferenceEqualityComparer.Instance);
     public abstract override ConstructorSymbol Symbol { get; }
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope

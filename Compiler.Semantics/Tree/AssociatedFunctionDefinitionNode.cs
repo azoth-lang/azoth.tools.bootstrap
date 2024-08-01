@@ -34,10 +34,13 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type, TypeMemberDeclarationsAspect.AssociatedFunctionDeclaration_Type);
     public IBodyNode Body { get; }
-    private ValueAttribute<LexicalScope> lexicalScope;
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
     public override LexicalScope LexicalScope
-        => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopingAspect.AssociatedFunctionDefinition_LexicalScope);
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.AssociatedFunctionDefinition_LexicalScope,
+                ReferenceEqualityComparer.Instance);
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value

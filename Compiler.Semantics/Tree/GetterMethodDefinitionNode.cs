@@ -10,10 +10,12 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
     public override IGetterMethodDefinitionSyntax Syntax { get; }
     public override ITypeNode Return => base.Return!;
     public override IBodyNode Body { get; }
-    private ValueAttribute<LexicalScope> lexicalScope;
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
     public override LexicalScope LexicalScope
-        => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopingAspect.ConcreteMethod_LexicalScope);
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.ConcreteMethod_LexicalScope, ReferenceEqualityComparer.Instance);
 
     public GetterMethodDefinitionNode(
         IGetterMethodDefinitionSyntax syntax,

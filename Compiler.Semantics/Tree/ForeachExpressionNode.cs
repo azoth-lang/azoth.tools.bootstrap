@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -32,10 +33,13 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public LexicalScope ContainingLexicalScope
         => containingLexicalScope.TryGetValue(out var value) ? value
             : containingLexicalScope.GetValue(InheritedContainingLexicalScope);
-    private ValueAttribute<LexicalScope> lexicalScope;
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
     public LexicalScope LexicalScope
-        => lexicalScope.TryGetValue(out var value) ? value
-            : lexicalScope.GetValue(this, LexicalScopingAspect.ForeachExpression_LexicalScope);
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.ForeachExpression_LexicalScope,
+                ReferenceEqualityComparer.Instance);
     private ValueAttribute<ITypeDeclarationNode?> referencedIterableDeclaration;
     public ITypeDeclarationNode? ReferencedIterableDeclaration
         => referencedIterableDeclaration.TryGetValue(out var value) ? value

@@ -9,6 +9,8 @@ namespace Azoth.Tools.Bootstrap.Framework;
 public interface IFixedList<out T> : IReadOnlyList<T>
 {
     bool IsEmpty { get; }
+
+    // TODO support equality on fixed lists (see FixedSet)
 }
 
 public static class FixedList
