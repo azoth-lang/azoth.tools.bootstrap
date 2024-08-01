@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -11,9 +12,13 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
 {
     public override IExpressionBodySyntax Syntax { get; }
     public IResultStatementNode ResultStatement { get; }
+    private IMaybeExpressionAntetype? expectedAntetype;
+    private bool expectedAntetypeCached;
+    public IMaybeExpressionAntetype? ExpectedAntetype
+        => GrammarAttribute.IsCached(in expectedAntetypeCached) ? expectedAntetype
+            : this.Inherited(ref expectedAntetypeCached, ref expectedAntetype, InheritedExpectedAntetype);
     private readonly IFixedList<IStatementNode> statements;
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements => statements;
-    public ValueId? ValueId => throw new NotImplementedException();
     public IFlowState FlowStateAfter => throw new NotImplementedException();
 
     public ExpressionBodyNode(IExpressionBodySyntax syntax, IResultStatementNode resultStatement)
@@ -31,5 +36,10 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
         return LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, statementIndex);
     }
 
-    public IFlowState FlowStateBefore() => throw new NotImplementedException();
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == ResultStatement)
+            return ExpectedAntetype;
+        return base.InheritedExpectedAntetype(child, descendant, ctx);
+    }
 }

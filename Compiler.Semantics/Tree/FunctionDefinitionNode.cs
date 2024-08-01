@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -85,5 +86,11 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
             return Parameters[index - 1].FlowStateAfter;
         }
         return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == Body) return Type.Return.Type.ToAntetype();
+        return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 }

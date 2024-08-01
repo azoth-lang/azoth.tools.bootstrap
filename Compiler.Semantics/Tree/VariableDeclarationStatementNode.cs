@@ -26,6 +26,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public IAmbiguousExpressionNode? Initializer
         => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
             : this.RewritableChild(ref initializerCached, ref initializer);
+    public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
     public IExpressionNode? IntermediateInitializer => Initializer as IExpressionNode;
     private ValueAttribute<LexicalScope> containingLexicalScope;
     public LexicalScope ContainingLexicalScope
@@ -85,4 +86,12 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
 
     public IFlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentInitializer)
+            // The expected antetype for the initializer is the type of the variable if provided
+            return Type?.NamedAntetype;
+        return base.InheritedExpectedAntetype(child, descendant, ctx);
+    }
 }

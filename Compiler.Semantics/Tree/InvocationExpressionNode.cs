@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
@@ -44,6 +45,12 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
             return Arguments[argumentIndex - 1].GetFlowLexicalScope().True;
         }
         return base.InheritedContainingLexicalScope(child, descendant);
+    }
+
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentExpression) return null;
+        return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 
     protected override IChildNode Rewrite()

@@ -37,7 +37,12 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public override FieldSymbol Symbol
         => symbol.TryGetValue(out var value) ? value
             : symbol.GetValue(this, SymbolAspect.FieldDefinition_Symbol);
-    public IAmbiguousExpressionNode? Initializer { get; }
+    private RewritableChild<IAmbiguousExpressionNode?> initializer;
+    private bool initializerCached;
+    public IAmbiguousExpressionNode? Initializer
+        => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
+            : this.RewritableChild(ref initializerCached, ref initializer);
+    public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value
@@ -48,7 +53,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     {
         Syntax = syntax;
         TypeNode = Child.Attach(this, type);
-        Initializer = Child.Attach(this, initializer);
+        this.initializer = Child.Create(this, initializer);
     }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)

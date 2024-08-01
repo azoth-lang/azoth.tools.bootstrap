@@ -772,6 +772,7 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FieldSymbol IFieldDeclarationNode.Symbol => Symbol;
     IAmbiguousExpressionNode? Initializer { get; }
+    IAmbiguousExpressionNode? CurrentInitializer { get; }
 }
 
 public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IAssociatedMemberDefinitionNode, IAssociatedFunctionDeclarationNode
@@ -971,6 +972,7 @@ public partial interface IExpressionBodyNode : IBodyNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IResultStatementNode ResultStatement { get; }
+    IMaybeExpressionAntetype? ExpectedAntetype { get; }
 }
 
 [Closed(
@@ -1151,7 +1153,9 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
+    IAmbiguousExpressionNode CurrentExpression { get; }
     IExpressionNode? IntermediateExpression { get; }
+    IMaybeExpressionAntetype? ExpectedAntetype { get; }
 }
 
 [Closed(
@@ -1175,6 +1179,7 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     ICapabilityNode? Capability { get; }
     ITypeNode? Type { get; }
     IAmbiguousExpressionNode? Initializer { get; }
+    IAmbiguousExpressionNode? CurrentInitializer { get; }
     IExpressionNode? IntermediateInitializer { get; }
     LexicalScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
@@ -1187,6 +1192,7 @@ public partial interface IExpressionStatementNode : IBodyStatementNode
     new IExpressionStatementSyntax Syntax { get; }
     IBodyStatementSyntax IBodyStatementNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
+    IAmbiguousExpressionNode CurrentExpression { get; }
     IExpressionNode? IntermediateExpression { get; }
 }
 

@@ -176,7 +176,7 @@ SourceInitializerDefinition <: InitializerDefinition
     SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
 FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding, FieldDeclaration, ExecutableDefinition
     = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type BindingAntetype:`IMaybeAntetype` BindingType:`DataType`
-    Symbol:`FieldSymbol` Initializer:AmbiguousExpression?;
+    Symbol:`FieldSymbol` Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?;
 AssociatedFunctionDefinition <: ConcreteFunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
    Symbol:`FunctionSymbol` Type:`FunctionType` Body;
@@ -216,7 +216,8 @@ FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyn
 // ---------- Function Parts
 Body: BodyOrBlock = FlowStateAfter:`IFlowState`;
 BlockBody: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
-ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
+ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement
+    ExpectedAntetype:`IMaybeExpressionAntetype`?;
 
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax` NamedAntetype:`IMaybeAntetype` NamedType:`DataType`;
@@ -242,16 +243,19 @@ SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:
 Statement <: Code = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?
     ResultType:`DataType`? ResultValueId:`ValueId`? FlowStateAfter:`IFlowState`;
 ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax`
-    Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
+    Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode` IntermediateExpression:`IExpressionNode`?
+    ExpectedAntetype:`IMaybeExpressionAntetype`?;
 BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
 VariableDeclarationStatement <: BodyStatement, NamedBinding = Syntax:`IVariableDeclarationStatementSyntax`
-    IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type? Initializer:AmbiguousExpression?
+    IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type?
+    Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
     IntermediateInitializer:`IExpressionNode`?
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
     // TODO remove variable symbols
     Symbol:`NamedVariableSymbol` DeclarationNumber:`int`?;
 ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax`
-    Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
+    Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
+    IntermediateExpression:`IExpressionNode`?;
 
 // ---------- Patterns
 Pattern <: Code = Syntax:`IPatternSyntax` FlowStateAfter:`IFlowState`;

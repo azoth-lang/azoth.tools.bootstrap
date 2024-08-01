@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -38,5 +39,11 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
     {
         if (child == Body) return LexicalScope;
         return base.InheritedContainingLexicalScope(child, descendant);
+    }
+
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == Body) return MethodGroupType.Return.Type.ToAntetype();
+        return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 }

@@ -16,6 +16,7 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
     public IAmbiguousExpressionNode Expression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
+    public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     public IExpressionNode? IntermediateExpression => Expression as IExpressionNode;
     public override IMaybeAntetype? ResultAntetype => null;
     public override DataType? ResultType => null;
@@ -35,4 +36,12 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
     }
 
     public override LexicalScope GetLexicalScope() => InheritedContainingLexicalScope();
+
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentExpression)
+            // No expected antetype for the expression (not broadcast)
+            return null;
+        return base.InheritedExpectedAntetype(child, descendant, ctx);
+    }
 }

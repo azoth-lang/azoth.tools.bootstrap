@@ -275,5 +275,8 @@ internal static class ExpressionAntetypesAspect
         => node.ReferencedDeclaration?.Type.ToAntetype() ?? IAntetype.Unknown;
 
     public static IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node)
-        => null;
+    {
+        _ = node.ExpectedAntetype;
+        return null;
+    }
 }

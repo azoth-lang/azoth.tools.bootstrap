@@ -43,6 +43,10 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
 
+    // TODO remove once all nodes properly provide the expected antetype
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => null;
+
     protected override IChildNode? Rewrite()
         => ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
