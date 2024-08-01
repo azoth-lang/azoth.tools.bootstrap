@@ -25,10 +25,11 @@ internal abstract class SelfParameterNode : ParameterNode, ISelfParameterNode
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
             : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
                 InheritedContainingDeclaredType);
-    private ValueAttribute<SelfParameterSymbol> symbol;
+    private SelfParameterSymbol? symbol;
+    private bool symbolCached;
     public SelfParameterSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAspect.SelfParameter_Symbol);
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.SelfParameter_Symbol);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
     public override IMaybeAntetype BindingAntetype

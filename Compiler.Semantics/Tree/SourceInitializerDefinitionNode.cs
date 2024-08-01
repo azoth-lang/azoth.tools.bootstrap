@@ -12,10 +12,11 @@ internal class SourceInitializerDefinitionNode : InitializerDefinitionNode, ISou
     public override IInitializerDefinitionSyntax Syntax { get; }
     public override IInitializerSelfParameterNode SelfParameter { get; }
     public override IBlockBodyNode Body { get; }
-    private ValueAttribute<InitializerSymbol> symbol;
+    private InitializerSymbol? symbol;
+    private bool symbolCached;
     public override InitializerSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAspect.SourceInitializerDefinition_Symbol);
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.SourceInitializerDefinition_Symbol);
 
     public SourceInitializerDefinitionNode(
         IInitializerDefinitionSyntax syntax,

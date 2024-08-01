@@ -42,10 +42,11 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.VariableDeclarationStatement_LexicalScope,
                 ReferenceEqualityComparer.Instance);
-    private ValueAttribute<NamedVariableSymbol> symbol;
+    private NamedVariableSymbol? symbol;
+    private bool symbolCached;
     public NamedVariableSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAspect.VariableDeclarationStatement_Symbol);
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.VariableDeclarationStatement_Symbol);
     public int? DeclarationNumber => Syntax.DeclarationNumber.Result;
     private ValueId bindingValueId;
     private bool bindingValueIdCached;

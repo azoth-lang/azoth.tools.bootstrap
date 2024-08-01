@@ -24,10 +24,11 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     // TODO this explicit implementation shouldn't be needed. There must be a bug in the code generator?
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     public ITypeNode? Return { get; }
-    private ValueAttribute<FunctionSymbol> symbol;
+    private FunctionSymbol? symbol;
+    private bool symbolCached;
     public override FunctionSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAspect.AssociatedFunctionDefinition_Symbol);
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.AssociatedFunctionDefinition_Symbol);
     private FunctionType? type;
     private bool typeCached;
     public FunctionType Type

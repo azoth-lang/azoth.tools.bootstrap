@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -19,10 +20,12 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
         => attributeType.TryGetValue(out var value) ? value
             : attributeType.GetValue(InheritedIsAttributeType);
     public override IdentifierName Name => Syntax.Name;
-    private ValueAttribute<ITypeDeclarationNode?> referencedDeclaration;
+    private ITypeDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
     public ITypeDeclarationNode? ReferencedDeclaration
-        => referencedDeclaration.TryGetValue(out var value) ? value
-            : referencedDeclaration.GetValue(this, SymbolNodeAspect.StandardTypeName_ReferencedDeclaration);
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                SymbolNodeAspect.StandardTypeName_ReferencedDeclaration, ReferenceEqualityComparer.Instance);
     public override TypeSymbol? ReferencedSymbol
         => SymbolAspect.StandardTypeName_ReferencedSymbol(this);
     private IMaybeAntetype? namedAntetype;

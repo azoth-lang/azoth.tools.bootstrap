@@ -23,10 +23,11 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
     public IFixedList<INamedParameterNode> Parameters { get; }
     public abstract IBodyNode? Body { get; }
     public virtual ITypeNode? Return { get; }
-    private ValueAttribute<MethodSymbol> symbol;
+    private MethodSymbol? symbol;
+    private bool symbolCached;
     public override MethodSymbol Symbol
-    => symbol.TryGetValue(out var value) ? value
-        : symbol.GetValue(this, SymbolAspect.MethodDefinition_Symbol);
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.MethodDefinition_Symbol);
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value

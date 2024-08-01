@@ -23,10 +23,12 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
     public override GenericName Name => Syntax.Name;
     public override TypeSymbol? ReferencedSymbol => SymbolAspect.StandardTypeName_ReferencedSymbol(this);
     public IFixedList<ITypeNode> TypeArguments { get; }
-    private ValueAttribute<ITypeDeclarationNode?> referencedDeclaration;
+    private ITypeDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
     public ITypeDeclarationNode? ReferencedDeclaration
-        => referencedDeclaration.TryGetValue(out var value) ? value
-            : referencedDeclaration.GetValue(this, SymbolNodeAspect.StandardTypeName_ReferencedDeclaration);
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                SymbolNodeAspect.StandardTypeName_ReferencedDeclaration, ReferenceEqualityComparer.Instance);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
     public override IMaybeAntetype NamedAntetype

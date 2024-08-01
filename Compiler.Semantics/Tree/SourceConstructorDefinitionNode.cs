@@ -12,10 +12,11 @@ internal sealed class SourceConstructorDefinitionNode : ConstructorDefinitionNod
     public override IConstructorDefinitionSyntax Syntax { get; }
     public override IConstructorSelfParameterNode SelfParameter { get; }
     public override IBlockBodyNode Body { get; }
-    private ValueAttribute<ConstructorSymbol> symbol;
+    private ConstructorSymbol? symbol;
+    private bool symbolCached;
     public override ConstructorSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAspect.SourceConstructorDefinition_Symbol);
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.SourceConstructorDefinition_Symbol);
 
     public SourceConstructorDefinitionNode(
         IConstructorDefinitionSyntax syntax,

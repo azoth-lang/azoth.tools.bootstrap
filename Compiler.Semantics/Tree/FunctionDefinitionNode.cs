@@ -27,10 +27,11 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.FunctionDefinition_LexicalScope,
                 ReferenceEqualityComparer.Instance);
-    private ValueAttribute<FunctionSymbol> symbol;
+    private FunctionSymbol? symbol;
+    private bool symbolCached;
     public override FunctionSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAspect.FunctionDefinition_Symbol);
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.FunctionDefinition_Symbol);
     public IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     public ITypeNode? Return { get; }

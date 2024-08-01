@@ -35,10 +35,11 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType, TypeMemberDeclarationsAspect.FieldDeclaration_BindingType);
     public override LexicalScope LexicalScope => throw new NotImplementedException();
-    private ValueAttribute<FieldSymbol> symbol;
+    private FieldSymbol? symbol;
+    private bool symbolCached;
     public override FieldSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAspect.FieldDefinition_Symbol);
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.FieldDefinition_Symbol);
     private RewritableChild<IAmbiguousExpressionNode?> initializer;
     private bool initializerCached;
     public IAmbiguousExpressionNode? Initializer

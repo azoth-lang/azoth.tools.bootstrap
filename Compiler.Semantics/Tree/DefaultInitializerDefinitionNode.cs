@@ -11,10 +11,11 @@ internal class DefaultInitializerDefinitionNode : InitializerDefinitionNode, IDe
     public override IInitializerDefinitionSyntax? Syntax => null;
     public override IInitializerSelfParameterNode? SelfParameter => null;
     public override IBlockBodyNode? Body => null;
-    private ValueAttribute<InitializerSymbol> symbol;
+    private InitializerSymbol? symbol;
+    private bool symbolCached;
     public override InitializerSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value
-            : symbol.GetValue(this, SymbolAspect.DefaultInitializerDefinition_Symbol);
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.DefaultInitializerDefinition_Symbol);
 
     public DefaultInitializerDefinitionNode()
         : base(FixedList.Empty<IConstructorOrInitializerParameterNode>()) { }

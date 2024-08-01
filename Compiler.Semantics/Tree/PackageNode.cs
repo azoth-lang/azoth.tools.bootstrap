@@ -18,10 +18,11 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     /// should be <see langword="null"/> for the current package.</remarks>
     public IdentifierName? AliasOrName => null;
     public IdentifierName Name => Syntax.Name;
-
-    private ValueAttribute<PackageSymbol> symbol;
+    private PackageSymbol? symbol;
+    private bool symbolCached;
     public PackageSymbol Symbol
-        => symbol.TryGetValue(out var value) ? value : symbol.GetValue(this, SymbolAspect.Package_Symbol);
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.Package_Symbol);
     private ValueAttribute<FixedDictionary<IdentifierName, IPackageDeclarationNode>> packageDeclarations;
     public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
         => packageDeclarations.TryGetValue(out var value) ? value
