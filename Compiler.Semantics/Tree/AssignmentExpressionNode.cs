@@ -31,7 +31,8 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
-            : this.Synthetic(ref antetypeCached, ref antetype, ExpressionAntetypesAspect.AssignmentExpression_Antetype);
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.AssignmentExpression_Antetype);
     private DataType? type;
     private bool typeCached;
     public override DataType Type
@@ -64,6 +65,12 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     {
         if (child == CurrentRightOperand) return LeftOperand.FlowStateAfter;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child == CurrentRightOperand) return LeftOperand.Antetype;
+        return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 
     protected override IChildNode? Rewrite()

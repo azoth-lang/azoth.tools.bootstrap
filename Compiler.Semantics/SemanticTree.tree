@@ -298,6 +298,7 @@ BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax
     LeftOperand:AmbiguousExpression IntermediateLeftOperand:`IExpressionNode`?
     Operator:`BinaryOperator`
     RightOperand:AmbiguousExpression IntermediateRightOperand:`IExpressionNode`?
+    NumericOperatorCommonAntetype:`IAntetype`?
     ContainingLexicalScope:`LexicalScope`;
 UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` Fixity:`UnaryOperatorFixity`
     Operator:`UnaryOperator` Operand:AmbiguousExpression IntermediateOperand:`IExpressionNode`?;

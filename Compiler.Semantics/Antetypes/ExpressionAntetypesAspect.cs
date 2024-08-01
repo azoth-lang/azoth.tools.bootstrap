@@ -57,6 +57,64 @@ internal static class ExpressionAntetypesAspect
     public static IMaybeAntetype ResultStatement_Antetype(IResultStatementNode node)
         => node.IntermediateExpression?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
+    public static IAntetype? BinaryOperatorExpression_NumericOperatorCommonAntetype(IBinaryOperatorExpressionNode node)
+    {
+        var leftAntetype = node.IntermediateLeftOperand?.Antetype ?? IAntetype.Unknown;
+        var rightAntetype = node.IntermediateRightOperand?.Antetype ?? IAntetype.Unknown;
+        return (leftAntetype, node.Operator, rightAntetype) switch
+        {
+            (IntegerConstValueAntetype, BinaryOperator.Plus, IntegerConstValueAntetype) => null,
+            (IntegerConstValueAntetype, BinaryOperator.Minus, IntegerConstValueAntetype) => null,
+            (IntegerConstValueAntetype, BinaryOperator.Asterisk, IntegerConstValueAntetype) => null,
+            (IntegerConstValueAntetype, BinaryOperator.Slash, IntegerConstValueAntetype) => null,
+            (IntegerConstValueAntetype, BinaryOperator.EqualsEquals, IntegerConstValueAntetype) => null,
+            (IntegerConstValueAntetype, BinaryOperator.NotEqual, IntegerConstValueAntetype) => null,
+            (IntegerConstValueAntetype, BinaryOperator.LessThan, IntegerConstValueAntetype) => null,
+            (IntegerConstValueAntetype, BinaryOperator.LessThanOrEqual, IntegerConstValueAntetype) => null,
+            (IntegerConstValueAntetype, BinaryOperator.GreaterThan, IntegerConstValueAntetype) => null,
+            (IntegerConstValueAntetype, BinaryOperator.GreaterThanOrEqual, IntegerConstValueAntetype) => null,
+
+            (BoolConstValueAntetype, BinaryOperator.EqualsEquals, BoolConstValueAntetype) => null,
+            (BoolConstValueAntetype, BinaryOperator.NotEqual, BoolConstValueAntetype) => null,
+            (BoolConstValueAntetype, BinaryOperator.And, BoolConstValueAntetype) => null,
+            (BoolConstValueAntetype, BinaryOperator.Or, BoolConstValueAntetype) => null,
+
+            // TODO this is the legacy reference equality operator that needs to be changed
+            (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.EqualsEquals, INonVoidAntetype { HasReferenceSemantics: true })
+                or (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.NotEqual, INonVoidAntetype { HasReferenceSemantics: true })
+                => null,
+
+            (BoolAntetype, BinaryOperator.EqualsEquals, BoolAntetype)
+                or (BoolAntetype, BinaryOperator.NotEqual, BoolAntetype)
+                or (BoolAntetype, BinaryOperator.And, BoolAntetype)
+                or (BoolAntetype, BinaryOperator.Or, BoolAntetype)
+                => null,
+
+            (IExpressionAntetype, BinaryOperator.Plus, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.Minus, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.Asterisk, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.Slash, IExpressionAntetype)
+                => ((IExpressionAntetype)leftAntetype).NumericOperatorCommonType((IExpressionAntetype)rightAntetype),
+            (IExpressionAntetype, BinaryOperator.EqualsEquals, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.NotEqual, IExpressionAntetype)
+                or (OptionalAntetype { Referent: IExpressionAntetype }, BinaryOperator.NotEqual, OptionalAntetype { Referent: IExpressionAntetype })
+                or (IExpressionAntetype, BinaryOperator.LessThan, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.LessThanOrEqual, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.GreaterThan, IExpressionAntetype)
+                or (IExpressionAntetype, BinaryOperator.GreaterThanOrEqual, IExpressionAntetype)
+                => ((IExpressionAntetype)leftAntetype).NumericOperatorCommonType((IExpressionAntetype)rightAntetype),
+
+            (_, BinaryOperator.DotDot, _)
+                or (_, BinaryOperator.LessThanDotDot, _)
+                or (_, BinaryOperator.DotDotLessThan, _)
+                or (_, BinaryOperator.LessThanDotDotLessThan, _)
+                // TODO for the moment ranges are always integer ranges
+                => IAntetype.Int,
+
+            _ => null,
+        };
+    }
+
     public static IMaybeExpressionAntetype BinaryOperatorExpression_Antetype(IBinaryOperatorExpressionNode node)
     {
         var leftAntetype = node.IntermediateLeftOperand?.Antetype ?? IAntetype.Unknown;
@@ -94,7 +152,7 @@ internal static class ExpressionAntetypesAspect
                 or (IExpressionAntetype, BinaryOperator.Minus, IExpressionAntetype)
                 or (IExpressionAntetype, BinaryOperator.Asterisk, IExpressionAntetype)
                 or (IExpressionAntetype, BinaryOperator.Slash, IExpressionAntetype)
-                => InferNumericOperatorType((IExpressionAntetype)leftAntetype, (IExpressionAntetype)rightAntetype),
+                => InferNumericOperatorType(node.NumericOperatorCommonAntetype),
             (IExpressionAntetype, BinaryOperator.EqualsEquals, IExpressionAntetype)
                 or (IExpressionAntetype, BinaryOperator.NotEqual, IExpressionAntetype)
                 or (OptionalAntetype { Referent: IExpressionAntetype }, BinaryOperator.NotEqual, OptionalAntetype { Referent: IExpressionAntetype })
@@ -102,13 +160,13 @@ internal static class ExpressionAntetypesAspect
                 or (IExpressionAntetype, BinaryOperator.LessThanOrEqual, IExpressionAntetype)
                 or (IExpressionAntetype, BinaryOperator.GreaterThan, IExpressionAntetype)
                 or (IExpressionAntetype, BinaryOperator.GreaterThanOrEqual, IExpressionAntetype)
-                => InferComparisonOperatorType((IExpressionAntetype)leftAntetype, (IExpressionAntetype)rightAntetype),
+                => InferComparisonOperatorType(node.NumericOperatorCommonAntetype),
 
             (_, BinaryOperator.DotDot, _)
                 or (_, BinaryOperator.LessThanDotDot, _)
                 or (_, BinaryOperator.DotDotLessThan, _)
                 or (_, BinaryOperator.LessThanDotDotLessThan, _)
-                => InferRangeOperatorType(node.ContainingLexicalScope, leftAntetype, rightAntetype),
+                => InferRangeOperatorType(node.ContainingLexicalScope),
 
             (OptionalAntetype { Referent: var referentType }, BinaryOperator.QuestionQuestion, NeverAntetype)
                 => referentType,
@@ -119,23 +177,16 @@ internal static class ExpressionAntetypesAspect
         };
     }
 
-    private static IMaybeExpressionAntetype InferNumericOperatorType(IExpressionAntetype leftAntetype, IExpressionAntetype rightAntetype)
-    {
-        var commonAntetype = leftAntetype.NumericOperatorCommonType(rightAntetype);
-        return commonAntetype ?? IAntetype.UnknownMaybeAntetype;
-    }
+    private static IMaybeExpressionAntetype InferNumericOperatorType(IAntetype? commonAntetype)
+        => commonAntetype ?? IAntetype.UnknownMaybeAntetype;
 
-    private static IMaybeExpressionAntetype InferComparisonOperatorType(IExpressionAntetype leftAntetype, IExpressionAntetype rightAntetype)
+    private static IMaybeExpressionAntetype InferComparisonOperatorType(IAntetype? commonAntetype)
     {
-        var commonAntetype = leftAntetype.NumericOperatorCommonType(rightAntetype);
         if (commonAntetype is null) return IAntetype.Unknown;
         return IAntetype.Bool;
     }
 
-    private static IMaybeExpressionAntetype InferRangeOperatorType(
-        LexicalScope containingLexicalScope,
-        IMaybeExpressionAntetype leftAntetype,
-        IMaybeExpressionAntetype rightAntetype)
+    private static IMaybeExpressionAntetype InferRangeOperatorType(LexicalScope containingLexicalScope)
     {
         // TODO the left and right antetypes need to be compatible with the range type
         var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
@@ -293,12 +344,18 @@ internal static class ExpressionAntetypesAspect
                 return null;
             case (FixedSizeIntegerAntetype to, IntegerConstValueAntetype from):
             {
+                // TODO make a method on antetypes for this check
                 var requireSigned = from.Value < 0;
                 var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
-                if (to.Bits >= bits && (!requireSigned || to.IsSigned))
-                    return to;
-
-                return null;
+                return to.Bits >= bits && (!requireSigned || to.IsSigned) ? to : null;
+            }
+            case (PointerSizedIntegerAntetype to, IntegerConstValueAntetype from):
+            {
+                // TODO make a method on antetypes for this check
+                var requireSigned = from.Value < 0;
+                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
+                // Must fit in 32 bits so that it will fit on all platforms
+                return bits <= 32 && (!requireSigned || to.IsSigned) ? to : null;
             }
             case (BigIntegerAntetype { IsSigned: true }, IntegerAntetype):
             case (BigIntegerAntetype { IsSigned: true }, IntegerConstValueAntetype):

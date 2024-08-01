@@ -36,6 +36,12 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
                 InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
+    private IAntetype? numericOperatorCommonAntetype;
+    private bool numericOperatorCommonAntetypeCached;
+    public IAntetype? NumericOperatorCommonAntetype
+        => GrammarAttribute.IsCached(in numericOperatorCommonAntetypeCached) ? numericOperatorCommonAntetype
+            : this.Synthetic(ref numericOperatorCommonAntetypeCached, ref numericOperatorCommonAntetype,
+                ExpressionAntetypesAspect.BinaryOperatorExpression_NumericOperatorCommonAntetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
@@ -84,5 +90,13 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         if (child == CurrentRightOperand)
             return IntermediateLeftOperand?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentLeftOperand || descendant == CurrentRightOperand)
+            return NumericOperatorCommonAntetype;
+
+        return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 }
