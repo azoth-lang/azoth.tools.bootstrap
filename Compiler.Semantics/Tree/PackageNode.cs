@@ -39,7 +39,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     private bool entryPointCached;
     public IFunctionDefinitionNode? EntryPoint
         => GrammarAttribute.IsCached(in entryPointCached) ? entryPoint
-            : this.Synthetic(ref entryPointCached, ref entryPoint, DeclarationsAspect.Package_EntryPoint);
+            : this.Synthetic(ref entryPointCached, ref entryPoint, DefinitionAspect.Package_EntryPoint);
     public IFixedSet<IPackageReferenceNode> References { get; }
     private ValueAttribute<IPackageReferenceNode> intrinsicsReference;
     public IPackageReferenceNode IntrinsicsReference
