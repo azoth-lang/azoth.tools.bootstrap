@@ -8,10 +8,10 @@ using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Lab.Config;
 using ExhaustiveMatching;
-using AST = Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 
 namespace Azoth.Tools.Bootstrap.Lab.Build;
 
@@ -122,10 +122,8 @@ internal class ProjectSet : IEnumerable<Project>
             // Fatal Compile Errors
             return;
 
-        var interpreter = new AST.AzothTreeInterpreter();
-        var process = interpreter.Execute(entryPackage);
-        //var interpreter = new AzothTreeInterpreter();
-        //var process = interpreter.Execute(entryPackageNode, referencedPackages);
+        var interpreter = new AzothTreeInterpreter();
+        var process = interpreter.Execute(entryPackageNode, referencedPackages);
         await process.WaitForExitAsync();
         var stdout = await process.StandardOutput.ReadToEndAsync();
         Console.WriteLine(stdout);
@@ -141,10 +139,8 @@ internal class ProjectSet : IEnumerable<Project>
             // Fatal Compile Errors
             return;
 
-        var interpreter = new AST.AzothTreeInterpreter();
-        var process = interpreter.ExecuteTests(testPackage);
-        //var interpreter = new AzothTreeInterpreter();
-        //var process = interpreter.ExecuteTests(testPackageNode, referencedPackages);
+        var interpreter = new AzothTreeInterpreter();
+        var process = interpreter.ExecuteTests(testPackageNode, referencedPackages);
         await process.WaitForExitAsync();
         var stdout = await process.StandardOutput.ReadToEndAsync();
         Console.WriteLine(stdout);

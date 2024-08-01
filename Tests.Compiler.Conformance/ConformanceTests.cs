@@ -17,7 +17,6 @@ using Azoth.Tools.Bootstrap.Tests.Conformance.Helpers;
 using MoreLinq;
 using Xunit;
 using Xunit.Abstractions;
-using AST = Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 
 namespace Azoth.Tools.Bootstrap.Tests.Conformance;
 
@@ -88,8 +87,7 @@ public partial class ConformanceTests
             //packageIL.Position = 0;
 
             // Execute and check results
-            var process = Execute(package);
-            //var process = Execute(packageNode, supportPackageNode);
+            var process = Execute(packageNode, supportPackageNode);
             //var process = Execute(packageIL, stdLibIL);
 
             await process.WaitForExitAsync();
@@ -230,12 +228,6 @@ public partial class ConformanceTests
                 count = 1;
             return new(line, count);
         }
-    }
-
-    private static AST.InterpreterProcess Execute(Package package)
-    {
-        var interpreter = new AST.AzothTreeInterpreter();
-        return interpreter.Execute(package);
     }
 
     private static InterpreterProcess Execute(IPackageNode package, IPackageNode supportPackage)
