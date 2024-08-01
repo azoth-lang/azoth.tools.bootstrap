@@ -12,6 +12,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Lab.Config;
 using ExhaustiveMatching;
+using Nito.AsyncEx;
 
 namespace Azoth.Tools.Bootstrap.Lab.Build;
 
@@ -70,7 +71,7 @@ internal class ProjectSet : IEnumerable<Project>
         Project project,
         bool outputTests,
         Task<FixedDictionary<Project, Task<(Package, IPackageNode)?>>> projectBuildsTask,
-        object consoleLock);
+        AsyncLock consoleLock);
 
     private async Task<(IPackageNode, IFixedSet<IPackageNode>)?> ProcessProjects(
         TaskScheduler taskScheduler,
@@ -89,7 +90,7 @@ internal class ProjectSet : IEnumerable<Project>
         // Sort projects to detect cycles and so we can assume the tasks already exist
         var sortedProjects = TopologicalSort();
         var compiler = new AzothCompiler();
-        var consoleLock = new object();
+        var consoleLock = new AsyncLock();
         foreach (var project in sortedProjects)
         {
             var buildTask = taskFactory.StartNew(() => processAsync(compiler, project, outputTests, projectBuildsTask, consoleLock))
@@ -153,7 +154,7 @@ internal class ProjectSet : IEnumerable<Project>
         Project project,
         bool outputTests,
         Task<FixedDictionary<Project, Task<(Package, IPackageNode)?>>> projectBuildsTask,
-        object consoleLock)
+        AsyncLock consoleLock)
     {
         var compileResult = await CompileAsync(compiler, project, outputTests, projectBuildsTask, consoleLock);
         if (compileResult is not var (package, packageNode)) return null;
@@ -161,7 +162,7 @@ internal class ProjectSet : IEnumerable<Project>
         var cacheDir = PrepareCacheDir(project);
         var codePath = EmitIL(project, package, outputTests, cacheDir);
 
-        lock (consoleLock)
+        using (await consoleLock.LockAsync())
         {
             Console.WriteLine($"Build SUCCEEDED {project.Name} ({project.Path})");
         }
@@ -174,7 +175,7 @@ internal class ProjectSet : IEnumerable<Project>
         Project project,
         bool outputTests,
         Task<FixedDictionary<Project, Task<(Package, IPackageNode)?>>> projectBuildsTask,
-        object consoleLock)
+        AsyncLock consoleLock)
     {
         // Doesn't affect compilation, only IL emitting
         _ = outputTests;
@@ -193,7 +194,7 @@ internal class ProjectSet : IEnumerable<Project>
                 references.Add(new PackageReference(reference.NameOrAlias, package, reference.IsTrusted));
         }
 
-        lock (consoleLock)
+        using (await consoleLock.LockAsync())
         {
             Console.WriteLine($"Compiling {project.Name} ({project.Path})...");
         }
@@ -210,7 +211,7 @@ internal class ProjectSet : IEnumerable<Project>
             if (OutputDiagnostics(project, package.Diagnostics, consoleLock))
                 return (package, packageNode);
 
-            lock (consoleLock)
+            using (await consoleLock.LockAsync())
             {
                 Console.WriteLine($"Compile SUCCEEDED {project.Name} ({project.Path})");
             }
@@ -253,11 +254,11 @@ internal class ProjectSet : IEnumerable<Project>
         return cacheDir;
     }
 
-    private static bool OutputDiagnostics(Project project, IFixedList<Diagnostic> diagnostics, object consoleLock)
+    private static bool OutputDiagnostics(Project project, IFixedList<Diagnostic> diagnostics, AsyncLock consoleLock)
     {
         if (!diagnostics.Any())
             return false;
-        lock (consoleLock)
+        using (consoleLock.Lock())
         {
             Console.WriteLine($"Build FAILED {project.Name} ({project.Path})");
             foreach (var group in diagnostics.GroupBy(d => d.File))
