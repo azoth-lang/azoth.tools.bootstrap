@@ -11,6 +11,7 @@ using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Semantics;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Tests.Conformance.Helpers;
 using MoreLinq;
@@ -60,14 +61,13 @@ public partial class ConformanceTests
         var references = new List<PackageReference>();
 
         // Reference Standard Library
-        var supportPackage = CompileSupportPackage(compiler);
+        var (supportPackage, supportPackageNode) = CompileSupportPackage(compiler);
         references.Add(new PackageReference(TestsSupportPackage.Name, supportPackage, true));
 
         try
         {
             // Analyze
-            var package = compiler.CompilePackage("testPackage", codeFile.Yield(),
-                Enumerable.Empty<CodeFile>(), references);
+            var (package, packageNode) = compiler.CompilePackage("testPackage", codeFile.Yield(), [], references);
 
             // Check for compiler errors
             Assert.NotNull(package.Diagnostics);
@@ -108,7 +108,7 @@ public partial class ConformanceTests
         }
     }
 
-    private Package CompileSupportPackage(AzothCompiler compiler)
+    private (Package package, IPackageNode packageNode) CompileSupportPackage(AzothCompiler compiler)
     {
         try
         {
@@ -116,11 +116,10 @@ public partial class ConformanceTests
             var sourcePaths = CodeFiles.GetIn(sourceDir);
             var rootNamespace = FixedList.Empty<string>();
             var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, rootNamespace)).ToList();
-            var package = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles,
-                Enumerable.Empty<CodeFile>(), Enumerable.Empty<PackageReference>());
+            var (package, packageNode) = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles, [], []);
             if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                 ReportSupportCompilationErrors(package.Diagnostics);
-            return package;
+            return (package, packageNode);
         }
         catch (FatalCompilationErrorException ex)
         {

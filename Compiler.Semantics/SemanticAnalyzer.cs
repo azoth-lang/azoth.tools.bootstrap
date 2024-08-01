@@ -36,7 +36,7 @@ public class SemanticAnalyzer
     /// </summary>
     public bool SaveReachabilityGraphs { get; set; }
 
-    public Package Check(PackageSyntax<Package> packageSyntax)
+    public (Package, IPackageNode) Check(PackageSyntax<Package> packageSyntax)
     {
         // If there are errors from the lex and parse phase, don't continue on
         packageSyntax.Diagnostics.ThrowIfFatalErrors();
@@ -65,7 +65,7 @@ public class SemanticAnalyzer
         // If there are errors from the previous phase, don't continue on
         packageBuilder.Diagnostics.ThrowIfFatalErrors();
 
-        return packageBuilder.Build();
+        return (packageBuilder.Build(), packageNode);
     }
 
     private static IPackageNode BuildSemanticTreeAndValidate(PackageSyntax<Package> packageSyntax)

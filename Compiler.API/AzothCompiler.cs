@@ -28,14 +28,14 @@ public class AzothCompiler
     /// </summary>
     public bool SaveReachabilityGraphs { get; set; }
 
-    public Task<Package> CompilePackageAsync(
+    public Task<(Package, IPackageNode)> CompilePackageAsync(
         IdentifierName name,
         IEnumerable<ICodeFileSource> files,
         IEnumerable<ICodeFileSource> testingFileSources,
         IEnumerable<PackageReferenceAsync> references)
         => CompilePackageAsync(name, files, testingFileSources, references, TaskScheduler.Default);
 
-    public async Task<Package> CompilePackageAsync(
+    public async Task<(Package, IPackageNode)> CompilePackageAsync(
         IdentifierName name,
         IEnumerable<ICodeFileSource> fileSources,
         IEnumerable<ICodeFileSource> testingFileSources,
@@ -83,14 +83,14 @@ public class AzothCompiler
         }
     }
 
-    public Package CompilePackage(
+    public (Package, IPackageNode) CompilePackage(
         string name,
         IEnumerable<ICodeFileSource> fileSources,
         IEnumerable<ICodeFileSource> testingFileSources,
         IEnumerable<PackageReference> references)
         => CompilePackage(name, fileSources.Select(s => s.Load()), testingFileSources.Select(s => s.Load()), references);
 
-    public Package CompilePackage(
+    public (Package, IPackageNode) CompilePackage(
         string name,
         IEnumerable<CodeFile> files,
         IEnumerable<CodeFile> testingFiles,
