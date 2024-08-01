@@ -6,11 +6,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.AST;
-using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Semantics;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Lab.Config;
 using ExhaustiveMatching;
+using AST = Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 
 namespace Azoth.Tools.Bootstrap.Lab.Build;
 
@@ -64,14 +65,14 @@ internal class ProjectSet : IEnumerable<Project>
     public async Task BuildAsync(TaskScheduler taskScheduler, bool verbose)
         => await ProcessProjects(taskScheduler, verbose, outputTests: false, BuildAsync, null);
 
-    private delegate Task<Package?> ProcessAsync(
+    private delegate Task<(Package, IPackageNode)?> ProcessAsync(
         AzothCompiler compiler,
         Project project,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<Package?>>> projectBuildsTask,
+        Task<FixedDictionary<Project, Task<(Package, IPackageNode)?>>> projectBuildsTask,
         object consoleLock);
 
-    private async Task<Package?> ProcessProjects(
+    private async Task<(Package, IPackageNode, IFixedSet<IPackageNode>)?> ProcessProjects(
         TaskScheduler taskScheduler,
         bool verbose,
         bool outputTests,
@@ -80,9 +81,9 @@ internal class ProjectSet : IEnumerable<Project>
     {
         _ = verbose; // verbose parameter will be needed in the future
         var taskFactory = new TaskFactory(taskScheduler);
-        var projectBuilds = new Dictionary<Project, Task<Package?>>();
+        var projectBuilds = new Dictionary<Project, Task<(Package, IPackageNode)?>>();
 
-        var projectBuildsSource = new TaskCompletionSource<FixedDictionary<Project, Task<Package?>>>();
+        var projectBuildsSource = new TaskCompletionSource<FixedDictionary<Project, Task<(Package, IPackageNode)?>>>();
         var projectBuildsTask = projectBuildsSource.Task;
 
         // Sort projects to detect cycles and so we can assume the tasks already exist
@@ -99,25 +100,32 @@ internal class ProjectSet : IEnumerable<Project>
 
         projectBuildsSource.SetResult(projectBuilds.ToFixedDictionary());
 
-        _ = await Task.WhenAll(projectBuilds.Values).ConfigureAwait(false);
+        var allBuilds = await Task.WhenAll(projectBuilds.Values).ConfigureAwait(false);
 
         if (entryProjectConfig is null) return null;
 
         var entryProject = Get(entryProjectConfig);
-        var entryPackage = await projectBuilds[entryProject];
-        return entryPackage;
+        var entryPackageResult = await projectBuilds[entryProject];
+        if (entryPackageResult is var (entryPackage, entryPackageNode))
+        {
+            var referencedPackages = allBuilds.WhereNotNull().Select(b => b.Item2).Except(entryPackageNode).ToFixedSet();
+            return (entryPackage, entryPackageNode, referencedPackages);
+        }
+        return null;
     }
 
     public async Task InterpretAsync(TaskScheduler taskScheduler, bool verbose, ProjectConfig entryProjectConfig)
     {
-        var entryPackage = await ProcessProjects(taskScheduler, verbose, outputTests: false, CompileAsync, entryProjectConfig);
+        var packages = await ProcessProjects(taskScheduler, verbose, outputTests: false, CompileAsync, entryProjectConfig);
 
-        if (entryPackage is null)
+        if (packages is not var (entryPackage, entryPackageNode, referencedPackages))
             // Fatal Compile Errors
             return;
 
-        var interpreter = new AzothTreeInterpreter();
+        var interpreter = new AST.AzothTreeInterpreter();
         var process = interpreter.Execute(entryPackage);
+        //var interpreter = new AzothTreeInterpreter();
+        //var process = interpreter.Execute(entryPackageNode, referencedPackages);
         await process.WaitForExitAsync();
         var stdout = await process.StandardOutput.ReadToEndAsync();
         Console.WriteLine(stdout);
@@ -127,14 +135,16 @@ internal class ProjectSet : IEnumerable<Project>
 
     public async Task TestAsync(TaskScheduler taskScheduler, bool verbose, ProjectConfig testProjectConfig)
     {
-        var testPackage = await ProcessProjects(taskScheduler, verbose, outputTests: true, CompileAsync, testProjectConfig);
+        var packages = await ProcessProjects(taskScheduler, verbose, outputTests: true, CompileAsync, testProjectConfig);
 
-        if (testPackage is null)
+        if (packages is not var (testPackage, testPackageNode, referencedPackages))
             // Fatal Compile Errors
             return;
 
-        var interpreter = new AzothTreeInterpreter();
+        var interpreter = new AST.AzothTreeInterpreter();
         var process = interpreter.ExecuteTests(testPackage);
+        //var interpreter = new AzothTreeInterpreter();
+        //var process = interpreter.ExecuteTests(testPackageNode, referencedPackages);
         await process.WaitForExitAsync();
         var stdout = await process.StandardOutput.ReadToEndAsync();
         Console.WriteLine(stdout);
@@ -142,15 +152,15 @@ internal class ProjectSet : IEnumerable<Project>
         await Console.Error.WriteLineAsync(stderr);
     }
 
-    private static async Task<Package?> BuildAsync(
+    private static async Task<(Package, IPackageNode)?> BuildAsync(
         AzothCompiler compiler,
         Project project,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<Package?>>> projectBuildsTask,
+        Task<FixedDictionary<Project, Task<(Package, IPackageNode)?>>> projectBuildsTask,
         object consoleLock)
     {
-        var package = await CompileAsync(compiler, project, outputTests, projectBuildsTask, consoleLock);
-        if (package is null) return package;
+        var compileResult = await CompileAsync(compiler, project, outputTests, projectBuildsTask, consoleLock);
+        if (compileResult is not var (package, packageNode)) return null;
 
         var cacheDir = PrepareCacheDir(project);
         var codePath = EmitIL(project, package, outputTests, cacheDir);
@@ -160,14 +170,14 @@ internal class ProjectSet : IEnumerable<Project>
             Console.WriteLine($"Build SUCCEEDED {project.Name} ({project.Path})");
         }
 
-        return package;
+        return (package, packageNode);
     }
 
-    private static async Task<Package?> CompileAsync(
+    private static async Task<(Package, IPackageNode)?> CompileAsync(
         AzothCompiler compiler,
         Project project,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<Package?>>> projectBuildsTask,
+        Task<FixedDictionary<Project, Task<(Package, IPackageNode)?>>> projectBuildsTask,
         object consoleLock)
     {
         // Doesn't affect compilation, only IL emitting
@@ -182,8 +192,8 @@ internal class ProjectSet : IEnumerable<Project>
         var references = new HashSet<PackageReference>();
         foreach (var (reference, packageTask) in referenceTasks)
         {
-            var package = await packageTask.ConfigureAwait(false);
-            if (package is not null)
+            var packageResult = await packageTask.ConfigureAwait(false);
+            if (packageResult is var (package, _))
                 references.Add(new PackageReference(reference.NameOrAlias, package, reference.IsTrusted));
         }
 
@@ -202,14 +212,14 @@ internal class ProjectSet : IEnumerable<Project>
             //var package = await compiler.CompilePackageAsync(project.Name, codeFiles, references);
 
             if (OutputDiagnostics(project, package.Diagnostics, consoleLock))
-                return package;
+                return (package, packageNode);
 
             lock (consoleLock)
             {
                 Console.WriteLine($"Compile SUCCEEDED {project.Name} ({project.Path})");
             }
 
-            return package;
+            return (package, packageNode);
         }
         catch (FatalCompilationErrorException ex)
         {
@@ -260,8 +270,8 @@ internal class ProjectSet : IEnumerable<Project>
                 foreach (var diagnostic in fileDiagnostics.Take(10))
                 {
                     Console.WriteLine(
-                        $@"{diagnostic.File.Reference}:{diagnostic.StartPosition.Line}:{diagnostic.StartPosition.Column} {diagnostic.Level} {diagnostic.ErrorCode}");
-                    Console.WriteLine(@"    " + diagnostic.Message);
+                        $"{diagnostic.File.Reference}:{diagnostic.StartPosition.Line}:{diagnostic.StartPosition.Column} {diagnostic.Level} {diagnostic.ErrorCode}");
+                    Console.WriteLine("    " + diagnostic.Message);
                 }
 
                 if (fileDiagnostics.Count > 10)
