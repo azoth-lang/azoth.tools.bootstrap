@@ -14,10 +14,12 @@ internal sealed class VariableNameExpressionNode : AmbiguousNameExpressionNode, 
     public override IIdentifierNameExpressionSyntax Syntax { get; }
     public IdentifierName Name => Syntax.Name;
     public INamedBindingNode ReferencedDefinition { get; }
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.VariableNameExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.VariableNameExpression_Antetype);
     private DataType? type;
     private bool typeCached;
     public override DataType Type

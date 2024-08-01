@@ -12,10 +12,12 @@ internal sealed class IntegerLiteralExpressionNode : LiteralExpressionNode, IInt
 {
     public override IIntegerLiteralExpressionSyntax Syntax { get; }
     public BigInteger Value => Syntax.Value;
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.IntegerLiteralExpression_NamedAntetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                TypeExpressionsAntetypesAspect.IntegerLiteralExpression_NamedAntetype);
     private IntegerConstValueType? type;
     private bool typeCached;
     public override IntegerConstValueType Type

@@ -8,7 +8,10 @@ using System.Runtime.CompilerServices;
 namespace Azoth.Tools.Bootstrap.Framework;
 
 [CollectionBuilder(typeof(FixedSet), "Create")]
-public interface IFixedSet<out T> : IReadOnlyCollection<T>;
+public interface IFixedSet<out T> : IReadOnlyCollection<T>
+{
+    bool IsEmpty { get; }
+}
 
 public static class FixedSet
 {
@@ -105,6 +108,8 @@ public static class FixedSet
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)items).GetEnumerator();
 
         public int Count => items.Count;
+
+        public bool IsEmpty => items.Count == 0;
 
         public override bool Contains(object? item) => item is T value && items.Contains(value);
     }

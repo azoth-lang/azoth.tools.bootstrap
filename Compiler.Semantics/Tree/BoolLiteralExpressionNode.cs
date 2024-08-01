@@ -11,10 +11,12 @@ internal sealed class BoolLiteralExpressionNode : LiteralExpressionNode, IBoolLi
 {
     public override IBoolLiteralExpressionSyntax Syntax { get; }
     public bool Value => Syntax.Value;
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, TypeExpressionsAntetypesAspect.BoolLiteralExpression_NamedAntetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                TypeExpressionsAntetypesAspect.BoolLiteralExpression_NamedAntetype);
     public override BoolConstValueType Type => ExpressionTypesAspect.BoolLiteralExpression_Type(this);
 
     public BoolLiteralExpressionNode(IBoolLiteralExpressionSyntax syntax)

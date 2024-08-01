@@ -18,10 +18,11 @@ internal sealed class AwaitExpressionNode : ExpressionNode, IAwaitExpressionNode
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
     public IExpressionNode? IntermediateExpression => Expression as IExpressionNode;
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.AwaitExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype, ExpressionAntetypesAspect.AwaitExpression_Antetype);
     private DataType? type;
     private bool typeCached;
     public override DataType Type

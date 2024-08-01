@@ -30,10 +30,12 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     public ContextualizedOverload? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value
             : contextualizedOverload.GetValue(this, ExpressionTypesAspect.MethodInvocationExpression_ContextualizedOverload);
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.MethodInvocationExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.MethodInvocationExpression_Antetype);
     private DataType? type;
     private bool typeCached;
     public override DataType Type

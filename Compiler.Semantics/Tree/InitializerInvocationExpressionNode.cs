@@ -25,10 +25,12 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
     public IInitializerDeclarationNode? ReferencedDeclaration
         => referencedDeclaration.TryGetValue(out var value) ? value
             : referencedDeclaration.GetValue(this, OverloadResolutionAspect.InitializerInvocationExpression_ReferencedDeclaration);
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.InitializerInvocationExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.InitializerInvocationExpression_Antetype);
     private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
     public ContextualizedOverload? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value

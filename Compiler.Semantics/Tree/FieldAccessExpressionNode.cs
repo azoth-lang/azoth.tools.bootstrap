@@ -19,10 +19,12 @@ internal sealed class FieldAccessExpressionNode : ExpressionNode, IFieldAccessEx
             : this.RewritableChild(ref contextCached, ref context);
     public IdentifierName FieldName { get; }
     public IFieldDeclarationNode ReferencedDeclaration { get; }
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.FieldAccessExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.FieldAccessExpression_Antetype);
     private DataType? type;
     private bool typeCached;
     public override DataType Type

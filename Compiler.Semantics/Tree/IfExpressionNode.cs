@@ -28,10 +28,12 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     public IElseClauseNode? ElseClause
         => GrammarAttribute.IsCached(in elseClauseCached) ? elseClause.UnsafeValue
             : this.RewritableChild(ref elseClauseCached, ref elseClause);
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.IfExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.IfExpression_Antetype);
     private DataType? type;
     private bool typeCached;
     public override DataType Type

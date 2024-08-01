@@ -22,10 +22,12 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.FunctionReferenceInvocation_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.FunctionReferenceInvocation_Antetype);
     private FunctionType? functionType;
     private bool functionTypeCached;
     public FunctionType FunctionType

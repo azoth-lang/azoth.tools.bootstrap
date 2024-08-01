@@ -21,10 +21,12 @@ internal sealed class FunctionNameNode : AmbiguousNameExpressionNode, IFunctionN
     public StandardName FunctionName => FunctionGroup.FunctionName;
     public IFixedList<ITypeNode> TypeArguments => FunctionGroup.TypeArguments;
     public IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.FunctionName_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.FunctionName_Antetype);
     private DataType? type;
     private bool typeCached;
     public override DataType Type

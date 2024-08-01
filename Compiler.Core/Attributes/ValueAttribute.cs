@@ -6,6 +6,10 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
+/// <summary>
+/// This is the old legacy way of caching attributes. It should be replaced with
+/// <see cref="GrammarAttribute.Synthetic{TNode,T}(TNode,ref bool,ref T?,System.Func{TNode,T},string)"/>
+/// </summary>
 [StructLayout(LayoutKind.Auto)]
 public struct ValueAttribute<T>
 {

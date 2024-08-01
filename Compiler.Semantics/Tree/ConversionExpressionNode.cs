@@ -21,10 +21,12 @@ internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpr
     public IExpressionNode? IntermediateReferent => Referent as IExpressionNode;
     public ConversionOperator Operator => Syntax.Operator;
     public ITypeNode ConvertToType { get; }
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.ConversionExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.ConversionExpression_Antetype);
     private DataType? type;
     private bool typeCached;
     public override DataType Type

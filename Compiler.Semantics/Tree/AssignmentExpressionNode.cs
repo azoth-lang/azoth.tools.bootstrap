@@ -27,10 +27,11 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
             : this.RewritableChild(ref rightOperandCached, ref rightOperand);
     public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
     public IExpressionNode? IntermediateRightOperand => RightOperand as IExpressionNode;
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.AssignmentExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype, ExpressionAntetypesAspect.AssignmentExpression_Antetype);
     private DataType? type;
     private bool typeCached;
     public override DataType Type

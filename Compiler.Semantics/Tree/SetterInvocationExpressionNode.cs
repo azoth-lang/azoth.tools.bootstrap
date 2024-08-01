@@ -25,10 +25,12 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     public IExpressionNode? IntermediateValue => Value as IExpressionNode;
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     public ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.SetterInvocationExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.SetterInvocationExpression_Antetype);
     private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
     public ContextualizedOverload? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value

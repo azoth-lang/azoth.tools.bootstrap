@@ -16,11 +16,12 @@ internal sealed class GetterInvocationExpressionNode : ExpressionNode, IGetterIn
     public StandardName PropertyName { get; }
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     public IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
-
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.GetterInvocationExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.GetterInvocationExpression_Antetype);
     private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
     public ContextualizedOverload? ContextualizedOverload
         => contextualizedOverload.TryGetValue(out var value) ? value

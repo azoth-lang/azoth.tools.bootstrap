@@ -30,10 +30,12 @@ internal sealed class SelfExpressionNode : AmbiguousNameExpressionNode, ISelfExp
     public SelfParameterSymbol? ReferencedSymbol
         => referencedSymbol.TryGetValue(out var value) ? value
             : referencedSymbol.GetValue(this, SymbolAspect.SelfExpression_ReferencedSymbol);
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.SelfExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.SelfExpression_Antetype);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter

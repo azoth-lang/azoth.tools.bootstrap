@@ -21,10 +21,12 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
         => GrammarAttribute.IsCached(in operandCached) ? operand.UnsafeValue
             : this.RewritableChild(ref operandCached, ref operand);
     public IExpressionNode? IntermediateOperand => Operand as IExpressionNode;
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-         => antetype.TryGetValue(out var value) ? value
-             : antetype.GetValue(this, ExpressionAntetypesAspect.UnaryOperatorExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.UnaryOperatorExpression_Antetype);
     private DataType? type;
     private bool typeCached;
     public override DataType Type

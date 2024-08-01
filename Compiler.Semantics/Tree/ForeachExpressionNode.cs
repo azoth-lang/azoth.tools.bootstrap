@@ -91,10 +91,12 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         => GrammarAttribute.IsCached(in flowStateBeforeBlockCached) ? flowStateBeforeBlock.UnsafeValue
             : this.Circular(ref flowStateBeforeBlockCached, ref flowStateBeforeBlock,
                 ForeachExpressionTypeAspect.ForeachExpression_FlowStateBeforeBlock);
-    private ValueAttribute<IMaybeExpressionAntetype> antetype;
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
-        => antetype.TryGetValue(out var value) ? value
-            : antetype.GetValue(this, ExpressionAntetypesAspect.ForeachExpression_Antetype);
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.ForeachExpression_Antetype);
     private DataType? type;
     private bool typeCached;
     public override DataType Type
