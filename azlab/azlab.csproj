@@ -26,7 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Compiler.API\Compiler.API.csproj" />
-    <ProjectReference Include="..\Compiler.AST.Interpreter\Compiler.AST.Interpreter.csproj" />
     <ProjectReference Include="..\Compiler.Semantics.Interpreter\Compiler.Semantics.Interpreter.csproj" />
   </ItemGroup>
 </Project>
