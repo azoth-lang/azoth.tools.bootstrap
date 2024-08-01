@@ -866,14 +866,14 @@ public class InterpreterProcess
             default:
                 throw ExhaustiveMatch.Failed(pattern);
             case IBindingContextPatternNode pat:
-                throw new NotImplementedException();
+                return await ExecuteMatchAsync(value, pat.Pattern, variables).ConfigureAwait(false);
             case IBindingPatternNode pat:
                 variables.Add(pat, value);
                 return AzothValue.Bool(true);
             case IOptionalPatternNode pat:
                 if (value.IsNone)
                     return AzothValue.Bool(false);
-                return await ExecuteMatchAsync(value, pat.Pattern, variables);
+                return await ExecuteMatchAsync(value, pat.Pattern, variables).ConfigureAwait(false);
         }
     }
 
