@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -271,12 +272,8 @@ internal static class ExpressionAntetypesAspect
 
     public static IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node)
     {
-        _ = node.ExpectedAntetype;
-        // TODO this is causing a problem, something must not be participating in caching correctly
-        //_ = node.Antetype;
-
-        //if (ImplicitlyConvertToType(node.ExpectedAntetype, node.Antetype) is SimpleAntetype convertToAntetype)
-        //    return new ImplicitConversionExpressionNode(node, convertToAntetype);
+        if (ImplicitlyConvertToType(node.ExpectedAntetype, node.Antetype) is SimpleAntetype convertToAntetype)
+            return new ImplicitConversionExpressionNode(node, convertToAntetype);
 
         return null;
     }
