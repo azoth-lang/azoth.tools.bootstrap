@@ -72,7 +72,7 @@ internal class ProjectSet : IEnumerable<Project>
         Task<FixedDictionary<Project, Task<(Package, IPackageNode)?>>> projectBuildsTask,
         object consoleLock);
 
-    private async Task<(Package, IPackageNode, IFixedSet<IPackageNode>)?> ProcessProjects(
+    private async Task<(IPackageNode, IFixedSet<IPackageNode>)?> ProcessProjects(
         TaskScheduler taskScheduler,
         bool verbose,
         bool outputTests,
@@ -106,10 +106,10 @@ internal class ProjectSet : IEnumerable<Project>
 
         var entryProject = Get(entryProjectConfig);
         var entryPackageResult = await projectBuilds[entryProject];
-        if (entryPackageResult is var (entryPackage, entryPackageNode))
+        if (entryPackageResult is var (_, entryPackageNode))
         {
             var referencedPackages = allBuilds.WhereNotNull().Select(b => b.Item2).Except(entryPackageNode).ToFixedSet();
-            return (entryPackage, entryPackageNode, referencedPackages);
+            return (entryPackageNode, referencedPackages);
         }
         return null;
     }
@@ -118,7 +118,7 @@ internal class ProjectSet : IEnumerable<Project>
     {
         var packages = await ProcessProjects(taskScheduler, verbose, outputTests: false, CompileAsync, entryProjectConfig);
 
-        if (packages is not var (entryPackage, entryPackageNode, referencedPackages))
+        if (packages is not var (entryPackageNode, referencedPackages))
             // Fatal Compile Errors
             return;
 
@@ -135,7 +135,7 @@ internal class ProjectSet : IEnumerable<Project>
     {
         var packages = await ProcessProjects(taskScheduler, verbose, outputTests: true, CompileAsync, testProjectConfig);
 
-        if (packages is not var (testPackage, testPackageNode, referencedPackages))
+        if (packages is not var (testPackageNode, referencedPackages))
             // Fatal Compile Errors
             return;
 
@@ -259,7 +259,7 @@ internal class ProjectSet : IEnumerable<Project>
             return false;
         lock (consoleLock)
         {
-            Console.WriteLine($@"Build FAILED {project.Name} ({project.Path})");
+            Console.WriteLine($"Build FAILED {project.Name} ({project.Path})");
             foreach (var group in diagnostics.GroupBy(d => d.File))
             {
                 var fileDiagnostics = @group.ToList();

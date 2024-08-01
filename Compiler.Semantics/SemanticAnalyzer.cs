@@ -68,7 +68,7 @@ public class SemanticAnalyzer
         return (packageBuilder.Build(), packageNode);
     }
 
-    private static IPackageNode BuildSemanticTreeAndValidate(PackageSyntax<Package> packageSyntax)
+    private static IPackageNode BuildSemanticTreeAndValidate(IPackageSyntax packageSyntax)
     {
         // Start of new attribute grammar based approach
         var packageNode = SyntaxBinder.Bind(packageSyntax);

@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -45,7 +44,7 @@ public class BasicAnalyzer
         this.diagnostics = diagnostics;
     }
 
-    public static void Check(PackageSyntax<Package> package, UserTypeSymbol? rangeSymbol)
+    public static void Check(IPackageSyntax package, UserTypeSymbol? rangeSymbol)
     {
         // Analyze standard code (*.az)
         var analyzer = new BasicAnalyzer(package.SymbolTree, package.SymbolTrees, rangeSymbol, package.Diagnostics);
