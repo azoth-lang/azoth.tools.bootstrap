@@ -6,9 +6,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 internal class ConcreteFunctionReference : FunctionReference
 {
     private readonly InterpreterProcess interpreterProcess;
-    private readonly IFunctionDefinitionNode function;
+    private readonly IConcreteFunctionInvocableDefinitionNode function;
 
-    public ConcreteFunctionReference(InterpreterProcess interpreterProcess, IFunctionDefinitionNode function)
+    public ConcreteFunctionReference(InterpreterProcess interpreterProcess, IConcreteFunctionInvocableDefinitionNode function)
     {
         this.interpreterProcess = interpreterProcess;
         this.function = function;

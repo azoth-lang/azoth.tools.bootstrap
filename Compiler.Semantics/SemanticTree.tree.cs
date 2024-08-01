@@ -33,9 +33,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IUsingDirectiveNode),
     typeof(IInvocableDefinitionNode),
     typeof(IExecutableDefinitionNode),
+    typeof(IConcreteFunctionInvocableDefinitionNode),
     typeof(INamespaceBlockMemberDefinitionNode),
     typeof(INamespaceMemberDefinitionNode),
-    typeof(IFunctionDefinitionNode),
     typeof(ITypeDefinitionNode),
     typeof(ITypeMemberDefinitionNode),
     typeof(IConcreteMethodDefinitionNode),
@@ -320,13 +320,27 @@ public partial interface IExecutableDefinitionNode : ISemanticNode, IDefinitionN
 }
 
 [Closed(
-    typeof(IFunctionDefinitionNode),
+    typeof(IConcreteFunctionInvocableDefinitionNode),
     typeof(IConcreteMethodDefinitionNode),
     typeof(IConstructorDefinitionNode),
-    typeof(IInitializerDefinitionNode),
-    typeof(IAssociatedFunctionDefinitionNode))]
+    typeof(IInitializerDefinitionNode))]
 public partial interface IConcreteInvocableDefinitionNode : IInvocableDefinitionNode, IExecutableDefinitionNode
 {
+}
+
+[Closed(
+    typeof(IFunctionDefinitionNode),
+    typeof(IAssociatedFunctionDefinitionNode))]
+public partial interface IConcreteFunctionInvocableDefinitionNode : ISemanticNode, IConcreteInvocableDefinitionNode
+{
+    new IdentifierName Name { get; }
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    new IFixedList<INamedParameterNode> Parameters { get; }
+    ITypeNode? Return { get; }
+    IBodyNode Body { get; }
+    FunctionType Type { get; }
+    new FunctionSymbol Symbol { get; }
+    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
 }
 
 public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDefinitionNode
@@ -372,7 +386,7 @@ public partial interface INamespaceMemberDefinitionNode : ISemanticNode, INamesp
 {
 }
 
-public partial interface IFunctionDefinitionNode : ISemanticNode, IPackageMemberDefinitionNode, IFunctionDeclarationNode, IConcreteInvocableDefinitionNode
+public partial interface IFunctionDefinitionNode : IPackageMemberDefinitionNode, IFunctionDeclarationNode, IConcreteFunctionInvocableDefinitionNode
 {
     new IFunctionDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -385,14 +399,16 @@ public partial interface IFunctionDefinitionNode : ISemanticNode, IPackageMember
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
-    new IFixedList<INamedParameterNode> Parameters { get; }
-    ITypeNode? Return { get; }
-    IBodyNode Body { get; }
+    IdentifierName IConcreteFunctionInvocableDefinitionNode.Name => Name;
+    new FunctionType Type { get; }
+    FunctionType IFunctionLikeDeclarationNode.Type => Type;
+    FunctionType IConcreteFunctionInvocableDefinitionNode.Type => Type;
     new FunctionSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
-    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
+    FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
 }
 
 [Closed(
@@ -757,7 +773,7 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     IAmbiguousExpressionNode? Initializer { get; }
 }
 
-public partial interface IAssociatedFunctionDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IAssociatedMemberDefinitionNode, IAssociatedFunctionDeclarationNode
+public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IAssociatedMemberDefinitionNode, IAssociatedFunctionDeclarationNode
 {
     new IAssociatedFunctionDefinitionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -768,16 +784,18 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteInvocableD
     IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     new IdentifierName Name { get; }
+    IdentifierName IConcreteFunctionInvocableDefinitionNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
-    new IFixedList<INamedParameterNode> Parameters { get; }
-    ITypeNode? Return { get; }
     new FunctionSymbol Symbol { get; }
-    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
+    FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
-    IBodyNode Body { get; }
+    new FunctionType Type { get; }
+    FunctionType IConcreteFunctionInvocableDefinitionNode.Type => Type;
+    FunctionType IFunctionLikeDeclarationNode.Type => Type;
 }
 
 public partial interface IAttributeNode : ISemanticNode, ICodeNode

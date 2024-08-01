@@ -37,7 +37,7 @@ public class InterpreterProcess
 
     private readonly IPackageNode package;
     private readonly Task executionTask;
-    private readonly FixedDictionary<FunctionSymbol, IFunctionDefinitionNode> functions;
+    private readonly FixedDictionary<FunctionSymbol, IConcreteFunctionInvocableDefinitionNode> functions;
     private readonly FixedDictionary<MethodSymbol, IMethodDefinitionNode> structMethods;
     private readonly FixedDictionary<ConstructorSymbol, ISourceConstructorDefinitionNode?> constructors;
     private readonly FixedDictionary<InitializerSymbol, ISourceInitializerDefinitionNode?> initializers;
@@ -55,10 +55,10 @@ public class InterpreterProcess
     private InterpreterProcess(IPackageNode package, IEnumerable<IPackageNode> referencedPackages, bool runTests)
     {
         this.package = package;
-        var allDefinitions = GetAllDeclarations(package, referencedPackages,
+        var allDefinitions = GetAllDefinitions(package, referencedPackages,
             runTests ? r => r.MainFacet.Definitions.Concat(r.TestingFacet.Definitions) : r => r.MainFacet.Definitions);
         functions = allDefinitions
-                    .OfType<IFunctionDefinitionNode>()
+                    .OfType<IConcreteFunctionInvocableDefinitionNode>()
                     .ToFixedDictionary(f => f.Symbol);
 
         structMethods = allDefinitions
@@ -99,11 +99,24 @@ public class InterpreterProcess
         executionTask = runTests ? Task.Run(RunTestsAsync) : Task.Run(CallEntryPointAsync);
     }
 
-    private static List<IDefinitionNode> GetAllDeclarations(
+    private static IFixedList<IDefinitionNode> GetAllDefinitions(
         IPackageNode package,
         IEnumerable<IPackageNode> referencedPackages,
-        Func<IPackageNode, IEnumerable<IDefinitionNode>> getDeclarations)
-        => referencedPackages.Prepend(package).SelectMany(getDeclarations).ToList();
+        Func<IPackageNode, IEnumerable<IPackageMemberDefinitionNode>> getPackageMemberDefinitions)
+        => GetAllDefinitions(referencedPackages.Prepend(package).SelectMany(getPackageMemberDefinitions)).ToFixedList();
+
+    private static IEnumerable<IDefinitionNode> GetAllDefinitions(
+        IEnumerable<IPackageMemberDefinitionNode> packageMemberDefinitions)
+    {
+        var definitions = new Queue<IDefinitionNode>();
+        definitions.EnqueueRange(packageMemberDefinitions);
+        while (definitions.TryDequeue(out var definition))
+        {
+            yield return definition;
+            if (definition is ITypeDefinitionNode syn)
+                definitions.EnqueueRange(syn.Members);
+        }
+    }
 
     private async Task CallEntryPointAsync()
     {
@@ -194,7 +207,9 @@ public class InterpreterProcess
         return await ConstructClass(@class, constructorSymbol, []);
     }
 
-    internal async Task<AzothValue> CallFunctionAsync(IFunctionDefinitionNode function, IEnumerable<AzothValue> arguments)
+    internal async Task<AzothValue> CallFunctionAsync(
+        IConcreteFunctionInvocableDefinitionNode function,
+        IEnumerable<AzothValue> arguments)
     {
         try
         {
