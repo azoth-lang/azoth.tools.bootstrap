@@ -35,6 +35,11 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations
         => primitivesDeclarations.TryGetValue(out var value) ? value
             : primitivesDeclarations.GetValue(this, BuiltInsAspect.Package_PrimitivesDeclarations);
+    private IFunctionDefinitionNode? entryPoint;
+    private bool entryPointCached;
+    public IFunctionDefinitionNode? EntryPoint
+        => GrammarAttribute.IsCached(in entryPointCached) ? entryPoint
+            : this.Synthetic(ref entryPointCached, ref entryPoint, DeclarationsAspect.Package_EntryPoint);
     public IFixedSet<IPackageReferenceNode> References { get; }
     private ValueAttribute<IPackageReferenceNode> intrinsicsReference;
     public IPackageReferenceNode IntrinsicsReference

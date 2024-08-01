@@ -41,7 +41,7 @@ Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Sy
     References:{PackageReference} IntrinsicsReference:`IPackageReferenceNode`
     PackageDeclarations:`FixedDictionary<IdentifierName,IPackageDeclarationNode>`
     MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`Diagnostic`*
-    PrimitivesDeclarations:{TypeDeclaration};
+    PrimitivesDeclarations:{TypeDeclaration} EntryPoint:`IFunctionDefinitionNode`?;
 
 PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPackageSymbolNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;

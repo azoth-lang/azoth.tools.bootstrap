@@ -201,6 +201,7 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
     IFixedList<Diagnostic> Diagnostics { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
+    IFunctionDefinitionNode? EntryPoint { get; }
 }
 
 public partial interface IPackageReferenceNode : IChildNode

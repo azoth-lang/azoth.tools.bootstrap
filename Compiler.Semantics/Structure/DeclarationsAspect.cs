@@ -16,4 +16,9 @@ internal static class DeclarationsAspect
         static IEnumerable<INamespaceBlockMemberDefinitionNode> NamespaceChildren(INamespaceBlockMemberDefinitionNode m)
             => (m as INamespaceBlockDefinitionNode)?.Members ?? Enumerable.Empty<INamespaceBlockMemberDefinitionNode>();
     }
+
+    public static IFunctionDefinitionNode? Package_EntryPoint(IPackageNode node)
+        // TODO warn on and remove main functions that don't have correct parameters or types
+        // TODO compiler error on multiple main functions
+        => node.MainFacet.Definitions.OfType<IFunctionDefinitionNode>().SingleOrDefault(f => f.Name == "main");
 }
