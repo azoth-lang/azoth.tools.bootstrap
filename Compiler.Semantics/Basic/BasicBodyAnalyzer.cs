@@ -1622,13 +1622,18 @@ public class BasicBodyAnalyzer
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindFunction(file, invocation));
-                promise.Fulfill(null);
-                invocation.ReferencedSymbol.Fulfill(null);
+                // Already assigned by SemanticsApplier
+                //promise.Fulfill(null);
+                //invocation.ReferencedSymbol.Fulfill(null);
                 return null;
             case 1:
                 var overload = validOverloads.Single();
-                promise.Fulfill(overload.Symbol);
-                invocation.ReferencedSymbol.Fulfill(overload.Symbol);
+                // May already be assigned by SemanticsApplier
+                if (!promise.IsFulfilled)
+                {
+                    promise.Fulfill(overload.Symbol);
+                    invocation.ReferencedSymbol.Fulfill(overload.Symbol);
+                }
                 var functionType = new FunctionType(overload.ParameterTypes, overload.ReturnType);
                 return functionType;
             default:
@@ -1743,7 +1748,8 @@ public class BasicBodyAnalyzer
         if (nextMethod is null)
         {
             if (iterateMethod is null) return ForeachNoIterateOrNextMethod();
-            diagnostics.Add(OtherSemanticError.ForeachNoNextMethod(file, inExpression, iterableType));
+            // ERROR reported by semantic tree
+            //diagnostics.Add(OtherSemanticError.ForeachNoNextMethod(file, inExpression, iterableType));
             return (result, declaredType ?? DataType.Unknown);
         }
 
@@ -1770,7 +1776,8 @@ public class BasicBodyAnalyzer
 
         (ExpressionResult, DataType) ForeachNoIterateOrNextMethod()
         {
-            diagnostics.Add(OtherSemanticError.ForeachNoIterateOrNextMethod(file, inExpression, result.Type));
+            // ERROR reported by semantic tree
+            //diagnostics.Add(OtherSemanticError.ForeachNoIterateOrNextMethod(file, inExpression, result.Type));
             return (result, declaredType ?? DataType.Unknown);
         }
     }

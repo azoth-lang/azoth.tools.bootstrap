@@ -1,3 +1,5 @@
+using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -9,10 +11,10 @@ internal static class ForeachExpressionTypeAspect
     {
         var iterableType = node.IntermediateInExpression?.Type ?? DataType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
-        var iteratorAntetype = iterableType is NonEmptyType nonEmptyIterableType && iterateMethod is not null
+        var iteratorType = iterableType is NonEmptyType nonEmptyIterableType && iterateMethod is not null
             ? nonEmptyIterableType.ReplaceTypeParametersIn(iterateMethod.MethodGroupType.Return.Type)
             : iterableType;
-        return iteratorAntetype;
+        return iteratorType;
     }
 
     public static DataType ForeachExpression_IteratedType(IForeachExpressionNode node)
@@ -43,4 +45,17 @@ internal static class ForeachExpressionTypeAspect
         => (node.IntermediateInExpression?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty)
             // TODO when the `foreach` has a type other than void, correctly handle the value id
             .Constant(node.ValueId);
+
+    public static void ForeachExpression_ContributeDiagnostics(IForeachExpressionNode node, Diagnostics diagnostics)
+    {
+        var iterableType = node.IntermediateInExpression?.Type ?? DataType.Unknown;
+        if (iterableType is UnknownType)
+            // Don't know if there are any errors until the type is known
+            return;
+
+        if (node.IteratorType is UnknownType)
+            diagnostics.Add(OtherSemanticError.ForeachNoIterateOrNextMethod(node.File, node.InExpression.Syntax, iterableType));
+        else if (node.ReferencedNextMethod is null)
+            diagnostics.Add(OtherSemanticError.ForeachNoNextMethod(node.File, node.InExpression.Syntax, iterableType));
+    }
 }

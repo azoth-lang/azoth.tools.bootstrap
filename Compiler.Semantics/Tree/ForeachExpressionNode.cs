@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -147,4 +148,10 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         // Include the BindingValueId in the value id flow
         => BindingValueId;
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        ForeachExpressionTypeAspect.ForeachExpression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
+    }
 }

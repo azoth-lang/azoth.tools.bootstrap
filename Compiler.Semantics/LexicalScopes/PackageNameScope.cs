@@ -126,7 +126,8 @@ public sealed class PackageNameScope
             OptionalAntetype _ => throw new NotImplementedException(),
             NominalAntetype t => Lookup(t.DeclaredAntetype),
             SimpleAntetype t => Lookup(t),
-            ConstValueAntetype _ => throw new NotImplementedException(),
+            // TODO There are no declarations for const value type, but perhaps there should be?
+            ConstValueAntetype _ => null,
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 

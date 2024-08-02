@@ -836,7 +836,10 @@ internal class SemanticsApplier
 
     private static void FunctionInvocationExpression(IFunctionInvocationExpressionNode node)
     {
-        FunctionGroupName(node.FunctionGroup);
+        var semantics = FunctionGroupName(node.FunctionGroup);
+        var symbol = node.ReferencedDeclaration?.Symbol;
+        semantics.Symbol.Fulfill(symbol);
+        node.Syntax.ReferencedSymbol.Fulfill(symbol);
         AmbiguousExpressions(node.Arguments);
     }
 
@@ -855,7 +858,6 @@ internal class SemanticsApplier
         node.Syntax.Semantics.Fulfill(semantics);
         Expression(node.Context);
     }
-
 
     private static void SetterInvocationExpression(ISetterInvocationExpressionNode node)
     {
