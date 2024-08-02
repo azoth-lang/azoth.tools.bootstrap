@@ -774,6 +774,7 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     FieldSymbol IFieldDeclarationNode.Symbol => Symbol;
     IAmbiguousExpressionNode? Initializer { get; }
     IAmbiguousExpressionNode? CurrentInitializer { get; }
+    IExpressionNode? IntermediateInitializer { get; }
 }
 
 public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IAssociatedMemberDefinitionNode, IAssociatedFunctionDeclarationNode

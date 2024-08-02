@@ -17,7 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static class TypeMemberDeclarationsAspect
 {
-    public static FunctionType FunctionDeclaration_Type(IFunctionDefinitionNode node)
+    public static FunctionType FunctionDefinition_Type(IFunctionDefinitionNode node)
         => FunctionType(node.Parameters, node.Return);
 
     private static FunctionType FunctionType(IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
@@ -27,7 +27,7 @@ internal static class TypeMemberDeclarationsAspect
         return new FunctionType(parameterTypes, new ReturnType(returnType));
     }
 
-    public static void MethodDeclaration_ContributeDiagnostics(IMethodDefinitionNode node, Diagnostics diagnostics)
+    public static void MethodDefinition_ContributeDiagnostics(IMethodDefinitionNode node, Diagnostics diagnostics)
         => CheckParameterAndReturnAreVarianceSafe(node, diagnostics);
 
     private static void CheckParameterAndReturnAreVarianceSafe(IMethodDefinitionNode node, Diagnostics diagnostics)
@@ -60,7 +60,7 @@ internal static class TypeMemberDeclarationsAspect
     public static IMaybeAntetype NamedParameter_BindingAntetype(INamedParameterNode node)
         => node.TypeNode.NamedAntetype;
 
-    public static DataType NamedParameterNode_BindingType(INamedParameterNode node)
+    public static DataType NamedParameter_BindingType(INamedParameterNode node)
         => node.TypeNode.NamedType;
 
     public static ParameterType NamedParameter_ParameterType(INamedParameterNode node)
@@ -183,9 +183,9 @@ internal static class TypeMemberDeclarationsAspect
         }
     }
 
-    public static DataType FieldDeclaration_BindingType(IFieldDefinitionNode node) => node.TypeNode.NamedType;
+    public static DataType FieldDefinition_BindingType(IFieldDefinitionNode node) => node.TypeNode.NamedType;
 
-    public static void FieldDeclaration_ContributeDiagnostics(IFieldDefinitionNode node, Diagnostics diagnostics)
+    public static void FieldDefinition_ContributeDiagnostics(IFieldDefinitionNode node, Diagnostics diagnostics)
     {
         CheckFieldIsVarianceSafe(node, diagnostics);
 
@@ -226,7 +226,7 @@ internal static class TypeMemberDeclarationsAspect
             diagnostics.Add(TypeError.FieldMustMaintainIndependence(node.File, node.Syntax, type));
     }
 
-    public static FunctionType AssociatedFunctionDeclaration_Type(IAssociatedFunctionDefinitionNode node)
+    public static FunctionType AssociatedFunctionDefinition_Type(IAssociatedFunctionDefinitionNode node)
         => FunctionType(node.Parameters, node.Return);
 
     // TODO maybe this should be initial flow state?

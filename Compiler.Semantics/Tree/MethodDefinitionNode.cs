@@ -46,7 +46,7 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        TypeMemberDeclarationsAspect.MethodDeclaration_ContributeDiagnostics(this, diagnostics);
+        TypeMemberDeclarationsAspect.MethodDefinition_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 

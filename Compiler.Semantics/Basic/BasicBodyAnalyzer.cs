@@ -114,7 +114,7 @@ public class BasicBodyAnalyzer
         SymbolForest symbolTrees,
         UserTypeSymbol? rangeSymbol,
         Diagnostics diagnostics)
-        : this(containingDefinition, Enumerable.Empty<BindingSymbol>(),
+        : this(containingDefinition, [],
             symbolTreeBuilder, symbolTrees, rangeSymbol, diagnostics, null)
     { }
 
@@ -139,6 +139,8 @@ public class BasicBodyAnalyzer
 
     public void ResolveTypes(IBodySyntax body)
     {
+        if (returnType is not { } expectedReturnType)
+            throw new InvalidOperationException("Field definitions don't have bodies.");
         var flow = new FlowStateMutable(diagnostics, file, parameterSharing);
         switch (body)
         {
@@ -148,7 +150,7 @@ public class BasicBodyAnalyzer
                 ResolveTypes(syn, flow);
                 break;
             case IExpressionBodySyntax syn:
-                ResolveTypes(syn, flow);
+                ResolveTypes(syn, flow, expectedReturnType.Type);
                 break;
         }
     }
@@ -156,15 +158,12 @@ public class BasicBodyAnalyzer
     private void ResolveTypes(IBlockBodySyntax body, FlowStateMutable flow)
     {
         foreach (var statement in body.Statements)
-            ResolveTypes(statement, StatementContext.BodyLevel, flow);
+            ResolveTypes(statement, flow);
     }
 
-    private void ResolveTypes(IExpressionBodySyntax body, FlowStateMutable flow)
+    private void ResolveTypes(IExpressionBodySyntax body, FlowStateMutable flow, DataType expectedType)
     {
-        if (returnType is not { } expectedReturnType)
-            throw new NotImplementedException("Expression body in field initializer.");
-        var expectedType = expectedReturnType.Type;
-        var result = ResolveTypes(body.ResultStatement, StatementContext.BeforeResult, flow)!;
+        var result = ResolveTypes(body.ResultStatement, flow)!;
         // local variables are no longer in scope and isolated parameters have no external references
         flow.DropBindingsForReturn();
         result = AddImplicitConversionIfNeeded(result, expectedType, allowMoveOrFreeze: true, flow);
@@ -177,7 +176,6 @@ public class BasicBodyAnalyzer
     /// </summary>
     private ExpressionResult? ResolveTypes(
         IStatementSyntax statement,
-        StatementContext context,
         FlowStateMutable flow)
     {
         switch (statement)
@@ -1594,8 +1592,7 @@ public class BasicBodyAnalyzer
                 ExpressionResult? blockResult = null;
                 foreach (var statement in block.Statements)
                 {
-                    var context = blockResult is null ? StatementContext.BeforeResult : StatementContext.AfterResult;
-                    var resultType = ResolveTypes(statement, context, flow);
+                    var resultType = ResolveTypes(statement, flow);
                     // Always resolve types even if there is already a block type
                     blockResult ??= resultType;
                 }

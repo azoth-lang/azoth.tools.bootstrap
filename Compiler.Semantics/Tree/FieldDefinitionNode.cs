@@ -33,7 +33,8 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     private bool bindingTypeCached;
     public DataType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : this.Synthetic(ref bindingTypeCached, ref bindingType, TypeMemberDeclarationsAspect.FieldDeclaration_BindingType);
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                TypeMemberDeclarationsAspect.FieldDefinition_BindingType);
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     private FieldSymbol? symbol;
     private bool symbolCached;
@@ -46,6 +47,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
             : this.RewritableChild(ref initializerCached, ref initializer);
     public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
+    public IExpressionNode? IntermediateInitializer => Initializer as IExpressionNode;
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value
@@ -61,7 +63,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        TypeMemberDeclarationsAspect.FieldDeclaration_ContributeDiagnostics(this, diagnostics);
+        TypeMemberDeclarationsAspect.FieldDefinition_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 

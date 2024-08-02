@@ -33,7 +33,7 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     private bool typeCached;
     public FunctionType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type, TypeMemberDeclarationsAspect.AssociatedFunctionDeclaration_Type);
+            : this.Synthetic(ref typeCached, ref type, TypeMemberDeclarationsAspect.AssociatedFunctionDefinition_Type);
     public IBodyNode Body { get; }
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;

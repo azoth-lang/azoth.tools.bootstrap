@@ -177,7 +177,8 @@ SourceInitializerDefinition <: InitializerDefinition
     SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
 FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding, FieldDeclaration, ExecutableDefinition
     = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type BindingAntetype:`IMaybeAntetype` BindingType:`DataType`
-    Symbol:`FieldSymbol` Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?;
+    Symbol:`FieldSymbol` Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
+    IntermediateInitializer:`IExpressionNode`?;
 AssociatedFunctionDefinition <: ConcreteFunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
    Symbol:`FunctionSymbol` Type:`FunctionType` Body;

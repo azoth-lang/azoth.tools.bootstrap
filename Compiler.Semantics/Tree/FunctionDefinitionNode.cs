@@ -40,7 +40,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     private bool typeCached;
     public FunctionType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type, TypeMemberDeclarationsAspect.FunctionDeclaration_Type);
+            : this.Synthetic(ref typeCached, ref type, TypeMemberDeclarationsAspect.FunctionDefinition_Type);
     private ValueAttribute<ValueIdScope> valueIdScope;
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value
