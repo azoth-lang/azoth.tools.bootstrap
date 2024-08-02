@@ -842,7 +842,8 @@ internal class SemanticsApplier
 
     private static void MethodInvocationExpression(IMethodInvocationExpressionNode node)
     {
-        MethodGroupName(node.MethodGroup);
+        var semantics = MethodGroupName(node.MethodGroup);
+        semantics.Symbol.Fulfill(node.ReferencedDeclaration?.Symbol);
         AmbiguousExpressions(node.Arguments);
     }
 
@@ -1052,7 +1053,7 @@ internal class SemanticsApplier
         NamespaceName(node.Context);
     }
 
-    private static void FunctionGroupName(IFunctionGroupNameNode node)
+    private static FunctionGroupNameSyntax FunctionGroupName(IFunctionGroupNameNode node)
     {
         var semantics = new FunctionGroupNameSyntax(
             node.ReferencedDeclarations.Select(d => d.Symbol).ToFixedSet());
@@ -1066,17 +1067,22 @@ internal class SemanticsApplier
                 break;
         }
         Expression(node.Context);
+        return semantics;
     }
 
     private static void FunctionName(IFunctionNameNode node)
-        => FunctionGroupName(node.FunctionGroup);
+    {
+        var semantics = FunctionGroupName(node.FunctionGroup);
+        semantics.Symbol.Fulfill(node.ReferencedDeclaration?.Symbol);
+    }
 
-    private static void MethodGroupName(IMethodGroupNameNode node)
+    private static MethodGroupNameSyntax MethodGroupName(IMethodGroupNameNode node)
     {
         var semantics = new MethodGroupNameSyntax(
                        node.ReferencedDeclarations.Select(d => d.Symbol).ToFixedSet());
         node.Syntax.Semantics.Fulfill(semantics);
         Expression(node.Context);
+        return semantics;
     }
 
     private static void FieldAccessExpression(IFieldAccessExpressionNode node)

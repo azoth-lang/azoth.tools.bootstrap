@@ -611,11 +611,8 @@ public class BasicBodyAnalyzer
                         var type = flow.AliasType(sem.Symbol);
                         sem.Type.Fulfill(type);
                         return new ExpressionResult(exp, resultVariable);
-                    case FunctionGroupNameSyntax sem:
-                        // TODO this is a hack. We should not be inferring the type of a function group
-                        var functionSymbol = sem.Symbols.TrySingle();
-                        if (functionSymbol is not null)
-                            sem.Symbol.Fulfill(functionSymbol);
+                    case FunctionGroupNameSyntax _:
+                        // Symbol already applied
                         return new ExpressionResult(exp);
                     case TypeNameSyntax _:
                     case NamespaceNameSyntax _:
@@ -1310,7 +1307,8 @@ public class BasicBodyAnalyzer
                         // Make sure to infer argument type *after* the context type
                         args = InferArgumentTypes(contextResult, invocation.Arguments, flow);
                         var method = InferSymbol(invocation, sem.Symbols, args, flow);
-                        sem.Symbol.Fulfill(method?.Symbol);
+                        // Symbol already applied by SemanticsApplier
+                        //sem.Symbol.Fulfill(method?.Symbol);
                         return InferMethodInvocationType(invocation, invocation.DataType, method, args, flow);
                     }
                     case FunctionGroupNameSyntax sem:
