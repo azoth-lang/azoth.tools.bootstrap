@@ -8,7 +8,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
-using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
@@ -61,8 +60,8 @@ public partial class ConformanceTests
         var references = new List<PackageReference>();
 
         // Reference Standard Library
-        var (supportPackage, supportPackageNode) = CompileSupportPackage(compiler);
-        references.Add(new PackageReference(TestsSupportPackage.Name, supportPackage, true));
+        var supportPackage = CompileSupportPackage(compiler);
+        references.Add(new PackageReference(TestsSupportPackage.Name, supportPackage.PackageSymbols, true));
 
         try
         {
@@ -87,7 +86,7 @@ public partial class ConformanceTests
             //packageIL.Position = 0;
 
             // Execute and check results
-            var process = Execute(packageNode, supportPackageNode);
+            var process = Execute(packageNode, supportPackage);
             //var process = Execute(packageIL, stdLibIL);
 
             await process.WaitForExitAsync();
@@ -108,7 +107,7 @@ public partial class ConformanceTests
         }
     }
 
-    private (Package package, IPackageNode packageNode) CompileSupportPackage(AzothCompiler compiler)
+    private IPackageNode CompileSupportPackage(AzothCompiler compiler)
     {
         try
         {
@@ -119,7 +118,7 @@ public partial class ConformanceTests
             var (package, packageNode) = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles, [], []);
             if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                 ReportSupportCompilationErrors(package.Diagnostics);
-            return (package, packageNode);
+            return packageNode;
         }
         catch (FatalCompilationErrorException ex)
         {

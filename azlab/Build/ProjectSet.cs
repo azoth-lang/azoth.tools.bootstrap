@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
-using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
@@ -66,11 +65,11 @@ internal class ProjectSet : IEnumerable<Project>
     public async Task BuildAsync(TaskScheduler taskScheduler, bool verbose)
         => await ProcessProjects(taskScheduler, verbose, outputTests: false, BuildAsync, null);
 
-    private delegate Task<(Package, IPackageNode)?> ProcessAsync(
+    private delegate Task<IPackageNode?> ProcessAsync(
         AzothCompiler compiler,
         Project project,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<(Package, IPackageNode)?>>> projectBuildsTask,
+        Task<FixedDictionary<Project, Task<IPackageNode?>>> projectBuildsTask,
         AsyncLock consoleLock);
 
     private async Task<(IPackageNode, IFixedSet<IPackageNode>)?> ProcessProjects(
@@ -82,9 +81,9 @@ internal class ProjectSet : IEnumerable<Project>
     {
         _ = verbose; // verbose parameter will be needed in the future
         var taskFactory = new TaskFactory(taskScheduler);
-        var projectBuilds = new Dictionary<Project, Task<(Package, IPackageNode)?>>();
+        var projectBuilds = new Dictionary<Project, Task<IPackageNode?>>();
 
-        var projectBuildsSource = new TaskCompletionSource<FixedDictionary<Project, Task<(Package, IPackageNode)?>>>();
+        var projectBuildsSource = new TaskCompletionSource<FixedDictionary<Project, Task<IPackageNode?>>>();
         var projectBuildsTask = projectBuildsSource.Task;
 
         // Sort projects to detect cycles and so we can assume the tasks already exist
@@ -106,13 +105,11 @@ internal class ProjectSet : IEnumerable<Project>
         if (entryProjectConfig is null) return null;
 
         var entryProject = Get(entryProjectConfig);
-        var entryPackageResult = await projectBuilds[entryProject];
-        if (entryPackageResult is var (_, entryPackageNode))
-        {
-            var referencedPackages = allBuilds.WhereNotNull().Select(b => b.Item2).Except(entryPackageNode).ToFixedSet();
-            return (entryPackageNode, referencedPackages);
-        }
-        return null;
+        var entryPackage = await projectBuilds[entryProject];
+        if (entryPackage is null)
+            return null;
+        var referencedPackages = allBuilds.WhereNotNull().Except(entryPackage).ToFixedSet();
+        return (entryPackage, referencedPackages);
     }
 
     public async Task InterpretAsync(TaskScheduler taskScheduler, bool verbose, ProjectConfig entryProjectConfig)
@@ -149,32 +146,32 @@ internal class ProjectSet : IEnumerable<Project>
         await Console.Error.WriteLineAsync(stderr);
     }
 
-    private static async Task<(Package, IPackageNode)?> BuildAsync(
+    private static async Task<IPackageNode?> BuildAsync(
         AzothCompiler compiler,
         Project project,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<(Package, IPackageNode)?>>> projectBuildsTask,
+        Task<FixedDictionary<Project, Task<IPackageNode?>>> projectBuildsTask,
         AsyncLock consoleLock)
     {
-        var compileResult = await CompileAsync(compiler, project, outputTests, projectBuildsTask, consoleLock);
-        if (compileResult is not var (package, packageNode)) return null;
+        var package = await CompileAsync(compiler, project, outputTests, projectBuildsTask, consoleLock);
+        if (package is null) return null;
 
         var cacheDir = PrepareCacheDir(project);
-        var codePath = EmitIL(project, packageNode, outputTests, cacheDir);
+        var codePath = EmitIL(project, package, outputTests, cacheDir);
 
         using (await consoleLock.LockAsync())
         {
             Console.WriteLine($"Build SUCCEEDED {project.Name} ({project.Path})");
         }
 
-        return (package, packageNode);
+        return package;
     }
 
-    private static async Task<(Package, IPackageNode)?> CompileAsync(
+    private static async Task<IPackageNode?> CompileAsync(
         AzothCompiler compiler,
         Project project,
         bool outputTests,
-        Task<FixedDictionary<Project, Task<(Package, IPackageNode)?>>> projectBuildsTask,
+        Task<FixedDictionary<Project, Task<IPackageNode?>>> projectBuildsTask,
         AsyncLock consoleLock)
     {
         // Doesn't affect compilation, only IL emitting
@@ -189,9 +186,9 @@ internal class ProjectSet : IEnumerable<Project>
         var references = new HashSet<PackageReference>();
         foreach (var (reference, packageTask) in referenceTasks)
         {
-            var packageResult = await packageTask.ConfigureAwait(false);
-            if (packageResult is var (package, _))
-                references.Add(new PackageReference(reference.NameOrAlias, package, reference.IsTrusted));
+            var package = await packageTask.ConfigureAwait(false);
+            if (package is not null)
+                references.Add(new PackageReference(reference.NameOrAlias, package.PackageSymbols, reference.IsTrusted));
         }
 
         using (await consoleLock.LockAsync())
@@ -209,14 +206,14 @@ internal class ProjectSet : IEnumerable<Project>
             //var package = await compiler.CompilePackageAsync(project.Name, codeFiles, references);
 
             if (OutputDiagnostics(project, package.Diagnostics, consoleLock))
-                return (package, packageNode);
+                return packageNode;
 
             using (await consoleLock.LockAsync())
             {
                 Console.WriteLine($"Compile SUCCEEDED {project.Name} ({project.Path})");
             }
 
-            return (package, packageNode);
+            return packageNode;
         }
         catch (FatalCompilationErrorException ex)
         {
