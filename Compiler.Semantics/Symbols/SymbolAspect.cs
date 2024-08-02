@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -17,7 +18,15 @@ internal static class SymbolAspect
     /// All the symbols of this package in a form suitable for other packages to reference.
     /// </summary>
     public static IPackageSymbols Package_PackageSymbols(IPackageNode node)
-        => new PackageSymbols(node.Symbol, node.MainFacet, node.TestingFacet);
+    {
+        var mainTreeBuilder = new SymbolTreeBuilder(node.Symbol);
+        var mainForest = BuiltIn.CreateSymbolForest(mainTreeBuilder, node.References.Select(p => p.PackageSymbols.SymbolTree));
+        var mainTree = new PackageSymbolTreeBuilder(mainTreeBuilder, node.MainFacet, mainForest).Build();
+        var testingTreeBuilder = new TestingSymbolTreeBuilder(mainTreeBuilder);
+        var testingForest = BuiltIn.CreateSymbolForest(testingTreeBuilder, node.References.Select(p => p.PackageSymbols.TestingSymbolTree));
+        var testingTree = new PackageSymbolTreeBuilder(testingTreeBuilder, node.MainFacet, testingForest).Build();
+        return new PackageSymbols(node.Symbol, mainTree, testingTree);
+    }
 
     public static PackageSymbol Package_Symbol(IPackageNode node) => new(node.Name);
 
