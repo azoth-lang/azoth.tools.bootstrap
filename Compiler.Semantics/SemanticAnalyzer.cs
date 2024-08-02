@@ -7,7 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Startup;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
@@ -58,11 +57,6 @@ public class SemanticAnalyzer
         var packageBuilder = CheckSemantics(packageSyntax, packageNode);
 
         // If there are errors from the semantics phase, don't continue on
-        packageBuilder.Diagnostics.ThrowIfFatalErrors();
-
-        EntryPoint.Determine(packageBuilder);
-
-        // If there are errors from the previous phase, don't continue on
         packageBuilder.Diagnostics.ThrowIfFatalErrors();
 
         return (packageBuilder.Build(), packageNode);

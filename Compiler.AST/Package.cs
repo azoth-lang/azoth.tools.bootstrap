@@ -18,7 +18,6 @@ public class Package : IPackageSymbols
     public FixedSymbolTree TestingSymbolTree { get; }
     public IFixedList<Diagnostic> Diagnostics { get; }
     public IFixedSet<IPackageSymbols> References { get; }
-    public IFunctionDeclaration? EntryPoint { get; }
 
     public Package(
         IFixedSet<INonMemberDeclaration> nonMemberDeclarations,
@@ -26,8 +25,7 @@ public class Package : IPackageSymbols
         FixedSymbolTree symbolTree,
         FixedSymbolTree testingSymbolTree,
         IFixedList<Diagnostic> diagnostics,
-        IFixedSet<IPackageSymbols> references,
-        IFunctionDeclaration? entryPoint)
+        IFixedSet<IPackageSymbols> references)
     {
         Declarations = GetAllDeclarations(nonMemberDeclarations).ToFixedSet();
         TestingDeclarations = GetAllDeclarations(testingNonMemberDeclarations).ToFixedSet();
@@ -38,7 +36,6 @@ public class Package : IPackageSymbols
         TestingSymbolTree = testingSymbolTree;
         Diagnostics = diagnostics;
         References = references;
-        EntryPoint = entryPoint;
     }
 
     private static IEnumerable<IDeclaration> GetAllDeclarations(

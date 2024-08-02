@@ -17,7 +17,6 @@ internal class PackageBuilder
     public FixedSymbolTree TestingSymbolTree { get; }
     public Diagnostics Diagnostics { get; }
     public IFixedSet<IPackageSymbols> References { get; }
-    public IFunctionDeclaration? EntryPoint { get; set; }
 
     public PackageBuilder(
         IFixedSet<INonMemberDeclaration> nonMemberDeclarations,
@@ -52,7 +51,6 @@ internal class PackageBuilder
     public Package Build()
     {
         return new(NonMemberDeclarations, NonMemberTestingDeclarations, SymbolTree, TestingSymbolTree,
-            Diagnostics.ToFixedList(), References,
-            EntryPoint);
+            Diagnostics.ToFixedList(), References);
     }
 }
