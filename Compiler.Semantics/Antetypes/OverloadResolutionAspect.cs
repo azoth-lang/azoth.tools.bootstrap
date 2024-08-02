@@ -151,16 +151,18 @@ internal static class OverloadResolutionAspect
 
     public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, Diagnostics diagnostics)
     {
-        if (node.ConstructingAntetype is UnknownAntetype
-            || node.ReferencedConstructor is not null)
-            return;
-
-        if (node.ConstructingAntetype is NominalAntetype { DeclaredAntetype.IsAbstract: true })
+        switch (node.ConstructingAntetype)
         {
-            // TODO uncomment once semantic tree can provide type for this error
-            //diagnostics.Add(OtherSemanticError.CannotConstructAbstractType(node.File, exp.Type));
-            return;
+            case UnknownAntetype:
+                // Error should be reported elsewhere
+                return;
+            case NominalAntetype { DeclaredAntetype.IsAbstract: true }:
+                diagnostics.Add(OtherSemanticError.CannotConstructAbstractType(node.File, node.ConstructingType.Syntax));
+                return;
         }
+
+        if (node.ReferencedConstructor is not null)
+            return;
 
         switch (node.CompatibleConstructors.Count)
         {

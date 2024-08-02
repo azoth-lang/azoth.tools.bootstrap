@@ -715,7 +715,7 @@ public class BasicBodyAnalyzer
 
                 if (!constructingType.IsFullyKnown)
                 {
-                    diagnostics.Add(NameBindingError.CouldNotBindConstructor(file, exp.Span));
+                    // ERROR could not bind constructor
                     // Symbol already assigned by SemanticsApplier
                     if (exp.ReferencedSymbol.Result is not null)
                         throw new InvalidOperationException("Symbol should match expected");
@@ -727,7 +727,7 @@ public class BasicBodyAnalyzer
 
                 if (constructingType is BareReferenceType { DeclaredType.IsAbstract: true })
                 {
-                    diagnostics.Add(OtherSemanticError.CannotConstructAbstractType(file, exp.Type));
+                    // ERROR: Cannot construct abstract type
                     // Symbol already assigned by SemanticsApplier
                     // Note: it may actually pick a constructor on the abstract type, so the symbol may not be null
                     exp.DataType.Fulfill(DataType.Unknown);
