@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
@@ -42,4 +43,10 @@ internal sealed class AwaitExpressionNode : ExpressionNode, IAwaitExpressionNode
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Expression.GetFlowLexicalScope();
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        ExpressionAntetypesAspect.AwaitExpression_CollectDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
+    }
 }

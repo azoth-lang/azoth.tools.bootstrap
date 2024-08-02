@@ -947,7 +947,7 @@ public class BasicBodyAnalyzer
                 if (result.Type is not CapabilityType { DeclaredType: { } declaredType } promiseType
                     || !declaredType.Equals(Intrinsic.PromiseType))
                 {
-                    diagnostics.Add(TypeError.CannotAwaitType(file, exp.Span, result.Type));
+                    // ERROR cannot await type
                     exp.DataType.Fulfill(DataType.Unknown);
                     return new ExpressionResult(exp, result.Variable);
                 }

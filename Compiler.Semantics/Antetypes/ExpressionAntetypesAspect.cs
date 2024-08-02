@@ -261,6 +261,16 @@ internal static class ExpressionAntetypesAspect
         return IAntetype.Unknown;
     }
 
+    public static void AwaitExpression_CollectDiagnostics(IAwaitExpressionNode node, Diagnostics diagnostics)
+    {
+        // TODO eliminate code duplication with AwaitExpression_Antetype
+        if (node.IntermediateExpression?.Antetype is UserGenericNominalAntetype { DeclaredAntetype: var declaredAntetype }
+            && Intrinsic.PromiseAntetype.Equals(declaredAntetype))
+            return;
+
+        diagnostics.Add(TypeError.CannotAwaitType(node.File, node.Syntax.Span, node.IntermediateExpression!.Type));
+    }
+
     public static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype(IUnaryOperatorExpressionNode node)
         => node.Operator switch
         {
