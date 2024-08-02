@@ -238,7 +238,7 @@ public static class TypeError
             3035, $"No function in group `{nameSyntax.ToString()}` matches the expected type `{functionType.ToSourceCodeString()}`.");
     }
 
-    public static Diagnostic AmbiguousFunctionGroup(CodeFile file, INameExpressionSyntax nameSyntax, FunctionType functionType)
+    public static Diagnostic AmbiguousFunctionGroup(CodeFile file, INameExpressionSyntax nameSyntax, DataType functionType)
     {
         return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3036, $"Function group `{nameSyntax.ToString()}` has multiple functions that match the expected type `{functionType.ToSourceCodeString()}`.");

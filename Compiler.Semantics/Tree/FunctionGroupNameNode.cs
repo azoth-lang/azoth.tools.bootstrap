@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -29,8 +30,17 @@ internal sealed class FunctionGroupNameNode : AmbiguousNameExpressionNode, IFunc
         FunctionName = functionName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
+        Requires.That(nameof(referencedDeclarations), !ReferencedDeclarations.IsEmpty,
+            "Must be at least one referenced declaration");
     }
 
     protected override IChildNode? Rewrite()
-        => BindingAmbiguousNamesAspect.FunctionGroupName_Rewrite(this) ?? base.Rewrite();
+        => BindingAmbiguousNamesAspect.FunctionGroupName_Rewrite(this)
+        ?? base.Rewrite();
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        BindingAmbiguousNamesAspect.FunctionGroupName_CollectDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
+    }
 }

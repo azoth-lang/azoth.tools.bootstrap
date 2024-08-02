@@ -311,42 +311,11 @@ public class BasicBodyAnalyzer
         bool allowMoveOrFreeze,
         FlowStateMutable flow)
     {
-        ResolveFunctionAndMethodGroups(expression, expectedType);
         var syntax = expression.Syntax;
         var conversion = CreateImplicitConversion(expectedType,
             expression.Type, expression.Variable, allowMoveOrFreeze, syntax.ImplicitConversion, flow, out var newResult);
         if (conversion is not null) syntax.AddConversion(conversion);
         return expression with { Variable = newResult };
-    }
-
-    private void ResolveFunctionAndMethodGroups(ExpressionResult expression, DataType expectedType)
-    {
-        if (expression.Syntax is not INameExpressionSyntax nameExpression
-            || expectedType is not FunctionType functionType)
-            return;
-
-        switch (nameExpression.Semantics.Result)
-        {
-            case FunctionGroupNameSyntax sem:
-                // TODO this is because of a separate hack to assign the type of a function group when only one function matches
-                if (sem.Symbol.IsFulfilled) return;
-                var functionSymbols = sem.Symbols.Where(s => functionType.IsAssignableFrom(s.Type)).ToFixedSet();
-                switch (functionSymbols.Count)
-                {
-                    case 0:
-                        diagnostics.Add(TypeError.NoFunctionInGroupMatchesExpectedType(file, nameExpression, functionType));
-                        sem.Symbol.Fulfill(null);
-                        break;
-                    case 1:
-                        sem.Symbol.Fulfill(functionSymbols.Single());
-                        break;
-                    default: // i.e. > 1
-                        diagnostics.Add(TypeError.AmbiguousFunctionGroup(file, nameExpression, functionType));
-                        sem.Symbol.Fulfill(null);
-                        break;
-                }
-                break;
-        }
     }
 
     private static ChainedConversion? CreateImplicitConversion(

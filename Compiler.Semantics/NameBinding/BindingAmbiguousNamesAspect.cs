@@ -4,6 +4,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
@@ -194,6 +195,20 @@ internal static class BindingAmbiguousNamesAspect
 
         // if there is only one declaration, then it isn't ambiguous
         return new FunctionNameNode(node.Syntax, node, node.ReferencedDeclarations.TrySingle());
+    }
+
+    public static void FunctionGroupName_CollectDiagnostics(IFunctionGroupNameNode node, Diagnostics diagnostics)
+    {
+        // TODO develop a better check that this node is ambiguous
+        if (node.Parent is IFunctionNameNode or IInvocationExpressionNode or IFunctionInvocationExpressionNode)
+            return;
+
+        // TODO this should be based on how many compatible declarations there are
+        if (node.ReferencedDeclarations.Count == 0)
+            diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
+        else if (node.ReferencedDeclarations.Count > 1)
+            // TODO provide the expected function type that didn't match
+            diagnostics.Add(TypeError.AmbiguousFunctionGroup(node.File, node.Syntax, DataType.Unknown));
     }
 
     public static void UnknownMemberAccessExpression_ContributeDiagnostics(
