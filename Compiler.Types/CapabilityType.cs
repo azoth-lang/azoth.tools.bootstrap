@@ -183,10 +183,11 @@ public abstract class CapabilityType : NonEmptyType
 
     public sealed override string ToSourceCodeString()
     {
-        if (Capability != Capability.Read)
-            return $"{Capability.ToSourceCodeString()} {BareType.ToSourceCodeString()}";
+        if (Capability == Capability.Read || (Capability == Capability.Constant && DeclaredType.IsDeclaredConst))
+            return BareType.ToSourceCodeString();
 
-        return BareType.ToSourceCodeString();
+        return $"{Capability.ToSourceCodeString()} {BareType.ToSourceCodeString()}";
+
     }
 
     public sealed override string ToILString()

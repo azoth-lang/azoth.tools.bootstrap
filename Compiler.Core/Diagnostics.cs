@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core;
 
+// TODO rename to DiagnosticsBuilder (and maybe introduce an immutable diagnostics class)
 [DebuggerDisplay("Count = {items.Count}")]
 [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
 public class Diagnostics : IReadOnlyCollection<Diagnostic>

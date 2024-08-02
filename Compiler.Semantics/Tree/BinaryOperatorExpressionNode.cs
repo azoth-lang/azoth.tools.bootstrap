@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -98,5 +99,11 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
             return NumericOperatorCommonAntetype;
 
         return base.InheritedExpectedAntetype(child, descendant, ctx);
+    }
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        ExpressionTypesAspect.BinaryOperatorExpression_CollectDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

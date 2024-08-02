@@ -596,10 +596,6 @@ public class BasicBodyAnalyzer
                     // TODO optional types
                 };
 
-                if (type == DataType.Unknown)
-                    diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandsOfType(file,
-                        exp.Span, @operator, leftResult.Type, rightResult.Type));
-
                 exp.DataType.Fulfill(type);
                 return new ExpressionResult(exp, resultVariable);
             }
@@ -678,8 +674,6 @@ public class BasicBodyAnalyzer
                                 expType = DataType.Unknown;
                                 break;
                             default:
-                                diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandOfType(file,
-                                    exp.Span, @operator, result.Type));
                                 expType = DataType.Unknown;
                                 break;
                         }
@@ -693,8 +687,6 @@ public class BasicBodyAnalyzer
                                 expType = result.Type;
                                 break;
                             default:
-                                diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandOfType(file,
-                                    exp.Span, @operator, result.Type));
                                 expType = DataType.Unknown;
                                 break;
                         }

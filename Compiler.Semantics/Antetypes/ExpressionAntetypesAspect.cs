@@ -1,9 +1,11 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -291,6 +293,24 @@ internal static class ExpressionAntetypesAspect
             INumericAntetype t => t,
             _ => IAntetype.Unknown,
         };
+
+    public static void UnaryOperatorExpression_CollectDiagnostics(
+        IUnaryOperatorExpressionNode node,
+        Diagnostics diagnostics)
+    {
+        var operandAntetype = node.IntermediateOperand!.Antetype;
+        var cannotBeAppliedToOperandType = node.Operator switch
+        {
+            UnaryOperator.Not => operandAntetype is not (BoolAntetype or BoolConstValueAntetype),
+            UnaryOperator.Minus => operandAntetype is not INumericAntetype,
+            UnaryOperator.Plus => operandAntetype is not INumericAntetype,
+            _ => throw ExhaustiveMatch.Failed(node.Operator),
+        };
+
+        if (cannotBeAppliedToOperandType)
+            diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandOfType(node.File,
+                node.Syntax.Span, node.Operator, node.IntermediateOperand!.Type));
+    }
 
     public static IMaybeExpressionAntetype GetterInvocationExpression_Antetype(IGetterInvocationExpressionNode node)
     {

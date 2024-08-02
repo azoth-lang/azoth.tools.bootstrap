@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -47,4 +48,10 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
 
     public override ConditionalLexicalScope GetFlowLexicalScope()
         => LexicalScopingAspect.UnaryOperatorExpression_GetFlowLexicalScope(this);
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        ExpressionAntetypesAspect.UnaryOperatorExpression_CollectDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
+    }
 }
