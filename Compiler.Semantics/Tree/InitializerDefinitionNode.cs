@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -63,5 +64,11 @@ internal abstract class InitializerDefinitionNode : TypeMemberDefinitionNode, II
             return FlowStateBefore();
 
         return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
+
+    internal sealed override DataType? InheritedExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child == Body) return DataType.Void;
+        return base.InheritedExpectedReturnType(child, descendant, ctx);
     }
 }

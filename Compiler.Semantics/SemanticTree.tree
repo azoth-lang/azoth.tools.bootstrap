@@ -331,7 +331,7 @@ BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax`
     Value:AmbiguousExpression? IntermediateValue:`IExpressionNode`?;
 NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;
 ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax`
-    Value:AmbiguousExpression? IntermediateValue:`IExpressionNode`?;
+    Value:AmbiguousExpression? CurrentValue:`IAmbiguousExpressionNode`? IntermediateValue:`IExpressionNode`?;
 
 // ---------- Invocation Expressions
 InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`

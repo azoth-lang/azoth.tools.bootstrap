@@ -1,6 +1,8 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -15,8 +17,15 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
     public IAmbiguousExpressionNode? Value
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
+    public IAmbiguousExpressionNode? CurrentValue => value.UnsafeValue;
     public IExpressionNode? IntermediateValue => Value as IExpressionNode;
     public override IMaybeExpressionAntetype Antetype => IAntetype.Never;
+    private DataType? expectedReturnType;
+    private bool expectedReturnTypeCached;
+    public DataType? ExpectedReturnType
+        => GrammarAttribute.IsCached(in expectedReturnTypeCached) ? expectedReturnType
+            : this.Inherited(ref expectedReturnTypeCached, ref expectedReturnType,
+                InheritedExpectedReturnType);
     public override NeverType Type => DataType.Never;
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
@@ -29,5 +38,17 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
     {
         Syntax = syntax;
         this.value = Child.Create(this, value);
+    }
+
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentValue) return ExpectedReturnType?.ToAntetype();
+        return base.InheritedExpectedAntetype(child, descendant, ctx);
+    }
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        InvalidStructureAspect.ReturnExpression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

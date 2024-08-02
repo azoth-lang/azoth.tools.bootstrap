@@ -1561,6 +1561,7 @@ public partial interface IReturnExpressionNode : INeverTypedExpressionNode
     new IReturnExpressionSyntax Syntax { get; }
     INeverTypedExpressionSyntax INeverTypedExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode? Value { get; }
+    IAmbiguousExpressionNode? CurrentValue { get; }
     IExpressionNode? IntermediateValue { get; }
 }
 

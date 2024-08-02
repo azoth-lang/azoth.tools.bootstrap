@@ -96,6 +96,10 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedExpectedAntetype), child, descendant));
 
+    internal virtual DataType? InheritedExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedExpectedReturnType), child, descendant));
+
     internal virtual IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => throw Child.PreviousFailed(nameof(PreviousValueId), before);
 

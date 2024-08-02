@@ -35,6 +35,7 @@ public partial interface IPackageFacetNode
 }
 #endregion
 
+#region Type Definitions
 public partial interface ITypeDefinitionNode
 {
     IEnumerable<IStandardTypeNameNode> AllSupertypeNames => SupertypeNames;
@@ -45,6 +46,7 @@ public partial interface IClassDefinitionNode
     IEnumerable<IStandardTypeNameNode> ITypeDefinitionNode.AllSupertypeNames
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
 }
+#endregion
 
 #region Capabilities
 public partial interface ICapabilityNode
@@ -173,6 +175,11 @@ public partial interface IForeachExpressionNode
     IdentifierName INamedBindingDeclarationNode.Name => VariableName;
     PackageNameScope InheritedPackageNameScope();
     new ValueId ValueId { get; }
+}
+
+public partial interface IReturnExpressionNode
+{
+    DataType? ExpectedReturnType { get; }
 }
 #endregion
 

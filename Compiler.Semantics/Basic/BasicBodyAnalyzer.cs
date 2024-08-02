@@ -508,10 +508,6 @@ public class BasicBodyAnalyzer
                         diagnostics.Add(FlowTypingError.CannotReturnLent(file, exp));
                     flow.Drop(result.Variable);
                 }
-                else if (expectedType == DataType.Never)
-                    diagnostics.Add(TypeError.CannotReturnFromNeverFunction(file, exp.Span));
-                else if (expectedType != DataType.Void)
-                    diagnostics.Add(TypeError.MustReturnCorrectType(file, exp.Span, expectedType));
 
                 // Return expressions always have the type Never
                 return new ExpressionResult(exp);

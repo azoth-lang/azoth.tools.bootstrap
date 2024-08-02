@@ -42,12 +42,14 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     private bool entryPointCached;
     public IFunctionDefinitionNode? EntryPoint
         => GrammarAttribute.IsCached(in entryPointCached) ? entryPoint
-            : this.Synthetic(ref entryPointCached, ref entryPoint, DefinitionAspect.Package_EntryPoint);
+            : this.Synthetic(ref entryPointCached, ref entryPoint,
+                DefinitionAspect.Package_EntryPoint, ReferenceEqualityComparer.Instance);
     private IPackageSymbols? packageSymbols;
     private bool packageSymbolsCached;
     public IPackageSymbols PackageSymbols
         => GrammarAttribute.IsCached(in packageSymbolsCached) ? packageSymbols!
-            : this.Synthetic(ref packageSymbolsCached, ref packageSymbols, SymbolAspect.Package_PackageSymbols);
+            : this.Synthetic(ref packageSymbolsCached, ref packageSymbols,
+                SymbolAspect.Package_PackageSymbols, ReferenceEqualityComparer.Instance);
     public IFixedSet<IPackageReferenceNode> References { get; }
     private ValueAttribute<IPackageReferenceNode> intrinsicsReference;
     public IPackageReferenceNode IntrinsicsReference

@@ -97,4 +97,10 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
         if (descendant == Body) return Type.Return.Type.ToAntetype();
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
+
+    internal override DataType? InheritedExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child == Body) return Type.Return.Type;
+        return base.InheritedExpectedReturnType(child, descendant, ctx);
+    }
 }

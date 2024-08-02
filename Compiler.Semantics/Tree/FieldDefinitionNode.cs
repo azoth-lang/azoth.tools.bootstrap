@@ -64,4 +64,12 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         TypeMemberDeclarationsAspect.FieldDeclaration_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
+
+    internal override DataType? InheritedExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child == CurrentInitializer)
+            // Null is the signal that this is a field initializer and not a method body
+            return null;
+        return base.InheritedExpectedReturnType(child, descendant, ctx);
+    }
 }
