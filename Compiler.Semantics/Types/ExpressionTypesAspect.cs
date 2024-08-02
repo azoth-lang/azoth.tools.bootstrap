@@ -430,7 +430,7 @@ public static class ExpressionTypesAspect
             node.IntermediateRightOperand.ValueId, node.IntermediateLeftOperand?.ValueId, node.ValueId)
            ?? IFlowState.Empty;
 
-    public static void BinaryOperatorExpression_CollectDiagnostics(IBinaryOperatorExpressionNode node, Diagnostics diagnostics)
+    public static void BinaryOperatorExpression_ContributeDiagnostics(IBinaryOperatorExpressionNode node, Diagnostics diagnostics)
     {
         if (node.Type == DataType.Unknown)
             diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandsOfType(node.File,

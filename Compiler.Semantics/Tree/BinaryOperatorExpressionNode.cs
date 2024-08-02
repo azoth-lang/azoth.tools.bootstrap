@@ -103,7 +103,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        ExpressionTypesAspect.BinaryOperatorExpression_CollectDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.BinaryOperatorExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
@@ -35,5 +36,11 @@ internal sealed class OptionalPatternNode : PatternNode, IOptionalPatternNode
         if (descendant == Pattern)
             return NameBindingTypesAspect.OptionalPattern_InheritedBindingType_Pattern(this);
         return base.InheritedBindingType(child, descendant);
+    }
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        ExpressionAntetypesAspect.OptionalPattern_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

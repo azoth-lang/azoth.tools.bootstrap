@@ -1058,8 +1058,7 @@ public class BasicBodyAnalyzer
             {
                 if (valueType is OptionalType optionalType)
                     valueType = optionalType.Referent;
-                else
-                    diagnostics.Add(TypeError.OptionalPatternOnNonOptionalType(file, pat, valueType));
+                // else ERROR optional pattern on non-optional type (reported by semantics)
 
                 ResolveTypes(pat.Pattern, valueType, resultVariable, flow, isMutableBinding);
                 break;

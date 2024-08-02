@@ -40,7 +40,7 @@ internal sealed class FunctionGroupNameNode : AmbiguousNameExpressionNode, IFunc
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        BindingAmbiguousNamesAspect.FunctionGroupName_CollectDiagnostics(this, diagnostics);
+        BindingAmbiguousNamesAspect.FunctionGroupName_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

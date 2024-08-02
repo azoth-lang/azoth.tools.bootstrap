@@ -261,7 +261,7 @@ internal static class ExpressionAntetypesAspect
         return IAntetype.Unknown;
     }
 
-    public static void AwaitExpression_CollectDiagnostics(IAwaitExpressionNode node, Diagnostics diagnostics)
+    public static void AwaitExpression_ContributeDiagnostics(IAwaitExpressionNode node, Diagnostics diagnostics)
     {
         // TODO eliminate code duplication with AwaitExpression_Antetype
         if (node.IntermediateExpression?.Antetype is UserGenericNominalAntetype { DeclaredAntetype: var declaredAntetype }
@@ -304,7 +304,7 @@ internal static class ExpressionAntetypesAspect
             _ => IAntetype.Unknown,
         };
 
-    public static void UnaryOperatorExpression_CollectDiagnostics(
+    public static void UnaryOperatorExpression_ContributeDiagnostics(
         IUnaryOperatorExpressionNode node,
         Diagnostics diagnostics)
     {
@@ -398,5 +398,11 @@ internal static class ExpressionAntetypesAspect
             default:
                 return null;
         }
+    }
+
+    public static void OptionalPattern_ContributeDiagnostics(IOptionalPatternNode node, Diagnostics diagnostics)
+    {
+        if (node.InheritedBindingAntetype() is not OptionalAntetype)
+            diagnostics.Add(TypeError.OptionalPatternOnNonOptionalType(node.File, node.Syntax, node.InheritedBindingType()));
     }
 }

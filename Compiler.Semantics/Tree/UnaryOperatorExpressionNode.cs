@@ -51,7 +51,7 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        ExpressionAntetypesAspect.UnaryOperatorExpression_CollectDiagnostics(this, diagnostics);
+        ExpressionAntetypesAspect.UnaryOperatorExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

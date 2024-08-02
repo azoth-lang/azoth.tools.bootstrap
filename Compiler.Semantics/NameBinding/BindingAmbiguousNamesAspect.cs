@@ -197,7 +197,7 @@ internal static class BindingAmbiguousNamesAspect
         return new FunctionNameNode(node.Syntax, node, node.ReferencedDeclarations.TrySingle());
     }
 
-    public static void FunctionGroupName_CollectDiagnostics(IFunctionGroupNameNode node, Diagnostics diagnostics)
+    public static void FunctionGroupName_ContributeDiagnostics(IFunctionGroupNameNode node, Diagnostics diagnostics)
     {
         // TODO develop a better check that this node is ambiguous
         if (node.Parent is IFunctionNameNode or IInvocationExpressionNode or IFunctionInvocationExpressionNode)
