@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -27,11 +28,12 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
         => packageDeclarations.TryGetValue(out var value) ? value
             : packageDeclarations.GetValue(this, SymbolNodeAspect.Package_PackageDeclarations);
-
-    private ValueAttribute<IFixedList<Diagnostic>> diagnostics;
+    private IFixedList<Diagnostic>? diagnostics;
+    private bool diagnosticsCached;
     public IFixedList<Diagnostic> Diagnostics
-        => diagnostics.TryGetValue(out var value) ? value
-            : diagnostics.GetValue(this, DiagnosticsAspect.Package);
+        => GrammarAttribute.IsCached(in diagnosticsCached) ? diagnostics!
+            : this.Synthetic(ref diagnosticsCached, ref diagnostics,
+                DiagnosticsAspect.Package); // TODO this needs a comparer
     private ValueAttribute<IFixedSet<ITypeDeclarationNode>> primitivesDeclarations;
     public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations
         => primitivesDeclarations.TryGetValue(out var value) ? value
@@ -65,6 +67,11 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
         MainFacet = Child.Attach(this, mainFacet);
         TestingFacet = Child.Attach(this, testingFacet);
     }
+
+    public void AddDistinctDiagnostics(IEnumerable<Diagnostic> diagnostics)
+        => this.diagnostics = Diagnostics.Concat(diagnostics.Except(Diagnostics))
+                                         .OrderBy(d => d.StartPosition).ThenBy(d => d.EndPosition)
+                                         .ToFixedList();
 
     internal override IPackageDeclarationNode InheritedPackage(IChildNode child, IChildNode descendant)
         => this;

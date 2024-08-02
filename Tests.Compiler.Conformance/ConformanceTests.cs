@@ -66,7 +66,7 @@ public partial class ConformanceTests
         try
         {
             // Analyze
-            var (package, packageNode) = compiler.CompilePackage("testPackage", codeFile.Yield(), [], references);
+            var package = compiler.CompilePackage("testPackage", codeFile.Yield(), [], references);
 
             // Check for compiler errors
             Assert.NotNull(package.Diagnostics);
@@ -86,7 +86,7 @@ public partial class ConformanceTests
             //packageIL.Position = 0;
 
             // Execute and check results
-            var process = Execute(packageNode, supportPackage);
+            var process = Execute(package, supportPackage);
             //var process = Execute(packageIL, stdLibIL);
 
             await process.WaitForExitAsync();
@@ -115,10 +115,10 @@ public partial class ConformanceTests
             var sourcePaths = CodeFiles.GetIn(sourceDir);
             var rootNamespace = FixedList.Empty<string>();
             var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, rootNamespace)).ToList();
-            var (package, packageNode) = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles, [], []);
+            var package = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles, [], []);
             if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                 ReportSupportCompilationErrors(package.Diagnostics);
-            return packageNode;
+            return package;
         }
         catch (FatalCompilationErrorException ex)
         {

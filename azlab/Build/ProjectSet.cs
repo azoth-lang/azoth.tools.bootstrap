@@ -199,21 +199,21 @@ internal class ProjectSet : IEnumerable<Project>
         var testCodeFiles = LoadCode(testSourcePaths, isTest: true);
         try
         {
-            var (package, packageNode) = compiler.CompilePackage(project.Name, codeFiles, testCodeFiles, references);
+            var package = compiler.CompilePackage(project.Name, codeFiles, testCodeFiles, references);
             // TODO switch to the async version of the compiler
             //var codeFiles = sourcePaths.Select(p => new CodePath(p)).ToList();
             //var references = project.References.ToDictionary(r => r.Name, r => projectBuilds[r.Project]);
             //var package = await compiler.CompilePackageAsync(project.Name, codeFiles, references);
 
             if (OutputDiagnostics(project, package.Diagnostics, consoleLock))
-                return packageNode;
+                return package;
 
             using (await consoleLock.LockAsync())
             {
                 Console.WriteLine($"Compile SUCCEEDED {project.Name} ({project.Path})");
             }
 
-            return packageNode;
+            return package;
         }
         catch (FatalCompilationErrorException ex)
         {
