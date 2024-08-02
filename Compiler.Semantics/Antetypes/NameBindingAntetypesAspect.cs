@@ -1,4 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
@@ -33,6 +35,15 @@ internal static class NameBindingAntetypesAspect
 
     public static IMaybeAntetype VariableDeclarationStatement_BindingAntetype(IVariableDeclarationStatementNode node)
         => node.Type?.NamedAntetype ?? node.IntermediateInitializer?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
+
+    public static void VariableDeclarationStatement_ContributeDiagnostics(
+        IVariableDeclarationStatementNode node,
+        Diagnostics diagnostics)
+    {
+        if (node.Type is null && node.IntermediateInitializer is null)
+            diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.NameSpan,
+                "Inference of local variable types not implemented"));
+    }
 
     public static IMaybeAntetype ForeachExpression_BindingAntetype(IForeachExpressionNode node)
         => node.DeclaredType?.NamedAntetype ?? node.IteratedAntetype;

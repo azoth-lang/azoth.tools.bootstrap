@@ -60,7 +60,7 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
-        UnreachableCodeAspect.BlockExpression_StatementAfterResultStatement(this, diagnostics);
+        UnreachableCodeAspect.BlockExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

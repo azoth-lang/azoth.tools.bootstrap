@@ -213,17 +213,11 @@ public class BasicBodyAnalyzer
         var initializerResult = InferType(variableDeclaration.Initializer, flow);
         DataType variableType;
         if (variableDeclaration.Type is not null)
-        {
             variableType = variableDeclaration.Type.NamedType!;
-        }
         else if (variableDeclaration.Initializer is not null)
             variableType = InferDeclarationType(variableDeclaration.Initializer, variableDeclaration.Capability);
         else
-        {
-            diagnostics.Add(TypeError.NotImplemented(file, variableDeclaration.NameSpan,
-                "Inference of local variable types not implemented"));
             variableType = DataType.Unknown;
-        }
 
         if (initializerResult is not null)
         {

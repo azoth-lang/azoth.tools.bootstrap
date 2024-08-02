@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -102,5 +103,11 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
             // The expected antetype for the initializer is the type of the variable if provided
             return Type?.NamedAntetype;
         return base.InheritedExpectedAntetype(child, descendant, ctx);
+    }
+
+    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    {
+        NameBindingAntetypesAspect.VariableDeclarationStatement_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }
