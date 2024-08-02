@@ -180,8 +180,6 @@ public class BasicBodyAnalyzer
         StatementContext context,
         FlowStateMutable flow)
     {
-        if (context == StatementContext.AfterResult)
-            diagnostics.Add(OtherSemanticError.StatementAfterResult(file, statement.Span));
         switch (statement)
         {
             default:
