@@ -51,11 +51,12 @@ public static class OtherSemanticError
             6008, "Can't use `self` outside of a method or constructor");
     }
 
-    public static Diagnostic ResultStatementInBody(CodeFile file, TextSpan span)
-    {
-        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            6009, "Result statement (i.e. `=> ...;`) cannot be used in the body of a function, or method, etc.");
-    }
+    // TODO error reported by parser and statement dropped, perhaps should be a semantic error
+    //public static Diagnostic ResultStatementInBody(CodeFile file, TextSpan span)
+    //{
+    //    return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+    //        6009, "Result statement (i.e. `=> ...;`) cannot be used in the body of a function, or method, etc.");
+    //}
 
     public static Diagnostic StatementAfterResult(CodeFile file, TextSpan span)
     {

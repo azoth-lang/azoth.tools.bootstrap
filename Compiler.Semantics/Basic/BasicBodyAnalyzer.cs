@@ -197,8 +197,6 @@ public class BasicBodyAnalyzer
             case IResultStatementSyntax resultStatement:
             {
                 var result = InferType(resultStatement.Expression, flow);
-                if (context == StatementContext.BodyLevel)
-                    diagnostics.Add(OtherSemanticError.ResultStatementInBody(file, resultStatement.Span));
 
                 // Return type for use in determining block type. Keep result shared for use in
                 // parent expression.
