@@ -332,6 +332,20 @@ public static class ExpressionTypesAspect
     public static IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node)
         => node.Context.FlowStateAfter.AccessField(node);
 
+    public static void FieldAccessExpression_ContributeDiagnostics(IFieldAccessExpressionNode node, Diagnostics diagnostics)
+    {
+        if (node.Parent is IAssignmentExpressionNode assignmentNode && assignmentNode.LeftOperand == node)
+            // In this case, a different error will be reported and CannotAccessMutableBindingFieldOfIdentityReference
+            // should not be reported.
+            return;
+
+        var fieldHasMutableBinding = node.ReferencedDeclaration.Symbol.IsMutableBinding;
+        if (fieldHasMutableBinding
+            && node.Context.Type is CapabilityType { Capability: var contextCapability }
+            && contextCapability == Capability.Identity)
+            diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(node.File, node.Syntax, node.Context.Type));
+    }
+
     public static IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node)
         => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
 

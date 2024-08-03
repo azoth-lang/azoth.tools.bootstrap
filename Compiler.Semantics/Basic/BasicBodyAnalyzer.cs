@@ -837,7 +837,7 @@ public class BasicBodyAnalyzer
                             && contextType is CapabilityType { Capability: var contextCapability }
                             && contextCapability == Capability.Identity)
                         {
-                            diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(file, exp, contextType));
+                            // ERROR cannot access mutable field of identity reference (reported by semantic)
                             type = DataType.Unknown;
                         }
                         sem.Type.Fulfill(type);
