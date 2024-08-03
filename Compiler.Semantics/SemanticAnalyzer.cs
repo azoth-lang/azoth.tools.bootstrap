@@ -6,7 +6,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Liveness;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
@@ -22,12 +21,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
 public class SemanticAnalyzer
 {
-    /// <summary>
-    /// Whether to store the liveness analysis for each function and method.
-    /// Default Value: false
-    /// </summary>
-    public bool SaveLivenessAnalysis { get; set; }
-
     /// <summary>
     /// Whether to store the reachability graphs for each function and method.
     /// Default Value: false
@@ -133,11 +126,5 @@ public class SemanticAnalyzer
             diagnostics);
 
         // TODO use DataFlowAnalysis to check for unused variables and report use of variables starting with `_`
-
-        // Compute variable liveness needed by reachability analyzer
-        DataFlowAnalysis.Check(LivenessAnalyzer.Instance, executableDeclarations, symbolTree,
-            diagnostics);
-
-        // TODO remove live variables if SaveLivenessAnalysis is false
     }
 }

@@ -365,7 +365,6 @@ public partial interface IVariableDeclarationStatement : IBodyStatement, ILocalB
     new NamedVariableSymbol Symbol { get; }
     NamedBindingSymbol ILocalBinding.Symbol => Symbol;
     IExpression? Initializer { get; }
-    Promise<bool> VariableIsLiveAfter { get; }
 }
 
 public partial interface IExpressionStatement : IBodyStatement
@@ -385,7 +384,6 @@ public partial interface IBindingPattern : IPattern, ILocalBinding
 {
     new NamedVariableSymbol Symbol { get; }
     NamedBindingSymbol ILocalBinding.Symbol => Symbol;
-    Promise<bool> VariableIsLiveAfter { get; }
 }
 
 public partial interface IBindingContextPattern : IPattern
@@ -545,7 +543,6 @@ public partial interface IForeachExpression : IExpression, ILocalBinding
     MethodSymbol? IterateMethod { get; }
     MethodSymbol NextMethod { get; }
     IBlockExpression Block { get; }
-    Promise<bool> VariableIsLiveAfterAssignment { get; }
 }
 
 public partial interface IBreakExpression : IExpression
@@ -634,7 +631,6 @@ public partial interface IVariableNameExpression : INameExpression, IAssignableE
 {
     NamedVariableSymbol ReferencedSymbol { get; }
     bool IsMove { get; }
-    Promise<bool> VariableIsLiveAfter { get; }
 }
 
 public partial interface ISelfExpression : IExpression

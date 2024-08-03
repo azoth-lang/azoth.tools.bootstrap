@@ -16,12 +16,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.API;
 public class AzothCompiler
 {
     /// <summary>
-    /// Whether to store the liveness analysis for each function and method.
-    /// Default Value: false
-    /// </summary>
-    public bool SaveLivenessAnalysis { get; set; }
-
-    /// <summary>
     /// Whether to store the borrow checker claims for each function and method.
     /// Default Value: false
     /// </summary>
@@ -53,7 +47,6 @@ public class AzothCompiler
 
         var analyzer = new SemanticAnalyzer()
         {
-            SaveLivenessAnalysis = SaveLivenessAnalysis,
             SaveReachabilityGraphs = SaveReachabilityGraphs,
         };
 
@@ -104,7 +97,6 @@ public class AzothCompiler
 
         var analyzer = new SemanticAnalyzer()
         {
-            SaveLivenessAnalysis = SaveLivenessAnalysis,
             SaveReachabilityGraphs = SaveReachabilityGraphs,
         };
 

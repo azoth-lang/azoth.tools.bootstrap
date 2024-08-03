@@ -1,7 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -11,7 +10,6 @@ internal sealed class VariableNameExpression : Expression, IVariableNameExpressi
 {
     public NamedVariableSymbol ReferencedSymbol { get; }
     public bool IsMove { get; }
-    public Promise<bool> VariableIsLiveAfter { get; } = new Promise<bool>();
 
     public VariableNameExpression(TextSpan span, DataType dataType, NamedVariableSymbol referencedSymbol, bool isMove)
         : base(span, dataType)

@@ -1,7 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -16,7 +15,6 @@ internal sealed class ForeachExpression : Expression, IForeachExpression
     public MethodSymbol? IterateMethod { get; }
     public MethodSymbol NextMethod { get; }
     public IBlockExpression Block { get; }
-    public Promise<bool> VariableIsLiveAfterAssignment { get; } = new Promise<bool>();
 
     public ForeachExpression(
         TextSpan span,

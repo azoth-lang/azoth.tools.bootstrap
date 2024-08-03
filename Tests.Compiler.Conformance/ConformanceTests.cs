@@ -54,7 +54,6 @@ public partial class ConformanceTests
         var code = codeFile.Code.Text;
         var compiler = new AzothCompiler()
         {
-            SaveLivenessAnalysis = true,
             SaveReachabilityGraphs = true,
         };
         var references = new List<PackageReference>();
