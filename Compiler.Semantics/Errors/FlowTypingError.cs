@@ -18,12 +18,6 @@ public static class FlowTypingError
             4002, $"Cannot freeze the value `{file.Code[referent.Span]}`");
     }
 
-    public static Diagnostic UseOfPossiblyMovedValue(CodeFile file, TextSpan span)
-    {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            4003, "Use of possibly moved value");
-    }
-
     public static Diagnostic CannotUnion(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,

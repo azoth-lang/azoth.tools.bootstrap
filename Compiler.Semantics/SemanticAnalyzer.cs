@@ -13,7 +13,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.BindingMutability;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.DefiniteAssignment;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Moves;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Shadowing;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
@@ -131,9 +130,6 @@ public class SemanticAnalyzer
             diagnostics);
 
         DataFlowAnalysis.Check(BindingMutabilityAnalyzer.Instance, executableDeclarations, symbolTree,
-            diagnostics);
-
-        DataFlowAnalysis.Check(UseOfMovedValueAnalyzer.Instance, executableDeclarations, symbolTree,
             diagnostics);
 
         // TODO use DataFlowAnalysis to check for unused variables and report use of variables starting with `_`

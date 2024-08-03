@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 
-internal class BackwardDataFlowAnalyzer<TState> : AbstractSyntaxWalker<bool>
+internal sealed class BackwardDataFlowAnalyzer<TState> : AbstractSyntaxWalker<bool>
     where TState : class
 {
     private readonly IBackwardDataFlowAnalyzer<TState> strategy;
