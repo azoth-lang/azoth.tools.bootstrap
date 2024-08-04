@@ -40,16 +40,4 @@ public static class DataFlowAnalysis
         foreach (var invocableDeclaration in declarations)
             dataFlowAnalyzer.Check(invocableDeclaration);
     }
-
-    public static void Check<TState>(
-        IBackwardDataFlowAnalyzer<TState> strategy,
-        IFixedSet<IExecutableDeclaration> declarations,
-        ISymbolTree symbolTree,
-        Diagnostics diagnostics)
-        where TState : class
-    {
-        var dataFlowAnalyzer = new BackwardDataFlowAnalyzer<TState>(strategy, symbolTree, diagnostics);
-        foreach (var invocableDeclaration in declarations)
-            dataFlowAnalyzer.Check(invocableDeclaration);
-    }
 }

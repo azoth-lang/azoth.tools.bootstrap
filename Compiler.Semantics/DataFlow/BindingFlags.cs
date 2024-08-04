@@ -73,7 +73,7 @@ public static class BindingFlags
         var contextTypeSymbol = executableSymbol.ContextTypeSymbol;
         var fields = contextTypeSymbol is not null
             ? symbolTree.GetChildrenOf(contextTypeSymbol).OfType<FieldSymbol>()
-            : Enumerable.Empty<FieldSymbol>();
+            : [];
         var symbolMap = variables.Concat(fields).Enumerate().ToFixedDictionary();
         var flags = new BitArray(symbolMap.Count, defaultValue);
         return new(symbolMap, flags);
