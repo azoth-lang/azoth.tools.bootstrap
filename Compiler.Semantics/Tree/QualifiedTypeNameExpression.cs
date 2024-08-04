@@ -10,7 +10,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class QualifiedTypeNameExpression : AmbiguousNameExpressionNode, IQualifiedTypeNameExpressionNode
+internal sealed class QualifiedTypeNameExpression : NameExpressionNode, IQualifiedTypeNameExpressionNode
 {
     public override IMemberAccessExpressionSyntax Syntax { get; }
     public INamespaceNameNode Context { get; }

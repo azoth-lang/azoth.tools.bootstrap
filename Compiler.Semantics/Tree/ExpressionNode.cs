@@ -41,6 +41,9 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     public IPreviousValueId PreviousValueId()
         => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
+    public IFixedSet<IControlFlowNode> ControlFlowFollowing()
+        => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
 
     // TODO remove once all nodes properly provide the expected antetype

@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal abstract class NamespaceNameNode : AmbiguousNameExpressionNode, INamespaceNameNode
+internal abstract class NamespaceNameNode : NameExpressionNode, INamespaceNameNode
 {
     public abstract override INameExpressionSyntax Syntax { get; }
     public override UnknownType Type => (UnknownType)DataType.Unknown;

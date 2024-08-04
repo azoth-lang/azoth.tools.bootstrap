@@ -465,7 +465,7 @@ internal static class SyntaxBinder
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    private static IAssignableExpressionNode AssignableExpression(IAssignableExpressionSyntax syntax)
+    private static IAmbiguousAssignableExpressionNode AssignableExpression(IAssignableExpressionSyntax syntax)
         => syntax switch
         {
             IIdentifierNameExpressionSyntax syn => IdentifierNameExpression(syn),

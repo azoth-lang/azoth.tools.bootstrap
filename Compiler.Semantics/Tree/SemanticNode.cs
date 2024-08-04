@@ -10,6 +10,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -99,6 +100,10 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual DataType? InheritedExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedExpectedReturnType), child, descendant));
+
+    internal virtual IFixedSet<IControlFlowNode> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedControlFlowFollowing), child, descendant));
 
     internal virtual IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => throw Child.PreviousFailed(nameof(PreviousValueId), before);

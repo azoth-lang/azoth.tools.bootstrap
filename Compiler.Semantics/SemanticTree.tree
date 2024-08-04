@@ -244,8 +244,11 @@ ViewpointType <: Type = Syntax:`IViewpointTypeSyntax` Referent:Type;
 CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSyntax` Capability Referent:Type;
 SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type NamedSelfType:`Pseudotype`?;
 
+// ---------- Control Flow
+ControlFlow <: Code;
+
 // ---------- Statements
-Statement <: Code = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?
+Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?
     ResultType:`DataType`? ResultValueId:`ValueId`? FlowStateAfter:`IFlowState`;
 ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode` IntermediateExpression:`IExpressionNode`?
@@ -272,10 +275,11 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 
 // ---------- Expressions
 AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
-Expression <: AmbiguousExpression = Syntax:`IExpressionSyntax` ValueId:`ValueId`
+AmbiguousAssignableExpression <: AmbiguousExpression = Syntax:`IAssignableExpressionSyntax`;
+Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax` ValueId:`ValueId`
     ExpectedAntetype:`IMaybeExpressionAntetype`? Antetype:`IMaybeExpressionAntetype`
     Type:`DataType` FlowStateAfter:`IFlowState`;
-AssignableExpression <: Expression = Syntax:`IAssignableExpressionSyntax`;
+AssignableExpression <: Expression, AmbiguousAssignableExpression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax`
     ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression*
@@ -296,7 +300,7 @@ StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionS
 
 // ---------- Operator Expressions
 AssignmentExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
-    LeftOperand:AssignableExpression
+    LeftOperand:AmbiguousAssignableExpression CurrentLeftOperand:`IAmbiguousAssignableExpressionNode` IntermediateLeftOperand:`IAssignableExpressionNode`?
     Operator:`AssignmentOperator`
     RightOperand:AmbiguousExpression CurrentRightOperand:`IAmbiguousExpressionNode` IntermediateRightOperand:`IExpressionNode`?;
 BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax`
@@ -376,13 +380,13 @@ AmbiguousName <: AmbiguousNameExpression;
 SimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
 StandardNameExpression <: AmbiguousName = Syntax:`IStandardNameExpressionSyntax`
     Name:`StandardName` ContainingLexicalScope:`LexicalScope` ReferencedDeclarations:`IDeclarationNode`*;
-IdentifierNameExpression <: AmbiguousName, StandardNameExpression, SimpleName, AssignableExpression
+IdentifierNameExpression <: AmbiguousName, StandardNameExpression, SimpleName, AmbiguousAssignableExpression
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 GenericNameExpression <: AmbiguousName, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
-MemberAccessExpression <: AmbiguousName, AssignableExpression
+MemberAccessExpression <: AmbiguousName, AmbiguousAssignableExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression MemberName:`StandardName` TypeArguments:Type*;
-PropertyName <: AmbiguousName, AssignableExpression
+PropertyName <: AmbiguousName, AmbiguousAssignableExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:Expression PropertyName:`StandardName`
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`};
 

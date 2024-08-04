@@ -545,6 +545,27 @@ internal class SemanticsApplier
     private static void AmbiguousExpressions(IEnumerable<IAmbiguousExpressionNode> nodes)
         => nodes.ForEach(AmbiguousExpression);
 
+    private static void AmbiguousAssignableExpression(IAmbiguousAssignableExpressionNode node)
+    {
+        switch (node)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(node);
+            case IIdentifierNameExpressionNode n:
+                IdentifierNameExpression(n);
+                break;
+            case IMemberAccessExpressionNode n:
+                MemberAccessExpression(n);
+                break;
+            case IPropertyNameNode n:
+                PropertyName(n);
+                break;
+            case IAssignableExpressionNode n:
+                AssignableExpression(n);
+                break;
+        }
+    }
+
     private static void AmbiguousExpression(IAmbiguousExpressionNode? node)
     {
         switch (node)
@@ -687,20 +708,11 @@ internal class SemanticsApplier
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
-            case IIdentifierNameExpressionNode n:
-                IdentifierNameExpression(n);
-                break;
             case IVariableNameExpressionNode n:
                 VariableNameExpression(n);
                 break;
-            case IMemberAccessExpressionNode n:
-                MemberAccessExpression(n);
-                break;
             case IFieldAccessExpressionNode n:
                 FieldAccessExpression(n);
-                break;
-            case IPropertyNameNode n:
-                PropertyName(n);
                 break;
             case IMissingNameExpressionNode n:
                 MissingNameExpression(n);
@@ -792,7 +804,7 @@ internal class SemanticsApplier
     #region Operator Expressions
     private static void AssignmentExpression(IAssignmentExpressionNode node)
     {
-        AssignableExpression(node.LeftOperand);
+        AmbiguousAssignableExpression(node.LeftOperand);
         AmbiguousExpression(node.RightOperand);
     }
 

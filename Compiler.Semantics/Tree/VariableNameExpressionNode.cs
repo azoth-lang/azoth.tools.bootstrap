@@ -9,7 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class VariableNameExpressionNode : AmbiguousNameExpressionNode, IVariableNameExpressionNode
+internal sealed class VariableNameExpressionNode : NameExpressionNode, IVariableNameExpressionNode
 {
     public override IIdentifierNameExpressionSyntax Syntax { get; }
     public IdentifierName Name => Syntax.Name;

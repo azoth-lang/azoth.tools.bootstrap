@@ -9,6 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
@@ -79,6 +80,17 @@ public partial interface ISelfParameterNode
     new Pseudotype BindingType { get; }
     Pseudotype IBindingNode.BindingType => BindingType;
     Pseudotype IParameterNode.BindingType => BindingType;
+}
+#endregion
+
+#region Control Flow
+public partial interface IControlFlowNode
+{
+    /// <summary>
+    /// The control flow nodes that follow this node based on the context.
+    /// </summary>
+    /// <remarks>This is an inherited property.</remarks>
+    IFixedSet<IControlFlowNode> ControlFlowFollowing();
 }
 #endregion
 

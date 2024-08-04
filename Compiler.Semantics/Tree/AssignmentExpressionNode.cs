@@ -14,11 +14,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpressionNode
 {
     public override IAssignmentExpressionSyntax Syntax { get; }
-    private RewritableChild<IAssignableExpressionNode> leftOperand;
+    private RewritableChild<IAmbiguousAssignableExpressionNode> leftOperand;
     private bool leftOperandCached;
-    public IAssignableExpressionNode LeftOperand
+    public IAmbiguousAssignableExpressionNode LeftOperand
         => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
             : this.RewritableChild(ref leftOperandCached, ref leftOperand);
+    public IAmbiguousAssignableExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
+    public IAssignableExpressionNode? IntermediateLeftOperand => LeftOperand as IAssignableExpressionNode;
     public AssignmentOperator Operator => Syntax.Operator;
     private RewritableChild<IAmbiguousExpressionNode> rightOperand;
     private bool rightOperandCached;
@@ -47,7 +49,7 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
 
     public AssignmentExpressionNode(
         IAssignmentExpressionSyntax syntax,
-        IAssignableExpressionNode leftOperand,
+        IAmbiguousAssignableExpressionNode leftOperand,
         IAmbiguousExpressionNode rightOperand)
     {
         Syntax = syntax;
@@ -63,13 +65,13 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
         IChildNode descendant,
         IInheritanceContext ctx)
     {
-        if (child == CurrentRightOperand) return LeftOperand.FlowStateAfter;
+        if (child == CurrentRightOperand) return IntermediateLeftOperand?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
-        if (child == CurrentRightOperand) return LeftOperand.Antetype;
+        if (child == CurrentRightOperand) return IntermediateLeftOperand?.Antetype;
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 

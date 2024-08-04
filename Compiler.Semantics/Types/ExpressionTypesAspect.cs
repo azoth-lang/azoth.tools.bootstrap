@@ -393,10 +393,15 @@ public static class ExpressionTypesAspect
     }
 
     public static DataType AssignmentExpression_Type(IAssignmentExpressionNode node)
-        => node.LeftOperand.Type;
+        => node.IntermediateLeftOperand?.Type ?? DataType.Unknown;
 
     public static IFlowState AssignmentExpression_FlowStateAfter(IAssignmentExpressionNode node)
-        => node.IntermediateRightOperand?.FlowStateAfter.Combine(node.LeftOperand.ValueId, node.IntermediateRightOperand.ValueId, node.ValueId) ?? IFlowState.Empty;
+    {
+        if (node.IntermediateLeftOperand?.ValueId is not ValueId leftValueId)
+            return IFlowState.Empty;
+        return node.IntermediateRightOperand?.FlowStateAfter.Combine(leftValueId,
+            node.IntermediateRightOperand.ValueId, node.ValueId) ?? IFlowState.Empty;
+    }
 
     public static DataType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
     {

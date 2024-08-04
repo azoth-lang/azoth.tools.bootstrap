@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class FunctionGroupNameNode : AmbiguousNameExpressionNode, IFunctionGroupNameNode
+internal sealed class FunctionGroupNameNode : NameExpressionNode, IFunctionGroupNameNode
 {
     protected override bool MayHaveRewrite => true;
 

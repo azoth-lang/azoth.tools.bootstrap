@@ -11,6 +11,7 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -188,6 +189,12 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected DataType? InheritedExpectedReturnType(IInheritanceContext ctx)
         => GetParent(ctx).InheritedExpectedReturnType(this, this, ctx);
+
+    internal override IFixedSet<IControlFlowNode> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).InheritedControlFlowFollowing(this, descendant, ctx);
+
+    protected IFixedSet<IControlFlowNode> InheritedControlFlowFollowing(IInheritanceContext ctx)
+        => GetParent(ctx).InheritedControlFlowFollowing(this, this, ctx);
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => Previous(ctx).PreviousValueId(before, ctx);

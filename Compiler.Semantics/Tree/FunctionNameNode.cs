@@ -10,7 +10,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class FunctionNameNode : AmbiguousNameExpressionNode, IFunctionNameNode
+internal sealed class FunctionNameNode : NameExpressionNode, IFunctionNameNode
 {
     public override INameExpressionSyntax Syntax { get; }
     private RewritableChild<IFunctionGroupNameNode> functionGroup;

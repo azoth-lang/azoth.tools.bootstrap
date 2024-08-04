@@ -629,16 +629,16 @@ public class InterpreterProcess
                         // TODO the expression being assigned into is supposed to be evaluated first
                         await ExecuteAsync(exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
                     AssignmentOperator.Plus
-                        => await AddAsync(exp.LeftOperand, exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
+                        => await AddAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
                     AssignmentOperator.Minus
-                        => await SubtractAsync(exp.LeftOperand, exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
+                        => await SubtractAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
                     AssignmentOperator.Asterisk
-                        => await MultiplyAsync(exp.LeftOperand, exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
+                        => await MultiplyAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
                     AssignmentOperator.Slash
-                        => await DivideAsync(exp.LeftOperand, exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
+                        => await DivideAsync(exp.IntermediateLeftOperand!, exp.IntermediateRightOperand!, variables).ConfigureAwait(false),
                     _ => throw ExhaustiveMatch.Failed(exp.Operator)
                 };
-                await ExecuteAssignmentAsync(exp.LeftOperand, value, variables).ConfigureAwait(false);
+                await ExecuteAssignmentAsync(exp.IntermediateLeftOperand!, value, variables).ConfigureAwait(false);
                 return value;
             }
             case IBinaryOperatorExpressionNode exp:
@@ -852,11 +852,8 @@ public class InterpreterProcess
             case IUnknownInvocationExpressionNode _:
             case IUnknownNameExpressionNode _:
             case IMissingNameExpressionNode _:
-            case IMemberAccessExpressionNode _:
                 throw new UnreachableException($"Node type {expression.GetType().GetFriendlyName()} won't be in final tree.");
             case INameExpressionNode _:
-            case IPropertyNameNode _:
-            case IIdentifierNameExpressionNode _:
                 throw new UnreachableException($"Name node type {expression.GetType().GetFriendlyName()} won't be traversed.");
         }
     }

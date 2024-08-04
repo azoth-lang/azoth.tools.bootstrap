@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class MethodGroupNameNode : AmbiguousNameExpressionNode, IMethodGroupNameNode
+internal sealed class MethodGroupNameNode : NameExpressionNode, IMethodGroupNameNode
 {
     public override IMemberAccessExpressionSyntax Syntax { get; }
     private RewritableChild<IExpressionNode> context;

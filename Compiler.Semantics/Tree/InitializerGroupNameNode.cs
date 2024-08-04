@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class InitializerGroupNameNode : AmbiguousNameExpressionNode, IInitializerGroupNameNode
+internal sealed class InitializerGroupNameNode : NameExpressionNode, IInitializerGroupNameNode
 {
     public override INameExpressionSyntax Syntax { get; }
     public ITypeNameExpressionNode Context { get; }

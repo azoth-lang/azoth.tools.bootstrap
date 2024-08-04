@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class MissingNameExpressionNode : AmbiguousNameExpressionNode, IMissingNameExpressionNode
+internal sealed class MissingNameExpressionNode : NameExpressionNode, IMissingNameExpressionNode
 {
     public override IMissingNameSyntax Syntax { get; }
     public override UnknownType Type => (UnknownType)DataType.Unknown;
