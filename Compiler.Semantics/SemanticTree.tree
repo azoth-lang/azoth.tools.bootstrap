@@ -2,7 +2,6 @@
 ◊root Semantic;
 ◊prefix I;
 ◊suffix Node;
-◊using System.Collections.Generic;
 ◊using System.Numerics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -10,6 +9,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -245,7 +245,7 @@ CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSynta
 SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type NamedSelfType:`Pseudotype`?;
 
 // ---------- Control Flow
-ControlFlow <: Code;
+ControlFlow <: Code = ControlFlowNext:`FixedDictionary<IControlFlowNode,ControlFlowKind>`;
 
 // ---------- Statements
 Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?

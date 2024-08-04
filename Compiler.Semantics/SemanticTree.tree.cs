@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -6,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -1150,6 +1150,7 @@ public partial interface ISelfViewpointTypeNode : ISemanticNode, IViewpointTypeN
     typeof(IExpressionNode))]
 public partial interface IControlFlowNode : ISemanticNode, ICodeNode
 {
+    FixedDictionary<IControlFlowNode,ControlFlowKind> ControlFlowNext { get; }
 }
 
 [Closed(

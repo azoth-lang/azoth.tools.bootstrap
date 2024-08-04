@@ -16,6 +16,12 @@ internal abstract class StatementNode : CodeNode, IStatementNode
     public abstract DataType? ResultType { get; }
     public abstract ValueId? ResultValueId { get; }
     public abstract IFlowState FlowStateAfter { get; }
+    private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowNext;
+    private bool controlFlowNextCached;
+    public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Statement_ControlFlowNext);
 
     private protected StatementNode() { }
 

@@ -36,6 +36,12 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     // TODO make this abstract once all expressions have flow state implemented
     public virtual IFlowState FlowStateAfter
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
+    private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowNext;
+    private bool controlFlowNextCached;
+    public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
 
     private protected ExpressionNode() { }
 
