@@ -36,7 +36,7 @@ BlockOrResult: ElseClause = DataType:`IPromise<DataType?>`;
 
 // ---------- Bindings
 Binding = IsMutableBinding:`bool` Symbol:`IPromise<BindingSymbol>`;
-LocalBinding: Binding = Symbol:`IPromise<NamedVariableSymbol>`;
+LocalBinding: Binding = Symbol:`IPromise<NamedVariableSymbol>` NameSpan:`TextSpan`;
 
 // ---------- Definitions
 Definition: Concrete = File:`CodeFile` Name:`TypeName`? NameSpan:`TextSpan` Symbol:`IPromise<Symbol>`;

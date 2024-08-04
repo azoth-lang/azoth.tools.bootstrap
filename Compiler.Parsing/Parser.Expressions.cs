@@ -464,6 +464,7 @@ public partial class Parser
         var mutableBinding = Tokens.Accept<IVarKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var variableName = identifier.Value;
+        var nameSpan = identifier.Span;
         ITypeSyntax? type = null;
         if (Tokens.Accept<IColonToken>())
             type = ParseType();
@@ -471,7 +472,7 @@ public partial class Parser
         var expression = ParseExpression();
         var block = ParseBlock();
         var span = TextSpan.Covering(foreachKeyword, block.Span);
-        return new ForeachExpressionSyntax(span, mutableBinding, variableName, type, expression, block);
+        return new ForeachExpressionSyntax(span, mutableBinding, nameSpan, variableName, type, expression, block);
     }
 
     private IWhileExpressionSyntax ParseWhile()

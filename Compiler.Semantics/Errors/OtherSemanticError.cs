@@ -10,20 +10,20 @@ public static class OtherSemanticError
 {
     public static Diagnostic CantRebindMutableBinding(CodeFile file, TextSpan span)
     {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             6001, "Variable binding can't rebind previous mutable variable binding");
     }
 
     public static Diagnostic CantRebindAsMutableBinding(CodeFile file, TextSpan span)
     {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             6002, "Mutable variable binding can't rebind previous variable binding");
     }
 
     public static Diagnostic CantShadow(CodeFile file, TextSpan bindingSpan, TextSpan useSpan)
     {
         // TODO that use span needs converted to a line and column
-        return new(file, bindingSpan, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+        return new(file, bindingSpan, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             6003, $"Variable binding can't shadow. Shadowed binding used at {useSpan}");
     }
 

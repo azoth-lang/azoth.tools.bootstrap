@@ -34,7 +34,10 @@ BlockOrResult: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings
 Binding <: Code, BindingDeclaration = IsLentBinding:`bool` BindingValueId:`ValueId` BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
-NamedBinding <: Binding, NamedBindingDeclaration = Syntax:`ILocalBindingSyntax` BindingType:`DataType`;
+NamedBinding <: Binding, NamedBindingDeclaration = Syntax:`ILocalBindingSyntax`
+    IsMutableBinding:`bool` BindingType:`DataType`
+    ContainingLexicalScope:`LexicalScope`;
+VariableBinding <: NamedBinding;
 
 // ---------- Packages
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
@@ -248,7 +251,7 @@ ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode` IntermediateExpression:`IExpressionNode`?
     ExpectedAntetype:`IMaybeExpressionAntetype`?;
 BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
-VariableDeclarationStatement <: BodyStatement, NamedBinding = Syntax:`IVariableDeclarationStatementSyntax`
+VariableDeclarationStatement <: BodyStatement, VariableBinding = Syntax:`IVariableDeclarationStatementSyntax`
     IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type?
     Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
     IntermediateInitializer:`IExpressionNode`?
@@ -263,7 +266,7 @@ ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax`
 Pattern <: Code = Syntax:`IPatternSyntax` FlowStateAfter:`IFlowState`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
-BindingPattern <: OptionalOrBindingPattern, NamedBinding = Syntax:`IBindingPatternSyntax`
+BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPatternSyntax`
     IsMutableBinding:`bool` Name:`IdentifierName` ContainingLexicalScope:`LexicalScope` BindingValueId:`ValueId`;
 OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pattern:OptionalOrBindingPattern;
 
@@ -319,7 +322,7 @@ IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax`
 LoopExpression <: Expression = Syntax:`ILoopExpressionSyntax` Block:BlockExpression;
 WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax`
     Condition:AmbiguousExpression IntermediateCondition:`IExpressionNode`? Block:BlockExpression;
-ForeachExpression <: Expression, NamedBinding = Syntax:`IForeachExpressionSyntax`
+ForeachExpression <: Expression, VariableBinding = Syntax:`IForeachExpressionSyntax`
     IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:AmbiguousExpression
     IntermediateInExpression:`IExpressionNode`? DeclaredType:Type? Block:BlockExpression
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`

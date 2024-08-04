@@ -11,6 +11,7 @@ internal class NamedParameterSyntax : ParameterSyntax, INamedParameterSyntax
 {
     public bool IsMutableBinding { get; }
     public bool IsLentBinding { get; }
+    public TextSpan NameSpan { get; }
     public new IdentifierName Name { get; }
     public Promise<int?> DeclarationNumber { get; } = new Promise<int?>();
     public Promise<NamedVariableSymbol> Symbol { get; } = new Promise<NamedVariableSymbol>();
@@ -22,6 +23,7 @@ internal class NamedParameterSyntax : ParameterSyntax, INamedParameterSyntax
         TextSpan span,
         bool isMutableBinding,
         bool isLentBinding,
+        TextSpan nameSpan,
         IdentifierName name,
         ITypeSyntax typeSyntax,
         IExpressionSyntax? defaultValue)
@@ -32,6 +34,7 @@ internal class NamedParameterSyntax : ParameterSyntax, INamedParameterSyntax
         Type = typeSyntax;
         DefaultValue = defaultValue;
         IsLentBinding = isLentBinding;
+        NameSpan = nameSpan;
         DataType = Symbol.Select(s => s.Type);
     }
 

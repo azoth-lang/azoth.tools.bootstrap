@@ -56,7 +56,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ICapabilityViewpointTypeNode),
     typeof(ISelfViewpointTypeNode),
     typeof(IStatementNode),
+    typeof(IVariableDeclarationStatementNode),
     typeof(IPatternNode),
+    typeof(IBindingPatternNode),
     typeof(IOptionalPatternNode),
     typeof(IAmbiguousExpressionNode),
     typeof(IAssignableExpressionNode),
@@ -73,6 +75,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IPatternMatchExpressionNode),
     typeof(ILoopExpressionNode),
     typeof(IWhileExpressionNode),
+    typeof(IForeachExpressionNode),
     typeof(IFunctionInvocationExpressionNode),
     typeof(IMethodInvocationExpressionNode),
     typeof(IGetterInvocationExpressionNode),
@@ -176,17 +179,25 @@ public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 }
 
 [Closed(
-    typeof(INamedParameterNode),
-    typeof(IVariableDeclarationStatementNode),
-    typeof(IBindingPatternNode),
-    typeof(IForeachExpressionNode))]
+    typeof(IVariableBindingNode),
+    typeof(INamedParameterNode))]
 public partial interface INamedBindingNode : ISemanticNode, IBindingNode, INamedBindingDeclarationNode
 {
     new ILocalBindingSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
+    bool IsMutableBinding { get; }
     new DataType BindingType { get; }
     Pseudotype IBindingNode.BindingType => BindingType;
+    LexicalScope ContainingLexicalScope { get; }
+}
+
+[Closed(
+    typeof(IVariableDeclarationStatementNode),
+    typeof(IBindingPatternNode),
+    typeof(IForeachExpressionNode))]
+public partial interface IVariableBindingNode : INamedBindingNode
+{
 }
 
 public partial interface IPackageNode : IPackageDeclarationNode
@@ -873,7 +884,6 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    bool IsMutableBinding { get; }
     new IdentifierName Name { get; }
     IdentifierName? IParameterNode.Name => Name;
     IdentifierName INamedBindingDeclarationNode.Name => Name;
@@ -1169,21 +1179,19 @@ public partial interface IBodyStatementNode : IStatementNode
     IStatementSyntax IStatementNode.Syntax => Syntax;
 }
 
-public partial interface IVariableDeclarationStatementNode : IBodyStatementNode, INamedBindingNode
+public partial interface IVariableDeclarationStatementNode : ISemanticNode, IBodyStatementNode, IVariableBindingNode
 {
     new IVariableDeclarationStatementSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IBodyStatementSyntax IBodyStatementNode.Syntax => Syntax;
     ILocalBindingSyntax INamedBindingNode.Syntax => Syntax;
     IStatementSyntax IStatementNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    bool IsMutableBinding { get; }
     ICapabilityNode? Capability { get; }
     ITypeNode? Type { get; }
     IAmbiguousExpressionNode? Initializer { get; }
     IAmbiguousExpressionNode? CurrentInitializer { get; }
     IExpressionNode? IntermediateInitializer { get; }
-    LexicalScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
     NamedVariableSymbol Symbol { get; }
     int? DeclarationNumber { get; }
@@ -1227,16 +1235,14 @@ public partial interface IOptionalOrBindingPatternNode : IPatternNode
     IPatternSyntax IPatternNode.Syntax => Syntax;
 }
 
-public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, INamedBindingNode
+public partial interface IBindingPatternNode : ISemanticNode, IOptionalOrBindingPatternNode, IVariableBindingNode
 {
     new IBindingPatternSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IOptionalOrBindingPatternSyntax IOptionalOrBindingPatternNode.Syntax => Syntax;
     ILocalBindingSyntax INamedBindingNode.Syntax => Syntax;
     IPatternSyntax IPatternNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    bool IsMutableBinding { get; }
-    LexicalScope ContainingLexicalScope { get; }
 }
 
 public partial interface IOptionalPatternNode : ISemanticNode, IOptionalOrBindingPatternNode
@@ -1517,20 +1523,18 @@ public partial interface IWhileExpressionNode : ISemanticNode, IExpressionNode
     IBlockExpressionNode Block { get; }
 }
 
-public partial interface IForeachExpressionNode : IExpressionNode, INamedBindingNode
+public partial interface IForeachExpressionNode : ISemanticNode, IExpressionNode, IVariableBindingNode
 {
     new IForeachExpressionSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
     ILocalBindingSyntax INamedBindingNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    bool IsMutableBinding { get; }
     IdentifierName VariableName { get; }
     IAmbiguousExpressionNode InExpression { get; }
     IExpressionNode? IntermediateInExpression { get; }
     ITypeNode? DeclaredType { get; }
     IBlockExpressionNode Block { get; }
-    LexicalScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
     ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
     IStandardMethodDeclarationNode? ReferencedIterateMethod { get; }

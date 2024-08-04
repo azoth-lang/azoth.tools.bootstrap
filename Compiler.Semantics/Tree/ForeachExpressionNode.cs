@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Shadowing;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -152,6 +153,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
         ForeachExpressionTypeAspect.ForeachExpression_ContributeDiagnostics(this, diagnostics);
+        ShadowingAspect.VariableBinding_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

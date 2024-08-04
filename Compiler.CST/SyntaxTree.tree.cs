@@ -99,6 +99,7 @@ public partial interface ILocalBindingSyntax : IBindingSyntax
 {
     new IPromise<NamedVariableSymbol> Symbol { get; }
     IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
+    TextSpan NameSpan { get; }
 }
 
 [Closed(
@@ -638,7 +639,6 @@ public partial interface IBodyStatementSyntax : IStatementSyntax
 
 public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyntax, ILocalBindingSyntax
 {
-    TextSpan NameSpan { get; }
     IdentifierName Name { get; }
     Promise<int?> DeclarationNumber { get; }
     ICapabilitySyntax? Capability { get; }

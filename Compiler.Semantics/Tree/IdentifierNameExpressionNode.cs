@@ -22,7 +22,8 @@ internal sealed class IdentifierNameExpressionNode : AmbiguousNameExpressionNode
     private ValueAttribute<IFixedList<IDeclarationNode>> referencedDeclarations;
     public IFixedList<IDeclarationNode> ReferencedDeclarations
         => referencedDeclarations.TryGetValue(out var value) ? value
-            : referencedDeclarations.GetValue(this, BindingAmbiguousNamesAspect.StandardNameExpression_ReferencedDeclarations);
+            : referencedDeclarations.GetValue(this,
+                BindingAmbiguousNamesAspect.StandardNameExpression_ReferencedDeclarations);
 
     public IdentifierNameExpressionNode(IIdentifierNameExpressionSyntax syntax)
     {
