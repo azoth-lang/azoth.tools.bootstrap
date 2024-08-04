@@ -1,6 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -26,6 +27,6 @@ internal abstract class StatementNode : CodeNode, IStatementNode
     public IPreviousValueId PreviousValueId()
         => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    public IFixedSet<IControlFlowNode> ControlFlowFollowing()
+    public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowFollowing()
         => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 }

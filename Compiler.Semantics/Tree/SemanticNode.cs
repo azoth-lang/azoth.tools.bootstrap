@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
@@ -101,7 +102,7 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedExpectedReturnType), child, descendant));
 
-    internal virtual IFixedSet<IControlFlowNode> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal virtual FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedControlFlowFollowing), child, descendant));
 

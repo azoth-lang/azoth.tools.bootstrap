@@ -3,6 +3,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -90,7 +91,7 @@ public partial interface IControlFlowNode
     /// The control flow nodes that follow this node based on the context.
     /// </summary>
     /// <remarks>This is an inherited property.</remarks>
-    IFixedSet<IControlFlowNode> ControlFlowFollowing();
+    FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowFollowing();
 }
 #endregion
 
