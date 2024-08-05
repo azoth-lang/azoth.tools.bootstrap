@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
@@ -18,8 +17,6 @@ internal sealed class ControlFlowAspect
     public static FixedDictionary<IControlFlowNode, ControlFlowKind> Statement_ControlFlowNext(IStatementNode node)
         => node.ControlFlowFollowing();
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> Entry_ControlFlowNext(EntryNode arg)
-    {
-        throw new System.NotImplementedException();
-    }
+    public static FixedDictionary<IControlFlowNode, ControlFlowKind> Entry_ControlFlowNext(IEntryNode node)
+        => node.ControlFlowFollowing();
 }
