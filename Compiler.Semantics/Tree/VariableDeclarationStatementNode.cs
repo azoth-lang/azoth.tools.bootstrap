@@ -6,10 +6,10 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Shadowing;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 

@@ -2,7 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Shadowing;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 
 internal static class ShadowingAspect
 {
