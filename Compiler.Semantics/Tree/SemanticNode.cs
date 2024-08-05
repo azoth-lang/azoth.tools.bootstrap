@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -117,5 +118,18 @@ internal abstract class SemanticNode : ISemanticNode
     {
         foreach (var child in this.Children().Cast<SemanticNode>())
             child.CollectDiagnostics(diagnostics);
+    }
+
+    internal virtual FixedDictionary<IControlFlowNode, ControlFlowKind> CollectControlFlowPrevious(IControlFlowNode target, IInheritanceContext ctx)
+    {
+        var previous = new Dictionary<IControlFlowNode, ControlFlowKind>();
+        CollectControlFlowPrevious(target, previous);
+        return previous.ToFixedDictionary();
+    }
+
+    protected virtual void CollectControlFlowPrevious(IControlFlowNode target, Dictionary<IControlFlowNode, ControlFlowKind> previous)
+    {
+        foreach (var child in this.Children().Cast<SemanticNode>())
+            child.CollectControlFlowPrevious(target, previous);
     }
 }

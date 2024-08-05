@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
@@ -19,4 +20,13 @@ internal sealed class ControlFlowAspect
 
     public static FixedDictionary<IControlFlowNode, ControlFlowKind> Entry_ControlFlowNext(IEntryNode node)
         => node.ControlFlowFollowing();
+
+    public static void ControlFlow_ContributeControlFlowPrevious(
+        IControlFlowNode node,
+        IControlFlowNode target,
+        Dictionary<IControlFlowNode, ControlFlowKind> previous)
+    {
+        if (node.ControlFlowNext.TryGetValue(target, out var kind))
+            previous.Add(node, kind);
+    }
 }

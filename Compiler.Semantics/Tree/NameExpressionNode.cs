@@ -13,6 +13,12 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
             ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Expression_ControlFlowNext);
+    private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowPrevious
+        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
+            : this.Inherited(ref controlFlowPreviousCached, ref controlFlowPrevious,
+                ctx => CollectControlFlowPrevious(this, ctx));
 
     public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowFollowing()
         => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());

@@ -47,6 +47,11 @@ internal class SemanticTreeValidator
             Validate(executable.Entry);
             Validate(executable.Exit);
         }
+        if (node is IControlFlowNode controlFlow)
+        {
+            //_ = controlFlow.ControlFlowNext;
+            //_ = controlFlow.ControlFlowPrevious;
+        }
         if (node is IDataFlowNode dataFlow)
         {
             _ = dataFlow.DefinitelyAssigned;

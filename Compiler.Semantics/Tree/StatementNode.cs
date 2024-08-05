@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -22,6 +23,12 @@ internal abstract class StatementNode : CodeNode, IStatementNode
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Statement_ControlFlowNext);
+    private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowPrevious
+        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
+            : this.Inherited(ref controlFlowPreviousCached, ref controlFlowPrevious,
+                ctx => CollectControlFlowPrevious(this, ctx));
 
     private protected StatementNode() { }
 
@@ -35,4 +42,12 @@ internal abstract class StatementNode : CodeNode, IStatementNode
 
     public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowFollowing()
         => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+
+    protected override void CollectControlFlowPrevious(
+        IControlFlowNode target,
+        Dictionary<IControlFlowNode, ControlFlowKind> previous)
+    {
+        ControlFlowAspect.ControlFlow_ContributeControlFlowPrevious(this, target, previous);
+        base.CollectControlFlowPrevious(target, previous);
+    }
 }

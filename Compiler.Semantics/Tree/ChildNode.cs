@@ -208,4 +208,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected IPreviousValueId PreviousValueId(IInheritanceContext ctx)
         => Previous(ctx).PreviousValueId(this, ctx);
+
+    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> CollectControlFlowPrevious(IControlFlowNode target, IInheritanceContext ctx)
+    {
+        if (this is IExecutableDefinitionNode)
+            return base.CollectControlFlowPrevious(target, ctx);
+        return GetParent(ctx).CollectControlFlowPrevious(target, ctx);
+    }
 }

@@ -1169,6 +1169,7 @@ public partial interface ISelfViewpointTypeNode : ISemanticNode, IViewpointTypeN
 public partial interface IControlFlowNode : ISemanticNode, ICodeNode
 {
     FixedDictionary<IControlFlowNode,ControlFlowKind> ControlFlowNext { get; }
+    FixedDictionary<IControlFlowNode,ControlFlowKind> ControlFlowPrevious { get; }
 }
 
 public partial interface IEntryNode : ISemanticNode, IDataFlowNode
