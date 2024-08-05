@@ -34,10 +34,11 @@ BlockOrResult: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings
 Binding <: Code, BindingDeclaration = IsLentBinding:`bool` BindingValueId:`ValueId` BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
-NamedBinding <: Binding, NamedBindingDeclaration = Syntax:`ILocalBindingSyntax`
+NamedBinding <: Binding, NamedBindingDeclaration =
     IsMutableBinding:`bool` BindingType:`DataType`
     ContainingLexicalScope:`LexicalScope`;
-VariableBinding <: NamedBinding;
+LocalBinding <: NamedBinding = Syntax:`ILocalBindingSyntax`;
+VariableBinding <: LocalBinding;
 
 // ---------- Packages
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
@@ -78,9 +79,9 @@ Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? F
     ContainingDeclaration:`ISymbolDeclarationNode` ContainingSymbol:`Symbol`
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol` ValueIdScope:`ValueIdScope`;
-ExecutableDefinition <: Definition = ValueIdScope:`ValueIdScope` Entry:`IEntryNode` Exit:`IExitNode`;
+ExecutableDefinition <: Definition = ValueIdScope:`ValueIdScope` Entry:`IEntryNode` Exit:`IExitNode` LocalBindingsMap:`FixedDictionary<ILocalBindingNode,int>`;
 ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition
-    = Parameters:ConstructorOrInitializerParameter*;
+    = Parameters:ConstructorOrInitializerParameter* Body?;
 ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition
     = Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body
     Type:`FunctionType` Symbol:`FunctionSymbol`;
@@ -166,7 +167,7 @@ ConstructorDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition
     = Syntax:`IConstructorDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*
     Symbol:`ConstructorSymbol`;
 DefaultConstructorDefinition <: ConstructorDefinition
-    = Parameters:ConstructorOrInitializerParameter*;
+    = Parameters:ConstructorOrInitializerParameter* Body?;
 SourceConstructorDefinition <: ConstructorDefinition
     = Syntax:`IConstructorDefinitionSyntax`
     SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
@@ -174,11 +175,11 @@ InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition
     = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*
     Symbol:`InitializerSymbol`;
 DefaultInitializerDefinition <: InitializerDefinition
-    = Parameters:ConstructorOrInitializerParameter*;
+    = Parameters:ConstructorOrInitializerParameter* Body?;
 SourceInitializerDefinition <: InitializerDefinition
     = Syntax:`IInitializerDefinitionSyntax`
     SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
-FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding, FieldDeclaration, ExecutableDefinition
+FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, NamedBinding, FieldDeclaration, ExecutableDefinition
     = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type BindingAntetype:`IMaybeAntetype` BindingType:`DataType`
     Symbol:`FieldSymbol` Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
     IntermediateInitializer:`IExpressionNode`?;
@@ -200,7 +201,7 @@ Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`boo
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`
     BindingType:`DataType` ParameterType:`ParameterType`;
-NamedParameter <: ConstructorOrInitializerParameter, NamedBinding = Syntax:`INamedParameterSyntax`
+NamedParameter <: ConstructorOrInitializerParameter, LocalBinding = Syntax:`INamedParameterSyntax`
     IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`?
     TypeNode:Type
     // TODO remove parameter symbols
@@ -408,7 +409,7 @@ MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax` Conte
 FieldAccessExpression <: NameExpression, AssignableExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
 VariableNameExpression <: LocalBindingNameExpression, AssignableExpression, SimpleName
-    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDefinition:`INamedBindingNode`;
+    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDefinition:`ILocalBindingNode`;
 TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
     Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`
     NamedAntetype:`IMaybeAntetype` NamedBareType:`BareType`?;

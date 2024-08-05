@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -46,8 +47,14 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value
             : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.Invocable_ValueIdScope);
-    public IEntryNode Entry { get; } = new EntryNode();
-    public IExitNode Exit { get; } = new ExitNode();
+    public IEntryNode Entry { get; }
+    public IExitNode Exit { get; }
+    private FixedDictionary<ILocalBindingNode, int>? localBindingsMap;
+    private bool localBindingsMapCached;
+    public FixedDictionary<ILocalBindingNode, int> LocalBindingsMap
+        => GrammarAttribute.IsCached(in localBindingsMapCached) ? localBindingsMap!
+            : this.Synthetic(ref localBindingsMapCached, ref localBindingsMap,
+                AssignmentAspect.ConcreteInvocableDefinition_LocalBindingsMap);
 
     public AssociatedFunctionDefinitionNode(
         IAssociatedFunctionDefinitionSyntax syntax,
@@ -59,6 +66,8 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
         Body = Child.Attach(this, body);
+        Entry = Child.Attach(this, new EntryNode());
+        Exit = Child.Attach(this, new ExitNode());
     }
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
@@ -98,4 +107,6 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
         if (child == Body) return Type.Return.Type;
         return base.InheritedExpectedReturnType(child, descendant, ctx);
     }
+    internal override FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => LocalBindingsMap;
 }

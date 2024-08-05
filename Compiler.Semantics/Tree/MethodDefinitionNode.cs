@@ -33,8 +33,8 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value
             : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.Invocable_ValueIdScope);
-    public IEntryNode Entry { get; } = new EntryNode();
-    public IExitNode Exit { get; } = new ExitNode();
+    public IEntryNode Entry { get; }
+    public IExitNode Exit { get; }
 
     private protected MethodDefinitionNode(
         IMethodSelfParameterNode selfParameter,
@@ -44,6 +44,8 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
+        Entry = Child.Attach(this, new EntryNode());
+        Exit = Child.Attach(this, new ExitNode());
     }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)

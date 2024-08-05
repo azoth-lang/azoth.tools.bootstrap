@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -20,6 +21,7 @@ internal abstract class InitializerDefinitionNode : TypeMemberDefinitionNode, II
     public abstract IInitializerSelfParameterNode? SelfParameter { get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
     public abstract IBlockBodyNode? Body { get; }
+    IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
     public override LexicalScope LexicalScope
@@ -32,13 +34,21 @@ internal abstract class InitializerDefinitionNode : TypeMemberDefinitionNode, II
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value
             : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.Invocable_ValueIdScope);
-    public IEntryNode Entry { get; } = new EntryNode();
-    public IExitNode Exit { get; } = new ExitNode();
+    public IEntryNode Entry { get; }
+    public IExitNode Exit { get; }
+    private FixedDictionary<ILocalBindingNode, int>? localBindingsMap;
+    private bool localBindingsMapCached;
+    public FixedDictionary<ILocalBindingNode, int> LocalBindingsMap
+        => GrammarAttribute.IsCached(in localBindingsMapCached) ? localBindingsMap!
+            : this.Synthetic(ref localBindingsMapCached, ref localBindingsMap,
+                AssignmentAspect.ConcreteInvocableDefinition_LocalBindingsMap);
 
     private protected InitializerDefinitionNode(
         IEnumerable<IConstructorOrInitializerParameterNode> parameters)
     {
         Parameters = ChildList.Attach(this, parameters);
+        Entry = Child.Attach(this, new EntryNode());
+        Exit = Child.Attach(this, new ExitNode());
     }
 
     public IFlowState FlowStateBefore()
@@ -73,4 +83,7 @@ internal abstract class InitializerDefinitionNode : TypeMemberDefinitionNode, II
         if (child == Body) return DataType.Void;
         return base.InheritedExpectedReturnType(child, descendant, ctx);
     }
+
+    internal override FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => LocalBindingsMap;
 }

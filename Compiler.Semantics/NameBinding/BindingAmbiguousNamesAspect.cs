@@ -26,7 +26,7 @@ internal static class BindingAmbiguousNamesAspect
         if (node.ReferencedDeclarations.TrySingle() is not null and var referencedDeclaration)
             switch (referencedDeclaration)
             {
-                case INamedBindingNode referencedVariable:
+                case ILocalBindingNode referencedVariable:
                     return new VariableNameExpressionNode(node.Syntax, referencedVariable);
                 case ITypeDeclarationNode referencedType:
                     return new StandardTypeNameExpressionNode(node.Syntax, FixedList.Empty<ITypeNode>(), referencedType);

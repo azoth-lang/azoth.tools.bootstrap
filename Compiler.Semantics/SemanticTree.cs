@@ -93,6 +93,11 @@ public partial interface IControlFlowNode
     /// <remarks>This is an inherited property.</remarks>
     FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowFollowing();
 }
+
+public partial interface IEntryNode
+{
+    FixedDictionary<ILocalBindingNode, int> LocalBindingsMap();
+}
 #endregion
 
 #region Statements

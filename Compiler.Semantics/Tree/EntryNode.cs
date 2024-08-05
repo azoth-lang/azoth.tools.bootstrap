@@ -12,4 +12,7 @@ internal sealed class EntryNode : ControlFlowNode, IEntryNode
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Entry_ControlFlowNext);
+
+    public FixedDictionary<ILocalBindingNode, int> LocalBindingsMap()
+        => InheritedLocalBindingsMap(GrammarAttribute.CurrentInheritanceContext());
 }

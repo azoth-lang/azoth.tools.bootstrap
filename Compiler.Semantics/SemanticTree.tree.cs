@@ -29,6 +29,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IBodyOrBlockNode),
     typeof(IElseClauseNode),
     typeof(INamedBindingNode),
+    typeof(IVariableBindingNode),
     typeof(ICompilationUnitNode),
     typeof(IUsingDirectiveNode),
     typeof(IInvocableDefinitionNode),
@@ -44,6 +45,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IAttributeNode),
     typeof(ICapabilityConstraintNode),
     typeof(IParameterNode),
+    typeof(INamedParameterNode),
     typeof(IConstructorSelfParameterNode),
     typeof(IInitializerSelfParameterNode),
     typeof(IMethodSelfParameterNode),
@@ -56,9 +58,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ICapabilityViewpointTypeNode),
     typeof(ISelfViewpointTypeNode),
     typeof(IControlFlowNode),
-    typeof(IVariableDeclarationStatementNode),
     typeof(IPatternNode),
-    typeof(IBindingPatternNode),
     typeof(IOptionalPatternNode),
     typeof(IAmbiguousExpressionNode),
     typeof(IAssignableExpressionNode),
@@ -75,7 +75,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IPatternMatchExpressionNode),
     typeof(ILoopExpressionNode),
     typeof(IWhileExpressionNode),
-    typeof(IForeachExpressionNode),
     typeof(IFunctionInvocationExpressionNode),
     typeof(IMethodInvocationExpressionNode),
     typeof(IGetterInvocationExpressionNode),
@@ -169,7 +168,6 @@ public partial interface IBlockOrResultNode : IElseClauseNode
 
 [Closed(
     typeof(INamedBindingNode),
-    typeof(IFieldDefinitionNode),
     typeof(ISelfParameterNode))]
 public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 {
@@ -180,13 +178,10 @@ public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 }
 
 [Closed(
-    typeof(IVariableBindingNode),
-    typeof(INamedParameterNode))]
+    typeof(ILocalBindingNode),
+    typeof(IFieldDefinitionNode))]
 public partial interface INamedBindingNode : ISemanticNode, IBindingNode, INamedBindingDeclarationNode
 {
-    new ILocalBindingSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     bool IsMutableBinding { get; }
     new DataType BindingType { get; }
     Pseudotype IBindingNode.BindingType => BindingType;
@@ -194,10 +189,20 @@ public partial interface INamedBindingNode : ISemanticNode, IBindingNode, INamed
 }
 
 [Closed(
+    typeof(IVariableBindingNode),
+    typeof(INamedParameterNode))]
+public partial interface ILocalBindingNode : INamedBindingNode
+{
+    new ILocalBindingSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IConcreteSyntax? ICodeNode.Syntax => Syntax;
+}
+
+[Closed(
     typeof(IVariableDeclarationStatementNode),
     typeof(IBindingPatternNode),
     typeof(IForeachExpressionNode))]
-public partial interface IVariableBindingNode : INamedBindingNode
+public partial interface IVariableBindingNode : ISemanticNode, ILocalBindingNode
 {
 }
 
@@ -333,6 +338,7 @@ public partial interface IExecutableDefinitionNode : ISemanticNode, IDefinitionN
     ValueIdScope ValueIdScope { get; }
     IEntryNode Entry { get; }
     IExitNode Exit { get; }
+    FixedDictionary<ILocalBindingNode,int> LocalBindingsMap { get; }
 }
 
 [Closed(
@@ -342,6 +348,7 @@ public partial interface IExecutableDefinitionNode : ISemanticNode, IDefinitionN
     typeof(IInitializerDefinitionNode))]
 public partial interface IConcreteInvocableDefinitionNode : IInvocableDefinitionNode, IExecutableDefinitionNode
 {
+    IBodyNode? Body { get; }
 }
 
 [Closed(
@@ -353,7 +360,8 @@ public partial interface IConcreteFunctionInvocableDefinitionNode : ISemanticNod
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     new IFixedList<INamedParameterNode> Parameters { get; }
     ITypeNode? Return { get; }
-    IBodyNode Body { get; }
+    new IBodyNode Body { get; }
+    IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
     FunctionType Type { get; }
     new FunctionSymbol Symbol { get; }
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
@@ -665,7 +673,8 @@ public partial interface IConcreteMethodDefinitionNode : ISemanticNode, IMethodD
     new IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<INamedParameterNode> IMethodDefinitionNode.Parameters => Parameters;
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
-    IBodyNode Body { get; }
+    new IBodyNode Body { get; }
+    IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 }
 
 public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefinitionNode, IStandardMethodDeclarationNode
@@ -729,7 +738,8 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     new IConstructorDefinitionSyntax Syntax { get; }
     IConstructorDefinitionSyntax? IConstructorDefinitionNode.Syntax => Syntax;
     IConstructorSelfParameterNode SelfParameter { get; }
-    IBlockBodyNode Body { get; }
+    new IBlockBodyNode Body { get; }
+    IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 }
 
 [Closed(
@@ -762,27 +772,29 @@ public partial interface ISourceInitializerDefinitionNode : IInitializerDefiniti
     new IInitializerDefinitionSyntax Syntax { get; }
     IInitializerDefinitionSyntax? IInitializerDefinitionNode.Syntax => Syntax;
     IInitializerSelfParameterNode SelfParameter { get; }
-    IBlockBodyNode Body { get; }
+    new IBlockBodyNode Body { get; }
+    IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 }
 
-public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IStructMemberDefinitionNode, IBindingNode, IFieldDeclarationNode, IExecutableDefinitionNode
+public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IStructMemberDefinitionNode, INamedBindingNode, IFieldDeclarationNode, IExecutableDefinitionNode
 {
     new IFieldDefinitionSyntax Syntax { get; }
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IClassMemberDefinitionSyntax? IClassMemberDefinitionNode.Syntax => Syntax;
     IStructMemberDefinitionSyntax? IStructMemberDefinitionNode.Syntax => Syntax;
-    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    bool IsMutableBinding { get; }
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    IdentifierName INamedBindingDeclarationNode.Name => Name;
     IdentifierName IFieldDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
     ITypeNode TypeNode { get; }
     new DataType BindingType { get; }
-    Pseudotype IBindingNode.BindingType => BindingType;
+    DataType INamedBindingNode.BindingType => BindingType;
     DataType IFieldDeclarationNode.BindingType => BindingType;
+    Pseudotype IBindingNode.BindingType => BindingType;
     new FieldSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FieldSymbol IFieldDeclarationNode.Symbol => Symbol;
@@ -879,13 +891,13 @@ public partial interface IConstructorOrInitializerParameterNode : IParameterNode
     ParameterType ParameterType { get; }
 }
 
-public partial interface INamedParameterNode : IConstructorOrInitializerParameterNode, INamedBindingNode
+public partial interface INamedParameterNode : ISemanticNode, IConstructorOrInitializerParameterNode, ILocalBindingNode
 {
     new INamedParameterSyntax Syntax { get; }
-    IConstructorOrInitializerParameterSyntax IConstructorOrInitializerParameterNode.Syntax => Syntax;
-    ILocalBindingSyntax INamedBindingNode.Syntax => Syntax;
-    IParameterSyntax IParameterNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    IConstructorOrInitializerParameterSyntax IConstructorOrInitializerParameterNode.Syntax => Syntax;
+    ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
+    IParameterSyntax IParameterNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     IdentifierName? IParameterNode.Name => Name;
@@ -1200,12 +1212,12 @@ public partial interface IBodyStatementNode : IStatementNode
     IStatementSyntax IStatementNode.Syntax => Syntax;
 }
 
-public partial interface IVariableDeclarationStatementNode : ISemanticNode, IBodyStatementNode, IVariableBindingNode
+public partial interface IVariableDeclarationStatementNode : IBodyStatementNode, IVariableBindingNode
 {
     new IVariableDeclarationStatementSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IBodyStatementSyntax IBodyStatementNode.Syntax => Syntax;
-    ILocalBindingSyntax INamedBindingNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
     IStatementSyntax IStatementNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     ICapabilityNode? Capability { get; }
@@ -1256,12 +1268,12 @@ public partial interface IOptionalOrBindingPatternNode : IPatternNode
     IPatternSyntax IPatternNode.Syntax => Syntax;
 }
 
-public partial interface IBindingPatternNode : ISemanticNode, IOptionalOrBindingPatternNode, IVariableBindingNode
+public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IVariableBindingNode
 {
     new IBindingPatternSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IOptionalOrBindingPatternSyntax IOptionalOrBindingPatternNode.Syntax => Syntax;
-    ILocalBindingSyntax INamedBindingNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
     IPatternSyntax IPatternNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
 }
@@ -1588,12 +1600,12 @@ public partial interface IWhileExpressionNode : ISemanticNode, IExpressionNode
     IBlockExpressionNode Block { get; }
 }
 
-public partial interface IForeachExpressionNode : ISemanticNode, IExpressionNode, IVariableBindingNode
+public partial interface IForeachExpressionNode : IExpressionNode, IVariableBindingNode
 {
     new IForeachExpressionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IExpressionNode.Syntax => Syntax;
-    ILocalBindingSyntax INamedBindingNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IdentifierName VariableName { get; }
@@ -1951,7 +1963,7 @@ public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressi
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     IdentifierName Name { get; }
-    new INamedBindingNode ReferencedDefinition { get; }
+    new ILocalBindingNode ReferencedDefinition { get; }
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
 }
 

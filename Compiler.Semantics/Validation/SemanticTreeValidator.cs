@@ -41,6 +41,14 @@ internal class SemanticTreeValidator
             _ = expression.ValueId;
         }
 
+        if (node is IExecutableDefinitionNode executable)
+        {
+            var entry = executable.Entry;
+            entry.LocalBindingsMap();
+            _ = executable.LocalBindingsMap;
+            _ = executable.Exit;
+        }
+
         // Validate Concrete Node Attributes
         switch (node)
         {

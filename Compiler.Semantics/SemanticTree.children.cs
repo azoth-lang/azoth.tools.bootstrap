@@ -131,6 +131,8 @@ public static class ISemanticNodeExtensions
             case IDefaultConstructorDefinitionNode n:
                 foreach (var child in n.Parameters)
                     yield return child;
+                if (n.Body is not null)
+                    yield return n.Body;
                 yield break;
             case ISourceConstructorDefinitionNode n:
                 yield return n.SelfParameter;
@@ -141,6 +143,8 @@ public static class ISemanticNodeExtensions
             case IDefaultInitializerDefinitionNode n:
                 foreach (var child in n.Parameters)
                     yield return child;
+                if (n.Body is not null)
+                    yield return n.Body;
                 yield break;
             case ISourceInitializerDefinitionNode n:
                 yield return n.SelfParameter;

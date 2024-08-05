@@ -4,8 +4,10 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -21,6 +23,12 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.ConcreteMethod_LexicalScope, ReferenceEqualityComparer.Instance);
+    private FixedDictionary<ILocalBindingNode, int>? localBindingsMap;
+    private bool localBindingsMapCached;
+    public FixedDictionary<ILocalBindingNode, int> LocalBindingsMap
+        => GrammarAttribute.IsCached(in localBindingsMapCached) ? localBindingsMap!
+            : this.Synthetic(ref localBindingsMapCached, ref localBindingsMap,
+                AssignmentAspect.ConcreteInvocableDefinition_LocalBindingsMap);
 
     public StandardMethodDefinitionNode(
         IStandardMethodDefinitionSyntax syntax,
@@ -48,4 +56,7 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
         if (descendant == Body) return MethodGroupType.Return.Type.ToAntetype();
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
+
+    internal override FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => LocalBindingsMap;
 }

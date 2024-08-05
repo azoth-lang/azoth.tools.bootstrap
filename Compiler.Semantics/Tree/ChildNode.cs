@@ -197,6 +197,12 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IInheritanceContext ctx)
         => GetParent(ctx).InheritedControlFlowFollowing(this, this, ctx);
 
+    internal override FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).InheritedLocalBindingsMap(this, descendant, ctx);
+
+    protected FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IInheritanceContext ctx)
+        => GetParent(ctx).InheritedLocalBindingsMap(this, this, ctx);
+
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => Previous(ctx).PreviousValueId(before, ctx);
 

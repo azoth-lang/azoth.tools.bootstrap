@@ -13,7 +13,7 @@ internal sealed class VariableNameExpressionNode : NameExpressionNode, IVariable
 {
     public override IIdentifierNameExpressionSyntax Syntax { get; }
     public IdentifierName Name => Syntax.Name;
-    public INamedBindingNode ReferencedDefinition { get; }
+    public ILocalBindingNode ReferencedDefinition { get; }
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
@@ -32,7 +32,9 @@ internal sealed class VariableNameExpressionNode : NameExpressionNode, IVariable
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.VariableNameExpression_FlowStateAfter);
 
-    public VariableNameExpressionNode(IIdentifierNameExpressionSyntax syntax, INamedBindingNode referencedDefinition)
+    public VariableNameExpressionNode(
+        IIdentifierNameExpressionSyntax syntax,
+        ILocalBindingNode referencedDefinition)
     {
         Syntax = syntax;
         ReferencedDefinition = referencedDefinition;

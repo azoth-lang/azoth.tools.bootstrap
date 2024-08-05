@@ -10,6 +10,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -55,14 +56,23 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         => valueIdScope.TryGetValue(out var value) ? value
             : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.FieldDefinition_ValueIdScope);
     public ValueId BindingValueId => throw new NotImplementedException();
-    public IEntryNode Entry { get; } = new EntryNode();
-    public IExitNode Exit { get; } = new ExitNode();
+    public IEntryNode Entry { get; }
+    public IExitNode Exit { get; }
+    private FixedDictionary<ILocalBindingNode, int>? localBindingsMap;
+    private bool localBindingsMapCached;
+    public FixedDictionary<ILocalBindingNode, int> LocalBindingsMap
+        => GrammarAttribute.IsCached(in localBindingsMapCached)
+            ? localBindingsMap!
+            : this.Synthetic(ref localBindingsMapCached, ref localBindingsMap,
+                AssignmentAspect.FieldDefinition_LocalBindingsMap);
 
     public FieldDefinitionNode(IFieldDefinitionSyntax syntax, ITypeNode type, IAmbiguousExpressionNode? initializer)
     {
         Syntax = syntax;
         TypeNode = Child.Attach(this, type);
         this.initializer = Child.Create(this, initializer);
+        Entry = Child.Attach(this, new EntryNode());
+        Exit = Child.Attach(this, new ExitNode());
     }
 
     protected override void CollectDiagnostics(Diagnostics diagnostics)
@@ -85,4 +95,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         if (descendant == CurrentInitializer) return ControlFlowSet.CreateNormal(Exit);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
+
+    internal override FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => LocalBindingsMap;
 }
