@@ -32,6 +32,8 @@ internal abstract class InitializerDefinitionNode : TypeMemberDefinitionNode, II
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value
             : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.Invocable_ValueIdScope);
+    public IEntryNode Entry { get; } = new EntryNode();
+    public IExitNode Exit { get; } = new ExitNode();
 
     private protected InitializerDefinitionNode(
         IEnumerable<IConstructorOrInitializerParameterNode> parameters)

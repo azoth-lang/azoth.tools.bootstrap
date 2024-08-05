@@ -78,7 +78,7 @@ Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? F
     ContainingDeclaration:`ISymbolDeclarationNode` ContainingSymbol:`Symbol`
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol` ValueIdScope:`ValueIdScope`;
-ExecutableDefinition <: Definition = ValueIdScope:`ValueIdScope`;
+ExecutableDefinition <: Definition = ValueIdScope:`ValueIdScope` Entry:`IEntryNode` Exit:`IExitNode`;
 ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition
     = Parameters:ConstructorOrInitializerParameter*;
 ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition
@@ -246,6 +246,8 @@ SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:
 
 // ---------- Control Flow
 ControlFlow <: Code = ControlFlowNext:`FixedDictionary<IControlFlowNode,ControlFlowKind>`;
+Entry <: ControlFlow;
+Exit <: ControlFlow;
 
 // ---------- Statements
 Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?

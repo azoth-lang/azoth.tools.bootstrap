@@ -46,6 +46,8 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     public ValueIdScope ValueIdScope
         => valueIdScope.TryGetValue(out var value) ? value
             : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.Invocable_ValueIdScope);
+    public IEntryNode Entry { get; } = new EntryNode();
+    public IExitNode Exit { get; } = new ExitNode();
 
     public AssociatedFunctionDefinitionNode(
         IAssociatedFunctionDefinitionSyntax syntax,

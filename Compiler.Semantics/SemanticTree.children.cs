@@ -222,6 +222,10 @@ public static class ISemanticNodeExtensions
             case ISelfViewpointTypeNode n:
                 yield return n.Referent;
                 yield break;
+            case IEntryNode n:
+                yield break;
+            case IExitNode n:
+                yield break;
             case IResultStatementNode n:
                 yield return n.Expression;
                 yield break;

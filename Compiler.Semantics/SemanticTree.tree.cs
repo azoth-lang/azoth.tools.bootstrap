@@ -331,6 +331,8 @@ public partial interface IInvocableDefinitionNode : ISemanticNode, IDefinitionNo
 public partial interface IExecutableDefinitionNode : ISemanticNode, IDefinitionNode
 {
     ValueIdScope ValueIdScope { get; }
+    IEntryNode Entry { get; }
+    IExitNode Exit { get; }
 }
 
 [Closed(
@@ -1146,11 +1148,21 @@ public partial interface ISelfViewpointTypeNode : ISemanticNode, IViewpointTypeN
 }
 
 [Closed(
+    typeof(IEntryNode),
+    typeof(IExitNode),
     typeof(IStatementNode),
     typeof(IExpressionNode))]
 public partial interface IControlFlowNode : ISemanticNode, ICodeNode
 {
     FixedDictionary<IControlFlowNode,ControlFlowKind> ControlFlowNext { get; }
+}
+
+public partial interface IEntryNode : IControlFlowNode
+{
+}
+
+public partial interface IExitNode : IControlFlowNode
+{
 }
 
 [Closed(
