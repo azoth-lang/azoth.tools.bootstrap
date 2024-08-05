@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
@@ -32,4 +33,12 @@ internal static class AssignmentAspect
         foreach (var child in node.Children())
             LocalBindings(child, localBindings);
     }
+
+    public static BindingFlags<ILocalBindingNode> Entry_DefinitelyAssigned(IEntryNode node)
+        // All local bindings are not yet assigned
+        => BindingFlags.Create(node.LocalBindingsMap(), false);
+
+    public static BindingFlags<ILocalBindingNode> Exit_DefinitelyAssigned(IExitNode node)
+        // TODO implement proper definite assignment analysis
+        => BindingFlags.Create(FixedDictionary<ILocalBindingNode, int>.Empty, false);
 }

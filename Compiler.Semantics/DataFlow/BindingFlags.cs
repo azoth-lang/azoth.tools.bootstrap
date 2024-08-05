@@ -8,14 +8,14 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 
-public class BindingFlags<TSymbol>
-    where TSymbol : IBindingSymbol
+public class BindingFlags<T>
+    where T : notnull
 {
-    private readonly FixedDictionary<TSymbol, int> symbolMap;
+    private readonly FixedDictionary<T, int> symbolMap;
     private readonly BitArray flags;
 
     internal BindingFlags(
-        FixedDictionary<TSymbol, int> symbolMap,
+        FixedDictionary<T, int> symbolMap,
         BitArray flags)
     {
         this.symbolMap = symbolMap;
@@ -25,10 +25,10 @@ public class BindingFlags<TSymbol>
     /// <summary>
     /// Returns the state for the symbol.
     /// </summary>
-    public bool this[TSymbol symbol]
+    public bool this[T symbol]
         => flags[symbolMap[symbol]];
 
-    public BindingFlags<TSymbol> Set(TSymbol symbol, bool value)
+    public BindingFlags<T> Set(T symbol, bool value)
     {
         // TODO if setting to the current value, don't need to clone
         var newFlags = Clone();
@@ -36,7 +36,7 @@ public class BindingFlags<TSymbol>
         return newFlags;
     }
 
-    public BindingFlags<TSymbol> Set(IEnumerable<TSymbol> symbols, bool value)
+    public BindingFlags<T> Set(IEnumerable<T> symbols, bool value)
     {
         // TODO if setting to the current value, don't need to clone
         var newFlags = Clone();
@@ -46,7 +46,7 @@ public class BindingFlags<TSymbol>
         return newFlags;
     }
 
-    private BindingFlags<TSymbol> Clone() => new(symbolMap, (BitArray)flags.Clone());
+    private BindingFlags<T> Clone() => new(symbolMap, (BitArray)flags.Clone());
 }
 
 public static class BindingFlags
@@ -77,5 +77,16 @@ public static class BindingFlags
         var symbolMap = variables.Concat(fields).Enumerate().ToFixedDictionary();
         var flags = new BitArray(symbolMap.Count, defaultValue);
         return new(symbolMap, flags);
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <remarks>This assumes the map is to unique indexes in the range <c>0</c> to <c>Count - 1</c>.</remarks>
+    public static BindingFlags<T> Create<T>(FixedDictionary<T, int> map, bool defaultValue)
+        where T : notnull
+    {
+        var flags = new BitArray(map.Count, defaultValue);
+        return new(map, flags);
     }
 }

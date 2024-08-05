@@ -40,13 +40,16 @@ internal class SemanticTreeValidator
         {
             _ = expression.ValueId;
         }
-
         if (node is IExecutableDefinitionNode executable)
         {
-            var entry = executable.Entry;
-            entry.LocalBindingsMap();
             _ = executable.LocalBindingsMap;
-            _ = executable.Exit;
+            // NTA nodes are not a children but should still be validated
+            Validate(executable.Entry);
+            Validate(executable.Exit);
+        }
+        if (node is IDataFlowNode dataFlow)
+        {
+            _ = dataFlow.DefinitelyAssigned;
         }
 
         // Validate Concrete Node Attributes

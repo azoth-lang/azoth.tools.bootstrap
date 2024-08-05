@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -58,6 +59,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(ICapabilityViewpointTypeNode),
     typeof(ISelfViewpointTypeNode),
     typeof(IControlFlowNode),
+    typeof(IEntryNode),
+    typeof(IExitNode),
     typeof(IPatternNode),
     typeof(IOptionalPatternNode),
     typeof(IAmbiguousExpressionNode),
@@ -1160,8 +1163,7 @@ public partial interface ISelfViewpointTypeNode : ISemanticNode, IViewpointTypeN
 }
 
 [Closed(
-    typeof(IEntryNode),
-    typeof(IExitNode),
+    typeof(IDataFlowNode),
     typeof(IStatementNode),
     typeof(IExpressionNode))]
 public partial interface IControlFlowNode : ISemanticNode, ICodeNode
@@ -1169,12 +1171,20 @@ public partial interface IControlFlowNode : ISemanticNode, ICodeNode
     FixedDictionary<IControlFlowNode,ControlFlowKind> ControlFlowNext { get; }
 }
 
-public partial interface IEntryNode : IControlFlowNode
+public partial interface IEntryNode : ISemanticNode, IDataFlowNode
 {
 }
 
-public partial interface IExitNode : IControlFlowNode
+public partial interface IExitNode : ISemanticNode, IDataFlowNode
 {
+}
+
+[Closed(
+    typeof(IEntryNode),
+    typeof(IExitNode))]
+public partial interface IDataFlowNode : IControlFlowNode
+{
+    BindingFlags<ILocalBindingNode> DefinitelyAssigned { get; }
 }
 
 [Closed(
