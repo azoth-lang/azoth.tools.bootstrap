@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
@@ -59,4 +60,15 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
 
     internal override FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LocalBindingsMap;
+
+    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+    {
+        if (descendant == Entry)
+            return ControlFlowAspect.ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(this);
+        if (child == Body) return ControlFlowSet.CreateNormal(Exit);
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+    }
 }

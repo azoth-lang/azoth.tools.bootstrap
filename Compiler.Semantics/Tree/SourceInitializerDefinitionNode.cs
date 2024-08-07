@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -34,5 +36,16 @@ internal class SourceInitializerDefinitionNode : InitializerDefinitionNode, ISou
     {
         if (child == Body) return LexicalScope;
         return base.InheritedContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+    {
+        if (descendant == Entry)
+            return ControlFlowAspect.ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(this);
+        if (child == Body) return ControlFlowSet.CreateNormal(Exit);
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 }

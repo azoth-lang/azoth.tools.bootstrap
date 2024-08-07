@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -109,4 +110,15 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     }
     internal override FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LocalBindingsMap;
+
+    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+    {
+        if (descendant == Entry)
+            return ControlFlowAspect.ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(this);
+        if (child == Body) return ControlFlowSet.CreateNormal(Exit);
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+    }
 }

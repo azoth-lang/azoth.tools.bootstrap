@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
@@ -20,4 +21,15 @@ internal sealed class DefaultConstructorDefinitionNode : ConstructorDefinitionNo
     public DefaultConstructorDefinitionNode()
         : base(FixedList.Empty<IConstructorOrInitializerParameterNode>())
     { }
+
+    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+    {
+        if (descendant == Entry)
+            return ControlFlowAspect.ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(this);
+        if (child == Body) return ControlFlowSet.CreateNormal(Exit);
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+    }
 }

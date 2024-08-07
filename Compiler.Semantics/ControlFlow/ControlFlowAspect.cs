@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
@@ -12,6 +13,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 /// and else expressions.</remarks>
 internal sealed class ControlFlowAspect
 {
+    public static FixedDictionary<IControlFlowNode, ControlFlowKind>
+        ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(IConcreteInvocableDefinitionNode node)
+        => ControlFlowSet.CreateNormal(node.Body?.Statements.FirstOrDefault() ?? (IControlFlowNode)node.Exit);
+
     public static FixedDictionary<IControlFlowNode, ControlFlowKind> Expression_ControlFlowNext(IExpressionNode node)
         => node.ControlFlowFollowing();
 
