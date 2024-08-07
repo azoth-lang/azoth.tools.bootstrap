@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
@@ -20,8 +21,19 @@ internal sealed class ControlFlowAspect
     public static FixedDictionary<IControlFlowNode, ControlFlowKind> Expression_ControlFlowNext(IExpressionNode node)
         => node.ControlFlowFollowing();
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> Statement_ControlFlowNext(IStatementNode node)
-        => node.ControlFlowFollowing();
+    public static FixedDictionary<IControlFlowNode, ControlFlowKind> ExpressionStatement_ControlFlowNext(IExpressionStatementNode node)
+        => ControlFlowSet.CreateNormal(node.IntermediateExpression);
+
+    public static FixedDictionary<IControlFlowNode, ControlFlowKind> VariableDeclarationStatement_ControlFlowNext(
+        IVariableDeclarationStatementNode node)
+    {
+        if (node.Initializer is not null)
+            return ControlFlowSet.CreateNormal(node.IntermediateInitializer);
+        return node.ControlFlowFollowing();
+    }
+
+    public static FixedDictionary<IControlFlowNode, ControlFlowKind> ResultStatement_ControlFlowNext(IResultStatementNode node)
+        => ControlFlowSet.CreateNormal(node.IntermediateExpression);
 
     public static FixedDictionary<IControlFlowNode, ControlFlowKind> Entry_ControlFlowNext(IEntryNode node)
         => node.ControlFlowFollowing();

@@ -55,7 +55,9 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
+                yield return n.Entry;
                 yield return n.Body;
+                yield return n.Exit;
                 yield break;
             case IClassDefinitionNode n:
                 foreach (var child in n.Attributes)
@@ -111,14 +113,18 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
+                yield return n.Entry;
                 yield return n.Body;
+                yield return n.Exit;
                 yield break;
             case IGetterMethodDefinitionNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
                 yield return n.Return;
+                yield return n.Entry;
                 yield return n.Body;
+                yield return n.Exit;
                 yield break;
             case ISetterMethodDefinitionNode n:
                 yield return n.SelfParameter;
@@ -126,43 +132,57 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
+                yield return n.Entry;
                 yield return n.Body;
+                yield return n.Exit;
                 yield break;
             case IDefaultConstructorDefinitionNode n:
                 foreach (var child in n.Parameters)
                     yield return child;
+                yield return n.Entry;
                 if (n.Body is not null)
                     yield return n.Body;
+                yield return n.Exit;
                 yield break;
             case ISourceConstructorDefinitionNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
+                yield return n.Entry;
                 yield return n.Body;
+                yield return n.Exit;
                 yield break;
             case IDefaultInitializerDefinitionNode n:
                 foreach (var child in n.Parameters)
                     yield return child;
+                yield return n.Entry;
                 if (n.Body is not null)
                     yield return n.Body;
+                yield return n.Exit;
                 yield break;
             case ISourceInitializerDefinitionNode n:
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
+                yield return n.Entry;
                 yield return n.Body;
+                yield return n.Exit;
                 yield break;
             case IFieldDefinitionNode n:
                 yield return n.TypeNode;
+                yield return n.Entry;
                 if (n.Initializer is not null)
                     yield return n.Initializer;
+                yield return n.Exit;
                 yield break;
             case IAssociatedFunctionDefinitionNode n:
                 foreach (var child in n.Parameters)
                     yield return child;
                 if (n.Return is not null)
                     yield return n.Return;
+                yield return n.Entry;
                 yield return n.Body;
+                yield return n.Exit;
                 yield break;
             case IAttributeNode n:
                 yield return n.TypeName;

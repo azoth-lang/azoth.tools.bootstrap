@@ -1,10 +1,12 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -28,6 +30,12 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
             ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ExpressionStatement_FlowStateAfter);
+    private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowNext;
+    private bool controlFlowNextCached;
+    public override FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.ExpressionStatement_ControlFlowNext);
 
     public ExpressionStatementNode(IExpressionStatementSyntax syntax, IAmbiguousExpressionNode expression)
     {

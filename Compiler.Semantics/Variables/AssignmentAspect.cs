@@ -41,4 +41,8 @@ internal static class AssignmentAspect
     public static BindingFlags<ILocalBindingNode> Exit_DefinitelyAssigned(IExitNode node)
         // TODO implement proper definite assignment analysis
         => BindingFlags.Create(FixedDictionary<ILocalBindingNode, int>.Empty, false);
+    //=> node.DefinitelyAssignedPrevious();
+
+    private static BindingFlags<ILocalBindingNode> DefinitelyAssignedPrevious(this IDataFlowNode node)
+        => node.DataFlowPrevious(n => n.DefinitelyAssigned, (a, b) => a.Intersect(b));
 }

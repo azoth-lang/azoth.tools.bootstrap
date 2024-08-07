@@ -46,6 +46,14 @@ public class BindingFlags<T>
         return newFlags;
     }
 
+    public BindingFlags<T> Intersect(BindingFlags<T> other)
+    {
+        Requires.That(nameof(other), ReferenceEquals(symbolMap, other.symbolMap), "Must have same symbol map");
+        var newFlags = Clone();
+        newFlags.flags.And(other.flags);
+        return newFlags;
+    }
+
     private BindingFlags<T> Clone() => new(symbolMap, (BitArray)flags.Clone());
 }
 
