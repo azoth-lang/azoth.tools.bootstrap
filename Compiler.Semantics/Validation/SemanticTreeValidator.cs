@@ -49,8 +49,8 @@ internal class SemanticTreeValidator
         }
         if (node is IControlFlowNode controlFlow)
         {
-            //_ = controlFlow.ControlFlowNext;
-            //_ = controlFlow.ControlFlowPrevious;
+            _ = controlFlow.ControlFlowNext;
+            _ = controlFlow.ControlFlowPrevious;
         }
         if (node is IDataFlowNode dataFlow)
         {

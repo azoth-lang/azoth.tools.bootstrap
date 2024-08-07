@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Framework;
@@ -34,5 +35,13 @@ internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
         if (Statements.IndexOf(child) is int index and > 0)
             return Statements[index - 1].FlowStateAfter;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
+
+    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant is IStatementNode statement
+            && Statements.IndexOf(statement) is int index && index < Statements.Count - 1)
+            return ControlFlowSet.CreateNormal(Statements[index + 1]);
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 }
