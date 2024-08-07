@@ -47,7 +47,7 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
     internal override FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LocalBindingsMap;
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(
+    internal override ControlFlowSet InheritedControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)

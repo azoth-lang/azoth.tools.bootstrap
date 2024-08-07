@@ -104,10 +104,13 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     public IFlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
-    protected override FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+    protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.FunctionInvocationExpression_ControlFlowNext(this);
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (child == FunctionGroup)
         {

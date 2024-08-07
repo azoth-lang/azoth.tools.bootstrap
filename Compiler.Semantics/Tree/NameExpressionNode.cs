@@ -7,21 +7,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameExpressionNode
 {
-    private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowNext;
+    private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowNext
+    public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached)
             ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 _ => ComputeControlFlowNext());
-    private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowPrevious;
+    private ControlFlowSet? controlFlowPrevious;
     private bool controlFlowPreviousCached;
-    public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowPrevious
+    public ControlFlowSet ControlFlowPrevious
         => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
             : this.Inherited(ref controlFlowPreviousCached, ref controlFlowPrevious,
                 ctx => CollectControlFlowPrevious(this, ctx));
 
-    public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowFollowing()
+    public ControlFlowSet ControlFlowFollowing()
         => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 
     protected override void CollectControlFlowPrevious(
@@ -32,6 +32,6 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
         base.CollectControlFlowPrevious(target, previous);
     }
 
-    protected virtual FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+    protected virtual ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.Expression_ControlFlowNext(this);
 }

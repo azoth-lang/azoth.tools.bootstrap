@@ -39,6 +39,6 @@ internal sealed class UnsafeExpressionNode : ExpressionNode, IUnsafeExpressionNo
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Expression.GetFlowLexicalScope();
 
-    protected override FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+    protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.UnsafeExpression_ControlFlowNext(this);
 }

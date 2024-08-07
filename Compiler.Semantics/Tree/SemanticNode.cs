@@ -103,7 +103,10 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedExpectedReturnType), child, descendant));
 
-    internal virtual FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal virtual ControlFlowSet InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedControlFlowFollowing), child, descendant));
 
@@ -127,11 +130,11 @@ internal abstract class SemanticNode : ISemanticNode
             child.CollectDiagnostics(diagnostics);
     }
 
-    internal virtual FixedDictionary<IControlFlowNode, ControlFlowKind> CollectControlFlowPrevious(IControlFlowNode target, IInheritanceContext ctx)
+    internal virtual ControlFlowSet CollectControlFlowPrevious(IControlFlowNode target, IInheritanceContext ctx)
     {
         var previous = new Dictionary<IControlFlowNode, ControlFlowKind>();
         CollectControlFlowPrevious(target, previous);
-        return previous.ToFixedDictionary();
+        return ControlFlowSet.Create(previous);
     }
 
     protected virtual void CollectControlFlowPrevious(IControlFlowNode target, Dictionary<IControlFlowNode, ControlFlowKind> previous)

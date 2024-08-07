@@ -80,10 +80,13 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 
-    protected override FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+    protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.MethodInvocationExpression_ControlFlowNext(this);
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (child == MethodGroup)
         {

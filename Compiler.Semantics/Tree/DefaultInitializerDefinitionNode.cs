@@ -22,7 +22,7 @@ internal class DefaultInitializerDefinitionNode : InitializerDefinitionNode, IDe
     public DefaultInitializerDefinitionNode()
         : base(FixedList.Empty<IConstructorOrInitializerParameterNode>()) { }
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(
+    internal override ControlFlowSet InheritedControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)

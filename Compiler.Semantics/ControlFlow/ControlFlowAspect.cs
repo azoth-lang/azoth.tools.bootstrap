@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 
@@ -18,17 +17,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 /// flow graph, that indicates that whole expression is next.</para></remarks>
 internal sealed class ControlFlowAspect
 {
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind>
+    public static ControlFlowSet
         ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(IConcreteInvocableDefinitionNode node)
         => ControlFlowSet.CreateNormal(node.Body?.Statements.FirstOrDefault() ?? (IControlFlowNode)node.Exit);
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> Entry_ControlFlowNext(IEntryNode node)
+    public static ControlFlowSet Entry_ControlFlowNext(IEntryNode node)
         => node.ControlFlowFollowing();
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> ExpressionStatement_ControlFlowNext(IExpressionStatementNode node)
+    public static ControlFlowSet ExpressionStatement_ControlFlowNext(IExpressionStatementNode node)
         => ControlFlowSet.CreateNormal(node.IntermediateExpression);
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> VariableDeclarationStatement_ControlFlowNext(
+    public static ControlFlowSet VariableDeclarationStatement_ControlFlowNext(
         IVariableDeclarationStatementNode node)
     {
         if (node.Initializer is not null)
@@ -36,35 +35,35 @@ internal sealed class ControlFlowAspect
         return node.ControlFlowFollowing();
     }
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> ResultStatement_ControlFlowNext(IResultStatementNode node)
+    public static ControlFlowSet ResultStatement_ControlFlowNext(IResultStatementNode node)
         => ControlFlowSet.CreateNormal(node.IntermediateExpression);
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> Expression_ControlFlowNext(IExpressionNode node)
+    public static ControlFlowSet Expression_ControlFlowNext(IExpressionNode node)
         => node.ControlFlowFollowing();
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> FunctionInvocationExpression_ControlFlowNext(
+    public static ControlFlowSet FunctionInvocationExpression_ControlFlowNext(
         IFunctionInvocationExpressionNode node)
         // TODO this shouldn't just be a function group, but instead a function name.
         => ControlFlowSet.CreateNormal(node.FunctionGroup);
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> MethodInvocationExpression_ControlFlowNext(
+    public static ControlFlowSet MethodInvocationExpression_ControlFlowNext(
         IMethodInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.MethodGroup);
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> AssignmentExpression_ControlFlowNext(IAssignmentExpressionNode node)
+    public static ControlFlowSet AssignmentExpression_ControlFlowNext(IAssignmentExpressionNode node)
         => ControlFlowSet.CreateNormal(node.IntermediateLeftOperand);
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node)
+    public static ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Context);
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> UnsafeExpression_ControlFlowNext(IUnsafeExpressionNode node)
+    public static ControlFlowSet UnsafeExpression_ControlFlowNext(IUnsafeExpressionNode node)
         => ControlFlowSet.CreateNormal(node.IntermediateExpression);
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> MethodGroupName_ControlFlowNext(
+    public static ControlFlowSet MethodGroupName_ControlFlowNext(
         IMethodGroupNameNode node)
         => ControlFlowSet.CreateNormal(node.Context);
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> NewObjectExpression_ControlFlowNext(
+    public static ControlFlowSet NewObjectExpression_ControlFlowNext(
         INewObjectExpressionNode node)
     {
         if (!node.Arguments.IsEmpty)
@@ -72,19 +71,19 @@ internal sealed class ControlFlowAspect
         return node.ControlFlowFollowing();
     }
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> IfExpression_ControlFlowNext(
+    public static ControlFlowSet IfExpression_ControlFlowNext(
         IIfExpressionNode node)
         => ControlFlowSet.CreateNormal(node.IntermediateCondition);
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> BinaryOperatorExpression_ControlFlowNext(
+    public static ControlFlowSet BinaryOperatorExpression_ControlFlowNext(
         IBinaryOperatorExpressionNode node)
         => ControlFlowSet.CreateNormal(node.IntermediateLeftOperand);
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> ImplicitConversionExpression_ControlFlowNext(
+    public static ControlFlowSet ImplicitConversionExpression_ControlFlowNext(
         IImplicitConversionExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Referent);
 
-    public static FixedDictionary<IControlFlowNode, ControlFlowKind> ReturnExpression_ControlFlowNext(
+    public static ControlFlowSet ReturnExpression_ControlFlowNext(
         IReturnExpressionNode node)
     {
         if (node.Value is not null)

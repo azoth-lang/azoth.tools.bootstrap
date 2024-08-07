@@ -54,10 +54,13 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
         base.CollectDiagnostics(diagnostics);
     }
 
-    protected override FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+    protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.ReturnExpression_ControlFlowNext(this);
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (child == CurrentValue) return ControlFlowSet.CreateNormal(ControlFlowExit());
         return base.InheritedControlFlowFollowing(child, descendant, ctx);

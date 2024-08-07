@@ -191,10 +191,10 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected DataType? InheritedExpectedReturnType(IInheritanceContext ctx)
         => GetParent(ctx).InheritedExpectedReturnType(this, this, ctx);
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => GetParent(ctx).InheritedControlFlowFollowing(this, descendant, ctx);
 
-    protected FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IInheritanceContext ctx)
+    protected ControlFlowSet InheritedControlFlowFollowing(IInheritanceContext ctx)
         => GetParent(ctx).InheritedControlFlowFollowing(this, this, ctx);
 
     internal override FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
@@ -215,7 +215,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected IPreviousValueId PreviousValueId(IInheritanceContext ctx)
         => Previous(ctx).PreviousValueId(this, ctx);
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> CollectControlFlowPrevious(IControlFlowNode target, IInheritanceContext ctx)
+    internal override ControlFlowSet CollectControlFlowPrevious(IControlFlowNode target, IInheritanceContext ctx)
     {
         if (this is IExecutableDefinitionNode)
             return base.CollectControlFlowPrevious(target, ctx);

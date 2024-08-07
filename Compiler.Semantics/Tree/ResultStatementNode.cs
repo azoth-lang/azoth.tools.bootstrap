@@ -7,7 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -42,9 +41,9 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
     public override IFlowState FlowStateAfter
         => IntermediateExpression?.FlowStateAfter ?? IFlowState.Empty;
     public ValueId ValueId => IntermediateExpression?.ValueId ?? default;
-    private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowNext;
+    private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    public override FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowNext
+    public override ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.ResultStatement_ControlFlowNext);

@@ -38,7 +38,7 @@ internal sealed class SourceConstructorDefinitionNode : ConstructorDefinitionNod
         return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(
+    internal override ControlFlowSet InheritedControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)

@@ -89,7 +89,10 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         return base.InheritedExpectedReturnType(child, descendant, ctx);
     }
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (descendant == Entry) return ControlFlowSet.CreateNormal(IntermediateInitializer ?? (IControlFlowNode)Exit);
         if (descendant == CurrentInitializer) return ControlFlowSet.CreateNormal(Exit);

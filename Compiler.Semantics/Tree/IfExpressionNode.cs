@@ -80,10 +80,13 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 
-    protected override FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+    protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.IfExpression_ControlFlowNext(this);
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (child == CurrentCondition)
         {

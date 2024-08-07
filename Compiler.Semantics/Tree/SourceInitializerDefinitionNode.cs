@@ -38,7 +38,7 @@ internal class SourceInitializerDefinitionNode : InitializerDefinitionNode, ISou
         return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(
+    internal override ControlFlowSet InheritedControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)

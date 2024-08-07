@@ -37,7 +37,10 @@ internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (child is IStatementNode statement
             && Statements.IndexOf(statement) is int index && index < Statements.Count - 1)

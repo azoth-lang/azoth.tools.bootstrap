@@ -109,10 +109,13 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         base.CollectDiagnostics(diagnostics);
     }
 
-    protected override FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+    protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.BinaryOperatorExpression_ControlFlowNext(this);
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
     {
         if (child == CurrentLeftOperand) return ControlFlowSet.CreateNormal(IntermediateRightOperand);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);

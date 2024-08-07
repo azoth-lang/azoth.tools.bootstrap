@@ -91,7 +91,7 @@ public partial interface IControlFlowNode
     /// The control flow nodes that follow this node based on the context.
     /// </summary>
     /// <remarks>This is an inherited property.</remarks>
-    FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowFollowing();
+    ControlFlowSet ControlFlowFollowing();
 }
 
 public partial interface IEntryNode

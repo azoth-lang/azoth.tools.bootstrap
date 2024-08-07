@@ -252,8 +252,7 @@ CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSynta
 SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type NamedSelfType:`Pseudotype`?;
 
 // ---------- Control Flow
-ControlFlow <: Code = ControlFlowNext:`FixedDictionary<IControlFlowNode,ControlFlowKind>`
-    ControlFlowPrevious:`FixedDictionary<IControlFlowNode,ControlFlowKind>`;
+ControlFlow <: Code = ControlFlowNext:`ControlFlowSet` ControlFlowPrevious:`ControlFlowSet`;
 Entry <: DataFlow;
 Exit <: DataFlow;
 

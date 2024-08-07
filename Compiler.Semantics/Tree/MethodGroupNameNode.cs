@@ -35,6 +35,6 @@ internal sealed class MethodGroupNameNode : NameExpressionNode, IMethodGroupName
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
-    protected override FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+    protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.MethodGroupName_ControlFlowNext(this);
 }

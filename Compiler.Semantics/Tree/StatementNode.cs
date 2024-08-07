@@ -6,7 +6,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -17,10 +16,10 @@ internal abstract class StatementNode : CodeNode, IStatementNode
     public abstract DataType? ResultType { get; }
     public abstract ValueId? ResultValueId { get; }
     public abstract IFlowState FlowStateAfter { get; }
-    public abstract FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowNext { get; }
-    private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowPrevious;
+    public abstract ControlFlowSet ControlFlowNext { get; }
+    private ControlFlowSet? controlFlowPrevious;
     private bool controlFlowPreviousCached;
-    public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowPrevious
+    public ControlFlowSet ControlFlowPrevious
         => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
             : this.Inherited(ref controlFlowPreviousCached, ref controlFlowPrevious,
                 ctx => CollectControlFlowPrevious(this, ctx));
@@ -35,7 +34,7 @@ internal abstract class StatementNode : CodeNode, IStatementNode
     public IPreviousValueId PreviousValueId()
         => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowFollowing()
+    public ControlFlowSet ControlFlowFollowing()
         => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 
     protected override void CollectControlFlowPrevious(

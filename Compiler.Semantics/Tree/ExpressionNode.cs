@@ -37,15 +37,15 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     // TODO make this abstract once all expressions have flow state implemented
     public virtual IFlowState FlowStateAfter
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
-    private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowNext;
+    private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowNext
+    public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 _ => ComputeControlFlowNext());
-    private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowPrevious;
+    private ControlFlowSet? controlFlowPrevious;
     private bool controlFlowPreviousCached;
-    public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowPrevious
+    public ControlFlowSet ControlFlowPrevious
         => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
             : this.Inherited(ref controlFlowPreviousCached, ref controlFlowPrevious,
                 ctx => CollectControlFlowPrevious(this, ctx));
@@ -55,7 +55,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     public IPreviousValueId PreviousValueId()
         => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowFollowing()
+    public ControlFlowSet ControlFlowFollowing()
         => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
@@ -70,7 +70,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
         base.CollectControlFlowPrevious(target, previous);
     }
 
-    protected virtual FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+    protected virtual ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.Expression_ControlFlowNext(this);
 
     protected override IChildNode? Rewrite()

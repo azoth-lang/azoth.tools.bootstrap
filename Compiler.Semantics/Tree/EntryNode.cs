@@ -8,9 +8,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class EntryNode : ControlFlowNode, IEntryNode
 {
-    private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowNext;
+    private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    public override FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowNext
+    public override ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Entry_ControlFlowNext);

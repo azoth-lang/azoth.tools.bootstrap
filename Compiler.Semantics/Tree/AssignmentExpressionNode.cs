@@ -77,10 +77,10 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 
-    protected override FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+    protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.AssignmentExpression_ControlFlowNext(this);
 
-    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == CurrentLeftOperand)
             return ControlFlowSet.CreateNormal(IntermediateRightOperand);

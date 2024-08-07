@@ -58,6 +58,6 @@ internal sealed class FieldAccessExpressionNode : ExpressionNode, IFieldAccessEx
         base.CollectDiagnostics(diagnostics);
     }
 
-    protected override FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+    protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.FieldAccessExpression_ControlFlowNext(this);
 }
