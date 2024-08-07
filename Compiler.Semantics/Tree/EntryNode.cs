@@ -16,6 +16,7 @@ internal sealed class EntryNode : ControlFlowNode, IEntryNode
                 ControlFlowAspect.Entry_ControlFlowNext);
     private BindingFlags<ILocalBindingNode>? definitelyAssigned;
     private bool definitelyAssignedCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious => FixedSet.Empty<IDataFlowNode>();
     public BindingFlags<ILocalBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned!
             : this.Synthetic(ref definitelyAssignedCached, ref definitelyAssigned,

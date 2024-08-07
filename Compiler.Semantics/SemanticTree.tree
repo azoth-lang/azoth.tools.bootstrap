@@ -257,7 +257,7 @@ Entry <: DataFlow;
 Exit <: DataFlow;
 
 // ---------- Data Flow
-DataFlow <: ControlFlow = DefinitelyAssigned:`BindingFlags<ILocalBindingNode>`;
+DataFlow <: ControlFlow = DataFlowPrevious:`IFixedSet<IDataFlowNode>` DefinitelyAssigned:`BindingFlags<ILocalBindingNode>`;
 
 // ---------- Statements
 Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?

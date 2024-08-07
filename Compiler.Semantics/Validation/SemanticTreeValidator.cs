@@ -54,6 +54,7 @@ internal class SemanticTreeValidator
         }
         if (node is IDataFlowNode dataFlow)
         {
+            _ = dataFlow.DataFlowPrevious;
             _ = dataFlow.DefinitelyAssigned;
         }
 

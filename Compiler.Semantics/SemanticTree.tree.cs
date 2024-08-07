@@ -1185,6 +1185,7 @@ public partial interface IExitNode : ISemanticNode, IDataFlowNode
     typeof(IExitNode))]
 public partial interface IDataFlowNode : IControlFlowNode
 {
+    IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
     BindingFlags<ILocalBindingNode> DefinitelyAssigned { get; }
 }
 

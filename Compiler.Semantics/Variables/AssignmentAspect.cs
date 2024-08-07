@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -39,10 +40,8 @@ internal static class AssignmentAspect
         => BindingFlags.Create(node.LocalBindingsMap(), false);
 
     public static BindingFlags<ILocalBindingNode> Exit_DefinitelyAssigned(IExitNode node)
-        // TODO implement proper definite assignment analysis
-        => BindingFlags.Create(FixedDictionary<ILocalBindingNode, int>.Empty, false);
-    //=> node.DefinitelyAssignedPrevious();
+        => node.DefinitelyAssignedPrevious();
 
     private static BindingFlags<ILocalBindingNode> DefinitelyAssignedPrevious(this IDataFlowNode node)
-        => node.DataFlowPrevious(n => n.DefinitelyAssigned, (a, b) => a.Intersect(b));
+        => node.DataFlowPrevious.Select(d => d.DefinitelyAssigned).Aggregate((a, b) => a.Intersect(b));
 }
