@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Framework;
@@ -12,7 +13,7 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
         => GrammarAttribute.IsCached(in controlFlowNextCached)
             ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
+                _ => ComputeControlFlowNext());
     private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowPrevious;
     private bool controlFlowPreviousCached;
     public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowPrevious
@@ -22,4 +23,15 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
 
     public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowFollowing()
         => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+
+    protected override void CollectControlFlowPrevious(
+        IControlFlowNode target,
+        Dictionary<IControlFlowNode, ControlFlowKind> previous)
+    {
+        ControlFlowAspect.ControlFlow_ContributeControlFlowPrevious(this, target, previous);
+        base.CollectControlFlowPrevious(target, previous);
+    }
+
+    protected virtual FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+        => ControlFlowAspect.Expression_ControlFlowNext(this);
 }

@@ -28,7 +28,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 [Closed(
     typeof(IChildNode),
     typeof(IBodyOrBlockNode),
-    typeof(IElseClauseNode),
     typeof(INamedBindingNode),
     typeof(IVariableBindingNode),
     typeof(ICompilationUnitNode),
@@ -76,6 +75,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IConversionExpressionNode),
     typeof(IImplicitConversionExpressionNode),
     typeof(IPatternMatchExpressionNode),
+    typeof(IIfExpressionNode),
     typeof(ILoopExpressionNode),
     typeof(IWhileExpressionNode),
     typeof(IFunctionInvocationExpressionNode),
@@ -154,7 +154,7 @@ public partial interface IBodyOrBlockNode : ISemanticNode, ICodeNode
 [Closed(
     typeof(IBlockOrResultNode),
     typeof(IIfExpressionNode))]
-public partial interface IElseClauseNode : ISemanticNode, ICodeNode
+public partial interface IElseClauseNode : IControlFlowNode
 {
     IFlowState FlowStateAfter { get; }
     ValueId ValueId { get; }
@@ -259,7 +259,6 @@ public partial interface IPackageMemberDefinitionNode : INamespaceBlockMemberDef
 
 [Closed(
     typeof(IBodyOrBlockNode),
-    typeof(IElseClauseNode),
     typeof(IBindingNode),
     typeof(ICompilationUnitNode),
     typeof(IUsingDirectiveNode),
@@ -1163,6 +1162,7 @@ public partial interface ISelfViewpointTypeNode : ISemanticNode, IViewpointTypeN
 }
 
 [Closed(
+    typeof(IElseClauseNode),
     typeof(IDataFlowNode),
     typeof(IStatementNode),
     typeof(IExpressionNode))]
@@ -1576,11 +1576,11 @@ public partial interface IPatternMatchExpressionNode : ISemanticNode, IExpressio
     IPatternNode Pattern { get; }
 }
 
-public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
+public partial interface IIfExpressionNode : ISemanticNode, IExpressionNode, IElseClauseNode
 {
     new IIfExpressionSyntax Syntax { get; }
-    IExpressionSyntax IExpressionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    IExpressionSyntax IExpressionNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Condition { get; }

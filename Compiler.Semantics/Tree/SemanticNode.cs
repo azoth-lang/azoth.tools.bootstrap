@@ -111,6 +111,13 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedLocalBindingsMap), child, descendant));
 
+    internal virtual IControlFlowNode InheritedControlFlowExit(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedControlFlowExit), child, descendant));
+
     internal virtual IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => throw Child.PreviousFailed(nameof(PreviousValueId), before);
 

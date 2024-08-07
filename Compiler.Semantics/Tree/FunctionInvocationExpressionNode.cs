@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -22,6 +23,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
             : this.RewritableChild(ref functionGroupCached, ref functionGroup);
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     private IFixedSet<IFunctionLikeDeclarationNode>? compatibleDeclarations;
     private bool compatibleDeclarationsCached;
@@ -93,7 +95,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
         IInheritanceContext ctx)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
-            && arguments.Current.IndexOf(ambiguousExpression) is int index and > 0)
+            && CurrentArguments.IndexOf(ambiguousExpression) is int index and > 0)
             return IntermediateArguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
 
         return base.InheritedFlowStateBefore(child, descendant, ctx);
@@ -101,4 +103,20 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
 
     public IFlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+
+    protected override FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+        => ControlFlowAspect.FunctionInvocationExpression_ControlFlowNext(this);
+
+    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child == FunctionGroup)
+        {
+            if (!Arguments.IsEmpty)
+                return ControlFlowSet.CreateNormal(IntermediateArguments[0]);
+        }
+        else if (child is IAmbiguousExpressionNode ambiguousExpression
+                 && CurrentArguments.IndexOf(ambiguousExpression) is int index && index < CurrentArguments.Count - 1)
+            return ControlFlowSet.CreateNormal(IntermediateArguments[index + 1]);
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+    }
 }

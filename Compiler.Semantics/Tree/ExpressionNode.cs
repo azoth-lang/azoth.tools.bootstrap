@@ -42,7 +42,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
+                _ => ComputeControlFlowNext());
     private FixedDictionary<IControlFlowNode, ControlFlowKind>? controlFlowPrevious;
     private bool controlFlowPreviousCached;
     public FixedDictionary<IControlFlowNode, ControlFlowKind> ControlFlowPrevious
@@ -69,6 +69,9 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
         ControlFlowAspect.ControlFlow_ContributeControlFlowPrevious(this, target, previous);
         base.CollectControlFlowPrevious(target, previous);
     }
+
+    protected virtual FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+        => ControlFlowAspect.Expression_ControlFlowNext(this);
 
     protected override IChildNode? Rewrite()
         => ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)

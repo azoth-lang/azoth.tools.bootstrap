@@ -30,7 +30,7 @@ Child <: `IChildTreeNode<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPack
 
 // ---------- Special Parts
 BodyOrBlock <: Code = Statements:`IStatementNode`*;
-ElseClause <: Code = FlowStateAfter:`IFlowState` ValueId:`ValueId`;
+ElseClause <: ControlFlow = FlowStateAfter:`IFlowState` ValueId:`ValueId`;
 BlockOrResult: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings

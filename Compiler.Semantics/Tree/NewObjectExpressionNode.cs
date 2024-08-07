@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -22,6 +23,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     public IdentifierName? ConstructorName => Syntax.ConstructorName;
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     private IMaybeAntetype? constructingAntetype;
     private bool constructingAntetypeCached;
@@ -117,5 +119,16 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
             && arguments.Current.IndexOf(ambiguousExpression) is int index and > 0)
             return IntermediateArguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
+
+    protected override FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+        => ControlFlowAspect.NewObjectExpression_ControlFlowNext(this);
+
+    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child is IAmbiguousExpressionNode ambiguousExpression
+            && CurrentArguments.IndexOf(ambiguousExpression) is int index && index < CurrentArguments.Count - 1)
+            return ControlFlowSet.CreateNormal(IntermediateArguments[index + 1]);
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 }

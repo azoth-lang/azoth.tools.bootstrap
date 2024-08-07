@@ -198,6 +198,7 @@ public partial interface IForeachExpressionNode
 public partial interface IReturnExpressionNode
 {
     DataType? ExpectedReturnType { get; }
+    IControlFlowNode ControlFlowExit();
 }
 #endregion
 

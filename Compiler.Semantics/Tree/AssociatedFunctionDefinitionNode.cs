@@ -121,4 +121,7 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
         if (child == Body) return ControlFlowSet.CreateNormal(Exit);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
+
+    internal override IControlFlowNode InheritedControlFlowExit(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => Exit;
 }

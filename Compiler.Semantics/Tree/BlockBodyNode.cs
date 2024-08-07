@@ -39,7 +39,7 @@ internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
 
     internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
-        if (descendant is IStatementNode statement
+        if (child is IStatementNode statement
             && Statements.IndexOf(statement) is int index && index < Statements.Count - 1)
             return ControlFlowSet.CreateNormal(Statements[index + 1]);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);

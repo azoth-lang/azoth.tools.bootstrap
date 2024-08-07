@@ -2,10 +2,12 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -51,4 +53,16 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
         InvalidStructureAspect.ReturnExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
+
+    protected override FixedDictionary<IControlFlowNode, ControlFlowKind> ComputeControlFlowNext()
+        => ControlFlowAspect.ReturnExpression_ControlFlowNext(this);
+
+    internal override FixedDictionary<IControlFlowNode, ControlFlowKind> InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child == CurrentValue) return ControlFlowSet.CreateNormal(ControlFlowExit());
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+    }
+
+    public IControlFlowNode ControlFlowExit()
+        => InheritedControlFlowExit(GrammarAttribute.CurrentInheritanceContext());
 }
