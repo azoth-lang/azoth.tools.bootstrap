@@ -90,10 +90,9 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     {
         if (child == CurrentCondition)
         {
-            //if (ElseClause is not null)
-            return ControlFlowSet.CreateNormal(ThenBlock/*, ElseClause*/);
-            //return ControlFlowSet.CreateNormal(ThenBlock).Union(ControlFlowFollowing())
-            //                     .ToFixedDictionary<IControlFlowNode, ControlFlowKind>();
+            if (ElseClause is not null)
+                return ControlFlowSet.CreateNormal(ThenBlock, ElseClause);
+            return ControlFlowSet.CreateNormal(ThenBlock).Union(ControlFlowFollowing());
         }
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }

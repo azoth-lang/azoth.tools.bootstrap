@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ public class ControlFlowSet : IReadOnlyCollection<IControlFlowNode>, IReadOnlyDi
     public static ControlFlowSet Empty { get; } = new();
 
     public static ControlFlowSet Create(IReadOnlyDictionary<IControlFlowNode, ControlFlowKind> set)
-        => new(set);
+        => new(new Dictionary<IControlFlowNode, ControlFlowKind>(set));
 
     public static ControlFlowSet CreateNormal(params IControlFlowNode[] nodes)
         => new(nodes, ControlFlowKind.Normal);
@@ -37,9 +38,11 @@ public class ControlFlowSet : IReadOnlyCollection<IControlFlowNode>, IReadOnlyDi
         items = FixedDictionary<IControlFlowNode, ControlFlowKind>.Empty;
     }
 
-    private ControlFlowSet(IReadOnlyDictionary<IControlFlowNode, ControlFlowKind> set)
+    /// <remarks>CAUTION: this constructor takes ownership of the collection. No external references
+    /// should be kept.</remarks>
+    private ControlFlowSet(IReadOnlyDictionary<IControlFlowNode, ControlFlowKind> items)
     {
-        items = new Dictionary<IControlFlowNode, ControlFlowKind>(set);
+        this.items = items;
     }
 
     public ControlFlowKind this[IControlFlowNode key] => throw new System.NotImplementedException();
@@ -57,5 +60,21 @@ public class ControlFlowSet : IReadOnlyCollection<IControlFlowNode>, IReadOnlyDi
         IEnumerable<KeyValuePair<IControlFlowNode, ControlFlowKind>>.GetEnumerator()
         => items.GetEnumerator();
 
-
+    public ControlFlowSet Union(ControlFlowSet other)
+    {
+        Dictionary<IControlFlowNode, ControlFlowKind>? set = null;
+        foreach (var (node, kind) in other.items)
+        {
+            if (items.TryGetValue(node, out var existing))
+            {
+                if (existing == kind)
+                    continue;
+                throw new InvalidOperationException(
+                    $"Cannot union two {nameof(ControlFlowSet)}s with different kinds for node.");
+            }
+            set ??= new(items);
+            set[node] = kind;
+        }
+        return set is null ? this : new(set);
+    }
 }
