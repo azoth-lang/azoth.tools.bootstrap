@@ -40,7 +40,7 @@ internal sealed class VariableNameExpressionNode : NameExpressionNode, IVariable
     public IFixedSet<IDataFlowNode> DataFlowPrevious
         => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
             : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
-                DataFlowAspect.VariableNameExpression_DataFlowPrevious);
+                DataFlowAspect.VariableNameExpression_DataFlowPrevious, FixedSet.ObjectEqualityComparer);
 
     public VariableNameExpressionNode(
         IIdentifierNameExpressionSyntax syntax,

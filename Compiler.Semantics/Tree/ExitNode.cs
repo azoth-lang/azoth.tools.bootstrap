@@ -14,7 +14,7 @@ internal sealed class ExitNode : ControlFlowNode, IExitNode
     public IFixedSet<IDataFlowNode> DataFlowPrevious
         => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
             : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
-                DataFlowAspect.DataFlow_DataFlowPrevious);
+                DataFlowAspect.DataFlow_DataFlowPrevious, FixedSet.ObjectEqualityComparer);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
     private bool definitelyAssignedCached;
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned

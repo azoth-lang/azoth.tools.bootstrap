@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 
-public class ControlFlowSet : IReadOnlyCollection<IControlFlowNode>, IReadOnlyDictionary<IControlFlowNode, ControlFlowKind>
+public class ControlFlowSet : IReadOnlyCollection<IControlFlowNode>, IReadOnlyDictionary<IControlFlowNode, ControlFlowKind>, IEquatable<ControlFlowSet>
 {
     public static ControlFlowSet Empty { get; } = new();
 
@@ -79,4 +79,35 @@ public class ControlFlowSet : IReadOnlyCollection<IControlFlowNode>, IReadOnlyDi
         }
         return set is null ? this : new(set);
     }
+
+    #region Equality
+    public bool Equals(ControlFlowSet? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+
+        if (items.Count != other.items.Count) return false;
+        foreach (var (otherKey, otherKind) in other.items)
+            if (!TryGetValue(otherKey, out var kind) || kind != otherKind)
+                return false;
+        return true;
+    }
+
+    public override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is ControlFlowSet other && Equals(other);
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(Count);
+        int hashCode = 0;
+        foreach (var item in items)
+            hashCode ^= GetHashCode(item);
+        hash.Add(hashCode);
+        return hashCode;
+    }
+
+    private static int GetHashCode(KeyValuePair<IControlFlowNode, ControlFlowKind> item)
+        => HashCode.Combine(item.Key, item.Value);
+    #endregion
 }
