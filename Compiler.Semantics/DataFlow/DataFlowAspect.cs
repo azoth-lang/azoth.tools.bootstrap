@@ -6,7 +6,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 
 internal static class DataFlowAspect
 {
-    public static IFixedSet<IDataFlowNode> DataFlow_DataFlowPrevious(IDataFlowNode node)
+    public static IFixedSet<IDataFlowNode> DataFlow_DataFlowPrevious(IDataFlowNode node) => GetDataFlowPrevious(node);
+
+    public static IFixedSet<IDataFlowNode> GetDataFlowPrevious(this IControlFlowNode node)
     {
         var visited = new HashSet<IControlFlowNode>();
         DataFlowPrevious(node, visited);

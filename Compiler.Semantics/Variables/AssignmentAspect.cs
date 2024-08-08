@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -72,7 +73,24 @@ internal static class AssignmentAspect
     private static BindingFlags<IVariableBindingNode> DefinitelyAssignedPrevious(this IDataFlowNode node)
     {
         var previous = node.DataFlowPrevious;
+        return DefinitelyAssignedPrevious(node, previous);
+    }
+
+    private static BindingFlags<IVariableBindingNode> DefinitelyAssignedPrevious(IControlFlowNode node, IFixedSet<IDataFlowNode> previous)
+    {
         if (previous.IsEmpty) return node.ControlFlowEntry().DefinitelyAssigned;
         return previous.Select(d => d.DefinitelyAssigned).Aggregate((a, b) => a.Intersect(b));
+    }
+
+    public static void VariableNameExpression_ContributeDiagnostics(IVariableNameExpressionNode node, Diagnostics diagnostics)
+    {
+        if (node is not { ReferencedDefinition: IVariableBindingNode variableBinding })
+            return;
+
+        var definitelyAssigned = DefinitelyAssignedPrevious(node, node.GetDataFlowPrevious());
+        if (!definitelyAssigned[variableBinding])
+        {
+            //diagnostics.Add(OtherSemanticError.VariableMayNotHaveBeenAssigned(node.File, node.Syntax.Span, node.Name));
+        }
     }
 }
