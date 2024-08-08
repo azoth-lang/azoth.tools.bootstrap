@@ -51,10 +51,12 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
             : this.RewritableChild(ref initializerCached, ref initializer);
     public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
     public IExpressionNode? IntermediateInitializer => Initializer as IExpressionNode;
-    private ValueAttribute<ValueIdScope> valueIdScope;
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
     public ValueIdScope ValueIdScope
-        => valueIdScope.TryGetValue(out var value) ? value
-            : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.FieldDefinition_ValueIdScope);
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                TypeMemberDeclarationsAspect.FieldDefinition_ValueIdScope);
     public ValueId BindingValueId => throw new NotImplementedException();
     public IEntryNode Entry { get; }
     public IExitNode Exit { get; }
