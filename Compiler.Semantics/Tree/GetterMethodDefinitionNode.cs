@@ -19,12 +19,12 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.ConcreteMethod_LexicalScope, ReferenceEqualityComparer.Instance);
-    private FixedDictionary<ILocalBindingNode, int>? localBindingsMap;
-    private bool localBindingsMapCached;
-    public FixedDictionary<ILocalBindingNode, int> LocalBindingsMap
-        => GrammarAttribute.IsCached(in localBindingsMapCached) ? localBindingsMap!
-            : this.Synthetic(ref localBindingsMapCached, ref localBindingsMap,
-                AssignmentAspect.ConcreteInvocableDefinition_LocalBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                AssignmentAspect.ConcreteInvocableDefinition_VariableBindingsMap);
 
     public GetterMethodDefinitionNode(
         IGetterMethodDefinitionSyntax syntax,
@@ -44,8 +44,11 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
         return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }
 
-    internal override FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => LocalBindingsMap;
+    internal override FixedDictionary<IVariableBindingNode, int> InheritedVariableBindingsMap(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+        => VariableBindingsMap;
 
     internal override ControlFlowSet InheritedControlFlowFollowing(
         IChildNode child,
@@ -58,6 +61,15 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override IControlFlowNode InheritedControlFlowExit(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IEntryNode InheritedControlFlowEntry(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+        => Entry;
+
+    internal override IExitNode InheritedControlFlowExit(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
         => Exit;
 }

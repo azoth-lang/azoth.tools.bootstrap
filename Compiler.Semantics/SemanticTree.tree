@@ -39,7 +39,7 @@ NamedBinding <: Binding, NamedBindingDeclaration =
     IsMutableBinding:`bool` BindingType:`DataType`
     ContainingLexicalScope:`LexicalScope`;
 LocalBinding <: NamedBinding = Syntax:`ILocalBindingSyntax`;
-VariableBinding <: LocalBinding;
+VariableBinding <: LocalBinding, DataFlow;
 
 // ---------- Packages
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
@@ -81,7 +81,7 @@ Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? F
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol` ValueIdScope:`ValueIdScope`;
 ExecutableDefinition <: Definition = ValueIdScope:`ValueIdScope` Entry Exit
-    LocalBindingsMap:`FixedDictionary<ILocalBindingNode,int>`;
+    VariableBindingsMap:`FixedDictionary<IVariableBindingNode,int>`;
 ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition
     = Parameters:ConstructorOrInitializerParameter* Body?;
 ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition
@@ -257,7 +257,7 @@ Entry <: DataFlow;
 Exit <: DataFlow;
 
 // ---------- Data Flow
-DataFlow <: ControlFlow = DataFlowPrevious:`IFixedSet<IDataFlowNode>` DefinitelyAssigned:`BindingFlags<ILocalBindingNode>`;
+DataFlow <: ControlFlow = DataFlowPrevious:`IFixedSet<IDataFlowNode>` DefinitelyAssigned:`BindingFlags<IVariableBindingNode>`;
 
 // ---------- Statements
 Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?

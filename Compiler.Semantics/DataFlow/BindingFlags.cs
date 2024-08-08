@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.AST;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
@@ -8,7 +10,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 
-public class BindingFlags<T>
+public sealed class BindingFlags<T> : IEquatable<BindingFlags<T>>
     where T : notnull
 {
     private readonly FixedDictionary<T, int> symbolMap;
@@ -55,6 +57,23 @@ public class BindingFlags<T>
     }
 
     private BindingFlags<T> Clone() => new(symbolMap, (BitArray)flags.Clone());
+
+    #region Equality
+    public bool Equals(BindingFlags<T>? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        // symbolMap is compared by reference for efficiency because all BindingFlags<T> instances
+        // in a given context are supposed to share the same symbol map instance.
+        return ReferenceEquals(symbolMap, other.symbolMap) && flags.ValuesEqual(other.flags);
+    }
+
+    public override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is BindingFlags<T> other && Equals(other);
+
+    public override int GetHashCode()
+        => HashCode.Combine(RuntimeHelpers.GetHashCode(symbolMap), flags.GetValueHashCode());
+    #endregion
 }
 
 public static class BindingFlags

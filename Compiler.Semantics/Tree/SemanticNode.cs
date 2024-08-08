@@ -103,21 +103,22 @@ internal abstract class SemanticNode : ISemanticNode
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedExpectedReturnType), child, descendant));
 
-    internal virtual ControlFlowSet InheritedControlFlowFollowing(
-        IChildNode child,
-        IChildNode descendant,
-        IInheritanceContext ctx)
+    internal virtual ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedControlFlowFollowing), child, descendant));
 
-    internal virtual FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedLocalBindingsMap), child, descendant));
-
-    internal virtual IControlFlowNode InheritedControlFlowExit(
+    internal virtual FixedDictionary<IVariableBindingNode, int> InheritedVariableBindingsMap(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedVariableBindingsMap), child, descendant));
+
+    internal virtual IEntryNode InheritedControlFlowEntry(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw new NotImplementedException(
+            Child.InheritFailedMessage(nameof(InheritedControlFlowEntry), child, descendant));
+
+    internal virtual IExitNode InheritedControlFlowExit(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw new NotImplementedException(
             Child.InheritFailedMessage(nameof(InheritedControlFlowExit), child, descendant));
 

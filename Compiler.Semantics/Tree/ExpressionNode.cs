@@ -55,6 +55,9 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     public IPreviousValueId PreviousValueId()
         => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
+    public IEntryNode ControlFlowEntry()
+        => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+
     public ControlFlowSet ControlFlowFollowing()
         => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 

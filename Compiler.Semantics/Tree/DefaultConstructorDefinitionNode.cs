@@ -29,10 +29,18 @@ internal sealed class DefaultConstructorDefinitionNode : ConstructorDefinitionNo
     {
         if (descendant == Entry)
             return ControlFlowAspect.ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(this);
-        if (child == Body) return ControlFlowSet.CreateNormal(Exit);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override IControlFlowNode InheritedControlFlowExit(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IEntryNode InheritedControlFlowEntry(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+        => Entry;
+
+    internal override IExitNode InheritedControlFlowExit(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
         => Exit;
 }

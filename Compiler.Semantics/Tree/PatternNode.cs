@@ -1,6 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -31,4 +32,7 @@ internal abstract class PatternNode : CodeNode, IPatternNode
     public new IMaybeAntetype InheritedBindingAntetype() => base.InheritedBindingAntetype();
 
     public new DataType InheritedBindingType() => base.InheritedBindingType();
+
+    public ControlFlowSet ControlFlowFollowing()
+        => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 }

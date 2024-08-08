@@ -18,6 +18,8 @@ internal abstract class ControlFlowNode : ChildNode, IControlFlowNode
             : this.Inherited(ref controlFlowPreviousCached, ref controlFlowPrevious,
                 ctx => CollectControlFlowPrevious(this, ctx));
 
+    public abstract IEntryNode ControlFlowEntry();
+
     public virtual ControlFlowSet ControlFlowFollowing()
         => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 

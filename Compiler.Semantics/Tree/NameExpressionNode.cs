@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -20,6 +19,9 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
         => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
             : this.Inherited(ref controlFlowPreviousCached, ref controlFlowPrevious,
                 ctx => CollectControlFlowPrevious(this, ctx));
+
+    public IEntryNode ControlFlowEntry()
+        => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
 
     public ControlFlowSet ControlFlowFollowing()
         => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());

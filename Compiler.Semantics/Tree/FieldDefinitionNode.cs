@@ -58,13 +58,12 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public ValueId BindingValueId => throw new NotImplementedException();
     public IEntryNode Entry { get; }
     public IExitNode Exit { get; }
-    private FixedDictionary<ILocalBindingNode, int>? localBindingsMap;
-    private bool localBindingsMapCached;
-    public FixedDictionary<ILocalBindingNode, int> LocalBindingsMap
-        => GrammarAttribute.IsCached(in localBindingsMapCached)
-            ? localBindingsMap!
-            : this.Synthetic(ref localBindingsMapCached, ref localBindingsMap,
-                AssignmentAspect.FieldDefinition_LocalBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                AssignmentAspect.FieldDefinition_VariableBindingsMap);
 
     public FieldDefinitionNode(IFieldDefinitionSyntax syntax, ITypeNode type, IAmbiguousExpressionNode? initializer)
     {
@@ -99,6 +98,9 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => LocalBindingsMap;
+    internal override FixedDictionary<IVariableBindingNode, int> InheritedVariableBindingsMap(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+        => VariableBindingsMap;
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 
@@ -17,8 +18,29 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 /// flow graph, that indicates that whole expression is next.</para></remarks>
 internal sealed class ControlFlowAspect
 {
-    public static ControlFlowSet
-        ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(IConcreteInvocableDefinitionNode node)
+    public static ControlFlowSet ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(IConcreteInvocableDefinitionNode node)
+    {
+        if (!node.Parameters.IsEmpty)
+        {
+            var firstControlFlowParameter = node.Parameters.OfType<IControlFlowNode>().FirstOrDefault();
+            if (firstControlFlowParameter is not null)
+                return ControlFlowSet.CreateNormal(firstControlFlowParameter);
+        }
+        return ConcreteInvocableDefinition_InheritedControlFlowFollowing_Parameters(node);
+    }
+
+    public static ControlFlowSet ConcreteInvocableDefinition_InheritedControlFlowFollowing_Parameter(
+        IConcreteInvocableDefinitionNode node,
+        IParameterNode parameter)
+    {
+        if (node.Parameters.IndexOf(parameter) is int index)
+            for (int i = index + 1; i < node.Parameters.Count; i++)
+                if (node.Parameters[i] is IControlFlowNode controlFlowNode)
+                    return ControlFlowSet.CreateNormal(controlFlowNode);
+        return ConcreteInvocableDefinition_InheritedControlFlowFollowing_Parameters(node);
+    }
+
+    private static ControlFlowSet ConcreteInvocableDefinition_InheritedControlFlowFollowing_Parameters(IConcreteInvocableDefinitionNode node)
         => ControlFlowSet.CreateNormal(node.Body?.Statements.FirstOrDefault() ?? (IControlFlowNode)node.Exit);
 
     public static ControlFlowSet Entry_ControlFlowNext(IEntryNode node)
@@ -90,6 +112,9 @@ internal sealed class ControlFlowAspect
             return ControlFlowSet.CreateNormal(node.IntermediateValue);
         return ControlFlowSet.CreateNormal(node.ControlFlowExit());
     }
+
+    public static ControlFlowSet BindingPattern_ControlFlowNext(IBindingPatternNode node)
+        => node.ControlFlowFollowing();
 
     public static void ControlFlow_ContributeControlFlowPrevious(
         IControlFlowNode node,

@@ -197,16 +197,25 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected ControlFlowSet InheritedControlFlowFollowing(IInheritanceContext ctx)
         => GetParent(ctx).InheritedControlFlowFollowing(this, this, ctx);
 
-    internal override FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => GetParent(ctx).InheritedLocalBindingsMap(this, descendant, ctx);
+    internal override FixedDictionary<IVariableBindingNode, int> InheritedVariableBindingsMap(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+        => GetParent(ctx).InheritedVariableBindingsMap(this, descendant, ctx);
 
-    protected FixedDictionary<ILocalBindingNode, int> InheritedLocalBindingsMap(IInheritanceContext ctx)
-        => GetParent(ctx).InheritedLocalBindingsMap(this, this, ctx);
+    protected FixedDictionary<IVariableBindingNode, int> InheritedLocalBindingsMap(IInheritanceContext ctx)
+        => GetParent(ctx).InheritedVariableBindingsMap(this, this, ctx);
 
-    internal override IControlFlowNode InheritedControlFlowExit(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IEntryNode InheritedControlFlowEntry(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).InheritedControlFlowEntry(this, descendant, ctx);
+
+    protected IEntryNode InheritedControlFlowEntry(IInheritanceContext ctx)
+        => GetParent(ctx).InheritedControlFlowEntry(this, this, ctx);
+
+    internal override IExitNode InheritedControlFlowExit(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => GetParent(ctx).InheritedControlFlowExit(this, descendant, ctx);
 
-    protected IControlFlowNode InheritedControlFlowExit(IInheritanceContext ctx)
+    protected IExitNode InheritedControlFlowExit(IInheritanceContext ctx)
         => GetParent(ctx).InheritedControlFlowExit(this, this, ctx);
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)

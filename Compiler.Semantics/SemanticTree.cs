@@ -87,6 +87,7 @@ public partial interface ISelfParameterNode
 #region Control Flow
 public partial interface IControlFlowNode
 {
+    IEntryNode ControlFlowEntry();
     /// <summary>
     /// The control flow nodes that follow this node based on the context.
     /// </summary>
@@ -96,7 +97,7 @@ public partial interface IControlFlowNode
 
 public partial interface IEntryNode
 {
-    FixedDictionary<ILocalBindingNode, int> LocalBindingsMap();
+    FixedDictionary<IVariableBindingNode, int> VariableBindingsMap();
 }
 #endregion
 
@@ -198,7 +199,7 @@ public partial interface IForeachExpressionNode
 public partial interface IReturnExpressionNode
 {
     DataType? ExpectedReturnType { get; }
-    IControlFlowNode ControlFlowExit();
+    IExitNode ControlFlowExit();
 }
 #endregion
 

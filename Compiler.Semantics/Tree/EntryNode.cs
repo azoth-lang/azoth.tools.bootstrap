@@ -14,14 +14,16 @@ internal sealed class EntryNode : ControlFlowNode, IEntryNode
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Entry_ControlFlowNext);
-    private BindingFlags<ILocalBindingNode>? definitelyAssigned;
-    private bool definitelyAssignedCached;
     public IFixedSet<IDataFlowNode> DataFlowPrevious => FixedSet.Empty<IDataFlowNode>();
-    public BindingFlags<ILocalBindingNode> DefinitelyAssigned
+    private BindingFlags<IVariableBindingNode>? definitelyAssigned;
+    private bool definitelyAssignedCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned!
             : this.Synthetic(ref definitelyAssignedCached, ref definitelyAssigned,
                 AssignmentAspect.Entry_DefinitelyAssigned);
 
-    public FixedDictionary<ILocalBindingNode, int> LocalBindingsMap()
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap()
         => InheritedLocalBindingsMap(GrammarAttribute.CurrentInheritanceContext());
+
+    public override IEntryNode ControlFlowEntry() => this;
 }

@@ -7,7 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -66,6 +65,6 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 
-    public IControlFlowNode ControlFlowExit()
+    public IExitNode ControlFlowExit()
         => InheritedControlFlowExit(GrammarAttribute.CurrentInheritanceContext());
 }

@@ -5,11 +5,14 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -49,6 +52,31 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 NameBindingTypesAspect.BindingPattern_FlowStateAfter);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.DataFlow_DataFlowPrevious);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.BindingPattern_ControlFlowNext);
+    private ControlFlowSet? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    public ControlFlowSet ControlFlowPrevious
+        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
+            : this.Inherited(ref controlFlowPreviousCached, ref controlFlowPrevious,
+                ctx => CollectControlFlowPrevious(this, ctx));
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned;
+    private bool definitelyAssignedCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned
+        => GrammarAttribute.IsCached(in definitelyAssignedCached)
+            ? definitelyAssigned.UnsafeValue
+            : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
+                AssignmentAspect.BindingPattern_DefinitelyAssigned);
 
     public BindingPatternNode(IBindingPatternSyntax syntax)
     {
@@ -73,4 +101,7 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
         ShadowingAspect.VariableBinding_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
+
+    public IEntryNode ControlFlowEntry()
+        => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
 }

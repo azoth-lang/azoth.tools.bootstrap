@@ -34,4 +34,14 @@ public static class BitArrayExtensions
     {
         for (var i = 0; i < array.Count; i++) yield return array[i];
     }
+
+    public static int GetValueHashCode(this BitArray array)
+    {
+        var hash = new HashCode();
+        hash.Add(array.Count);
+        for (var i = 0; i < array.Length; i++)
+            hash.Add(array[i]);
+
+        return hash.ToHashCode();
+    }
 }

@@ -205,7 +205,7 @@ public partial interface ILocalBindingNode : INamedBindingNode
     typeof(IVariableDeclarationStatementNode),
     typeof(IBindingPatternNode),
     typeof(IForeachExpressionNode))]
-public partial interface IVariableBindingNode : ISemanticNode, ILocalBindingNode
+public partial interface IVariableBindingNode : ISemanticNode, ILocalBindingNode, IDataFlowNode
 {
 }
 
@@ -340,7 +340,7 @@ public partial interface IExecutableDefinitionNode : ISemanticNode, IDefinitionN
     ValueIdScope ValueIdScope { get; }
     IEntryNode Entry { get; }
     IExitNode Exit { get; }
-    FixedDictionary<ILocalBindingNode,int> LocalBindingsMap { get; }
+    FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; }
 }
 
 [Closed(
@@ -1181,12 +1181,13 @@ public partial interface IExitNode : ISemanticNode, IDataFlowNode
 }
 
 [Closed(
+    typeof(IVariableBindingNode),
     typeof(IEntryNode),
     typeof(IExitNode))]
 public partial interface IDataFlowNode : IControlFlowNode
 {
     IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
-    BindingFlags<ILocalBindingNode> DefinitelyAssigned { get; }
+    BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; }
 }
 
 [Closed(
@@ -1230,8 +1231,8 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     IBodyStatementSyntax IBodyStatementNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
-    IStatementSyntax IStatementNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
+    IStatementSyntax IStatementNode.Syntax => Syntax;
     ICapabilityNode? Capability { get; }
     ITypeNode? Type { get; }
     IAmbiguousExpressionNode? Initializer { get; }
@@ -1286,8 +1287,8 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
     IOptionalOrBindingPatternSyntax IOptionalOrBindingPatternNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
-    IPatternSyntax IPatternNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
+    IPatternSyntax IPatternNode.Syntax => Syntax;
 }
 
 public partial interface IOptionalPatternNode : ISemanticNode, IOptionalOrBindingPatternNode
@@ -1618,8 +1619,8 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     IExpressionSyntax IExpressionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IdentifierName VariableName { get; }
     IAmbiguousExpressionNode InExpression { get; }
     IExpressionNode? IntermediateInExpression { get; }

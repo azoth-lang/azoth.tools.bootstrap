@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -45,10 +44,21 @@ internal class SourceInitializerDefinitionNode : InitializerDefinitionNode, ISou
     {
         if (descendant == Entry)
             return ControlFlowAspect.ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(this);
+        if (child is IParameterNode parameter)
+            return ControlFlowAspect.ConcreteInvocableDefinition_InheritedControlFlowFollowing_Parameter(this, parameter);
         if (child == Body) return ControlFlowSet.CreateNormal(Exit);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override IControlFlowNode InheritedControlFlowExit(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IEntryNode InheritedControlFlowEntry(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+        => Entry;
+
+    internal override IExitNode InheritedControlFlowExit(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
         => Exit;
 }
