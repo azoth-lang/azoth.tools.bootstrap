@@ -63,8 +63,8 @@ internal class ShadowChecker : AbstractSyntaxWalker<BindingScope>
             {
                 // This checks for cases where a variable was shadowed, but then used later
                 if (!bindingScope.Lookup(syn.ReferencedSymbol.Name, out var binding)) return;
-                if (binding.WasShadowedBy.Any())
-                    diagnostics.Add(OtherSemanticError.CantShadow(file, binding.WasShadowedBy[^1].NameSpan, syn.Span));
+                //if (binding.WasShadowedBy.Any())
+                //    diagnostics.Add(OtherSemanticError.CantShadow(file, binding.WasShadowedBy[^1].NameSpan, syn.Span));
                 return;
             }
             case IDeclaration _:
