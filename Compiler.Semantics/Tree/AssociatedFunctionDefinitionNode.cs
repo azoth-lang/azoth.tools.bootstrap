@@ -44,10 +44,12 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.AssociatedFunctionDefinition_LexicalScope,
                 ReferenceEqualityComparer.Instance);
-    private ValueAttribute<ValueIdScope> valueIdScope;
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
     public ValueIdScope ValueIdScope
-        => valueIdScope.TryGetValue(out var value) ? value
-            : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.Invocable_ValueIdScope);
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                TypeMemberDeclarationsAspect.Invocable_ValueIdScope);
     public IEntryNode Entry { get; }
     public IExitNode Exit { get; }
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;

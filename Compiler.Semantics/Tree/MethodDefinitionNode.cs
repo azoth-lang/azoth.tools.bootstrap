@@ -29,10 +29,12 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
     public override MethodSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
             : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.MethodDefinition_Symbol);
-    private ValueAttribute<ValueIdScope> valueIdScope;
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
     public ValueIdScope ValueIdScope
-        => valueIdScope.TryGetValue(out var value) ? value
-            : valueIdScope.GetValue(this, TypeMemberDeclarationsAspect.Invocable_ValueIdScope);
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                TypeMemberDeclarationsAspect.Invocable_ValueIdScope);
     public IEntryNode Entry { get; }
     public IExitNode Exit { get; }
 
