@@ -129,8 +129,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned;
     private bool definitelyAssignedCached;
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
-        => GrammarAttribute.IsCached(in definitelyAssignedCached)
-            ? definitelyAssigned.UnsafeValue
+        => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
                 AssignmentAspect.ForeachExpression_DefinitelyAssigned);
 

@@ -1183,7 +1183,8 @@ public partial interface IExitNode : ISemanticNode, IDataFlowNode
 [Closed(
     typeof(IVariableBindingNode),
     typeof(IEntryNode),
-    typeof(IExitNode))]
+    typeof(IExitNode),
+    typeof(IAssignmentExpressionNode))]
 public partial interface IDataFlowNode : IControlFlowNode
 {
     IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
@@ -1489,13 +1490,13 @@ public partial interface IStringLiteralExpressionNode : ILiteralExpressionNode
     LexicalScope ContainingLexicalScope { get; }
 }
 
-public partial interface IAssignmentExpressionNode : ISemanticNode, IExpressionNode
+public partial interface IAssignmentExpressionNode : ISemanticNode, IExpressionNode, IDataFlowNode
 {
     new IAssignmentExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionSyntax IExpressionNode.Syntax => Syntax;
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousAssignableExpressionNode LeftOperand { get; }
     IAmbiguousAssignableExpressionNode CurrentLeftOperand { get; }
     IAssignableExpressionNode? IntermediateLeftOperand { get; }

@@ -58,6 +58,14 @@ internal static class AssignmentAspect
     public static BindingFlags<IVariableBindingNode> ForeachExpression_DefinitelyAssigned(IForeachExpressionNode node)
         => node.DefinitelyAssignedPrevious().Set(node, true);
 
+    public static BindingFlags<IVariableBindingNode> AssignmentExpression_DefinitelyAssigned(IAssignmentExpressionNode node)
+    {
+        var previous = node.DefinitelyAssignedPrevious();
+        if (node.IntermediateLeftOperand is IVariableNameExpressionNode { ReferencedDefinition: IVariableBindingNode variableBinding })
+            return previous.Set(variableBinding, true);
+        return previous;
+    }
+
     public static BindingFlags<IVariableBindingNode> Exit_DefinitelyAssigned(IExitNode node)
         => node.DefinitelyAssignedPrevious();
 

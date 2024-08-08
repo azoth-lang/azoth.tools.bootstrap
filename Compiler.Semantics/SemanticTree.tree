@@ -311,7 +311,7 @@ StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionS
     Value:`string` Type:`DataType` ContainingLexicalScope:`LexicalScope`;
 
 // ---------- Operator Expressions
-AssignmentExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
+AssignmentExpression <: Expression, DataFlow = Syntax:`IAssignmentExpressionSyntax`
     LeftOperand:AmbiguousAssignableExpression CurrentLeftOperand:`IAmbiguousAssignableExpressionNode` IntermediateLeftOperand:`IAssignableExpressionNode`?
     Operator:`AssignmentOperator`
     RightOperand:AmbiguousExpression CurrentRightOperand:`IAmbiguousExpressionNode` IntermediateRightOperand:`IExpressionNode`?;
