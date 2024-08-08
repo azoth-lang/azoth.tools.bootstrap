@@ -9,35 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 
 internal static class DefiniteAssignmentAspect
 {
-    public static FixedDictionary<IVariableBindingNode, int> ConcreteInvocableDefinition_VariableBindingsMap(IConcreteInvocableDefinitionNode node)
-        => VariableBindings(node.Body);
-
-    public static FixedDictionary<IVariableBindingNode, int> FieldDefinition_VariableBindingsMap(IFieldDefinitionNode node)
-        => VariableBindings(node.Initializer);
-
-    private static FixedDictionary<IVariableBindingNode, int> VariableBindings(IChildNode? node)
-    {
-        if (node is null) return FixedDictionary<IVariableBindingNode, int>.Empty;
-        var localBindings = new List<IVariableBindingNode>();
-        VariableBindings(node, localBindings);
-        return localBindings.Enumerate().ToFixedDictionary();
-    }
-
-    private static void VariableBindings(ISemanticNode node, List<IVariableBindingNode> variableBindings)
-    {
-        switch (node)
-        {
-            case ITypeNameNode:
-                // No need to recurse into type names
-                return;
-            case IVariableBindingNode variableBinding:
-                variableBindings.Add(variableBinding);
-                break;
-        }
-        foreach (var child in node.Children())
-            VariableBindings(child, variableBindings);
-    }
-
     public static BindingFlags<IVariableBindingNode> DataFlow_DefinitelyAssigned_Initial(IDataFlowNode node)
         // Since the merge operation is intersection, the initial state must be that all bindings are "assigned".
         => BindingFlags.Create(node.ControlFlowEntry().VariableBindingsMap(), true);

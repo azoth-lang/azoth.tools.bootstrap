@@ -99,6 +99,13 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
                 DefiniteAssignmentAspect.VariableDeclarationStatement_DefinitelyAssigned,
                 DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
+    private bool definitelyUnassignedCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned
+        => GrammarAttribute.IsCached(in definitelyUnassignedCached) ? definitelyUnassigned.UnsafeValue
+            : this.Circular(ref definitelyUnassignedCached, ref definitelyUnassigned,
+                SingleAssignmentAspect.VariableDeclarationStatement_DefinitelyUnassigned,
+                SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
 
     public VariableDeclarationStatementNode(
         IVariableDeclarationStatementSyntax syntax,

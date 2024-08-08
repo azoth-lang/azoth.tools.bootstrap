@@ -63,7 +63,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                DefiniteAssignmentAspect.FieldDefinition_VariableBindingsMap);
+                VariablesAspect.FieldDefinition_VariableBindingsMap);
 
     public FieldDefinitionNode(IFieldDefinitionSyntax syntax, ITypeNode type, IAmbiguousExpressionNode? initializer)
     {

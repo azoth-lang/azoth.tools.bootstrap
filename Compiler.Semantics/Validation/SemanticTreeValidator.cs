@@ -56,6 +56,7 @@ internal class SemanticTreeValidator
         {
             _ = dataFlow.DataFlowPrevious;
             _ = dataFlow.DefinitelyAssigned;
+            _ = dataFlow.DefinitelyUnassigned;
         }
 
         // Validate Concrete Node Attributes

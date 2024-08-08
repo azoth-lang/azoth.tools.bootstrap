@@ -29,7 +29,7 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                DefiniteAssignmentAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
 
     public StandardMethodDefinitionNode(
         IStandardMethodDefinitionSyntax syntax,

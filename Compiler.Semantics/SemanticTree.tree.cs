@@ -1189,6 +1189,7 @@ public partial interface IDataFlowNode : IControlFlowNode
 {
     IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
     BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; }
+    BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; }
 }
 
 [Closed(

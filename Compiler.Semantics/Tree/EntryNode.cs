@@ -21,6 +21,12 @@ internal sealed class EntryNode : ControlFlowNode, IEntryNode
         => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned!
             : this.Synthetic(ref definitelyAssignedCached, ref definitelyAssigned,
                 DefiniteAssignmentAspect.Entry_DefinitelyAssigned);
+    private BindingFlags<IVariableBindingNode>? definitelyUnassigned;
+    private bool definitelyUnassignedCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned
+        => GrammarAttribute.IsCached(in definitelyUnassignedCached) ? definitelyUnassigned!
+            : this.Synthetic(ref definitelyUnassignedCached, ref definitelyUnassigned,
+                SingleAssignmentAspect.Entry_DefinitelyUnassigned);
 
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap()
         => InheritedLocalBindingsMap(GrammarAttribute.CurrentInheritanceContext());

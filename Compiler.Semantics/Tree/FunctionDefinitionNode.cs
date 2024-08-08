@@ -54,7 +54,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                DefiniteAssignmentAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
 
     public FunctionDefinitionNode(
         IFunctionDefinitionSyntax syntax,

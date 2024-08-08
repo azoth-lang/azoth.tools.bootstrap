@@ -136,6 +136,14 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
                 DefiniteAssignmentAspect.ForeachExpression_DefinitelyAssigned,
                 DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
+    private bool definitelyUnassignedCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned
+        => GrammarAttribute.IsCached(in definitelyUnassignedCached)
+            ? definitelyUnassigned.UnsafeValue
+            : this.Circular(ref definitelyUnassignedCached, ref definitelyUnassigned,
+                SingleAssignmentAspect.ForeachExpression_DefinitelyUnassigned,
+                SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
 
     public ForeachExpressionNode(
         IForeachExpressionSyntax syntax,

@@ -23,6 +23,13 @@ internal sealed class ExitNode : ControlFlowNode, IExitNode
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
                 DefiniteAssignmentAspect.Exit_DefinitelyAssigned,
                 DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
+    private bool definitelyUnassignedCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned
+        => GrammarAttribute.IsCached(in definitelyUnassignedCached) ? definitelyUnassigned.UnsafeValue
+            : this.Circular(ref definitelyUnassignedCached, ref definitelyUnassigned,
+                SingleAssignmentAspect.Exit_DefinitelyUnassigned,
+                SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
 
     public override IEntryNode ControlFlowEntry()
         => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());

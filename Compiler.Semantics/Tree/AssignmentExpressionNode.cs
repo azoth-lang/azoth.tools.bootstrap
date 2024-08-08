@@ -63,6 +63,13 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
                 DefiniteAssignmentAspect.AssignmentExpression_DefinitelyAssigned,
                 DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
+    private bool definitelyUnassignedCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned
+        => GrammarAttribute.IsCached(in definitelyUnassignedCached) ? definitelyUnassigned.UnsafeValue
+            : this.Circular(ref definitelyUnassignedCached, ref definitelyUnassigned,
+                SingleAssignmentAspect.AssignmentExpression_DefinitelyUnassigned,
+                SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
 
     public AssignmentExpressionNode(
         IAssignmentExpressionSyntax syntax,
