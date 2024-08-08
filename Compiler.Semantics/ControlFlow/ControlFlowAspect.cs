@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 
@@ -19,28 +18,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 internal sealed class ControlFlowAspect
 {
     public static ControlFlowSet ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(IConcreteInvocableDefinitionNode node)
-    {
-        if (!node.Parameters.IsEmpty)
-        {
-            var firstControlFlowParameter = node.Parameters.OfType<IControlFlowNode>().FirstOrDefault();
-            if (firstControlFlowParameter is not null)
-                return ControlFlowSet.CreateNormal(firstControlFlowParameter);
-        }
-        return ConcreteInvocableDefinition_InheritedControlFlowFollowing_Parameters(node);
-    }
-
-    public static ControlFlowSet ConcreteInvocableDefinition_InheritedControlFlowFollowing_Parameter(
-        IConcreteInvocableDefinitionNode node,
-        IParameterNode parameter)
-    {
-        if (node.Parameters.IndexOf(parameter) is int index)
-            for (int i = index + 1; i < node.Parameters.Count; i++)
-                if (node.Parameters[i] is IControlFlowNode controlFlowNode)
-                    return ControlFlowSet.CreateNormal(controlFlowNode);
-        return ConcreteInvocableDefinition_InheritedControlFlowFollowing_Parameters(node);
-    }
-
-    private static ControlFlowSet ConcreteInvocableDefinition_InheritedControlFlowFollowing_Parameters(IConcreteInvocableDefinitionNode node)
         => ControlFlowSet.CreateNormal(node.Body?.Statements.FirstOrDefault() ?? (IControlFlowNode)node.Exit);
 
     public static ControlFlowSet Entry_ControlFlowNext(IEntryNode node)
@@ -68,14 +45,24 @@ internal sealed class ControlFlowAspect
         // TODO this shouldn't just be a function group, but instead a function name.
         => ControlFlowSet.CreateNormal(node.FunctionGroup);
 
+    public static ControlFlowSet FunctionReferenceInvocation_ControlFlowNext(
+        IFunctionReferenceInvocationExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Expression);
+
     public static ControlFlowSet MethodInvocationExpression_ControlFlowNext(
         IMethodInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.MethodGroup);
 
+    public static ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Context);
+
+    public static ControlFlowSet GetterInvocationExpression_ControlFlowNext(IGetterInvocationExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Context);
+
     public static ControlFlowSet AssignmentExpression_ControlFlowNext(IAssignmentExpressionNode node)
         => ControlFlowSet.CreateNormal(node.IntermediateLeftOperand);
 
-    public static ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node)
+    public static ControlFlowSet SetterInvocationExpression_ControlFlowNext(ISetterInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Context);
 
     public static ControlFlowSet UnsafeExpression_ControlFlowNext(IUnsafeExpressionNode node)
@@ -101,9 +88,11 @@ internal sealed class ControlFlowAspect
         IBinaryOperatorExpressionNode node)
         => ControlFlowSet.CreateNormal(node.IntermediateLeftOperand);
 
-    public static ControlFlowSet ImplicitConversionExpression_ControlFlowNext(
-        IImplicitConversionExpressionNode node)
+    public static ControlFlowSet ImplicitConversionExpression_ControlFlowNext(IImplicitConversionExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Referent);
+
+    public static ControlFlowSet ConversionExpression_ControlFlowNext(IConversionExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.IntermediateReferent);
 
     public static ControlFlowSet ReturnExpression_ControlFlowNext(
         IReturnExpressionNode node)
@@ -113,8 +102,51 @@ internal sealed class ControlFlowAspect
         return ControlFlowSet.CreateNormal(node.ControlFlowExit());
     }
 
+    public static ControlFlowSet WhileExpression_ControlFlowNext(IWhileExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.IntermediateCondition);
+
+    public static ControlFlowSet LoopExpression_ControlFlowNext(ILoopExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Block);
+
+    public static ControlFlowSet ForeachExpression_ControlFlowNext(IForeachExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.IntermediateInExpression);
+
+    public static ControlFlowSet UnaryOperatorExpression_ComputeControlFlowNext(IUnaryOperatorExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.IntermediateOperand);
+
+    public static ControlFlowSet BlockExpression_ControlFlowNext(IBlockExpressionNode node)
+    {
+        if (!node.Statements.IsEmpty)
+            return ControlFlowSet.CreateNormal(node.Statements[0]);
+        return node.ControlFlowFollowing();
+    }
+
+    public static ControlFlowSet FreezeExpression_ControlFlowNext(IFreezeExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Referent);
+
+    public static ControlFlowSet MoveExpression_ControlFlowNext(IMoveExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Referent);
+
+    public static ControlFlowSet ImplicitTempMoveExpression_ControlFlowNext(IImplicitTempMoveExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Referent);
+
+    public static ControlFlowSet IdExpression_ControlFlowNext(IIdExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.IntermediateReferent);
+
+    public static ControlFlowSet AwaitExpression_ControlFlowNext(IAwaitExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.IntermediateExpression);
+
+    public static ControlFlowSet PatternMatchExpression_ControlFlowNext(IPatternMatchExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.IntermediateReferent);
+
     public static ControlFlowSet BindingPattern_ControlFlowNext(IBindingPatternNode node)
         => node.ControlFlowFollowing();
+
+    public static ControlFlowSet OptionalPattern_ControlFlowNext(IOptionalPatternNode node)
+        => ControlFlowSet.CreateNormal(node.Pattern);
+
+    public static ControlFlowSet BindingContextPattern_ControlFlowNext(IBindingContextPatternNode node)
+        => ControlFlowSet.CreateNormal(node.Pattern);
 
     public static void ControlFlow_ContributeControlFlowPrevious(
         IControlFlowNode node,

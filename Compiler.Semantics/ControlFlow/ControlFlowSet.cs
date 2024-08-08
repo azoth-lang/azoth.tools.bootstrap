@@ -22,6 +22,8 @@ public class ControlFlowSet : IReadOnlyCollection<IControlFlowNode>, IReadOnlyDi
     public static ControlFlowSet CreateNormal(IControlFlowNode node1, IControlFlowNode node2)
         => new([node1, node2], ControlFlowKind.Normal);
 
+    public static ControlFlowSet CreateLoop(IControlFlowNode? node)
+        => node is null ? Empty : new([node], ControlFlowKind.Loop);
 
     private readonly IReadOnlyDictionary<IControlFlowNode, ControlFlowKind> items;
     public int Count => items.Count;

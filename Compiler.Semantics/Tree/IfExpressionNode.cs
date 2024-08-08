@@ -7,7 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -31,6 +30,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     public IElseClauseNode? ElseClause
         => GrammarAttribute.IsCached(in elseClauseCached) ? elseClause.UnsafeValue
             : this.RewritableChild(ref elseClauseCached, ref elseClause);
+    public IElseClauseNode? CurrentElseClause => elseClause.UnsafeValue;
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
@@ -90,8 +90,8 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     {
         if (child == CurrentCondition)
         {
-            if (ElseClause is not null)
-                return ControlFlowSet.CreateNormal(ThenBlock, ElseClause);
+            if (CurrentElseClause is not null)
+                return ControlFlowSet.CreateNormal(ThenBlock, ElseClause!);
             return ControlFlowSet.CreateNormal(ThenBlock).Union(ControlFlowFollowing());
         }
         return base.InheritedControlFlowFollowing(child, descendant, ctx);

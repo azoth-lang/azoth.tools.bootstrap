@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -71,5 +72,14 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     {
         if (child == CurrentValue) return Context.FlowStateAfter;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
+
+    protected override ControlFlowSet ComputeControlFlowNext()
+        => ControlFlowAspect.SetterInvocationExpression_ControlFlowNext(this);
+
+    internal override ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child == Context) return ControlFlowSet.CreateNormal(IntermediateValue);
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 }

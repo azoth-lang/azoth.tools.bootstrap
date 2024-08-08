@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -18,9 +19,11 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
     public IExpressionNode Expression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
+    public IExpressionNode CurrentExpression => expression.UnsafeValue;
     public FunctionAntetype FunctionAntetype { get; }
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
@@ -63,5 +66,26 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
             return IntermediateArguments[index - 1]?.FlowStateAfter ?? Expression.FlowStateAfter;
 
         return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
+
+    protected override ControlFlowSet ComputeControlFlowNext()
+        => ControlFlowAspect.FunctionReferenceInvocation_ControlFlowNext(this);
+
+    internal override ControlFlowSet InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+    {
+        if (child == CurrentExpression)
+        {
+            if (!Arguments.IsEmpty)
+                return ControlFlowSet.CreateNormal(IntermediateArguments[0]);
+        }
+        else if (child is IAmbiguousExpressionNode ambiguousExpression
+                 && CurrentArguments.IndexOf(ambiguousExpression) is int index
+                 && index < CurrentArguments.Count - 1)
+            return ControlFlowSet.CreateNormal(IntermediateArguments[index + 1]);
+
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 }

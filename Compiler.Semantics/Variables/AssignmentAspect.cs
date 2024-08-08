@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
@@ -38,7 +39,8 @@ internal static class AssignmentAspect
     }
 
     public static BindingFlags<IVariableBindingNode> DataFlow_DefinitelyAssigned_Initial(IDataFlowNode node)
-        => node.ControlFlowEntry().DefinitelyAssigned;
+        // Since the merge operation is intersection, the initial state must be that all bindings are "assigned".
+        => BindingFlags.Create(node.ControlFlowEntry().VariableBindingsMap(), true);
 
     public static BindingFlags<IVariableBindingNode> Entry_DefinitelyAssigned(IEntryNode node)
         // All local bindings are not yet assigned
@@ -48,6 +50,7 @@ internal static class AssignmentAspect
     {
         var previous = node.DefinitelyAssignedPrevious();
         if (node.Initializer is null) return previous;
+        // TODO this is technically marking it as assigned inside the initializer too. (Of course it isn't in scope there)
         return previous.Set(node, true);
     }
 
@@ -89,8 +92,6 @@ internal static class AssignmentAspect
 
         var definitelyAssigned = DefinitelyAssignedPrevious(node, node.GetDataFlowPrevious());
         if (!definitelyAssigned[variableBinding])
-        {
-            //diagnostics.Add(OtherSemanticError.VariableMayNotHaveBeenAssigned(node.File, node.Syntax.Span, node.Name));
-        }
+            diagnostics.Add(OtherSemanticError.VariableMayNotHaveBeenAssigned(node.File, node.Syntax.Span, node.Name));
     }
 }

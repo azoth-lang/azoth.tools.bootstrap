@@ -1,6 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -35,4 +36,7 @@ internal sealed class MoveValueExpressionNode : ExpressionNode, IMoveValueExpres
         this.referent = Child.Create(this, referent);
         IsImplicit = isImplicit;
     }
+
+    protected override ControlFlowSet ComputeControlFlowNext()
+        => ControlFlowAspect.MoveExpression_ControlFlowNext(this);
 }

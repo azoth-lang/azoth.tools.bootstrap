@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -41,4 +42,7 @@ internal sealed class MoveVariableExpressionNode : ExpressionNode, IMoveVariable
         ExpressionTypesAspect.MoveVariableExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
+
+    protected override ControlFlowSet ComputeControlFlowNext()
+        => ControlFlowAspect.MoveExpression_ControlFlowNext(this);
 }

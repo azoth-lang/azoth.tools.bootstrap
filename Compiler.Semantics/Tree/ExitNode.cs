@@ -15,13 +15,14 @@ internal sealed class ExitNode : ControlFlowNode, IExitNode
         => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
             : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
                 DataFlowAspect.DataFlow_DataFlowPrevious);
-    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned;
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
     private bool definitelyAssignedCached;
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached)
             ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
-                AssignmentAspect.Exit_DefinitelyAssigned, AssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+                AssignmentAspect.Exit_DefinitelyAssigned,
+                AssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
 
     public override IEntryNode ControlFlowEntry()
         => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());

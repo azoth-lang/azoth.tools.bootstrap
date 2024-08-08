@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -21,6 +22,18 @@ internal abstract class PatternNode : CodeNode, IPatternNode
     public ValueId? MatchReferentValueId
         => GrammarAttribute.IsCached(in matchReferentValueIdCached) ? matchReferentValueId
             : this.Inherited(ref matchReferentValueIdCached, ref matchReferentValueId, ref SyncLock, InheritedMatchReferentValueId);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                _ => ComputeControlFlow());
+    private ControlFlowSet? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    public ControlFlowSet ControlFlowPrevious
+        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
+            : this.Inherited(ref controlFlowPreviousCached, ref controlFlowPrevious,
+                ctx => CollectControlFlowPrevious(this, ctx));
 
     private protected PatternNode() { }
 
@@ -35,4 +48,17 @@ internal abstract class PatternNode : CodeNode, IPatternNode
 
     public ControlFlowSet ControlFlowFollowing()
         => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+
+    public IEntryNode ControlFlowEntry()
+        => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+
+    protected abstract ControlFlowSet ComputeControlFlow();
+
+    protected override void CollectControlFlowPrevious(
+        IControlFlowNode target,
+        Dictionary<IControlFlowNode, ControlFlowKind> previous)
+    {
+        ControlFlowAspect.ControlFlow_ContributeControlFlowPrevious(this, target, previous);
+        base.CollectControlFlowPrevious(target, previous);
+    }
 }

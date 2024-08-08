@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -16,6 +17,7 @@ internal sealed class LoopExpressionNode : ExpressionNode, ILoopExpressionNode
     public IBlockExpressionNode Block
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
+    public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
@@ -38,5 +40,18 @@ internal sealed class LoopExpressionNode : ExpressionNode, ILoopExpressionNode
     {
         Syntax = syntax;
         this.block = Child.Create(this, block);
+    }
+
+    protected override ControlFlowSet ComputeControlFlowNext()
+        => ControlFlowAspect.LoopExpression_ControlFlowNext(this);
+
+    internal override ControlFlowSet InheritedControlFlowFollowing(
+        IChildNode child,
+        IChildNode descendant,
+        IInheritanceContext ctx)
+    {
+        if (child == CurrentBlock)
+            return ControlFlowSet.CreateLoop(CurrentBlock).Union(ControlFlowFollowing());
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 }

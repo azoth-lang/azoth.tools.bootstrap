@@ -58,25 +58,14 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
         => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
             : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
                 DataFlowAspect.DataFlow_DataFlowPrevious);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.BindingPattern_ControlFlowNext);
-    private ControlFlowSet? controlFlowPrevious;
-    private bool controlFlowPreviousCached;
-    public ControlFlowSet ControlFlowPrevious
-        => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
-            : this.Inherited(ref controlFlowPreviousCached, ref controlFlowPrevious,
-                ctx => CollectControlFlowPrevious(this, ctx));
-    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned;
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
     private bool definitelyAssignedCached;
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached)
             ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
-                AssignmentAspect.BindingPattern_DefinitelyAssigned);
+                AssignmentAspect.BindingPattern_DefinitelyAssigned,
+                AssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
 
     public BindingPatternNode(IBindingPatternSyntax syntax)
     {
@@ -102,6 +91,6 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
         base.CollectDiagnostics(diagnostics);
     }
 
-    public IEntryNode ControlFlowEntry()
-        => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    protected override ControlFlowSet ComputeControlFlow()
+        => ControlFlowAspect.BindingPattern_ControlFlowNext(this);
 }

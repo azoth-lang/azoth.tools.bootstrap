@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -17,6 +18,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     public IAmbiguousExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
+    public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
     public IExpressionNode? IntermediateReferent => Referent as IExpressionNode;
     public IPatternNode Pattern { get; }
     public override IMaybeExpressionAntetype Antetype => IAntetype.Bool;
@@ -74,5 +76,14 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
         if (child == Pattern)
             return IntermediateReferent?.ValueId;
         return base.InheritedMatchReferentValueId(child, descendant, ctx);
+    }
+
+    protected override ControlFlowSet ComputeControlFlowNext()
+        => ControlFlowAspect.PatternMatchExpression_ControlFlowNext(this);
+
+    internal override ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child == CurrentReferent) return ControlFlowSet.CreateNormal(Pattern);
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 }

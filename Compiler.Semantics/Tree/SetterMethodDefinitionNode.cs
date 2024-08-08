@@ -56,8 +56,6 @@ internal sealed class SetterMethodDefinitionNode : MethodDefinitionNode, ISetter
     {
         if (descendant == Entry)
             return ControlFlowAspect.ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(this);
-        if (child is IParameterNode parameter)
-            return ControlFlowAspect.ConcreteInvocableDefinition_InheritedControlFlowFollowing_Parameter(this, parameter);
         if (child == Body) return ControlFlowSet.CreateNormal(Exit);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }

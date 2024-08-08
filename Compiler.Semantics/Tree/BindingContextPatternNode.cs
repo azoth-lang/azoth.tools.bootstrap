@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -42,4 +43,7 @@ internal sealed class BindingContextPatternNode : PatternNode, IBindingContextPa
             return NameBindingTypesAspect.BindingContextPattern_InheritedBindingType_Pattern(this);
         return base.InheritedBindingType(child, descendant);
     }
+
+    protected override ControlFlowSet ComputeControlFlow()
+        => ControlFlowAspect.BindingContextPattern_ControlFlowNext(this);
 }

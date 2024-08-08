@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -62,5 +63,16 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
     {
         InvalidStructureAspect.BlockExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
+    }
+
+    protected override ControlFlowSet ComputeControlFlowNext()
+        => ControlFlowAspect.BlockExpression_ControlFlowNext(this);
+
+    internal override ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child is IStatementNode statement && Statements.IndexOf(statement) is int index
+                                              && index < Statements.Count - 1)
+            return ControlFlowSet.CreateNormal(Statements[index + 1]);
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 }

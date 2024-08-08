@@ -103,4 +103,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         IChildNode descendant,
         IInheritanceContext ctx)
         => VariableBindingsMap;
+
+    internal override IEntryNode InheritedControlFlowEntry(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => Entry;
 }

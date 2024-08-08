@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -26,6 +27,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public IAmbiguousExpressionNode InExpression
         => GrammarAttribute.IsCached(in inExpressionCached) ? inExpression.UnsafeValue
             : this.RewritableChild(ref inExpressionCached, ref inExpression);
+    public IAmbiguousExpressionNode CurrentInExpression => inExpression.UnsafeValue;
     public IExpressionNode? IntermediateInExpression => InExpression as IExpressionNode;
     public ITypeNode? DeclaredType { get; }
     private RewritableChild<IBlockExpressionNode> block;
@@ -33,6 +35,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public IBlockExpressionNode Block
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
+    public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
     public LexicalScope ContainingLexicalScope
@@ -126,12 +129,13 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
             : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
                 DataFlowAspect.DataFlow_DataFlowPrevious);
-    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned;
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
     private bool definitelyAssignedCached;
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
-                AssignmentAspect.ForeachExpression_DefinitelyAssigned);
+                AssignmentAspect.ForeachExpression_DefinitelyAssigned,
+                AssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
 
     public ForeachExpressionNode(
         IForeachExpressionSyntax syntax,
@@ -169,5 +173,19 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         ForeachExpressionTypeAspect.ForeachExpression_ContributeDiagnostics(this, diagnostics);
         ShadowingAspect.VariableBinding_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
+    }
+
+    protected override ControlFlowSet ComputeControlFlowNext()
+        => ControlFlowAspect.ForeachExpression_ControlFlowNext(this);
+
+    internal override ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child == CurrentInExpression)
+            return ControlFlowSet.CreateNormal(Block);
+        if (child == CurrentBlock)
+            // Technically, `next()` is called on the iterator before the block is looped. But there
+            // is no node that corresponds to that and it has no effect on the control flow.
+            return ControlFlowSet.CreateLoop(Block).Union(ControlFlowFollowing());
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 }

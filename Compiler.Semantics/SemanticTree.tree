@@ -278,7 +278,7 @@ ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax`
     IntermediateExpression:`IExpressionNode`?;
 
 // ---------- Patterns
-Pattern <: Code = Syntax:`IPatternSyntax` FlowStateAfter:`IFlowState`;
+Pattern <: ControlFlow = Syntax:`IPatternSyntax` FlowStateAfter:`IFlowState`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
 BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPatternSyntax`

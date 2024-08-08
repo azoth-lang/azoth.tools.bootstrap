@@ -92,12 +92,13 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
             : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
                 DataFlowAspect.DataFlow_DataFlowPrevious);
-    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned;
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
     private bool definitelyAssignedCached;
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
-                AssignmentAspect.VariableDeclarationStatement_DefinitelyAssigned);
+                AssignmentAspect.VariableDeclarationStatement_DefinitelyAssigned,
+                AssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
 
     public VariableDeclarationStatementNode(
         IVariableDeclarationStatementSyntax syntax,

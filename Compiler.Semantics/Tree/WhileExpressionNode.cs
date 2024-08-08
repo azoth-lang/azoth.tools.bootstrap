@@ -2,6 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -17,12 +18,14 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
     public IAmbiguousExpressionNode Condition
         => GrammarAttribute.IsCached(in conditionCached) ? condition.UnsafeValue
             : this.RewritableChild(ref conditionCached, ref condition);
+    public IAmbiguousExpressionNode CurrentCondition => condition.UnsafeValue;
     public IExpressionNode? IntermediateCondition => Condition as IExpressionNode;
     private RewritableChild<IBlockExpressionNode> block;
     private bool blockCached;
     public IBlockExpressionNode Block
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
+    public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
@@ -66,5 +69,17 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         if (child == Block)
             return IntermediateCondition?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
+
+    protected override ControlFlowSet ComputeControlFlowNext()
+        => ControlFlowAspect.WhileExpression_ControlFlowNext(this);
+
+    internal override ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child == CurrentCondition)
+            return ControlFlowSet.CreateNormal(Block).Union(ControlFlowFollowing());
+        if (child == CurrentBlock)
+            return ControlFlowSet.CreateLoop(IntermediateCondition).Union(ControlFlowFollowing());
+        return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 }

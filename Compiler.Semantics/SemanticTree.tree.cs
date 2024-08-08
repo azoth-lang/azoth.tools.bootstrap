@@ -60,8 +60,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IControlFlowNode),
     typeof(IEntryNode),
     typeof(IExitNode),
-    typeof(IPatternNode),
-    typeof(IOptionalPatternNode),
+    typeof(IBindingContextPatternNode),
+    typeof(IOptionalOrBindingPatternNode),
     typeof(IAmbiguousExpressionNode),
     typeof(IAssignableExpressionNode),
     typeof(INewObjectExpressionNode),
@@ -270,7 +270,6 @@ public partial interface IPackageMemberDefinitionNode : INamespaceBlockMemberDef
     typeof(ITypeNode),
     typeof(IParameterTypeNode),
     typeof(IControlFlowNode),
-    typeof(IPatternNode),
     typeof(IAmbiguousExpressionNode))]
 public partial interface ICodeNode : IChildNode
 {
@@ -1165,6 +1164,7 @@ public partial interface ISelfViewpointTypeNode : ISemanticNode, IViewpointTypeN
     typeof(IElseClauseNode),
     typeof(IDataFlowNode),
     typeof(IStatementNode),
+    typeof(IPatternNode),
     typeof(IExpressionNode))]
 public partial interface IControlFlowNode : ISemanticNode, ICodeNode
 {
@@ -1256,7 +1256,7 @@ public partial interface IExpressionStatementNode : IBodyStatementNode
 [Closed(
     typeof(IBindingContextPatternNode),
     typeof(IOptionalOrBindingPatternNode))]
-public partial interface IPatternNode : ISemanticNode, ICodeNode
+public partial interface IPatternNode : IControlFlowNode
 {
     new IPatternSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -1264,10 +1264,12 @@ public partial interface IPatternNode : ISemanticNode, ICodeNode
     IFlowState FlowStateAfter { get; }
 }
 
-public partial interface IBindingContextPatternNode : IPatternNode
+public partial interface IBindingContextPatternNode : ISemanticNode, IPatternNode
 {
     new IBindingContextPatternSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IPatternSyntax IPatternNode.Syntax => Syntax;
+    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     bool IsMutableBinding { get; }
     IPatternNode Pattern { get; }
     ITypeNode? Type { get; }
@@ -1276,10 +1278,12 @@ public partial interface IBindingContextPatternNode : IPatternNode
 [Closed(
     typeof(IBindingPatternNode),
     typeof(IOptionalPatternNode))]
-public partial interface IOptionalOrBindingPatternNode : IPatternNode
+public partial interface IOptionalOrBindingPatternNode : ISemanticNode, IPatternNode
 {
     new IOptionalOrBindingPatternSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IPatternSyntax IPatternNode.Syntax => Syntax;
+    IConcreteSyntax? ICodeNode.Syntax => Syntax;
 }
 
 public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IVariableBindingNode
@@ -1292,12 +1296,10 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
     IPatternSyntax IPatternNode.Syntax => Syntax;
 }
 
-public partial interface IOptionalPatternNode : ISemanticNode, IOptionalOrBindingPatternNode
+public partial interface IOptionalPatternNode : IOptionalOrBindingPatternNode
 {
     new IOptionalPatternSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
     IOptionalOrBindingPatternSyntax IOptionalOrBindingPatternNode.Syntax => Syntax;
-    IPatternSyntax IPatternNode.Syntax => Syntax;
     IOptionalOrBindingPatternNode Pattern { get; }
 }
 
