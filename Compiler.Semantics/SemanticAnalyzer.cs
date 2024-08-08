@@ -11,7 +11,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.BindingMutability;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.DefiniteAssignment;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Shadowing;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
@@ -118,9 +117,6 @@ public class SemanticAnalyzer
         var executableDeclarations = declarations.OfType<IExecutableDeclaration>().ToFixedSet();
 
         ShadowChecker.Check(executableDeclarations, diagnostics);
-
-        DataFlowAnalysis.Check(DefiniteAssignmentAnalyzer.Instance, executableDeclarations, symbolTree,
-            diagnostics);
 
         DataFlowAnalysis.Check(BindingMutabilityAnalyzer.Instance, executableDeclarations, symbolTree,
             diagnostics);
