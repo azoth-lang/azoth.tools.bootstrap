@@ -1,7 +1,6 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
@@ -39,13 +38,10 @@ public class SemanticAnalyzer
         NamespaceSymbolCollector.Collect(packageNode, packageSyntax.SymbolTree, packageSyntax.TestingSymbolTree);
 
         // Check the semantics of the package
-        var packageBuilder = CheckSemantics(packageSyntax, packageNode);
-
-        // If there are errors from the semantics phase, don't continue on
-        packageBuilder.Diagnostics.ThrowIfFatalErrors();
+        CheckSemantics(packageSyntax, packageNode);
 
         // TODO remove hack once all diagnostics are generated from the semantic tree
-        packageNode.AddDistinctDiagnostics(packageBuilder.Diagnostics);
+        packageNode.AddDistinctDiagnostics(packageSyntax.Diagnostics);
 
         return packageNode;
     }
@@ -67,7 +63,7 @@ public class SemanticAnalyzer
         return packageNode;
     }
 
-    private static PackageBuilder CheckSemantics(IPackageSyntax packageSyntax, IPackageNode packageNode)
+    private static void CheckSemantics(IPackageSyntax packageSyntax, IPackageNode packageNode)
     {
         // Resolve symbols for the entities
         EntitySymbolBuilder.BuildFor(packageSyntax);
@@ -98,7 +94,5 @@ public class SemanticAnalyzer
         new TypeFulfillmentValidator().Validate(packageSyntax.AllEntityDeclarations);
         new TypeKnownValidator().Validate(packageSyntax.AllEntityDeclarations);
 #endif
-
-        return new ASTBuilder().BuildPackage(packageSyntax);
     }
 }
