@@ -4,16 +4,13 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.AbstractSyntax;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.BindingMutability;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables.Shadowing;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
@@ -107,20 +104,17 @@ public class SemanticAnalyzer
 
         var packageBuilder = new ASTBuilder().BuildPackage(packageSyntax);
 
-        CheckDataFlow(packageBuilder.Declarations, packageBuilder.SymbolTree, packageBuilder.Diagnostics);
-        CheckDataFlow(packageBuilder.TestingDeclarations, packageBuilder.TestingSymbolTree, packageBuilder.Diagnostics);
+        CheckDataFlow(packageBuilder.Declarations, packageBuilder.Diagnostics);
+        CheckDataFlow(packageBuilder.TestingDeclarations, packageBuilder.Diagnostics);
 
         return packageBuilder;
     }
 
-    private static void CheckDataFlow(IFixedSet<IDeclaration> declarations, FixedSymbolTree symbolTree, Diagnostics diagnostics)
+    private static void CheckDataFlow(IFixedSet<IDeclaration> declarations, Diagnostics diagnostics)
     {
         // From this point forward, analysis focuses on executable declarations (i.e. invocables and field initializers)
         var executableDeclarations = declarations.OfType<IExecutableDeclaration>().ToFixedSet();
 
         ShadowChecker.Check(executableDeclarations, diagnostics);
-
-        DataFlowAnalysis.Check(BindingMutabilityAnalyzer.Instance, executableDeclarations, symbolTree,
-            diagnostics);
     }
 }

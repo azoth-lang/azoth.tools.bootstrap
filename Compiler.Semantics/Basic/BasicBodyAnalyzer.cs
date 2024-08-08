@@ -1221,8 +1221,8 @@ public class BasicBodyAnalyzer
                         var contextType = contextResult.Type;
                         if (contextType is CapabilityType { AllowsWrite: false, AllowsInit: false } capabilityType)
                             diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(file, expression.Span, capabilityType));
-                        // Check for assigning into `let` fields (self is handled by binding mutability analysis)
-                        if (exp.Context is not ISelfExpressionSyntax
+                        // Check for assigning into `let` fields (skip self fields in constructors and initializers)
+                        if (exp.Context is not { ConvertedDataType: CapabilityType { AllowsInit: true } }
                             && sem.Symbol is { IsMutableBinding: false, Name: IdentifierName name })
                             diagnostics.Add(OtherSemanticError.CannotAssignImmutableField(file, exp.Span, name));
                         var type = sem.Symbol.Type.AccessedVia(contextType);
