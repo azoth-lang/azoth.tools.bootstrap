@@ -97,8 +97,8 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
-                AssignmentAspect.VariableDeclarationStatement_DefinitelyAssigned,
-                AssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+                DefiniteAssignmentAspect.VariableDeclarationStatement_DefinitelyAssigned,
+                DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
 
     public VariableDeclarationStatementNode(
         IVariableDeclarationStatementSyntax syntax,

@@ -55,7 +55,7 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                AssignmentAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                DefiniteAssignmentAspect.ConcreteInvocableDefinition_VariableBindingsMap);
 
     public AssociatedFunctionDefinitionNode(
         IAssociatedFunctionDefinitionSyntax syntax,

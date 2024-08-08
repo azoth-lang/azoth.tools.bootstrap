@@ -64,8 +64,8 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
         => GrammarAttribute.IsCached(in definitelyAssignedCached)
             ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
-                AssignmentAspect.BindingPattern_DefinitelyAssigned,
-                AssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+                DefiniteAssignmentAspect.BindingPattern_DefinitelyAssigned,
+                DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
 
     public BindingPatternNode(IBindingPatternSyntax syntax)
     {

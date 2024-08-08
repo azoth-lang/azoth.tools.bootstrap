@@ -41,7 +41,7 @@ internal abstract class InitializerDefinitionNode : TypeMemberDefinitionNode, II
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                AssignmentAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                DefiniteAssignmentAspect.ConcreteInvocableDefinition_VariableBindingsMap);
 
     private protected InitializerDefinitionNode(
         IEnumerable<IConstructorOrInitializerParameterNode> parameters)

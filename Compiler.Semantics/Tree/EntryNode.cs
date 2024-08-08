@@ -20,7 +20,7 @@ internal sealed class EntryNode : ControlFlowNode, IEntryNode
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned!
             : this.Synthetic(ref definitelyAssignedCached, ref definitelyAssigned,
-                AssignmentAspect.Entry_DefinitelyAssigned);
+                DefiniteAssignmentAspect.Entry_DefinitelyAssigned);
 
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap()
         => InheritedLocalBindingsMap(GrammarAttribute.CurrentInheritanceContext());

@@ -61,8 +61,8 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
-                AssignmentAspect.AssignmentExpression_DefinitelyAssigned,
-                AssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+                DefiniteAssignmentAspect.AssignmentExpression_DefinitelyAssigned,
+                DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
 
     public AssignmentExpressionNode(
         IAssignmentExpressionSyntax syntax,

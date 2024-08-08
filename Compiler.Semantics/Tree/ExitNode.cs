@@ -21,8 +21,8 @@ internal sealed class ExitNode : ControlFlowNode, IExitNode
         => GrammarAttribute.IsCached(in definitelyAssignedCached)
             ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
-                AssignmentAspect.Exit_DefinitelyAssigned,
-                AssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+                DefiniteAssignmentAspect.Exit_DefinitelyAssigned,
+                DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
 
     public override IEntryNode ControlFlowEntry()
         => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());

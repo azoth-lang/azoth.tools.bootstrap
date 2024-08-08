@@ -40,7 +40,7 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                AssignmentAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                DefiniteAssignmentAspect.ConcreteInvocableDefinition_VariableBindingsMap);
 
     private protected ConstructorDefinitionNode(
         IEnumerable<IConstructorOrInitializerParameterNode> parameters)
