@@ -419,7 +419,8 @@ MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax` Conte
 FieldAccessExpression <: NameExpression, AssignableExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
 VariableNameExpression <: LocalBindingNameExpression, AssignableExpression, SimpleName
-    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDefinition:`ILocalBindingNode`;
+    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDefinition:`ILocalBindingNode`
+    DataFlowPrevious:`IFixedSet<IDataFlowNode>`;
 TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
     Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`
     NamedAntetype:`IMaybeAntetype` NamedBareType:`BareType`?;

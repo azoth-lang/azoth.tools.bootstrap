@@ -4,10 +4,12 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -33,6 +35,12 @@ internal sealed class VariableNameExpressionNode : NameExpressionNode, IVariable
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.VariableNameExpression_FlowStateAfter);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.VariableNameExpression_DataFlowPrevious);
 
     public VariableNameExpressionNode(
         IIdentifierNameExpressionSyntax syntax,
@@ -48,6 +56,7 @@ internal sealed class VariableNameExpressionNode : NameExpressionNode, IVariable
     protected override void CollectDiagnostics(Diagnostics diagnostics)
     {
         DefiniteAssignmentAspect.VariableNameExpression_ContributeDiagnostics(this, diagnostics);
+        SingleAssignmentAspect.VariableNameExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

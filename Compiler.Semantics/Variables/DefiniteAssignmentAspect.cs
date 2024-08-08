@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
@@ -61,7 +60,7 @@ internal static class DefiniteAssignmentAspect
         if (node is not { ReferencedDefinition: IVariableBindingNode variableBinding })
             return;
 
-        var definitelyAssigned = DefinitelyAssignedPrevious(node, node.GetDataFlowPrevious());
+        var definitelyAssigned = DefinitelyAssignedPrevious(node, node.DataFlowPrevious);
         if (!definitelyAssigned[variableBinding])
             diagnostics.Add(OtherSemanticError.VariableMayNotHaveBeenAssigned(node.File, node.Syntax.Span, node.Name));
     }

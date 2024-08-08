@@ -64,6 +64,8 @@ public class SemanticAnalyzer
         // Since the tree is lazy evaluated, walk it and force evaluation of many attributes to catch bugs
         SemanticTreeValidator.Validate(packageNode);
 
+        // TODO use DataFlowAnalysis to check for unused variables and report use of variables starting with `_`
+
         // If the semantic tree reports any fatal errors, don't continue on
         // TODO add back once old semantic checks are removed
         //packageNode.Diagnostics.ThrowIfFatalErrors();
@@ -120,7 +122,5 @@ public class SemanticAnalyzer
 
         DataFlowAnalysis.Check(BindingMutabilityAnalyzer.Instance, executableDeclarations, symbolTree,
             diagnostics);
-
-        // TODO use DataFlowAnalysis to check for unused variables and report use of variables starting with `_`
     }
 }

@@ -1982,6 +1982,7 @@ public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressi
     IdentifierName Name { get; }
     new ILocalBindingNode ReferencedDefinition { get; }
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
+    IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
 }
 
 [Closed(

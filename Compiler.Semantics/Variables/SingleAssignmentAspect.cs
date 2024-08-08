@@ -1,5 +1,7 @@
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
@@ -57,5 +59,20 @@ internal static class SingleAssignmentAspect
     {
         if (previous.IsEmpty) return node.ControlFlowEntry().DefinitelyUnassigned;
         return previous.Select(d => d.DefinitelyUnassigned).Aggregate((a, b) => a.Intersect(b));
+    }
+
+    public static void VariableNameExpression_ContributeDiagnostics(IVariableNameExpressionNode node, Diagnostics diagnostics)
+    {
+        if (node is not
+            {
+                Parent: IAssignmentExpressionNode assignment,
+                ReferencedDefinition: IVariableBindingNode { IsMutableBinding: false } variableBinding
+            }
+            || assignment.LeftOperand != node)
+            return;
+
+        var definitelyUnassigned = DefinitelyUnassignedPrevious(node, node.DataFlowPrevious);
+        if (!definitelyUnassigned[variableBinding])
+            diagnostics.Add(OtherSemanticError.MayAlreadyBeAssigned(node.File, node.Syntax.Span, node.Name));
     }
 }
