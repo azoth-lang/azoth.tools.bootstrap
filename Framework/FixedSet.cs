@@ -12,6 +12,8 @@ public interface IFixedSet<out T> : IReadOnlyCollection<T>
 {
     bool IsEmpty { get; }
 
+    bool Equals(IFixedSet<object?>? other);
+
     static IEqualityComparer<IFixedSet<T>> EqualityComparer => EqualityComparer<IFixedSet<T>>.Default;
 }
 
@@ -64,6 +66,7 @@ public static class FixedSet
         public static readonly Of<T> Empty = new Of<T>([]);
 
         private readonly IReadOnlySet<T> items;
+        private int hashCode;
 
         [DebuggerStepThrough]
         public Of(ReadOnlySpan<T> items)
@@ -108,22 +111,23 @@ public static class FixedSet
         public override bool Contains(object? item) => item is T value && items.Contains(value);
 
         #region Equality
-        public bool Equals(IFixedSet<T>? other)
+        public bool Equals(IFixedSet<object?>? other)
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
-            if (Count != other.Count) return false;
-
-            foreach (var item in this)
-                if (!other.Contains(item))
+            if (Count != other.Count || GetHashCode() != other.GetHashCode()) return false;
+            foreach (var item in other)
+                if (!Contains(item))
                     return false;
             return true;
         }
 
         public override bool Equals(object? obj)
-            => ReferenceEquals(this, obj) || obj is IFixedSet<T> other && Equals(other);
+            => ReferenceEquals(this, obj) || obj is IFixedSet<object?> other && Equals(other);
 
-        public override int GetHashCode()
+        public override int GetHashCode() => hashCode != 0 ? hashCode : hashCode = ComputeHashCode();
+
+        private int ComputeHashCode()
         {
             HashCode hash = new HashCode();
             hash.Add(Count);

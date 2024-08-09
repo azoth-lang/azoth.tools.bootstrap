@@ -10,7 +10,9 @@ public interface IFixedList<out T> : IReadOnlyList<T>
 {
     bool IsEmpty { get; }
 
-    // TODO support equality on fixed lists (see FixedSet)
+    bool Equals(IFixedList<object?>? other);
+
+    static IEqualityComparer<IFixedList<T>> EqualityComparer => EqualityComparer<IFixedList<T>>.Default;
 }
 
 public static class FixedList
@@ -26,7 +28,7 @@ public static class FixedList
 
     public static bool ItemsEqual<T>(this IFixedList<T> first, IFixedList<T>? second)
         where T : IEquatable<T>
-        => first.ItemsEqual(second, EqualityComparer<T>.Default);
+        => first.ItemsEqual(second, System.Collections.Generic.EqualityComparer<T>.Default);
 
     public static bool ItemsEqual<T>(this IFixedList<T> first, IFixedList<T>? second, IEqualityComparer<T> comparer)
     {
@@ -40,9 +42,16 @@ public static class FixedList
         return true;
     }
 
+    public static IEqualityComparer<IFixedList<object?>> ObjectEqualityComparer
+        => System.Collections.Generic.EqualityComparer<IFixedList<object?>>.Default;
+
+    public static IEqualityComparer<IFixedList<T>> EqualityComparer<T>()
+        where T : IEquatable<T>
+        => System.Collections.Generic.EqualityComparer<IFixedList<T>>.Default;
+
     public static int? IndexOf<T>(this IFixedList<T> list, T item)
     {
-        var comparer = EqualityComparer<T>.Default;
+        var comparer = System.Collections.Generic.EqualityComparer<T>.Default;
         for (int i = 0; i < list.Count; i++)
             if (comparer.Equals(list[i], item))
                 return i;
@@ -57,6 +66,7 @@ public static class FixedList
         public static readonly Of<T> Empty = new([]);
 
         private readonly IReadOnlyList<T> items;
+        private int hashCode;
 
         [DebuggerStepThrough]
         internal Of(IEnumerable<T> items)
@@ -87,14 +97,28 @@ public static class FixedList
         }
 
         #region Equality
-        public override bool Equals(object? obj) => throw new NotSupportedException();
-
-        public override int GetHashCode()
+        public bool Equals(IFixedList<object?>? other)
         {
-            var comparer = StrictEqualityComparer<T>.Instance;
+            if (ReferenceEquals(this, other)) return true;
+            if (other is null) return false;
+            if (Count != other.Count || GetHashCode() != other.GetHashCode()) return false;
+            for (int i = 0; i < Count; i++)
+                if (!Equals(this[i], other[i]))
+                    return false;
+            return true;
+        }
+
+        public override bool Equals(object? obj)
+            => ReferenceEquals(this, obj) || obj is IFixedList<object?> other && Equals(other);
+
+        public override int GetHashCode() => hashCode != 0 ? hashCode : hashCode = ComputeHashCode();
+
+        private int ComputeHashCode()
+        {
             HashCode hash = new HashCode();
             hash.Add(Count);
-            foreach (var item in items) hash.Add(item, comparer);
+            foreach (var item in items)
+                hash.Add(item);
             return hash.ToHashCode();
         }
         #endregion

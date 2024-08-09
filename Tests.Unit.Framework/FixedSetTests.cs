@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Framework;
+using Azoth.Tools.Bootstrap.Tests.Unit.Framework.Fakes;
 using Xunit;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Framework;
@@ -26,5 +27,17 @@ public class FixedSetTests
         var comparer = FixedSet.EqualityComparer<string>();
         Assert.True(comparer.Equals(set1, set2));
         Assert.Equal(comparer.GetHashCode(set1), comparer.GetHashCode(set2));
+    }
+
+    [Fact]
+    public void Can_compare_equality_of_sets_with_different_type()
+    {
+        var l1 = new[] { new FakeSquare(42), new FakeSquare(33), new FakeSquare(-98) }.ToFixedSet();
+        var l2 = new[] { new FakeSquare(42), new FakeSquare(33), new FakeSquare(-98) }.ToFixedSet<FakeShape>();
+
+        // Directly call `Equals` to ensure it is being used rather than some special collection
+        // comparison of the unit test framework.
+        Assert.True(l1.Equals(l2));
+        Assert.True(l2.Equals(l1));
     }
 }

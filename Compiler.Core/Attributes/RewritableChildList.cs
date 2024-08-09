@@ -8,7 +8,47 @@ using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 
-internal class RewritableChildList<TNode, TChild> : IRewritableChildList<TChild>
+internal abstract class RewritableChildList<T> : IFixedList<T>
+{
+    private int hashCode;
+
+    public abstract int Count { get; }
+    public bool IsEmpty => Count == 0;
+
+    public abstract T this[int index] { get; }
+
+    public abstract IEnumerator<T> GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    #region Equality
+    public bool Equals(IFixedList<object?>? other)
+    {
+        if (ReferenceEquals(this, other)) return true;
+        if (other is null) return false;
+        if (Count != other.Count || GetHashCode() != other.GetHashCode()) return false;
+        for (int i = 0; i < Count; i++)
+            if (!Equals(this[i], other[i]))
+                return false;
+        return true;
+    }
+
+    public sealed override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is IFixedList<object?> other && Equals(other);
+
+    public sealed override int GetHashCode() => hashCode != 0 ? hashCode : hashCode = ComputeHashCode();
+
+    private int ComputeHashCode()
+    {
+        HashCode hash = new HashCode();
+        hash.Add(Count);
+        foreach (var item in this)
+            hash.Add(item);
+        return hash.ToHashCode();
+    }
+    #endregion
+}
+
+internal class RewritableChildList<TNode, TChild> : RewritableChildList<TChild>, IRewritableChildList<TChild>
     where TNode : class, ITreeNode
     where TChild : class, IChildTreeNode<TNode>
 {
@@ -33,11 +73,9 @@ internal class RewritableChildList<TNode, TChild> : IRewritableChildList<TChild>
         Current = new CurrentList(children);
     }
 
-    public int Count => children.Count;
+    public override int Count => children.Count;
 
-    public bool IsEmpty => Count == 0;
-
-    public TChild this[int index] => Get(index);
+    public override TChild this[int index] => Get(index);
 
     [Inline]
     private TChild Get(int index)
@@ -46,29 +84,23 @@ internal class RewritableChildList<TNode, TChild> : IRewritableChildList<TChild>
             AttributeFunction.RewritableChild<TNode, TChild>(), default(Func<TNode, TChild>),
             ReferenceEqualityComparer.Instance, new(node, attributeName, index), cached);
 
-    public IEnumerator<TChild> GetEnumerator()
+    public override IEnumerator<TChild> GetEnumerator()
     {
         for (int i = 0; i < children.Count; i++)
             yield return Get(i);
     }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    private sealed class CurrentList(Buffer<RewritableChild<TChild>> children) : IFixedList<TChild>
+    private sealed class CurrentList(Buffer<RewritableChild<TChild>> children) : RewritableChildList<TChild>, IFixedList<TChild>
     {
-        public int Count => children.Count;
+        public override int Count => children.Count;
 
-        public bool IsEmpty => Count == 0;
+        public override TChild this[int index] => children[index].UnsafeValue;
 
-        public TChild this[int index] => children[index].UnsafeValue;
-
-        public IEnumerator<TChild> GetEnumerator()
+        public override IEnumerator<TChild> GetEnumerator()
         {
             for (int i = 0; i < children.Count; i++)
                 yield return children[i].UnsafeValue;
         }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
 
@@ -85,20 +117,16 @@ internal sealed class RewritableChildList<TNode, TChild, TFinal> : RewritableChi
         Intermediate = new IntermediateList(this);
     }
 
-    private sealed class IntermediateList(RewritableChildList<TNode, TChild> children) : IFixedList<TFinal?>
+    private sealed class IntermediateList(RewritableChildList<TNode, TChild> children) : RewritableChildList<TFinal?>, IFixedList<TFinal?>
     {
-        public int Count => children.Count;
+        public override int Count => children.Count;
 
-        public bool IsEmpty => Count == 0;
+        public override TFinal? this[int index] => children[index] as TFinal;
 
-        public TFinal? this[int index] => children[index] as TFinal;
-
-        public IEnumerator<TFinal?> GetEnumerator()
+        public override IEnumerator<TFinal?> GetEnumerator()
         {
             foreach (var child in children)
                 yield return child as TFinal;
         }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
