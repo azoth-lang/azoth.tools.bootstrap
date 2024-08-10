@@ -135,7 +135,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
             && ContainingNamespace == structType.ContainingNamespace
             && IsDeclaredConst == structType.IsDeclaredConst
             && Name == structType.Name
-            && GenericParameters.ItemsEqual(structType.GenericParameters);
+            && GenericParameters.Equals(structType.GenericParameters);
         // Supertypes and GenericParameterTypes are not considered because they are derived. Also,
         // that prevents infinite recursion.
     }

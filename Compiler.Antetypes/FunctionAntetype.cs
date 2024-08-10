@@ -23,7 +23,7 @@ public sealed class FunctionAntetype : INonVoidAntetype
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is FunctionAntetype that
-               && Parameters.ItemsEqual<IMaybeExpressionAntetype>(that.Parameters)
+               && Parameters.Equals(that.Parameters)
                && Return.Equals(that.Return);
     }
 

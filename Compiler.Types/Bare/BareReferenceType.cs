@@ -58,7 +58,7 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
         if (ReferenceEquals(this, other)) return true;
         return other is BareReferenceType<TDeclared> otherType
                && DeclaredType == otherType.DeclaredType
-               && GenericTypeArguments.ItemsEqual(otherType.GenericTypeArguments);
+               && GenericTypeArguments.Equals(otherType.GenericTypeArguments);
     }
 
     public override int GetHashCode() => HashCode.Combine(DeclaredType, GenericTypeArguments);

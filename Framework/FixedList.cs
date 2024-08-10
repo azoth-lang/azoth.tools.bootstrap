@@ -72,22 +72,6 @@ public static class FixedList
     public static IFixedList<T> Create<T>(params T[] items)
         => new Of<T>(items);
 
-    public static bool ItemsEqual<T>(this IFixedList<T> first, IFixedList<T>? second)
-        where T : IEquatable<T>
-        => first.ItemsEqual(second, System.Collections.Generic.EqualityComparer<T>.Default);
-
-    public static bool ItemsEqual<T>(this IFixedList<T> first, IFixedList<T>? second, IEqualityComparer<T> comparer)
-    {
-        if (ReferenceEquals(first, second)) return true;
-        if (first.Count != second?.Count) return false;
-
-        var count = first.Count;
-        for (int i = 0; i < count; i++)
-            if (!comparer.Equals(first[i], second[i]))
-                return false;
-        return true;
-    }
-
     public static IEqualityComparer<IFixedList<T>> EqualityComparer<T>()
         where T : IEquatable<T>
         => System.Collections.Generic.EqualityComparer<IFixedList<T>>.Default;

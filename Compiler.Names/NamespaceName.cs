@@ -48,7 +48,7 @@ public sealed class NamespaceName : IEquatable<NamespaceName>
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return Segments.ItemsEqual<TypeName>(other.Segments);
+        return Segments.Equals(other.Segments);
     }
 
     public override bool Equals(object? other)

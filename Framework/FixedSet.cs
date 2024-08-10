@@ -123,6 +123,7 @@ public static class FixedSet
         }
 
         public override bool Equals(object? obj)
+            // TODO handle equality like IFixedList<T> does so that it works for all types in all cases
             => ReferenceEquals(this, obj) || obj is IFixedSet<object?> other && Equals(other);
 
         public override int GetHashCode() => hashCode != 0 ? hashCode : hashCode = ComputeHashCode();

@@ -205,7 +205,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
             && IsAbstract == objectType.IsAbstract
             && IsDeclaredConst == objectType.IsDeclaredConst
             && Name == objectType.Name
-            && GenericParameters.ItemsEqual(objectType.GenericParameters);
+            && GenericParameters.Equals(objectType.GenericParameters);
         // Supertypes and GenericParameterTypes are not considered because they are derived. Also,
         // that prevents infinite recursion.
     }

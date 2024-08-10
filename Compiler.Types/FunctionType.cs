@@ -31,7 +31,7 @@ public sealed class FunctionType : NonEmptyType
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is FunctionType otherType
-               && Parameters.ItemsEqual(otherType.Parameters)
+               && Parameters.Equals(otherType.Parameters)
                && Return == otherType.Return;
     }
 

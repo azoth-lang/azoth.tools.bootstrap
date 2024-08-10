@@ -58,7 +58,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
                && ContainingPackage.Equals(that.ContainingPackage)
                && ContainingNamespace.Equals(that.ContainingNamespace)
                && Name.Equals(that.Name)
-               && GenericParameters.ItemsEqual(that.GenericParameters);
+               && GenericParameters.Equals(that.GenericParameters);
         // GenericParameterAntetypes is derived from GenericParameters and doesn't need to be compared
     }
 

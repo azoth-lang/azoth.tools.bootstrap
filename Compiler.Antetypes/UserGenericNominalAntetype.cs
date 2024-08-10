@@ -39,7 +39,7 @@ public sealed class UserGenericNominalAntetype : NominalAntetype, INonVoidAntety
         if (ReferenceEquals(this, other)) return true;
         return other is UserGenericNominalAntetype that
                && DeclaredAntetype.Equals(that.DeclaredAntetype)
-               && TypeArguments.ItemsEqual<IMaybeExpressionAntetype>(that.TypeArguments);
+               && TypeArguments.Equals(that.TypeArguments);
     }
 
     public override int GetHashCode() => HashCode.Combine(DeclaredAntetype, TypeArguments);
