@@ -24,7 +24,7 @@ internal sealed class MethodSelfParameterNode : SelfParameterNode, IMethodSelfPa
         Capability = Child.Attach(this, capability);
     }
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         TypeMemberDeclarationsAspect.MethodSelfParameter_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

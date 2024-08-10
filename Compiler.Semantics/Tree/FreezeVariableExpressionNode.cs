@@ -41,7 +41,7 @@ internal sealed class FreezeVariableExpressionNode : ExpressionNode, IFreezeVari
         IsImplicit = isImplicit;
     }
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         ExpressionTypesAspect.FreezeVariableExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

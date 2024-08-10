@@ -81,7 +81,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     internal override bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
         => SymbolNodeAspect.TypeDeclaration_InheritedIsAttributeType(this);
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         TypeDeclarationsAspect.TypeDeclaration_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

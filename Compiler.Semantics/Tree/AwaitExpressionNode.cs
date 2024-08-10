@@ -45,7 +45,7 @@ internal sealed class AwaitExpressionNode : ExpressionNode, IAwaitExpressionNode
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Expression.GetFlowLexicalScope();
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         ExpressionAntetypesAspect.AwaitExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

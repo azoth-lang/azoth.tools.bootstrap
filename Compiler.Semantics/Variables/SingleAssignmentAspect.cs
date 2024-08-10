@@ -61,7 +61,7 @@ internal static class SingleAssignmentAspect
         return previous.Select(d => d.DefinitelyUnassigned).Aggregate((a, b) => a.Intersect(b));
     }
 
-    public static void VariableNameExpression_ContributeDiagnostics(IVariableNameExpressionNode node, Diagnostics diagnostics)
+    public static void VariableNameExpression_ContributeDiagnostics(IVariableNameExpressionNode node, DiagnosticsBuilder diagnostics)
     {
         if (node is not
             {

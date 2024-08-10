@@ -15,6 +15,6 @@ internal static class DiagnosticsAspect
     private static IEnumerable<Diagnostic> CollectForFacet(IPackageFacetNode node)
         => node.CompilationUnits.SelectMany(cu => cu.Diagnostics);
 
-    public static void CompilationUnit_ContributeDiagnostics(ICompilationUnitNode node, Diagnostics diagnostics)
+    public static void CompilationUnit_ContributeDiagnostics(ICompilationUnitNode node, DiagnosticsBuilder diagnostics)
         => diagnostics.Add(node.Syntax.Diagnostics);
 }

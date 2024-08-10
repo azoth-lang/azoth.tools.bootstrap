@@ -39,7 +39,7 @@ internal sealed class OptionalPatternNode : PatternNode, IOptionalPatternNode
         return base.InheritedBindingType(child, descendant);
     }
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         ExpressionAntetypesAspect.OptionalPattern_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

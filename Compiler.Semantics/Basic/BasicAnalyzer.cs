@@ -30,13 +30,13 @@ public class BasicAnalyzer
     private readonly ISymbolTreeBuilder symbolTreeBuilder;
     private readonly SymbolForest symbolTrees;
     private readonly UserTypeSymbol? rangeSymbol;
-    private readonly Diagnostics diagnostics;
+    private readonly DiagnosticsBuilder diagnostics;
 
     private BasicAnalyzer(
         ISymbolTreeBuilder symbolTreeBuilder,
         SymbolForest symbolTrees,
         UserTypeSymbol? rangeSymbol,
-        Diagnostics diagnostics)
+        DiagnosticsBuilder diagnostics)
     {
         this.symbolTreeBuilder = symbolTreeBuilder;
         this.symbolTrees = symbolTrees;
@@ -86,48 +86,48 @@ public class BasicAnalyzer
             default:
                 throw ExhaustiveMatch.Failed(definition);
             case IFunctionDefinitionSyntax function:
-            {
-                var resolver = new BasicBodyAnalyzer(function, symbolTreeBuilder, symbolTrees,
-                    rangeSymbol, diagnostics,
-                    function.Symbol.Result.Return);
-                resolver.ResolveTypes(function.Body);
-                break;
-            }
+                {
+                    var resolver = new BasicBodyAnalyzer(function, symbolTreeBuilder, symbolTrees,
+                        rangeSymbol, diagnostics,
+                        function.Symbol.Result.Return);
+                    resolver.ResolveTypes(function.Body);
+                    break;
+                }
             case IAssociatedFunctionDefinitionSyntax associatedFunction:
-            {
-                var resolver = new BasicBodyAnalyzer(associatedFunction, symbolTreeBuilder, symbolTrees,
-                    rangeSymbol, diagnostics,
-                    associatedFunction.Symbol.Result.Return);
-                resolver.ResolveTypes(associatedFunction.Body);
-                break;
-            }
+                {
+                    var resolver = new BasicBodyAnalyzer(associatedFunction, symbolTreeBuilder, symbolTrees,
+                        rangeSymbol, diagnostics,
+                        associatedFunction.Symbol.Result.Return);
+                    resolver.ResolveTypes(associatedFunction.Body);
+                    break;
+                }
             case IConcreteMethodDefinitionSyntax method:
-            {
-                var resolver = new BasicBodyAnalyzer(method, symbolTreeBuilder,
-                    symbolTrees, rangeSymbol, diagnostics,
-                    method.Symbol.Result.Return);
-                resolver.ResolveTypes(method.Body);
-                break;
-            }
+                {
+                    var resolver = new BasicBodyAnalyzer(method, symbolTreeBuilder,
+                        symbolTrees, rangeSymbol, diagnostics,
+                        method.Symbol.Result.Return);
+                    resolver.ResolveTypes(method.Body);
+                    break;
+                }
             case IAbstractMethodDefinitionSyntax _:
                 // has no body, so nothing to resolve
                 break;
             case IConstructorDefinitionSyntax constructor:
-            {
-                var returnType = new ReturnType(constructor.SelfParameter.DataType.Result);
-                var resolver = new BasicBodyAnalyzer(constructor, symbolTreeBuilder, symbolTrees,
-                    rangeSymbol, diagnostics, returnType);
-                resolver.ResolveTypes(constructor.Body);
-                break;
-            }
+                {
+                    var returnType = new ReturnType(constructor.SelfParameter.DataType.Result);
+                    var resolver = new BasicBodyAnalyzer(constructor, symbolTreeBuilder, symbolTrees,
+                        rangeSymbol, diagnostics, returnType);
+                    resolver.ResolveTypes(constructor.Body);
+                    break;
+                }
             case IInitializerDefinitionSyntax initializer:
-            {
-                var returnType = new ReturnType(initializer.SelfParameter.DataType.Result);
-                var resolver = new BasicBodyAnalyzer(initializer, symbolTreeBuilder, symbolTrees,
-                    rangeSymbol, diagnostics, returnType);
-                resolver.ResolveTypes(initializer.Body);
-                break;
-            }
+                {
+                    var returnType = new ReturnType(initializer.SelfParameter.DataType.Result);
+                    var resolver = new BasicBodyAnalyzer(initializer, symbolTreeBuilder, symbolTrees,
+                        rangeSymbol, diagnostics, returnType);
+                    resolver.ResolveTypes(initializer.Body);
+                    break;
+                }
         }
     }
 

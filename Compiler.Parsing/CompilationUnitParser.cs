@@ -39,7 +39,7 @@ public class CompilationUnitParser
         return name;
     }
 
-    private static void CheckSyntax(CompilationUnitSyntax compilationUnit, Diagnostics diagnostics)
+    private static void CheckSyntax(CompilationUnitSyntax compilationUnit, DiagnosticsBuilder diagnostics)
     {
         var notImplementedChecker = new SyntaxNotImplementedChecker(compilationUnit, diagnostics);
         notImplementedChecker.Check();

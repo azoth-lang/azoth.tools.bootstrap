@@ -47,7 +47,7 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         InvalidStructureAspect.ReturnExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

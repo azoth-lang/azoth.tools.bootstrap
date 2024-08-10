@@ -37,7 +37,7 @@ internal sealed class MoveVariableExpressionNode : ExpressionNode, IMoveVariable
         IsImplicit = isImplicit;
     }
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         ExpressionTypesAspect.MoveVariableExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

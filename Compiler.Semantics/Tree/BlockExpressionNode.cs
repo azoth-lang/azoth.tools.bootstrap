@@ -59,7 +59,7 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
     public IFlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         InvalidStructureAspect.BlockExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

@@ -17,7 +17,7 @@ public class Lexer
     public ITokenIterator<IToken> Lex(ParseContext context)
         => new TokenIterator<IToken>(context, Lex(context.File, context.Diagnostics));
 
-    private static IEnumerable<IToken> Lex(CodeFile file, Diagnostics diagnostics)
+    private static IEnumerable<IToken> Lex(CodeFile file, DiagnosticsBuilder diagnostics)
     {
         var code = file.Code;
         var text = code.Text;
@@ -240,12 +240,12 @@ public class Lexer
                     yield return TokenFactory.NotEqual(SymbolSpan());
                     break;
                 case '!' when NextChar() is '=':
-                {
-                    var span = SymbolSpan(2);
-                    diagnostics.Add(LexError.CStyleNotEquals(file, span));
-                    yield return TokenFactory.NotEqual(span);
-                    break;
-                }
+                    {
+                        var span = SymbolSpan(2);
+                        diagnostics.Add(LexError.CStyleNotEquals(file, span));
+                        yield return TokenFactory.NotEqual(span);
+                        break;
+                    }
                 case '>':
                     if (NextChar() is '=')
                         // it is `>=`
@@ -303,33 +303,33 @@ public class Lexer
                 case '7':
                 case '8':
                 case '9':
-                {
-                    tokenEnd = tokenStart + 1;
-                    while (tokenEnd < text.Length && IsIntegerCharacter(text[tokenEnd]))
-                        tokenEnd += 1;
-
-                    var span = TokenSpan();
-                    var value = BigInteger.Parse(code[span], CultureInfo.InvariantCulture);
-                    yield return TokenFactory.IntegerLiteral(span, value);
-                    break;
-                }
-                case '\\':
-                {
-                    if (NextChar() is '"')
-                        yield return LexStringIdentifier();
-                    else
                     {
                         tokenEnd = tokenStart + 1;
-                        while (tokenEnd < text.Length && IsIdentifierCharacter(text[tokenEnd]))
+                        while (tokenEnd < text.Length && IsIntegerCharacter(text[tokenEnd]))
                             tokenEnd += 1;
 
-                        if (tokenEnd == tokenStart + 1)
-                            yield return NewUnexpectedCharacter();
-                        else
-                            yield return NewEscapedIdentifier();
+                        var span = TokenSpan();
+                        var value = BigInteger.Parse(code[span], CultureInfo.InvariantCulture);
+                        yield return TokenFactory.IntegerLiteral(span, value);
+                        break;
                     }
-                    break;
-                }
+                case '\\':
+                    {
+                        if (NextChar() is '"')
+                            yield return LexStringIdentifier();
+                        else
+                        {
+                            tokenEnd = tokenStart + 1;
+                            while (tokenEnd < text.Length && IsIdentifierCharacter(text[tokenEnd]))
+                                tokenEnd += 1;
+
+                            if (tokenEnd == tokenStart + 1)
+                                yield return NewUnexpectedCharacter();
+                            else
+                                yield return NewEscapedIdentifier();
+                        }
+                        break;
+                    }
                 default:
                     if (char.IsWhiteSpace(currentChar))
                     {
@@ -516,65 +516,65 @@ public class Lexer
                         content.Append('\t');
                         break;
                     case 'u':
-                    {
-                        if (tokenEnd < text.Length && text[tokenEnd] == '(')
-                            tokenEnd += 1;
-                        else
                         {
-                            content.Append('u');
-                            var errorSpan = TextSpan.FromStartEnd(escapeStart, tokenEnd);
-                            diagnostics.Add(LexError.InvalidEscapeSequence(file, errorSpan));
-                            break;
-                        }
-
-                        var codepoint = new StringBuilder(6);
-                        while (tokenEnd < text.Length && IsHexDigit(currentChar = text[tokenEnd]))
-                        {
-                            codepoint.Append(currentChar);
-                            tokenEnd += 1;
-                        }
-
-                        int value;
-                        if (codepoint.Length is > 0 and <= 6 && (value = Convert.ToInt32(codepoint.ToString(), 16)) <= 0x10FFFF)
-                        {
-                            // TODO disallow surrogate pairs
-                            content.Append(char.ConvertFromUtf32(value));
-                        }
-                        else
-                        {
-                            content.Append("u(");
-                            content.Append(codepoint);
-                            // Include the closing ')' in the escape sequence if it is present
-                            if (tokenEnd < text.Length && text[tokenEnd] == ')')
+                            if (tokenEnd < text.Length && text[tokenEnd] == '(')
+                                tokenEnd += 1;
+                            else
                             {
-                                content.Append(')');
+                                content.Append('u');
+                                var errorSpan = TextSpan.FromStartEnd(escapeStart, tokenEnd);
+                                diagnostics.Add(LexError.InvalidEscapeSequence(file, errorSpan));
+                                break;
+                            }
+
+                            var codepoint = new StringBuilder(6);
+                            while (tokenEnd < text.Length && IsHexDigit(currentChar = text[tokenEnd]))
+                            {
+                                codepoint.Append(currentChar);
                                 tokenEnd += 1;
                             }
 
-                            var errorSpan = TextSpan.FromStartEnd(escapeStart, tokenEnd);
-                            diagnostics.Add(LexError.InvalidEscapeSequence(file, errorSpan));
+                            int value;
+                            if (codepoint.Length is > 0 and <= 6 && (value = Convert.ToInt32(codepoint.ToString(), 16)) <= 0x10FFFF)
+                            {
+                                // TODO disallow surrogate pairs
+                                content.Append(char.ConvertFromUtf32(value));
+                            }
+                            else
+                            {
+                                content.Append("u(");
+                                content.Append(codepoint);
+                                // Include the closing ')' in the escape sequence if it is present
+                                if (tokenEnd < text.Length && text[tokenEnd] == ')')
+                                {
+                                    content.Append(')');
+                                    tokenEnd += 1;
+                                }
+
+                                var errorSpan = TextSpan.FromStartEnd(escapeStart, tokenEnd);
+                                diagnostics.Add(LexError.InvalidEscapeSequence(file, errorSpan));
+                                break;
+                            }
+
+                            if (tokenEnd < text.Length && text[tokenEnd] == ')')
+                                tokenEnd += 1;
+                            else
+                            {
+                                var errorSpan = TextSpan.FromStartEnd(escapeStart, tokenEnd);
+                                diagnostics.Add(LexError.InvalidEscapeSequence(file, errorSpan));
+                            }
+
                             break;
                         }
-
-                        if (tokenEnd < text.Length && text[tokenEnd] == ')')
-                            tokenEnd += 1;
-                        else
-                        {
-                            var errorSpan = TextSpan.FromStartEnd(escapeStart, tokenEnd);
-                            diagnostics.Add(LexError.InvalidEscapeSequence(file, errorSpan));
-                        }
-
-                        break;
-                    }
                     default:
-                    {
-                        // Last two chars form the invalid sequence
-                        var errorSpan = TextSpan.FromStartEnd(tokenEnd - 2, tokenEnd);
-                        diagnostics.Add(LexError.InvalidEscapeSequence(file, errorSpan));
-                        // drop the `/` keep the character after
-                        content.Append(currentChar);
-                        break;
-                    }
+                        {
+                            // Last two chars form the invalid sequence
+                            var errorSpan = TextSpan.FromStartEnd(tokenEnd - 2, tokenEnd);
+                            diagnostics.Add(LexError.InvalidEscapeSequence(file, errorSpan));
+                            // drop the `/` keep the character after
+                            content.Append(currentChar);
+                            break;
+                        }
                 }
             }
 

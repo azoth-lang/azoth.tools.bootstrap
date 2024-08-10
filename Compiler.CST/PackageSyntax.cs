@@ -40,7 +40,7 @@ public class PackageSyntax : IPackageSyntax
     public IFixedSet<IEntityDefinitionSyntax> AllEntityDeclarations { get; }
     public IFixedSet<IPackageReferenceSyntax> References { get; }
     public IEnumerable<IPackageSymbols> ReferencedPackages => References.Select(r => r.Package);
-    public Diagnostics Diagnostics { get; }
+    public DiagnosticsBuilder Diagnostics { get; }
 
     public PackageSyntax(
         IdentifierName name,
@@ -60,7 +60,7 @@ public class PackageSyntax : IPackageSyntax
         References = references;
         SymbolTrees = BuiltIn.CreateSymbolForest(SymbolTree, ReferencedPackages.Select(p => p.SymbolTree));
         TestingSymbolTrees = BuiltIn.CreateSymbolForest(TestingSymbolTree, ReferencedPackages.Select(p => p.TestingSymbolTree));
-        Diagnostics = new Diagnostics(CompilationUnits.Concat(TestingCompilationUnits).SelectMany(cu => cu.Diagnostics));
+        Diagnostics = new DiagnosticsBuilder(CompilationUnits.Concat(TestingCompilationUnits).SelectMany(cu => cu.Diagnostics));
     }
 
     /// <remarks>

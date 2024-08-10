@@ -27,10 +27,10 @@ internal static class TypeMemberDeclarationsAspect
         return new FunctionType(parameterTypes, new ReturnType(returnType));
     }
 
-    public static void MethodDefinition_ContributeDiagnostics(IMethodDefinitionNode node, Diagnostics diagnostics)
+    public static void MethodDefinition_ContributeDiagnostics(IMethodDefinitionNode node, DiagnosticsBuilder diagnostics)
         => CheckParameterAndReturnAreVarianceSafe(node, diagnostics);
 
-    private static void CheckParameterAndReturnAreVarianceSafe(IMethodDefinitionNode node, Diagnostics diagnostics)
+    private static void CheckParameterAndReturnAreVarianceSafe(IMethodDefinitionNode node, DiagnosticsBuilder diagnostics)
     {
         // TODO do generic methods and functions need to be checked?
 
@@ -89,14 +89,14 @@ internal static class TypeMemberDeclarationsAspect
         };
     }
 
-    public static void MethodSelfParameter_ContributeDiagnostics(IMethodSelfParameterNode node, Diagnostics diagnostics)
+    public static void MethodSelfParameter_ContributeDiagnostics(IMethodSelfParameterNode node, DiagnosticsBuilder diagnostics)
     {
         CheckTypeCannotBeLent(node, diagnostics);
 
         CheckConstClassSelfParameterCannotHaveCapability(node, diagnostics);
     }
 
-    private static void CheckTypeCannotBeLent(IMethodSelfParameterNode node, Diagnostics diagnostics)
+    private static void CheckTypeCannotBeLent(IMethodSelfParameterNode node, DiagnosticsBuilder diagnostics)
     {
         var isLent = node.IsLentBinding;
         var selfType = ((IParameterNode)node).BindingType;
@@ -106,7 +106,7 @@ internal static class TypeMemberDeclarationsAspect
 
     private static void CheckConstClassSelfParameterCannotHaveCapability(
         IMethodSelfParameterNode node,
-        Diagnostics diagnostics)
+        DiagnosticsBuilder diagnostics)
     {
         var inConstClass = node.ContainingDeclaredType.IsDeclaredConst;
         var selfParameterType = node.ParameterType;
@@ -128,7 +128,7 @@ internal static class TypeMemberDeclarationsAspect
 
     public static void ConstructorSelfParameter_ContributeDiagnostics(
         IConstructorSelfParameterNode node,
-        Diagnostics diagnostics)
+        DiagnosticsBuilder diagnostics)
     {
         if (node.IsLentBinding)
             diagnostics.Add(OtherSemanticError.LentConstructorOrInitializerSelf(node.File, node.Syntax));
@@ -151,7 +151,7 @@ internal static class TypeMemberDeclarationsAspect
 
     public static void InitializerSelfParameter_ContributeDiagnostics(
         IInitializerSelfParameterNode node,
-        Diagnostics diagnostics)
+        DiagnosticsBuilder diagnostics)
     {
         if (node.IsLentBinding)
             diagnostics.Add(OtherSemanticError.LentConstructorOrInitializerSelf(node.File, node.Syntax));
@@ -162,7 +162,7 @@ internal static class TypeMemberDeclarationsAspect
     private static void CheckInvalidConstructorSelfParameterCapability(
         ICapabilitySyntax capabilitySyntax,
         CodeFile file,
-        Diagnostics diagnostics)
+        DiagnosticsBuilder diagnostics)
     {
         var declaredCapability = capabilitySyntax.Declared;
         switch (declaredCapability)
@@ -185,14 +185,14 @@ internal static class TypeMemberDeclarationsAspect
 
     public static DataType FieldDefinition_BindingType(IFieldDefinitionNode node) => node.TypeNode.NamedType;
 
-    public static void FieldDefinition_ContributeDiagnostics(IFieldDefinitionNode node, Diagnostics diagnostics)
+    public static void FieldDefinition_ContributeDiagnostics(IFieldDefinitionNode node, DiagnosticsBuilder diagnostics)
     {
         CheckFieldIsVarianceSafe(node, diagnostics);
 
         CheckFieldMaintainsIndependence(node, diagnostics);
     }
 
-    private static void CheckFieldIsVarianceSafe(IFieldDefinitionNode node, Diagnostics diagnostics)
+    private static void CheckFieldIsVarianceSafe(IFieldDefinitionNode node, DiagnosticsBuilder diagnostics)
     {
         var type = ((IFieldDeclarationNode)node).BindingType;
 
@@ -218,7 +218,7 @@ internal static class TypeMemberDeclarationsAspect
         }
     }
 
-    private static void CheckFieldMaintainsIndependence(IFieldDefinitionNode node, Diagnostics diagnostics)
+    private static void CheckFieldMaintainsIndependence(IFieldDefinitionNode node, DiagnosticsBuilder diagnostics)
     {
         var type = ((IFieldDeclarationNode)node).BindingType;
         // Fields must also maintain the independence of independent type parameters

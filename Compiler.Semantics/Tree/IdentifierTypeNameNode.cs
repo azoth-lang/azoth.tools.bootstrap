@@ -44,7 +44,7 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
         Syntax = syntax;
     }
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         SymbolNodeAspect.StandardTypeName_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

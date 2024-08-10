@@ -37,7 +37,7 @@ internal static class BindingAmbiguousNamesAspect
 
     public static void UnknownIdentifierNameExpression_ContributeDiagnostics(
         IUnknownIdentifierNameExpressionNode node,
-        Diagnostics diagnostics)
+        DiagnosticsBuilder diagnostics)
     {
         switch (node.ReferencedDeclarations.Count)
         {
@@ -197,7 +197,7 @@ internal static class BindingAmbiguousNamesAspect
         return new FunctionNameNode(node.Syntax, node, node.ReferencedDeclarations.TrySingle());
     }
 
-    public static void FunctionGroupName_ContributeDiagnostics(IFunctionGroupNameNode node, Diagnostics diagnostics)
+    public static void FunctionGroupName_ContributeDiagnostics(IFunctionGroupNameNode node, DiagnosticsBuilder diagnostics)
     {
         // TODO develop a better check that this node is ambiguous
         if (node.Parent is IFunctionNameNode or IInvocationExpressionNode or IFunctionInvocationExpressionNode)
@@ -213,7 +213,7 @@ internal static class BindingAmbiguousNamesAspect
 
     public static void UnknownMemberAccessExpression_ContributeDiagnostics(
         IUnknownMemberAccessExpressionNode node,
-        Diagnostics diagnostics)
+        DiagnosticsBuilder diagnostics)
     {
         if (node.Context is IFunctionGroupNameNode or IMethodGroupNameNode)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "No member accessible from function or method."));

@@ -25,7 +25,7 @@ internal static class BindingNamesAspect
             _ => throw ExhaustiveMatch.Failed(node.ContainingDeclaration),
         };
 
-    public static void SelfExpression_ContributeDiagnostics(ISelfExpressionNode node, Diagnostics diagnostics)
+    public static void SelfExpression_ContributeDiagnostics(ISelfExpressionNode node, DiagnosticsBuilder diagnostics)
     {
         if (node.ContainingDeclaration is not (IMethodDefinitionNode or ISourceConstructorDefinitionNode or IInitializerDeclarationNode))
             diagnostics.Add(node.IsImplicit

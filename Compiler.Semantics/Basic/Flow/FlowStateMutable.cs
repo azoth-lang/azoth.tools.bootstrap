@@ -22,7 +22,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow;
 /// the type of <s>self</s> if it started out isolated.</remarks>
 public sealed class FlowStateMutable
 {
-    private readonly Diagnostics diagnostics;
+    private readonly DiagnosticsBuilder diagnostics;
     private readonly CodeFile file;
     private readonly ResultVariableFactory resultVariableFactory;
     private readonly TempConversionFactory tempConversionFactory;
@@ -40,7 +40,7 @@ public sealed class FlowStateMutable
     private readonly Dictionary<ISharingVariable, SharingSetMutable> subsetFor;
 
     public FlowStateMutable(
-        Diagnostics diagnostics,
+        DiagnosticsBuilder diagnostics,
         CodeFile file,
         ParameterSharingRelation parameterSharing)
         : this(diagnostics, file, new(), parameterSharing.SharingSets.Select(s => s.MutableCopy()), new(), new())
@@ -49,13 +49,13 @@ public sealed class FlowStateMutable
             TrackCapabilities(symbol);
     }
 
-    public FlowStateMutable(Diagnostics diagnostics, CodeFile file)
+    public FlowStateMutable(DiagnosticsBuilder diagnostics, CodeFile file)
         : this(diagnostics, file, new(), Enumerable.Empty<SharingSetMutable>(), new(), new())
     {
     }
 
     private FlowStateMutable(
-        Diagnostics diagnostics,
+        DiagnosticsBuilder diagnostics,
         CodeFile file,
         Dictionary<ICapabilitySharingVariable, FlowCapabilities> capabilities,
         IEnumerable<SharingSetMutable> sharing,

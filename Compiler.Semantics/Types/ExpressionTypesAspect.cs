@@ -34,10 +34,10 @@ public static class ExpressionTypesAspect
         // value id of the expression to depend on the binding value id, but it is easy to do this.
         => node.ValueId.CreateNext();
 
-    public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, Diagnostics diagnostics)
+    public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, DiagnosticsBuilder diagnostics)
         => CheckConstructingType(node.ConstructingType, diagnostics);
 
-    private static void CheckConstructingType(ITypeNameNode node, Diagnostics diagnostics)
+    private static void CheckConstructingType(ITypeNameNode node, DiagnosticsBuilder diagnostics)
     {
         switch (node)
         {
@@ -57,7 +57,7 @@ public static class ExpressionTypesAspect
 
     public static void CheckTypeArgumentsAreConstructable(
         IStandardTypeNameNode node,
-        Diagnostics diagnostics)
+        DiagnosticsBuilder diagnostics)
     {
         var bareType = node.NamedBareType;
         if (bareType is null) return;
@@ -84,7 +84,7 @@ public static class ExpressionTypesAspect
         return intermediateReferent.FlowStateAfter.Transform(intermediateReferent.ValueId, node.ValueId, node.Type);
     }
 
-    public static void IdExpression_ContributeDiagnostics(IIdExpressionNode node, Diagnostics diagnostics)
+    public static void IdExpression_ContributeDiagnostics(IIdExpressionNode node, DiagnosticsBuilder diagnostics)
     {
         if (node.Type is not UnknownType)
             return;
@@ -169,7 +169,7 @@ public static class ExpressionTypesAspect
 
     public static void StringLiteralExpression_ContributeDiagnostics(
         IStringLiteralExpressionNode node,
-        Diagnostics diagnostics)
+        DiagnosticsBuilder diagnostics)
     {
         if (node.Type is UnknownType)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Could not find string type for string literal."));
@@ -332,7 +332,7 @@ public static class ExpressionTypesAspect
     public static IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node)
         => node.Context.FlowStateAfter.AccessField(node);
 
-    public static void FieldAccessExpression_ContributeDiagnostics(IFieldAccessExpressionNode node, Diagnostics diagnostics)
+    public static void FieldAccessExpression_ContributeDiagnostics(IFieldAccessExpressionNode node, DiagnosticsBuilder diagnostics)
     {
         if (node.Parent is IAssignmentExpressionNode assignmentNode && assignmentNode.LeftOperand == node)
             // In this case, a different error will be reported and CannotAccessMutableBindingFieldOfIdentityReference
@@ -449,7 +449,7 @@ public static class ExpressionTypesAspect
             node.IntermediateRightOperand.ValueId, node.IntermediateLeftOperand?.ValueId, node.ValueId)
            ?? IFlowState.Empty;
 
-    public static void BinaryOperatorExpression_ContributeDiagnostics(IBinaryOperatorExpressionNode node, Diagnostics diagnostics)
+    public static void BinaryOperatorExpression_ContributeDiagnostics(IBinaryOperatorExpressionNode node, DiagnosticsBuilder diagnostics)
     {
         if (node.Type == DataType.Unknown)
             diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandsOfType(node.File,
@@ -607,7 +607,7 @@ public static class ExpressionTypesAspect
             : flowStateBefore.FreezeValue(referentValueId, node.ValueId);
     }
 
-    public static void FreezeVariableExpression_ContributeDiagnostics(IFreezeVariableExpressionNode node, Diagnostics diagnostics)
+    public static void FreezeVariableExpression_ContributeDiagnostics(IFreezeVariableExpressionNode node, DiagnosticsBuilder diagnostics)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
             return;
@@ -636,7 +636,7 @@ public static class ExpressionTypesAspect
         return flowStateBefore.MoveVariable(node.Referent.ReferencedDefinition, node.Referent.ValueId, node.ValueId);
     }
 
-    public static void MoveVariableExpression_ContributeDiagnostics(IMoveVariableExpressionNode node, Diagnostics diagnostics)
+    public static void MoveVariableExpression_ContributeDiagnostics(IMoveVariableExpressionNode node, DiagnosticsBuilder diagnostics)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
             return;

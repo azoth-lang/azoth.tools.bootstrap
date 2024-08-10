@@ -87,7 +87,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         OverloadResolutionAspect.NewObjectExpression_ContributeDiagnostics(this, diagnostics);
         ExpressionTypesAspect.NewObjectExpression_ContributeDiagnostics(this, diagnostics);

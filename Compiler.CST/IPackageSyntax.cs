@@ -23,5 +23,5 @@ public interface IPackageSyntax : ISyntax
     /// </summary>
     IFixedSet<IEntityDefinitionSyntax> AllEntityDeclarations { get; }
 
-    Diagnostics Diagnostics { get; }
+    DiagnosticsBuilder Diagnostics { get; }
 }

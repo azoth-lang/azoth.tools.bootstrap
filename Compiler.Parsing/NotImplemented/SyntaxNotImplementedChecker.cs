@@ -12,10 +12,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.NotImplemented;
 internal class SyntaxNotImplementedChecker : SyntaxWalker
 {
     private readonly CompilationUnitSyntax compilationUnit;
-    private readonly Diagnostics diagnostics;
+    private readonly DiagnosticsBuilder diagnostics;
     private readonly CodeFile file;
 
-    public SyntaxNotImplementedChecker(CompilationUnitSyntax compilationUnit, Diagnostics diagnostics)
+    public SyntaxNotImplementedChecker(CompilationUnitSyntax compilationUnit, DiagnosticsBuilder diagnostics)
     {
         this.compilationUnit = compilationUnit;
         this.diagnostics = diagnostics;

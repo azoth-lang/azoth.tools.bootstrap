@@ -62,12 +62,12 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
 
     private IFixedList<Diagnostic> GetDiagnostics()
     {
-        var diagnostics = new Diagnostics();
+        var diagnostics = new DiagnosticsBuilder();
         CollectDiagnostics(diagnostics);
         return diagnostics.Build();
     }
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         DiagnosticsAspect.CompilationUnit_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

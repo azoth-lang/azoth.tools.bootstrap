@@ -63,7 +63,7 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
         TypeNode = Child.Attach(this, type);
     }
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         SymbolAspect.NamedParameter_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

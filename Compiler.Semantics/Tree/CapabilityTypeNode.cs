@@ -32,7 +32,7 @@ internal sealed class CapabilityTypeNode : TypeNode, ICapabilityTypeNode
         Referent = Child.Attach(this, referent);
     }
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         TypeExpressionsAspect.CapabilityType_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

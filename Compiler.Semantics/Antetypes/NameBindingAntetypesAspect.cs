@@ -38,7 +38,7 @@ internal static class NameBindingAntetypesAspect
 
     public static void VariableDeclarationStatement_ContributeDiagnostics(
         IVariableDeclarationStatementNode node,
-        Diagnostics diagnostics)
+        DiagnosticsBuilder diagnostics)
     {
         if (node.Type is null && node.IntermediateInitializer is null)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.NameSpan,

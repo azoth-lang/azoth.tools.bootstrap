@@ -9,13 +9,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core;
 // TODO rename to DiagnosticsBuilder (and maybe introduce an immutable diagnostics class)
 [DebuggerDisplay("Count = {items.Count}")]
 [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
-public class Diagnostics : IReadOnlyCollection<Diagnostic>
+public class DiagnosticsBuilder : IReadOnlyCollection<Diagnostic>
 {
     private readonly List<Diagnostic> items = new List<Diagnostic>();
 
-    public Diagnostics() { }
+    public DiagnosticsBuilder() { }
 
-    public Diagnostics(IEnumerable<Diagnostic> diagnostics)
+    public DiagnosticsBuilder(IEnumerable<Diagnostic> diagnostics)
     {
         items.AddRange(diagnostics);
     }
@@ -39,7 +39,7 @@ public class Diagnostics : IReadOnlyCollection<Diagnostic>
 
 public static class DiagnosticsExtensions
 {
-    public static void ThrowIfFatalErrors(this Diagnostics items)
+    public static void ThrowIfFatalErrors(this DiagnosticsBuilder items)
     {
         if (items.Any(i => i.IsFatal))
             throw new FatalCompilationErrorException(items.Build());

@@ -81,7 +81,7 @@ internal static class SymbolAspect
                                  .SingleOrDefault(s => s.Arity == 0);
     }
 
-    public static void Attribute_ContributeDiagnostics(IAttributeNode node, Diagnostics diagnostics)
+    public static void Attribute_ContributeDiagnostics(IAttributeNode node, DiagnosticsBuilder diagnostics)
     {
         if (node.ReferencedSymbol is null)
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.TypeName.Syntax.Span));
@@ -104,7 +104,7 @@ internal static class SymbolAspect
             node.DeclarationNumber, node.IsMutableBinding, isLent, node.BindingType);
     }
 
-    public static void NamedParameter_ContributeDiagnostics(INamedParameterNode node, Diagnostics diagnostics)
+    public static void NamedParameter_ContributeDiagnostics(INamedParameterNode node, DiagnosticsBuilder diagnostics)
     {
         var type = node.BindingType;
         if (node.IsLentBinding && !type.CanBeLent())

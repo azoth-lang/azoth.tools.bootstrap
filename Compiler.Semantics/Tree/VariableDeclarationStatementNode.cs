@@ -135,7 +135,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 
-    protected override void CollectDiagnostics(Diagnostics diagnostics)
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         NameBindingAntetypesAspect.VariableDeclarationStatement_ContributeDiagnostics(this, diagnostics);
         ShadowingAspect.VariableBinding_ContributeDiagnostics(this, diagnostics);
