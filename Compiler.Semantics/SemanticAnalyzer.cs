@@ -28,17 +28,14 @@ public class SemanticAnalyzer
         // be used to build symbols for the old syntax tree approach.
         DeclarationNumberAssigner.AssignIn(packageSyntax.AllEntityDeclarations);
 
-        // New semantic tree approach
-        var packageNode = BuildSemanticTreeAndValidate(packageSyntax);
+        // Build a semantic tree from the syntax tree
+        var packageNode = SyntaxBinder.Bind(packageSyntax);
 
-        // Apply symbols from the semantic tree to the old syntax tree approach
-        SemanticsApplier.Apply(packageNode);
+        // Check all semantic conditions
+        CheckSemantics(packageNode);
 
-        // Load namespace symbols applied to the old syntax tree approach into the symbol trees
-        NamespaceSymbolCollector.Collect(packageNode, packageSyntax.SymbolTree, packageSyntax.TestingSymbolTree);
-
-        // Check the semantics of the package
-        CheckSemantics(packageSyntax, packageNode);
+        // Run legacy semantic analysis of the package
+        LegacyBasicAnalysis(packageSyntax, packageNode);
 
         // TODO remove hack once all diagnostics are generated from the semantic tree
         packageNode.AddDistinctDiagnostics(packageSyntax.Diagnostics);
@@ -46,25 +43,29 @@ public class SemanticAnalyzer
         return packageNode;
     }
 
-    private static IPackageNode BuildSemanticTreeAndValidate(IPackageSyntax packageSyntax)
+    private static void CheckSemantics(IPackageNode package)
     {
-        // Start of new attribute grammar based approach
-        var packageNode = SyntaxBinder.Bind(packageSyntax);
-
+#if DEBUG
         // Since the tree is lazy evaluated, walk it and force evaluation of many attributes to catch bugs
-        SemanticTreeValidator.Validate(packageNode);
+        SemanticTreeValidator.Validate(package);
+#endif
 
         // TODO use DataFlowAnalysis to check for unused variables and report use of variables starting with `_`
 
         // If the semantic tree reports any fatal errors, don't continue on
         // TODO add back once old semantic checks are removed
-        //packageNode.Diagnostics.ThrowIfFatalErrors();
-
-        return packageNode;
+        //package.Diagnostics.ThrowIfFatalErrors();
+        _ = package.Diagnostics;
     }
 
-    private static void CheckSemantics(IPackageSyntax packageSyntax, IPackageNode packageNode)
+    private static void LegacyBasicAnalysis(IPackageSyntax packageSyntax, IPackageNode packageNode)
     {
+        // Apply symbols from the semantic tree to the old syntax tree approach
+        SemanticsApplier.Apply(packageNode);
+
+        // Load namespace symbols applied to the old syntax tree approach into the symbol trees
+        NamespaceSymbolCollector.Collect(packageNode, packageSyntax.SymbolTree, packageSyntax.TestingSymbolTree);
+
         // Resolve symbols for the entities
         EntitySymbolBuilder.BuildFor(packageSyntax);
 
