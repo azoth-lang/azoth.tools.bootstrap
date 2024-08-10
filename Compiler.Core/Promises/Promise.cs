@@ -28,7 +28,7 @@ public sealed class Promise<T> : IPromise<T>
     [DebuggerHidden]
     public T Fulfill(T value)
     {
-        Requires.That(nameof(IsFulfilled), !IsFulfilled, "must not already be fulfilled");
+        Requires.That(!IsFulfilled, nameof(IsFulfilled), "must not already be fulfilled");
         this.value = value;
         IsFulfilled = true;
         return value;

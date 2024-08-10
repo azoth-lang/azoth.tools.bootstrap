@@ -78,8 +78,8 @@ public static class DataTypeExtensions
         IFixedList<DataType> target,
         IFixedList<DataType> source)
     {
-        Requires.That(nameof(target), target.Count == declaredType.GenericParameters.Count, "count must match count of declaredType generic parameters");
-        Requires.That(nameof(source), source.Count == target.Count, "count must match count of target");
+        Requires.That(target.Count == declaredType.GenericParameters.Count, nameof(target), "count must match count of declaredType generic parameters");
+        Requires.That(source.Count == target.Count, nameof(source), "count must match count of target");
         for (int i = 0; i < declaredType.GenericParameters.Count; i++)
         {
             var from = source[i];

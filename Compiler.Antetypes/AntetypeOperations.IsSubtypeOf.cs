@@ -75,8 +75,8 @@ public static partial class AntetypeOperations
         IFixedList<IAntetype> selfTypeArguments,
         IFixedList<IAntetype> otherTypeArguments)
     {
-        Requires.That(nameof(selfTypeArguments), selfTypeArguments.Count == declaredAntetype.GenericParameters.Count, "count must match count of declaredAntetype generic parameters");
-        Requires.That(nameof(otherTypeArguments), otherTypeArguments.Count == declaredAntetype.GenericParameters.Count, "count must match count of declaredAntetype generic parameters");
+        Requires.That(selfTypeArguments.Count == declaredAntetype.GenericParameters.Count, nameof(selfTypeArguments), "count must match count of declaredAntetype generic parameters");
+        Requires.That(otherTypeArguments.Count == declaredAntetype.GenericParameters.Count, nameof(otherTypeArguments), "count must match count of declaredAntetype generic parameters");
         for (int i = 0; i < declaredAntetype.GenericParameters.Count; i++)
         {
             var genericParameter = declaredAntetype.GenericParameters[i];

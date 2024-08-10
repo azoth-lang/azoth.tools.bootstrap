@@ -55,7 +55,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         IFixedList<GenericParameter> genericParameters,
         IFixedSet<BareReferenceType> supertypes)
     {
-        Requires.That(nameof(genericParameters), name.GenericParameterCount == genericParameters.Count, "Count must match name count");
+        Requires.That(name.GenericParameterCount == genericParameters.Count, nameof(genericParameters), "Count must match name count");
         return new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true, name,
             genericParameters, supertypes);
     }
@@ -68,7 +68,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         IFixedList<GenericParameter> genericParameters,
         IFixedSet<BareReferenceType> supertypes)
     {
-        Requires.That(nameof(genericParameters), name.GenericParameterCount == genericParameters.Count,
+        Requires.That(name.GenericParameterCount == genericParameters.Count, nameof(genericParameters),
             "Count must match name count");
         return new(containingPackage, containingNamespace, isAbstract: true, isConst, isClass: false, name,
             genericParameters, supertypes);

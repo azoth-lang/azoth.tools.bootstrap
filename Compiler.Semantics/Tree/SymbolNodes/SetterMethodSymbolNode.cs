@@ -8,6 +8,6 @@ internal sealed class SetterMethodSymbolNode : MethodSymbolNode, ISetterMethodSy
     internal SetterMethodSymbolNode(MethodSymbol symbol)
         : base(symbol)
     {
-        Requires.That(nameof(symbol), symbol.Kind == MethodKind.Setter, "Must be a standard method symbol.");
+        Requires.That(symbol.Kind == MethodKind.Setter, nameof(symbol), "Must be a standard method symbol.");
     }
 }

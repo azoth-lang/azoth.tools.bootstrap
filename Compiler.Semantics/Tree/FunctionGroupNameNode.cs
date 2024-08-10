@@ -30,7 +30,7 @@ internal sealed class FunctionGroupNameNode : NameExpressionNode, IFunctionGroup
         FunctionName = functionName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
-        Requires.That(nameof(referencedDeclarations), !ReferencedDeclarations.IsEmpty,
+        Requires.That(!ReferencedDeclarations.IsEmpty, nameof(referencedDeclarations),
             "Must be at least one referenced declaration");
     }
 

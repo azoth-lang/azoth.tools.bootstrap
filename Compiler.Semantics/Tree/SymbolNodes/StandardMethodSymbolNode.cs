@@ -12,6 +12,6 @@ internal sealed class StandardMethodSymbolNode : MethodSymbolNode, IStandardMeth
     internal StandardMethodSymbolNode(MethodSymbol symbol)
         : base(symbol)
     {
-        Requires.That(nameof(symbol), symbol.Kind == MethodKind.Standard, "Must be a standard method symbol.");
+        Requires.That(symbol.Kind == MethodKind.Standard, nameof(symbol), "Must be a standard method symbol.");
     }
 }

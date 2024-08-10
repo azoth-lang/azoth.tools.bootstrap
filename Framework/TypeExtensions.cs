@@ -12,7 +12,7 @@ public static class TypeExtensions
             return type.Name;
 
         var name = type.Name;
-        var index = name.IndexOf("`", StringComparison.Ordinal);
+        var index = name.IndexOf('`');
         name = name[..index];
         var genericArguments = string.Join(',', type.GetGenericArguments().Select(GetFriendlyName));
         return $"{name}<{genericArguments}>";

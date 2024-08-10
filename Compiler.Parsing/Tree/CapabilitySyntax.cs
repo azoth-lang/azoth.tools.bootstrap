@@ -12,7 +12,7 @@ internal class CapabilitySyntax : Syntax, ICapabilitySyntax
 {
     public static CapabilitySyntax ImplicitReadOnly(TextSpan span)
     {
-        Requires.That(nameof(span), span.Length == 0, "span must be empty");
+        Requires.That(span.Length == 0, nameof(span), "span must be empty");
         return new(span, Enumerable.Empty<ICapabilityToken>(), DeclaredCapability.Read);
     }
 

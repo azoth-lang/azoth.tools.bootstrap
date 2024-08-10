@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -16,8 +17,8 @@ public readonly struct TextSpan : IEquatable<TextSpan>
 
     public TextSpan(int start, int length)
     {
-        Requires.Positive(nameof(start), start);
-        Requires.Positive(nameof(length), length);
+        Requires.Positive(start, nameof(start));
+        Requires.Positive(length, nameof(length));
         Start = start;
         Length = length;
     }
@@ -25,8 +26,8 @@ public readonly struct TextSpan : IEquatable<TextSpan>
     [System.Diagnostics.Contracts.Pure]
     public static TextSpan FromStartEnd(int start, int end)
     {
-        Requires.Positive(nameof(start), start);
-        Requires.Positive(nameof(end), end);
+        Requires.Positive(start, nameof(start));
+        Requires.Positive(end, nameof(end));
         return new TextSpan(start, end - start);
     }
 
@@ -81,26 +82,25 @@ public readonly struct TextSpan : IEquatable<TextSpan>
     [System.Diagnostics.Contracts.Pure]
     public TextSpan AtEnd() => new(End, 0);
 
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
 
     public string GetText(string text) => text.Substring(Start, Length);
 
     #region Equality
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
     public override bool Equals(object? obj) => obj is TextSpan span && Equals(span);
 
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
     public bool Equals(TextSpan other) => Start == other.Start && Length == other.Length;
 
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
     public override int GetHashCode() => HashCode.Combine(Start, Length);
 
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
     public static bool operator ==(TextSpan span1, TextSpan span2) => span1.Equals(span2);
 
-    [System.Diagnostics.Contracts.Pure]
+    [Pure]
     public static bool operator !=(TextSpan span1, TextSpan span2) => !span1.Equals(span2);
-
     #endregion
 
     public override string ToString() => $"TextSpan({Start},{Length})";

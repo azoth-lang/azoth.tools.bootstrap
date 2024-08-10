@@ -46,7 +46,7 @@ public sealed class BindingFlags<T> : IEquatable<BindingFlags<T>>
 
     public BindingFlags<T> Intersect(BindingFlags<T> other)
     {
-        Requires.That(nameof(other), ReferenceEquals(symbolMap, other.symbolMap), "Must have same symbol map");
+        Requires.That(ReferenceEquals(symbolMap, other.symbolMap), nameof(other), "Must have same symbol map");
         var newFlags = Clone();
         newFlags.flags.And(other.flags);
         return newFlags;

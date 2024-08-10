@@ -28,7 +28,7 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
 
     public GenericParameter(ICapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
     {
-        Requires.That(nameof(name), name.GenericParameterCount == 0, "Cannot have generic parameters");
+        Requires.That(name.GenericParameterCount == 0, nameof(name), "Cannot have generic parameters");
         Constraint = constraint;
         Independence = independence;
         Variance = variance;

@@ -29,7 +29,7 @@ internal class ImmutableDisjointHashSetsBuilder<TItem, TItemData, TSetData>
         ImmutableArray<ImmutableDisjointHashSet<TItem, TSetData>?> sets,
         Action<IImmutableDisjointSets<TItem, TItemData, TSetData>.IBuilder, TSetData>? setRemoved)
     {
-        Requires.That(nameof(sets), sets.Length == 0 || sets[^1] is not null, "Must not be empty sets at end");
+        Requires.That(sets.Length == 0 || sets[^1] is not null, nameof(sets), "Must not be empty sets at end");
         this.items = items.ToBuilder();
         this.sets = [.. sets];
         setCount = sets.Length;

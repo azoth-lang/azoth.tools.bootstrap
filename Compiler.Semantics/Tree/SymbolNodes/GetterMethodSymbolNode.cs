@@ -8,6 +8,6 @@ internal sealed class GetterMethodSymbolNode : MethodSymbolNode, IGetterMethodSy
     internal GetterMethodSymbolNode(MethodSymbol symbol)
         : base(symbol)
     {
-        Requires.That(nameof(symbol), symbol.Kind == MethodKind.Getter, "Must be a getter symbol.");
+        Requires.That(symbol.Kind == MethodKind.Getter, nameof(symbol), "Must be a getter symbol.");
     }
 }

@@ -19,7 +19,7 @@ internal sealed class ClassSymbolNode : UserTypeSymbolNode, IClassSymbolNode
     internal ClassSymbolNode(UserTypeSymbol symbol)
         : base(symbol)
     {
-        Requires.That(nameof(symbol), symbol.DeclaresType is ObjectType { IsClass: true }, "Symbol must be for an class type.");
+        Requires.That(symbol.DeclaresType is ObjectType { IsClass: true }, nameof(symbol), "Symbol must be for an class type.");
     }
 
     private new IFixedSet<IClassMemberDeclarationNode> GetMembers()

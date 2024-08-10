@@ -31,7 +31,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
         ContainingNamespace = containingNamespace;
         Name = name;
         GenericParameters = genericParameters.ToFixedList();
-        Requires.That(nameof(genericParameters), Name.GenericParameterCount == GenericParameters.Count,
+        Requires.That(Name.GenericParameterCount == GenericParameters.Count, nameof(genericParameters),
             "Count must match name count");
         AllowsVariance = GenericParameters.Any(p => p.Variance != Variance.Invariant);
         HasReferenceSemantics = hasReferenceSemantics;

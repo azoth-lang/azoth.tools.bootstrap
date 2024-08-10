@@ -103,7 +103,7 @@ internal sealed class FlowState : IFlowState
         ValueId newValueId,
         CapabilityType newValueType)
     {
-        Requires.That(nameof(newValueType), newValueType.IsAssignableFrom(newValueType),
+        Requires.That(newValueType.IsAssignableFrom(newValueType), nameof(newValueType),
             $"Must be a supertype of {nameof(oldValueType)}");
 
         var valueMap = AliasValueMultiMapping(oldValueId, newValueId);

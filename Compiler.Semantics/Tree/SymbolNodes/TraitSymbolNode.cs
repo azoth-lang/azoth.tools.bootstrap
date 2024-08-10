@@ -19,7 +19,7 @@ internal sealed class TraitSymbolNode : UserTypeSymbolNode, ITraitSymbolNode
     internal TraitSymbolNode(UserTypeSymbol symbol)
         : base(symbol)
     {
-        Requires.That(nameof(symbol), symbol.DeclaresType is ObjectType { IsClass: false },
+        Requires.That(symbol.DeclaresType is ObjectType { IsClass: false }, nameof(symbol),
             "Symbol must be for an trait type.");
     }
 

@@ -19,7 +19,7 @@ internal sealed class StructSymbolNode : UserTypeSymbolNode, IStructSymbolNode
     internal StructSymbolNode(UserTypeSymbol symbol)
         : base(symbol)
     {
-        Requires.That(nameof(symbol), symbol.DeclaresType is StructType, "Symbol must be for a struct type.");
+        Requires.That(symbol.DeclaresType is StructType, nameof(symbol), "Symbol must be for a struct type.");
     }
 
     private new IFixedSet<IStructMemberDeclarationNode> GetMembers()

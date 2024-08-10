@@ -27,7 +27,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         IFixedList<GenericParameter> genericParameters,
         IFixedSet<BareReferenceType> supertypes)
     {
-        Requires.That(nameof(genericParameters), name.GenericParameterCount == genericParameters.Count,
+        Requires.That(name.GenericParameterCount == genericParameters.Count, nameof(genericParameters),
             "Count must match name count");
         return new(containingPackage, containingNamespace, isConst, name,
             genericParameters, supertypes);

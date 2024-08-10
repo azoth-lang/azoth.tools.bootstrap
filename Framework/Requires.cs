@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Numerics;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
@@ -14,39 +15,48 @@ namespace Azoth.Tools.Bootstrap.Framework;
 public static class Requires
 {
     [DebuggerHidden]
-    public static void Positive(string parameter, int value)
+    public static void Positive(int value, string paramName)
     {
         if (value < 0)
-            throw new ArgumentOutOfRangeException(parameter, value, "Must be greater than or equal to zero");
+            throw new ArgumentOutOfRangeException(paramName, value, "Must be greater than or equal to zero");
     }
 
     [DebuggerHidden]
-    public static void InString(string inString, string parameter, int value)
+    public static void InString(string paramName, string inString, int value)
     {
         // Start is allowed to be equal to length to allow for a zero length span after the last character
         if (value < 0 || value >= inString.Length)
-            throw new ArgumentOutOfRangeException(parameter, value, $"Value not in string of length {inString.Length}");
+            throw new ArgumentOutOfRangeException(paramName, value, $"Value not in string of length {inString.Length}");
     }
 
     [DebuggerHidden]
-    public static void ValidEnum<E>(string parameter, E value)
-        where E : struct, Enum
+    public static void ValidEnum<TEnum>(TEnum value, string paramName)
+        where TEnum : struct, Enum
     {
         if (!value.IsDefined())
-            throw new InvalidEnumArgumentException(parameter, Convert.ToInt32(value, CultureInfo.InvariantCulture), typeof(E));
+            throw new InvalidEnumArgumentException(paramName, Convert.ToInt32(value, CultureInfo.InvariantCulture), typeof(TEnum));
     }
 
     [DebuggerHidden]
-    public static void NotNullOrEmpty(string parameter, string value)
+    public static void NotNullOrEmpty(string value, string paramName)
     {
         if (string.IsNullOrEmpty(value))
-            throw new ArgumentException("Value cannot be null or empty", parameter);
+            throw new ArgumentException("Value cannot be null or empty", paramName);
     }
 
     [DebuggerHidden]
-    public static void That(string parameter, [DoesNotReturnIf(false)] bool condition, string message)
+    public static void That([DoesNotReturnIf(false)] bool condition, string paramName, string message)
     {
         if (!condition)
-            throw new ArgumentException(message, parameter);
+            throw new ArgumentException(message, paramName);
     }
+
+    public static void Zero<T>(T value, string paramName)
+        where T : IAdditiveIdentity<T, T>, IEquatable<T>
+    {
+        if (!T.AdditiveIdentity.Equals(value))
+            throw new ArgumentException(MustBeZero, paramName);
+    }
+
+    private const string MustBeZero = "Must be zero.";
 }
