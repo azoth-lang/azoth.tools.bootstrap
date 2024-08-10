@@ -52,10 +52,11 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
             : this.Synthetic(ref referencedConstructorCached, ref referencedConstructor,
                 OverloadResolutionAspect.NewObjectExpression_ReferencedConstructor,
                 ReferenceEqualityComparer.Instance);
-    private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
     public ContextualizedOverload? ContextualizedOverload
-        => contextualizedOverload.TryGetValue(out var value) ? value
-            : contextualizedOverload.GetValue(this,
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
                 ExpressionTypesAspect.NewObjectExpression_ContextualizedOverload);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;

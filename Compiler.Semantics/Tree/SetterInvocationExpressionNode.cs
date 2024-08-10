@@ -32,10 +32,12 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.SetterInvocationExpression_Antetype);
-    private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
     public ContextualizedOverload? ContextualizedOverload
-        => contextualizedOverload.TryGetValue(out var value) ? value
-            : contextualizedOverload.GetValue(this, ExpressionTypesAspect.SetterInvocationExpression_ContextualizedOverload);
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
+                ExpressionTypesAspect.SetterInvocationExpression_ContextualizedOverload);
     private DataType? type;
     private bool typeCached;
     public override DataType Type

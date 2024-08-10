@@ -33,10 +33,12 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
                 OverloadResolutionAspect.MethodInvocationExpression_ReferencedDeclaration,
                 ReferenceEqualityComparer.Instance);
-    private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
     public ContextualizedOverload? ContextualizedOverload
-        => contextualizedOverload.TryGetValue(out var value) ? value
-            : contextualizedOverload.GetValue(this, ExpressionTypesAspect.MethodInvocationExpression_ContextualizedOverload);
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
+                ExpressionTypesAspect.MethodInvocationExpression_ContextualizedOverload);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype

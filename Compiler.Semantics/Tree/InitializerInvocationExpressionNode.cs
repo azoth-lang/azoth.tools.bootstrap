@@ -37,10 +37,12 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.InitializerInvocationExpression_Antetype);
-    private ValueAttribute<ContextualizedOverload?> contextualizedOverload;
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
     public ContextualizedOverload? ContextualizedOverload
-        => contextualizedOverload.TryGetValue(out var value) ? value
-            : contextualizedOverload.GetValue(this, ExpressionTypesAspect.InitializerInvocationExpression_ContextualizedOverload);
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
+                ExpressionTypesAspect.InitializerInvocationExpression_ContextualizedOverload);
     private DataType? type;
     private bool typeCached;
     public override DataType Type
