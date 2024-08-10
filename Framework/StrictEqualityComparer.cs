@@ -11,21 +11,25 @@ namespace Azoth.Tools.Bootstrap.Framework;
 /// <see cref="NotSupportedException"/>.</remarks>
 public static class StrictEqualityComparer<T>
 {
-    public static readonly IEqualityComparer<T> Instance = StrictEqualityComparer.Create<T>();
-}
+    public static readonly IEqualityComparer<T> Instance = Create();
 
-internal static class StrictEqualityComparer
-{
-    public static IEqualityComparer<T> Create<T>()
+    private static IEqualityComparer<T> Create()
     {
         var type = typeof(T);
 
         // The types for which the default comparer is not the same as the ReferenceEqualityComparer.
-        if (type.IsEquatableToSupertype()
-            || type.IsNullableOfEquatable()
-            || type.IsEnum)
+        if (type.IsEquatableToSupertype() || type.IsNullableOfEquatable() || type.IsEnum)
             return EqualityComparer<T>.Default;
 
-        return new UnsupportedEqualityComparer<T>();
+        return new Unsupported();
+    }
+
+    private class Unsupported : IEqualityComparer<T>
+    {
+        public bool Equals(T? x, T? y)
+            => throw new NotSupportedException($"{typeof(T).GetFriendlyName()} does not support strict Equals.");
+
+        public int GetHashCode(T obj)
+            => throw new NotSupportedException($"{typeof(T).GetFriendlyName()} does not support strict GetHashCode.");
     }
 }

@@ -33,7 +33,7 @@ public readonly struct CapabilityIndex : IEquatable<CapabilityIndex>
         => new(TreeIndex.Append(index));
 
     #region Equality
-    public bool Equals(CapabilityIndex other) => TreeIndex.ItemsEqual(other.TreeIndex);
+    public bool Equals(CapabilityIndex other) => TreeIndex.Equals(other.TreeIndex);
 
     public override bool Equals(object? obj) => obj is CapabilityIndex other && Equals(other);
 

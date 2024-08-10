@@ -33,7 +33,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public IFixedList<Diagnostic> Diagnostics
         => GrammarAttribute.IsCached(in diagnosticsCached) ? diagnostics!
             : this.Synthetic(ref diagnosticsCached, ref diagnostics,
-                DiagnosticsAspect.Package); // TODO this needs a comparer
+                DiagnosticsAspect.Package);
     private ValueAttribute<IFixedSet<ITypeDeclarationNode>> primitivesDeclarations;
     public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations
         => primitivesDeclarations.TryGetValue(out var value) ? value

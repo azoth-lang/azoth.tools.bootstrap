@@ -21,30 +21,10 @@ internal abstract class RewritableChildList<T> : IFixedList<T>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     #region Equality
-    public bool Equals(IFixedList<object?>? other)
-    {
-        if (ReferenceEquals(this, other)) return true;
-        if (other is null) return false;
-        if (Count != other.Count || GetHashCode() != other.GetHashCode()) return false;
-        for (int i = 0; i < Count; i++)
-            if (!Equals(this[i], other[i]))
-                return false;
-        return true;
-    }
+    public override bool Equals(object? obj) => IFixedList<T>.Equals(this, obj);
 
-    public sealed override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is IFixedList<object?> other && Equals(other);
-
-    public sealed override int GetHashCode() => hashCode != 0 ? hashCode : hashCode = ComputeHashCode();
-
-    private int ComputeHashCode()
-    {
-        HashCode hash = new HashCode();
-        hash.Add(Count);
-        foreach (var item in this)
-            hash.Add(item);
-        return hash.ToHashCode();
-    }
+    public sealed override int GetHashCode()
+        => hashCode != 0 ? hashCode : hashCode = IFixedList<T>.ComputeHashCode(this);
     #endregion
 }
 

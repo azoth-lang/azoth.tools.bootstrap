@@ -36,4 +36,20 @@ public class FixedListTests
         Assert.True(l1.Equals(l2));
         Assert.True(l2.Equals(l1));
     }
+
+    /// <summary>
+    /// There were bugs in the past where equality didn't work for value types because of what had to
+    /// be done to support equality with type variance.
+    /// </summary>
+    [Fact]
+    public void Equality_works_for_value_types()
+    {
+        var l1 = new[] { 42, 23, -23 }.ToFixedList();
+        var l2 = new[] { 42, 23, -23 }.ToFixedList();
+
+        // Directly call `Equals` to ensure it is being used rather than some special collection
+        // comparison of the unit test framework.
+        Assert.True(l1.Equals(l2));
+        Assert.True(l2.Equals(l1));
+    }
 }

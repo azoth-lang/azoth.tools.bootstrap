@@ -6,13 +6,59 @@ using System.Linq;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
-public interface IFixedList<out T> : IReadOnlyList<T>
+public interface IFixedList : IEnumerable
 {
+    int Count { get; }
     bool IsEmpty { get; }
 
-    bool Equals(IFixedList<object?>? other);
+    object? this[int index] { get; }
+}
 
-    static IEqualityComparer<IFixedList<T>> EqualityComparer => EqualityComparer<IFixedList<T>>.Default;
+public interface IFixedList<out T> : IFixedList, IReadOnlyList<T>
+{
+    new int Count { get; }
+    int IFixedList.Count => Count;
+    int IReadOnlyCollection<T>.Count => Count;
+    new T this[int index] { get; }
+    object? IFixedList.this[int index] => this[index];
+    T IReadOnlyList<T>.this[int index] => this[index];
+
+    protected static bool Equals(IFixedList<T> self, object? obj)
+    {
+        if (obj is null) return false;
+        if (ReferenceEquals(self, obj)) return true;
+        return obj switch
+        {
+            IFixedList<T> other => Equals(self, other),
+            IFixedList other => Equals(self, other),
+            _ => false
+        };
+    }
+
+    private static bool Equals(IFixedList<T> self, IFixedList<T> other)
+    {
+        if (self.Count != other.Count) return false;
+        var comparer = EqualityComparer<T>.Default;
+        return self.SequenceEqual(other, comparer);
+    }
+
+    private static bool Equals(IFixedList<T> self, IFixedList other)
+    {
+        var count = self.Count;
+        if (count != other.Count) return false;
+        for (int i = 0; i < count; i++)
+            if (!Equals(self[i], other[i]))
+                return false;
+        return true;
+    }
+
+    protected static int ComputeHashCode(IFixedList<T> self)
+    {
+        HashCode hash = new HashCode();
+        hash.Add(self.Count);
+        foreach (var item in self) hash.Add(item);
+        return hash.ToHashCode();
+    }
 }
 
 public static class FixedList
@@ -42,16 +88,15 @@ public static class FixedList
         return true;
     }
 
-    public static IEqualityComparer<IFixedList<object?>> ObjectEqualityComparer
-        => System.Collections.Generic.EqualityComparer<IFixedList<object?>>.Default;
-
     public static IEqualityComparer<IFixedList<T>> EqualityComparer<T>()
         where T : IEquatable<T>
         => System.Collections.Generic.EqualityComparer<IFixedList<T>>.Default;
 
     public static int? IndexOf<T>(this IFixedList<T> list, T item)
+        => IndexOf(list, item, System.Collections.Generic.EqualityComparer<T>.Default);
+
+    public static int? IndexOf<T>(IFixedList<T> list, T item, IEqualityComparer<T> comparer)
     {
-        var comparer = System.Collections.Generic.EqualityComparer<T>.Default;
         for (int i = 0; i < list.Count; i++)
             if (comparer.Equals(list[i], item))
                 return i;
@@ -97,30 +142,10 @@ public static class FixedList
         }
 
         #region Equality
-        public bool Equals(IFixedList<object?>? other)
-        {
-            if (ReferenceEquals(this, other)) return true;
-            if (other is null) return false;
-            if (Count != other.Count || GetHashCode() != other.GetHashCode()) return false;
-            for (int i = 0; i < Count; i++)
-                if (!Equals(this[i], other[i]))
-                    return false;
-            return true;
-        }
+        public override bool Equals(object? obj) => IFixedList<T>.Equals(this, obj);
 
-        public override bool Equals(object? obj)
-            => ReferenceEquals(this, obj) || obj is IFixedList<object?> other && Equals(other);
-
-        public override int GetHashCode() => hashCode != 0 ? hashCode : hashCode = ComputeHashCode();
-
-        private int ComputeHashCode()
-        {
-            HashCode hash = new HashCode();
-            hash.Add(Count);
-            foreach (var item in items)
-                hash.Add(item);
-            return hash.ToHashCode();
-        }
+        public override int GetHashCode()
+            => hashCode != 0 ? hashCode : hashCode = IFixedList<T>.ComputeHashCode(this);
         #endregion
     }
 }

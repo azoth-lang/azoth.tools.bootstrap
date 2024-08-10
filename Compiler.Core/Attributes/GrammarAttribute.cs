@@ -168,7 +168,7 @@ public static class GrammarAttribute
         where TNode : class, ITreeNode
         where T : class?
         => node.NonCircular(ref cached, ref value, AttributeFunction.Create(compute),
-            StrictEqualityComparer<T>.Instance, attributeName);
+            EqualityComparer<T>.Default, attributeName);
 
     /// <summary>
     /// Read the value of a non-circular synthetic attribute.
@@ -203,7 +203,7 @@ public static class GrammarAttribute
         where TNode : class, ITreeNode
         where T : struct
         => node.NonCircular(ref cached, ref value, AttributeFunction.Create(compute),
-            StrictEqualityComparer<T>.Instance, ref syncLock, attributeName);
+            EqualityComparer<T>.Default, ref syncLock, attributeName);
 
     /// <summary>
     /// Read the value of a non-circular synthetic attribute that is <see cref="IEquatable{T}"/>.
@@ -221,7 +221,7 @@ public static class GrammarAttribute
         where TNode : class, ITreeNode
         where T : struct
         => node.NonCircular(ref cached, ref value, AttributeFunction.Create(compute),
-            StrictEqualityComparer<T?>.Instance, ref syncLock, attributeName);
+            EqualityComparer<T?>.Default, ref syncLock, attributeName);
     #endregion
 
     #region Inherited overloads
@@ -240,7 +240,7 @@ public static class GrammarAttribute
         where TNode : class, ITreeNode
         where T : class?
         => node.NonCircular(ref cached, ref value, AttributeFunction.Create<TNode, T>(compute),
-            StrictEqualityComparer<T>.Instance, attributeName);
+            EqualityComparer<T>.Default, attributeName);
 
     /// <summary>
     /// Read the value of a non-circular inherited attribute.
@@ -276,7 +276,7 @@ public static class GrammarAttribute
         where TNode : class, ITreeNode
         where T : struct
         => node.NonCircular(ref cached, ref value, AttributeFunction.Create<TNode, T>(compute),
-            StrictEqualityComparer<T>.Instance, ref syncLock, attributeName);
+            EqualityComparer<T>.Default, ref syncLock, attributeName);
 
     /// <summary>
     /// Read the value of a non-circular inherited attribute that is <see cref="IEquatable{T}"/>.
@@ -294,7 +294,7 @@ public static class GrammarAttribute
         where TNode : class, ITreeNode
         where T : struct
         => node.NonCircular(ref cached, ref value, AttributeFunction.Create<TNode, T?>(compute),
-            StrictEqualityComparer<T?>.Instance, ref syncLock, attributeName);
+            EqualityComparer<T?>.Default, ref syncLock, attributeName);
     #endregion
 
     #region Circular overloads
@@ -314,7 +314,7 @@ public static class GrammarAttribute
         where TNode : class, ITreeNode
         where T : class?
         => node.Cyclic(ref cached, ref value, AttributeFunction.Create(compute), default(Func<TNode, T>),
-            StrictEqualityComparer<T>.Instance, attributeName);
+            EqualityComparer<T>.Default, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute that already has an initial value.
@@ -350,7 +350,7 @@ public static class GrammarAttribute
         where TNode : class, ITreeNode
         where T : class?
         => node.Cyclic(ref cached, ref value, AttributeFunction.Create(compute), initializer,
-            StrictEqualityComparer<T>.Instance, attributeName);
+            EqualityComparer<T>.Default, attributeName);
 
     /// <summary>
     /// Read the value of a circular attribute.
