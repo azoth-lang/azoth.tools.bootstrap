@@ -25,7 +25,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 public static class ExpressionTypesAspect
 {
-    public static ValueId Expression_ValueId(IExpressionNode node)
+    // TODO have an alternate implementation that is easy to switch to that just assigned unique
+    // value ids as they are requested. That would be much more efficient avoiding the need to
+    // recompute value ids when they can't be cached because rewrites aren't finalized. Something
+    // like a factory on the executable node. However, that would need special handling for the
+    // framework to know that inheriting that through non-final nodes was still cacheable.
+    public static ValueId AmbiguousExpression_ValueId(IAmbiguousExpressionNode node)
         => node.PreviousValueId().CreateNext();
 
     public static void Expression_ContributeDiagnostics(IExpressionNode node, DiagnosticsBuilder diagnostics)

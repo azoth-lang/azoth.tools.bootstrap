@@ -1318,6 +1318,7 @@ public partial interface IAmbiguousExpressionNode : ISemanticNode, ICodeNode
     new IExpressionSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
+    ValueId ValueId { get; }
 }
 
 [Closed(
@@ -1369,7 +1370,6 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlo
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    ValueId ValueId { get; }
     IMaybeExpressionAntetype? ExpectedAntetype { get; }
     IMaybeExpressionAntetype Antetype { get; }
     DataType? ExpectedType { get; }

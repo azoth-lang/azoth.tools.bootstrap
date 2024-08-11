@@ -34,7 +34,8 @@ ElseClause <: ControlFlow = FlowStateAfter:`IFlowState` ValueId:`ValueId`;
 BlockOrResult: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings
-Binding <: Code, BindingDeclaration = IsLentBinding:`bool` BindingValueId:`ValueId` BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
+Binding <: Code, BindingDeclaration = IsLentBinding:`bool` BindingValueId:`ValueId`
+    BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
 NamedBinding <: Binding, NamedBindingDeclaration =
     IsMutableBinding:`bool` BindingType:`DataType`
     ContainingLexicalScope:`LexicalScope`;
@@ -287,9 +288,10 @@ BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPa
 OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
-AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
+// TODO rename Ambiguous to `Unresolved` or `Unbound` because it is not ambiguous, it is just not bound
+AmbiguousExpression <: Code = Syntax:`IExpressionSyntax` ValueId:`ValueId`;
 AmbiguousAssignableExpression <: AmbiguousExpression = Syntax:`IAssignableExpressionSyntax`;
-Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax` ValueId:`ValueId`
+Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`
     ExpectedAntetype:`IMaybeExpressionAntetype`? Antetype:`IMaybeExpressionAntetype`
     ExpectedType:`DataType`? Type:`DataType` FlowStateAfter:`IFlowState`;
 AssignableExpression <: Expression, AmbiguousAssignableExpression = Syntax:`IAssignableExpressionSyntax`;

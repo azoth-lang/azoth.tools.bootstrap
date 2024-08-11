@@ -133,6 +133,7 @@ public partial interface IBindingPatternNode
 #region Expressions
 public partial interface IAmbiguousExpressionNode
 {
+    IPreviousValueId PreviousValueId();
     LexicalScope GetContainingLexicalScope();
     // TODO it is strange that this is always a conditional scope. Instead, use conditional only where it makes sense?
     ConditionalLexicalScope GetFlowLexicalScope();
@@ -140,8 +141,6 @@ public partial interface IAmbiguousExpressionNode
 
 public partial interface IExpressionNode
 {
-    IPreviousValueId PreviousValueId();
-
     /// <summary>
     /// Indicates that this node type should not actually be counted as an expression. (i.e. it
     /// should implement <see cref="IExpressionNode"/>.
@@ -185,7 +184,7 @@ public partial interface IIfExpressionNode
 {
     new ValueId ValueId { get; }
     ValueId IElseClauseNode.ValueId => ValueId;
-    ValueId IExpressionNode.ValueId => ValueId;
+    ValueId IAmbiguousExpressionNode.ValueId => ValueId;
 }
 
 public partial interface IForeachExpressionNode

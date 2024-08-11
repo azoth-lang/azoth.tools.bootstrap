@@ -18,12 +18,6 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     protected sealed override bool MayHaveRewrite => true;
 
     public abstract override ITypedExpressionSyntax Syntax { get; }
-    private ValueId valueId;
-    private bool valueIdCached;
-    public ValueId ValueId
-        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
-            : this.Synthetic(ref valueIdCached, ref valueId, ref SyncLock,
-                ExpressionTypesAspect.Expression_ValueId);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
     public IMaybeExpressionAntetype? ExpectedAntetype
@@ -57,9 +51,6 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
                 ctx => CollectControlFlowPrevious(this, ctx));
 
     private protected ExpressionNode() { }
-
-    public IPreviousValueId PreviousValueId()
-        => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
     public IEntryNode ControlFlowEntry()
         => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
