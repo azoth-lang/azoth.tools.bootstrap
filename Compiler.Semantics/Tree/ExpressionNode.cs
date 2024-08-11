@@ -31,6 +31,11 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     // TODO make this abstract once all expressions have type implemented
     public virtual IMaybeExpressionAntetype Antetype
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Antetype)} not implemented.");
+    private DataType? expectedType;
+    private bool expectedTypeCached;
+    public DataType? ExpectedType
+        => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
+            : this.Inherited(ref expectedTypeCached, ref expectedType, InheritedExpectedType);
     // TODO make this abstract once all expressions have type implemented
     public virtual DataType Type
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Type)} not implemented.");

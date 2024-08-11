@@ -185,6 +185,12 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected IMaybeExpressionAntetype? InheritedExpectedAntetype(IInheritanceContext ctx)
         => GetParent(ctx).InheritedExpectedAntetype(this, this, ctx);
 
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).InheritedExpectedType(this, descendant, ctx);
+
+    protected DataType? InheritedExpectedType(IInheritanceContext ctx)
+        => GetParent(ctx).InheritedExpectedType(this, this, ctx);
+
     internal override DataType? InheritedExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => GetParent(ctx).InheritedExpectedReturnType(this, descendant, ctx);
 

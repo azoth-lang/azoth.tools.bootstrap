@@ -229,7 +229,7 @@ FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyn
 Body: BodyOrBlock = FlowStateAfter:`IFlowState`;
 BlockBody: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
 ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement
-    ExpectedAntetype:`IMaybeExpressionAntetype`?;
+    ExpectedAntetype:`IMaybeExpressionAntetype`? ExpectedType:`DataType`?;
 
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax` NamedAntetype:`IMaybeAntetype` NamedType:`DataType`;
@@ -265,7 +265,7 @@ Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntet
     ResultType:`DataType`? ResultValueId:`ValueId`? FlowStateAfter:`IFlowState`;
 ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode` IntermediateExpression:`IExpressionNode`?
-    ExpectedAntetype:`IMaybeExpressionAntetype`?;
+    ExpectedAntetype:`IMaybeExpressionAntetype`? ExpectedType:`DataType`?;
 BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
 VariableDeclarationStatement <: BodyStatement, VariableBinding = Syntax:`IVariableDeclarationStatementSyntax`
     IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type?
@@ -291,7 +291,7 @@ AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
 AmbiguousAssignableExpression <: AmbiguousExpression = Syntax:`IAssignableExpressionSyntax`;
 Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax` ValueId:`ValueId`
     ExpectedAntetype:`IMaybeExpressionAntetype`? Antetype:`IMaybeExpressionAntetype`
-    Type:`DataType` FlowStateAfter:`IFlowState`;
+    ExpectedType:`DataType`? Type:`DataType` FlowStateAfter:`IFlowState`;
 AssignableExpression <: Expression, AmbiguousAssignableExpression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax`

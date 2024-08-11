@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -17,6 +18,11 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
     public IMaybeExpressionAntetype? ExpectedAntetype
         => GrammarAttribute.IsCached(in expectedAntetypeCached) ? expectedAntetype
             : this.Inherited(ref expectedAntetypeCached, ref expectedAntetype, InheritedExpectedAntetype);
+    private DataType? expectedType;
+    private bool expectedTypeCached;
+    public DataType? ExpectedType
+        => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
+            : this.Inherited(ref expectedTypeCached, ref expectedType, InheritedExpectedType);
     private readonly IFixedList<IStatementNode> statements;
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements => statements;
     public IFlowState FlowStateAfter => throw new NotImplementedException();

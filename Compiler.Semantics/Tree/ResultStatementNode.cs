@@ -31,6 +31,11 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype, ExpressionAntetypesAspect.ResultStatement_Antetype);
     public override IMaybeAntetype ResultAntetype => Antetype;
+    private DataType? expectedType;
+    private bool expectedTypeCached;
+    public DataType? ExpectedType
+        => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
+            : this.Inherited(ref expectedTypeCached, ref expectedType, InheritedExpectedType);
     private DataType? type;
     private bool typeCached;
     public DataType Type

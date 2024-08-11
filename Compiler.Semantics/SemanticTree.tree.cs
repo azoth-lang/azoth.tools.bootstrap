@@ -1001,6 +1001,7 @@ public partial interface IExpressionBodyNode : IBodyNode
     IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IResultStatementNode ResultStatement { get; }
     IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    DataType? ExpectedType { get; }
 }
 
 [Closed(
@@ -1216,6 +1217,7 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
     IAmbiguousExpressionNode CurrentExpression { get; }
     IExpressionNode? IntermediateExpression { get; }
     IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    DataType? ExpectedType { get; }
 }
 
 [Closed(
@@ -1370,6 +1372,7 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlo
     ValueId ValueId { get; }
     IMaybeExpressionAntetype? ExpectedAntetype { get; }
     IMaybeExpressionAntetype Antetype { get; }
+    DataType? ExpectedType { get; }
     DataType Type { get; }
     IFlowState FlowStateAfter { get; }
 }
