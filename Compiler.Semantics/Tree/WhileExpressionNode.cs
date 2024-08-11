@@ -82,4 +82,16 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
             return ControlFlowSet.CreateLoop(IntermediateCondition).Union(ControlFlowFollowing());
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
+
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentCondition) return IAntetype.OptionalBool;
+        return base.InheritedExpectedAntetype(child, descendant, ctx);
+    }
+
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentCondition) return DataType.OptionalBool;
+        return base.InheritedExpectedType(child, descendant, ctx);
+    }
 }
