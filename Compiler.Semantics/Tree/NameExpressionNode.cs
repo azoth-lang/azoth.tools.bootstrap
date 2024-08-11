@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -36,4 +38,10 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
 
     protected virtual ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.Expression_ControlFlowNext(this);
+
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    {
+        ExpressionTypesAspect.Expression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
+    }
 }
