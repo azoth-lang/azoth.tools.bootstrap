@@ -22,47 +22,22 @@ public readonly struct TextPosition : IEquatable<TextPosition>, IComparable<Text
     }
 
     public bool Equals(TextPosition other)
-    {
-        return CharacterOffset == other.CharacterOffset;
-    }
+        => CharacterOffset == other.CharacterOffset;
 
     public int CompareTo(TextPosition other)
-    {
-        return CharacterOffset.CompareTo(other.CharacterOffset);
-    }
+        => CharacterOffset.CompareTo(other.CharacterOffset);
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(CharacterOffset);
-    }
+    public override int GetHashCode() => HashCode.Combine(CharacterOffset);
 
-    public static bool operator ==(TextPosition left, TextPosition right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(TextPosition left, TextPosition right) => left.Equals(right);
 
-    public static bool operator !=(TextPosition left, TextPosition right)
-    {
-        return !left.Equals(right);
-    }
+    public static bool operator !=(TextPosition left, TextPosition right) => !left.Equals(right);
 
-    public static bool operator <(TextPosition left, TextPosition right)
-    {
-        return left.CompareTo(right) < 0;
-    }
+    public static bool operator <(TextPosition left, TextPosition right) => left.CompareTo(right) < 0;
 
-    public static bool operator <=(TextPosition left, TextPosition right)
-    {
-        return left.CompareTo(right) <= 0;
-    }
+    public static bool operator <=(TextPosition left, TextPosition right) => left.CompareTo(right) <= 0;
 
-    public static bool operator >(TextPosition left, TextPosition right)
-    {
-        return left.CompareTo(right) > 0;
-    }
+    public static bool operator >(TextPosition left, TextPosition right) => left.CompareTo(right) > 0;
 
-    public static bool operator >=(TextPosition left, TextPosition right)
-    {
-        return left.CompareTo(right) >= 0;
-    }
+    public static bool operator >=(TextPosition left, TextPosition right) => left.CompareTo(right) >= 0;
 }

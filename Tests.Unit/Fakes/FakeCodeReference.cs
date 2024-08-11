@@ -14,6 +14,8 @@ internal class FakeCodeReference : CodeReference
     { }
     #endregion
 
+    public override int CompareTo(CodeReference? other) => throw new NotImplementedException();
+
     public override string ToString()
         => throw new InvalidOperationException("Fake doesn't support ToString()");
 }

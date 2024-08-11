@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
@@ -8,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 [Closed(
     typeof(BoolAntetype),
     typeof(NumericAntetype))]
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype, ISimpleOrConstValueAntetype
 {
     public bool IsAbstract => false;

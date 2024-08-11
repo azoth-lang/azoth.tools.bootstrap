@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +24,7 @@ public sealed class Diagnostics : IReadOnlyList<Diagnostic>
 
     private Diagnostics()
     {
-        diagnostics = Array.Empty<Diagnostic>();
+        diagnostics = [];
     }
 
     public Diagnostic this[int index] => diagnostics[index];

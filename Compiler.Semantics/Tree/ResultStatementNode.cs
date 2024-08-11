@@ -64,8 +64,7 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
-        if (descendant == CurrentExpression)
-            return ExpectedAntetype;
+        if (descendant == CurrentExpression) return ExpectedAntetype;
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 

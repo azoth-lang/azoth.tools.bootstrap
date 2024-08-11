@@ -27,6 +27,7 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     public static readonly NeverType Never = NeverType.Instance;
     public static readonly Promise<NeverType> PromiseOfNever = Promise.ForValue(Never);
     public static readonly CapabilityType<BoolType> Bool = DeclaredType.Bool.Type;
+    public static readonly OptionalType OptionalBool = new(Bool);
     public static readonly BoolConstValueType True = BoolConstValueType.True;
     public static readonly BoolConstValueType False = BoolConstValueType.False;
     public static readonly CapabilityType<BigIntegerType> Int = DeclaredType.Int.Type;

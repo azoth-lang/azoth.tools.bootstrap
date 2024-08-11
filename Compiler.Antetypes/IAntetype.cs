@@ -19,6 +19,7 @@ public interface IAntetype : IExpressionAntetype, IMaybeAntetype
     public static readonly NeverAntetype Never = NeverAntetype.Instance;
     public static readonly AnyAntetype Any = AnyAntetype.Instance;
     public static readonly BoolAntetype Bool = BoolAntetype.Instance;
+    public static readonly OptionalAntetype OptionalBool = new(Bool);
     public static readonly BigIntegerAntetype Int = BigIntegerAntetype.Int;
     public static readonly BigIntegerAntetype UInt = BigIntegerAntetype.UInt;
     public static readonly FixedSizeIntegerAntetype Int8 = FixedSizeIntegerAntetype.Int8;
