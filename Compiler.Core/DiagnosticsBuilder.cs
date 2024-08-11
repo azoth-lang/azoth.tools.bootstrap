@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core;
@@ -17,31 +16,43 @@ public class DiagnosticsBuilder : IReadOnlyCollection<Diagnostic>
 
     public DiagnosticsBuilder(IEnumerable<Diagnostic> diagnostics)
     {
-        items.AddRange(diagnostics);
+        items.AddRange(diagnostics.Do(UpdateFatalErrorCount));
     }
 
     public int Count => items.Count;
 
-    public void Add(Diagnostic diagnostic) => items.Add(diagnostic);
+    public int FatalErrorCount { get; private set; }
 
-    public void Add(IEnumerable<Diagnostic> diagnostics) => items.AddRange(diagnostics);
-
-    public IFixedList<Diagnostic> Build()
+    public void Add(Diagnostic diagnostic)
     {
-        items.Sort((d1, d2) => d1.StartPosition.CompareTo(d2.StartPosition));
-        return items.ToFixedList();
+        items.Add(diagnostic);
+        UpdateFatalErrorCount(diagnostic);
     }
+
+    public void Add(Diagnostics diagnostics)
+    {
+        items.AddRange(diagnostics);
+        FatalErrorCount += diagnostics.FatalErrorCount;
+    }
+
+    public void Add(IEnumerable<Diagnostic> diagnostics)
+        => items.AddRange(diagnostics.Do(UpdateFatalErrorCount));
+
+    private void UpdateFatalErrorCount(Diagnostic diagnostic)
+    {
+        if (diagnostic.IsFatal)
+            FatalErrorCount++;
+    }
+
+    public Diagnostics Build() => new(this);
 
     public IEnumerator<Diagnostic> GetEnumerator() => items.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)items).GetEnumerator();
-}
+    IEnumerator IEnumerable.GetEnumerator() => items.GetEnumerator();
 
-public static class DiagnosticsExtensions
-{
-    public static void ThrowIfFatalErrors(this DiagnosticsBuilder items)
+    public void ThrowIfFatalErrors()
     {
-        if (items.Any(i => i.IsFatal))
-            throw new FatalCompilationErrorException(items.Build());
+        if (FatalErrorCount > 0)
+            throw new FatalCompilationErrorException(Build());
     }
 }

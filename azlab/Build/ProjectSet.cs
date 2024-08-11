@@ -251,7 +251,7 @@ internal class ProjectSet : IEnumerable<Project>
         return cacheDir;
     }
 
-    private static bool OutputDiagnostics(Project project, IFixedList<Diagnostic> diagnostics, AsyncLock consoleLock)
+    private static bool OutputDiagnostics(Project project, Diagnostics diagnostics, AsyncLock consoleLock)
     {
         if (!diagnostics.Any())
             return false;
@@ -260,7 +260,7 @@ internal class ProjectSet : IEnumerable<Project>
             Console.WriteLine($"Build FAILED {project.Name} ({project.Path})");
             foreach (var group in diagnostics.GroupBy(d => d.File))
             {
-                var fileDiagnostics = @group.ToList();
+                var fileDiagnostics = group.ToList();
                 foreach (var diagnostic in fileDiagnostics.Take(10))
                 {
                     Console.WriteLine(
@@ -270,7 +270,7 @@ internal class ProjectSet : IEnumerable<Project>
 
                 if (fileDiagnostics.Count > 10)
                 {
-                    Console.WriteLine($"{@group.Key.Reference}");
+                    Console.WriteLine($"{group.Key.Reference}");
                     Console.WriteLine(
                         $"    {fileDiagnostics.Skip(10).Count(d => d.Level >= DiagnosticLevel.CompilationError)} more errors not shown.");
                     Console.WriteLine(

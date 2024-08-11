@@ -220,7 +220,7 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
     new IPackageFacetNode TestingFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
-    IFixedList<Diagnostic> Diagnostics { get; }
+    Diagnostics Diagnostics { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
     IFunctionDefinitionNode? EntryPoint { get; }
     IPackageSymbols PackageSymbols { get; }
@@ -292,7 +292,7 @@ public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
     IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
     NamespaceScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
-    IFixedList<Diagnostic> Diagnostics { get; }
+    Diagnostics Diagnostics { get; }
 }
 
 public partial interface IUsingDirectiveNode : ISemanticNode, ICodeNode

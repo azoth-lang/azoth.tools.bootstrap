@@ -7,10 +7,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal static class DiagnosticsAspect
 {
-    public static IFixedList<Diagnostic> Package(IPackageNode node)
-        => CollectForFacet(node.MainFacet).Concat(CollectForFacet(node.TestingFacet))
-                                          .OrderBy(d => d.StartPosition).ThenBy(d => d.EndPosition)
-                                          .ToFixedList();
+    public static Diagnostics Package(IPackageNode node)
+    {
+        var diagnostics = new DiagnosticsBuilder
+        {
+            CollectForFacet(node.MainFacet),
+            CollectForFacet(node.TestingFacet)
+        };
+        return diagnostics.Build();
+    }
 
     private static IEnumerable<Diagnostic> CollectForFacet(IPackageFacetNode node)
         => node.CompilationUnits.SelectMany(cu => cu.Diagnostics);

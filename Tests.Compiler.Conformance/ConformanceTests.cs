@@ -126,7 +126,7 @@ public partial class ConformanceTests
         }
     }
 
-    private void ReportSupportCompilationErrors(IFixedList<Diagnostic> diagnostics)
+    private void ReportSupportCompilationErrors(Diagnostics diagnostics)
     {
         testOutput.WriteLine("Test Support Package Compiler Errors:");
         foreach (var diagnostic in diagnostics)
@@ -153,7 +153,7 @@ public partial class ConformanceTests
         TestCase testCase,
         CodeFile codeFile,
         string code,
-        IFixedList<Diagnostic> diagnostics)
+        Diagnostics diagnostics)
     {
         // Check for compiler errors
         var expectCompileErrors = ExpectCompileErrors(code);
@@ -201,7 +201,7 @@ public partial class ConformanceTests
             }
         }
 
-        if (expectCompileErrors && !errorDiagnostics.Any())
+        if (expectCompileErrors && errorDiagnostics.IsEmpty())
             errors.AppendLine("Expected compilation errors and there were none");
 
         Assert.True(errors.Length == 0, errors.ToString().TrimEnd());

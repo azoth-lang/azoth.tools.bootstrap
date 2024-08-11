@@ -25,7 +25,7 @@
 //     `SpecialTypeNameExpression` should be the same type.
 
 Concrete = Span:`TextSpan`;
-CompilationUnit = File:`CodeFile` ImplicitNamespaceName:`NamespaceName` Diagnostics:`Diagnostic`*
+CompilationUnit = File:`CodeFile` ImplicitNamespaceName:`NamespaceName` Diagnostics:`Diagnostics`
     UsingDirectives:UsingDirective* Definitions:NonMemberDefinition*;
 UsingDirective = Name:`NamespaceName`;
 

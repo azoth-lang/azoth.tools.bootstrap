@@ -154,4 +154,13 @@ public static class EnumerableExtensions
         using var e = source.GetEnumerator();
         return !e.MoveNext();
     }
+
+    public static IEnumerable<T> Do<T>(this IEnumerable<T> source, Action<T> action)
+    {
+        foreach (var item in source)
+        {
+            action(item);
+            yield return item;
+        }
+    }
 }

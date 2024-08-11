@@ -12,7 +12,7 @@ public class LexResult
 {
     public CodeFile File { get; }
     public IFixedList<IToken> Tokens { get; }
-    public IFixedList<Diagnostic> Diagnostics { get; }
+    public Diagnostics Diagnostics { get; }
 
     public LexResult(ITokenIterator<IToken> iterator)
     {

@@ -48,7 +48,7 @@ public partial interface ICompilationUnitSyntax : IConcreteSyntax
 {
     CodeFile File { get; }
     NamespaceName ImplicitNamespaceName { get; }
-    IFixedList<Diagnostic> Diagnostics { get; }
+    Diagnostics Diagnostics { get; }
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
 }

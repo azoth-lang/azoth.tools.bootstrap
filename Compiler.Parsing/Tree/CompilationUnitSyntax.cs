@@ -11,7 +11,7 @@ internal class CompilationUnitSyntax : Syntax, ICompilationUnitSyntax
     public NamespaceName ImplicitNamespaceName { get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     public IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
-    public IFixedList<Diagnostic> Diagnostics { get; private set; }
+    public Diagnostics Diagnostics { get; private set; }
 
     public CompilationUnitSyntax(
         NamespaceName implicitNamespaceName,
@@ -25,10 +25,10 @@ internal class CompilationUnitSyntax : Syntax, ICompilationUnitSyntax
         ImplicitNamespaceName = implicitNamespaceName;
         UsingDirectives = usingDirectives;
         Definitions = declarations;
-        Diagnostics = FixedList.Empty<Diagnostic>();
+        Diagnostics = Diagnostics.Empty;
     }
 
-    public void Attach(IFixedList<Diagnostic> diagnostics)
+    public void Attach(Diagnostics diagnostics)
         => Diagnostics = diagnostics;
 
     public override string ToString() => File.Reference.ToString();

@@ -28,9 +28,9 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
         => packageDeclarations.TryGetValue(out var value) ? value
             : packageDeclarations.GetValue(this, SymbolNodeAspect.Package_PackageDeclarations);
-    private IFixedList<Diagnostic>? diagnostics;
+    private Diagnostics? diagnostics;
     private bool diagnosticsCached;
-    public IFixedList<Diagnostic> Diagnostics
+    public Diagnostics Diagnostics
         => GrammarAttribute.IsCached(in diagnosticsCached) ? diagnostics!
             : this.Synthetic(ref diagnosticsCached, ref diagnostics,
                 DiagnosticsAspect.Package);
@@ -71,9 +71,10 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     }
 
     public void AddDistinctDiagnostics(IEnumerable<Diagnostic> diagnostics)
-        => this.diagnostics = Diagnostics.Concat(diagnostics.Except(Diagnostics))
-                                         .OrderBy(d => d.StartPosition).ThenBy(d => d.EndPosition)
-                                         .ToFixedList();
+    {
+        var builder = new DiagnosticsBuilder { Diagnostics, diagnostics.Except(Diagnostics) };
+        this.diagnostics = builder.Build();
+    }
 
     internal override IPackageDeclarationNode InheritedPackage(IChildNode child, IChildNode descendant)
         => this;

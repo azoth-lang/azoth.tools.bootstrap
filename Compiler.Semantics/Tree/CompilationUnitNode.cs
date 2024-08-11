@@ -37,8 +37,8 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.CompilationUnit_LexicalScope, ReferenceEqualityComparer.Instance);
-    private ValueAttribute<IFixedList<Diagnostic>> diagnostics;
-    public IFixedList<Diagnostic> Diagnostics
+    private ValueAttribute<Diagnostics> diagnostics;
+    public Diagnostics Diagnostics
         => diagnostics.TryGetValue(out var value) ? value : diagnostics.GetValue(GetDiagnostics);
 
     public CompilationUnitNode(
@@ -60,7 +60,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LexicalScope;
 
-    private IFixedList<Diagnostic> GetDiagnostics()
+    private Diagnostics GetDiagnostics()
     {
         var diagnostics = new DiagnosticsBuilder();
         CollectDiagnostics(diagnostics);

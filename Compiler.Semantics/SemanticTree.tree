@@ -45,7 +45,7 @@ VariableBinding <: LocalBinding, DataFlow;
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
     References:{PackageReference} IntrinsicsReference:`IPackageReferenceNode`
     PackageDeclarations:`FixedDictionary<IdentifierName,IPackageDeclarationNode>`
-    MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`Diagnostic`*
+    MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`Diagnostics`
     PrimitivesDeclarations:{TypeDeclaration} EntryPoint:`IFunctionDefinitionNode`?
     PackageSymbols:`IPackageSymbols`;
 
@@ -71,7 +71,7 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
     ImplicitNamespaceName:`NamespaceName` ImplicitNamespace:`INamespaceDefinitionNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*
     ContainingLexicalScope:`NamespaceScope` LexicalScope:`LexicalScope`
-    Diagnostics:`Diagnostic`*;
+    Diagnostics:`Diagnostics`;
 
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
