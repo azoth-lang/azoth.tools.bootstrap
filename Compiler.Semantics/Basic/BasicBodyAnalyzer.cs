@@ -907,9 +907,10 @@ public class BasicBodyAnalyzer
             case IConversionExpressionSyntax exp:
             {
                 var result = InferType(exp.Referent, flow);
+                var convertFromType = result.Type;
                 var convertToType = exp.ConvertToType.NamedType!;
-                if (!ExplicitConversionTypesAreCompatible(exp.Referent, exp.Operator == ConversionOperator.Safe, convertToType))
-                    diagnostics.Add(TypeError.CannotExplicitlyConvert(file, exp.Referent, result.Type, convertToType));
+                if (!convertFromType.CanBeExplicitlyConvertedTo(convertToType, exp.Operator == ConversionOperator.Safe))
+                    diagnostics.Add(TypeError.CannotExplicitlyConvert(file, exp.Referent, convertFromType, convertToType));
                 if (exp.Operator == ConversionOperator.Optional)
                     convertToType = convertToType.MakeOptional();
                 exp.DataType.Fulfill(convertToType);
@@ -1840,26 +1841,6 @@ public class BasicBodyAnalyzer
         AddImplicitConversionIfNeeded(rightOperand, DataType.Int, allowMoveOrFreeze: false, flow);
         return rangeSymbol?.DeclaresType.With(Capability.Constant, FixedList.Empty<DataType>())
                ?? DataType.Unknown;
-    }
-
-    private static bool ExplicitConversionTypesAreCompatible(IExpressionSyntax expression, bool safeOnly, DataType convertToType)
-    {
-        return (expression.ConvertedDataType.Assigned(), convertToType) switch
-        {
-            // Safe conversions
-            (CapabilityType<BoolType>, CapabilityType { DeclaredType: IntegerType }) => true,
-            (BoolConstValueType, CapabilityType { DeclaredType: IntegerType }) => true,
-            (CapabilityType { DeclaredType: IntegerType { IsSigned: false } }, CapabilityType { DeclaredType: BigIntegerType }) => true,
-            (CapabilityType { DeclaredType: IntegerType }, CapabilityType { DeclaredType: BigIntegerType { IsSigned: true } }) => true,
-            (CapabilityType<FixedSizeIntegerType> from, CapabilityType<FixedSizeIntegerType> to)
-                when from.DeclaredType.Bits < to.DeclaredType.Bits
-                     || (from.DeclaredType.Bits == to.DeclaredType.Bits && from.DeclaredType.IsSigned == to.DeclaredType.IsSigned)
-                => true,
-            // TODO conversions for constants
-            // Unsafe conversions
-            (CapabilityType { DeclaredType: IntegerType }, CapabilityType { DeclaredType: IntegerType }) => !safeOnly,
-            _ => convertToType.IsAssignableFrom(expression.ConvertedDataType),
-        };
     }
 
     private static IFixedSet<Contextualized<TSymbol>> SelectOverload<TSymbol>(
