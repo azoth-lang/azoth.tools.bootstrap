@@ -100,6 +100,12 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (child == CurrentRightOperand) return IntermediateLeftOperand?.Type;
+        return base.InheritedExpectedType(child, descendant, ctx);
+    }
+
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.AssignmentExpression_ControlFlowNext(this);
 

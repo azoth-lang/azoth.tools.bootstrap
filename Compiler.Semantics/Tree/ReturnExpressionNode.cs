@@ -47,6 +47,12 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentValue) return ExpectedReturnType;
+        return base.InheritedExpectedType(child, descendant, ctx);
+    }
+
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         InvalidStructureAspect.ReturnExpression_ContributeDiagnostics(this, diagnostics);

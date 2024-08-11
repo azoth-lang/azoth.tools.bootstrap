@@ -68,4 +68,10 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
             return ExpectedAntetype;
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
+
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentExpression) return ExpectedType;
+        return base.InheritedExpectedType(child, descendant, ctx);
+    }
 }

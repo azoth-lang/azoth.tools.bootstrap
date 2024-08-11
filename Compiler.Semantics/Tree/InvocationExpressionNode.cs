@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -51,6 +52,12 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
     {
         if (descendant == CurrentExpression) return null;
         return base.InheritedExpectedAntetype(child, descendant, ctx);
+    }
+
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentExpression) return null;
+        return base.InheritedExpectedType(child, descendant, ctx);
     }
 
     protected override IChildNode Rewrite()

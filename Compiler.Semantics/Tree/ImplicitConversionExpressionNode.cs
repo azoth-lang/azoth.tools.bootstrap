@@ -46,6 +46,14 @@ internal class ImplicitConversionExpressionNode : ExpressionNode, IImplicitConve
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentReferent)
+            // No expected antetype for the referent. If one were given, it could cause another implicit conversion.
+            return null;
+        return base.InheritedExpectedType(child, descendant, ctx);
+    }
+
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.ImplicitConversionExpression_ControlFlowNext(this);
 }

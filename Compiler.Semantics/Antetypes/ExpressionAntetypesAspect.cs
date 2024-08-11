@@ -373,20 +373,20 @@ internal static class ExpressionAntetypesAspect
                     return to;
                 return null;
             case (FixedSizeIntegerAntetype to, IntegerConstValueAntetype from):
-                {
-                    // TODO make a method on antetypes for this check
-                    var requireSigned = from.Value < 0;
-                    var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
-                    return to.Bits >= bits && (!requireSigned || to.IsSigned) ? to : null;
-                }
+            {
+                // TODO make a method on antetypes for this check
+                var requireSigned = from.Value < 0;
+                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
+                return to.Bits >= bits && (!requireSigned || to.IsSigned) ? to : null;
+            }
             case (PointerSizedIntegerAntetype to, IntegerConstValueAntetype from):
-                {
-                    // TODO make a method on antetypes for this check
-                    var requireSigned = from.Value < 0;
-                    var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
-                    // Must fit in 32 bits so that it will fit on all platforms
-                    return bits <= 32 && (!requireSigned || to.IsSigned) ? to : null;
-                }
+            {
+                // TODO make a method on antetypes for this check
+                var requireSigned = from.Value < 0;
+                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
+                // Must fit in 32 bits so that it will fit on all platforms
+                return bits <= 32 && (!requireSigned || to.IsSigned) ? to : null;
+            }
             case (BigIntegerAntetype { IsSigned: true }, IntegerAntetype):
             case (BigIntegerAntetype { IsSigned: true }, IntegerConstValueAntetype):
                 return IAntetype.Int;
@@ -395,6 +395,11 @@ internal static class ExpressionAntetypesAspect
                 return to;
             case (BoolAntetype, BoolConstValueAntetype):
                 return IAntetype.Bool;
+            // TODO support lifted implicit conversions
+            //case (OptionalAntetype { Referent: var to }, OptionalAntetype { Referent: var from }):
+            //    return ImplicitlyConvertToType(to, from)?.MakeOptional();
+            case (OptionalAntetype { Referent: var to }, _):
+                return ImplicitlyConvertToType(to, fromType);
             default:
                 return null;
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
@@ -72,6 +73,10 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => null;
 
+    // TODO remove once all nodes properly provide the expected type
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => null;
+
     protected override void CollectControlFlowPrevious(IControlFlowNode target, Dictionary<IControlFlowNode, ControlFlowKind> previous)
     {
         ControlFlowAspect.ControlFlow_ContributeControlFlowPrevious(this, target, previous);
@@ -80,6 +85,12 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
 
     protected virtual ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.Expression_ControlFlowNext(this);
+
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    {
+        ExpressionTypesAspect.Expression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
+    }
 
     protected override IChildNode? Rewrite()
         => ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)

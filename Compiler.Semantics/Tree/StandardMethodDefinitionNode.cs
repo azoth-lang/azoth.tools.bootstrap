@@ -58,6 +58,12 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == Body) return MethodGroupType.Return.Type;
+        return base.InheritedExpectedType(child, descendant, ctx);
+    }
+
     internal override FixedDictionary<IVariableBindingNode, int> InheritedVariableBindingsMap(
         IChildNode child,
         IChildNode descendant,

@@ -52,4 +52,12 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
             return null;
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
+
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentExpression)
+            // No expected type for the expression (not broadcast)
+            return null;
+        return base.InheritedExpectedType(child, descendant, ctx);
+    }
 }

@@ -49,4 +49,11 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
             return ExpectedAntetype;
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
+
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == ResultStatement)
+            return ExpectedType;
+        return base.InheritedExpectedType(child, descendant, ctx);
+    }
 }

@@ -135,6 +135,14 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentInitializer)
+            // The expected type for the initializer is the type of the variable if provided
+            return Type?.NamedType;
+        return base.InheritedExpectedType(child, descendant, ctx);
+    }
+
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         NameBindingAntetypesAspect.VariableDeclarationStatement_ContributeDiagnostics(this, diagnostics);

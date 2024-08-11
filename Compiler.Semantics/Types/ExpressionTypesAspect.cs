@@ -28,6 +28,15 @@ public static class ExpressionTypesAspect
     public static ValueId Expression_ValueId(IExpressionNode node)
         => node.PreviousValueId().CreateNext();
 
+    public static void Expression_ContributeDiagnostics(IExpressionNode node, DiagnosticsBuilder diagnostics)
+    {
+        if (node.ExpectedType is not DataType expectedType)
+            return;
+
+        //if (!expectedType.IsAssignableFrom(node.Type))
+        //    diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, expectedType));
+    }
+
     public static ValueId ForeachExpression_BindingValueId(IForeachExpressionNode node)
         // Since value ids are in preorder, to makes some sense that the expression value id is
         // before the binding value id. However, this is also because it would be hard to change the
