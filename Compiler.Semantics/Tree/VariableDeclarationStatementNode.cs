@@ -130,8 +130,9 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentInitializer)
-            // The expected antetype for the initializer is the type of the variable if provided
-            return Type?.NamedAntetype;
+            // The expected antetype for the initializer is the binding antetype since it needs to
+            // have any conversion (e.g. to non-const-value type) applied.
+            return BindingAntetype;
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 
