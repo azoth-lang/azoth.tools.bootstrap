@@ -395,6 +395,21 @@ public static class ExpressionTypesAspect
     public static DataType AssignmentExpression_Type(IAssignmentExpressionNode node)
         => node.IntermediateLeftOperand?.Type ?? DataType.Unknown;
 
+    public static void AssignmentExpression_ContributeDiagnostics(IAssignmentExpressionNode node, DiagnosticsBuilder diagnostics)
+    {
+        if (node.IntermediateLeftOperand is IFieldAccessExpressionNode fieldAccess)
+        {
+            var contextType = fieldAccess.Context.Type;
+            if (contextType is CapabilityType { AllowsWrite: false, AllowsInit: false } capabilityType)
+                diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(node.File, node.Syntax.Span, capabilityType));
+
+            // Check for assigning into `let` fields (skip self fields in constructors and initializers)
+            if (contextType is not CapabilityType { AllowsInit: true }
+                && fieldAccess.ReferencedDeclaration.Symbol is { IsMutableBinding: false, Name: IdentifierName name })
+                diagnostics.Add(OtherSemanticError.CannotAssignImmutableField(node.File, node.Syntax.Span, name));
+        }
+    }
+
     public static IFlowState AssignmentExpression_FlowStateAfter(IAssignmentExpressionNode node)
     {
         if (node.IntermediateLeftOperand?.ValueId is not ValueId leftValueId)

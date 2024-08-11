@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -107,6 +108,12 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
         if (child == CurrentLeftOperand)
             return ControlFlowSet.CreateNormal(IntermediateRightOperand);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
+    }
+
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    {
+        ExpressionTypesAspect.AssignmentExpression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 
     protected override IChildNode? Rewrite()
