@@ -33,4 +33,10 @@ public sealed class Diagnostics : IReadOnlyList<Diagnostic>
     public IEnumerator<Diagnostic> GetEnumerator() => diagnostics.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => diagnostics.GetEnumerator();
+
+    public void ThrowIfFatalErrors()
+    {
+        if (FatalErrorCount > 0)
+            throw new FatalCompilationErrorException(this);
+    }
 }

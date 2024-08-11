@@ -39,6 +39,9 @@ public class SemanticAnalyzer
         // TODO remove hack once all diagnostics are generated from the semantic tree
         packageNode.AddDistinctDiagnostics(packageSyntax.Diagnostics);
 
+        // If the semantic tree reports any fatal errors, don't continue on
+        packageNode.Diagnostics.ThrowIfFatalErrors();
+
         return packageNode;
     }
 
