@@ -551,6 +551,14 @@ public static class ExpressionTypesAspect
             .Transform(node.IntermediateReferent?.ValueId, node.ValueId, node.Type);
     }
 
+    public static void ConversionExpression_ContributeDiagnostics(IConversionExpressionNode node, DiagnosticsBuilder diagnostics)
+    {
+        var convertFromType = node.IntermediateReferent!.Type;
+        var convertToType = node.ConvertToType.NamedType;
+        if (!convertFromType.CanBeExplicitlyConvertedTo(convertToType, node.Operator == ConversionOperator.Safe))
+            diagnostics.Add(TypeError.CannotExplicitlyConvert(node.File, node.IntermediateReferent.Syntax, convertFromType, convertToType));
+    }
+
     public static IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node)
         => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
 

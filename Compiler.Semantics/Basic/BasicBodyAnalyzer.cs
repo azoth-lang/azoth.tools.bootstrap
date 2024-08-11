@@ -907,10 +907,11 @@ public class BasicBodyAnalyzer
             case IConversionExpressionSyntax exp:
             {
                 var result = InferType(exp.Referent, flow);
-                var convertFromType = result.Type;
+                //var convertFromType = result.Type;
                 var convertToType = exp.ConvertToType.NamedType!;
-                if (!convertFromType.CanBeExplicitlyConvertedTo(convertToType, exp.Operator == ConversionOperator.Safe))
-                    diagnostics.Add(TypeError.CannotExplicitlyConvert(file, exp.Referent, convertFromType, convertToType));
+                // Reported by semantic tree now
+                //if (!convertFromType.CanBeExplicitlyConvertedTo(convertToType, exp.Operator == ConversionOperator.Safe))
+                //    diagnostics.Add(TypeError.CannotExplicitlyConvert(file, exp.Referent, convertFromType, convertToType));
                 if (exp.Operator == ConversionOperator.Optional)
                     convertToType = convertToType.MakeOptional();
                 exp.DataType.Fulfill(convertToType);
