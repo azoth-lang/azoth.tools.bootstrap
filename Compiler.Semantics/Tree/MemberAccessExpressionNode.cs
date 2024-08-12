@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -42,4 +43,7 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Context.GetFlowLexicalScope();
 
     public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();
+
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => null;
 }

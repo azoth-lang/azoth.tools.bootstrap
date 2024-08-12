@@ -101,8 +101,23 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 
+    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        // TODO this is a hack that is working only because method group nodes aren't getting the default expression InheritedImplicitRecoveryAllowed applied
+        if (child == MethodGroup && descendant == MethodGroup.CurrentContext)
+            return true;
+        return base.InheritedImplicitRecoveryAllowed(child, descendant, ctx);
+    }
+
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == MethodGroup.CurrentContext)
+            // TODO is there a better way to get the expected type?
+            return ReferencedDeclaration?.Symbol.SelfParameterType.Type.ToUpperBound();
+        return base.InheritedExpectedType(child, descendant, ctx);
+    }
+
     protected override IChildNode? Rewrite()
         => ExpressionTypesAspect.MethodInvocationExpression_Rewrite_ImplicitMove(this)
-        ?? ExpressionTypesAspect.MethodInvocationExpression_Rewrite_ImplicitFreeze(this)
         ?? base.Rewrite();
 }

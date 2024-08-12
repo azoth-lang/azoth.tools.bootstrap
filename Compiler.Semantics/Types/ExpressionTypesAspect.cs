@@ -227,32 +227,35 @@ public static class ExpressionTypesAspect
         return new MethodInvocationExpressionNode(node.Syntax, newMethodGroup, node.CurrentArguments);
     }
 
-    public static IAmbiguousExpressionNode? MethodInvocationExpression_Rewrite_ImplicitFreeze(
-        IMethodInvocationExpressionNode node)
+    public static IChildNode? Expression_Rewrite_ImplicitMove(IExpressionNode node)
+        => null;
+
+    public static IChildNode? Expression_Rewrite_ImplicitFreeze(IExpressionNode node)
     {
-        var expectedSelfType = node.ReferencedDeclaration?.Symbol.SelfParameterType.Type ?? DataType.Unknown;
-        if (expectedSelfType is not CapabilityType { Capability: var expectedCapability }
+        if (!node.ImplicitRecoveryAllowed())
+            return null;
+
+        if (node is IVariableNameExpressionNode { Name: var name } && name == "book")
+            Debugger.Break();
+
+        var expectedType = node.ExpectedType;
+        if (expectedType is not CapabilityType { Capability: var expectedCapability }
             || (expectedCapability != Capability.Constant && expectedCapability != Capability.TemporarilyConstant))
             return null;
 
         var isTemporary = expectedCapability == Capability.TemporarilyConstant;
 
-        var selfType = node.MethodGroup.Context.Type;
-        if (selfType is CapabilityType { Capability: var capability }
-            && capability == expectedCapability)
+        var type = node.Type;
+        if (type is CapabilityType { Capability: var capability } && capability == expectedCapability)
             return null;
 
         // TODO what if selfType is not a capability type?
 
-        var context = node.MethodGroup.Context;
-        var contextSyntax = (ITypedExpressionSyntax)context.Syntax;
-        IFreezeExpressionNode implicitFreeze = context is IVariableNameExpressionNode variableName
-            ? new FreezeVariableExpressionNode(contextSyntax, variableName, isTemporary, isImplicit: true)
-            : new FreezeValueExpressionNode(contextSyntax, context, isTemporary, isImplicit: true);
-        var methodGroup = node.MethodGroup;
-        var newMethodGroup = new MethodGroupNameNode(methodGroup.Syntax, implicitFreeze, methodGroup.MethodName,
-            methodGroup.TypeArguments, methodGroup.ReferencedDeclarations);
-        return new MethodInvocationExpressionNode(node.Syntax, newMethodGroup, node.CurrentArguments);
+        var syntax = (ITypedExpressionSyntax)node.Syntax;
+        IFreezeExpressionNode implicitFreeze = node is IVariableNameExpressionNode variableName
+            ? new FreezeVariableExpressionNode(syntax, variableName, isTemporary, isImplicit: true)
+            : new FreezeValueExpressionNode(syntax, node, isTemporary, isImplicit: true);
+        return implicitFreeze;
     }
 
     public static DataType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)

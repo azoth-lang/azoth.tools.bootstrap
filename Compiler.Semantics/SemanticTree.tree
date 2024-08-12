@@ -416,7 +416,8 @@ FunctionGroupName <: NameExpression = Context:NameExpression? FunctionName:`Stan
     ReferencedDeclarations:{`IFunctionLikeDeclarationNode`};
 FunctionName <: NameExpression = FunctionGroup:FunctionGroupName FunctionName:`StandardName` TypeArguments:`ITypeNode`*
     ReferencedDeclaration:`IFunctionLikeDeclarationNode`?;
-MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax` Context:Expression MethodName:`StandardName` TypeArguments:Type*
+MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:Expression CurrentContext:`IExpressionNode` MethodName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IStandardMethodDeclarationNode`};
 FieldAccessExpression <: NameExpression, AssignableExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;

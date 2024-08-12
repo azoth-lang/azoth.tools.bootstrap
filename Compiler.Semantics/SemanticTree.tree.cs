@@ -1953,6 +1953,7 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     new IMemberAccessExpressionSyntax Syntax { get; }
     INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
+    IExpressionNode CurrentContext { get; }
     StandardName MethodName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }

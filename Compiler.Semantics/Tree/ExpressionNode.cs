@@ -92,5 +92,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
 
     protected override IChildNode? Rewrite()
         => ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? base.Rewrite();
 }

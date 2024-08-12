@@ -36,12 +36,4 @@ internal abstract class AmbiguousNameExpressionNode : AmbiguousExpressionNode, I
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => ValueId;
-
-    // TODO remove once all nodes properly provide the expected antetype
-    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => null;
-
-    // TODO remove once all nodes properly provide the expected antetype
-    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => null;
 }

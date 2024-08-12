@@ -16,6 +16,7 @@ internal sealed class MethodGroupNameNode : NameExpressionNode, IMethodGroupName
     public IExpressionNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
+    public IExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName MethodName { get; }
     public IFixedList<ITypeNode> TypeArguments { get; }
     public IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
