@@ -203,10 +203,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected ControlFlowSet InheritedControlFlowFollowing(IInheritanceContext ctx)
         => GetParent(ctx).InheritedControlFlowFollowing(this, this, ctx);
 
-    internal override FixedDictionary<IVariableBindingNode, int> InheritedVariableBindingsMap(
-        IChildNode child,
-        IChildNode descendant,
-        IInheritanceContext ctx)
+    internal override FixedDictionary<IVariableBindingNode, int> InheritedVariableBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => GetParent(ctx).InheritedVariableBindingsMap(this, descendant, ctx);
 
     protected FixedDictionary<IVariableBindingNode, int> InheritedLocalBindingsMap(IInheritanceContext ctx)
@@ -223,6 +220,12 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected IExitNode InheritedControlFlowExit(IInheritanceContext ctx)
         => GetParent(ctx).InheritedControlFlowExit(this, this, ctx);
+
+    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).InheritedImplicitRecoveryAllowed(this, descendant, ctx);
+
+    protected bool InheritedImplicitRecoveryAllowed(IInheritanceContext ctx)
+        => GetParent(ctx).InheritedImplicitRecoveryAllowed(this, this, ctx);
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => Previous(ctx).PreviousValueId(before, ctx);

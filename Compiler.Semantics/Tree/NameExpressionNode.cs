@@ -42,6 +42,9 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
     protected virtual ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.Expression_ControlFlowNext(this);
 
+    public bool ImplicitRecoveryAllowed()
+        => InheritedImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         ExpressionTypesAspect.Expression_ContributeDiagnostics(this, diagnostics);

@@ -58,6 +58,9 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     public ControlFlowSet ControlFlowFollowing()
         => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 
+    public bool ImplicitRecoveryAllowed()
+        => InheritedImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
 
     // TODO remove once all nodes properly provide the expected antetype
@@ -76,6 +79,10 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
 
     protected virtual ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.Expression_ControlFlowNext(this);
+
+    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        // By default, implicit recovery is not allowed
+        => false;
 
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {

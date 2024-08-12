@@ -145,6 +145,10 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         return base.InheritedExpectedType(child, descendant, ctx);
     }
 
+    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        // By default, implicit recovery is not allowed
+        => false;
+
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         NameBindingAntetypesAspect.VariableDeclarationStatement_ContributeDiagnostics(this, diagnostics);

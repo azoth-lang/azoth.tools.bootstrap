@@ -60,4 +60,8 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
             return null;
         return base.InheritedExpectedType(child, descendant, ctx);
     }
+
+    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        // By default, implicit recovery is not allowed
+        => false;
 }

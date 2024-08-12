@@ -142,6 +142,11 @@ public partial interface IAmbiguousExpressionNode
 public partial interface IExpressionNode
 {
     /// <summary>
+    /// Whether an implicit recovery (i.e. move or freeze) is allowed to covert this expression to
+    /// the expected type.
+    /// </summary>
+    bool ImplicitRecoveryAllowed();
+    /// <summary>
     /// Indicates that this node type should not actually be counted as an expression. (i.e. it
     /// should implement <see cref="IExpressionNode"/>.
     /// </summary>
