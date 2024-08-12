@@ -130,6 +130,10 @@ public static class ExpressionTypesAspect
     public static DataType UnsafeExpression_Type(IUnsafeExpressionNode node)
         => node.IntermediateExpression?.Type ?? DataType.Unknown;
 
+    public static IFlowState UnsafeExpression_FlowStateAfter(IUnsafeExpressionNode node)
+        => node.IntermediateExpression?.FlowStateAfter.Transform(node.IntermediateExpression.ValueId, node.ValueId, node.Type)
+           ?? IFlowState.Empty;
+
     public static DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
         => node.ReferencedDeclaration?.Type.Return.Type ?? DataType.Unknown;
 
@@ -279,6 +283,13 @@ public static class ExpressionTypesAspect
         return boundType ?? DataType.Unknown;
     }
 
+    public static IFlowState GetterInvocationExpression_FlowStateAfter(IGetterInvocationExpressionNode node)
+    {
+        var flowStateBefore = node.Context.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Context, []);
+        return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
+    }
+
     public static ContextualizedOverload? SetterInvocationExpression_ContextualizedOverload(ISetterInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
             ? ContextualizedOverload.Create(node.Context.Type, node.ReferencedDeclaration)
@@ -297,9 +308,9 @@ public static class ExpressionTypesAspect
         if (node.IntermediateValue is not IExpressionNode value)
             return IFlowState.Empty;
         // The flow state just before the setter is called is the state after the argument has been evaluated
-        var flowState = value.FlowStateAfter;
+        var flowStateBefore = value.FlowStateAfter;
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Context, [value]);
-        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
+        return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
     private static IEnumerable<ArgumentValueId> ArgumentValueIds(
@@ -605,7 +616,6 @@ public static class ExpressionTypesAspect
 
     public static IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node)
         => node.FlowStateBefore().Constant(node.ValueId);
-
 
     public static DataType FreezeExpression_Type(IFreezeExpressionNode node)
     {
