@@ -160,6 +160,7 @@ public abstract class CapabilityType : NonEmptyType
         if (DeclaredType.Equals(target))
             return this;
 
+        // TODO this will fail if the type implements the target type in multiple ways.
         var supertype = Supertypes.Where(s => s.DeclaredType == target).TrySingle();
         if (supertype is null)
             throw new ArgumentException($"The type {target} is not a supertype of {this}.");

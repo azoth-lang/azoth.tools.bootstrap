@@ -6,8 +6,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
 internal static class CapabilityIndexExtensions
 {
+    // TODO this does not properly handle optional types and should probably be replaced with TypeAt
     public static CapabilityType ArgumentAt(this CapabilityType type, CapabilityIndex index)
-        => index.TreeIndex.Aggregate(type, (current1, i) => (CapabilityType)current1.TypeArguments[i]);
+        => index.TreeIndex.Aggregate(type, (currentType, i) => (CapabilityType)currentType.TypeArguments[i]);
 
     /// <summary>
     /// Get the type at this index in the given type.

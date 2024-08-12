@@ -109,10 +109,28 @@ internal sealed class FlowState : IFlowState
         Requires.That(newValueType.IsAssignableFrom(newValueType), nameof(newValueType),
             $"Must be a supertype of {nameof(oldValueType)}");
 
-        var valueMap = AliasValueMultiMapping(oldValueId, newValueId);
-        if (oldValueType.Equals(newValueType)) return valueMap;
+        var aliasValueMap = AliasValueMultiMapping(oldValueId, newValueId);
+        if (oldValueType.Equals(newValueType)) return aliasValueMap;
 
-        throw new NotImplementedException("Mapping actual upcast");
+        var declaredSupertypes = oldValueType.DeclaredType.Supertypes
+                                             .Where(s => s.DeclaredType == newValueType.DeclaredType)
+                                             .ToFixedList();
+
+        if (declaredSupertypes.Count > 1)
+            throw new NotImplementedException("Type is a subtype of the new type in multiple ways");
+
+        var declaredSupertype = declaredSupertypes.TrySingle();
+        if (declaredSupertype is null)
+            throw new ArgumentException($"The type `{newValueType.ToILString()}` is not a supertype of `{oldValueType.ToILString()}`.");
+
+        foreach (var (toValue, fromValue) in aliasValueMap)
+        {
+            if (toValue.Index != CapabilityIndex.TopLevel)
+                throw new NotImplementedException(
+                    $"Mapping actual upcast from `{oldValueType.ToILString()}` to `{newValueType.ToILString()}`.");
+        }
+
+        return aliasValueMap;
     }
     #endregion
 

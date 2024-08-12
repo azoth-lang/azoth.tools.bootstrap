@@ -128,6 +128,10 @@ internal class SemanticTreeValidator
             case IVariableDeclarationStatementNode n:
                 _ = n.BindingValueId;
                 break;
+            case IReturnExpressionNode n:
+                // Force flow state to the return where it matters
+                _ = n.IntermediateValue?.FlowStateAfter;
+                break;
         }
 
         foreach (var child in node.Children())
