@@ -12,7 +12,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class FreezeVariableExpressionNode : ExpressionNode, IFreezeVariableExpressionNode
 {
     public override ITypedExpressionSyntax Syntax { get; }
-    public ILocalBindingNameExpressionNode Referent { get; }
+    private RewritableChild<ILocalBindingNameExpressionNode> referent;
+    private bool referentCached;
+    public ILocalBindingNameExpressionNode Referent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
     public bool IsTemporary { get; }
     public bool IsImplicit { get; }
     public override IMaybeExpressionAntetype Antetype => Referent.Antetype;
@@ -36,7 +40,7 @@ internal sealed class FreezeVariableExpressionNode : ExpressionNode, IFreezeVari
         bool isImplicit)
     {
         Syntax = syntax;
-        Referent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
         IsTemporary = isTemporary;
         IsImplicit = isImplicit;
     }
