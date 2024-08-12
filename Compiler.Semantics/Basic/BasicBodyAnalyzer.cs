@@ -500,9 +500,10 @@ public class BasicBodyAnalyzer
                     flow.DropBindingsForReturn();
                     result = AddImplicitConversionIfNeeded(result, expectedType, allowMoveOrFreeze: true, flow);
                     CheckTypeCompatibility(expectedType, exp.Value);
-                    // TODO aren't there other cases where this shouldn't be an error?
-                    if (flow.IsLent(result.Variable))
-                        diagnostics.Add(FlowTypingError.CannotReturnLent(file, exp));
+                    // reported by semantic tree now
+                    //// TODO aren't there other cases where this shouldn't be an error?
+                    //if (flow.IsLent(result.Variable))
+                    //    diagnostics.Add(FlowTypingError.CannotReturnLent(file, exp));
                     flow.Drop(result.Variable);
                 }
 

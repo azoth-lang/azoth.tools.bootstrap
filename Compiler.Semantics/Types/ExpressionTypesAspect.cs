@@ -727,9 +727,9 @@ public static class ExpressionTypesAspect
     {
         if (node.IntermediateValue is not { } value)
             return;
-        //var flowState = value.FlowStateAfter;
-        //if (flowState.IsLent(value.ValueId))
-        //    diagnostics.Add(FlowTypingError.CannotReturnLent(node.File, node.Syntax));
+        var flowStateBefore = value.FlowStateAfter;
+        if (flowStateBefore.IsLent(value.ValueId))
+            diagnostics.Add(FlowTypingError.CannotReturnLent(node.File, node.Syntax));
     }
 
     public static IFlowState BreakExpression_FlowStateAfter(IBreakExpressionNode node)
