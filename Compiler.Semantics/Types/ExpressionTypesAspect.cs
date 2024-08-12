@@ -229,9 +229,6 @@ public static class ExpressionTypesAspect
         if (!node.ImplicitRecoveryAllowed())
             return null;
 
-        if (node is IVariableNameExpressionNode { Name: var name } && name == "book")
-            Debugger.Break();
-
         var expectedType = node.ExpectedType;
         if (expectedType is not CapabilityType { Capability: var expectedCapability }
             || (expectedCapability != Capability.Constant && expectedCapability != Capability.TemporarilyConstant))

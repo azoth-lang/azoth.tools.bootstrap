@@ -112,8 +112,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == MethodGroup.CurrentContext)
-            // TODO is there a better way to get the expected type?
-            return ReferencedDeclaration?.Symbol.SelfParameterType.Type.ToUpperBound();
+            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
         return base.InheritedExpectedType(child, descendant, ctx);
     }
 }
