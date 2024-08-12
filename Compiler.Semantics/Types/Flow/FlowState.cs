@@ -57,6 +57,9 @@ internal sealed class FlowState : IFlowState
     }
 
     #region Value Lookup
+    private IEnumerable<ICapabilityValue> TrackedValues(ValueId valueId)
+        => valuesForId[valueId].Where(v => !untrackedValues.Contains(v));
+
     private IEnumerable<ICapabilityValue> TrackedValues(IFixedList<ValueId> valueIds)
         => valueIds.SelectMany(id => valuesForId[id]).Where(v => !untrackedValues.Contains(v));
 
@@ -279,6 +282,9 @@ internal sealed class FlowState : IFlowState
 
         return true;
     }
+
+    public bool IsLent(ValueId valueId)
+        => TrackedValues(valueId).Select(value => values.Sets[value]).Any(set => set.Data.IsLent);
 
     public IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId, DataType returnType)
     {

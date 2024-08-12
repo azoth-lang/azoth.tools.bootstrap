@@ -713,6 +713,15 @@ public static class ExpressionTypesAspect
         // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
         => IFlowState.Empty.Constant(node.ValueId);
 
+    public static void ReturnExpression_ContributeDiagnostics(IReturnExpressionNode node, DiagnosticsBuilder diagnostics)
+    {
+        if (node.IntermediateValue is not { } value)
+            return;
+        //var flowState = value.FlowStateAfter;
+        //if (flowState.IsLent(value.ValueId))
+        //    diagnostics.Add(FlowTypingError.CannotReturnLent(node.File, node.Syntax));
+    }
+
     public static IFlowState BreakExpression_FlowStateAfter(IBreakExpressionNode node)
         // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
         => IFlowState.Empty.Constant(node.ValueId);

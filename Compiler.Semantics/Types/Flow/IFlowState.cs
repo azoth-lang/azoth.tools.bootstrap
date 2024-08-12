@@ -55,6 +55,8 @@ public interface IFlowState : IEquatable<IFlowState>
     bool IsIsolatedExceptFor(IBindingNode? binding, ValueId? valueId);
     bool CanFreezeExceptFor(IBindingNode? binding, ValueId? valueId);
 
+    bool IsLent(ValueId valueId);
+
     /// <summary>
     /// Combine the non-lent values representing the arguments into one sharing set with the return
     /// value id and drop the values for all arguments.

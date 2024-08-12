@@ -56,6 +56,7 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         InvalidStructureAspect.ReturnExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.ReturnExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 
