@@ -197,38 +197,32 @@ public static class ExpressionTypesAspect
             ? ContextualizedOverload.Create(node.MethodGroup.Context.Type, node.ReferencedDeclaration)
             : null;
 
-    public static IAmbiguousExpressionNode? MethodInvocationExpression_Rewrite_ImplicitMove(
-        IMethodInvocationExpressionNode node)
+    public static IChildNode? Expression_Rewrite_ImplicitMove(IExpressionNode node)
     {
-        var expectedSelfType = node.ReferencedDeclaration?.Symbol.SelfParameterType.Type ?? DataType.Unknown;
-        if (expectedSelfType is not CapabilityType { Capability: var expectedCapability }
+        if (!node.ImplicitRecoveryAllowed())
+            return null;
+
+        var expectedType = node.ExpectedType;
+        if (expectedType is not CapabilityType { Capability: var expectedCapability }
             || (expectedCapability != Capability.Isolated && expectedCapability != Capability.TemporarilyIsolated))
             return null;
 
         var isTemporary = expectedCapability == Capability.TemporarilyIsolated;
 
-        var selfType = node.MethodGroup.Context.Type;
-        if (selfType is CapabilityType { Capability: var capability }
-            && capability == expectedCapability)
+        var type = node.Type;
+        if (type is CapabilityType { Capability: var capability } && capability == expectedCapability)
             return null;
 
         // TODO what if selfType is not a capability type?
 
-        var context = node.MethodGroup.Context;
-        var contextSyntax = (ITypedExpressionSyntax)context.Syntax;
-        var implicitFreeze = isTemporary
-            ? new ImplicitTempMoveExpressionNode(contextSyntax, context)
-            : (IExpressionNode)(context is IVariableNameExpressionNode variableName
-                ? new MoveVariableExpressionNode(contextSyntax, variableName, isImplicit: true)
-                : new MoveValueExpressionNode(contextSyntax, context, isImplicit: true));
-        var methodGroup = node.MethodGroup;
-        var newMethodGroup = new MethodGroupNameNode(methodGroup.Syntax, implicitFreeze,
-            methodGroup.MethodName, methodGroup.TypeArguments, methodGroup.ReferencedDeclarations);
-        return new MethodInvocationExpressionNode(node.Syntax, newMethodGroup, node.CurrentArguments);
+        var syntax = (ITypedExpressionSyntax)node.Syntax;
+        var implicitMove = isTemporary
+            ? new ImplicitTempMoveExpressionNode(syntax, node)
+            : (IExpressionNode)(node is IVariableNameExpressionNode variableName
+                ? new MoveVariableExpressionNode(syntax, variableName, isImplicit: true)
+                : new MoveValueExpressionNode(syntax, node, isImplicit: true));
+        return implicitMove;
     }
-
-    public static IChildNode? Expression_Rewrite_ImplicitMove(IExpressionNode node)
-        => null;
 
     public static IChildNode? Expression_Rewrite_ImplicitFreeze(IExpressionNode node)
     {

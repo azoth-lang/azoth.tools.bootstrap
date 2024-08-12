@@ -116,8 +116,4 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
             return ReferencedDeclaration?.Symbol.SelfParameterType.Type.ToUpperBound();
         return base.InheritedExpectedType(child, descendant, ctx);
     }
-
-    protected override IChildNode? Rewrite()
-        => ExpressionTypesAspect.MethodInvocationExpression_Rewrite_ImplicitMove(this)
-        ?? base.Rewrite();
 }
