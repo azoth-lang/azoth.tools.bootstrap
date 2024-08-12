@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -172,13 +173,29 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         public void AddToRewriteContext(object current, object? next)
             => state.rewriteContexts.AddRewriteToContext((ITreeNode)current, (ITreeNode?)next);
 
+        /// <summary>
+        /// Must be called before successfully leaving the attribute scope.
+        /// </summary>
+        /// <remarks>This performs safety checks. These cannot be done in the <see cref="Dispose"/>
+        /// method because if it fails, an exception is thrown and that exception causes any original
+        /// exception to be lost. This method will typically do that. Indeed, an actual error was
+        /// observed where that happened.</remarks>
+        [Conditional("DEBUG")]
+        public void Success()
+        {
+            if (attributeIndex == 0 && !IsFinal)
+                throw new InvalidOperationException("The starting attribute should always end up final.");
+        }
+
         public void Dispose()
         {
+            rewriteContext?.MarkInactive();
+
             if (IsFinal)
             {
                 // If there were changes, then this attribute was marked final by another thread OR
                 // is final because it doesn't support anymore rewrites. So shouldn't mark any
-                // attributes below it as.
+                // attributes below it as cached.
                 var markFinal = !state.Changed;
 
                 // Remove attributes off the stack up to and including the current attribute.
@@ -207,15 +224,10 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
             }
             else
             {
-                if (attributeIndex == 0)
-                    throw new InvalidOperationException("The starting attribute should always end up final.");
-
                 state.Changed |= wasChanged;
 
                 state.MinLowLinkWith(previousLowLink);
             }
-
-            rewriteContext?.MarkInactive();
         }
     }
     #endregion

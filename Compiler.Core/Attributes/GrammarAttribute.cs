@@ -480,6 +480,7 @@ public static class GrammarAttribute
                 if (isFinal)
                 {
                     attributeScope.MarkFinal();
+                    attributeScope.Success();
                     // Read again if final to ensure the value is the one that is actually cached
                     return value.UnsafeValue;
                 }
@@ -501,6 +502,7 @@ public static class GrammarAttribute
         if (attributeScope.IsFinal)
             Volatile.Write(ref cached, true);
 
+        attributeScope.Success();
         return current;
     }
     #endregion
