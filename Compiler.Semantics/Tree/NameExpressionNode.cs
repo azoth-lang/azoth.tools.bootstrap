@@ -48,7 +48,7 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
         base.CollectDiagnostics(diagnostics);
     }
 
-    //protected override IChildNode? Rewrite()
-    //    => ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
-    //    ?? base.Rewrite();
+    protected override IChildNode? Rewrite()
+        => ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
