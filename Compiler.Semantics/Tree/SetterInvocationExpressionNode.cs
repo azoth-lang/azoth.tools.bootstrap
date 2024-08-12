@@ -15,7 +15,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterInvocationExpressionNode
 {
     public override IAssignmentExpressionSyntax Syntax { get; }
-    public IExpressionNode Context { get; }
+    private RewritableChild<IExpressionNode> context;
+    private bool contextCached;
+    public IExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
     public StandardName PropertyName { get; }
     private RewritableChild<IAmbiguousExpressionNode> value;
     private bool valueCached;
@@ -60,7 +64,7 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
         ISetterMethodDeclarationNode? referencedDeclaration)
     {
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         PropertyName = propertyName;
         this.value = Child.Create(this, value);
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();

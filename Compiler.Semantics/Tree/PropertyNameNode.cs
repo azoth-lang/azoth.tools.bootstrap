@@ -12,7 +12,11 @@ internal sealed class PropertyNameNode : AmbiguousNameExpressionNode, IPropertyN
     protected override bool MayHaveRewrite => true;
 
     public override IMemberAccessExpressionSyntax Syntax { get; }
-    public IExpressionNode Context { get; }
+    private RewritableChild<IExpressionNode> context;
+    private bool contextCached;
+    public IExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
     public StandardName PropertyName { get; }
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
 
@@ -23,7 +27,7 @@ internal sealed class PropertyNameNode : AmbiguousNameExpressionNode, IPropertyN
         IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors)
     {
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         PropertyName = propertyName;
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
     }

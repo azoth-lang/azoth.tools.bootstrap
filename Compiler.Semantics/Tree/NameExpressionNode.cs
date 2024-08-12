@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -8,6 +9,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameExpressionNode
 {
+    protected override bool MayHaveRewrite => !((IExpressionNode)this).ShouldNotBeExpression();
+
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public ControlFlowSet ControlFlowNext
@@ -44,4 +47,8 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
         ExpressionTypesAspect.Expression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
+
+    //protected override IChildNode? Rewrite()
+    //    => ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+    //    ?? base.Rewrite();
 }
