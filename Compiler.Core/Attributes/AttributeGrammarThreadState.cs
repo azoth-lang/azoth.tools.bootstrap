@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -82,6 +81,8 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
                 throw new InvalidOperationException($"{nameof(attributeIterations)} was not empty when entering graph.");
             if (outstandingAttributes.Any())
                 throw new InvalidOperationException($"{nameof(outstandingAttributes)} was not empty when entering graph.");
+            if (lowLink is not null)
+                throw new InvalidOperationException($"{nameof(lowLink)} was not null when entering graph..");
         }
 #endif
 
@@ -215,18 +216,33 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
                 state.nextIndex = attributeIndex;
                 state.Changed = wasChanged;
                 state.lowLink = previousLowLink;
-                if (attributeIndex == 0)
-                {
-                    state.currentIteration = 0;
-                    state.attributeIterations.Clear();
-                    state.rewriteContexts.Clear();
-                }
             }
             else
             {
                 state.Changed |= wasChanged;
 
                 state.MinLowLinkWith(previousLowLink);
+            }
+
+            // If this is the first attribute, reset the state. (Note: this happens regardless of
+            // whether the attribute is final or not because in the case of an exception, the
+            // attribute won't be final, but cleanup is still needed to prevent other work using this
+            // thread state from being affected.)
+            if (attributeIndex == 0)
+            {
+                state.currentIteration = 0;
+                state.attributeIterations.Clear();
+                state.rewriteContexts.Clear();
+
+                // These should already be correct, but in case of an exception, still reset them.
+                state.outstandingAttributes.Clear();
+                state.inStackIndexes.Clear(); // Critical because it is used to determine InGraph.
+                state.nextIndex = 0;
+                if (!state.inAttributesOutsideOfGraph)
+                    // lowLink is cleared only if we are not in a non-cyclic attribute computation.
+                    // If we are, then the lowLink indicates that those attributes are NOT final. It
+                    // is cleared when the non-cyclic attribute computation is done.
+                    state.lowLink = null;
             }
         }
     }
@@ -237,6 +253,10 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
     public bool ComputedInCurrentIteration(in AttributeId attribute)
         => attributeIterations.TryGetValue(attribute, out var i) && i == currentIteration;
 
+    /// <summary>
+    /// Whether we are currently inside the evaluation of attributes outside a graph of cyclic attributes.
+    /// </summary>
+    private bool inAttributesOutsideOfGraph;
 #if DEBUG
     private readonly HashSet<AttributeId> inProgressAttributes = new();
 #endif
@@ -246,17 +266,32 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
     public NonCircularScope VisitNonCircular(in AttributeId attribute)
     {
 #if DEBUG
-        if (!InGraph)
-            if (!inProgressAttributes.Add(attribute))
-                throw new InvalidOperationException($"Attribute `{attribute.ToTypeString()}` has circular definition but is declared non-circular.");
+        if (!InGraph && !inProgressAttributes.Add(attribute))
+            throw new InvalidOperationException($"Attribute `{attribute.ToTypeString()}` has circular definition but is declared non-circular.");
 #endif
         return new(this, attribute);
     }
 
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct NonCircularScope(AttributeGrammarThreadState state, in AttributeId attribute) : IDisposable
+    public readonly struct NonCircularScope : IDisposable
     {
-        private readonly AttributeId attribute = attribute;
+        private readonly AttributeGrammarThreadState state;
+        private readonly AttributeId attribute;
+        private readonly bool firstAttribute;
+
+        public NonCircularScope(AttributeGrammarThreadState state, in AttributeId attribute)
+        {
+            this.state = state;
+            this.attribute = attribute;
+
+            if (state is { inAttributesOutsideOfGraph: false, InGraph: false })
+            {
+                if (state.lowLink is not null)
+                    throw new InvalidOperationException("Low link should be null when starting attribute computation.");
+                state.inAttributesOutsideOfGraph = true;
+                firstAttribute = true;
+            }
+        }
 
         public bool IsFinal => state.lowLink is null;
 
@@ -277,10 +312,14 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [SuppressMessage("Style", "IDE0022:Use expression body for method",
-            Justification = "<Pending>")]
         public void Dispose()
         {
+            if (firstAttribute)
+            {
+                state.inAttributesOutsideOfGraph = false;
+                // Reset the low link so that any future thread using this state won't be affected.
+                state.lowLink = null;
+            }
 #if DEBUG
             state.inProgressAttributes.Remove(attribute);
 #endif

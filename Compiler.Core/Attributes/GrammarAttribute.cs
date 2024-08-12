@@ -17,7 +17,7 @@ public static class GrammarAttribute
 {
     /// <remarks><see cref="ThreadStaticAttribute"/> does not support static initializers. The
     /// initializer will be run once and other threads will see the default value. Instead,
-    /// <see cref="LazyInitializer"/> is used to ensure it is initialized.</remarks>
+    /// <see cref="ThreadState"/> is used to ensure it is initialized.</remarks>
     [ThreadStatic]
     private static AttributeGrammarThreadState? _threadStateStorage;
 
