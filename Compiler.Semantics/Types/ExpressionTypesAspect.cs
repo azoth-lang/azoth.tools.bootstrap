@@ -373,7 +373,6 @@ public static class ExpressionTypesAspect
     public static Pseudotype SelfExpression_Pseudotype(ISelfExpressionNode node)
         => node.ReferencedSymbol?.Type ?? DataType.Unknown;
 
-
     public static ContextualizedOverload? NewObjectExpression_ContextualizedOverload(
         INewObjectExpressionNode node)
         => node.ReferencedConstructor is not null
@@ -762,4 +761,7 @@ public static class ExpressionTypesAspect
     public static IFlowState PatternMatchExpression_FlowStateAfter(IPatternMatchExpressionNode node)
         // Constant for the boolean result of the pattern match
         => node.Pattern.FlowStateAfter.Constant(node.ValueId);
+
+    public static IFlowState UnknownMemberAccessExpression_FlowStateAfter(IUnknownMemberAccessExpressionNode node)
+        => node.Context.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type);
 }
