@@ -775,5 +775,9 @@ public static class ExpressionTypesAspect
         => node.Context.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type);
 
     public static IFlowState PrepareToReturnExpression_FlowStateAfter(IPrepareToReturnExpressionNode node)
-        => node.Value.FlowStateAfter.Transform(node.Value.ValueId, node.ValueId, node.Type);
+    {
+        var flowStateBefore = node.Value.FlowStateAfter;
+        return flowStateBefore.Transform(node.Value.ValueId, node.ValueId, node.Type)
+                              .DropBindingsForReturn();
+    }
 }

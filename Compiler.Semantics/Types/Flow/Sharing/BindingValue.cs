@@ -27,6 +27,7 @@ internal sealed class BindingValue : ICapabilityValue
     public static IReadOnlyDictionary<BindingValue, FlowCapability> ForType(ValueId id, Pseudotype type)
         => ICapabilityValue.ForType(id, type, Create);
 
+    public bool IsVariableOrParameter => true;
     public ulong Value { get; }
     public CapabilityIndex Index { get; }
 

@@ -53,7 +53,7 @@ internal sealed class FreezeValueExpressionNode : ExpressionNode, IFreezeValueEx
     {
         if (descendant == CurrentReferent && IsImplicit)
             // Pass along should prepare to return to the referent if this is an implicit freeze.
-            return base.InheritedShouldPrepareToReturn(child, descendant, ctx);
+            return ShouldPrepareToReturn();
         return false;
     }
 

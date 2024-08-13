@@ -11,6 +11,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 /// </summary>
 public interface ICapabilityValue : IValue
 {
+    /// <summary>
+    /// Whether this is a declared variable or parameter (as opposed to a temp reference etc.)
+    /// </summary>
+    bool IsVariableOrParameter { get; }
     ulong Value { get; }
     CapabilityIndex Index { get; }
 

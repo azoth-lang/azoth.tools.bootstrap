@@ -46,7 +46,7 @@ internal sealed class MoveValueExpressionNode : ExpressionNode, IMoveValueExpres
     {
         if (descendant == CurrentReferent && IsImplicit)
             // Pass along should prepare to return to the referent if this is an implicit move.
-            return base.InheritedShouldPrepareToReturn(child, descendant, ctx);
+            return ShouldPrepareToReturn();
         return false;
     }
 

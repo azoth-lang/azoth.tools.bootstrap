@@ -79,4 +79,11 @@ public interface IFlowState : IEquatable<IFlowState>
     IFlowState TempMove(ValueId valueId, ValueId intoValueId);
     IFlowState DropBindings(IEnumerable<INamedBindingNode> bindings);
     IFlowState DropValue(ValueId valueId);
+
+    /// <summary>
+    /// Drop all local variables and parameters in preparation for a return from the function or
+    /// method.
+    /// </summary>
+    /// <remarks>External references will ensure that parameters aren't incorrectly treated as isolated.</remarks>
+    IFlowState DropBindingsForReturn();
 }

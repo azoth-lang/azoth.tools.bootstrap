@@ -630,6 +630,15 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
+    public IFlowState DropBindingsForReturn()
+    {
+        var builder = ToBuilder();
+        foreach (var (valueId, values) in valuesForId)
+            if (values.Any(v => v.IsVariableOrParameter))
+                builder.Remove(valueId);
+        return builder.ToImmutable();
+    }
+
     #region Equality
     public bool Equals(FlowState? other)
     {
