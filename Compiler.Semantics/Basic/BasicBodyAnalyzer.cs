@@ -219,8 +219,9 @@ public class BasicBodyAnalyzer
         if (initializerResult is not null)
         {
             initializerResult = AddImplicitConversionIfNeeded(initializerResult, variableType, allowMoveOrFreeze: true, flow);
-            if (!variableType.IsAssignableFrom(initializerResult.Type))
-                diagnostics.Add(TypeError.CannotImplicitlyConvert(file, initializerResult.Syntax, initializerResult.Type, variableType));
+            // Reported by the semantic tree now
+            //if (!variableType.IsAssignableFrom(initializerResult.Type))
+            //    diagnostics.Add(TypeError.CannotImplicitlyConvert(file, initializerResult.Syntax, initializerResult.Type, variableType));
         }
 
         var symbol = NamedVariableSymbol.CreateLocal(containingSymbol, variableDeclaration.IsMutableBinding, variableDeclaration.Name, variableDeclaration.DeclarationNumber.Result, variableType);
@@ -872,9 +873,9 @@ public class BasicBodyAnalyzer
                 var left = InferAssignmentTargetType(exp.LeftOperand, flow);
                 var right = InferType(exp.RightOperand, flow);
                 right = AddImplicitConversionIfNeeded(right, left.Type, allowMoveOrFreeze: false, flow);
-                if (!left.Type.IsAssignableFrom(right.Type))
-                    diagnostics.Add(TypeError.CannotImplicitlyConvert(file,
-                        exp.RightOperand, right.Type, left.Type));
+                // Reported by the semantic tree now
+                //if (!left.Type.IsAssignableFrom(right.Type))
+                //    diagnostics.Add(TypeError.CannotImplicitlyConvert(file, exp.RightOperand, right.Type, left.Type));
                 var resultVariable = flow.Combine(left.Variable, right.Variable, exp);
                 exp.DataType.Fulfill(left.Type);
                 return new ExpressionResult(exp, resultVariable);
@@ -1623,7 +1624,8 @@ public class BasicBodyAnalyzer
         switch (validOverloads.Count)
         {
             case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindFunction(file, invocation));
+                // Reported by the semantic tree now
+                //diagnostics.Add(NameBindingError.CouldNotBindFunction(file, invocation));
                 // Already assigned by SemanticsApplier
                 //promise.Fulfill(null);
                 //invocation.ReferencedSymbol.Fulfill(null);
@@ -1639,7 +1641,8 @@ public class BasicBodyAnalyzer
                 var functionType = new FunctionType(overload.ParameterTypes, overload.ReturnType);
                 return functionType;
             default:
-                diagnostics.Add(NameBindingError.AmbiguousFunctionCall(file, invocation));
+                // Reported by the semantic tree now
+                //diagnostics.Add(NameBindingError.AmbiguousFunctionCall(file, invocation));
                 promise.Fulfill(null);
                 invocation.ReferencedSymbol.Fulfill(null);
                 return null;
@@ -1660,7 +1663,8 @@ public class BasicBodyAnalyzer
         switch (validOverloads.Count)
         {
             case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindMethod(file, invocation));
+                // Reported by the semantic tree now
+                //diagnostics.Add(NameBindingError.CouldNotBindMethod(file, invocation));
                 invocation.ReferencedSymbol.Fulfill(null);
                 break;
             case 1:
@@ -1668,7 +1672,8 @@ public class BasicBodyAnalyzer
                 invocation.ReferencedSymbol.Fulfill(method.Symbol);
                 break;
             default:
-                diagnostics.Add(NameBindingError.AmbiguousMethodCall(file, invocation));
+                // Reported by the semantic tree now
+                //diagnostics.Add(NameBindingError.AmbiguousMethodCall(file, invocation));
                 invocation.ReferencedSymbol.Fulfill(null);
                 break;
         }
@@ -1787,8 +1792,9 @@ public class BasicBodyAnalyzer
     private void CheckTypeCompatibility(DataType type, IExpressionSyntax arg)
     {
         var fromType = arg.ConvertedDataType.Assigned();
-        if (!type.IsAssignableFrom(fromType))
-            diagnostics.Add(TypeError.CannotImplicitlyConvert(file, arg, fromType, type));
+        // Reported by the semantic tree now
+        //if (!type.IsAssignableFrom(fromType))
+        //    diagnostics.Add(TypeError.CannotImplicitlyConvert(file, arg, fromType, type));
     }
 
     private DataType InferNumericOperatorType(

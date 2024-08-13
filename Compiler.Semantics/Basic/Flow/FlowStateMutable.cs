@@ -135,7 +135,7 @@ public sealed class FlowStateMutable
     /// Drop all local variables and parameters in preparation for a return from the function or
     /// method.
     /// </summary>
-    /// <remarks>External references will ensure that parameters are incorrectly treated as isolated.</remarks>
+    /// <remarks>External references will ensure that parameters aren't incorrectly treated as isolated.</remarks>
     public void DropBindingsForReturn()
     {
         SharingDropAll(subsetFor.Keys.Where(v => v.IsVariableOrParameter)).Consume();

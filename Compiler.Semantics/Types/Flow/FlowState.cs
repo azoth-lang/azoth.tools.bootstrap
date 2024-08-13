@@ -261,7 +261,12 @@ internal sealed class FlowState : IFlowState
     }
 
     public bool IsIsolated(IBindingNode? binding)
+        // TODO what about independent parameters?
         => binding is null || IsIsolated(values.Sets.TrySetFor(BindingValue.CreateTopLevel(binding)));
+
+    public bool IsIsolated(ValueId valueId)
+        // TODO what about independent parameters?
+        => IsIsolated(values.Sets.TrySetFor(CapabilityValue.CreateTopLevel(valueId)));
 
     private static bool IsIsolated(IImmutableDisjointSet<IValue, SharingSetState>? set)
         => set?.Count == 1;
@@ -279,15 +284,40 @@ internal sealed class FlowState : IFlowState
     public bool CanFreezeExceptFor(IBindingNode? binding, ValueId? valueId)
     {
         if (binding is null) return true;
+        // TODO what about independent parameters?
         var bindingValue = BindingValue.CreateTopLevel(binding);
         var set = values.Sets.TrySetFor(bindingValue);
         if (set is null) return false;
         if (IsIsolated(set)) return true;
 
         var exceptValue = valueId is ValueId v ? CapabilityValue.CreateTopLevel(v) : null;
-        foreach (var value in set.Except(bindingValue).Except(exceptValue))
+        foreach (var otherValue in set.Except(bindingValue).Except(exceptValue))
         {
-            if (value is ICapabilityValue capabilityValue)
+            if (otherValue is ICapabilityValue capabilityValue)
+            {
+                // The modified capability is what matters because lending can go out of scope later
+                var capability = values[capabilityValue].Modified;
+                if (capability.AllowsWrite) return false;
+            }
+            else
+                // All other sharing variable types prevent freezing
+                return false;
+        }
+
+        return true;
+    }
+
+    public bool CanFreeze(ValueId valueId)
+    {
+        // TODO what about independent parameters?
+        var value = CapabilityValue.CreateTopLevel(valueId);
+        var set = values.Sets.TrySetFor(value);
+        if (set is null) return false;
+        if (IsIsolated(set)) return true;
+
+        foreach (var otherValue in set.Except(value))
+        {
+            if (otherValue is ICapabilityValue capabilityValue)
             {
                 // The modified capability is what matters because lending can go out of scope later
                 var capability = values[capabilityValue].Modified;

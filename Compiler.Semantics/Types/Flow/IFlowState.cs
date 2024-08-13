@@ -52,9 +52,10 @@ public interface IFlowState : IEquatable<IFlowState>
     DataType AliasType(IBindingNode? binding);
 
     bool IsIsolated(IBindingNode? binding);
+    bool IsIsolated(ValueId valueId);
     bool IsIsolatedExceptFor(IBindingNode? binding, ValueId? valueId);
     bool CanFreezeExceptFor(IBindingNode? binding, ValueId? valueId);
-
+    bool CanFreeze(ValueId valueId);
     bool IsLent(ValueId valueId);
 
     /// <summary>

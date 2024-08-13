@@ -56,4 +56,10 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
             return ExpectedType;
         return base.InheritedExpectedType(child, descendant, ctx);
     }
+
+    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == ResultStatement.CurrentExpression) return true;
+        return false;
+    }
 }

@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
@@ -46,4 +47,10 @@ internal sealed class FreezeValueExpressionNode : ExpressionNode, IFreezeValueEx
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.FreezeExpression_ControlFlowNext(this);
+
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    {
+        ExpressionTypesAspect.FreezeValueExpression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
+    }
 }

@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
@@ -39,4 +40,10 @@ internal sealed class MoveValueExpressionNode : ExpressionNode, IMoveValueExpres
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.MoveExpression_ControlFlowNext(this);
+
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    {
+        ExpressionTypesAspect.MoveValueExpression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
+    }
 }

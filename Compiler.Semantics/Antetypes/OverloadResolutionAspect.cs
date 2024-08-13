@@ -42,14 +42,12 @@ internal static class OverloadResolutionAspect
         switch (node.CompatibleDeclarations.Count)
         {
             case 0:
-                // TODO uncomment once semantic tree can report errors for capability mismatch
-                //diagnostics.Add(NameBindingError.CouldNotBindFunction(node.File, node.Syntax));
+                diagnostics.Add(NameBindingError.CouldNotBindFunction(node.File, node.Syntax));
                 break;
             case 1:
                 throw new UnreachableException("ReferencedDeclaration would not be null");
             default:
-                // TODO uncomment once semantic tree can report errors for capability mismatch
-                //diagnostics.Add(NameBindingError.AmbiguousFunctionCall(node.File, node.Syntax));
+                diagnostics.Add(NameBindingError.AmbiguousFunctionCall(node.File, node.Syntax));
                 break;
         }
     }
@@ -93,14 +91,12 @@ internal static class OverloadResolutionAspect
         switch (node.CompatibleDeclarations.Count)
         {
             case 0:
-                // TODO uncomment once semantic tree can report errors for capability mismatch
-                //diagnostics.Add(NameBindingError.CouldNotBindMethod(node.File, node.Syntax));
+                diagnostics.Add(NameBindingError.CouldNotBindMethod(node.File, node.Syntax));
                 break;
             case 1:
                 throw new UnreachableException("ReferencedDeclaration would not be null");
             default:
-                // TODO uncomment once semantic tree can report errors for capability mismatch
-                //diagnostics.Add(NameBindingError.AmbiguousMethodCall(node.File, node.Syntax));
+                diagnostics.Add(NameBindingError.AmbiguousMethodCall(node.File, node.Syntax));
                 break;
         }
     }

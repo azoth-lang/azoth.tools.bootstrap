@@ -38,8 +38,8 @@ public static class ExpressionTypesAspect
         if (node.ExpectedType is not DataType expectedType)
             return;
 
-        //if (!expectedType.IsAssignableFrom(node.Type))
-        //    diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, expectedType));
+        if (!expectedType.IsAssignableFrom(node.Type))
+            diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, expectedType));
     }
 
     public static ValueId ForeachExpression_BindingValueId(IForeachExpressionNode node)
@@ -659,6 +659,15 @@ public static class ExpressionTypesAspect
             diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
     }
 
+    public static void FreezeValueExpression_ContributeDiagnostics(IFreezeExpressionNode node, DiagnosticsBuilder diagnostics)
+    {
+        if (node.Referent.Type is not CapabilityType capabilityType) return;
+
+        if (!capabilityType.AllowsFreeze)
+            diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow freezing"));
+        else if (!node.IsTemporary && !node.Referent.FlowStateAfter.CanFreeze(node.Referent.ValueId))
+            diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
+    }
     public static DataType MoveExpression_Type(IMoveExpressionNode node)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
@@ -692,6 +701,16 @@ public static class ExpressionTypesAspect
     {
         var flowStateBefore = node.Referent.FlowStateAfter;
         return flowStateBefore.MoveValue(node.Referent.ValueId, node.ValueId);
+    }
+
+    public static void MoveValueExpression_ContributeDiagnostics(IMoveValueExpressionNode node, DiagnosticsBuilder diagnostics)
+    {
+        if (node.Referent.Type is not CapabilityType capabilityType) return;
+
+        if (!capabilityType.AllowsMove)
+            diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Reference capability does not allow moving"));
+        else if (!node.Referent.FlowStateAfter.IsIsolated(node.Referent.ValueId))
+            diagnostics.Add(FlowTypingError.CannotMoveValue(node.File, node.Syntax, node.Referent.Syntax));
     }
 
     public static DataType ImplicitTempMoveExpression_Type(IImplicitTempMoveExpressionNode node)
