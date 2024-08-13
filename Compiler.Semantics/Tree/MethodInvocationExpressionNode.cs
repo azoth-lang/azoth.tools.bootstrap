@@ -110,6 +110,18 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         return base.InheritedImplicitRecoveryAllowed(child, descendant, ctx);
     }
 
+    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == MethodGroup.CurrentContext)
+            // TODO it would be better if this didn't depend on types, but only on antetypes
+            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype();
+        if (descendant is IAmbiguousExpressionNode ambiguousExpression
+            && CurrentArguments.IndexOf(ambiguousExpression) is int index)
+            // TODO it would be better if this didn't depend on types, but only on antetypes
+            return ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype();
+        return base.InheritedExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == MethodGroup.CurrentContext)
