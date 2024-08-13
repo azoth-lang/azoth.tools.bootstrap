@@ -23,7 +23,7 @@ internal sealed class RewriteContexts
     /// </summary>
     /// <returns>The newly added <see cref="RewriteContext"/> or <see langword="null"/> if it is
     /// already under an existing context.</returns>
-    public RewriteContext? NewRewrite(ITreeNode node, ulong index)
+    public RewriteContext? NewRewrite(IChildTreeNode node, ulong index)
     {
         var currentContext = ContextFor(node.PeekParent()!);
         if (currentContext is not null)
@@ -33,7 +33,7 @@ internal sealed class RewriteContexts
         return newContext;
     }
 
-    public void AddRewriteToContext(ITreeNode node, ITreeNode? rewrittenNode)
+    public void AddRewriteToContext(IChildTreeNode node, IChildTreeNode? rewrittenNode)
     {
         if (rewrittenNode is null)
             return;
@@ -42,7 +42,7 @@ internal sealed class RewriteContexts
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ulong? LowLinkFor(ITreeNode node)
+    public ulong? LowLinkFor(IChildTreeNode node)
         => ContextFor(node)?.LowLink;
 
     /// <summary>

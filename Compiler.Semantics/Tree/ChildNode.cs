@@ -45,7 +45,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     {
         // Use volatile read to ensure order of operations as seen by other threads
         var node = Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
-        ctx.AccessParent(node);
+        ctx.AccessParentOf(this);
         return node;
     }
 

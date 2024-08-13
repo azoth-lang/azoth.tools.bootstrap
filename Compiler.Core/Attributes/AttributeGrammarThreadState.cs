@@ -42,8 +42,12 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
     private readonly RewriteContexts rewriteContexts = new();
     private ulong? lowLink;
 
-    void IInheritanceContext.AccessParent(ITreeNode parentNode)
-        => MinLowLinkWith(rewriteContexts.LowLinkFor(parentNode));
+    void IInheritanceContext.AccessParentOf(IChildTreeNode childNode)
+        // If the child node is part of a rewrite context, then accessing the parent means this is
+        // part of the SSC of the rewrite context. This is true because a rewrite can insert a new
+        // node between the parent and child. Thus, the parent of even the top-most rewrite node
+        // could change.
+        => MinLowLinkWith(rewriteContexts.LowLinkFor(childNode));
 
     [Inline]
     private void MinLowLinkWith(ulong? value)
@@ -172,7 +176,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         public void MarkFinal() => state.lowLink = null;
 
         public void AddToRewriteContext(object current, object? next)
-            => state.rewriteContexts.AddRewriteToContext((ITreeNode)current, (ITreeNode?)next);
+            => state.rewriteContexts.AddRewriteToContext((IChildTreeNode)current, (IChildTreeNode?)next);
 
         /// <summary>
         /// Must be called before successfully leaving the attribute scope.
@@ -278,11 +282,13 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         private readonly AttributeGrammarThreadState state;
         private readonly AttributeId attribute;
         private readonly bool firstAttribute;
+        private readonly ulong? previousLowLink;
 
         public NonCircularScope(AttributeGrammarThreadState state, in AttributeId attribute)
         {
             this.state = state;
             this.attribute = attribute;
+            previousLowLink = state.lowLink;
 
             if (state is { inAttributesOutsideOfGraph: false, InGraph: false })
             {
@@ -291,6 +297,9 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
                 state.inAttributesOutsideOfGraph = true;
                 firstAttribute = true;
             }
+            else
+                // Clear low link because we are starting a potentially new branch from the graph.
+                state.lowLink = null;
         }
 
         public bool IsFinal => state.lowLink is null;
@@ -320,6 +329,9 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
                 // Reset the low link so that any future thread using this state won't be affected.
                 state.lowLink = null;
             }
+            else
+                // Restore any previous lowLink to not mess up the computation of the cyclic attributes.
+                state.MinLowLinkWith(previousLowLink);
 #if DEBUG
             state.inProgressAttributes.Remove(attribute);
 #endif
