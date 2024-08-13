@@ -88,4 +88,12 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
 
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
+
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant is IAmbiguousExpressionNode ambiguousExpression
+            && CurrentArguments.IndexOf(ambiguousExpression) is int index)
+            return FunctionType.Parameters[index].Type;
+        return base.InheritedExpectedType(child, descendant, ctx);
+    }
 }

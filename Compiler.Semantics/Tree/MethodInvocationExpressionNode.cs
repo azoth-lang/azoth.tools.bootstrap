@@ -114,6 +114,9 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     {
         if (descendant == MethodGroup.CurrentContext)
             return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
+        if (descendant is IAmbiguousExpressionNode ambiguousExpression
+            && CurrentArguments.IndexOf(ambiguousExpression) is int index)
+            return ContextualizedOverload?.ParameterTypes[index].Type;
         return base.InheritedExpectedType(child, descendant, ctx);
     }
 

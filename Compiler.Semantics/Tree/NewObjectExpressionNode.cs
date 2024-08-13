@@ -135,4 +135,12 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
             return ControlFlowSet.CreateNormal(IntermediateArguments[index + 1]);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
+
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant is IAmbiguousExpressionNode ambiguousExpression
+            && CurrentArguments.IndexOf(ambiguousExpression) is int index)
+            return ContextualizedOverload?.ParameterTypes[index].Type;
+        return base.InheritedExpectedType(child, descendant, ctx);
+    }
 }

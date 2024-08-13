@@ -16,6 +16,7 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
     public IInitializerGroupNameNode InitializerGroup { get; }
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     private IFixedSet<IInitializerDeclarationNode>? compatibleDeclarations;
     private bool compatibleDeclarationsCached;
@@ -77,5 +78,13 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
             && arguments.Current.IndexOf(ambiguousExpression) is int index and > 0)
             return IntermediateArguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
+    }
+
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant is IAmbiguousExpressionNode ambiguousExpression
+            && CurrentArguments.IndexOf(ambiguousExpression) is int index)
+            return ContextualizedOverload?.ParameterTypes[index].Type;
+        return base.InheritedExpectedType(child, descendant, ctx);
     }
 }

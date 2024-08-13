@@ -20,6 +20,7 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     public IExpressionNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
+    public IExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName PropertyName { get; }
     private RewritableChild<IAmbiguousExpressionNode> value;
     private bool valueCached;
@@ -87,5 +88,14 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     {
         if (child == Context) return ControlFlowSet.CreateNormal(IntermediateValue);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentContext)
+            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
+        if (descendant == CurrentValue)
+            return ContextualizedOverload?.ParameterTypes[0].Type;
+        return base.InheritedExpectedType(child, descendant, ctx);
     }
 }

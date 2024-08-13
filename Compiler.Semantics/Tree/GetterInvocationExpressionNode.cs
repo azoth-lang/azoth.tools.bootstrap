@@ -19,6 +19,7 @@ internal sealed class GetterInvocationExpressionNode : ExpressionNode, IGetterIn
     public IExpressionNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
+    public IExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName PropertyName { get; }
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     public IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
@@ -62,4 +63,11 @@ internal sealed class GetterInvocationExpressionNode : ExpressionNode, IGetterIn
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.GetterInvocationExpression_ControlFlowNext(this);
+
+    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentContext)
+            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
+        return base.InheritedExpectedType(child, descendant, ctx);
+    }
 }
