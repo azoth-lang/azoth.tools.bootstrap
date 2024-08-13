@@ -61,5 +61,6 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
         => ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
         ?? base.Rewrite();
 }

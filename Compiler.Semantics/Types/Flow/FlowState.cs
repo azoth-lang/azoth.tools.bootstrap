@@ -477,11 +477,12 @@ internal sealed class FlowState : IFlowState
         var valueMap = AliasValueMapping(fromValueId, toValueId);
         foreach (var (toValue, fromValue) in valueMap)
         {
-            // TODO if the original value was untracked, does that meant the result should be untracked?
-            if (withType.SharingIsTracked())
+            var typeAtIndex = withType.TypeAt(fromValue.Index);
+            // TODO if the original value was untracked, does that mean the result should be untracked?
+            if (typeAtIndex.SharingIsTracked())
             {
                 FlowCapability flowCapability = default;
-                if (withType is CapabilityType withCapabilityType)
+                if (typeAtIndex is CapabilityType withCapabilityType)
                     flowCapability = builder[fromValue].With(withCapabilityType.Capability);
                 var set = builder.TrySetFor(fromValue) ?? throw new InvalidOperationException();
                 builder.AddToSet(set, toValue, flowCapability);
@@ -648,7 +649,7 @@ internal sealed class FlowState : IFlowState
         // entries in one are in the other and equal.
         return values.All(p => other.values.TryGetValue(p.Key, out var value) && p.Value.Equals(value))
                && untrackedValues.SetEquals(other.untrackedValues)
-               // TODO check for valuesForId equality
+               && valuesForId.All(p => other.valuesForId.TryGetValue(p.Key, out var values) && p.Value.Equals(values))
                // Check the sets last since they are the most expensive to compare
                && AreEqual(values.Sets, other.values.Sets);
     }
@@ -664,10 +665,10 @@ internal sealed class FlowState : IFlowState
 
     private static int ComputeHashCode(IImmutableDisjointSet<IValue, SharingSetState> set)
     {
-        int itemHash = 0;
+        var unorderedHash = new UnorderedHashCode();
         foreach (var value in set)
-            itemHash ^= value.GetHashCode();
-        return HashCode.Combine(set.Count, set.Data, itemHash);
+            unorderedHash.Add(value);
+        return HashCode.Combine(unorderedHash, set.Data);
     }
 
     public bool Equals(IFlowState? obj)
@@ -686,10 +687,14 @@ internal sealed class FlowState : IFlowState
         var hash = new HashCode();
         hash.Add(valuesForId.Count);
         hash.Add(values.Count);
-        hash.Add(values.Sets.Count);
-        foreach (var set in values.Sets.OrderByDescending(s => s.Count))
-            hash.Add(set.Count);
-        hash.Add(untrackedValues.Count);
+        var unorderedHash = new UnorderedHashCode();
+        foreach (var set in values.Sets)
+            unorderedHash.Add(set.Count);
+        hash.Add(unorderedHash);
+        unorderedHash = new();
+        foreach (var value in untrackedValues)
+            unorderedHash.Add(value);
+        hash.Add(unorderedHash);
         return hash.ToHashCode();
     }
     #endregion

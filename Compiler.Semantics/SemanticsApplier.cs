@@ -609,6 +609,9 @@ internal class SemanticsApplier
             case INewObjectExpressionNode n:
                 NewObjectExpression(n);
                 break;
+            case IPrepareToReturnExpressionNode n:
+                PrepareToReturnExpression(n);
+                break;
             case IUnsafeExpressionNode n:
                 UnsafeExpression(n);
                 break;
@@ -734,6 +737,9 @@ internal class SemanticsApplier
         TypeName(node.ConstructingType);
         AmbiguousExpressions(node.Arguments);
     }
+
+    private static void PrepareToReturnExpression(IPrepareToReturnExpressionNode node)
+        => Expression(node.Value);
 
     private static void UnsafeExpression(IUnsafeExpressionNode node)
         => AmbiguousExpression(node.Expression);

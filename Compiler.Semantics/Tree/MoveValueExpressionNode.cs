@@ -17,6 +17,7 @@ internal sealed class MoveValueExpressionNode : ExpressionNode, IMoveValueExpres
     public IExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
+    public IExpressionNode CurrentReferent => referent.UnsafeValue;
     public bool IsImplicit { get; }
     public override IMaybeExpressionAntetype Antetype => Referent.Antetype;
     private DataType? type;
@@ -40,6 +41,14 @@ internal sealed class MoveValueExpressionNode : ExpressionNode, IMoveValueExpres
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.MoveExpression_ControlFlowNext(this);
+
+    internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentReferent && IsImplicit)
+            // Pass along should prepare to return to the referent if this is an implicit move.
+            return base.InheritedShouldPrepareToReturn(child, descendant, ctx);
+        return false;
+    }
 
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {

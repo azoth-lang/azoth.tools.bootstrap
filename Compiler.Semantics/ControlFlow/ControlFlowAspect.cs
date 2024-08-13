@@ -148,6 +148,9 @@ internal sealed class ControlFlowAspect
     public static ControlFlowSet BindingContextPattern_ControlFlowNext(IBindingContextPatternNode node)
         => ControlFlowSet.CreateNormal(node.Pattern);
 
+    public static ControlFlowSet PrepareToReturnExpression_ControlFlowNext(IPrepareToReturnExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Value);
+
     public static void ControlFlow_ContributeControlFlowPrevious(
         IControlFlowNode node,
         IControlFlowNode target,

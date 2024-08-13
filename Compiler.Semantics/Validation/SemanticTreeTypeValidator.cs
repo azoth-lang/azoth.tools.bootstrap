@@ -35,9 +35,10 @@ internal class SemanticTreeTypeValidator
 
     private static void ValidateAntetype(IExpressionNode expression)
     {
-        if (expression is IImplicitConversionExpressionNode)
-            // Don't validate implicit conversion expressions since they don't match up with the
-            // syntax tree exactly (conversions on syntax tree won't be properly separated).
+        if (expression is IImplicitConversionExpressionNode or IPrepareToReturnExpressionNode)
+            // Don't validate implicit conversion or prepare to return expressions since they don't
+            // match up with the syntax tree exactly. Note: Conversions on syntax tree won't be
+            // properly separated.
             return;
 
         var expectedAntetype = expression.Syntax.DataType.Result?.ToAntetype();
@@ -56,9 +57,10 @@ internal class SemanticTreeTypeValidator
     {
         if (!ValidateTypes) return;
 
-        if (expression is IImplicitConversionExpressionNode)
-            // Don't validate implicit conversion expressions since they don't match up with the
-            // syntax tree exactly (conversions on syntax tree won't be properly separated).
+        if (expression is IImplicitConversionExpressionNode or IPrepareToReturnExpressionNode)
+            // Don't validate implicit conversion or prepare to return expressions since they don't
+            // match up with the syntax tree exactly. Note: Conversions on syntax tree won't be
+            // properly separated.
             return;
 
         // The handling of freeze and move expressions has changed. So skip validating their child

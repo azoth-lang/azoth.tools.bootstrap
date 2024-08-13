@@ -244,13 +244,22 @@ public static class ExpressionTypesAspect
         if (type is CapabilityType { Capability: var capability } && capability == expectedCapability)
             return null;
 
-        // TODO what if selfType is not a capability type?
+        // TODO what if type is not a capability type?
 
         var syntax = (ITypedExpressionSyntax)node.Syntax;
         IFreezeExpressionNode implicitFreeze = node is IVariableNameExpressionNode variableName
             ? new FreezeVariableExpressionNode(syntax, variableName, isTemporary, isImplicit: true)
             : new FreezeValueExpressionNode(syntax, node, isTemporary, isImplicit: true);
         return implicitFreeze;
+    }
+
+    public static IChildNode? Expression_Rewrite_PrepareToReturn(IExpressionNode node)
+    {
+        if (node is IRecoveryExpressionNode { IsImplicit: true } or IPrepareToReturnExpressionNode
+            || !node.ShouldPrepareToReturn())
+            return null;
+
+        return new PrepareToReturnExpressionNode(node);
     }
 
     public static DataType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
@@ -764,4 +773,7 @@ public static class ExpressionTypesAspect
 
     public static IFlowState UnknownMemberAccessExpression_FlowStateAfter(IUnknownMemberAccessExpressionNode node)
         => node.Context.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type);
+
+    public static IFlowState PrepareToReturnExpression_FlowStateAfter(IPrepareToReturnExpressionNode node)
+        => node.Value.FlowStateAfter.Transform(node.Value.ValueId, node.ValueId, node.Type);
 }

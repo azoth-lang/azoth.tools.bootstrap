@@ -473,6 +473,9 @@ public static class ISemanticNodeExtensions
             case IFreezeValueExpressionNode n:
                 yield return n.Referent;
                 yield break;
+            case IPrepareToReturnExpressionNode n:
+                yield return n.Value;
+                yield break;
             case IAsyncBlockExpressionNode n:
                 yield return n.Block;
                 yield break;

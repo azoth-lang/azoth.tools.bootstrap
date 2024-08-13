@@ -17,6 +17,7 @@ internal sealed class FreezeValueExpressionNode : ExpressionNode, IFreezeValueEx
     public IExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
+    public IExpressionNode CurrentReferent => referent.UnsafeValue;
     public bool IsTemporary { get; }
     public bool IsImplicit { get; }
     public override IMaybeExpressionAntetype Antetype => Referent.Antetype;
@@ -47,6 +48,14 @@ internal sealed class FreezeValueExpressionNode : ExpressionNode, IFreezeValueEx
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.FreezeExpression_ControlFlowNext(this);
+
+    internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentReferent && IsImplicit)
+            // Pass along should prepare to return to the referent if this is an implicit freeze.
+            return base.InheritedShouldPrepareToReturn(child, descendant, ctx);
+        return false;
+    }
 
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {

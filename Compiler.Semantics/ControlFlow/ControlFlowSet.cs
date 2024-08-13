@@ -98,13 +98,10 @@ public class ControlFlowSet : IReadOnlyCollection<IControlFlowNode>, IReadOnlyDi
 
     public override int GetHashCode()
     {
-        var hash = new HashCode();
-        hash.Add(Count);
-        int hashCode = 0;
+        var unorderedHash = new UnorderedHashCode();
         foreach (var item in items)
-            hashCode ^= GetHashCode(item);
-        hash.Add(hashCode);
-        return hashCode;
+            unorderedHash.Add(item);
+        return unorderedHash.ToHashCode();
     }
 
     private static int GetHashCode(KeyValuePair<IControlFlowNode, ControlFlowKind> item)

@@ -752,6 +752,8 @@ public class InterpreterProcess
                 var @class = (IClassDefinitionNode)userTypes[objectTypeSymbol];
                 return await ConstructClass(@class, constructorSymbol, arguments);
             }
+            case IPrepareToReturnExpressionNode exp:
+                return await ExecuteAsync(exp.Value, variables).ConfigureAwait(false);
             case ISelfExpressionNode exp:
                 return variables[exp.ReferencedDefinition!];
             case IStringLiteralExpressionNode exp:

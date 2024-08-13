@@ -93,12 +93,6 @@ public static class FixedSet
         }
 
         [DebuggerStepThrough]
-        public Of(IEnumerable<T> items, IEqualityComparer<T> equalityComparer)
-        {
-            this.items = items.ToHashSet(equalityComparer);
-        }
-
-        [DebuggerStepThrough]
         public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
 
         [DebuggerStepThrough]
@@ -130,14 +124,10 @@ public static class FixedSet
 
         private int ComputeHashCode()
         {
-            HashCode hash = new HashCode();
-            hash.Add(Count);
-            // Xor the hash codes so the order doesn't matter
-            int itemHash = 0;
+            var unorderedHash = new UnorderedHashCode();
             foreach (var item in this)
-                itemHash ^= item?.GetHashCode() ?? 0;
-            hash.Add(itemHash);
-            return hash.ToHashCode();
+                unorderedHash.Add(item);
+            return unorderedHash.ToHashCode();
         }
         #endregion
     }

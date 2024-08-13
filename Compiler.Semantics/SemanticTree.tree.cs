@@ -94,9 +94,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IQualifiedTypeNameExpressionNode),
     typeof(ISelfExpressionNode),
     typeof(IUnknownStandardNameExpressionNode),
-    typeof(IMoveExpressionNode),
+    typeof(IRecoveryExpressionNode),
+    typeof(IMoveVariableExpressionNode),
+    typeof(IMoveValueExpressionNode),
     typeof(IImplicitTempMoveExpressionNode),
-    typeof(IFreezeExpressionNode),
+    typeof(IFreezeVariableExpressionNode),
+    typeof(IFreezeValueExpressionNode),
+    typeof(IPrepareToReturnExpressionNode),
     typeof(IAsyncBlockExpressionNode),
     typeof(IAsyncStartExpressionNode),
     typeof(IAwaitExpressionNode),
@@ -1358,9 +1362,9 @@ public partial interface IAmbiguousAssignableExpressionNode : IAmbiguousExpressi
     typeof(IInitializerInvocationExpressionNode),
     typeof(IUnknownInvocationExpressionNode),
     typeof(INameExpressionNode),
-    typeof(IMoveExpressionNode),
+    typeof(IRecoveryExpressionNode),
     typeof(IImplicitTempMoveExpressionNode),
-    typeof(IFreezeExpressionNode),
+    typeof(IPrepareToReturnExpressionNode),
     typeof(IAsyncBlockExpressionNode),
     typeof(IAsyncStartExpressionNode),
     typeof(IAwaitExpressionNode))]
@@ -2137,36 +2141,33 @@ public partial interface IAmbiguousMoveExpressionNode : IAmbiguousExpressionNode
 }
 
 [Closed(
-    typeof(IMoveVariableExpressionNode),
-    typeof(IMoveValueExpressionNode))]
-public partial interface IMoveExpressionNode : ISemanticNode, IExpressionNode
+    typeof(IMoveExpressionNode),
+    typeof(IFreezeExpressionNode))]
+public partial interface IRecoveryExpressionNode : ISemanticNode, IExpressionNode
 {
-    new IExpressionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IExpressionSyntax IExpressionNode.Syntax => Syntax;
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    IConcreteSyntax? ICodeNode.Syntax => Syntax;
-    IExpressionNode Referent { get; }
     bool IsImplicit { get; }
 }
 
-public partial interface IMoveVariableExpressionNode : IMoveExpressionNode
+[Closed(
+    typeof(IMoveVariableExpressionNode),
+    typeof(IMoveValueExpressionNode))]
+public partial interface IMoveExpressionNode : IRecoveryExpressionNode
+{
+    IExpressionNode Referent { get; }
+}
+
+public partial interface IMoveVariableExpressionNode : ISemanticNode, IMoveExpressionNode
 {
     new ILocalBindingNameExpressionNode Referent { get; }
     IExpressionNode IMoveExpressionNode.Referent => Referent;
 }
 
-public partial interface IMoveValueExpressionNode : IMoveExpressionNode
+public partial interface IMoveValueExpressionNode : ISemanticNode, IMoveExpressionNode
 {
 }
 
 public partial interface IImplicitTempMoveExpressionNode : ISemanticNode, IExpressionNode
 {
-    new IExpressionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IExpressionSyntax IExpressionNode.Syntax => Syntax;
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IExpressionNode Referent { get; }
 }
 
@@ -2181,26 +2182,26 @@ public partial interface IAmbiguousFreezeExpressionNode : IAmbiguousExpressionNo
 [Closed(
     typeof(IFreezeVariableExpressionNode),
     typeof(IFreezeValueExpressionNode))]
-public partial interface IFreezeExpressionNode : ISemanticNode, IExpressionNode
+public partial interface IFreezeExpressionNode : IRecoveryExpressionNode
 {
-    new IExpressionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IExpressionSyntax IExpressionNode.Syntax => Syntax;
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IExpressionNode Referent { get; }
     bool IsTemporary { get; }
-    bool IsImplicit { get; }
 }
 
-public partial interface IFreezeVariableExpressionNode : IFreezeExpressionNode
+public partial interface IFreezeVariableExpressionNode : ISemanticNode, IFreezeExpressionNode
 {
     new ILocalBindingNameExpressionNode Referent { get; }
     IExpressionNode IFreezeExpressionNode.Referent => Referent;
 }
 
-public partial interface IFreezeValueExpressionNode : IFreezeExpressionNode
+public partial interface IFreezeValueExpressionNode : ISemanticNode, IFreezeExpressionNode
 {
+}
+
+public partial interface IPrepareToReturnExpressionNode : ISemanticNode, IExpressionNode
+{
+    IExpressionNode Value { get; }
+    IExpressionNode CurrentValue { get; }
 }
 
 public partial interface IAsyncBlockExpressionNode : ISemanticNode, IExpressionNode
