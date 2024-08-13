@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
@@ -114,5 +115,11 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         if (descendant == MethodGroup.CurrentContext)
             return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
         return base.InheritedExpectedType(child, descendant, ctx);
+    }
+
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    {
+        OverloadResolutionAspect.MethodInvocationExpression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

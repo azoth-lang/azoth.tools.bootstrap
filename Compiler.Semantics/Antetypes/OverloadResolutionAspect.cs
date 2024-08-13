@@ -73,16 +73,37 @@ internal static class OverloadResolutionAspect
                    .Select(o => o.Declaration).ToFixedSet();
     }
 
-    private static IMaybeExpressionAntetype AntetypeIfKnown(IAmbiguousExpressionNode? node)
+    private static IMaybeExpressionAntetype AntetypeIfKnown(IExpressionNode? node)
     {
-        if (node is IExpressionNode expression && !expression.ShouldNotBeExpression())
-            return expression.Antetype;
+        if (node is not null && !node.ShouldNotBeExpression())
+            return node.Antetype;
         return IAntetype.Unknown;
     }
 
     public static IStandardMethodDeclarationNode? MethodInvocationExpression_ReferencedDeclaration(
         IMethodInvocationExpressionNode node)
         => node.CompatibleDeclarations.TrySingle();
+
+    public static void MethodInvocationExpression_ContributeDiagnostics(
+        IMethodInvocationExpressionNode node,
+        DiagnosticsBuilder diagnostics)
+    {
+        if (node.ReferencedDeclaration is not null) return;
+
+        switch (node.CompatibleDeclarations.Count)
+        {
+            case 0:
+                // TODO uncomment once semantic tree can report errors for capability mismatch
+                //diagnostics.Add(NameBindingError.CouldNotBindMethod(node.File, node.Syntax));
+                break;
+            case 1:
+                throw new UnreachableException("ReferencedDeclaration would not be null");
+            default:
+                // TODO uncomment once semantic tree can report errors for capability mismatch
+                //diagnostics.Add(NameBindingError.AmbiguousMethodCall(node.File, node.Syntax));
+                break;
+        }
+    }
 
     public static IAmbiguousExpressionNode? InvocationExpression_Rewrite_TypeNameExpression(
         IInvocationExpressionNode node)
@@ -111,7 +132,7 @@ internal static class OverloadResolutionAspect
         IInitializerInvocationExpressionNode node)
     {
         var initializingAntetype = node.InitializerGroup.InitializingAntetype;
-        var arguments = node.Arguments.Select(AntetypeIfKnown);
+        var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
         var argumentAntetypes = ArgumentAntetypes.ForInitializer(arguments);
         return node.InitializerGroup.ReferencedDeclarations
                    .Select(d => AntetypeContextualizedOverload.Create(initializingAntetype, d))
