@@ -227,6 +227,12 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected bool InheritedImplicitRecoveryAllowed(IInheritanceContext ctx)
         => GetParent(ctx).InheritedImplicitRecoveryAllowed(this, this, ctx);
 
+    internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).InheritedShouldPrepareToReturn(this, descendant, ctx);
+
+    protected bool InheritedShouldPrepareToReturn(IInheritanceContext ctx)
+        => GetParent(ctx).InheritedShouldPrepareToReturn(this, this, ctx);
+
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => Previous(ctx).PreviousValueId(before, ctx);
 

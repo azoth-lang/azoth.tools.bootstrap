@@ -154,6 +154,9 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         return false;
     }
 
+    internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => false;
+
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         NameBindingAntetypesAspect.VariableDeclarationStatement_ContributeDiagnostics(this, diagnostics);

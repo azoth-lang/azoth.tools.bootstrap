@@ -45,6 +45,12 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
     public bool ImplicitRecoveryAllowed()
         => InheritedImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
 
+    public bool ShouldPrepareToReturn()
+        => InheritedShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+
+    internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => false;
+
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         ExpressionTypesAspect.Expression_ContributeDiagnostics(this, diagnostics);

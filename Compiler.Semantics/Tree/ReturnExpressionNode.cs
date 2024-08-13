@@ -80,4 +80,10 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
         if (descendant == CurrentValue) return true;
         return base.InheritedImplicitRecoveryAllowed(child, descendant, ctx);
     }
+
+    internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentValue) return true;
+        return false;
+    }
 }

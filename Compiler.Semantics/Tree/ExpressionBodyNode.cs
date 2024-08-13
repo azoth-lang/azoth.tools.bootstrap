@@ -62,4 +62,10 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
         if (descendant == ResultStatement.CurrentExpression) return true;
         return false;
     }
+
+    internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == ResultStatement.CurrentExpression) return true;
+        return false;
+    }
 }

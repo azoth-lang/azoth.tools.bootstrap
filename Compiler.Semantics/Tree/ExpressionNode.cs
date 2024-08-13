@@ -61,6 +61,9 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     public bool ImplicitRecoveryAllowed()
         => InheritedImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
 
+    public bool ShouldPrepareToReturn()
+        => InheritedShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
 
     // TODO remove once all nodes properly provide the expected antetype
@@ -82,6 +85,9 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
 
     internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         // By default, implicit recovery is not allowed
+        => false;
+
+    internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => false;
 
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)

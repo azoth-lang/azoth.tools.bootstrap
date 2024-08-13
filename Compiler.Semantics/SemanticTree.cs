@@ -146,6 +146,12 @@ public partial interface IExpressionNode
     /// the expected type.
     /// </summary>
     bool ImplicitRecoveryAllowed();
+
+    /// <summary>
+    /// Whether this expression should be prepared for return.
+    /// </summary>
+    bool ShouldPrepareToReturn();
+
     /// <summary>
     /// Indicates that this node type should not actually be counted as an expression. (i.e. it
     /// should implement <see cref="IExpressionNode"/>.

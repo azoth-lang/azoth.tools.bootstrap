@@ -40,6 +40,7 @@ internal class SemanticTreeValidator
         {
             _ = expression.ValueId;
             expression.ImplicitRecoveryAllowed();
+            expression.ShouldPrepareToReturn();
         }
         if (node is IExecutableDefinitionNode executable)
         {
