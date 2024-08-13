@@ -74,4 +74,10 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
 
     public IExitNode ControlFlowExit()
         => InheritedControlFlowExit(GrammarAttribute.CurrentInheritanceContext());
+
+    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    {
+        if (descendant == CurrentValue) return true;
+        return base.InheritedImplicitRecoveryAllowed(child, descendant, ctx);
+    }
 }

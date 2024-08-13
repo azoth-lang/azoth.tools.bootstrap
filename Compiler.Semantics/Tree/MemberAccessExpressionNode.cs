@@ -46,4 +46,8 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => null;
+
+    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        // By default, implicit recovery is not allowed
+        => false;
 }

@@ -146,8 +146,13 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     }
 
     internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        // By default, implicit recovery is not allowed
-        => false;
+    {
+        if (descendant == CurrentInitializer)
+            // TODO implicit recovery is allowed for initializers, but only if no variable will be affected
+            return true;
+        // Deeper descendants should not be affected by the implicit recovery of the initializer
+        return false;
+    }
 
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {

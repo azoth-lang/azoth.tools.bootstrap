@@ -444,8 +444,8 @@ internal sealed class FlowState : IFlowState
 
         var builder = ToBuilder();
         // TODO map the original capability values to the result capability values
-        var valueMap = LegacyAliasValueMapping(fromValueId, toValueId);
-        foreach (var (fromValue, toValue) in valueMap)
+        var valueMap = AliasValueMapping(fromValueId, toValueId);
+        foreach (var (toValue, fromValue) in valueMap)
         {
             // TODO if the original value was untracked, does that meant the result should be untracked?
             if (withType.SharingIsTracked())
@@ -459,7 +459,7 @@ internal sealed class FlowState : IFlowState
             else
                 builder.AddUntracked(toValue);
         }
-        builder.AddValueId(toValueId, valueMap.Values);
+        builder.AddValueId(toValueId, valueMap.Keys);
         builder.Remove(fromValueId);
         return builder.ToImmutable();
     }
