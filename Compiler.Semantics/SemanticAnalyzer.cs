@@ -1,7 +1,6 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.DeclarationNumbers;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Entities;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
@@ -25,7 +24,7 @@ public class SemanticAnalyzer
 
         // Assign declaration numbers before building the semantic tree so that, for now, they can
         // be used to build symbols for the old syntax tree approach.
-        DeclarationNumberAssigner.AssignIn(packageSyntax.AllEntityDeclarations);
+        //DeclarationNumberAssigner.AssignIn(packageSyntax.AllEntityDeclarations);
 
         // Build a semantic tree from the syntax tree
         var packageNode = SyntaxBinder.Bind(packageSyntax);
@@ -33,11 +32,11 @@ public class SemanticAnalyzer
         // Check all semantic conditions
         CheckSemantics(packageNode);
 
-        // Run legacy semantic analysis of the package
-        LegacyBasicAnalysis(packageSyntax, packageNode);
+        //// Run legacy semantic analysis of the package
+        //LegacyBasicAnalysis(packageSyntax, packageNode);
 
-        // TODO remove hack once all diagnostics are generated from the semantic tree
-        packageNode.AddDistinctDiagnostics(packageSyntax.Diagnostics);
+        //// TODO remove hack once all diagnostics are generated from the semantic tree
+        //packageNode.AddDistinctDiagnostics(packageSyntax.Diagnostics);
 
         // If the semantic tree reports any fatal errors, don't continue on
         packageNode.Diagnostics.ThrowIfFatalErrors();
