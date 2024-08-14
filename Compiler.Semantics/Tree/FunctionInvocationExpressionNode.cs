@@ -24,7 +24,9 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments => Arguments;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments => IntermediateArguments;
     private IFixedSet<IFunctionLikeDeclarationNode>? compatibleDeclarations;
     private bool compatibleDeclarationsCached;
     public IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations
@@ -88,6 +90,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         OverloadResolutionAspect.FunctionInvocationExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.FunctionInvocationExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 

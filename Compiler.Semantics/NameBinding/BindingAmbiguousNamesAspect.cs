@@ -189,7 +189,7 @@ internal static class BindingAmbiguousNamesAspect
     public static IAmbiguousExpressionNode? FunctionGroupName_Rewrite(IFunctionGroupNameNode node)
     {
         // TODO develop a better check for names that don't need resolved
-        if (node.Parent is IFunctionNameNode or IInvocationExpressionNode or IFunctionInvocationExpressionNode
+        if (node.Parent is IFunctionNameNode or IUnresolvedInvocationExpressionNode or IFunctionInvocationExpressionNode
            || node.ReferencedDeclarations.Count > 1)
             return null;
 
@@ -200,7 +200,7 @@ internal static class BindingAmbiguousNamesAspect
     public static void FunctionGroupName_ContributeDiagnostics(IFunctionGroupNameNode node, DiagnosticsBuilder diagnostics)
     {
         // TODO develop a better check that this node is ambiguous
-        if (node.Parent is IFunctionNameNode or IInvocationExpressionNode or IFunctionInvocationExpressionNode)
+        if (node.Parent is IFunctionNameNode or IUnresolvedInvocationExpressionNode or IFunctionInvocationExpressionNode)
             return;
 
         // TODO this should be based on how many compatible declarations there are

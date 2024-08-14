@@ -580,8 +580,8 @@ internal class SemanticsApplier
             case IAmbiguousNameExpressionNode n:
                 AmbiguousNameExpression(n);
                 break;
-            case IInvocationExpressionNode n:
-                InvocationExpression(n);
+            case IUnresolvedInvocationExpressionNode n:
+                UnresolvedInvocationExpression(n);
                 break;
             case IAmbiguousMoveExpressionNode n:
                 AmbiguousMoveExpression(n);
@@ -846,7 +846,7 @@ internal class SemanticsApplier
     #endregion
 
     #region Invocation Expressions
-    private static void InvocationExpression(IInvocationExpressionNode node)
+    private static void UnresolvedInvocationExpression(IUnresolvedInvocationExpressionNode node)
     {
         AmbiguousExpression(node.Expression);
         AmbiguousExpressions(node.Arguments);

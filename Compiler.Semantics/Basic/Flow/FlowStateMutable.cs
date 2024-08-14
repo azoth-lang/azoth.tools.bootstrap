@@ -4,7 +4,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -243,7 +242,7 @@ public sealed class FlowStateMutable
     {
         if (leftVariable is null) return rightVariable;
         if (rightVariable is null) return leftVariable;
-        SharingUnion(leftVariable, rightVariable, () => diagnostics.Add(FlowTypingError.CannotUnion(file, expression.Span)));
+        SharingUnion(leftVariable, rightVariable, Functions.Empty /*() => diagnostics.Add(FlowTypingError.CannotUnion(file, expression.Span))*/);
         Drop(leftVariable);
         // TODO would it be better to create a new result variable to return instead of reusing this one?
         return rightVariable;

@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
@@ -13,6 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
 {
     public override IIfExpressionSyntax Syntax { get; }
+    IConcreteSyntax IElseClauseNode.Syntax => Syntax;
     private RewritableChild<IAmbiguousExpressionNode> condition;
     private bool conditionCached;
     public IAmbiguousExpressionNode Condition
@@ -107,5 +109,11 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     {
         if (descendant == CurrentCondition) return DataType.OptionalBool;
         return base.InheritedExpectedType(child, descendant, ctx);
+    }
+
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    {
+        ExpressionTypesAspect.IfExpression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

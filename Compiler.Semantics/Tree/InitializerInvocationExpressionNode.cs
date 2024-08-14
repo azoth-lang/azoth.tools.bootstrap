@@ -17,7 +17,9 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments => Arguments;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments => IntermediateArguments;
     private IFixedSet<IInitializerDeclarationNode>? compatibleDeclarations;
     private bool compatibleDeclarationsCached;
     public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations

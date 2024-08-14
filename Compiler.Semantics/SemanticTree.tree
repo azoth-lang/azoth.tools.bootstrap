@@ -2,6 +2,7 @@
 ◊root Semantic;
 ◊prefix I;
 ◊suffix Node;
+◊using System.Collections.Generic;
 ◊using System.Numerics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -30,7 +31,7 @@ Child <: `IChildTreeNode<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPack
 
 // ---------- Special Parts
 BodyOrBlock <: Code = Statements:`IStatementNode`*;
-ElseClause <: ControlFlow = FlowStateAfter:`IFlowState` ValueId:`ValueId`;
+ElseClause <: ControlFlow = Syntax:`IConcreteSyntax` FlowStateAfter:`IFlowState` ValueId:`ValueId`;
 BlockOrResult: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings
@@ -296,7 +297,7 @@ Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`
     ExpectedType:`DataType`? Type:`DataType` FlowStateAfter:`IFlowState`;
 AssignableExpression <: Expression, AmbiguousAssignableExpression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
-NewObjectExpression <: Expression = Syntax:`INewObjectExpressionSyntax`
+NewObjectExpression <: InvocationExpression = Syntax:`INewObjectExpressionSyntax`
     ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression*
     IntermediateArguments:`IExpressionNode?`*
     ConstructingAntetype:`IMaybeAntetype` ReferencedConstructors:{`IConstructorDeclarationNode`}
@@ -357,35 +358,37 @@ ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax`
     Value:AmbiguousExpression? CurrentValue:`IAmbiguousExpressionNode`? IntermediateValue:`IExpressionNode`?;
 
 // ---------- Invocation Expressions
-InvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
+UnresolvedInvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
     Arguments:AmbiguousExpression* CurrentArguments:`IAmbiguousExpressionNode`*;
-FunctionInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
+InvocationExpression <: Expression =
+    AllArguments:`IEnumerable<IAmbiguousExpressionNode>` AllIntermediateArguments:`IEnumerable<IExpressionNode?>`;
+FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
     IntermediateArguments:`IExpressionNode?`*
     CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
-MethodInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
+MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     MethodGroup:MethodGroupName Arguments:AmbiguousExpression* CurrentArguments:`IAmbiguousExpressionNode`*
     IntermediateArguments:`IExpressionNode?`*
     CompatibleDeclarations:{`IStandardMethodDeclarationNode`} ReferencedDeclaration:`IStandardMethodDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
-GetterInvocationExpression <: Expression = Syntax:`IMemberAccessExpressionSyntax`
+GetterInvocationExpression <: InvocationExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression PropertyName:`StandardName`
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`IGetterMethodDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
-SetterInvocationExpression <: Expression = Syntax:`IAssignmentExpressionSyntax`
+SetterInvocationExpression <: InvocationExpression = Syntax:`IAssignmentExpressionSyntax`
     Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression IntermediateValue:`IExpressionNode`?
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`ISetterMethodDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
-FunctionReferenceInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
+FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:Expression Arguments:AmbiguousExpression* IntermediateArguments:`IExpressionNode?`*
     FunctionAntetype:`FunctionAntetype` FunctionType:`FunctionType`;
-InitializerInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
+InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IExpressionNode?`*
     CompatibleDeclarations:{`IInitializerDeclarationNode`} ReferencedDeclaration:`IInitializerDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
-UnknownInvocationExpression: Expression = Syntax:`IInvocationExpressionSyntax`
+UnknownInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 
 // ---------- Ambiguous Name Expressions

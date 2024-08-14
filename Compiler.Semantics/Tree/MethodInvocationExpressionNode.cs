@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
@@ -19,7 +20,9 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments => Arguments.Prepend(MethodGroup.Context);
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments => IntermediateArguments.Prepend(MethodGroup.Context);
     private IFixedSet<IStandardMethodDeclarationNode>? compatibleDeclarations;
     private bool compatibleDeclarationsCached;
     public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations
@@ -135,6 +138,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
     {
         OverloadResolutionAspect.MethodInvocationExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.MethodInvocationExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

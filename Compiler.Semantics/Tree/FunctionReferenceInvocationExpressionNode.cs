@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
@@ -24,7 +25,9 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments => Arguments;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments => IntermediateArguments;
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
@@ -103,5 +106,11 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
             && CurrentArguments.IndexOf(ambiguousExpression) is int index)
             return FunctionType.Parameters[index].Type;
         return base.InheritedExpectedType(child, descendant, ctx);
+    }
+
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    {
+        ExpressionTypesAspect.FunctionReferenceInvocation_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

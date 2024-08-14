@@ -62,15 +62,18 @@ public interface IFlowState : IEquatable<IFlowState>
     /// Combine the non-lent values representing the arguments into one sharing set with the return
     /// value id and drop the values for all arguments.
     /// </summary>
-    // TODO should storage of return value be based on whether the return type requires tracking?
     IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId, DataType returnType);
+
+    IEnumerable<ValueId> CombineArgumentsDisallowedDueToLent(IEnumerable<ArgumentValueId> arguments);
 
     IFlowState AccessField(IFieldAccessExpressionNode node);
     IFlowState Merge(IFlowState? other);
     IFlowState Transform(ValueId? valueId, ValueId toValueId, DataType withType);
 
-    // TODO make parameters non-nullable
+    // TODO make parameters non-nullable?
     IFlowState Combine(ValueId left, ValueId? right, ValueId intoValueId);
+
+    IEnumerable<ValueId> CombineDisallowedDueToLent(ValueId left, ValueId? right);
     IFlowState FreezeVariable(IBindingNode? binding, ValueId valueId, ValueId intoValueId);
     IFlowState FreezeValue(ValueId valueId, ValueId intoValueId);
     IFlowState MoveVariable(IBindingNode? binding, ValueId valueId, ValueId intoValueId);

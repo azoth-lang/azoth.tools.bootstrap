@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -29,6 +30,8 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
             : this.RewritableChild(ref valueCached, ref value);
     public IAmbiguousExpressionNode CurrentValue => value.UnsafeValue;
     public IExpressionNode? IntermediateValue => Value as IExpressionNode;
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments => [Context, Value];
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments => [Context, IntermediateValue];
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     public ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
     private IMaybeExpressionAntetype? antetype;
@@ -106,5 +109,11 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
         if (descendant == CurrentValue)
             return ContextualizedOverload?.ParameterTypes[0].Type;
         return base.InheritedExpectedType(child, descendant, ctx);
+    }
+
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    {
+        ExpressionTypesAspect.SetterInvocationExpression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

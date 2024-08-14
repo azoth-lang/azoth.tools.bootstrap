@@ -18,6 +18,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
 {
     public override IBlockExpressionSyntax Syntax { get; }
+    IConcreteSyntax IElseClauseNode.Syntax => Syntax;
     public IFixedList<IStatementNode> Statements { get; }
     private IMaybeAntetype? antetype;
     private bool antetypeCached;

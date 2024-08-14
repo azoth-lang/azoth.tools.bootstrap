@@ -348,7 +348,7 @@ public static class ISemanticNodeExtensions
                 if (n.Value is not null)
                     yield return n.Value;
                 yield break;
-            case IInvocationExpressionNode n:
+            case IUnresolvedInvocationExpressionNode n:
                 yield return n.Expression;
                 foreach (var child in n.Arguments)
                     yield return child;

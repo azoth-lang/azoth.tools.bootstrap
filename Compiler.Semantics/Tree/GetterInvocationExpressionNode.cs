@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -21,6 +23,8 @@ internal sealed class GetterInvocationExpressionNode : ExpressionNode, IGetterIn
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName PropertyName { get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments => Context.Yield();
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments => Context.Yield();
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     public IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
     private IMaybeExpressionAntetype? antetype;
@@ -77,5 +81,11 @@ internal sealed class GetterInvocationExpressionNode : ExpressionNode, IGetterIn
         if (descendant == CurrentContext)
             return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
         return base.InheritedExpectedType(child, descendant, ctx);
+    }
+
+    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    {
+        ExpressionTypesAspect.GetterInvocationExpression_ContributeDiagnostics(this, diagnostics);
+        base.CollectDiagnostics(diagnostics);
     }
 }

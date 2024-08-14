@@ -360,6 +360,39 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
+    public IEnumerable<ValueId> CombineArgumentsDisallowedDueToLent(IEnumerable<ArgumentValueId> arguments)
+    {
+        var valueIds = arguments.Where(a => !a.IsLent).Select(a => a.ValueId).ToFixedList();
+        if (valueIds.Count <= 1)
+            // When there is only a single argument, even if it is in a lent set, it isn't being unioned with anything else
+            return [];
+
+        return CombineDisallowedDueToLent(valueIds);
+    }
+
+    /// <summary>
+    /// Determine which value ids cannot be combined due to lent sharing sets.
+    /// </summary>
+    /// <remarks>Two lent sharing sets cannot be combined. In addition, a lent sharing set cannot be
+    /// combined with a non-lent, non-isolated sharing set. Isolated sharing sets are not a problem
+    /// because they just become part of the lent set and nothing else references them.</remarks>
+    private IEnumerable<ValueId> CombineDisallowedDueToLent(IEnumerable<ValueId> valueIds)
+    {
+        bool nonIsolatedBeingCombined = false;
+        var lentValueIds = new HashSet<ValueId>();
+        foreach (var valueId in valueIds)
+            foreach (var set in TrackedValues(valueId).Select(v => values.Sets[v]))
+            {
+                if (set.Data.IsLent)
+                    lentValueIds.Add(valueId);
+                else if (!IsIsolated(set))
+                    nonIsolatedBeingCombined = true;
+            }
+        if (nonIsolatedBeingCombined || lentValueIds.Count > 1)
+            return lentValueIds;
+        return [];
+    }
+
     public IFlowState AccessField(IFieldAccessExpressionNode node)
     {
         var contextValueId = node.Context.ValueId;
@@ -512,6 +545,15 @@ internal sealed class FlowState : IFlowState
         builder.Remove(valueIds);
 
         return builder.ToImmutable();
+    }
+
+    public IEnumerable<ValueId> CombineDisallowedDueToLent(ValueId left, ValueId? right)
+    {
+        if (right is null)
+            // When there is only a single argument, even if it is in a lent set, it isn't being unioned with anything else
+            return [];
+
+        return CombineDisallowedDueToLent([left, right.Value]);
     }
 
     public IFlowState FreezeVariable(IBindingNode? binding, ValueId valueId, ValueId intoValueId)

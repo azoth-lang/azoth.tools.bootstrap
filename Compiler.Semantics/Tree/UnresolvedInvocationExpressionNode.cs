@@ -9,7 +9,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvocationExpressionNode
+internal sealed class UnresolvedInvocationExpressionNode : AmbiguousExpressionNode, IUnresolvedInvocationExpressionNode
 {
     protected override bool MayHaveRewrite => true;
     public override IInvocationExpressionSyntax Syntax { get; }
@@ -20,18 +20,18 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
             : this.RewritableChild(ref expressionCached, ref expression);
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
 
-    private readonly IRewritableChildList<IAmbiguousExpressionNode> arguments;
+    private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
 
-    public InvocationExpressionNode(
+    public UnresolvedInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
         IAmbiguousExpressionNode expression,
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
-        this.arguments = ChildList.Create(this, nameof(Arguments), arguments);
+        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
@@ -61,10 +61,10 @@ internal sealed class InvocationExpressionNode : AmbiguousExpressionNode, IInvoc
     }
 
     protected override IChildNode Rewrite()
-        => OverloadResolutionAspect.InvocationExpression_Rewrite_FunctionGroupNameExpression(this)
-        ?? OverloadResolutionAspect.InvocationExpression_Rewrite_MethodGroupNameExpression(this)
-        ?? OverloadResolutionAspect.InvocationExpression_Rewrite_InitializerGroupNameExpression(this)
-        ?? OverloadResolutionAspect.InvocationExpression_Rewrite_TypeNameExpression(this)
-        ?? OverloadResolutionAspect.InvocationExpression_Rewrite_FunctionReferenceExpression(this)
-        ?? OverloadResolutionAspect.InvocationExpression_Rewrite_ToUnknown(this);
+        => OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionGroupNameExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_MethodGroupNameExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_TypeNameExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_ToUnknown(this);
 }
