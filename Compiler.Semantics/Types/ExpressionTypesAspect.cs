@@ -439,6 +439,7 @@ public static class ExpressionTypesAspect
 
     public static IFlowState AssignmentExpression_FlowStateAfter(IAssignmentExpressionNode node)
     {
+        // TODO this isn't quite right since the original value is replaced by the new value
         if (node.IntermediateLeftOperand?.ValueId is not ValueId leftValueId)
             return IFlowState.Empty;
         return node.IntermediateRightOperand?.FlowStateAfter.Combine(leftValueId,

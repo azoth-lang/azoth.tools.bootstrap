@@ -20,6 +20,6 @@ public readonly struct CompilerResult<T>
         Diagnostics = diagnostics.ToFixedSet();
     }
 
-    public CompilerResult<S> Select<S>(Func<T, S> selector)
+    public CompilerResult<TResult> Select<TResult>(Func<T, TResult> selector)
         => new(selector(Value), Diagnostics);
 }
