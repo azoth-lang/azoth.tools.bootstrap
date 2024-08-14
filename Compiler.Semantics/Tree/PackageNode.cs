@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -68,12 +67,6 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
         References = ChildSet.Attach(this, references);
         MainFacet = Child.Attach(this, mainFacet);
         TestingFacet = Child.Attach(this, testingFacet);
-    }
-
-    public void AddDistinctDiagnostics(IEnumerable<Diagnostic> diagnostics)
-    {
-        var builder = new DiagnosticsBuilder { Diagnostics, diagnostics.Except(Diagnostics) };
-        this.diagnostics = builder.Build();
     }
 
     internal override IPackageDeclarationNode InheritedPackage(IChildNode child, IChildNode descendant)
