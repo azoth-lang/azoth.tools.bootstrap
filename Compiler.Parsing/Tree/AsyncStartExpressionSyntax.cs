@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class AsyncStartExpressionSyntax : DataTypedExpressionSyntax, IAsyncStartExpressionSyntax
+internal class AsyncStartExpressionSyntax : TypedExpressionSyntax, IAsyncStartExpressionSyntax
 {
     public bool Scheduled { get; }
     public IExpressionSyntax Expression { get; }

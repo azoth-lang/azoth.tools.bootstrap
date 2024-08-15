@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class MoveExpressionSyntax : DataTypedExpressionSyntax, IMoveExpressionSyntax
+internal class MoveExpressionSyntax : TypedExpressionSyntax, IMoveExpressionSyntax
 {
     public ISimpleNameSyntax Referent { [DebuggerStepThrough] get; }
 

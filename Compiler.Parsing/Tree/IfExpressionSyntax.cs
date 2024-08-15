@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class IfExpressionSyntax : DataTypedExpressionSyntax, IIfExpressionSyntax
+internal class IfExpressionSyntax : TypedExpressionSyntax, IIfExpressionSyntax
 {
     public IExpressionSyntax Condition { [DebuggerStepThrough] get; }
     public IBlockOrResultSyntax ThenBlock { [DebuggerStepThrough] get; }

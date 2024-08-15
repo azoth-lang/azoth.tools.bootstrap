@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class ConversionExpressionSyntax : DataTypedExpressionSyntax, IConversionExpressionSyntax
+internal class ConversionExpressionSyntax : TypedExpressionSyntax, IConversionExpressionSyntax
 {
     public IExpressionSyntax Referent { get; }
     public ConversionOperator Operator { get; }

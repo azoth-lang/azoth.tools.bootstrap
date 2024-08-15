@@ -6,7 +6,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class UnaryOperatorExpressionSyntax : DataTypedExpressionSyntax, IUnaryOperatorExpressionSyntax
+internal class UnaryOperatorExpressionSyntax : TypedExpressionSyntax, IUnaryOperatorExpressionSyntax
 {
     public UnaryOperatorFixity Fixity { [DebuggerStepThrough] get; }
     public UnaryOperator Operator { [DebuggerStepThrough] get; }

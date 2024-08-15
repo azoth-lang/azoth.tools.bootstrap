@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class NewObjectExpressionSyntax : DataTypedExpressionSyntax, INewObjectExpressionSyntax
+internal class NewObjectExpressionSyntax : TypedExpressionSyntax, INewObjectExpressionSyntax
 {
     /// <summary>
     /// Note that this could represent a named or unnamed constructor. So

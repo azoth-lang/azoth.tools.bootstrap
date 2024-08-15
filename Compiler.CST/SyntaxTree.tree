@@ -142,11 +142,10 @@ OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 // ---------- Expressions
 Expression;
 TypedExpression: Expression;
-DataTypedExpression: TypedExpression;
 AssignableExpression: TypedExpression;
-BlockExpression: DataTypedExpression <: BlockOrResult, BodyOrBlock = Statements:Statement*;
-NewObjectExpression: DataTypedExpression = Type:TypeName ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
-UnsafeExpression: DataTypedExpression = Expression;
+BlockExpression: TypedExpression <: BlockOrResult, BodyOrBlock = Statements:Statement*;
+NewObjectExpression: TypedExpression = Type:TypeName ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
+UnsafeExpression: TypedExpression = Expression;
 
 // ---------- Literal Expressions
 LiteralExpression: TypedExpression;
@@ -156,24 +155,24 @@ NoneLiteralExpression: LiteralExpression;
 StringLiteralExpression: LiteralExpression = Value:`string`;
 
 // ---------- Operator Expressions
-AssignmentExpression: DataTypedExpression = LeftOperand:AssignableExpression Operator:`AssignmentOperator` RightOperand:Expression;
-BinaryOperatorExpression: DataTypedExpression = LeftOperand:Expression Operator:`BinaryOperator` RightOperand:Expression;
-UnaryOperatorExpression: DataTypedExpression = Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:Expression;
-IdExpression: DataTypedExpression = Referent:Expression;
-ConversionExpression: DataTypedExpression = Referent:Expression Operator:`ConversionOperator` ConvertToType:Type;
-PatternMatchExpression: DataTypedExpression = Referent:Expression Pattern;
+AssignmentExpression: TypedExpression = LeftOperand:AssignableExpression Operator:`AssignmentOperator` RightOperand:Expression;
+BinaryOperatorExpression: TypedExpression = LeftOperand:Expression Operator:`BinaryOperator` RightOperand:Expression;
+UnaryOperatorExpression: TypedExpression = Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:Expression;
+IdExpression: TypedExpression = Referent:Expression;
+ConversionExpression: TypedExpression = Referent:Expression Operator:`ConversionOperator` ConvertToType:Type;
+PatternMatchExpression: TypedExpression = Referent:Expression Pattern;
 
 // ---------- Control Flow Expressions
-IfExpression: DataTypedExpression <: ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
-LoopExpression: DataTypedExpression = Block:BlockExpression;
-WhileExpression: DataTypedExpression = Condition:Expression Block:BlockExpression;
-ForeachExpression: DataTypedExpression <: LocalBinding = VariableName:`IdentifierName` InExpression:Expression Type? Block:BlockExpression;
+IfExpression: TypedExpression <: ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
+LoopExpression: TypedExpression = Block:BlockExpression;
+WhileExpression: TypedExpression = Condition:Expression Block:BlockExpression;
+ForeachExpression: TypedExpression <: LocalBinding = VariableName:`IdentifierName` InExpression:Expression Type? Block:BlockExpression;
 BreakExpression: TypedExpression = Value:Expression?;
 NextExpression: TypedExpression;
 ReturnExpression: TypedExpression = Value:Expression?;
 
 // ---------- Invocation Expressions
-InvocationExpression: DataTypedExpression = Expression Arguments:Expression*;
+InvocationExpression: TypedExpression = Expression Arguments:Expression*;
 
 // ---------- Name Expressions
 NameExpression: Expression;
@@ -190,10 +189,10 @@ MemberAccessExpression: NameExpression <: AssignableExpression
 MissingName: NameExpression <: SimpleName, AssignableExpression;
 
 // ---------- Capability Expressions
-MoveExpression: DataTypedExpression = Referent:SimpleName;
-FreezeExpression: DataTypedExpression = Referent:SimpleName;
+MoveExpression: TypedExpression = Referent:SimpleName;
+FreezeExpression: TypedExpression = Referent:SimpleName;
 
 // ---------- Async Expressions
-AsyncBlockExpression: DataTypedExpression = Block:BlockExpression;
-AsyncStartExpression: DataTypedExpression = Scheduled:`bool` Expression;
-AwaitExpression: DataTypedExpression = Expression;
+AsyncBlockExpression: TypedExpression = Block:BlockExpression;
+AsyncStartExpression: TypedExpression = Scheduled:`bool` Expression;
+AwaitExpression: TypedExpression = Expression;

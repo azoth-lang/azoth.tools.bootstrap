@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class IdExpressionSyntax : DataTypedExpressionSyntax, IIdExpressionSyntax
+internal class IdExpressionSyntax : TypedExpressionSyntax, IIdExpressionSyntax
 {
     public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
 
