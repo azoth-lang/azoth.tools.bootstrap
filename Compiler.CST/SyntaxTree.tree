@@ -148,7 +148,6 @@ AssignableExpression: TypedExpression;
 BlockExpression: DataTypedExpression <: BlockOrResult, BodyOrBlock = Statements:Statement*;
 NewObjectExpression: DataTypedExpression = Type:TypeName ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
 UnsafeExpression: DataTypedExpression = Expression;
-NeverTypedExpression: TypedExpression;
 
 // ---------- Literal Expressions
 LiteralExpression: TypedExpression;
@@ -170,9 +169,9 @@ IfExpression: DataTypedExpression <: ElseClause = Condition:Expression ThenBlock
 LoopExpression: DataTypedExpression = Block:BlockExpression;
 WhileExpression: DataTypedExpression = Condition:Expression Block:BlockExpression;
 ForeachExpression: DataTypedExpression <: LocalBinding = VariableName:`IdentifierName` DeclarationNumber:`Promise<int?>` InExpression:Expression Type? Block:BlockExpression;
-BreakExpression: NeverTypedExpression = Value:Expression?;
-NextExpression: NeverTypedExpression;
-ReturnExpression: NeverTypedExpression = Value:Expression?;
+BreakExpression: TypedExpression = Value:Expression?;
+NextExpression: TypedExpression;
+ReturnExpression: TypedExpression = Value:Expression?;
 
 // ---------- Invocation Expressions
 InvocationExpression: DataTypedExpression = Expression Arguments:Expression*;

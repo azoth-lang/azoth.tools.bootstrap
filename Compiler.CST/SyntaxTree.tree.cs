@@ -641,8 +641,10 @@ public partial interface IExpressionSyntax : IConcreteSyntax
 [Closed(
     typeof(IDataTypedExpressionSyntax),
     typeof(IAssignableExpressionSyntax),
-    typeof(INeverTypedExpressionSyntax),
     typeof(ILiteralExpressionSyntax),
+    typeof(IBreakExpressionSyntax),
+    typeof(INextExpressionSyntax),
+    typeof(IReturnExpressionSyntax),
     typeof(ISpecialTypeNameExpressionSyntax),
     typeof(IInstanceExpressionSyntax))]
 public partial interface ITypedExpressionSyntax : IExpressionSyntax
@@ -696,14 +698,6 @@ public partial interface INewObjectExpressionSyntax : IDataTypedExpressionSyntax
 public partial interface IUnsafeExpressionSyntax : IDataTypedExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
-}
-
-[Closed(
-    typeof(IBreakExpressionSyntax),
-    typeof(INextExpressionSyntax),
-    typeof(IReturnExpressionSyntax))]
-public partial interface INeverTypedExpressionSyntax : ITypedExpressionSyntax
-{
 }
 
 [Closed(
@@ -800,16 +794,16 @@ public partial interface IForeachExpressionSyntax : IDataTypedExpressionSyntax, 
     IBlockExpressionSyntax Block { get; }
 }
 
-public partial interface IBreakExpressionSyntax : INeverTypedExpressionSyntax
+public partial interface IBreakExpressionSyntax : ITypedExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
 }
 
-public partial interface INextExpressionSyntax : INeverTypedExpressionSyntax
+public partial interface INextExpressionSyntax : ITypedExpressionSyntax
 {
 }
 
-public partial interface IReturnExpressionSyntax : INeverTypedExpressionSyntax
+public partial interface IReturnExpressionSyntax : ITypedExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
 }

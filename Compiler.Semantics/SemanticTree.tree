@@ -300,7 +300,7 @@ NewObjectExpression <: InvocationExpression = Syntax:`INewObjectExpressionSyntax
     CompatibleConstructors:{`IConstructorDeclarationNode`} ReferencedConstructor:`IConstructorDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
 UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
-NeverTypedExpression <: Expression = Syntax:`INeverTypedExpressionSyntax` Type:`NeverType`;
+NeverTypedExpression <: Expression = Type:`NeverType`;
 
 // ---------- Literal Expressions
 LiteralExpression <: Expression = Syntax:`ILiteralExpressionSyntax`;

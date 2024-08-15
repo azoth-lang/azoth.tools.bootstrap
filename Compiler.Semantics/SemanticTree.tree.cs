@@ -1434,11 +1434,6 @@ public partial interface IUnsafeExpressionNode : ISemanticNode, IExpressionNode
     typeof(IReturnExpressionNode))]
 public partial interface INeverTypedExpressionNode : ISemanticNode, IExpressionNode
 {
-    new INeverTypedExpressionSyntax Syntax { get; }
-    ISyntax? ISemanticNode.Syntax => Syntax;
-    IExpressionSyntax IExpressionNode.Syntax => Syntax;
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     new NeverType Type { get; }
     DataType IExpressionNode.Type => Type;
 }
@@ -1644,7 +1639,10 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
 public partial interface IBreakExpressionNode : INeverTypedExpressionNode
 {
     new IBreakExpressionSyntax Syntax { get; }
-    INeverTypedExpressionSyntax INeverTypedExpressionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IExpressionSyntax IExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IAmbiguousExpressionNode? Value { get; }
     IExpressionNode? IntermediateValue { get; }
 }
@@ -1652,13 +1650,19 @@ public partial interface IBreakExpressionNode : INeverTypedExpressionNode
 public partial interface INextExpressionNode : INeverTypedExpressionNode
 {
     new INextExpressionSyntax Syntax { get; }
-    INeverTypedExpressionSyntax INeverTypedExpressionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IExpressionSyntax IExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    IConcreteSyntax? ICodeNode.Syntax => Syntax;
 }
 
 public partial interface IReturnExpressionNode : INeverTypedExpressionNode
 {
     new IReturnExpressionSyntax Syntax { get; }
-    INeverTypedExpressionSyntax INeverTypedExpressionNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IExpressionSyntax IExpressionNode.Syntax => Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    IConcreteSyntax? ICodeNode.Syntax => Syntax;
     IAmbiguousExpressionNode? Value { get; }
     IAmbiguousExpressionNode? CurrentValue { get; }
     IExpressionNode? IntermediateValue { get; }

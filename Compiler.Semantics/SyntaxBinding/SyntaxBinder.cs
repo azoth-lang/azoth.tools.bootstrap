@@ -453,7 +453,9 @@ internal static class SyntaxBinder
             ILoopExpressionSyntax syn => LoopExpression(syn),
             IWhileExpressionSyntax syn => WhileExpression(syn),
             IForeachExpressionSyntax syn => ForeachExpression(syn),
-            INeverTypedExpressionSyntax syn => NeverTypedExpression(syn),
+            IBreakExpressionSyntax syn => BreakExpression(syn),
+            INextExpressionSyntax syn => NextExpression(syn),
+            IReturnExpressionSyntax syn => ReturnExpression(syn),
             IInvocationExpressionSyntax syn => InvocationExpression(syn),
             ISelfExpressionSyntax syn => SelfExpression(syn),
             IMoveExpressionSyntax syn => MoveExpression(syn),
@@ -482,15 +484,6 @@ internal static class SyntaxBinder
 
     private static IUnsafeExpressionNode UnsafeExpression(IUnsafeExpressionSyntax syntax)
         => new UnsafeExpressionNode(syntax, AmbiguousExpression(syntax.Expression));
-
-    private static IExpressionNode NeverTypedExpression(INeverTypedExpressionSyntax syntax)
-        => syntax switch
-        {
-            IBreakExpressionSyntax syn => BreakExpression(syn),
-            INextExpressionSyntax syn => NextExpression(syn),
-            IReturnExpressionSyntax syn => ReturnExpression(syn),
-            _ => throw ExhaustiveMatch.Failed(syntax)
-        };
     #endregion
 
     #region Literal Expressions
