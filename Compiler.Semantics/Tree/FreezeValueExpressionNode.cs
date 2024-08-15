@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class FreezeValueExpressionNode : ExpressionNode, IFreezeValueExpressionNode
 {
-    public override ITypedExpressionSyntax Syntax { get; }
+    public override IExpressionSyntax Syntax { get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
     public IExpressionNode Referent
@@ -35,7 +35,7 @@ internal sealed class FreezeValueExpressionNode : ExpressionNode, IFreezeValueEx
                 ExpressionTypesAspect.FreezeValueExpression_FlowStateAfter);
 
     public FreezeValueExpressionNode(
-        ITypedExpressionSyntax syntax,
+        IExpressionSyntax syntax,
         IExpressionNode referent,
         bool isTemporary,
         bool isImplicit)

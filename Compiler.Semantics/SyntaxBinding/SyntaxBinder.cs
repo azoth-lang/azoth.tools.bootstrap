@@ -430,14 +430,6 @@ internal static class SyntaxBinder
         => syntax switch
         {
             null => null,
-            ITypedExpressionSyntax syn => AmbiguousExpression(syn),
-            INameExpressionSyntax syn => NameExpression(syn),
-            _ => throw ExhaustiveMatch.Failed(syntax)
-        };
-
-    private static IAmbiguousExpressionNode AmbiguousExpression(ITypedExpressionSyntax syntax)
-        => syntax switch
-        {
             IAssignableExpressionSyntax syn => AssignableExpression(syn),
             IBlockExpressionSyntax syn => BlockExpression(syn),
             INewObjectExpressionSyntax syn => NewObjectExpression(syn),
@@ -464,6 +456,7 @@ internal static class SyntaxBinder
             IAsyncStartExpressionSyntax syn => AsyncStartExpression(syn),
             IAwaitExpressionSyntax syn => AwaitExpression(syn),
             ISpecialTypeNameExpressionSyntax syn => SpecialTypeNameExpression(syn),
+            IGenericNameExpressionSyntax syn => GenericNameExpression(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 

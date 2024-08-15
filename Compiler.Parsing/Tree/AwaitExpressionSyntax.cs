@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class AwaitExpressionSyntax : TypedExpressionSyntax, IAwaitExpressionSyntax
+internal class AwaitExpressionSyntax : ExpressionSyntax, IAwaitExpressionSyntax
 {
     public IExpressionSyntax Expression { get; }
 

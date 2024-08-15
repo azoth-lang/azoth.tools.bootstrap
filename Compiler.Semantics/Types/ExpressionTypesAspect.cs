@@ -214,7 +214,7 @@ public static class ExpressionTypesAspect
 
         // TODO what if selfType is not a capability type?
 
-        var syntax = (ITypedExpressionSyntax)node.Syntax;
+        var syntax = (IExpressionSyntax)node.Syntax;
         var implicitMove = isTemporary
             ? new ImplicitTempMoveExpressionNode(syntax, node)
             : (IExpressionNode)(node is IVariableNameExpressionNode variableName
@@ -241,7 +241,7 @@ public static class ExpressionTypesAspect
 
         // TODO what if type is not a capability type?
 
-        var syntax = (ITypedExpressionSyntax)node.Syntax;
+        var syntax = (IExpressionSyntax)node.Syntax;
         IFreezeExpressionNode implicitFreeze = node is IVariableNameExpressionNode variableName
             ? new FreezeVariableExpressionNode(syntax, variableName, isTemporary, isImplicit: true)
             : new FreezeValueExpressionNode(syntax, node, isTemporary, isImplicit: true);

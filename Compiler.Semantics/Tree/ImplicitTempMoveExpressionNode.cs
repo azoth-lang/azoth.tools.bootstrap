@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class ImplicitTempMoveExpressionNode : ExpressionNode, IImplicitTempMoveExpressionNode
 {
-    public override ITypedExpressionSyntax Syntax { get; }
+    public override IExpressionSyntax Syntax { get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
     public IExpressionNode Referent
@@ -30,7 +30,7 @@ internal sealed class ImplicitTempMoveExpressionNode : ExpressionNode, IImplicit
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ImplicitTempMoveExpression_FlowStateAfter);
 
-    public ImplicitTempMoveExpressionNode(ITypedExpressionSyntax syntax, IExpressionNode referent)
+    public ImplicitTempMoveExpressionNode(IExpressionSyntax syntax, IExpressionNode referent)
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);

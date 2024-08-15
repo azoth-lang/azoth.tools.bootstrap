@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class UnsafeExpressionSyntax : TypedExpressionSyntax, IUnsafeExpressionSyntax
+internal class UnsafeExpressionSyntax : ExpressionSyntax, IUnsafeExpressionSyntax
 {
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
 

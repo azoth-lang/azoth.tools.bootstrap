@@ -141,38 +141,37 @@ OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
 Expression;
-TypedExpression: Expression;
-AssignableExpression: TypedExpression;
-BlockExpression: TypedExpression <: BlockOrResult, BodyOrBlock = Statements:Statement*;
-NewObjectExpression: TypedExpression = Type:TypeName ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
-UnsafeExpression: TypedExpression = Expression;
+AssignableExpression: Expression;
+BlockExpression: Expression <: BlockOrResult, BodyOrBlock = Statements:Statement*;
+NewObjectExpression: Expression = Type:TypeName ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
+UnsafeExpression: Expression = Expression;
 
 // ---------- Literal Expressions
-LiteralExpression: TypedExpression;
+LiteralExpression: Expression;
 BoolLiteralExpression: LiteralExpression = Value:`bool`;
 IntegerLiteralExpression: LiteralExpression = Value:`BigInteger` ;
 NoneLiteralExpression: LiteralExpression;
 StringLiteralExpression: LiteralExpression = Value:`string`;
 
 // ---------- Operator Expressions
-AssignmentExpression: TypedExpression = LeftOperand:AssignableExpression Operator:`AssignmentOperator` RightOperand:Expression;
-BinaryOperatorExpression: TypedExpression = LeftOperand:Expression Operator:`BinaryOperator` RightOperand:Expression;
-UnaryOperatorExpression: TypedExpression = Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:Expression;
-IdExpression: TypedExpression = Referent:Expression;
-ConversionExpression: TypedExpression = Referent:Expression Operator:`ConversionOperator` ConvertToType:Type;
-PatternMatchExpression: TypedExpression = Referent:Expression Pattern;
+AssignmentExpression: Expression = LeftOperand:AssignableExpression Operator:`AssignmentOperator` RightOperand:Expression;
+BinaryOperatorExpression: Expression = LeftOperand:Expression Operator:`BinaryOperator` RightOperand:Expression;
+UnaryOperatorExpression: Expression = Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:Expression;
+IdExpression: Expression = Referent:Expression;
+ConversionExpression: Expression = Referent:Expression Operator:`ConversionOperator` ConvertToType:Type;
+PatternMatchExpression: Expression = Referent:Expression Pattern;
 
 // ---------- Control Flow Expressions
-IfExpression: TypedExpression <: ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
-LoopExpression: TypedExpression = Block:BlockExpression;
-WhileExpression: TypedExpression = Condition:Expression Block:BlockExpression;
-ForeachExpression: TypedExpression <: LocalBinding = VariableName:`IdentifierName` InExpression:Expression Type? Block:BlockExpression;
-BreakExpression: TypedExpression = Value:Expression?;
-NextExpression: TypedExpression;
-ReturnExpression: TypedExpression = Value:Expression?;
+IfExpression: Expression <: ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
+LoopExpression: Expression = Block:BlockExpression;
+WhileExpression: Expression = Condition:Expression Block:BlockExpression;
+ForeachExpression: Expression <: LocalBinding = VariableName:`IdentifierName` InExpression:Expression Type? Block:BlockExpression;
+BreakExpression: Expression = Value:Expression?;
+NextExpression: Expression;
+ReturnExpression: Expression = Value:Expression?;
 
 // ---------- Invocation Expressions
-InvocationExpression: TypedExpression = Expression Arguments:Expression*;
+InvocationExpression: Expression = Expression Arguments:Expression*;
 
 // ---------- Name Expressions
 NameExpression: Expression;
@@ -180,19 +179,19 @@ SimpleName: NameExpression;
 StandardNameExpression: NameExpression = Name:`StandardName`;
 IdentifierNameExpression: NameExpression <: StandardNameExpression, SimpleName, AssignableExpression
     = Name:`IdentifierName`;
-SpecialTypeNameExpression: NameExpression <: TypedExpression = Name:`SpecialTypeName`;
+SpecialTypeNameExpression: NameExpression <: Expression = Name:`SpecialTypeName`;
 GenericNameExpression: NameExpression <: StandardNameExpression = Name:`GenericName` TypeArguments:Type*;
-InstanceExpression <: SimpleName, TypedExpression; // i.e. `self` or `base`
+InstanceExpression <: SimpleName, Expression; // i.e. `self` or `base`
 SelfExpression: NameExpression <: InstanceExpression = IsImplicit:`bool`;
 MemberAccessExpression: NameExpression <: AssignableExpression
     = Context:Expression MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan`;
 MissingName: NameExpression <: SimpleName, AssignableExpression;
 
 // ---------- Capability Expressions
-MoveExpression: TypedExpression = Referent:SimpleName;
-FreezeExpression: TypedExpression = Referent:SimpleName;
+MoveExpression: Expression = Referent:SimpleName;
+FreezeExpression: Expression = Referent:SimpleName;
 
 // ---------- Async Expressions
-AsyncBlockExpression: TypedExpression = Block:BlockExpression;
-AsyncStartExpression: TypedExpression = Scheduled:`bool` Expression;
-AwaitExpression: TypedExpression = Expression;
+AsyncBlockExpression: Expression = Block:BlockExpression;
+AsyncStartExpression: Expression = Scheduled:`bool` Expression;
+AwaitExpression: Expression = Expression;

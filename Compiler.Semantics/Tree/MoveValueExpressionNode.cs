@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class MoveValueExpressionNode : ExpressionNode, IMoveValueExpressionNode
 {
-    public override ITypedExpressionSyntax Syntax { get; }
+    public override IExpressionSyntax Syntax { get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
     public IExpressionNode Referent
@@ -32,7 +32,7 @@ internal sealed class MoveValueExpressionNode : ExpressionNode, IMoveValueExpres
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.MoveValueExpression_FlowStateAfter);
 
-    public MoveValueExpressionNode(ITypedExpressionSyntax syntax, IExpressionNode referent, bool isImplicit)
+    public MoveValueExpressionNode(IExpressionSyntax syntax, IExpressionNode referent, bool isImplicit)
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);

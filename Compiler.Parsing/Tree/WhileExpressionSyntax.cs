@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class WhileExpressionSyntax : TypedExpressionSyntax, IWhileExpressionSyntax
+internal class WhileExpressionSyntax : ExpressionSyntax, IWhileExpressionSyntax
 {
     public IExpressionSyntax Condition { [DebuggerStepThrough] get; }
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }

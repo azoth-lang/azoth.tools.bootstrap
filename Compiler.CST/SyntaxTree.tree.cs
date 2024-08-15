@@ -30,8 +30,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IReturnTypeSyntax),
     typeof(IStatementSyntax),
     typeof(IPatternSyntax),
-    typeof(IExpressionSyntax),
-    typeof(IInstanceExpressionSyntax))]
+    typeof(IExpressionSyntax))]
 public partial interface IConcreteSyntax
 {
     TextSpan Span { get; }
@@ -628,13 +627,6 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
 }
 
 [Closed(
-    typeof(ITypedExpressionSyntax),
-    typeof(INameExpressionSyntax))]
-public partial interface IExpressionSyntax : IConcreteSyntax
-{
-}
-
-[Closed(
     typeof(IAssignableExpressionSyntax),
     typeof(IBlockExpressionSyntax),
     typeof(INewObjectExpressionSyntax),
@@ -654,14 +646,14 @@ public partial interface IExpressionSyntax : IConcreteSyntax
     typeof(INextExpressionSyntax),
     typeof(IReturnExpressionSyntax),
     typeof(IInvocationExpressionSyntax),
-    typeof(ISpecialTypeNameExpressionSyntax),
+    typeof(INameExpressionSyntax),
     typeof(IInstanceExpressionSyntax),
     typeof(IMoveExpressionSyntax),
     typeof(IFreezeExpressionSyntax),
     typeof(IAsyncBlockExpressionSyntax),
     typeof(IAsyncStartExpressionSyntax),
     typeof(IAwaitExpressionSyntax))]
-public partial interface ITypedExpressionSyntax : IExpressionSyntax
+public partial interface IExpressionSyntax : IConcreteSyntax
 {
 }
 
@@ -669,15 +661,15 @@ public partial interface ITypedExpressionSyntax : IExpressionSyntax
     typeof(IIdentifierNameExpressionSyntax),
     typeof(IMemberAccessExpressionSyntax),
     typeof(IMissingNameSyntax))]
-public partial interface IAssignableExpressionSyntax : ITypedExpressionSyntax
+public partial interface IAssignableExpressionSyntax : IExpressionSyntax
 {
 }
 
-public partial interface IBlockExpressionSyntax : ITypedExpressionSyntax, IBlockOrResultSyntax, IBodyOrBlockSyntax
+public partial interface IBlockExpressionSyntax : IExpressionSyntax, IBlockOrResultSyntax, IBodyOrBlockSyntax
 {
 }
 
-public partial interface INewObjectExpressionSyntax : ITypedExpressionSyntax
+public partial interface INewObjectExpressionSyntax : IExpressionSyntax
 {
     ITypeNameSyntax Type { get; }
     IdentifierName? ConstructorName { get; }
@@ -685,7 +677,7 @@ public partial interface INewObjectExpressionSyntax : ITypedExpressionSyntax
     IFixedList<IExpressionSyntax> Arguments { get; }
 }
 
-public partial interface IUnsafeExpressionSyntax : ITypedExpressionSyntax
+public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
 }
@@ -695,7 +687,7 @@ public partial interface IUnsafeExpressionSyntax : ITypedExpressionSyntax
     typeof(IIntegerLiteralExpressionSyntax),
     typeof(INoneLiteralExpressionSyntax),
     typeof(IStringLiteralExpressionSyntax))]
-public partial interface ILiteralExpressionSyntax : ITypedExpressionSyntax
+public partial interface ILiteralExpressionSyntax : IExpressionSyntax
 {
 }
 
@@ -718,64 +710,64 @@ public partial interface IStringLiteralExpressionSyntax : ILiteralExpressionSynt
     string Value { get; }
 }
 
-public partial interface IAssignmentExpressionSyntax : ITypedExpressionSyntax
+public partial interface IAssignmentExpressionSyntax : IExpressionSyntax
 {
     IAssignableExpressionSyntax LeftOperand { get; }
     AssignmentOperator Operator { get; }
     IExpressionSyntax RightOperand { get; }
 }
 
-public partial interface IBinaryOperatorExpressionSyntax : ITypedExpressionSyntax
+public partial interface IBinaryOperatorExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax LeftOperand { get; }
     BinaryOperator Operator { get; }
     IExpressionSyntax RightOperand { get; }
 }
 
-public partial interface IUnaryOperatorExpressionSyntax : ITypedExpressionSyntax
+public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
 {
     UnaryOperatorFixity Fixity { get; }
     UnaryOperator Operator { get; }
     IExpressionSyntax Operand { get; }
 }
 
-public partial interface IIdExpressionSyntax : ITypedExpressionSyntax
+public partial interface IIdExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
 }
 
-public partial interface IConversionExpressionSyntax : ITypedExpressionSyntax
+public partial interface IConversionExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
     ConversionOperator Operator { get; }
     ITypeSyntax ConvertToType { get; }
 }
 
-public partial interface IPatternMatchExpressionSyntax : ITypedExpressionSyntax
+public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
     IPatternSyntax Pattern { get; }
 }
 
-public partial interface IIfExpressionSyntax : ITypedExpressionSyntax, IElseClauseSyntax
+public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyntax
 {
     IExpressionSyntax Condition { get; }
     IBlockOrResultSyntax ThenBlock { get; }
     IElseClauseSyntax? ElseClause { get; }
 }
 
-public partial interface ILoopExpressionSyntax : ITypedExpressionSyntax
+public partial interface ILoopExpressionSyntax : IExpressionSyntax
 {
     IBlockExpressionSyntax Block { get; }
 }
 
-public partial interface IWhileExpressionSyntax : ITypedExpressionSyntax
+public partial interface IWhileExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Condition { get; }
     IBlockExpressionSyntax Block { get; }
 }
 
-public partial interface IForeachExpressionSyntax : ITypedExpressionSyntax, ILocalBindingSyntax
+public partial interface IForeachExpressionSyntax : IExpressionSyntax, ILocalBindingSyntax
 {
     IdentifierName VariableName { get; }
     IExpressionSyntax InExpression { get; }
@@ -783,21 +775,21 @@ public partial interface IForeachExpressionSyntax : ITypedExpressionSyntax, ILoc
     IBlockExpressionSyntax Block { get; }
 }
 
-public partial interface IBreakExpressionSyntax : ITypedExpressionSyntax
+public partial interface IBreakExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
 }
 
-public partial interface INextExpressionSyntax : ITypedExpressionSyntax
+public partial interface INextExpressionSyntax : IExpressionSyntax
 {
 }
 
-public partial interface IReturnExpressionSyntax : ITypedExpressionSyntax
+public partial interface IReturnExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
 }
 
-public partial interface IInvocationExpressionSyntax : ITypedExpressionSyntax
+public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
     IFixedList<IExpressionSyntax> Arguments { get; }
@@ -835,7 +827,7 @@ public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressi
     StandardName IStandardNameExpressionSyntax.Name => Name;
 }
 
-public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSyntax, ITypedExpressionSyntax
+public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSyntax
 {
     SpecialTypeName Name { get; }
 }
@@ -849,7 +841,7 @@ public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionS
 
 [Closed(
     typeof(ISelfExpressionSyntax))]
-public partial interface IInstanceExpressionSyntax : IConcreteSyntax, ISimpleNameSyntax, ITypedExpressionSyntax
+public partial interface IInstanceExpressionSyntax : ISimpleNameSyntax, IExpressionSyntax
 {
 }
 
@@ -870,28 +862,28 @@ public partial interface IMissingNameSyntax : ISimpleNameSyntax, IAssignableExpr
 {
 }
 
-public partial interface IMoveExpressionSyntax : ITypedExpressionSyntax
+public partial interface IMoveExpressionSyntax : IExpressionSyntax
 {
     ISimpleNameSyntax Referent { get; }
 }
 
-public partial interface IFreezeExpressionSyntax : ITypedExpressionSyntax
+public partial interface IFreezeExpressionSyntax : IExpressionSyntax
 {
     ISimpleNameSyntax Referent { get; }
 }
 
-public partial interface IAsyncBlockExpressionSyntax : ITypedExpressionSyntax
+public partial interface IAsyncBlockExpressionSyntax : IExpressionSyntax
 {
     IBlockExpressionSyntax Block { get; }
 }
 
-public partial interface IAsyncStartExpressionSyntax : ITypedExpressionSyntax
+public partial interface IAsyncStartExpressionSyntax : IExpressionSyntax
 {
     bool Scheduled { get; }
     IExpressionSyntax Expression { get; }
 }
 
-public partial interface IAwaitExpressionSyntax : ITypedExpressionSyntax
+public partial interface IAwaitExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
 }

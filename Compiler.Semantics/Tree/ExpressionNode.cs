@@ -17,7 +17,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
 {
     protected sealed override bool MayHaveRewrite => true;
 
-    public abstract override ITypedExpressionSyntax Syntax { get; }
+    public abstract override IExpressionSyntax Syntax { get; }
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
     public IMaybeExpressionAntetype? ExpectedAntetype

@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class ForeachExpressionSyntax : TypedExpressionSyntax, IForeachExpressionSyntax
+internal class ForeachExpressionSyntax : ExpressionSyntax, IForeachExpressionSyntax
 {
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { get; }

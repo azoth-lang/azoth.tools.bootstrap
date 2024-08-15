@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class FreezeExpressionSyntax : TypedExpressionSyntax, IFreezeExpressionSyntax
+internal class FreezeExpressionSyntax : ExpressionSyntax, IFreezeExpressionSyntax
 {
     public ISimpleNameSyntax Referent { [DebuggerStepThrough] get; }
 

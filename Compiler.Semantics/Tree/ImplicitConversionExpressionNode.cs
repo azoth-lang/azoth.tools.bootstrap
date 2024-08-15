@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal class ImplicitConversionExpressionNode : ExpressionNode, IImplicitConversionExpressionNode
 {
-    public override ITypedExpressionSyntax Syntax => (ITypedExpressionSyntax)Referent.Syntax;
+    public override IExpressionSyntax Syntax => (IExpressionSyntax)Referent.Syntax;
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
     public IExpressionNode Referent

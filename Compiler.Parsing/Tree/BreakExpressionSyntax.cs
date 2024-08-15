@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class BreakExpressionSyntax : TypedExpressionSyntax, IBreakExpressionSyntax
+internal class BreakExpressionSyntax : ExpressionSyntax, IBreakExpressionSyntax
 {
     public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
 

@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class PrepareToReturnExpressionNode : ExpressionNode, IPrepareToReturnExpressionNode
 {
-    public override ITypedExpressionSyntax Syntax { get; }
+    public override IExpressionSyntax Syntax { get; }
     private RewritableChild<IExpressionNode> value;
     private bool valueCached;
     public IExpressionNode Value
@@ -28,7 +28,7 @@ internal sealed class PrepareToReturnExpressionNode : ExpressionNode, IPrepareTo
 
     public PrepareToReturnExpressionNode(IExpressionNode value)
     {
-        Syntax = (ITypedExpressionSyntax)value.Syntax;
+        Syntax = (IExpressionSyntax)value.Syntax;
         this.value = Child.Create(this, value);
     }
 

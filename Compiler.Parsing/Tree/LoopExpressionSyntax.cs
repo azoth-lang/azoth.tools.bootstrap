@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class LoopExpressionSyntax : TypedExpressionSyntax, ILoopExpressionSyntax
+internal class LoopExpressionSyntax : ExpressionSyntax, ILoopExpressionSyntax
 {
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
 

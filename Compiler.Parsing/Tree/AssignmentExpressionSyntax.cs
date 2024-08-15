@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal sealed class AssignmentExpressionSyntax : TypedExpressionSyntax, IAssignmentExpressionSyntax
+internal sealed class AssignmentExpressionSyntax : ExpressionSyntax, IAssignmentExpressionSyntax
 {
     public IAssignableExpressionSyntax LeftOperand { [DebuggerStepThrough] get; }
     public AssignmentOperator Operator { [DebuggerStepThrough] get; }

@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class MoveVariableExpressionNode : ExpressionNode, IMoveVariableExpressionNode
 {
-    public override ITypedExpressionSyntax Syntax { get; }
+    public override IExpressionSyntax Syntax { get; }
     private RewritableChild<ILocalBindingNameExpressionNode> referent;
     private bool referentCached;
     public ILocalBindingNameExpressionNode Referent
@@ -32,7 +32,7 @@ internal sealed class MoveVariableExpressionNode : ExpressionNode, IMoveVariable
                 ExpressionTypesAspect.MoveVariableExpression_FlowStateAfter);
 
     public MoveVariableExpressionNode(
-        ITypedExpressionSyntax syntax,
+        IExpressionSyntax syntax,
         ILocalBindingNameExpressionNode referent,
         bool isImplicit)
     {

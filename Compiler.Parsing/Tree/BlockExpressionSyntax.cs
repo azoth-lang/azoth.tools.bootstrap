@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class BlockExpressionSyntax : TypedExpressionSyntax, IBlockExpressionSyntax
+internal class BlockExpressionSyntax : ExpressionSyntax, IBlockExpressionSyntax
 {
     public IFixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
 

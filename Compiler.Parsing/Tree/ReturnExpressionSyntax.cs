@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class ReturnExpressionSyntax : TypedExpressionSyntax, IReturnExpressionSyntax
+internal class ReturnExpressionSyntax : ExpressionSyntax, IReturnExpressionSyntax
 {
     public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
 
