@@ -101,9 +101,9 @@ internal static class Parsing
     public static RuleSyntax ParseRule(string statement)
     {
         var (declaration, definition) = SplitDeclarationAndDefinition(statement);
-        var (defines, parent, supertypes) = ParseDeclaration(declaration);
+        var (defines, supertypes) = ParseDeclaration(declaration);
         var properties = ParseProperties(definition).ToFixedList();
-        return new RuleSyntax(defines, parent, supertypes, properties);
+        return new RuleSyntax(defines, supertypes, properties);
     }
 
     public static (string Declaration, string? Definition) SplitDeclarationAndDefinition(string statement)
@@ -173,16 +173,16 @@ internal static class Parsing
     public static IEnumerable<string> SplitProperties(string definition)
         => definition.SplitOrEmpty(' ').Where(v => !string.IsNullOrWhiteSpace(v));
 
-    private static (SymbolSyntax Defines, SymbolSyntax? Parent, IEnumerable<SymbolSyntax> Supertypes) ParseDeclaration(string declaration)
+    private static (SymbolSyntax Defines, IEnumerable<SymbolSyntax> Supertypes) ParseDeclaration(
+        string declaration)
     {
-        var (defines, parent, parents) = SplitDeclaration(declaration);
+        var (defines, parents) = SplitDeclaration(declaration);
         var definesSymbol = ParseSymbol(defines);
-        var parentSymbol = ParseSymbol(parent);
         var supertypes = ParseSupertypes(parents);
-        return (definesSymbol, parentSymbol, supertypes);
+        return (definesSymbol, supertypes);
     }
 
-    public static (string Defines, string? Parent, string? Parents) SplitDeclaration(string declaration)
+    public static (string Defines, string? Parents) SplitDeclaration(string declaration)
     {
         var remainder = declaration.Trim();
         string? parents = null;
@@ -195,29 +195,16 @@ internal static class Parsing
             parents = split[1].Trim();
         }
 
-        string? parent = null;
-        if (remainder.Contains(':'))
-        {
-            var split = remainder.Split(':');
-            if (split.Length > 2)
-                throw new FormatException($"Too many colons in declaration: '{declaration}'");
-            remainder = split[0].Trim();
-            parent = split[1].Trim();
-        }
 
-        return (remainder, parent, parents);
+        return (remainder, parents);
     }
 
     private static IEnumerable<SymbolSyntax> ParseSupertypes(string? parents)
     {
         if (parents is null) return [];
-
-        return SplitParents(parents).Select(p => ParseSymbol(p));
+        return SplitSupertypes(parents).Select(p => ParseSymbol(p));
     }
 
-    public static IEnumerable<string> SplitParents(string parents)
+    public static IEnumerable<string> SplitSupertypes(string parents)
         => parents.Split(',').Select(p => p.Trim());
-
-    public static IEnumerable<RuleSyntax> ParseRules(IFixedList<string> lines, SymbolSyntax? defaultParent)
-        => ParseRules(lines).Select(r => r.WithDefaultParent(defaultParent));
 }

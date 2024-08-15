@@ -14,7 +14,7 @@ internal static class Emit
 {
     public static string ClosedAttribute(Rule rule, string indent = "")
     {
-        var children = rule.DerivedRules;
+        var children = rule.ChildRules;
         if (!children.Any()) return "";
         var builder = new StringBuilder();
         builder.Append(indent);
@@ -36,14 +36,13 @@ internal static class Emit
 
     public static string BaseTypes(Rule rule)
     {
-        var parents = rule.Parents.OfType<ExternalSymbol>().Select(p => p.FullName)
-                          .Concat(rule.BaseRules.Select(r => TypeName(r.Defines)))
+        var supertypes = rule.Supertypes.OfType<ExternalSymbol>().Select(p => p.FullName)
+                          .Concat(rule.SupertypeRules.Select(r => TypeName(r.Defines)))
                           .ToFixedList();
 
-        bool anyParents = parents.Any();
-        if (!anyParents) return "";
+        if (supertypes.IsEmpty) return "";
 
-        return " : " + string.Join(", ", parents);
+        return " : " + string.Join(", ", supertypes);
     }
 
     public static string TypeName(Symbol symbol)

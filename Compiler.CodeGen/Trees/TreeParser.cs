@@ -15,7 +15,7 @@ internal static class TreeParser
         var prefix = Parsing.GetConfig(lines, "prefix") ?? "";
         var suffix = Parsing.GetConfig(lines, "suffix") ?? "";
         var usingNamespaces = Parsing.ParseUsingNamespaces(lines);
-        var rules = Parsing.ParseRules(lines, rootType);
+        var rules = Parsing.ParseRules(lines);
         return new GrammarSyntax(ns, rootType, prefix, suffix, usingNamespaces, rules);
     }
 }

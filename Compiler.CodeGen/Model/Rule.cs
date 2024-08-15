@@ -4,7 +4,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
@@ -16,21 +15,16 @@ public class Rule
 
     public InternalSymbol Defines { get; }
     public SymbolType DefinesType { get; }
-    public InternalSymbol? Base { get; }
-    public Rule? BaseRule => Base?.ReferencedRule;
     // TODO combine into one collection of bases
     public IFixedSet<Symbol> Supertypes { get; }
     private readonly Lazy<IFixedSet<Rule>> supertypeRules;
     public IFixedSet<Rule> SupertypeRules => supertypeRules.Value;
-    public IFixedSet<Symbol> Parents { get; }
-    public IFixedSet<Rule> BaseRules => parentRules.Value;
-    private readonly Lazy<IFixedSet<Rule>> parentRules;
     public IFixedSet<Rule> AncestorRules => ancestorRules.Value;
     private readonly Lazy<IFixedSet<Rule>> ancestorRules;
-    public IFixedSet<Rule> DerivedRules => derivedRules.Value;
-    private readonly Lazy<IFixedSet<Rule>> derivedRules;
+    public IFixedSet<Rule> ChildRules => childRules.Value;
+    private readonly Lazy<IFixedSet<Rule>> childRules;
     // TODO this is not the correct term for this. Terminal/Non-Terminal is about whether it is a rule or a token
-    public bool IsTerminal => DerivedRules.IsEmpty;
+    public bool IsTerminal => ChildRules.IsEmpty;
     public IFixedSet<Rule> DescendantRules => descendantRules.Value;
     private readonly Lazy<IFixedSet<Rule>> descendantRules;
 
@@ -58,20 +52,18 @@ public class Rule
         Syntax = syntax;
         Defines = Symbol.CreateInternalFromSyntax(grammar, syntax.Defines);
         DefinesType = new SymbolType(Defines);
-        Base = Symbol.CreateInternalFromSyntax(grammar, syntax.Parent);
         Supertypes = syntax.Supertypes.Select(s => Symbol.CreateFromSyntax(grammar, s)).ToFixedSet();
-        Parents = Base is null ? Supertypes : Supertypes.Prepend(Base).ToFixedSet();
+        if (Grammar.Root is { } root && root != Defines && !Supertypes.Any(s => s is InternalSymbol))
+            Supertypes = Supertypes.Append(root).ToFixedSet();
 
         supertypeRules = new(() => Supertypes.OfType<InternalSymbol>().Select(s => s.ReferencedRule)
                                              .EliminateRedundantRules().ToFixedSet());
-        parentRules = new(() => BaseRule is null ? SupertypeRules
-            : SupertypeRules.Prepend(BaseRule).EliminateRedundantRules().ToFixedSet());
-        ancestorRules = new(() => BaseRules.Concat(BaseRules.SelectMany(p => p.AncestorRules)).ToFixedSet());
-        derivedRules = new(() => Grammar.Rules.Where(r => r.BaseRules.Contains(this)).ToFixedSet());
-        descendantRules = new(() => DerivedRules.Concat(DerivedRules.SelectMany(r => r.DescendantRules)).ToFixedSet());
+        ancestorRules = new(() => SupertypeRules.Concat(SupertypeRules.SelectMany(p => p.AncestorRules)).ToFixedSet());
+        childRules = new(() => Grammar.Rules.Where(r => r.SupertypeRules.Contains(this)).ToFixedSet());
+        descendantRules = new(() => ChildRules.Concat(ChildRules.SelectMany(r => r.DescendantRules)).ToFixedSet());
 
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new Property(this, p)).ToFixedList();
-        inheritedProperties = new(() => BaseRules.SelectMany(r => r.AllProperties).Distinct().ToFixedList());
+        inheritedProperties = new(() => SupertypeRules.SelectMany(r => r.AllProperties).Distinct().ToFixedList());
         allProperties = new(() =>
         {
             var rulePropertyNames = DeclaredProperties.Select(p => p.Name).ToFixedSet();

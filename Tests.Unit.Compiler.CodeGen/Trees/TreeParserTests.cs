@@ -136,7 +136,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
         var expectedParents = FixedList(Symbol("MyBase"));
-        Assert.Equal(expectedParents, rule.Parents);
+        Assert.Equal(expectedParents, rule.Supertypes);
         Assert.Empty(rule.DeclaredProperties);
     }
 
@@ -155,13 +155,13 @@ public class TreeParserTests
     [Fact]
     public void ParsesSingleInheritanceRule()
     {
-        const string grammar = "◊namespace Foo.Bar.Baz;\rSubType: BaseType;";
+        const string grammar = "◊namespace Foo.Bar.Baz;\rSubType <: BaseType;";
 
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
-        Assert.Single(rule.Parents, Symbol("BaseType"));
+        Assert.Single(rule.Supertypes, Symbol("BaseType"));
         Assert.Empty(rule.DeclaredProperties);
     }
 
@@ -182,14 +182,14 @@ public class TreeParserTests
     [Fact]
     public void ParseQuotedInheritanceRule()
     {
-        const string grammar = "◊namespace Foo.Bar.Baz;\rSubType: `BaseType1` <: BaseType2;";
+        const string grammar = "◊namespace Foo.Bar.Baz;\rSubType <: `BaseType1`, BaseType2;";
 
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(new SymbolSyntax("SubType"), rule.Defines);
-        var expectedParents = FixedList(QuotedSymbol("BaseType1"), Symbol("BaseType2"));
-        Assert.Equal(expectedParents, rule.Parents);
+        var expectedParents = FixedSet(QuotedSymbol("BaseType1"), Symbol("BaseType2"));
+        Assert.Equal(expectedParents, rule.Supertypes);
         Assert.Empty(rule.DeclaredProperties);
     }
 
@@ -201,16 +201,6 @@ public class TreeParserTests
         var ex = Assert.Throws<FormatException>(() => TreeParser.ParseGrammar(grammar));
 
         Assert.Equal("Too many equal signs on line: 'NonTerminal = Foo = Bar'", ex.Message);
-    }
-
-    [Fact]
-    public void ParseErrorTooManyColonsInDeclaration()
-    {
-        const string grammar = "◊namespace Foo.Bar.Baz;\rSubType: BaseType: What = Foo;";
-
-        var ex = Assert.Throws<FormatException>(() => TreeParser.ParseGrammar(grammar));
-
-        Assert.Equal("Too many colons in declaration: 'SubType: BaseType: What'", ex.Message);
     }
     #endregion
 
@@ -362,6 +352,7 @@ public class TreeParserTests
     private static TypeSyntax ListType(SymbolSyntax symbol)
         => new(symbol, CollectionKind.List, false);
 
-    private static IFixedList<T> FixedList<T>(params T[] values)
-        => Framework.FixedList.Create(values);
+    private static IFixedList<T> FixedList<T>(params T[] values) => values.ToFixedList();
+
+    private static IFixedSet<T> FixedSet<T>(params T[] values) => values.ToFixedSet();
 }

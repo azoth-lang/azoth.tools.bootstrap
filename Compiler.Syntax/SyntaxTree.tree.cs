@@ -16,64 +16,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 [Closed(
     typeof(ICodeSyntax),
-    typeof(IBlockOrResultSyntax),
-    typeof(ILocalBindingSyntax),
     typeof(IPackageSyntax),
-    typeof(IPackageReferenceSyntax),
-    typeof(IEntityDefinitionSyntax),
-    typeof(IConcreteInvocableDefinitionSyntax),
-    typeof(INonMemberDefinitionSyntax),
-    typeof(IClassDefinitionSyntax),
-    typeof(IStructDefinitionSyntax),
-    typeof(ITraitDefinitionSyntax),
-    typeof(IClassMemberDefinitionSyntax),
-    typeof(ITraitMemberDefinitionSyntax),
-    typeof(IStructMemberDefinitionSyntax),
-    typeof(IAbstractMethodDefinitionSyntax),
-    typeof(IStandardMethodDefinitionSyntax),
-    typeof(IGetterMethodDefinitionSyntax),
-    typeof(ISetterMethodDefinitionSyntax),
-    typeof(ICapabilitySetSyntax),
-    typeof(ICapabilitySyntax),
-    typeof(IConstructorOrInitializerParameterSyntax),
-    typeof(ISelfParameterSyntax),
-    typeof(IBodySyntax),
-    typeof(ITypeNameSyntax),
-    typeof(IIdentifierTypeNameSyntax),
-    typeof(ISpecialTypeNameSyntax),
-    typeof(IGenericTypeNameSyntax),
-    typeof(IOptionalTypeSyntax),
-    typeof(ICapabilityTypeSyntax),
-    typeof(IFunctionTypeSyntax),
-    typeof(IViewpointTypeSyntax),
-    typeof(IBodyStatementSyntax),
-    typeof(IBindingContextPatternSyntax),
-    typeof(IOptionalOrBindingPatternSyntax),
-    typeof(IAssignableExpressionSyntax),
-    typeof(INewObjectExpressionSyntax),
-    typeof(IUnsafeExpressionSyntax),
-    typeof(ILiteralExpressionSyntax),
-    typeof(IAssignmentExpressionSyntax),
-    typeof(IBinaryOperatorExpressionSyntax),
-    typeof(IUnaryOperatorExpressionSyntax),
-    typeof(IIdExpressionSyntax),
-    typeof(IConversionExpressionSyntax),
-    typeof(IPatternMatchExpressionSyntax),
-    typeof(IIfExpressionSyntax),
-    typeof(ILoopExpressionSyntax),
-    typeof(IWhileExpressionSyntax),
-    typeof(IBreakExpressionSyntax),
-    typeof(INextExpressionSyntax),
-    typeof(IReturnExpressionSyntax),
-    typeof(IInvocationExpressionSyntax),
-    typeof(INameExpressionSyntax),
-    typeof(IGenericNameExpressionSyntax),
-    typeof(IInstanceExpressionSyntax),
-    typeof(IMoveExpressionSyntax),
-    typeof(IFreezeExpressionSyntax),
-    typeof(IAsyncBlockExpressionSyntax),
-    typeof(IAsyncStartExpressionSyntax),
-    typeof(IAwaitExpressionSyntax))]
+    typeof(IPackageReferenceSyntax))]
 public partial interface ISyntax
 {
 }
@@ -133,7 +77,7 @@ public partial interface IElseClauseSyntax : ICodeSyntax
 [Closed(
     typeof(IResultStatementSyntax),
     typeof(IBlockExpressionSyntax))]
-public partial interface IBlockOrResultSyntax : ISyntax, IElseClauseSyntax
+public partial interface IBlockOrResultSyntax : IElseClauseSyntax
 {
 }
 
@@ -150,7 +94,7 @@ public partial interface IBindingSyntax : ICodeSyntax
     typeof(IVariableDeclarationStatementSyntax),
     typeof(IBindingPatternSyntax),
     typeof(IForeachExpressionSyntax))]
-public partial interface ILocalBindingSyntax : ISyntax, IBindingSyntax
+public partial interface ILocalBindingSyntax : IBindingSyntax
 {
     TextSpan NameSpan { get; }
 }
@@ -185,7 +129,7 @@ public partial interface IDefinitionSyntax : ICodeSyntax
     typeof(IInvocableDefinitionSyntax),
     typeof(ITypeDefinitionSyntax),
     typeof(ITypeMemberDefinitionSyntax))]
-public partial interface IEntityDefinitionSyntax : ISyntax, IDefinitionSyntax
+public partial interface IEntityDefinitionSyntax : IDefinitionSyntax
 {
     IAccessModifierToken? AccessModifier { get; }
 }
@@ -204,7 +148,7 @@ public partial interface IInvocableDefinitionSyntax : IEntityDefinitionSyntax
     typeof(IConstructorDefinitionSyntax),
     typeof(IInitializerDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
-public partial interface IConcreteInvocableDefinitionSyntax : ISyntax, IInvocableDefinitionSyntax
+public partial interface IConcreteInvocableDefinitionSyntax : IInvocableDefinitionSyntax
 {
     IBodySyntax Body { get; }
 }
@@ -213,7 +157,7 @@ public partial interface IConcreteInvocableDefinitionSyntax : ISyntax, IInvocabl
     typeof(INamespaceDefinitionSyntax),
     typeof(IFunctionDefinitionSyntax),
     typeof(ITypeDefinitionSyntax))]
-public partial interface INonMemberDefinitionSyntax : ISyntax, IDefinitionSyntax
+public partial interface INonMemberDefinitionSyntax : IDefinitionSyntax
 {
 }
 
@@ -249,7 +193,7 @@ public partial interface ITypeDefinitionSyntax : IEntityDefinitionSyntax, INonMe
     IFixedList<ITypeMemberDefinitionSyntax> Members { get; }
 }
 
-public partial interface IClassDefinitionSyntax : ISyntax, ITypeDefinitionSyntax
+public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
 {
     IAbstractKeywordToken? AbstractModifier { get; }
     IStandardTypeNameSyntax? BaseTypeName { get; }
@@ -257,13 +201,13 @@ public partial interface IClassDefinitionSyntax : ISyntax, ITypeDefinitionSyntax
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 }
 
-public partial interface IStructDefinitionSyntax : ISyntax, ITypeDefinitionSyntax
+public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
 {
     new IFixedList<IStructMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 }
 
-public partial interface ITraitDefinitionSyntax : ISyntax, ITypeDefinitionSyntax
+public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
 {
     new IFixedList<ITraitMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
@@ -291,7 +235,7 @@ public partial interface ITypeMemberDefinitionSyntax : IEntityDefinitionSyntax
     typeof(IConstructorDefinitionSyntax),
     typeof(IFieldDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
-public partial interface IClassMemberDefinitionSyntax : ISyntax, ITypeMemberDefinitionSyntax
+public partial interface IClassMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
 {
 }
 
@@ -299,7 +243,7 @@ public partial interface IClassMemberDefinitionSyntax : ISyntax, ITypeMemberDefi
     typeof(ITypeDefinitionSyntax),
     typeof(IMethodDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
-public partial interface ITraitMemberDefinitionSyntax : ISyntax, ITypeMemberDefinitionSyntax
+public partial interface ITraitMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
 {
 }
 
@@ -309,7 +253,7 @@ public partial interface ITraitMemberDefinitionSyntax : ISyntax, ITypeMemberDefi
     typeof(IInitializerDefinitionSyntax),
     typeof(IFieldDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
-public partial interface IStructMemberDefinitionSyntax : ISyntax, ITypeMemberDefinitionSyntax
+public partial interface IStructMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
 {
 }
 
@@ -327,7 +271,7 @@ public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax,
     IReturnSyntax? Return { get; }
 }
 
-public partial interface IAbstractMethodDefinitionSyntax : ISyntax, IMethodDefinitionSyntax
+public partial interface IAbstractMethodDefinitionSyntax : IMethodDefinitionSyntax
 {
 }
 
@@ -342,16 +286,16 @@ public partial interface IConcreteMethodDefinitionSyntax : IMethodDefinitionSynt
     IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
 }
 
-public partial interface IStandardMethodDefinitionSyntax : ISyntax, IConcreteMethodDefinitionSyntax
+public partial interface IStandardMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
 }
 
-public partial interface IGetterMethodDefinitionSyntax : ISyntax, IConcreteMethodDefinitionSyntax
+public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
     new IReturnSyntax Return { get; }
 }
 
-public partial interface ISetterMethodDefinitionSyntax : ISyntax, IConcreteMethodDefinitionSyntax
+public partial interface ISetterMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
 }
 
@@ -402,13 +346,13 @@ public partial interface ICapabilityConstraintSyntax : ICodeSyntax
     ICapabilityConstraint Constraint { get; }
 }
 
-public partial interface ICapabilitySetSyntax : ISyntax, ICapabilityConstraintSyntax
+public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
 {
     new CapabilitySet Constraint { get; }
     ICapabilityConstraint ICapabilityConstraintSyntax.Constraint => Constraint;
 }
 
-public partial interface ICapabilitySyntax : ISyntax, ICapabilityConstraintSyntax
+public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
 {
     IFixedList<ICapabilityToken> Tokens { get; }
     DeclaredCapability Declared { get; }
@@ -427,7 +371,7 @@ public partial interface IParameterSyntax : ICodeSyntax
 [Closed(
     typeof(INamedParameterSyntax),
     typeof(IFieldParameterSyntax))]
-public partial interface IConstructorOrInitializerParameterSyntax : ISyntax, IParameterSyntax
+public partial interface IConstructorOrInitializerParameterSyntax : IParameterSyntax
 {
 }
 
@@ -444,7 +388,7 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
     typeof(IConstructorSelfParameterSyntax),
     typeof(IInitializerSelfParameterSyntax),
     typeof(IMethodSelfParameterSyntax))]
-public partial interface ISelfParameterSyntax : ISyntax, IParameterSyntax
+public partial interface ISelfParameterSyntax : IParameterSyntax
 {
     bool IsLentBinding { get; }
 }
@@ -479,7 +423,7 @@ public partial interface IReturnSyntax : ICodeSyntax
 [Closed(
     typeof(IBlockBodySyntax),
     typeof(IExpressionBodySyntax))]
-public partial interface IBodySyntax : ISyntax, IBodyOrBlockSyntax
+public partial interface IBodySyntax : IBodyOrBlockSyntax
 {
 }
 
@@ -508,7 +452,7 @@ public partial interface ITypeSyntax : ICodeSyntax
     typeof(IStandardTypeNameSyntax),
     typeof(ISimpleTypeNameSyntax),
     typeof(IQualifiedTypeNameSyntax))]
-public partial interface ITypeNameSyntax : ISyntax, ITypeSyntax
+public partial interface ITypeNameSyntax : ITypeSyntax
 {
     TypeName Name { get; }
 }
@@ -529,20 +473,20 @@ public partial interface ISimpleTypeNameSyntax : ITypeNameSyntax
 {
 }
 
-public partial interface IIdentifierTypeNameSyntax : ISyntax, IStandardTypeNameSyntax, ISimpleTypeNameSyntax
+public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax, ISimpleTypeNameSyntax
 {
     new IdentifierName Name { get; }
     StandardName IStandardTypeNameSyntax.Name => Name;
     TypeName ITypeNameSyntax.Name => Name;
 }
 
-public partial interface ISpecialTypeNameSyntax : ISyntax, ISimpleTypeNameSyntax
+public partial interface ISpecialTypeNameSyntax : ISimpleTypeNameSyntax
 {
     new SpecialTypeName Name { get; }
     TypeName ITypeNameSyntax.Name => Name;
 }
 
-public partial interface IGenericTypeNameSyntax : ISyntax, IStandardTypeNameSyntax
+public partial interface IGenericTypeNameSyntax : IStandardTypeNameSyntax
 {
     new GenericName Name { get; }
     StandardName IStandardTypeNameSyntax.Name => Name;
@@ -555,18 +499,18 @@ public partial interface IQualifiedTypeNameSyntax : ITypeNameSyntax
     IStandardTypeNameSyntax QualifiedName { get; }
 }
 
-public partial interface IOptionalTypeSyntax : ISyntax, ITypeSyntax
+public partial interface IOptionalTypeSyntax : ITypeSyntax
 {
     ITypeSyntax Referent { get; }
 }
 
-public partial interface ICapabilityTypeSyntax : ISyntax, ITypeSyntax
+public partial interface ICapabilityTypeSyntax : ITypeSyntax
 {
     ICapabilitySyntax Capability { get; }
     ITypeSyntax Referent { get; }
 }
 
-public partial interface IFunctionTypeSyntax : ISyntax, ITypeSyntax
+public partial interface IFunctionTypeSyntax : ITypeSyntax
 {
     IFixedList<IParameterTypeSyntax> Parameters { get; }
     IReturnTypeSyntax Return { get; }
@@ -586,7 +530,7 @@ public partial interface IReturnTypeSyntax : ICodeSyntax
 [Closed(
     typeof(ICapabilityViewpointTypeSyntax),
     typeof(ISelfViewpointTypeSyntax))]
-public partial interface IViewpointTypeSyntax : ISyntax, ITypeSyntax
+public partial interface IViewpointTypeSyntax : ITypeSyntax
 {
     ITypeSyntax Referent { get; }
 }
@@ -615,7 +559,7 @@ public partial interface IResultStatementSyntax : IStatementSyntax, IBlockOrResu
 [Closed(
     typeof(IVariableDeclarationStatementSyntax),
     typeof(IExpressionStatementSyntax))]
-public partial interface IBodyStatementSyntax : ISyntax, IStatementSyntax
+public partial interface IBodyStatementSyntax : IStatementSyntax
 {
 }
 
@@ -639,7 +583,7 @@ public partial interface IPatternSyntax : ICodeSyntax
 {
 }
 
-public partial interface IBindingContextPatternSyntax : ISyntax, IPatternSyntax
+public partial interface IBindingContextPatternSyntax : IPatternSyntax
 {
     bool IsMutableBinding { get; }
     IPatternSyntax Pattern { get; }
@@ -649,7 +593,7 @@ public partial interface IBindingContextPatternSyntax : ISyntax, IPatternSyntax
 [Closed(
     typeof(IBindingPatternSyntax),
     typeof(IOptionalPatternSyntax))]
-public partial interface IOptionalOrBindingPatternSyntax : ISyntax, IPatternSyntax
+public partial interface IOptionalOrBindingPatternSyntax : IPatternSyntax
 {
 }
 
@@ -697,7 +641,7 @@ public partial interface IExpressionSyntax : ICodeSyntax
     typeof(IIdentifierNameExpressionSyntax),
     typeof(IMemberAccessExpressionSyntax),
     typeof(IMissingNameSyntax))]
-public partial interface IAssignableExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IAssignableExpressionSyntax : IExpressionSyntax
 {
 }
 
@@ -705,7 +649,7 @@ public partial interface IBlockExpressionSyntax : IExpressionSyntax, IBlockOrRes
 {
 }
 
-public partial interface INewObjectExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface INewObjectExpressionSyntax : IExpressionSyntax
 {
     ITypeNameSyntax Type { get; }
     IdentifierName? ConstructorName { get; }
@@ -713,7 +657,7 @@ public partial interface INewObjectExpressionSyntax : ISyntax, IExpressionSyntax
     IFixedList<IExpressionSyntax> Arguments { get; }
 }
 
-public partial interface IUnsafeExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
 }
@@ -723,7 +667,7 @@ public partial interface IUnsafeExpressionSyntax : ISyntax, IExpressionSyntax
     typeof(IIntegerLiteralExpressionSyntax),
     typeof(INoneLiteralExpressionSyntax),
     typeof(IStringLiteralExpressionSyntax))]
-public partial interface ILiteralExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface ILiteralExpressionSyntax : IExpressionSyntax
 {
 }
 
@@ -746,58 +690,58 @@ public partial interface IStringLiteralExpressionSyntax : ILiteralExpressionSynt
     string Value { get; }
 }
 
-public partial interface IAssignmentExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IAssignmentExpressionSyntax : IExpressionSyntax
 {
     IAssignableExpressionSyntax LeftOperand { get; }
     AssignmentOperator Operator { get; }
     IExpressionSyntax RightOperand { get; }
 }
 
-public partial interface IBinaryOperatorExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IBinaryOperatorExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax LeftOperand { get; }
     BinaryOperator Operator { get; }
     IExpressionSyntax RightOperand { get; }
 }
 
-public partial interface IUnaryOperatorExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
 {
     UnaryOperatorFixity Fixity { get; }
     UnaryOperator Operator { get; }
     IExpressionSyntax Operand { get; }
 }
 
-public partial interface IIdExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IIdExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
 }
 
-public partial interface IConversionExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IConversionExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
     ConversionOperator Operator { get; }
     ITypeSyntax ConvertToType { get; }
 }
 
-public partial interface IPatternMatchExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
     IPatternSyntax Pattern { get; }
 }
 
-public partial interface IIfExpressionSyntax : ISyntax, IExpressionSyntax, IElseClauseSyntax
+public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyntax
 {
     IExpressionSyntax Condition { get; }
     IBlockOrResultSyntax ThenBlock { get; }
     IElseClauseSyntax? ElseClause { get; }
 }
 
-public partial interface ILoopExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface ILoopExpressionSyntax : IExpressionSyntax
 {
     IBlockExpressionSyntax Block { get; }
 }
 
-public partial interface IWhileExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IWhileExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Condition { get; }
     IBlockExpressionSyntax Block { get; }
@@ -811,21 +755,21 @@ public partial interface IForeachExpressionSyntax : IExpressionSyntax, ILocalBin
     IBlockExpressionSyntax Block { get; }
 }
 
-public partial interface IBreakExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IBreakExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
 }
 
-public partial interface INextExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface INextExpressionSyntax : IExpressionSyntax
 {
 }
 
-public partial interface IReturnExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IReturnExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
 }
 
-public partial interface IInvocationExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
     IFixedList<IExpressionSyntax> Arguments { get; }
@@ -837,7 +781,7 @@ public partial interface IInvocationExpressionSyntax : ISyntax, IExpressionSynta
     typeof(ISpecialTypeNameExpressionSyntax),
     typeof(ISelfExpressionSyntax),
     typeof(IMemberAccessExpressionSyntax))]
-public partial interface INameExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface INameExpressionSyntax : IExpressionSyntax
 {
 }
 
@@ -868,7 +812,7 @@ public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSynta
     SpecialTypeName Name { get; }
 }
 
-public partial interface IGenericNameExpressionSyntax : ISyntax, IStandardNameExpressionSyntax
+public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionSyntax
 {
     new GenericName Name { get; }
     StandardName IStandardNameExpressionSyntax.Name => Name;
@@ -877,7 +821,7 @@ public partial interface IGenericNameExpressionSyntax : ISyntax, IStandardNameEx
 
 [Closed(
     typeof(ISelfExpressionSyntax))]
-public partial interface IInstanceExpressionSyntax : ISyntax, ISimpleNameSyntax
+public partial interface IInstanceExpressionSyntax : ISimpleNameSyntax
 {
 }
 
@@ -898,28 +842,28 @@ public partial interface IMissingNameSyntax : ISimpleNameSyntax, IAssignableExpr
 {
 }
 
-public partial interface IMoveExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IMoveExpressionSyntax : IExpressionSyntax
 {
     ISimpleNameSyntax Referent { get; }
 }
 
-public partial interface IFreezeExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IFreezeExpressionSyntax : IExpressionSyntax
 {
     ISimpleNameSyntax Referent { get; }
 }
 
-public partial interface IAsyncBlockExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IAsyncBlockExpressionSyntax : IExpressionSyntax
 {
     IBlockExpressionSyntax Block { get; }
 }
 
-public partial interface IAsyncStartExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IAsyncStartExpressionSyntax : IExpressionSyntax
 {
     bool Scheduled { get; }
     IExpressionSyntax Expression { get; }
 }
 
-public partial interface IAwaitExpressionSyntax : ISyntax, IExpressionSyntax
+public partial interface IAwaitExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
 }
