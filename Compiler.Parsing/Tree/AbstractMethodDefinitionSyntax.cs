@@ -13,7 +13,6 @@ internal sealed class AbstractMethodDefinitionSyntax : MethodDefinitionSyntax, I
     public override IReturnSyntax? Return { get; }
 
     public AbstractMethodDefinitionSyntax(
-        ITypeDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -22,7 +21,7 @@ internal sealed class AbstractMethodDefinitionSyntax : MethodDefinitionSyntax, I
         IMethodSelfParameterSyntax selfParameter,
         IFixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return)
-        : base(declaringType, span, file, accessModifier, nameSpan, name,
+        : base(span, file, accessModifier, nameSpan, name,
             selfParameter, parameters)
     {
         Return = @return;

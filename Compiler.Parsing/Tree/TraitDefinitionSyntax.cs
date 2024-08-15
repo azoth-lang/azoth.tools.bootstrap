@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -15,7 +14,7 @@ internal class TraitDefinitionSyntax : TypeDefinitionSyntax<ITraitMemberDefiniti
     public TraitDefinitionSyntax(
         NamespaceName containingNamespaceName,
         ITypeDefinitionSyntax? declaringType,
-        TextSpan headerSpan,
+        TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
         IConstKeywordToken? constModifier,
@@ -24,13 +23,11 @@ internal class TraitDefinitionSyntax : TypeDefinitionSyntax<ITraitMemberDefiniti
         string name,
         IFixedList<IGenericParameterSyntax> genericParameters,
         IFixedList<IStandardTypeNameSyntax> supertypes,
-        Func<ITraitDefinitionSyntax, (IFixedList<ITraitMemberDefinitionSyntax>, TextSpan)> parseMembers)
-        : base(containingNamespaceName, declaringType, headerSpan, file, accessModifier, constModifier, moveModifier,
+        IFixedList<ITraitMemberDefinitionSyntax> members)
+        : base(containingNamespaceName, span, file, accessModifier, constModifier, moveModifier,
             nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypes)
     {
-        var (members, bodySpan) = parseMembers(this);
         Members = members;
-        Span = TextSpan.Covering(headerSpan, bodySpan);
     }
 
     public override string ToString()
@@ -38,8 +35,8 @@ internal class TraitDefinitionSyntax : TypeDefinitionSyntax<ITraitMemberDefiniti
         var modifiers = "";
         var accessModifier = AccessModifier.ToAccessModifier();
         if (accessModifier != CST.AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
-        if (IsConst) modifiers += "const ";
-        if (IsMove) modifiers += "move ";
+        if (ConstModifier is not null) modifiers += "const ";
+        if (MoveModifier is not null) modifiers += "move ";
         var generics = GenericParameters.Any() ? $"[{string.Join(", ", GenericParameters)}]" : "";
         return $"{modifiers}trait {Name.ToBareString()}{generics} {{ … }}";
     }

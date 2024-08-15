@@ -8,14 +8,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class FieldDefinitionSyntax : MemberDefinitionSyntax, IFieldDefinitionSyntax
 {
-    public new IClassOrStructDefinitionSyntax DefiningType { get; }
     public bool IsMutableBinding { get; }
     public new IdentifierName Name { get; }
     public ITypeSyntax Type { get; }
     public IExpressionSyntax? Initializer { [DebuggerStepThrough] get; }
 
     public FieldDefinitionSyntax(
-        IClassOrStructDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -24,9 +22,8 @@ internal class FieldDefinitionSyntax : MemberDefinitionSyntax, IFieldDefinitionS
         IdentifierName name,
         ITypeSyntax type,
         IExpressionSyntax? initializer)
-        : base(declaringType, span, file, accessModifier, nameSpan, name)
+        : base(span, file, accessModifier, nameSpan, name)
     {
-        DefiningType = declaringType;
         IsMutableBinding = mutableBinding;
         Name = name;
         Type = type;

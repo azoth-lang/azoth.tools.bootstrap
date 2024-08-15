@@ -140,7 +140,6 @@ public partial interface INamespaceDefinitionSyntax : INonMemberDefinitionSyntax
 {
     bool IsGlobalQualified { get; }
     NamespaceName DeclaredNames { get; }
-    NamespaceName FullName { get; }
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
 }
@@ -170,9 +169,7 @@ public partial interface INonMemberEntityDefinitionSyntax : IEntityDefinitionSyn
 public partial interface ITypeDefinitionSyntax : IConcreteSyntax, INonMemberEntityDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax
 {
     IConstKeywordToken? ConstModifier { get; }
-    bool IsConst { get; }
     IMoveKeywordToken? MoveModifier { get; }
-    bool IsMove { get; }
     new StandardName Name { get; }
     TypeName INonMemberEntityDefinitionSyntax.Name => Name;
     TypeName? IDefinitionSyntax.Name => Name;
@@ -191,7 +188,6 @@ public partial interface IClassOrStructDefinitionSyntax : ITypeDefinitionSyntax
 public partial interface IClassDefinitionSyntax : IClassOrStructDefinitionSyntax
 {
     IAbstractKeywordToken? AbstractModifier { get; }
-    bool IsAbstract { get; }
     IStandardTypeNameSyntax? BaseTypeName { get; }
     new IFixedList<IClassMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
@@ -224,7 +220,6 @@ public partial interface IGenericParameterSyntax : IConcreteSyntax
     typeof(IAlwaysTypeMemberDefinitionSyntax))]
 public partial interface ITypeMemberDefinitionSyntax : IEntityDefinitionSyntax
 {
-    ITypeDefinitionSyntax? DefiningType { get; }
 }
 
 [Closed(
@@ -263,8 +258,6 @@ public partial interface IStructMemberDefinitionSyntax : ITypeMemberDefinitionSy
     typeof(IAssociatedFunctionDefinitionSyntax))]
 public partial interface IAlwaysTypeMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
 {
-    new ITypeDefinitionSyntax DefiningType { get; }
-    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DefiningType => DefiningType;
 }
 
 [Closed(
@@ -311,9 +304,6 @@ public partial interface ISetterMethodDefinitionSyntax : IConcreteMethodDefiniti
 
 public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IAlwaysTypeMemberDefinitionSyntax, IClassMemberDefinitionSyntax
 {
-    new IClassDefinitionSyntax DefiningType { get; }
-    ITypeDefinitionSyntax IAlwaysTypeMemberDefinitionSyntax.DefiningType => DefiningType;
-    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DefiningType => DefiningType;
     new IdentifierName? Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     IConstructorSelfParameterSyntax SelfParameter { get; }
@@ -323,9 +313,6 @@ public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefini
 
 public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IAlwaysTypeMemberDefinitionSyntax, IStructMemberDefinitionSyntax
 {
-    new IStructDefinitionSyntax DefiningType { get; }
-    ITypeDefinitionSyntax IAlwaysTypeMemberDefinitionSyntax.DefiningType => DefiningType;
-    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DefiningType => DefiningType;
     new IdentifierName? Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     IInitializerSelfParameterSyntax SelfParameter { get; }
@@ -335,9 +322,6 @@ public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefini
 
 public partial interface IFieldDefinitionSyntax : IAlwaysTypeMemberDefinitionSyntax, IClassMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IBindingSyntax
 {
-    new IClassOrStructDefinitionSyntax DefiningType { get; }
-    ITypeDefinitionSyntax IAlwaysTypeMemberDefinitionSyntax.DefiningType => DefiningType;
-    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DefiningType => DefiningType;
     new IdentifierName Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     ITypeSyntax Type { get; }

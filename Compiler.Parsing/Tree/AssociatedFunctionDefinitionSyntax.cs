@@ -8,7 +8,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class AssociatedFunctionDefinitionSyntax : InvocableDefinitionSyntax, IAssociatedFunctionDefinitionSyntax
 {
-    public ITypeDefinitionSyntax DefiningType { get; }
     public new IdentifierName Name { get; }
     public new IFixedList<INamedParameterSyntax> Parameters { get; }
     public override IFixedList<IParameterSyntax> AllParameters => Parameters;
@@ -16,7 +15,6 @@ internal class AssociatedFunctionDefinitionSyntax : InvocableDefinitionSyntax, I
     public IBodySyntax Body { get; }
 
     public AssociatedFunctionDefinitionSyntax(
-        ITypeDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -27,7 +25,6 @@ internal class AssociatedFunctionDefinitionSyntax : InvocableDefinitionSyntax, I
         IBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters)
     {
-        DefiningType = declaringType;
         Name = name;
         Parameters = parameters;
         Body = body;

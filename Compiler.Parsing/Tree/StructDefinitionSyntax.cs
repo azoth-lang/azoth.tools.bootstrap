@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -14,8 +13,7 @@ internal class StructDefinitionSyntax : TypeDefinitionSyntax<IStructMemberDefini
 
     public StructDefinitionSyntax(
         NamespaceName containingNamespaceName,
-        ITypeDefinitionSyntax? declaringType,
-        TextSpan headerSpan,
+        TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
         IConstKeywordToken? constModifier,
@@ -24,13 +22,11 @@ internal class StructDefinitionSyntax : TypeDefinitionSyntax<IStructMemberDefini
         string name,
         IFixedList<IGenericParameterSyntax> genericParameters,
         IFixedList<IStandardTypeNameSyntax> supertypesNames,
-        Func<IStructDefinitionSyntax, (IFixedList<IStructMemberDefinitionSyntax>, TextSpan)> parseMembers)
-        : base(containingNamespaceName, declaringType, headerSpan, file, accessModifier, constModifier, structKind as IMoveKeywordToken,
+        IFixedList<IStructMemberDefinitionSyntax> members)
+        : base(containingNamespaceName, span, file, accessModifier, constModifier, structKind as IMoveKeywordToken,
             nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypesNames)
     {
-        var (members, bodySpan) = parseMembers(this);
         Members = members;
-        Span = TextSpan.Covering(headerSpan, bodySpan);
     }
 
     public override string ToString()
@@ -38,8 +34,8 @@ internal class StructDefinitionSyntax : TypeDefinitionSyntax<IStructMemberDefini
         var modifiers = "";
         var accessModifier = AccessModifier.ToAccessModifier();
         if (accessModifier != CST.AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
-        if (IsConst) modifiers += "const ";
-        if (IsMove) modifiers += "move ";
+        if (ConstModifier is not null) modifiers += "const ";
+        if (MoveModifier is not null) modifiers += "move ";
         var generics = GenericParameters.Any() ? $"[{string.Join(", ", GenericParameters)}]" : "";
         return $"{modifiers}class {Name.ToBareString()}{generics} {{ … }}";
     }

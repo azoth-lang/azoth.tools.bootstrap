@@ -13,7 +13,6 @@ internal sealed class StandardMethodDefinitionSyntax : ConcreteMethodDefinitionS
     public override IReturnSyntax? Return { get; }
 
     public StandardMethodDefinitionSyntax(
-        ITypeDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -23,7 +22,7 @@ internal sealed class StandardMethodDefinitionSyntax : ConcreteMethodDefinitionS
         IFixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax body)
-        : base(declaringType, span, file, accessModifier, nameSpan, name, selfParameter, parameters, body)
+        : base(span, file, accessModifier, nameSpan, name, selfParameter, parameters, body)
     {
         Return = @return;
     }

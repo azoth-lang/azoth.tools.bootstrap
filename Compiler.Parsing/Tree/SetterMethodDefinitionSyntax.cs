@@ -13,7 +13,6 @@ internal sealed class SetterMethodDefinitionSyntax : ConcreteMethodDefinitionSyn
     public override IReturnSyntax? Return => null;
 
     public SetterMethodDefinitionSyntax(
-        ITypeDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -22,7 +21,7 @@ internal sealed class SetterMethodDefinitionSyntax : ConcreteMethodDefinitionSyn
         IMethodSelfParameterSyntax selfParameter,
         INamedParameterSyntax? parameter,
         IBodySyntax body)
-        : base(declaringType, span, file, accessModifier, nameSpan, name, selfParameter,
+        : base(span, file, accessModifier, nameSpan, name, selfParameter,
             parameter is not null ? FixedList.Create(parameter) : FixedList.Empty<INamedParameterSyntax>(), body)
     { }
 

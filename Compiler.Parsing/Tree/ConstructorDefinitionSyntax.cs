@@ -9,7 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal sealed class ConstructorDefinitionSyntax : InvocableDefinitionSyntax, IConstructorDefinitionSyntax
 {
-    public IClassDefinitionSyntax DefiningType { get; }
     public new IdentifierName? Name { get; }
     public IConstructorSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
@@ -17,7 +16,6 @@ internal sealed class ConstructorDefinitionSyntax : InvocableDefinitionSyntax, I
     public IBlockBodySyntax Body { get; }
 
     public ConstructorDefinitionSyntax(
-        IClassDefinitionSyntax declaringClass,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -28,7 +26,6 @@ internal sealed class ConstructorDefinitionSyntax : InvocableDefinitionSyntax, I
         IBlockBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters)
     {
-        DefiningType = declaringClass;
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters;

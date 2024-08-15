@@ -7,11 +7,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal abstract class MemberDefinitionSyntax : DefinitionSyntax, ITypeMemberDefinitionSyntax
 {
-    public ITypeDefinitionSyntax DefiningType { get; }
     public IAccessModifierToken? AccessModifier { get; }
 
     protected MemberDefinitionSyntax(
-        ITypeDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -19,7 +17,6 @@ internal abstract class MemberDefinitionSyntax : DefinitionSyntax, ITypeMemberDe
         IdentifierName? name)
         : base(span, file, name, nameSpan)
     {
-        DefiningType = declaringType;
         AccessModifier = accessModifier;
     }
 }

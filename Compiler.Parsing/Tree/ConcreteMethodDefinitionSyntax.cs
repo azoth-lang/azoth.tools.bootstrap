@@ -11,7 +11,6 @@ internal abstract class ConcreteMethodDefinitionSyntax : MethodDefinitionSyntax,
     public virtual IBodySyntax Body { get; }
 
     protected ConcreteMethodDefinitionSyntax(
-        ITypeDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -20,7 +19,7 @@ internal abstract class ConcreteMethodDefinitionSyntax : MethodDefinitionSyntax,
         IMethodSelfParameterSyntax selfParameter,
         IFixedList<INamedParameterSyntax> parameters,
         IBodySyntax body)
-        : base(declaringType, span, file, accessModifier, nameSpan, name, selfParameter,
+        : base(span, file, accessModifier, nameSpan, name, selfParameter,
             parameters)
     {
         Body = body;

@@ -9,7 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class InitializerDefinitionSyntax : InvocableDefinitionSyntax, IInitializerDefinitionSyntax
 {
-    public IStructDefinitionSyntax DefiningType { get; }
     public new IdentifierName? Name { get; }
     public IInitializerSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
@@ -17,7 +16,6 @@ internal class InitializerDefinitionSyntax : InvocableDefinitionSyntax, IInitial
     public IBlockBodySyntax Body { get; }
 
     public InitializerDefinitionSyntax(
-        IStructDefinitionSyntax declaringStruct,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -28,7 +26,6 @@ internal class InitializerDefinitionSyntax : InvocableDefinitionSyntax, IInitial
         IBlockBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters)
     {
-        DefiningType = declaringStruct;
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters;

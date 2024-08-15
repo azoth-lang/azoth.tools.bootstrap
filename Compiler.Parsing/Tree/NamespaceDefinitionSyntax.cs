@@ -15,7 +15,6 @@ internal class NamespaceDefinitionSyntax : NonMemberDefinitionSyntax, INamespace
     /// </summary>
     public bool IsGlobalQualified { get; }
     public NamespaceName DeclaredNames { get; }
-    public NamespaceName FullName { get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     public IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
 
@@ -31,11 +30,11 @@ internal class NamespaceDefinitionSyntax : NonMemberDefinitionSyntax, INamespace
         : base(containingNamespaceName, span, file, declaredNames.Segments.LastOrDefault(), nameSpan)
     {
         DeclaredNames = declaredNames;
-        FullName = containingNamespaceName.Qualify(declaredNames);
         UsingDirectives = usingDirectives;
         Definitions = declarations;
         IsGlobalQualified = isGlobalQualified;
     }
 
-    public override string ToString() => $"namespace ::{FullName} {{ … }}";
+    public override string ToString()
+        => IsGlobalQualified ? $"namespace ::{DeclaredNames} {{ … }}" : $"namespace {DeclaredNames} {{ … }}";
 }

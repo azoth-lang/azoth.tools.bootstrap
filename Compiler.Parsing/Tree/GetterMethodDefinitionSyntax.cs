@@ -12,7 +12,6 @@ internal sealed class GetterMethodDefinitionSyntax : ConcreteMethodDefinitionSyn
     public override IReturnSyntax Return { get; }
 
     public GetterMethodDefinitionSyntax(
-        ITypeDefinitionSyntax declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -21,7 +20,7 @@ internal sealed class GetterMethodDefinitionSyntax : ConcreteMethodDefinitionSyn
         IMethodSelfParameterSyntax selfParameter,
         IReturnSyntax @return,
         IBodySyntax body)
-        : base(declaringType, span, file, accessModifier, nameSpan, name, selfParameter,
+        : base(span, file, accessModifier, nameSpan, name, selfParameter,
             FixedList.Empty<INamedParameterSyntax>(), body)
     {
         Return = @return;
