@@ -5,7 +5,6 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 [Closed(
-    typeof(NamedVariableSymbol),
     typeof(FieldSymbol))]
 public abstract class NamedBindingSymbol : BindingSymbol, INamedBindingSymbol
 {

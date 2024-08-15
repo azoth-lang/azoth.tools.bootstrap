@@ -211,9 +211,7 @@ ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializ
     BindingType:`DataType` ParameterType:`ParameterType`;
 NamedParameter <: ConstructorOrInitializerParameter, LocalBinding = Syntax:`INamedParameterSyntax`
     IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`?
-    TypeNode:Type
-    // TODO remove parameter symbols
-    Symbol:`NamedVariableSymbol`;
+    TypeNode:Type;
 SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool`
     ContainingTypeDefinition:`ITypeDefinitionNode` ContainingDeclaredType:`IDeclaredUserType`
     // TODO remove parameter symbols
@@ -273,9 +271,7 @@ VariableDeclarationStatement <: BodyStatement, VariableBinding = Syntax:`IVariab
     IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type?
     Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
     IntermediateInitializer:`IExpressionNode`?
-    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
-    // TODO remove variable symbols
-    Symbol:`NamedVariableSymbol` DeclarationNumber:`int`?;
+    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
 ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
     IntermediateExpression:`IExpressionNode`?;

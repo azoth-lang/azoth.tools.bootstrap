@@ -87,7 +87,6 @@ public partial interface IBlockOrResultSyntax : IElseClauseSyntax
 public partial interface IBindingSyntax : IConcreteSyntax
 {
     bool IsMutableBinding { get; }
-    IPromise<BindingSymbol> Symbol { get; }
 }
 
 [Closed(
@@ -97,8 +96,6 @@ public partial interface IBindingSyntax : IConcreteSyntax
     typeof(IForeachExpressionSyntax))]
 public partial interface ILocalBindingSyntax : IBindingSyntax
 {
-    new IPromise<NamedVariableSymbol> Symbol { get; }
-    IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
     TextSpan NameSpan { get; }
 }
 
@@ -377,7 +374,6 @@ public partial interface IFieldDefinitionSyntax : IAlwaysTypeMemberDefinitionSyn
     ITypeSyntax Type { get; }
     new AcyclicPromise<FieldSymbol> Symbol { get; }
     IPromise<Symbol> IDefinitionSyntax.Symbol => Symbol;
-    IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
     IExpressionSyntax? Initializer { get; }
 }
 
@@ -444,8 +440,6 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
     ITypeSyntax Type { get; }
     new IPromise<DataType> DataType { get; }
     IPromise<Pseudotype> IParameterSyntax.DataType => DataType;
-    new Promise<NamedVariableSymbol> Symbol { get; }
-    IPromise<NamedVariableSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IExpressionSyntax? DefaultValue { get; }
 }
 
@@ -643,8 +637,6 @@ public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyn
     Promise<int?> DeclarationNumber { get; }
     ICapabilitySyntax? Capability { get; }
     ITypeSyntax? Type { get; }
-    new Promise<NamedVariableSymbol> Symbol { get; }
-    IPromise<NamedVariableSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IExpressionSyntax? Initializer { get; }
 }
 
@@ -678,8 +670,6 @@ public partial interface IBindingPatternSyntax : IOptionalOrBindingPatternSyntax
 {
     IdentifierName Name { get; }
     Promise<int?> DeclarationNumber { get; }
-    new Promise<NamedVariableSymbol> Symbol { get; }
-    IPromise<NamedVariableSymbol> ILocalBindingSyntax.Symbol => Symbol;
 }
 
 public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSyntax
@@ -878,8 +868,6 @@ public partial interface IForeachExpressionSyntax : IDataTypedExpressionSyntax, 
     Promise<MethodSymbol?> IterateMethod { get; }
     Promise<MethodSymbol> NextMethod { get; }
     ITypeSyntax? Type { get; }
-    new Promise<NamedVariableSymbol> Symbol { get; }
-    IPromise<NamedVariableSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IBlockExpressionSyntax Block { get; }
 }
 

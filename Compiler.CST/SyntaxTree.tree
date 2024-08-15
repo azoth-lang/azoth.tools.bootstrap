@@ -35,8 +35,8 @@ ElseClause;
 BlockOrResult: ElseClause = DataType:`IPromise<DataType?>`;
 
 // ---------- Bindings
-Binding = IsMutableBinding:`bool` Symbol:`IPromise<BindingSymbol>`;
-LocalBinding: Binding = Symbol:`IPromise<NamedVariableSymbol>` NameSpan:`TextSpan`;
+Binding = IsMutableBinding:`bool`;
+LocalBinding: Binding = NameSpan:`TextSpan`;
 
 // ---------- Definitions
 Definition: Concrete = File:`CodeFile` Name:`TypeName`? NameSpan:`TextSpan` Symbol:`IPromise<Symbol>`;
@@ -101,7 +101,7 @@ Capability: CapabilityConstraint = Tokens:`ICapabilityToken`* Declared:`Declared
 Parameter = Name:`IdentifierName`? DataType:`IPromise<Pseudotype>` Unused:`bool`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter: Parameter;
-NamedParameter: ConstructorOrInitializerParameter <: LocalBinding = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`Promise<int?>` Type DataType:`IPromise<DataType>` Symbol:`Promise<NamedVariableSymbol>` DefaultValue:Expression?;
+NamedParameter: ConstructorOrInitializerParameter <: LocalBinding = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`Promise<int?>` Type DataType:`IPromise<DataType>` DefaultValue:Expression?;
 SelfParameter: Parameter = IsLentBinding:`bool` Symbol:`Promise<SelfParameterSymbol>`;
 ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability DataType:`IPromise<DataType>` Symbol:`Promise<SelfParameterSymbol>`;
 InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability DataType:`IPromise<DataType>` Symbol:`Promise<SelfParameterSymbol>`;
@@ -136,14 +136,14 @@ SelfViewpointType: ViewpointType = ReferencedSymbol:`Promise<SelfParameterSymbol
 Statement;
 ResultStatement: Statement <: BlockOrResult = Expression;
 BodyStatement: Statement;
-VariableDeclarationStatement: BodyStatement <: LocalBinding = NameSpan:`TextSpan` Name:`IdentifierName` DeclarationNumber:`Promise<int?>` Capability? Type? Symbol:`Promise<NamedVariableSymbol>` Initializer:Expression?;
+VariableDeclarationStatement: BodyStatement <: LocalBinding = NameSpan:`TextSpan` Name:`IdentifierName` DeclarationNumber:`Promise<int?>` Capability? Type? Initializer:Expression?;
 ExpressionStatement: BodyStatement = Expression;
 
 // ---------- Patterns
 Pattern;
 BindingContextPattern: Pattern = IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern: Pattern;
-BindingPattern: OptionalOrBindingPattern <: LocalBinding = Name:`IdentifierName` DeclarationNumber:`Promise<int?>` Symbol:`Promise<NamedVariableSymbol>`;
+BindingPattern: OptionalOrBindingPattern <: LocalBinding = Name:`IdentifierName` DeclarationNumber:`Promise<int?>`;
 OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
@@ -175,7 +175,7 @@ PatternMatchExpression: DataTypedExpression = Referent:Expression Pattern;
 IfExpression: DataTypedExpression <: ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
 LoopExpression: DataTypedExpression = Block:BlockExpression;
 WhileExpression: DataTypedExpression = Condition:Expression Block:BlockExpression;
-ForeachExpression: DataTypedExpression <: LocalBinding = VariableName:`IdentifierName` DeclarationNumber:`Promise<int?>` InExpression:Expression IterateMethod:`Promise<MethodSymbol?>` NextMethod:`Promise<MethodSymbol>` Type? Symbol:`Promise<NamedVariableSymbol>` Block:BlockExpression;
+ForeachExpression: DataTypedExpression <: LocalBinding = VariableName:`IdentifierName` DeclarationNumber:`Promise<int?>` InExpression:Expression IterateMethod:`Promise<MethodSymbol?>` NextMethod:`Promise<MethodSymbol>` Type? Block:BlockExpression;
 BreakExpression: NeverTypedExpression = Value:Expression?;
 NextExpression: NeverTypedExpression;
 ReturnExpression: NeverTypedExpression = Value:Expression?;

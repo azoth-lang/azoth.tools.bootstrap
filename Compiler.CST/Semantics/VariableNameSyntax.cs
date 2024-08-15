@@ -6,7 +6,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 
-[Closed(typeof(NamedVariableNameSyntax), typeof(SelfExpressionSyntax))]
+[Closed(typeof(SelfExpressionSyntax))]
 public abstract class VariableNameSyntax : SyntaxSemantics
 {
     public abstract BindingSymbol Symbol { get; }

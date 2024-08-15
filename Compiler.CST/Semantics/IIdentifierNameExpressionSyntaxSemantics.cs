@@ -6,7 +6,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 
 [Closed(
     typeof(TypeNameSyntax),
-    typeof(NamedVariableNameSyntax),
     typeof(FunctionGroupNameSyntax),
     typeof(NamespaceNameSyntax),
     typeof(UnknownNameSyntax))]

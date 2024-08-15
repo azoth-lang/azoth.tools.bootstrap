@@ -909,7 +909,6 @@ public partial interface INamedParameterNode : ISemanticNode, IConstructorOrInit
     TypeName INamedDeclarationNode.Name => Name;
     int? DeclarationNumber { get; }
     ITypeNode TypeNode { get; }
-    NamedVariableSymbol Symbol { get; }
 }
 
 [Closed(
@@ -1247,8 +1246,6 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     IAmbiguousExpressionNode? CurrentInitializer { get; }
     IExpressionNode? IntermediateInitializer { get; }
     LexicalScope LexicalScope { get; }
-    NamedVariableSymbol Symbol { get; }
-    int? DeclarationNumber { get; }
 }
 
 public partial interface IExpressionStatementNode : IBodyStatementNode

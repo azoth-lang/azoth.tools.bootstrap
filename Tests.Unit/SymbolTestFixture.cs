@@ -117,74 +117,15 @@ public abstract class SymbolTestFixture
         bool? isConst = null,
         Capability? referenceCapability = null)
     {
-        return new ReturnType(DataType(name, containingPackage, containingNamespace, isConst, referenceCapability));
+        return new(DataType(name, containingPackage, containingNamespace, isConst, referenceCapability));
     }
 
     protected UserTypeSymbol Type(
         NamespaceSymbol? ns = null,
         ObjectType? dataType = null)
     {
-        return new UserTypeSymbol(
+        return new(
             ns ?? Package(),
             dataType ?? DataType().DeclaredType);
-    }
-
-    protected NamedVariableSymbol Parameter(
-        string? name = null,
-        InvocableSymbol? containing = null,
-        int? declaration = null,
-        bool? mut = null,
-        bool? lent = null,
-        DataType? type = null)
-    {
-        return NamedVariableSymbol.CreateParameter(
-            containing ?? Func(),
-            Name(name) ?? DefaultName("variable"),
-            declaration ?? ++unique,
-            mut ?? true,
-            lent ?? false,
-            type ?? DataType());
-    }
-
-    protected NamedVariableSymbol LocalVariable(
-        string? name = null,
-        InvocableSymbol? containing = null,
-        int? declaration = null,
-        bool? mut = null,
-        DataType? type = null)
-    {
-        return NamedVariableSymbol.CreateLocal(
-            containing ?? Func(),
-            mut ?? true,
-            Name(name) ?? DefaultName("variable"),
-            declaration ?? ++unique,
-            type ?? DataType());
-    }
-
-    protected static NamedVariableSymbol LocalVariable(
-        NamedVariableSymbol mother,
-        string? name = null,
-        InvocableSymbol? containing = null,
-        int? declaration = null,
-        bool? mut = null,
-        DataType? type = null)
-    {
-        return NamedVariableSymbol.CreateLocal(
-            containing ?? mother.ContainingSymbol,
-            mut ?? mother.IsMutableBinding,
-            Name(name) ?? mother.Name,
-            declaration ?? mother.DeclarationNumber,
-            type ?? mother.Type);
-    }
-
-    protected SelfParameterSymbol SelfParam(
-        InvocableSymbol? containing = null,
-        bool? lent = null,
-        DataType? type = null)
-    {
-        return new SelfParameterSymbol(
-            containing ?? Method(),
-            lent ?? false,
-            type ?? DataType());
     }
 }

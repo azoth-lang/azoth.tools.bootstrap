@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
@@ -95,25 +94,12 @@ internal static class SymbolAspect
         return new SelfParameterSymbol(parent.Symbol, node.IsLentBinding && !isConstructor, ((IParameterNode)node).BindingType);
     }
 
-    // TODO remove parameter symbols
-    public static NamedVariableSymbol NamedParameter_Symbol(INamedParameterNode node)
-    {
-        var parent = (IInvocableDefinitionNode)node.Parent;
-        var isLent = node.IsLentBinding && node.BindingType.CanBeLent();
-        return NamedVariableSymbol.CreateParameter(parent.Symbol, node.Name,
-            node.DeclarationNumber, node.IsMutableBinding, isLent, node.BindingType);
-    }
-
     public static void NamedParameter_ContributeDiagnostics(INamedParameterNode node, DiagnosticsBuilder diagnostics)
     {
         var type = node.BindingType;
         if (node.IsLentBinding && !type.CanBeLent())
             diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, type));
     }
-
-    public static NamedVariableSymbol VariableDeclarationStatement_Symbol(IVariableDeclarationStatementNode node)
-        //var symbol = NamedVariableSymbol.CreateLocal(containingSymbol, node.IsMutableBinding, node.Name, node.DeclarationNumber, node.Type);
-        => throw new NotImplementedException();
 
     public static SelfParameterSymbol? SelfExpression_ReferencedSymbol(ISelfExpressionNode node)
         => node.ContainingDeclaration switch
