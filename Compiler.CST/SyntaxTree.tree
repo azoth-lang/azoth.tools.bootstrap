@@ -7,7 +7,6 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 ◊using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
-◊using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Tokens;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -183,20 +182,18 @@ ReturnExpression: NeverTypedExpression = Value:Expression?;
 InvocationExpression: DataTypedExpression = Expression Arguments:Expression*;
 
 // ---------- Name Expressions
-NameExpression: Expression = Semantics:`IPromise<ISyntaxSemantics>`;
-SimpleName: NameExpression = Semantics:`IPromise<ISimpleNameExpressionSyntaxSemantics>`;
+NameExpression: Expression;
+SimpleName: NameExpression;
 StandardNameExpression: NameExpression = Name:`StandardName`;
 IdentifierNameExpression: NameExpression <: StandardNameExpression, SimpleName, AssignableExpression
-    = Name:`IdentifierName` Semantics:`Promise<IIdentifierNameExpressionSyntaxSemantics>`;
-SpecialTypeNameExpression: NameExpression <: TypedExpression = Name:`SpecialTypeName` Semantics:`Promise<SpecialTypeNameExpressionSyntaxSemantics>` DataType:`IPromise<DataType>`;
+    = Name:`IdentifierName`;
+SpecialTypeNameExpression: NameExpression <: TypedExpression = Name:`SpecialTypeName` DataType:`IPromise<DataType>`;
 GenericNameExpression: NameExpression <: StandardNameExpression = Name:`GenericName` TypeArguments:Type* DataType:`Promise<DataType>`;
 InstanceExpression <: SimpleName, TypedExpression; // i.e. `self` or `base`
-SelfExpression: NameExpression <: InstanceExpression = IsImplicit:`bool` Semantics:`Promise<ISelfExpressionSyntaxSemantics>` Pseudotype:`IPromise<Pseudotype>`;
+SelfExpression: NameExpression <: InstanceExpression = IsImplicit:`bool` Pseudotype:`IPromise<Pseudotype>`;
 MemberAccessExpression: NameExpression <: AssignableExpression
-    = Context:Expression MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan`
-    Semantics:`Promise<IMemberAccessSyntaxSemantics>`;
-MissingName: NameExpression <: SimpleName, AssignableExpression
-    = Semantics:`Promise<UnknownNameSyntax>`;
+    = Context:Expression MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan`;
+MissingName: NameExpression <: SimpleName, AssignableExpression;
 
 // ---------- Capability Expressions
 MoveExpression: DataTypedExpression = Referent:SimpleName;

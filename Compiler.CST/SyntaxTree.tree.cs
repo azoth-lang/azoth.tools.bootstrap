@@ -3,7 +3,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
-using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -863,7 +862,6 @@ public partial interface IInvocationExpressionSyntax : IDataTypedExpressionSynta
     typeof(IMemberAccessExpressionSyntax))]
 public partial interface INameExpressionSyntax : IExpressionSyntax
 {
-    IPromise<ISyntaxSemantics> Semantics { get; }
 }
 
 [Closed(
@@ -872,8 +870,6 @@ public partial interface INameExpressionSyntax : IExpressionSyntax
     typeof(IMissingNameSyntax))]
 public partial interface ISimpleNameSyntax : INameExpressionSyntax
 {
-    new IPromise<ISimpleNameExpressionSyntaxSemantics> Semantics { get; }
-    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
 }
 
 [Closed(
@@ -888,16 +884,11 @@ public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressi
 {
     new IdentifierName Name { get; }
     StandardName IStandardNameExpressionSyntax.Name => Name;
-    new Promise<IIdentifierNameExpressionSyntaxSemantics> Semantics { get; }
-    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
-    IPromise<ISimpleNameExpressionSyntaxSemantics> ISimpleNameSyntax.Semantics => Semantics;
 }
 
 public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSyntax, ITypedExpressionSyntax
 {
     SpecialTypeName Name { get; }
-    new Promise<SpecialTypeNameExpressionSyntaxSemantics> Semantics { get; }
-    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
     new IPromise<DataType> DataType { get; }
     IPromise<DataType?> IExpressionSyntax.DataType => DataType;
     IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
@@ -921,9 +912,6 @@ public partial interface IInstanceExpressionSyntax : IConcreteSyntax, ISimpleNam
 public partial interface ISelfExpressionSyntax : INameExpressionSyntax, IInstanceExpressionSyntax
 {
     bool IsImplicit { get; }
-    new Promise<ISelfExpressionSyntaxSemantics> Semantics { get; }
-    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
-    IPromise<ISimpleNameExpressionSyntaxSemantics> ISimpleNameSyntax.Semantics => Semantics;
     IPromise<Pseudotype> Pseudotype { get; }
 }
 
@@ -933,14 +921,10 @@ public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, 
     StandardName MemberName { get; }
     IFixedList<ITypeSyntax> TypeArguments { get; }
     TextSpan MemberNameSpan { get; }
-    new Promise<IMemberAccessSyntaxSemantics> Semantics { get; }
-    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
 }
 
 public partial interface IMissingNameSyntax : ISimpleNameSyntax, IAssignableExpressionSyntax
 {
-    new Promise<UnknownNameSyntax> Semantics { get; }
-    IPromise<ISimpleNameExpressionSyntaxSemantics> ISimpleNameSyntax.Semantics => Semantics;
 }
 
 public partial interface IMoveExpressionSyntax : IDataTypedExpressionSyntax
