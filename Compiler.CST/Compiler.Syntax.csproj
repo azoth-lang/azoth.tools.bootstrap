@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <AssemblyName>Azoth.Tools.Bootstrap.Compiler.CST</AssemblyName>
-    <RootNamespace>Azoth.Tools.Bootstrap.Compiler.CST</RootNamespace>
+    <AssemblyName>Azoth.Tools.Bootstrap.Compiler.Syntax</AssemblyName>
+    <RootNamespace>Azoth.Tools.Bootstrap.Compiler.Syntax</RootNamespace>
     <Nullable>enable</Nullable>
     <DisableFastUpToDateCheck>True</DisableFastUpToDateCheck>
   </PropertyGroup>

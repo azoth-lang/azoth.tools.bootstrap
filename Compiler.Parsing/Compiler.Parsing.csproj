@@ -22,7 +22,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Compiler.CST\Compiler.CST.csproj" />
+    <ProjectReference Include="..\Compiler.CST\Compiler.Syntax.csproj" />
     <ProjectReference Include="..\Compiler.Lexing\Compiler.Lexing.csproj" />
   </ItemGroup>
 </Project>
