@@ -6,7 +6,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 [Closed(
-    typeof(NamedBindingSymbol),
+    typeof(FieldSymbol),
     typeof(SelfParameterSymbol))]
 public abstract class BindingSymbol : Symbol, IBindingSymbol
 {

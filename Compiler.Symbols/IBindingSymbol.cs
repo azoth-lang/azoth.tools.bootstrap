@@ -4,7 +4,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-[Closed(typeof(INamedVariableSymbol), typeof(ISelfParameterSymbol), typeof(IFieldSymbol))]
+[Closed(typeof(ISelfParameterSymbol), typeof(IFieldSymbol))]
 public interface IBindingSymbol
 {
     public PackageSymbol Package { get; }

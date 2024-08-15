@@ -4,8 +4,10 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-public sealed class FieldSymbol : NamedBindingSymbol, IFieldSymbol
+public sealed class FieldSymbol : BindingSymbol, IFieldSymbol
 {
+    public override IdentifierName Name { get; }
+    public override DataType Type { get; }
     public override UserTypeSymbol ContainingSymbol { get; }
     public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
 
@@ -14,8 +16,10 @@ public sealed class FieldSymbol : NamedBindingSymbol, IFieldSymbol
         IdentifierName name,
         bool isMutableBinding,
         DataType dataType)
-        : base(containingSymbol, isMutableBinding, false, name, dataType)
+        : base(containingSymbol, isMutableBinding, false, name)
     {
+        Name = name;
+        Type = dataType;
         ContainingSymbol = containingSymbol;
     }
 
