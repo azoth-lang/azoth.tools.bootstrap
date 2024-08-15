@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -37,8 +38,8 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.CompilationUnit_LexicalScope, ReferenceEqualityComparer.Instance);
-    private ValueAttribute<Diagnostics> diagnostics;
-    public Diagnostics Diagnostics
+    private ValueAttribute<DiagnosticsCollection> diagnostics;
+    public DiagnosticsCollection Diagnostics
         => diagnostics.TryGetValue(out var value) ? value : diagnostics.GetValue(GetDiagnostics);
 
     public CompilationUnitNode(
@@ -60,7 +61,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LexicalScope;
 
-    private Diagnostics GetDiagnostics()
+    private DiagnosticsCollection GetDiagnostics()
     {
         var diagnostics = new DiagnosticsBuilder();
         CollectDiagnostics(diagnostics);

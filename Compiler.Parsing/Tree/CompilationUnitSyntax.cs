@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
@@ -11,7 +12,7 @@ internal class CompilationUnitSyntax : CodeSyntax, ICompilationUnitSyntax
     public NamespaceName ImplicitNamespaceName { get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     public IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
-    public Diagnostics Diagnostics { get; private set; }
+    public DiagnosticsCollection Diagnostics { get; private set; }
 
     public CompilationUnitSyntax(
         NamespaceName implicitNamespaceName,
@@ -25,10 +26,10 @@ internal class CompilationUnitSyntax : CodeSyntax, ICompilationUnitSyntax
         ImplicitNamespaceName = implicitNamespaceName;
         UsingDirectives = usingDirectives;
         Definitions = declarations;
-        Diagnostics = Diagnostics.Empty;
+        Diagnostics = DiagnosticsCollection.Empty;
     }
 
-    public void Attach(Diagnostics diagnostics)
+    public void Attach(DiagnosticsCollection diagnostics)
         => Diagnostics = diagnostics;
 
     public override string ToString() => File.Reference.ToString();

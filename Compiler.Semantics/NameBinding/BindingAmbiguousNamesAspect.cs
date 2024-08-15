@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Types;

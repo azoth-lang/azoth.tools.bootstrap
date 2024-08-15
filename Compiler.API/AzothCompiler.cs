@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Lexing;
 using Azoth.Tools.Bootstrap.Compiler.Names;

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -27,9 +27,9 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
         => packageDeclarations.TryGetValue(out var value) ? value
             : packageDeclarations.GetValue(this, SymbolNodeAspect.Package_PackageDeclarations);
-    private Diagnostics? diagnostics;
+    private DiagnosticsCollection? diagnostics;
     private bool diagnosticsCached;
-    public Diagnostics Diagnostics
+    public DiagnosticsCollection Diagnostics
         => GrammarAttribute.IsCached(in diagnosticsCached) ? diagnostics!
             : this.Synthetic(ref diagnosticsCached, ref diagnostics,
                 DiagnosticsAspect.Package);

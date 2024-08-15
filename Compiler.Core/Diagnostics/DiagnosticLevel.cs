@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Core;
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
 public enum DiagnosticLevel
 {

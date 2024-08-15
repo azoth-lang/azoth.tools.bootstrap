@@ -1,6 +1,6 @@
 using System;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core;
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
 public static class ErrorCodeRange
 {

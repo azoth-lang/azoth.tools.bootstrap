@@ -1,9 +1,9 @@
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -40,7 +40,7 @@ public partial interface ICompilationUnitSyntax : ICodeSyntax
 {
     CodeFile File { get; }
     NamespaceName ImplicitNamespaceName { get; }
-    Diagnostics Diagnostics { get; }
+    DiagnosticsCollection Diagnostics { get; }
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
 }

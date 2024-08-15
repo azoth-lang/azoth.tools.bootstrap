@@ -1,6 +1,6 @@
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Core;
 
 public enum ParameterIndependence
 {

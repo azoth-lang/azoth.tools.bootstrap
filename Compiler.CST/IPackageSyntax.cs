@@ -1,4 +1,4 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -11,5 +11,5 @@ public interface IPackageSyntax : ISyntax
     IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
     IFixedSet<IPackageReferenceSyntax> References { get; }
 
-    Diagnostics Diagnostics { get; }
+    DiagnosticsCollection Diagnostics { get; }
 }

@@ -1,7 +1,7 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;

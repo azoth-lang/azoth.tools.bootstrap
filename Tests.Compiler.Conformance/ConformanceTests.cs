@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 using Azoth.Tools.Bootstrap.Framework;
@@ -126,7 +127,7 @@ public partial class ConformanceTests
         }
     }
 
-    private void ReportSupportCompilationErrors(Diagnostics diagnostics)
+    private void ReportSupportCompilationErrors(DiagnosticsCollection diagnostics)
     {
         testOutput.WriteLine("Test Support Package Compiler Errors:");
         foreach (var diagnostic in diagnostics)
@@ -153,7 +154,7 @@ public partial class ConformanceTests
         TestCase testCase,
         CodeFile codeFile,
         string code,
-        Diagnostics diagnostics)
+        DiagnosticsCollection diagnostics)
     {
         // Check for compiler errors
         var expectCompileErrors = ExpectCompileErrors(code);

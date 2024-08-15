@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Lexing;

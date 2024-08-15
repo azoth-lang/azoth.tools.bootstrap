@@ -3,6 +3,7 @@ using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -223,7 +224,7 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
     new IPackageFacetNode TestingFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
-    Diagnostics Diagnostics { get; }
+    DiagnosticsCollection Diagnostics { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
     IFunctionDefinitionNode? EntryPoint { get; }
     IPackageSymbols PackageSymbols { get; }
@@ -295,7 +296,7 @@ public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
     IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
     NamespaceScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
-    Diagnostics Diagnostics { get; }
+    DiagnosticsCollection Diagnostics { get; }
 }
 
 public partial interface IUsingDirectiveNode : ISemanticNode, ICodeNode

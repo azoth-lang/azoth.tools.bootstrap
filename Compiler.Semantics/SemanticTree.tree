@@ -7,6 +7,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 ◊using Azoth.Tools.Bootstrap.Compiler.CST;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -47,7 +48,7 @@ VariableBinding <: LocalBinding, DataFlow;
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
     References:{PackageReference} IntrinsicsReference:`IPackageReferenceNode`
     PackageDeclarations:`FixedDictionary<IdentifierName,IPackageDeclarationNode>`
-    MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`Diagnostics`
+    MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`DiagnosticsCollection`
     PrimitivesDeclarations:{TypeDeclaration} EntryPoint:`IFunctionDefinitionNode`?
     PackageSymbols:`IPackageSymbols`;
 
@@ -73,7 +74,7 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
     ImplicitNamespaceName:`NamespaceName` ImplicitNamespace:`INamespaceDefinitionNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*
     ContainingLexicalScope:`NamespaceScope` LexicalScope:`LexicalScope`
-    Diagnostics:`Diagnostics`;
+    Diagnostics:`DiagnosticsCollection`;
 
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 

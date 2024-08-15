@@ -1,5 +1,6 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -20,7 +21,7 @@ public class PackageSyntax : IPackageSyntax
     public IFixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
     public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
     public IFixedSet<IPackageReferenceSyntax> References { get; }
-    public Diagnostics Diagnostics { get; }
+    public DiagnosticsCollection Diagnostics { get; }
 
     public PackageSyntax(
         IdentifierName name,

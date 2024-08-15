@@ -1,7 +1,7 @@
 using System;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core;
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
 public class Diagnostic
 {

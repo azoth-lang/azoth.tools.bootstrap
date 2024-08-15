@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal static class DiagnosticsAspect
 {
-    public static Diagnostics Package(IPackageNode node)
+    public static DiagnosticsCollection Package(IPackageNode node)
     {
         var diagnostics = new DiagnosticsBuilder
         {

@@ -1,8 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
@@ -12,7 +10,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal sealed class IdentifierTypeNameSyntax : TypeSyntax, IIdentifierTypeNameSyntax
 {
     public IdentifierName Name { get; }
-    public BareType? NamedBareType => (NamedType as CapabilityType)?.BareType;
 
     public IdentifierTypeNameSyntax(TextSpan span, string name)
         : base(span)

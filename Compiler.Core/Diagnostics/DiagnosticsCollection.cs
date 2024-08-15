@@ -2,18 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core;
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
-public sealed class Diagnostics : IReadOnlyList<Diagnostic>
+public sealed class DiagnosticsCollection : IReadOnlyList<Diagnostic>
 {
-    public static readonly Diagnostics Empty = new();
+    public static readonly DiagnosticsCollection Empty = new();
 
     private readonly IReadOnlyList<Diagnostic> diagnostics;
 
     public int Count => diagnostics.Count;
     public int FatalErrorCount { get; }
 
-    public Diagnostics(DiagnosticsBuilder diagnostics)
+    public DiagnosticsCollection(DiagnosticsBuilder diagnostics)
     {
         FatalErrorCount = diagnostics.FatalErrorCount;
         // Don't wrap in read only list, as this class is the wrapper
@@ -22,7 +22,7 @@ public sealed class Diagnostics : IReadOnlyList<Diagnostic>
                                       .ToList();
     }
 
-    private Diagnostics()
+    private DiagnosticsCollection()
     {
         diagnostics = [];
     }

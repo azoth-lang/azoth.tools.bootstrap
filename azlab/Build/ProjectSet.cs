@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 using Azoth.Tools.Bootstrap.Framework;
@@ -251,7 +252,7 @@ internal class ProjectSet : IEnumerable<Project>
         return cacheDir;
     }
 
-    private static bool OutputDiagnostics(Project project, Diagnostics diagnostics, AsyncLock consoleLock)
+    private static bool OutputDiagnostics(Project project, DiagnosticsCollection diagnostics, AsyncLock consoleLock)
     {
         if (!diagnostics.Any())
             return false;

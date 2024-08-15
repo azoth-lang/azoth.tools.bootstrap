@@ -1,3 +1,5 @@
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+
 namespace Azoth.Tools.Bootstrap.Compiler.Core;
 
 public class ParseContext

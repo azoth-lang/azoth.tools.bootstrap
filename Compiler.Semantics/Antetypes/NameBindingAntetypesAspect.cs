@@ -1,5 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
-using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;

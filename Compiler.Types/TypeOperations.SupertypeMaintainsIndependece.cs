@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;

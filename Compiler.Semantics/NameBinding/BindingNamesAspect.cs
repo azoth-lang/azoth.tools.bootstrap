@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;

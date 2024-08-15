@@ -1,4 +1,4 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
 namespace Xunit;
 

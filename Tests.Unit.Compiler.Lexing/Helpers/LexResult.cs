@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Lexing;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
@@ -12,7 +13,7 @@ public class LexResult
 {
     public CodeFile File { get; }
     public IFixedList<IToken> Tokens { get; }
-    public Diagnostics Diagnostics { get; }
+    public DiagnosticsCollection Diagnostics { get; }
 
     public LexResult(ITokenIterator<IToken> iterator)
     {

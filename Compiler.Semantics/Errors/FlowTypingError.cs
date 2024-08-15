@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
@@ -8,25 +9,25 @@ public static class FlowTypingError
 {
     public static Diagnostic CannotMoveValue(CodeFile file, IExpressionSyntax moveExpression, IExpressionSyntax referent)
     {
-        return new(file, moveExpression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            4001, $"Cannot move value `{file.Code[referent.Span]}`");
+        return new(file, moveExpression.Span, (DiagnosticLevel)DiagnosticLevel.FatalCompilationError, (DiagnosticPhase)DiagnosticPhase.Analysis,
+            (int)4001, (string)$"Cannot move value `{file.Code[referent.Span]}`");
     }
 
     public static Diagnostic CannotFreezeValue(CodeFile file, IExpressionSyntax expression, IExpressionSyntax referent)
     {
-        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            4002, $"Cannot freeze the value `{file.Code[referent.Span]}`");
+        return new(file, expression.Span, (DiagnosticLevel)DiagnosticLevel.FatalCompilationError, (DiagnosticPhase)DiagnosticPhase.Analysis,
+            (int)4002, (string)$"Cannot freeze the value `{file.Code[referent.Span]}`");
     }
 
     public static Diagnostic CannotUnion(CodeFile file, TextSpan span)
     {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            4004, "Cannot combine lent values");
+        return new(file, span, (DiagnosticLevel)DiagnosticLevel.FatalCompilationError, (DiagnosticPhase)DiagnosticPhase.Analysis,
+            (int)4004, (string)"Cannot combine lent values");
     }
 
     public static Diagnostic CannotReturnLent(CodeFile file, IReturnExpressionSyntax expression)
     {
-        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            4005, "Cannot return lent value from function");
+        return new(file, expression.Span, (DiagnosticLevel)DiagnosticLevel.FatalCompilationError, (DiagnosticPhase)DiagnosticPhase.Analysis,
+            (int)4005, (string)"Cannot return lent value from function");
     }
 }

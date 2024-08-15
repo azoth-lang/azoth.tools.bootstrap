@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Tests.Unit.Fakes;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Lexing.Fakes;
