@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
     typeof(NamespaceSymbol),
     typeof(TypeSymbol),
     typeof(InvocableSymbol),
-    typeof(BindingSymbol))]
+    typeof(FieldSymbol))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public abstract class Symbol : IEquatable<Symbol>
 {

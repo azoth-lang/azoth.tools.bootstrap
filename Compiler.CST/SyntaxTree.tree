@@ -200,8 +200,8 @@ MissingName: NameExpression <: SimpleName, AssignableExpression
     = Semantics:`Promise<UnknownNameSyntax>`;
 
 // ---------- Capability Expressions
-MoveExpression: DataTypedExpression = Referent:SimpleName ReferencedSymbol:`Promise<BindingSymbol?>`;
-FreezeExpression: DataTypedExpression = Referent:SimpleName ReferencedSymbol:`Promise<BindingSymbol?>`;
+MoveExpression: DataTypedExpression = Referent:SimpleName;
+FreezeExpression: DataTypedExpression = Referent:SimpleName;
 
 // ---------- Async Expressions
 AsyncBlockExpression: DataTypedExpression = Block:BlockExpression;

@@ -980,13 +980,11 @@ public partial interface IMissingNameSyntax : ISimpleNameSyntax, IAssignableExpr
 public partial interface IMoveExpressionSyntax : IDataTypedExpressionSyntax
 {
     ISimpleNameSyntax Referent { get; }
-    Promise<BindingSymbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IFreezeExpressionSyntax : IDataTypedExpressionSyntax
 {
     ISimpleNameSyntax Referent { get; }
-    Promise<BindingSymbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IAsyncBlockExpressionSyntax : IDataTypedExpressionSyntax

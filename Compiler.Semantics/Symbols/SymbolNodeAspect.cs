@@ -138,7 +138,6 @@ internal static class SymbolNodeAspect
             TypeSymbol sym => TypeSymbol(sym),
             InvocableSymbol sym => InvocableSymbol(sym),
             FieldSymbol sym => FieldSymbol(sym),
-            BindingSymbol _ => null,
             _ => throw ExhaustiveMatch.Failed(symbol),
         };
     private static ITypeDeclarationNode TypeSymbol(TypeSymbol symbol)
