@@ -35,7 +35,7 @@
     <PackageReference Include="morelinq" Version="4.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Compiler.CST\Compiler.Syntax.csproj" />
+    <ProjectReference Include="..\Compiler.Syntax\Compiler.Syntax.csproj" />
     <ProjectReference Include="..\Compiler.Core\Compiler.Core.csproj" />
     <ProjectReference Include="..\Framework\Framework.csproj" />
     <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />

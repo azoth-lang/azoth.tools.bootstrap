@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 /// matched as part of syntax. It is always treated as the singular root.
 ///
 /// Currently, references are stored as ASTs. To avoid referencing the AST
-/// project from the CST project, a generic type is used.
+/// project from the Syntax project, a generic type is used.
 /// </remarks>
 public class PackageSyntax : IPackageSyntax
 {
