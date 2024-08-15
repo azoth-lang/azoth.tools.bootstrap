@@ -101,11 +101,11 @@ Parameter: Code = Name:`IdentifierName`? Unused:`bool`;
 ConstructorOrInitializerParameter: Parameter;
 NamedParameter: ConstructorOrInitializerParameter <: LocalBinding = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` Type DefaultValue:Expression?;
 SelfParameter: Parameter = IsLentBinding:`bool`;
-ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
-InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
-MethodSelfParameter: SelfParameter = IsLentBinding:`bool` Capability:CapabilityConstraint;
+ConstructorSelfParameter: SelfParameter = Capability;
+InitializerSelfParameter: SelfParameter = Capability;
+MethodSelfParameter: SelfParameter = Capability:CapabilityConstraint;
 FieldParameter: ConstructorOrInitializerParameter = Name:`IdentifierName` DefaultValue:Expression?;
-Return: Code = Type; // Return type of a function or method
+Return: Code = Type; // Return syntax of a function or method (i.e. `->` Type)
 
 // ---------- Function Parts
 Body: BodyOrBlock;
