@@ -7,8 +7,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal sealed class FunctionDefinitionSyntax : InvocableNonMemberEntityDefinitionSyntax, IFunctionDefinitionSyntax
+internal sealed class FunctionDefinitionSyntax : InvocableDefinitionSyntax, IFunctionDefinitionSyntax
 {
+    public NamespaceName ContainingNamespaceName { get; }
     public IFixedList<IAttributeSyntax> Attributes { get; }
     public new IdentifierName Name { get; }
     public new IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
@@ -26,8 +27,9 @@ internal sealed class FunctionDefinitionSyntax : InvocableNonMemberEntityDefinit
         IFixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax body)
-        : base(containingNamespaceName, span, file, accessModifier, nameSpan, name, parameters)
+        : base(span, file, accessModifier, nameSpan, name, parameters)
     {
+        ContainingNamespaceName = containingNamespaceName;
         Name = name;
         Parameters = parameters;
         Body = body;

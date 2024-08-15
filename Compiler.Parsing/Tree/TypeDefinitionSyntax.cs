@@ -17,7 +17,6 @@ internal abstract class TypeDefinitionSyntax<TMember> : NonMemberDefinitionSynta
     public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
     public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
     public new StandardName Name { [DebuggerStepThrough] get; }
-    TypeName INonMemberEntityDefinitionSyntax.Name => Name;
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<IStandardTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public abstract IFixedList<TMember> Members { [DebuggerStepThrough] get; }

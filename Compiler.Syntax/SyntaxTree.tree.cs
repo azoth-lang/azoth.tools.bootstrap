@@ -127,7 +127,7 @@ public partial interface IDefinitionSyntax : ICodeSyntax
 
 [Closed(
     typeof(IInvocableDefinitionSyntax),
-    typeof(INonMemberEntityDefinitionSyntax),
+    typeof(ITypeDefinitionSyntax),
     typeof(ITypeMemberDefinitionSyntax))]
 public partial interface IEntityDefinitionSyntax : IDefinitionSyntax
 {
@@ -155,7 +155,8 @@ public partial interface IConcreteInvocableDefinitionSyntax : IInvocableDefiniti
 
 [Closed(
     typeof(INamespaceDefinitionSyntax),
-    typeof(INonMemberEntityDefinitionSyntax))]
+    typeof(IFunctionDefinitionSyntax),
+    typeof(ITypeDefinitionSyntax))]
 public partial interface INonMemberDefinitionSyntax : IDefinitionSyntax
 {
     NamespaceName ContainingNamespaceName { get; }
@@ -169,35 +170,24 @@ public partial interface INamespaceDefinitionSyntax : INonMemberDefinitionSyntax
     IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
 }
 
-public partial interface IFunctionDefinitionSyntax : INonMemberEntityDefinitionSyntax, IConcreteInvocableDefinitionSyntax
+public partial interface IFunctionDefinitionSyntax : IConcreteInvocableDefinitionSyntax, INonMemberDefinitionSyntax
 {
     IFixedList<IAttributeSyntax> Attributes { get; }
     new IdentifierName Name { get; }
-    TypeName INonMemberEntityDefinitionSyntax.Name => Name;
     TypeName? IDefinitionSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
 }
 
 [Closed(
-    typeof(IFunctionDefinitionSyntax),
-    typeof(ITypeDefinitionSyntax))]
-public partial interface INonMemberEntityDefinitionSyntax : IEntityDefinitionSyntax, INonMemberDefinitionSyntax
-{
-    new TypeName Name { get; }
-    TypeName? IDefinitionSyntax.Name => Name;
-}
-
-[Closed(
     typeof(IClassDefinitionSyntax),
     typeof(IStructDefinitionSyntax),
     typeof(ITraitDefinitionSyntax))]
-public partial interface ITypeDefinitionSyntax : INonMemberEntityDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax
+public partial interface ITypeDefinitionSyntax : IEntityDefinitionSyntax, INonMemberDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax
 {
     IConstKeywordToken? ConstModifier { get; }
     IMoveKeywordToken? MoveModifier { get; }
     new StandardName Name { get; }
-    TypeName INonMemberEntityDefinitionSyntax.Name => Name;
     TypeName? IDefinitionSyntax.Name => Name;
     IFixedList<IGenericParameterSyntax> GenericParameters { get; }
     IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; }
