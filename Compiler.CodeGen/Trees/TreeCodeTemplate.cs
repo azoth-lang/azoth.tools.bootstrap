@@ -31,7 +31,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
         {
             
             #line 7 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-  foreach(var usingNamespace in Build.OrderedNamespaces(grammar, "ExhaustiveMatching")) { 
+  foreach(var usingNamespace in Build.OrderedNamespaces(tree, "ExhaustiveMatching")) { 
             
             #line default
             #line hidden
@@ -52,14 +52,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write("\r\nnamespace ");
             
             #line 11 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.Namespace));
+            this.Write(this.ToStringHelper.ToStringWithCulture(tree.Namespace));
             
             #line default
             #line hidden
             this.Write(";\r\n\r\n// ReSharper disable PartialTypeWithSinglePart\r\n\r\n");
             
             #line 15 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-  foreach(var rule in grammar.Rules) {
+  foreach(var rule in tree.Rules) {
             
             #line default
             #line hidden

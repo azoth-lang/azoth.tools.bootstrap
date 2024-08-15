@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
-public sealed class GrammarSyntax
+public sealed class TreeSyntax
 {
     public string Namespace { get; }
     public SymbolSyntax? Root { get; }
@@ -14,7 +14,7 @@ public sealed class GrammarSyntax
     public IFixedSet<string> UsingNamespaces { get; }
     public IFixedList<RuleSyntax> Rules { get; }
 
-    public GrammarSyntax(
+    public TreeSyntax(
         string @namespace,
         SymbolSyntax? root,
         string symbolPrefix,

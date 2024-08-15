@@ -64,15 +64,15 @@ public static class Program
 
             var inputFile = File.ReadAllText(inputPath)
                             ?? throw new InvalidOperationException("null from reading input file");
-            var grammarSyntax = TreeParser.ParseGrammar(inputFile);
-            var grammar = new Grammar(grammarSyntax);
+            var treeSyntax = TreeParser.Parse(inputFile);
+            var tree = new TreeModel(treeSyntax);
 
-            grammar.ValidateTreeOrdering();
+            tree.ValidateTreeOrdering();
 
-            var treeCode = TreeCodeBuilder.GenerateTree(grammar);
+            var treeCode = TreeCodeBuilder.GenerateTree(tree);
             WriteIfChanged(treeOutputPath, treeCode);
 
-            var walkerCode = TreeCodeBuilder.GenerateChildren(grammar);
+            var walkerCode = TreeCodeBuilder.GenerateChildren(tree);
             WriteIfChanged(childrenOutputPath, walkerCode);
             return true;
         }

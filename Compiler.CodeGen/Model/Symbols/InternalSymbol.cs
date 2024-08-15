@@ -5,23 +5,23 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 
 public sealed class InternalSymbol : Symbol
 {
-    private readonly Grammar grammar;
+    private readonly TreeModel tree;
     public string ShortName { get; }
     public override string FullName { get; }
     private readonly Lazy<Rule> referencedRule;
     public Rule ReferencedRule => referencedRule.Value;
 
-    public InternalSymbol(Grammar grammar, string shortName)
+    public InternalSymbol(TreeModel tree, string shortName)
     {
-        this.grammar = grammar;
+        this.tree = tree;
         ShortName = shortName;
-        FullName = $"{grammar.SymbolPrefix}{shortName}{grammar.SymbolSuffix}";
+        FullName = $"{tree.SymbolPrefix}{shortName}{tree.SymbolSuffix}";
         referencedRule = new(LookupReferencedRule);
         return;
 
         Rule LookupReferencedRule()
         {
-            var rule = grammar.RuleFor(ShortName);
+            var rule = tree.RuleFor(ShortName);
             if (rule is null)
                 throw new FormatException($"Symbol '{ShortName}' must be quoted because it doesn't reference a rule.");
             return rule;
@@ -35,13 +35,13 @@ public sealed class InternalSymbol : Symbol
         if (ReferenceEquals(this, other)) return true;
         return other is InternalSymbol symbol
             && ShortName == symbol.ShortName
-            // To avoid forcing lookup of the referenced rule, just compare the grammar reference
-            && ReferenceEquals(grammar, symbol.grammar);
+            // To avoid forcing lookup of the referenced rule, just compare the tree reference
+            && ReferenceEquals(tree, symbol.tree);
     }
 
     public override int GetHashCode()
-        // To avoid forcing lookup of the referenced rule, just use the grammar reference
-        => HashCode.Combine(ShortName, RuntimeHelpers.GetHashCode(grammar));
+        // To avoid forcing lookup of the referenced rule, just use the tree reference
+        => HashCode.Combine(ShortName, RuntimeHelpers.GetHashCode(tree));
     #endregion
 
     public override int GetEquivalenceHashCode() => HashCode.Combine(ShortName);

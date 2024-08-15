@@ -11,19 +11,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using ExhaustiveMatching;
 
-namespace <#=grammar.Namespace #>;
+namespace <#=tree.Namespace #>;
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public static class <#=Emit.TypeName(grammar.Root)#>Extensions
+public static class <#=Emit.TypeName(tree.Root)#>Extensions
 {
     [DebuggerStepThrough]
-    public static IEnumerable<<#=Emit.TypeName(grammar.Root)#>> Children(this <#=Emit.TypeName(grammar.Root)#> node)
+    public static IEnumerable<<#=Emit.TypeName(tree.Root)#>> Children(this <#=Emit.TypeName(tree.Root)#> node)
     {
         switch (node)
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
-<#  foreach(var rule in grammar.Rules.Where(r => !r.IsAbstract)) { #>
+<#  foreach(var rule in tree.Rules.Where(r => !r.IsAbstract)) { #>
             case <#=Emit.TypeName(rule.Defines) #> n:
 <#      foreach(var property in rule.DeclaredProperties.Where(p => p.ReferencesRule)) { #>
 <#          if (property.Type is CollectionType) { #>

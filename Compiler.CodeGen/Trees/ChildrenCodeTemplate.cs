@@ -35,28 +35,28 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
                     "iagnostics;\r\nusing ExhaustiveMatching;\r\n\r\nnamespace ");
             
             #line 14 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(grammar.Namespace));
+            this.Write(this.ToStringHelper.ToStringWithCulture(tree.Namespace));
             
             #line default
             #line hidden
             this.Write(";\r\n\r\n[GeneratedCode(\"AzothCompilerCodeGen\", null)]\r\npublic static class ");
             
             #line 17 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(grammar.Root)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(tree.Root)));
             
             #line default
             #line hidden
             this.Write("Extensions\r\n{\r\n    [DebuggerStepThrough]\r\n    public static IEnumerable<");
             
             #line 20 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(grammar.Root)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(tree.Root)));
             
             #line default
             #line hidden
             this.Write("> Children(this ");
             
             #line 20 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(grammar.Root)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(tree.Root)));
             
             #line default
             #line hidden
@@ -64,7 +64,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
                     "      throw ExhaustiveMatch.Failed(node);\r\n");
             
             #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-  foreach(var rule in grammar.Rules.Where(r => !r.IsAbstract)) { 
+  foreach(var rule in tree.Rules.Where(r => !r.IsAbstract)) { 
             
             #line default
             #line hidden

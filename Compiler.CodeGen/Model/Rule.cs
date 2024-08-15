@@ -10,12 +10,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
 public class Rule
 {
-    public Grammar Grammar { get; }
+    public TreeModel Tree { get; }
     public RuleSyntax Syntax { get; }
 
     public InternalSymbol Defines { get; }
     public SymbolType DefinesType { get; }
-    // TODO combine into one collection of bases
     public IFixedSet<Symbol> Supertypes { get; }
     private readonly Lazy<IFixedSet<Rule>> supertypeRules;
     public IFixedSet<Rule> SupertypeRules => supertypeRules.Value;
@@ -53,20 +52,20 @@ public class Rule
     public IFixedList<Property> AllProperties => allProperties.Value;
     private readonly Lazy<IFixedList<Property>> allProperties;
 
-    public Rule(Grammar grammar, RuleSyntax syntax)
+    public Rule(TreeModel tree, RuleSyntax syntax)
     {
-        Grammar = grammar;
+        Tree = tree;
         Syntax = syntax;
-        Defines = Symbol.CreateInternalFromSyntax(grammar, syntax.Defines);
+        Defines = Symbol.CreateInternalFromSyntax(tree, syntax.Defines);
         DefinesType = new SymbolType(Defines);
-        Supertypes = syntax.Supertypes.Select(s => Symbol.CreateFromSyntax(grammar, s)).ToFixedSet();
-        if (Grammar.Root is { } root && root != Defines && !Supertypes.Any(s => s is InternalSymbol))
+        Supertypes = syntax.Supertypes.Select(s => Symbol.CreateFromSyntax(tree, s)).ToFixedSet();
+        if (Tree.Root is { } root && root != Defines && !Supertypes.Any(s => s is InternalSymbol))
             Supertypes = Supertypes.Append(root).ToFixedSet();
 
         supertypeRules = new(() => Supertypes.OfType<InternalSymbol>().Select(s => s.ReferencedRule)
                                              .EliminateRedundantRules().ToFixedSet());
         ancestorRules = new(() => SupertypeRules.Concat(SupertypeRules.SelectMany(p => p.AncestorRules)).ToFixedSet());
-        childRules = new(() => Grammar.Rules.Where(r => r.SupertypeRules.Contains(this)).ToFixedSet());
+        childRules = new(() => Tree.Rules.Where(r => r.SupertypeRules.Contains(this)).ToFixedSet());
         descendantRules = new(() => ChildRules.Concat(ChildRules.SelectMany(r => r.DescendantRules)).ToFixedSet());
 
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new Property(this, p)).ToFixedList();

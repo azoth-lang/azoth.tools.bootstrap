@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
 internal static class TreeParser
 {
-    public static GrammarSyntax ParseGrammar(string grammar)
+    public static TreeSyntax Parse(string grammar)
     {
         var lines = Parsing.ParseLines(grammar).ToFixedList();
 
@@ -16,6 +16,6 @@ internal static class TreeParser
         var suffix = Parsing.GetConfig(lines, "suffix") ?? "";
         var usingNamespaces = Parsing.ParseUsingNamespaces(lines);
         var rules = Parsing.ParseRules(lines);
-        return new GrammarSyntax(ns, rootType, prefix, suffix, usingNamespaces, rules);
+        return new TreeSyntax(ns, rootType, prefix, suffix, usingNamespaces, rules);
     }
 }

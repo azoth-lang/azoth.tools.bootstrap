@@ -13,21 +13,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 public abstract class Symbol : IEquatable<Symbol>
 {
     [return: NotNullIfNotNull(nameof(syntax))]
-    public static Symbol? CreateFromSyntax(Grammar? grammar, SymbolSyntax? syntax)
+    public static Symbol? CreateFromSyntax(TreeModel? tree, SymbolSyntax? syntax)
     {
         if (syntax is null)
             return null;
-        return grammar is null || syntax.IsQuoted
+        return tree is null || syntax.IsQuoted
             ? CreateExternalFromSyntax(syntax)
-            : new InternalSymbol(grammar, syntax.Text);
+            : new InternalSymbol(tree, syntax.Text);
     }
 
     [return: NotNullIfNotNull(nameof(syntax))]
-    public static InternalSymbol? CreateInternalFromSyntax(Grammar grammar, SymbolSyntax? syntax)
+    public static InternalSymbol? CreateInternalFromSyntax(TreeModel tree, SymbolSyntax? syntax)
     {
         if (syntax is null) return null;
         if (syntax.IsQuoted) throw new ArgumentException("Internal symbol cannot be quoted.", nameof(syntax));
-        return new InternalSymbol(grammar, syntax.Text);
+        return new InternalSymbol(tree, syntax.Text);
     }
 
     [return: NotNullIfNotNull(nameof(syntax))]

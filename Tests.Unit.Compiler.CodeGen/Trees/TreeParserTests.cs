@@ -16,7 +16,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;";
 
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         Assert.Null(config.Root);
     }
@@ -26,7 +26,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;";
 
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         Assert.Equal("", config.SymbolPrefix);
     }
@@ -36,7 +36,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;";
 
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         Assert.Equal("", config.SymbolSuffix);
     }
@@ -46,7 +46,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;";
 
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         Assert.Equal("Foo.Bar.Baz", config.Namespace);
     }
@@ -56,7 +56,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\r◊root MyBase;";
 
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         Assert.Equal(Symbol("MyBase"), config.Root);
     }
@@ -66,7 +66,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\r◊root `MyBase`;";
 
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         Assert.Equal(QuotedSymbol("MyBase"), config.Root);
     }
@@ -76,7 +76,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\r◊prefix MyPrefix;";
 
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         Assert.Equal("MyPrefix", config.SymbolPrefix);
     }
@@ -86,7 +86,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\r◊suffix MySuffix;";
 
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         Assert.Equal("MySuffix", config.SymbolSuffix);
     }
@@ -96,7 +96,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\r◊using Foo.Bar;\r◊using Foo.Bar.Baz;";
 
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         Assert.Equal(FixedList("Foo.Bar", "Foo.Bar.Baz"), config.UsingNamespaces);
     }
@@ -107,7 +107,7 @@ public class TreeParserTests
     public void ParsesSimpleTerminalRule()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rSubType;";
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
@@ -119,7 +119,7 @@ public class TreeParserTests
     public void ParsesSimpleQuotedTerminalRule()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\r`IMyFullTypeName`;";
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(QuotedSymbol("IMyFullTypeName"), rule.Defines);
@@ -131,7 +131,7 @@ public class TreeParserTests
     public void ParsesSimpleTerminalRuleWithRootType()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\r◊root MyBase;\nSubType;";
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
@@ -144,7 +144,7 @@ public class TreeParserTests
     public void ParsesBaseTypeRule()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\r◊base MyBase;\nMyBase;";
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("MyBase"), rule.Defines);
@@ -157,7 +157,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rSubType <: BaseType;";
 
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
@@ -170,7 +170,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rSubType <: BaseType1, BaseType2;";
 
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(Symbol("SubType"), rule.Defines);
@@ -184,7 +184,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rSubType <: `BaseType1`, BaseType2;";
 
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         Assert.Equal(new SymbolSyntax("SubType"), rule.Defines);
@@ -198,7 +198,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rNonTerminal = Foo = Bar;";
 
-        var ex = Assert.Throws<FormatException>(() => TreeParser.ParseGrammar(grammar));
+        var ex = Assert.Throws<FormatException>(() => TreeParser.Parse(grammar));
 
         Assert.Equal("Too many equal signs on line: 'NonTerminal = Foo = Bar'", ex.Message);
     }
@@ -209,7 +209,7 @@ public class TreeParserTests
     public void Ignores_line_comments()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\r// A comment";
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         Assert.Empty(config.Rules);
     }
@@ -220,7 +220,7 @@ public class TreeParserTests
     public void ParsesSimpleProperty()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rMyNonterminal = MyProperty;";
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         var property = Assert.Single(rule.DeclaredProperties);
@@ -232,7 +232,7 @@ public class TreeParserTests
     public void ParsesSimpleOptionalProperty()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rMyNonterminal = MyProperty?;";
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         var property = Assert.Single(rule.DeclaredProperties);
@@ -244,7 +244,7 @@ public class TreeParserTests
     public void ParsesTypedProperty()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rMyNonterminal = MyProperty:MyType;";
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         var property = Assert.Single(rule.DeclaredProperties);
@@ -256,7 +256,7 @@ public class TreeParserTests
     public void ParsesQuotedTypedProperty()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rMyNonterminal = MyProperty:`MyType`;";
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         var property = Assert.Single(rule.DeclaredProperties);
@@ -268,7 +268,7 @@ public class TreeParserTests
     public void ParsesListTypedProperty()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rMyNonterminal = MyProperty:MyType*;";
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         var property = Assert.Single(rule.DeclaredProperties);
@@ -280,7 +280,7 @@ public class TreeParserTests
     public void ParsesOptionalTypedProperty()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rMyNonterminal = MyProperty:MyType?;";
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         var property = Assert.Single(rule.DeclaredProperties);
@@ -292,7 +292,7 @@ public class TreeParserTests
     public void ParsesListOfOptionalTypedProperty()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rMyNonterminal = MyProperty:MyType*?;";
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         var property = Assert.Single(rule.DeclaredProperties);
@@ -305,7 +305,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rMyNonterminal = MyProperty:MyType:What;";
 
-        var ex = Assert.Throws<FormatException>(() => TreeParser.ParseGrammar(grammar));
+        var ex = Assert.Throws<FormatException>(() => TreeParser.Parse(grammar));
 
         Assert.Equal("Too many colons in binding: 'MyProperty:MyType:What'", ex.Message);
     }
@@ -314,7 +314,7 @@ public class TreeParserTests
     public void ParsesMultipleProperties()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rMyNonterminal = MyProperty1:MyType1 MyProperty2:MyType2*;";
-        var config = TreeParser.ParseGrammar(grammar);
+        var config = TreeParser.Parse(grammar);
 
         var rule = Assert.Single(config.Rules);
         Assert.Collection(rule.DeclaredProperties, p1 =>
@@ -333,7 +333,7 @@ public class TreeParserTests
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rMyNonterminal = Something Something:'Blah';";
 
-        var ex = Assert.Throws<ArgumentException>(() => TreeParser.ParseGrammar(grammar));
+        var ex = Assert.Throws<ArgumentException>(() => TreeParser.Parse(grammar));
 
         Assert.Equal("Rule for MyNonterminal contains duplicate property definitions", ex.Message);
     }

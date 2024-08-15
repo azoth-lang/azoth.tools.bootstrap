@@ -52,7 +52,7 @@ public sealed class Property
         Rule = rule;
         Syntax = syntax;
 
-        var type = Types.Type.CreateFromSyntax(Rule.Grammar, syntax.Type);
+        var type = Types.Type.CreateFromSyntax(Rule.Tree, syntax.Type);
         if (type is not NonVoidType nonVoidType)
             throw new InvalidOperationException("Property type must be a non-void type.");
         Type = nonVoidType;

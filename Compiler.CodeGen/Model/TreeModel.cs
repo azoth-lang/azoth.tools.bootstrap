@@ -7,9 +7,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
-public sealed class Grammar
+public sealed class TreeModel
 {
-    public GrammarSyntax Syntax { get; }
+    public TreeSyntax Syntax { get; }
 
     public string Namespace => Syntax.Namespace;
     public Symbol? Root { get; }
@@ -18,7 +18,7 @@ public sealed class Grammar
     public IFixedSet<string> UsingNamespaces => Syntax.UsingNamespaces;
     public IFixedList<Rule> Rules { get; }
 
-    public Grammar(GrammarSyntax syntax)
+    public TreeModel(TreeSyntax syntax)
     {
         Syntax = syntax;
         Root = Symbol.CreateFromSyntax(this, syntax.Root);

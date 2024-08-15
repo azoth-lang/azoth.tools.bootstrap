@@ -4,15 +4,15 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
-<#  foreach(var usingNamespace in Build.OrderedNamespaces(grammar, "ExhaustiveMatching")) { #>
+<#  foreach(var usingNamespace in Build.OrderedNamespaces(tree, "ExhaustiveMatching")) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
-namespace <#=grammar.Namespace #>;
+namespace <#=tree.Namespace #>;
 
 // ReSharper disable PartialTypeWithSinglePart
 
-<#  foreach(var rule in grammar.Rules) {#>
+<#  foreach(var rule in tree.Rules) {#>
 <#=Emit.ClosedAttribute(rule) #>public partial interface <#= Emit.TypeName(rule.Defines) #><#= Emit.BaseTypes(rule) #>
 {
 <#      foreach (var property in rule.DeclaredProperties.Where(ShouldEmit.Property)) { #>

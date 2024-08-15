@@ -21,11 +21,11 @@ public abstract class Type : IEquatable<Type>
     public static SymbolType VoidSymbol { get; } = new SymbolType(new ExternalSymbol("Void"));
 
     [return: NotNullIfNotNull(nameof(syntax))]
-    public static Type? CreateFromSyntax(Grammar grammar, TypeSyntax? syntax)
+    public static Type? CreateFromSyntax(TreeModel tree, TypeSyntax? syntax)
     {
         if (syntax is null)
             return null;
-        return CreateDerivedType(SymbolType.CreateFromSyntax(grammar, syntax.Symbol), syntax);
+        return CreateDerivedType(SymbolType.CreateFromSyntax(tree, syntax.Symbol), syntax);
     }
 
     [return: NotNullIfNotNull(nameof(syntax))]

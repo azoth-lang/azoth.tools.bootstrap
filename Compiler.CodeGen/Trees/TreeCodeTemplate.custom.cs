@@ -4,10 +4,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
 public partial class TreeCodeTemplate
 {
-    private readonly Grammar grammar;
+    private readonly TreeModel tree;
 
-    public TreeCodeTemplate(Grammar grammar)
+    public TreeCodeTemplate(TreeModel tree)
     {
-        this.grammar = grammar;
+        this.tree = tree;
     }
 }
