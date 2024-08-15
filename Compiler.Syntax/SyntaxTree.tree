@@ -68,10 +68,9 @@ TypeMemberDefinition: EntityDefinition;
 ClassMemberDefinition: TypeMemberDefinition;
 TraitMemberDefinition: TypeMemberDefinition;
 StructMemberDefinition: TypeMemberDefinition;
-AlwaysTypeMemberDefinition: TypeMemberDefinition;
 
 // ---------- Member Definitions
-MethodDefinition: AlwaysTypeMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition
+MethodDefinition: TypeMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition
     = Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return?;
 AbstractMethodDefinition: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return?;
 ConcreteMethodDefinition: MethodDefinition <: StructMemberDefinition, ConcreteInvocableDefinition
@@ -79,13 +78,13 @@ ConcreteMethodDefinition: MethodDefinition <: StructMemberDefinition, ConcreteIn
 StandardMethodDefinition: ConcreteMethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 GetterMethodDefinition: ConcreteMethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return Body;
 SetterMethodDefinition: ConcreteMethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
-ConstructorDefinition: ConcreteInvocableDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition
+ConstructorDefinition: ConcreteInvocableDefinition <: ClassMemberDefinition
     = Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
-InitializerDefinition: ConcreteInvocableDefinition <: AlwaysTypeMemberDefinition, StructMemberDefinition
+InitializerDefinition: ConcreteInvocableDefinition <: StructMemberDefinition
     = Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
-FieldDefinition: AlwaysTypeMemberDefinition <: ClassMemberDefinition, StructMemberDefinition, Binding
+FieldDefinition: TypeMemberDefinition <: ClassMemberDefinition, StructMemberDefinition, Binding
     = Name:`IdentifierName` Type Initializer:Expression?;
-AssociatedFunctionDefinition: AlwaysTypeMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, ConcreteInvocableDefinition
+AssociatedFunctionDefinition: TypeMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, ConcreteInvocableDefinition
     = Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
 
 // ---------- Attributes

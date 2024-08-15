@@ -224,8 +224,7 @@ public partial interface IGenericParameterSyntax : ICodeSyntax
 [Closed(
     typeof(IClassMemberDefinitionSyntax),
     typeof(ITraitMemberDefinitionSyntax),
-    typeof(IStructMemberDefinitionSyntax),
-    typeof(IAlwaysTypeMemberDefinitionSyntax))]
+    typeof(IStructMemberDefinitionSyntax))]
 public partial interface ITypeMemberDefinitionSyntax : IEntityDefinitionSyntax
 {
 }
@@ -259,19 +258,9 @@ public partial interface IStructMemberDefinitionSyntax : ITypeMemberDefinitionSy
 }
 
 [Closed(
-    typeof(IMethodDefinitionSyntax),
-    typeof(IConstructorDefinitionSyntax),
-    typeof(IInitializerDefinitionSyntax),
-    typeof(IFieldDefinitionSyntax),
-    typeof(IAssociatedFunctionDefinitionSyntax))]
-public partial interface IAlwaysTypeMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
-{
-}
-
-[Closed(
     typeof(IAbstractMethodDefinitionSyntax),
     typeof(IConcreteMethodDefinitionSyntax))]
-public partial interface IMethodDefinitionSyntax : IAlwaysTypeMemberDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IInvocableDefinitionSyntax
+public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IInvocableDefinitionSyntax
 {
     MethodKind Kind { get; }
     new IdentifierName Name { get; }
@@ -310,7 +299,7 @@ public partial interface ISetterMethodDefinitionSyntax : IConcreteMethodDefiniti
 {
 }
 
-public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IAlwaysTypeMemberDefinitionSyntax, IClassMemberDefinitionSyntax
+public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IClassMemberDefinitionSyntax
 {
     new IdentifierName? Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
@@ -319,7 +308,7 @@ public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefini
     IBodySyntax IConcreteInvocableDefinitionSyntax.Body => Body;
 }
 
-public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IAlwaysTypeMemberDefinitionSyntax, IStructMemberDefinitionSyntax
+public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IStructMemberDefinitionSyntax
 {
     new IdentifierName? Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
@@ -328,7 +317,7 @@ public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefini
     IBodySyntax IConcreteInvocableDefinitionSyntax.Body => Body;
 }
 
-public partial interface IFieldDefinitionSyntax : IAlwaysTypeMemberDefinitionSyntax, IClassMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IBindingSyntax
+public partial interface IFieldDefinitionSyntax : IClassMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IBindingSyntax
 {
     new IdentifierName Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
@@ -336,7 +325,7 @@ public partial interface IFieldDefinitionSyntax : IAlwaysTypeMemberDefinitionSyn
     IExpressionSyntax? Initializer { get; }
 }
 
-public partial interface IAssociatedFunctionDefinitionSyntax : IAlwaysTypeMemberDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IConcreteInvocableDefinitionSyntax
+public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IConcreteInvocableDefinitionSyntax
 {
     new IdentifierName Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
