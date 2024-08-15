@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -22,10 +21,8 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     // TODO move these to `Type`
     #region Standard Types
     public static readonly DataType Unknown = UnknownType.Instance;
-    public static readonly Promise<UnknownType> PromiseOfUnknown = Promise.ForValue(UnknownType.Instance);
     public static readonly VoidType Void = VoidType.Instance;
     public static readonly NeverType Never = NeverType.Instance;
-    public static readonly Promise<NeverType> PromiseOfNever = Promise.ForValue(Never);
     public static readonly CapabilityType<BoolType> Bool = DeclaredType.Bool.Type;
     public static readonly OptionalType OptionalBool = new(Bool);
     public static readonly BoolConstValueType True = BoolConstValueType.True;
@@ -49,7 +46,6 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     /// The value `none` has this type, which is `never?`.
     /// </summary>
     public static readonly OptionalType None = new(Never);
-    public static readonly Promise<OptionalType> PromiseOfNone = Promise.ForValue(None);
     #endregion
 
     /// <summary>

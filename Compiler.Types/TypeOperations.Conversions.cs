@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
@@ -10,9 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public static partial class TypeOperations
 {
-    public static string ToSourceCodeString(this IPromise<DataType?> promise)
-        => promise.ToString(t => t?.ToSourceCodeString() ?? "⧼null⧽");
-
     public static string ToILString(this IFixedList<DataType> types)
         => string.Join(", ", types.Select(t => t.ToILString()));
 
