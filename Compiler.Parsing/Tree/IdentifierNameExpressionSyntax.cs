@@ -4,7 +4,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -18,14 +17,12 @@ internal sealed class IdentifierNameExpressionSyntax : NameExpressionSyntax, IId
     public IdentifierName Name { get; }
     public override Promise<IIdentifierNameExpressionSyntaxSemantics> Semantics { get; } = new();
     public override IPromise<DataType> DataType { get; }
-    public override IPromise<Symbol?> ReferencedSymbol { get; }
 
     public IdentifierNameExpressionSyntax(TextSpan span, IdentifierName name)
         : base(span)
     {
         Name = name;
         DataType = Semantics.Select(s => s.Type).Flatten();
-        ReferencedSymbol = Semantics.Select(s => s.Symbol).Flatten();
     }
 
     protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;

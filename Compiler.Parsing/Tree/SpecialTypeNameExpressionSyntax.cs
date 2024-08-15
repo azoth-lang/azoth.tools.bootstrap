@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -19,7 +18,6 @@ internal sealed class SpecialTypeNameExpressionSyntax : NameExpressionSyntax, IS
     public SpecialTypeName Name { get; }
     public override Promise<SpecialTypeNameExpressionSyntaxSemantics> Semantics { [DebuggerStepThrough] get; } = new();
     public override IPromise<DataType> DataType => Types.DataType.PromiseOfUnknown;
-    public override Promise<TypeSymbol?> ReferencedSymbol { get; } = new Promise<TypeSymbol?>();
 
     public SpecialTypeNameExpressionSyntax(TextSpan span, SpecialTypeName name)
         : base(span)

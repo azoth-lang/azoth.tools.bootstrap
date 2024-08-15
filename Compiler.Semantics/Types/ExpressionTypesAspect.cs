@@ -397,7 +397,7 @@ public static class ExpressionTypesAspect
     public static DataType SelfExpression_Type(ISelfExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
     public static Pseudotype SelfExpression_Pseudotype(ISelfExpressionNode node)
-        => node.ReferencedSymbol?.Type ?? DataType.Unknown;
+        => node.ReferencedDefinition?.BindingType ?? DataType.Unknown;
 
     public static ContextualizedOverload? NewObjectExpression_ContextualizedOverload(
         INewObjectExpressionNode node)

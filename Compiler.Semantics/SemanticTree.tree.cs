@@ -924,7 +924,6 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IDeclaredUserType ContainingDeclaredType { get; }
     SelfParameterType ParameterType { get; }
-    SelfParameterSymbol Symbol { get; }
 }
 
 public partial interface IConstructorSelfParameterNode : ISemanticNode, ISelfParameterNode
@@ -2067,7 +2066,6 @@ public partial interface ISelfExpressionNode : ISemanticNode, IInstanceExpressio
     IExecutableDefinitionNode ContainingDeclaration { get; }
     new ISelfParameterNode? ReferencedDefinition { get; }
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
-    SelfParameterSymbol? ReferencedSymbol { get; }
 }
 
 public partial interface IMissingNameExpressionNode : INameExpressionNode, ISimpleNameNode, IAssignableExpressionNode

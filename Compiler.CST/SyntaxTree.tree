@@ -102,10 +102,10 @@ Parameter = Name:`IdentifierName`? DataType:`IPromise<Pseudotype>` Unused:`bool`
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter: Parameter;
 NamedParameter: ConstructorOrInitializerParameter <: LocalBinding = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`Promise<int?>` Type DataType:`IPromise<DataType>` DefaultValue:Expression?;
-SelfParameter: Parameter = IsLentBinding:`bool` Symbol:`Promise<SelfParameterSymbol>`;
-ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability DataType:`IPromise<DataType>` Symbol:`Promise<SelfParameterSymbol>`;
-InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability DataType:`IPromise<DataType>` Symbol:`Promise<SelfParameterSymbol>`;
-MethodSelfParameter: SelfParameter = IsLentBinding:`bool` Capability:CapabilityConstraint Symbol:`Promise<SelfParameterSymbol>`;
+SelfParameter: Parameter = IsLentBinding:`bool`;
+ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability DataType:`IPromise<DataType>`;
+InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability DataType:`IPromise<DataType>`;
+MethodSelfParameter: SelfParameter = IsLentBinding:`bool` Capability:CapabilityConstraint;
 FieldParameter: ConstructorOrInitializerParameter = Name:`IdentifierName` ReferencedSymbol:`Promise<FieldSymbol?>` DefaultValue:Expression?;
 Return = Type; // Return type of a function or method
 
@@ -130,7 +130,7 @@ ParameterType = IsLent:`bool` Referent:Type;
 ReturnType = Referent:Type; // Return type of function type
 ViewpointType: Type = Referent:Type;
 CapabilityViewpointType: ViewpointType = Capability Referent:Type;
-SelfViewpointType: ViewpointType = ReferencedSymbol:`Promise<SelfParameterSymbol?>` Referent:Type;
+SelfViewpointType: ViewpointType = Referent:Type;
 
 // ---------- Statements
 Statement;
@@ -150,7 +150,7 @@ OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 Expression = DataType:`IPromise<DataType?>` ImplicitConversion:`Conversion` ConvertedDataType:`DataType`?;
 TypedExpression: Expression = DataType:`IPromise<DataType>`;
 DataTypedExpression: TypedExpression = DataType:`Promise<DataType>`;
-AssignableExpression: TypedExpression = ReferencedSymbol:`IPromise<Symbol?>`;
+AssignableExpression: TypedExpression;
 BlockExpression: DataTypedExpression <: BlockOrResult, BodyOrBlock = Statements:Statement* DataType:`Promise<DataType>`;
 NewObjectExpression: DataTypedExpression = Type:TypeName ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression* ReferencedSymbol:`Promise<ConstructorSymbol?>`;
 UnsafeExpression: DataTypedExpression = Expression;
@@ -184,18 +184,18 @@ ReturnExpression: NeverTypedExpression = Value:Expression?;
 InvocationExpression: DataTypedExpression = Expression Arguments:Expression* ReferencedSymbol:`Promise<Symbol?>`;
 
 // ---------- Name Expressions
-NameExpression: Expression = Semantics:`IPromise<ISyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
+NameExpression: Expression = Semantics:`IPromise<ISyntaxSemantics>`;
 SimpleName: NameExpression = Semantics:`IPromise<ISimpleNameExpressionSyntaxSemantics>`;
-StandardNameExpression: NameExpression = Name:`StandardName` ReferencedSymbol:`IPromise<Symbol?>`;
+StandardNameExpression: NameExpression = Name:`StandardName`;
 IdentifierNameExpression: NameExpression <: StandardNameExpression, SimpleName, AssignableExpression
     = Name:`IdentifierName` Semantics:`Promise<IIdentifierNameExpressionSyntaxSemantics>`;
-SpecialTypeNameExpression: NameExpression <: TypedExpression = Name:`SpecialTypeName` Semantics:`Promise<SpecialTypeNameExpressionSyntaxSemantics>` DataType:`IPromise<DataType>` ReferencedSymbol:`Promise<TypeSymbol?>`;
+SpecialTypeNameExpression: NameExpression <: TypedExpression = Name:`SpecialTypeName` Semantics:`Promise<SpecialTypeNameExpressionSyntaxSemantics>` DataType:`IPromise<DataType>`;
 GenericNameExpression: NameExpression <: StandardNameExpression = Name:`GenericName` TypeArguments:Type* DataType:`Promise<DataType>`;
 InstanceExpression <: SimpleName, TypedExpression; // i.e. `self` or `base`
-SelfExpression: NameExpression <: InstanceExpression = IsImplicit:`bool` Semantics:`Promise<ISelfExpressionSyntaxSemantics>` ReferencedSymbol:`IPromise<SelfParameterSymbol?>` Pseudotype:`IPromise<Pseudotype>`;
+SelfExpression: NameExpression <: InstanceExpression = IsImplicit:`bool` Semantics:`Promise<ISelfExpressionSyntaxSemantics>` Pseudotype:`IPromise<Pseudotype>`;
 MemberAccessExpression: NameExpression <: AssignableExpression
     = Context:Expression MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan`
-    Semantics:`Promise<IMemberAccessSyntaxSemantics>` ReferencedSymbol:`IPromise<Symbol?>`;
+    Semantics:`Promise<IMemberAccessSyntaxSemantics>`;
 MissingName: NameExpression <: SimpleName, AssignableExpression
     = Semantics:`Promise<UnknownNameSyntax>`;
 

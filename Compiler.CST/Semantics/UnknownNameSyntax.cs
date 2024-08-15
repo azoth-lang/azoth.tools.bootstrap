@@ -17,7 +17,6 @@ public sealed class UnknownNameSyntax : SyntaxSemantics,
 
     IPromise<Symbol?> IMemberAccessSyntaxSemantics.Symbol => Promise.Null<Symbol>();
     IPromise<Symbol?> IIdentifierNameExpressionSyntaxSemantics.Symbol => Promise.Null<Symbol>();
-    SelfParameterSymbol? ISelfExpressionSyntaxSemantics.Symbol => null;
     public override Promise<UnknownType> Type => DataType.PromiseOfUnknown;
     IPromise<Pseudotype> ISelfExpressionSyntaxSemantics.Pseudotype => DataType.PromiseOfUnknown;
 }

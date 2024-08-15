@@ -5,10 +5,8 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
@@ -32,11 +30,6 @@ internal sealed class SelfExpressionNode : NameExpressionNode, ISelfExpressionNo
             : this.Synthetic(ref referencedDefinitionCached, ref referencedDefinition,
                 BindingNamesAspect.SelfExpression_ReferencedDefinition,
                 ReferenceEqualityComparer.Instance);
-    // TODO remove parameter symbols
-    private ValueAttribute<SelfParameterSymbol?> referencedSymbol;
-    public SelfParameterSymbol? ReferencedSymbol
-        => referencedSymbol.TryGetValue(out var value) ? value
-            : referencedSymbol.GetValue(this, SymbolAspect.SelfExpression_ReferencedSymbol);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype

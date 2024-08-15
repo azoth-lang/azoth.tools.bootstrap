@@ -8,5 +8,6 @@ public interface IFieldSymbol : IBindingSymbol
     public new IdentifierName Name { get; }
 
     public new DataType Type { get; }
+
     public new UserTypeSymbol ContainingSymbol { get; }
 }

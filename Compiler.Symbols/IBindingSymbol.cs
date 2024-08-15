@@ -4,13 +4,12 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-[Closed(typeof(ISelfParameterSymbol), typeof(IFieldSymbol))]
+[Closed(typeof(IFieldSymbol))]
 public interface IBindingSymbol
 {
     public PackageSymbol Package { get; }
     public Symbol ContainingSymbol { get; }
     public bool IsMutableBinding { get; }
-    public bool IsLentBinding { get; }
     public IdentifierName? Name { get; }
     public Pseudotype Type { get; }
 }

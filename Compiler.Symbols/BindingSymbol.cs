@@ -5,28 +5,23 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-[Closed(
-    typeof(FieldSymbol),
-    typeof(SelfParameterSymbol))]
+[Closed(typeof(FieldSymbol))]
 public abstract class BindingSymbol : Symbol, IBindingSymbol
 {
     public override PackageSymbol Package { get; }
     public override Symbol ContainingSymbol { get; }
     public bool IsMutableBinding { get; }
-    public bool IsLentBinding { get; }
     public override IdentifierName? Name { get; }
     public abstract Pseudotype Type { get; }
 
     protected BindingSymbol(
         Symbol containingSymbol,
         bool isMutableBinding,
-        bool isLentBinding,
         IdentifierName? name)
     {
         Package = containingSymbol.Package ?? throw new ArgumentNullException(nameof(containingSymbol));
         ContainingSymbol = containingSymbol;
         Name = name;
         IsMutableBinding = isMutableBinding;
-        IsLentBinding = isLentBinding;
     }
 }

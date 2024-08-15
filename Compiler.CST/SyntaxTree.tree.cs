@@ -450,7 +450,6 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
 public partial interface ISelfParameterSyntax : IParameterSyntax
 {
     bool IsLentBinding { get; }
-    Promise<SelfParameterSymbol> Symbol { get; }
 }
 
 public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
@@ -609,7 +608,6 @@ public partial interface ICapabilityViewpointTypeSyntax : IViewpointTypeSyntax
 
 public partial interface ISelfViewpointTypeSyntax : IViewpointTypeSyntax
 {
-    Promise<SelfParameterSymbol?> ReferencedSymbol { get; }
 }
 
 [Closed(
@@ -732,7 +730,6 @@ public partial interface IDataTypedExpressionSyntax : ITypedExpressionSyntax
     typeof(IMissingNameSyntax))]
 public partial interface IAssignableExpressionSyntax : ITypedExpressionSyntax
 {
-    IPromise<Symbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IBlockExpressionSyntax : IDataTypedExpressionSyntax, IBlockOrResultSyntax, IBodyOrBlockSyntax
@@ -901,7 +898,6 @@ public partial interface IInvocationExpressionSyntax : IDataTypedExpressionSynta
 public partial interface INameExpressionSyntax : IExpressionSyntax
 {
     IPromise<ISyntaxSemantics> Semantics { get; }
-    IPromise<Symbol?> ReferencedSymbol { get; }
 }
 
 [Closed(
@@ -939,8 +935,6 @@ public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSynta
     new IPromise<DataType> DataType { get; }
     IPromise<DataType?> IExpressionSyntax.DataType => DataType;
     IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
-    new Promise<TypeSymbol?> ReferencedSymbol { get; }
-    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
 }
 
 public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionSyntax
@@ -964,8 +958,6 @@ public partial interface ISelfExpressionSyntax : INameExpressionSyntax, IInstanc
     new Promise<ISelfExpressionSyntaxSemantics> Semantics { get; }
     IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
     IPromise<ISimpleNameExpressionSyntaxSemantics> ISimpleNameSyntax.Semantics => Semantics;
-    new IPromise<SelfParameterSymbol?> ReferencedSymbol { get; }
-    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
     IPromise<Pseudotype> Pseudotype { get; }
 }
 
@@ -977,9 +969,6 @@ public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, 
     TextSpan MemberNameSpan { get; }
     new Promise<IMemberAccessSyntaxSemantics> Semantics { get; }
     IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
-    new IPromise<Symbol?> ReferencedSymbol { get; }
-    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
-    IPromise<Symbol?> IAssignableExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
 }
 
 public partial interface IMissingNameSyntax : ISimpleNameSyntax, IAssignableExpressionSyntax

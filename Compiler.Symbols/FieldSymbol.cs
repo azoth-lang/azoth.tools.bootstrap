@@ -16,7 +16,7 @@ public sealed class FieldSymbol : BindingSymbol, IFieldSymbol
         IdentifierName name,
         bool isMutableBinding,
         DataType dataType)
-        : base(containingSymbol, isMutableBinding, false, name)
+        : base(containingSymbol, isMutableBinding, name)
     {
         Name = name;
         Type = dataType;

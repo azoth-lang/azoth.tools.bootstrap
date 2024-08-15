@@ -215,7 +215,7 @@ NamedParameter <: ConstructorOrInitializerParameter, LocalBinding = Syntax:`INam
 SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool`
     ContainingTypeDefinition:`ITypeDefinitionNode` ContainingDeclaredType:`IDeclaredUserType`
     // TODO remove parameter symbols
-    ParameterType:`SelfParameterType` Symbol:`SelfParameterSymbol`;
+    ParameterType:`SelfParameterType`;
 ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax`
     IsLentBinding:`bool` Capability BindingType:`CapabilityType` ContainingDeclaredType:`ObjectType`;
 InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax`
@@ -439,7 +439,7 @@ InstanceExpression <: NameExpression, SimpleName; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression, LocalBindingNameExpression
     = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype`
-    ContainingDeclaration:`IExecutableDefinitionNode` ReferencedDefinition:`ISelfParameterNode`? ReferencedSymbol:`SelfParameterSymbol`?;
+    ContainingDeclaration:`IExecutableDefinitionNode` ReferencedDefinition:`ISelfParameterNode`?;
 MissingNameExpression <: NameExpression, SimpleName, AssignableExpression
     = Syntax:`IMissingNameSyntax` Type:`UnknownType`;
 UnknownNameExpression <: NameExpression = Syntax:`INameExpressionSyntax` Type:`UnknownType`;

@@ -53,10 +53,8 @@ internal class ClassDefinitionSyntax : TypeDefinitionSyntax<IClassMemberDefiniti
             throw new InvalidOperationException($"Can't {nameof(CreateDefaultConstructor)} twice");
 
         var constructorSymbol = ConstructorSymbol.CreateDefault(Symbol.Result);
-        var selfParameterSymbol = new SelfParameterSymbol(constructorSymbol, false, constructorSymbol.SelfParameterType);
 
         symbolTree.Add(constructorSymbol);
-        symbolTree.Add(selfParameterSymbol);
         DefaultConstructorSymbol = constructorSymbol;
     }
 

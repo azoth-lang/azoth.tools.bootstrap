@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -20,7 +19,6 @@ internal sealed class MemberAccessExpressionSyntax : NameExpressionSyntax, IMemb
     public override Promise<IMemberAccessSyntaxSemantics> Semantics { [DebuggerStepThrough] get; } = new();
     public override IPromise<DataType?> DataType { [DebuggerStepThrough] get; }
     IPromise<DataType> ITypedExpressionSyntax.DataType => DataType!;
-    public override IPromise<Symbol?> ReferencedSymbol { [DebuggerStepThrough] get; }
 
     public MemberAccessExpressionSyntax(
         TextSpan span,
@@ -32,7 +30,6 @@ internal sealed class MemberAccessExpressionSyntax : NameExpressionSyntax, IMemb
         MemberName = member.Name!;
         TypeArguments = FixedList.Empty<ITypeSyntax>();
         DataType = Semantics.Select(s => s.Type).Flatten();
-        ReferencedSymbol = Semantics.Select(s => s.Symbol).Flatten();
         MemberNameSpan = member.Span;
     }
 

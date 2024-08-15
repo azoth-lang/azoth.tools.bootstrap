@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
@@ -7,7 +6,6 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
-using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
@@ -86,34 +84,10 @@ internal static class SymbolAspect
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.TypeName.Syntax.Span));
     }
 
-    // TODO remove parameter symbols
-    public static SelfParameterSymbol SelfParameter_Symbol(ISelfParameterNode node)
-    {
-        var parent = (IInvocableDefinitionNode)node.Parent;
-        var isConstructor = node.Parent is IConstructorDefinitionNode or IInitializerDefinitionNode;
-        return new SelfParameterSymbol(parent.Symbol, node.IsLentBinding && !isConstructor, ((IParameterNode)node).BindingType);
-    }
-
     public static void NamedParameter_ContributeDiagnostics(INamedParameterNode node, DiagnosticsBuilder diagnostics)
     {
         var type = node.BindingType;
         if (node.IsLentBinding && !type.CanBeLent())
             diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, type));
     }
-
-    public static SelfParameterSymbol? SelfExpression_ReferencedSymbol(ISelfExpressionNode node)
-        => node.ContainingDeclaration switch
-        {
-            IConcreteMethodDefinitionNode n => n.SelfParameter.Symbol,
-            ISourceConstructorDefinitionNode n => n.SelfParameter.Symbol,
-            IDefaultConstructorDefinitionNode _
-                => throw new UnreachableException("A `self` expression cannot occur here because it has an empty body."),
-            ISourceInitializerDefinitionNode n => n.SelfParameter.Symbol,
-            IDefaultInitializerDefinitionNode _
-                => throw new UnreachableException("A `self` expression cannot occur here because it has an empty body."),
-            IFieldDefinitionNode _ => null,
-            IAssociatedFunctionDefinitionNode _ => null,
-            IFunctionDefinitionNode _ => null,
-            _ => throw ExhaustiveMatch.Failed(node.ContainingDeclaration),
-        };
 }

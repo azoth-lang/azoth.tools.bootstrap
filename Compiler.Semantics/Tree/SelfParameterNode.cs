@@ -2,10 +2,8 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 
@@ -25,11 +23,6 @@ internal abstract class SelfParameterNode : ParameterNode, ISelfParameterNode
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
             : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
                 InheritedContainingDeclaredType);
-    private SelfParameterSymbol? symbol;
-    private bool symbolCached;
-    public SelfParameterSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.SelfParameter_Symbol);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
     public override IMaybeAntetype BindingAntetype

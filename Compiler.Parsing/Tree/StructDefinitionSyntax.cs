@@ -45,10 +45,8 @@ internal class StructDefinitionSyntax : TypeDefinitionSyntax<IStructMemberDefini
             throw new InvalidOperationException($"Can't {nameof(CreateDefaultInitializer)} twice");
 
         var constructorSymbol = InitializerSymbol.CreateDefault(Symbol.Result);
-        var selfParameterSymbol = new SelfParameterSymbol(constructorSymbol, false, constructorSymbol.SelfParameterType);
 
         symbolTree.Add(constructorSymbol);
-        symbolTree.Add(selfParameterSymbol);
         DefaultInitializerSymbol = constructorSymbol;
     }
 
