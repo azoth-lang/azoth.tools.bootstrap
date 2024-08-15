@@ -20,7 +20,6 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     public bool IsMutableBinding => Syntax.IsMutableBinding;
     public bool IsLentBinding => Syntax.IsLentBinding;
     public override IdentifierName Name => Syntax.Name;
-    public int? DeclarationNumber => Syntax.DeclarationNumber.Result;
     public ITypeNode TypeNode { get; }
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;

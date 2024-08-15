@@ -1,7 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
@@ -9,14 +7,12 @@ internal class ConstructorSelfParameterSyntax : ParameterSyntax, IConstructorSel
 {
     public bool IsLentBinding { get; }
     public ICapabilitySyntax Capability { get; }
-    public override IPromise<DataType> DataType { get; }
 
     public ConstructorSelfParameterSyntax(TextSpan span, bool isLentBinding, ICapabilitySyntax capability)
         : base(span, null)
     {
         Capability = capability;
         IsLentBinding = isLentBinding;
-        DataType = Types.DataType.PromiseOfUnknown;
     }
 
     public override string ToString()

@@ -210,7 +210,7 @@ Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`boo
 ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`
     BindingType:`DataType` ParameterType:`ParameterType`;
 NamedParameter <: ConstructorOrInitializerParameter, LocalBinding = Syntax:`INamedParameterSyntax`
-    IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`int`?
+    IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName`
     TypeNode:Type;
 SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool`
     ContainingTypeDefinition:`ITypeDefinitionNode` ContainingDeclaredType:`IDeclaredUserType`

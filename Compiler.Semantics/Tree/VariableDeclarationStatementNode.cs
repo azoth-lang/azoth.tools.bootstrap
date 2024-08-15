@@ -45,7 +45,6 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.VariableDeclarationStatement_LexicalScope,
                 ReferenceEqualityComparer.Instance);
-    public int? DeclarationNumber => Syntax.DeclarationNumber.Result;
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
     public ValueId BindingValueId

@@ -95,7 +95,7 @@ Capability: CapabilityConstraint = Tokens:`ICapabilityToken`* Declared:`Declared
 Parameter = Name:`IdentifierName`? Unused:`bool`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter: Parameter;
-NamedParameter: ConstructorOrInitializerParameter <: LocalBinding = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`Promise<int?>` Type DefaultValue:Expression?;
+NamedParameter: ConstructorOrInitializerParameter <: LocalBinding = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` Type DefaultValue:Expression?;
 SelfParameter: Parameter = IsLentBinding:`bool`;
 ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
 InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
@@ -130,14 +130,14 @@ SelfViewpointType: ViewpointType = Referent:Type;
 Statement;
 ResultStatement: Statement <: BlockOrResult = Expression;
 BodyStatement: Statement;
-VariableDeclarationStatement: BodyStatement <: LocalBinding = NameSpan:`TextSpan` Name:`IdentifierName` DeclarationNumber:`Promise<int?>` Capability? Type? Initializer:Expression?;
+VariableDeclarationStatement: BodyStatement <: LocalBinding = NameSpan:`TextSpan` Name:`IdentifierName` Capability? Type? Initializer:Expression?;
 ExpressionStatement: BodyStatement = Expression;
 
 // ---------- Patterns
 Pattern;
 BindingContextPattern: Pattern = IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern: Pattern;
-BindingPattern: OptionalOrBindingPattern <: LocalBinding = Name:`IdentifierName` DeclarationNumber:`Promise<int?>`;
+BindingPattern: OptionalOrBindingPattern <: LocalBinding = Name:`IdentifierName`;
 OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
@@ -168,7 +168,7 @@ PatternMatchExpression: DataTypedExpression = Referent:Expression Pattern;
 IfExpression: DataTypedExpression <: ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
 LoopExpression: DataTypedExpression = Block:BlockExpression;
 WhileExpression: DataTypedExpression = Condition:Expression Block:BlockExpression;
-ForeachExpression: DataTypedExpression <: LocalBinding = VariableName:`IdentifierName` DeclarationNumber:`Promise<int?>` InExpression:Expression Type? Block:BlockExpression;
+ForeachExpression: DataTypedExpression <: LocalBinding = VariableName:`IdentifierName` InExpression:Expression Type? Block:BlockExpression;
 BreakExpression: TypedExpression = Value:Expression?;
 NextExpression: TypedExpression;
 ReturnExpression: TypedExpression = Value:Expression?;

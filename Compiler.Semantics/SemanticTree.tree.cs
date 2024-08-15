@@ -907,7 +907,6 @@ public partial interface INamedParameterNode : ISemanticNode, IConstructorOrInit
     IdentifierName? IParameterNode.Name => Name;
     IdentifierName INamedBindingDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
-    int? DeclarationNumber { get; }
     ITypeNode TypeNode { get; }
 }
 

@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
@@ -10,7 +9,6 @@ internal sealed class VariableDeclarationStatementSyntax : StatementSyntax, IVar
 {
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
-    public Promise<int?> DeclarationNumber { [DebuggerStepThrough] get; } = new Promise<int?>();
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public ITypeSyntax? Type { [DebuggerStepThrough] get; }
     public ICapabilitySyntax? Capability { [DebuggerStepThrough] get; }

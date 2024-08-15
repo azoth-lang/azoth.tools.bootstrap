@@ -401,7 +401,6 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
     bool IsLentBinding { get; }
     new IdentifierName Name { get; }
     IdentifierName? IParameterSyntax.Name => Name;
-    Promise<int?> DeclarationNumber { get; }
     ITypeSyntax Type { get; }
     IExpressionSyntax? DefaultValue { get; }
 }
@@ -588,7 +587,6 @@ public partial interface IBodyStatementSyntax : IStatementSyntax
 public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyntax, ILocalBindingSyntax
 {
     IdentifierName Name { get; }
-    Promise<int?> DeclarationNumber { get; }
     ICapabilitySyntax? Capability { get; }
     ITypeSyntax? Type { get; }
     IExpressionSyntax? Initializer { get; }
@@ -623,7 +621,6 @@ public partial interface IOptionalOrBindingPatternSyntax : IPatternSyntax
 public partial interface IBindingPatternSyntax : IOptionalOrBindingPatternSyntax, ILocalBindingSyntax
 {
     IdentifierName Name { get; }
-    Promise<int?> DeclarationNumber { get; }
 }
 
 public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSyntax
@@ -788,7 +785,6 @@ public partial interface IWhileExpressionSyntax : IDataTypedExpressionSyntax
 public partial interface IForeachExpressionSyntax : IDataTypedExpressionSyntax, ILocalBindingSyntax
 {
     IdentifierName VariableName { get; }
-    Promise<int?> DeclarationNumber { get; }
     IExpressionSyntax InExpression { get; }
     ITypeSyntax? Type { get; }
     IBlockExpressionSyntax Block { get; }
