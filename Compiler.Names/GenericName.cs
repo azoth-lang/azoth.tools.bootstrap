@@ -11,7 +11,7 @@ public sealed class GenericName : StandardName
     public GenericName(string text, int genericParameterCount)
         : base(text, genericParameterCount)
     {
-        Requires.That(nameof(genericParameterCount), genericParameterCount > 0, "Must be greater than zero.");
+        Requires.That(genericParameterCount > 0, nameof(genericParameterCount), "Must be greater than zero.");
     }
 
     #region Equals

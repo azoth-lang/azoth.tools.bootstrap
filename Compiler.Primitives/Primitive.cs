@@ -7,7 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using static Azoth.Tools.Bootstrap.Compiler.Primitives.SymbolBuilder;
-using Return = Azoth.Tools.Bootstrap.Compiler.Types.Return;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 
@@ -34,7 +33,7 @@ public static class Primitive
         var tree = SymbolTreeBuilder.CreateForPrimitives();
 
         // TODO: This is a hack to "have" a string type from here. Replace by extending primitive types with string related methods.
-        var stringType = ReferenceType.CreateClass(Capability.Constant, "fake", NamespaceName.Global, false, false, "String");
+        var stringType = CapabilityType.CreateClass(Capability.Constant, "fake", NamespaceName.Global, false, false, "String");
 
         // Simple Types
         BuildBoolSymbol(tree);
@@ -99,7 +98,7 @@ public static class Primitive
 
         var idAnyType = DeclaredType.Any.With(Capability.Identity);
         // fn identity_hash(value: Any) -> nuint
-        var identityHash = new MethodSymbol(symbol, "identity_hash", SelfParam(idAnyType), Params(), Return.NUInt);
+        var identityHash = new MethodSymbol(symbol, "identity_hash", SelfParam(idAnyType), Params(), ReturnType.NUInt);
         tree.Add(identityHash);
     }
 }

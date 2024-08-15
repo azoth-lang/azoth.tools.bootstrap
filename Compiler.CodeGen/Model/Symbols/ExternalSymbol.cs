@@ -9,7 +9,7 @@ public sealed class ExternalSymbol : Symbol
     public ExternalSymbol(string fullName)
     {
         FullName = fullName;
-        Requires.NotNullOrEmpty(nameof(fullName), fullName);
+        Requires.NotNullOrEmpty(fullName, nameof(fullName));
     }
 
     #region Equality

@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
+using System.Threading;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -23,13 +24,13 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         NamespaceName containingNamespace,
         bool isConst,
         StandardName name,
-        IFixedList<GenericParameterType> genericParametersTypes,
-        IPromise<IFixedSet<BareReferenceType>> superTypes)
+        IFixedList<GenericParameter> genericParameters,
+        IFixedSet<BareReferenceType> supertypes)
     {
-        Requires.That(nameof(genericParametersTypes), name.GenericParameterCount == genericParametersTypes.Count,
+        Requires.That(name.GenericParameterCount == genericParameters.Count, nameof(genericParameters),
             "Count must match name count");
         return new(containingPackage, containingNamespace, isConst, name,
-            genericParametersTypes, superTypes);
+            genericParameters, supertypes);
     }
 
     private StructType(
@@ -37,18 +38,15 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         NamespaceName containingNamespace,
         bool isConstType,
         StandardName name,
-        IFixedList<GenericParameterType> genericParametersTypes,
-        IPromise<IFixedSet<BareReferenceType>> supertypes)
-        : base(isConstType, genericParametersTypes)
+        IFixedList<GenericParameter> genericParameters,
+        IFixedSet<BareReferenceType> supertypes)
+        : base(isConstType, genericParameters)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
         Name = name;
-        this.supertypes = supertypes;
-        // Fulfill the declaring type promise so the parameters are associated to this type
-        var declaringTypePromise = genericParametersTypes.Select(t => t.DeclaringTypePromise)
-                                                         .Distinct().SingleOrDefault();
-        declaringTypePromise?.Fulfill(this);
+        Supertypes = supertypes;
+        GenericParameterTypes = genericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList();
     }
 
     public override IdentifierName ContainingPackage { get; }
@@ -56,26 +54,31 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     public override NamespaceName ContainingNamespace { get; }
 
     bool IDeclaredUserType.IsClass => false;
+    bool IDeclaredUserType.IsAbstract => false;
 
     public override StandardName Name { get; }
 
-    private readonly IPromise<IFixedSet<BareReferenceType>> supertypes;
-    public override IFixedSet<BareReferenceType> Supertypes => supertypes.Result;
+    public override IFixedSet<BareReferenceType> Supertypes { get; }
+    public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
+
+    private IDeclaredAntetype? antetype;
+
+    DeclaredType IDeclaredUserType.AsDeclaredType() => this;
 
     /// <summary>
     /// Make a version of this type for use as the default initializer parameter.
     /// </summary>
     /// <remarks>This is always `init mut` because the type is being initialized and can be mutated
     /// inside the constructor via field initializers.</remarks>
-    public ValueType<StructType> ToDefaultInitializerSelf()
+    public CapabilityType<StructType> ToDefaultInitializerSelf()
         => With(Capability.InitMutable, GenericParameterTypes);
 
     /// <summary>
     /// Make a version of this type for use as the return type of the default constructor.
     /// </summary>
     /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
-    /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
-    public ValueType<StructType> ToDefaultInitializerReturn()
+    /// with `const` because there are no parameters that could break the new object's isolation.</remarks>
+    public CapabilityType<StructType> ToDefaultInitializerReturn()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Isolated, GenericParameterTypes);
 
     /// <summary>
@@ -83,7 +86,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     /// </summary>
     /// <remarks>The capability of the return type is restricted by the parameter types because the
     /// newly constructed object could contain references to them.</remarks>
-    public ValueType<StructType> ToInitializerReturn(ValueType selfParameterType, IEnumerable<Parameter> parameterTypes)
+    public CapabilityType<StructType> ToInitializerReturn(CapabilityType selfParameterType, IEnumerable<ParameterType> parameterTypes)
     {
         if (IsDeclaredConst) return With(Capability.Constant, GenericParameterTypes);
         // Read only self constructors cannot return `mut` or `iso`
@@ -92,13 +95,12 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
         foreach (var parameterType in parameterTypes)
             switch (parameterType.Type)
             {
-                case ReferenceType when parameterType.IsLent:
-                case ReferenceType { IsConstantReference: true }:
-                case ReferenceType { IsIsolatedReference: true }:
-                case OptionalType { Referent: ReferenceType } when parameterType.IsLent:
-                case OptionalType { Referent: ReferenceType { IsConstantReference: true } }:
-                case OptionalType { Referent: ReferenceType { IsIsolatedReference: true } }:
-                case ValueType:
+                case CapabilityType when parameterType.IsLent:
+                case CapabilityType { IsConstantReference: true }:
+                case CapabilityType { IsIsolatedReference: true }:
+                case OptionalType { Referent: CapabilityType } when parameterType.IsLent:
+                case OptionalType { Referent: CapabilityType { IsConstantReference: true } }:
+                case OptionalType { Referent: CapabilityType { IsIsolatedReference: true } }:
                 case EmptyType:
                 case UnknownType:
                     continue;
@@ -113,23 +115,29 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     public override BareValueType<StructType> With(IFixedList<DataType> typeArguments)
         => BareType.Create(this, typeArguments);
 
-    public override ValueType<StructType> With(Capability capability, IFixedList<DataType> typeArguments)
+    public override CapabilityType<StructType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
     public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
+
+    public override IDeclaredAntetype ToAntetype()
+        // Lazy initialize to prevent evaluation of lazy supertypes when constructing StructType
+        => LazyInitializer.EnsureInitialized(ref antetype, this.ConstructDeclaredAntetype);
 
     #region Equals
     public override bool Equals(DeclaredType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is ObjectType objectType
-            && ContainingPackage == objectType.ContainingPackage
-            && ContainingNamespace == objectType.ContainingNamespace
-            && IsDeclaredConst == objectType.IsDeclaredConst
-            && Name == objectType.Name
-            && GenericParameters.ItemsEqual(objectType.GenericParameters);
+        return other is StructType structType
+            && ContainingPackage == structType.ContainingPackage
+            && ContainingNamespace == structType.ContainingNamespace
+            && IsDeclaredConst == structType.IsDeclaredConst
+            && Name == structType.Name
+            && GenericParameters.Equals(structType.GenericParameters);
+        // Supertypes and GenericParameterTypes are not considered because they are derived. Also,
+        // that prevents infinite recursion.
     }
 
     public bool Equals(IDeclaredUserType? other) => Equals(other as DeclaredType);

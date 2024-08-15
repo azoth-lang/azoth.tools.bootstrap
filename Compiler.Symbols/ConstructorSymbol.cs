@@ -13,27 +13,27 @@ public sealed class ConstructorSymbol : InvocableSymbol
     public override UserTypeSymbol ContainingSymbol { get; }
     public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public override IdentifierName? Name { get; }
-    public ReferenceType SelfParameterType { get; }
-    public ReferenceType ReturnType { get; }
+    public CapabilityType SelfParameterType { get; }
+    public CapabilityType ReturnType { get; }
 
     public ConstructorSymbol(
         UserTypeSymbol containingSymbol,
         IdentifierName? name,
-        ReferenceType selfParameterType,
-        IFixedList<Parameter> parameterTypes)
+        CapabilityType selfParameterType,
+        IFixedList<ParameterType> parameterTypes)
         : base(parameterTypes,
-            new Return(((ObjectType)containingSymbol.DeclaresType).ToConstructorReturn(selfParameterType, parameterTypes)))
+            new ReturnType(((ObjectType)containingSymbol.DeclaresType).ToConstructorReturn(selfParameterType, parameterTypes)))
     {
         ContainingSymbol = containingSymbol;
         Name = name;
         SelfParameterType = selfParameterType;
-        ReturnType = (ReferenceType)base.Return.Type;
+        ReturnType = (CapabilityType)Return.Type;
     }
 
     public static ConstructorSymbol CreateDefault(UserTypeSymbol containingSymbol)
         => new(containingSymbol, null,
             ((ObjectType)containingSymbol.DeclaresType).ToDefaultConstructorSelf(),
-            FixedList.Empty<Parameter>());
+            FixedList.Empty<ParameterType>());
 
     public override bool Equals(Symbol? other)
     {
@@ -51,7 +51,7 @@ public sealed class ConstructorSymbol : InvocableSymbol
     public override string ToILString()
     {
         var name = Name is null ? $".{Name}" : "";
-        var selfParameterType = new Parameter(false, SelfParameterType);
+        var selfParameterType = new ParameterType(false, SelfParameterType);
         return $"{ContainingSymbol}::new{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
     }
 }

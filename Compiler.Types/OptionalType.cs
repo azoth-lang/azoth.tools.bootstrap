@@ -1,4 +1,6 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -6,13 +8,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// The type `T?` is an optional type. Optional types either have the value
 /// `none` or a value of their referent type. The referent type may be a value
 /// type or a reference type. Optional types themselves are always immutable.
-/// However the referent type may be mutable or immutable. Effectively, optional
+/// However ,the referent type may be mutable or immutable. Effectively, optional
 /// types are like an immutable struct type `Optional[T]`. However, the value
 /// semantics are strange. They depend on the referent type.
 /// </summary>
 public sealed class OptionalType : NonEmptyType
 {
-    public DataType Referent { get; }
+    public static DataType Create(DataType referent)
+        => referent switch
+        {
+            Type t => new OptionalType(t),
+            UnknownType _ => Unknown,
+            _ => throw ExhaustiveMatch.Failed(referent),
+        };
+
+    public Type Referent { get; }
 
     public override bool AllowsVariance => true;
 
@@ -22,12 +32,16 @@ public sealed class OptionalType : NonEmptyType
 
     private bool ReferentRequiresParens => Referent is FunctionType or ViewpointType;
 
-    public OptionalType(DataType referent)
+    public OptionalType(Type referent)
     {
         if (referent is VoidType)
             throw new ArgumentException("Cannot create `void?` type", nameof(referent));
         Referent = referent;
     }
+
+    public override IMaybeExpressionAntetype ToAntetype()
+        => Referent.ToAntetype() is INonVoidAntetype referent
+            ? new OptionalAntetype(referent) : IAntetype.Unknown;
 
     #region Equals
     public override bool Equals(DataType? other)

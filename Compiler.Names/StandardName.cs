@@ -8,12 +8,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Names;
 [Closed(
     typeof(IdentifierName),
     typeof(GenericName))]
+// TODO rename to Ordinary or Normal
 public abstract class StandardName : TypeName
 {
     public static StandardName Create(string text, int genericParameterCount)
         => genericParameterCount == 0 ? new IdentifierName(text) : new GenericName(text, genericParameterCount);
 
-    protected StandardName(string text, int genericParameterCount)
+    private protected StandardName(string text, int genericParameterCount)
         : base(text, genericParameterCount) { }
 
     public abstract override StandardName WithAttributeSuffix();

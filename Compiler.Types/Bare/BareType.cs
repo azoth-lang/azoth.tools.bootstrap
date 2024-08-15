@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -86,12 +87,23 @@ public abstract class BareType : IEquatable<BareType>
         supertypes = new(GetSupertypes);
     }
 
+    public IMaybeAntetype ToAntetype()
+    {
+        var typeArguments = GenericTypeArguments.Select(a => a.ToAntetype()).OfType<IAntetype>().ToFixedList();
+        if (typeArguments.Count != GenericTypeArguments.Count)
+            return IAntetype.Unknown;
+        return DeclaredType.ToAntetype().With(typeArguments);
+    }
+
     private TypeReplacements GetTypeReplacements() => new(DeclaredType, GenericTypeArguments);
 
     private IFixedSet<BareReferenceType> GetSupertypes()
         => DeclaredType.Supertypes.Select(typeReplacements.Value.ReplaceTypeParametersIn).ToFixedSet();
 
     public DataType ReplaceTypeParametersIn(DataType type)
+        => typeReplacements.Value.ReplaceTypeParametersIn(type);
+
+    public BareReferenceType ReplaceTypeParametersIn(BareReferenceType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
     public Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
@@ -119,6 +131,13 @@ public abstract class BareType : IEquatable<BareType>
     public CapabilityTypeConstraint With(CapabilitySet capability)
         => new(capability, this);
 
+    /// <summary>
+    /// Make a version of this type that is the default read reference capability for the type. That
+    /// is either read-only or constant.
+    /// </summary>
+    public CapabilityType WithRead()
+        => With(IsDeclaredConst ? Capability.Constant : Capability.Read);
+
     #region Equality
     public sealed override bool Equals(object? obj)
     {
@@ -139,8 +158,8 @@ public abstract class BareType : IEquatable<BareType>
     public sealed override string ToString()
         => throw new NotSupportedException();
 
-    public virtual string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
-    public virtual string ToILString() => ToString(t => t.ToILString());
+    public string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
+    public string ToILString() => ToString(t => t.ToILString());
 
     private string ToString(Func<DataType, string> toString)
     {

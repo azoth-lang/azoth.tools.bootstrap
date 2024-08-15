@@ -9,7 +9,7 @@ internal class CapabilitySetSyntax : Syntax, ICapabilitySetSyntax
 {
     public static CapabilitySetSyntax ImplicitAliasable(TextSpan span)
     {
-        Requires.That(nameof(span), span.Length == 0, "span must be empty");
+        Requires.That(span.Length == 0, nameof(span), "span must be empty");
         return new(span, CapabilitySet.Aliasable);
     }
 

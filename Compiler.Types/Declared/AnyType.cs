@@ -1,3 +1,5 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -11,7 +13,7 @@ public sealed class AnyType : DeclaredReferenceType
     internal static readonly AnyType Instance = new();
 
     private AnyType()
-        : base(isDeclaredConst: false, isAbstract: true, isClass: false, FixedList.Empty<GenericParameterType>())
+        : base(isDeclaredConst: false, isAbstract: true, isClass: false, FixedList.Empty<GenericParameter>())
     {
         BareType = new(this, FixedList.Empty<DataType>());
     }
@@ -30,11 +32,13 @@ public sealed class AnyType : DeclaredReferenceType
         return BareType;
     }
 
-    public override ReferenceType<AnyType> With(Capability capability, IFixedList<DataType> typeArguments)
+    public override CapabilityType<AnyType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public ReferenceType<AnyType> With(Capability capability)
-        => ReferenceType.Create(capability, BareType);
+    public CapabilityType<AnyType> With(Capability capability)
+        => CapabilityType.Create(capability, BareType);
+
+    public override IDeclaredAntetype ToAntetype() => IAntetype.Any;
 
     #region Equals
     public override bool Equals(DeclaredType? other) => ReferenceEquals(this, other);

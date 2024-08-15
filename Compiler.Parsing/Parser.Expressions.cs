@@ -152,15 +152,14 @@ public partial class Parser
                     }
                     break;
                 case IDotToken _:
-                case IQuestionDotToken _:
                     if (minPrecedence <= OperatorPrecedence.Primary)
                     {
                         // Member Access
-                        var accessOperator = BuildAccessOperator(Tokens.ConsumeToken<IAccessOperatorToken>());
+                        Tokens.ConsumeToken<IAccessOperatorToken>();
                         // TODO support generic names
                         var nameSyntax = ParseIdentifierName();
                         var memberAccessSpan = TextSpan.Covering(expression.Span, nameSyntax.Span);
-                        expression = new MemberAccessExpressionSyntax(memberAccessSpan, expression, accessOperator, nameSyntax);
+                        expression = new MemberAccessExpressionSyntax(memberAccessSpan, expression, nameSyntax);
                         continue;
                     }
                     break;
@@ -180,7 +179,7 @@ public partial class Parser
                     // These terminating tokens should be safe to return the atom even if it is a missing identifier
                     return expression;
                 default:
-                    if (expression is IIdentifierNameExpressionSyntax { Name: null })
+                    if (expression is IMissingNameSyntax)
                     {
                         // Weren't able to parse an atom nor find an operator. There is a risk of
                         // not making progress. Mark the next token as unexpected.
@@ -216,16 +215,6 @@ public partial class Parser
             IAsteriskEqualsToken _ => AssignmentOperator.Asterisk,
             ISlashEqualsToken _ => AssignmentOperator.Slash,
             _ => throw ExhaustiveMatch.Failed(assignmentToken)
-        };
-    }
-
-    private static AccessOperator BuildAccessOperator(IAccessOperatorToken accessOperatorToken)
-    {
-        return accessOperatorToken switch
-        {
-            IDotToken _ => AccessOperator.Standard,
-            IQuestionDotToken _ => AccessOperator.Conditional,
-            _ => throw ExhaustiveMatch.Failed(accessOperatorToken)
         };
     }
 
@@ -281,11 +270,12 @@ public partial class Parser
             case INewKeywordToken _:
             {
                 var newKeyword = Tokens.Consume<INewKeywordToken>();
-                var type = ParseTypeName();
+                var type = ParseStandardTypeName();
                 Tokens.Expect<IOpenParenToken>();
                 var arguments = ParseArguments();
                 var closeParen = Tokens.Expect<ICloseParenToken>();
                 var span = TextSpan.Covering(newKeyword, closeParen);
+                // TODO if we can never parse a constructor name, then change the syntax tree to reflect that
                 return new NewObjectExpressionSyntax(span, type, null, null, arguments);
             }
             case IReturnKeywordToken _:
@@ -367,8 +357,8 @@ public partial class Parser
                 // `move` is like a unary operator
                 var expression = ParseExpression(OperatorPrecedence.Unary);
                 var span = TextSpan.Covering(move, expression.Span);
-                if (expression is IVariableNameExpressionSyntax variable)
-                    return new MoveExpressionSyntax(span, variable);
+                if (expression is ISimpleNameSyntax simpleName)
+                    return new MoveExpressionSyntax(span, simpleName);
                 Add(ParseError.CantMoveOutOfExpression(File, span));
                 return expression;
             }
@@ -378,8 +368,8 @@ public partial class Parser
                 // `freeze` is like a unary operator
                 var expression = ParseExpression(OperatorPrecedence.Unary);
                 var span = TextSpan.Covering(freeze, expression.Span);
-                if (expression is IVariableNameExpressionSyntax variable)
-                    return new FreezeExpressionSyntax(span, variable);
+                if (expression is ISimpleNameSyntax simpleName)
+                    return new FreezeExpressionSyntax(span, simpleName);
                 Add(ParseError.CantFreezeExpression(File, span));
                 return expression;
             }
@@ -399,7 +389,7 @@ public partial class Parser
             case ISemicolonToken _:
             case ICloseParenToken _:
                 // If it is one of these, we assume there is a missing identifier
-                return ParseMissingIdentifier();
+                return ParseMissingName();
             case ICloseBraceToken _:
             case IColonToken _:
             case IColonColonToken _:
@@ -427,10 +417,10 @@ public partial class Parser
         return new SelfExpressionSyntax(selfKeyword, false);
     }
 
-    private ISimpleNameExpressionSyntax ParseMissingIdentifier()
+    private IMissingNameSyntax ParseMissingName()
     {
         var identifierSpan = Tokens.Expect<IIdentifierToken>();
-        return new IdentifierNameExpressionSyntax(identifierSpan, null);
+        return new MissingNameSyntax(identifierSpan);
     }
 
     private IUnsafeExpressionSyntax ParseUnsafeExpression()
@@ -474,6 +464,7 @@ public partial class Parser
         var mutableBinding = Tokens.Accept<IVarKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var variableName = identifier.Value;
+        var nameSpan = identifier.Span;
         ITypeSyntax? type = null;
         if (Tokens.Accept<IColonToken>())
             type = ParseType();
@@ -481,7 +472,7 @@ public partial class Parser
         var expression = ParseExpression();
         var block = ParseBlock();
         var span = TextSpan.Covering(foreachKeyword, block.Span);
-        return new ForeachExpressionSyntax(span, mutableBinding, variableName, type, expression, block);
+        return new ForeachExpressionSyntax(span, mutableBinding, nameSpan, variableName, type, expression, block);
     }
 
     private IWhileExpressionSyntax ParseWhile()

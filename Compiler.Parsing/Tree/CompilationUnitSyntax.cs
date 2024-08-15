@@ -10,25 +10,25 @@ internal class CompilationUnitSyntax : Syntax, ICompilationUnitSyntax
     public CodeFile File { get; }
     public NamespaceName ImplicitNamespaceName { get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
-    public IFixedList<INonMemberDeclarationSyntax> Declarations { get; }
-    public IFixedList<Diagnostic> Diagnostics { get; private set; }
+    public IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
+    public Diagnostics Diagnostics { get; private set; }
 
     public CompilationUnitSyntax(
         NamespaceName implicitNamespaceName,
         TextSpan span,
         CodeFile file,
         IFixedList<IUsingDirectiveSyntax> usingDirectives,
-        IFixedList<INonMemberDeclarationSyntax> declarations)
+        IFixedList<INonMemberDefinitionSyntax> declarations)
         : base(span)
     {
         File = file;
         ImplicitNamespaceName = implicitNamespaceName;
         UsingDirectives = usingDirectives;
-        Declarations = declarations;
-        Diagnostics = FixedList.Empty<Diagnostic>();
+        Definitions = declarations;
+        Diagnostics = Diagnostics.Empty;
     }
 
-    public void Attach(IFixedList<Diagnostic> diagnostics)
+    public void Attach(Diagnostics diagnostics)
         => Diagnostics = diagnostics;
 
     public override string ToString() => File.Reference.ToString();

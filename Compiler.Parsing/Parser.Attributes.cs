@@ -15,7 +15,7 @@ public partial class Parser
     {
         var accept = Tokens.AcceptToken<IHashToken>();
         if (accept is null) return null;
-        var typeName = ParseTypeName();
+        var typeName = ParseStandardTypeName();
         var span = TextSpan.Covering(accept.Span, typeName.Span);
         return new AttributeSyntax(span, typeName);
     }

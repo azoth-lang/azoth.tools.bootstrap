@@ -16,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(FunctionType),
     typeof(OptionalType),
     typeof(ConstValueType))]
-public abstract class NonEmptyType : DataType
+public abstract class NonEmptyType : Type
 {
     private protected NonEmptyType() { }
 
@@ -39,7 +39,7 @@ public abstract class NonEmptyType : DataType
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
-    public Parameter ReplaceTypeParametersIn(Parameter type)
+    public ParameterType ReplaceTypeParametersIn(ParameterType type)
         => type with { Type = ReplaceTypeParametersIn(type.Type) };
 
     /// <summary>
@@ -48,9 +48,9 @@ public abstract class NonEmptyType : DataType
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
     [return: NotNullIfNotNull(nameof(type))]
-    public Parameter? ReplaceTypeParametersIn(Parameter? type)
+    public ParameterType? ReplaceTypeParametersIn(ParameterType? type)
     {
-        if (type is Parameter parameterType)
+        if (type is ParameterType parameterType)
             return ReplaceTypeParametersIn(parameterType);
         return null;
     }
@@ -60,7 +60,7 @@ public abstract class NonEmptyType : DataType
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
-    public SelfParameter ReplaceTypeParametersIn(SelfParameter type)
+    public SelfParameterType ReplaceTypeParametersIn(SelfParameterType type)
         => type with { Type = ReplaceTypeParametersIn(type.Type) };
 
     /// <summary>
@@ -69,9 +69,9 @@ public abstract class NonEmptyType : DataType
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
     [return: NotNullIfNotNull(nameof(type))]
-    public SelfParameter? ReplaceTypeParametersIn(SelfParameter? type)
+    public SelfParameterType? ReplaceTypeParametersIn(SelfParameterType? type)
     {
-        if (type is SelfParameter parameterType)
+        if (type is SelfParameterType parameterType)
             return ReplaceTypeParametersIn(parameterType);
         return null;
     }
@@ -81,6 +81,6 @@ public abstract class NonEmptyType : DataType
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
-    public Return ReplaceTypeParametersIn(Return @return)
-        => @return with { Type = ReplaceTypeParametersIn(@return.Type) };
+    public ReturnType ReplaceTypeParametersIn(ReturnType @return)
+        => new(ReplaceTypeParametersIn(@return.Type));
 }

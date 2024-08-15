@@ -19,7 +19,7 @@ public enum DeclaredCapability
     Identity
 }
 
-public static class DeclaredReferenceCapabilityExtensions
+public static class DeclaredCapabilityExtensions
 {
     public static Capability ToCapability(this DeclaredCapability capability)
         => capability switch
@@ -32,5 +32,18 @@ public static class DeclaredReferenceCapabilityExtensions
             DeclaredCapability.TemporarilyConstant => Capability.TemporarilyConstant,
             DeclaredCapability.Identity => Capability.Identity,
             _ => throw ExhaustiveMatch.Failed(capability),
+        };
+
+    public static Capability ToSelfParameterCapability(this DeclaredCapability declaredCapability)
+        => declaredCapability switch
+        {
+            DeclaredCapability.Read => Capability.InitReadOnly,
+            DeclaredCapability.Mutable => Capability.InitMutable,
+            DeclaredCapability.Isolated => Capability.InitMutable,
+            DeclaredCapability.TemporarilyIsolated => Capability.InitMutable,
+            DeclaredCapability.Constant => Capability.InitReadOnly,
+            DeclaredCapability.TemporarilyConstant => Capability.InitReadOnly,
+            DeclaredCapability.Identity => Capability.InitReadOnly,
+            _ => throw ExhaustiveMatch.Failed(declaredCapability)
         };
 }

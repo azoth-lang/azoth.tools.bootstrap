@@ -10,9 +10,9 @@ public class ReferenceTypeTests
     [Fact]
     public void Convert_to_non_constant_type_is_same_type()
     {
-        var type = ReferenceType.CreateClass(Isolated, "Package", "Foo", false, false, "Bar");
+        var type = CapabilityType.CreateClass(Isolated, "Package", "Foo", false, false, "Bar");
 
-        var nonConstant = type.ToNonConstantType();
+        var nonConstant = type.ToNonConstValueType();
 
         Assert.Same(type, nonConstant);
     }
@@ -20,8 +20,8 @@ public class ReferenceTypeTests
     [Fact]
     public void With_same_name_and_reference_capability_are_equal()
     {
-        var type1 = ReferenceType.CreateClass(Isolated, "Package", "Foo", false, false, "Bar");
-        var type2 = ReferenceType.CreateClass(Isolated, "Package", "Foo", false, false, "Bar");
+        var type1 = CapabilityType.CreateClass(Isolated, "Package", "Foo", false, false, "Bar");
+        var type2 = CapabilityType.CreateClass(Isolated, "Package", "Foo", false, false, "Bar");
 
         Assert.Equal(type1, type2);
     }

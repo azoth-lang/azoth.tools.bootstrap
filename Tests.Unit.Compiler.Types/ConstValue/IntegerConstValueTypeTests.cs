@@ -52,7 +52,7 @@ public class IntegerConstValueTypeTests
 
         var type = new IntegerConstValueType(42);
 
-        var nonConstant = type.ToNonConstantType();
+        var nonConstant = type.ToNonConstValueType();
 
         Assert.Same(DataType.Int, nonConstant);
     }

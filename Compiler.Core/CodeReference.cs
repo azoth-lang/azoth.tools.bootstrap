@@ -1,3 +1,4 @@
+using System;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core;
@@ -5,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core;
 /// Some kind of reference to where the source code came from. For example,
 /// this might be a path on disk or a network URL or a git hash or what
 /// template file the code was generated from.
-public abstract class CodeReference
+public abstract class CodeReference : IComparable<CodeReference>
 {
     public IFixedList<string> Namespace { get; }
 
@@ -16,6 +17,8 @@ public abstract class CodeReference
         Namespace = @namespace;
         IsTesting = isTesting;
     }
+
+    public abstract int CompareTo(CodeReference? other);
 
     public abstract override string ToString();
 }

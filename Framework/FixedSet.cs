@@ -3,35 +3,55 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
+[CollectionBuilder(typeof(FixedSet), "Create")]
 public interface IFixedSet<out T> : IReadOnlyCollection<T>
 {
+    bool IsEmpty { get; }
+
+    bool Equals(IFixedSet<object?>? other);
+
+    static IEqualityComparer<IFixedSet<T>> EqualityComparer => EqualityComparer<IFixedSet<T>>.Default;
 }
 
 public static class FixedSet
 {
     public static IFixedSet<T> Empty<T>() => Of<T>.Empty;
 
-    public static IFixedSet<T> Create<T>(IEnumerable<T> items) => new Of<T>(items);
+    public static IFixedSet<T> Create<T>(ReadOnlySpan<T> items)
+        => items.IsEmpty ? Of<T>.Empty : new(items);
 
-    public static IFixedSet<T> Create<T>(params T[] items) => new Of<T>(items);
+    public static IFixedSet<T> Create<T>(IEnumerable<T> items)
+        => new Of<T>(items);
 
-    public static bool ItemsEqual<T>(this IFixedSet<T> first, IFixedSet<T>? second)
-        where T : IEquatable<T>
-    {
-        if (ReferenceEquals(first, second)) return true;
-        if (first.Count != second?.Count) return false;
-
-        foreach (var item in first)
-            if (!second.Contains(item))
-                return false;
-        return true;
-    }
+    public static IFixedSet<T> Create<T>(params T[] items)
+        => items.IsEmpty() ? Of<T>.Empty : new(items.AsSpan());
 
     public static bool Contains<T>(this IFixedSet<T> set, T value)
         => ((Of)set).Contains(value);
+
+    public static IEqualityComparer<IFixedSet<object?>> ObjectEqualityComparer
+        => System.Collections.Generic.EqualityComparer<IFixedSet<object?>>.Default;
+
+    public static IEqualityComparer<IFixedSet<T>> EqualityComparer<T>()
+        where T : IEquatable<T>
+        => System.Collections.Generic.EqualityComparer<IFixedSet<T>>.Default;
+
+    public static IFixedSet<T> Union<T>(this IFixedSet<T> set, IEnumerable<T> other)
+    {
+        HashSet<T>? newSet = null;
+        foreach (var item in other)
+        {
+            if (newSet is not null)
+                newSet.Add(item);
+            else if (!set.Contains(item))
+                newSet = [.. set, item];
+        }
+        return newSet is null ? set : new Of<T>(newSet);
+    }
 
     private abstract class Of
     {
@@ -43,9 +63,19 @@ public static class FixedSet
     [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     private sealed class Of<T> : Of, IFixedSet<T>
     {
-        public static readonly Of<T> Empty = new Of<T>(Enumerable.Empty<T>());
+        public static readonly Of<T> Empty = new Of<T>([]);
 
         private readonly IReadOnlySet<T> items;
+        private int hashCode;
+
+        [DebuggerStepThrough]
+        public Of(ReadOnlySpan<T> items)
+        {
+            var set = new HashSet<T>(items.Length);
+            foreach (var item in items)
+                set.Add(item);
+            this.items = set;
+        }
 
         [DebuggerStepThrough]
         public Of(IEnumerable<T> items)
@@ -53,10 +83,13 @@ public static class FixedSet
             this.items = items.ToHashSet();
         }
 
+        /// <summary>
+        /// CAUTION: This constructor is for internal use only. It does not copy the items.
+        /// </summary>
         [DebuggerStepThrough]
-        public Of(IEnumerable<T> items, IEqualityComparer<T> equalityComparer)
+        internal Of(IReadOnlySet<T> items)
         {
-            this.items = items.ToHashSet(equalityComparer);
+            this.items = items;
         }
 
         [DebuggerStepThrough]
@@ -67,33 +100,35 @@ public static class FixedSet
 
         public int Count => items.Count;
 
-        #region Equality
-        public override bool Equals(object? obj) => throw new NotSupportedException();
-
-        public override int GetHashCode()
-        {
-            var comparer = StrictEqualityComparer<T>.Instance;
-            HashCode hash = new HashCode();
-            hash.Add(Count);
-            // Order the hash codes so there is a consistent hash order
-            foreach (var itemHash in items.Select(i => comparer.GetHashCode(i!)).OrderBy(h => h))
-                hash.Add(itemHash);
-            return hash.ToHashCode();
-        }
-        #endregion
+        public bool IsEmpty => items.Count == 0;
 
         public override bool Contains(object? item) => item is T value && items.Contains(value);
 
-        public bool IsProperSubsetOf(IEnumerable<T> other) => items.IsProperSubsetOf(other);
+        #region Equality
+        public bool Equals(IFixedSet<object?>? other)
+        {
+            if (ReferenceEquals(this, other)) return true;
+            if (other is null) return false;
+            if (Count != other.Count || GetHashCode() != other.GetHashCode()) return false;
+            foreach (var item in other)
+                if (!Contains(item))
+                    return false;
+            return true;
+        }
 
-        public bool IsProperSupersetOf(IEnumerable<T> other) => items.IsProperSupersetOf(other);
+        public override bool Equals(object? obj)
+            // TODO handle equality like IFixedList<T> does so that it works for all types in all cases
+            => ReferenceEquals(this, obj) || obj is IFixedSet<object?> other && Equals(other);
 
-        public bool IsSubsetOf(IEnumerable<T> other) => items.IsSubsetOf(other);
+        public override int GetHashCode() => hashCode != 0 ? hashCode : hashCode = ComputeHashCode();
 
-        public bool IsSupersetOf(IEnumerable<T> other) => items.IsSupersetOf(other);
-
-        public bool Overlaps(IEnumerable<T> other) => items.Overlaps(other);
-
-        public bool SetEquals(IEnumerable<T> other) => items.SetEquals(other);
+        private int ComputeHashCode()
+        {
+            var unorderedHash = new UnorderedHashCode();
+            foreach (var item in this)
+                unorderedHash.Add(item);
+            return unorderedHash.ToHashCode();
+        }
+        #endregion
     }
 }

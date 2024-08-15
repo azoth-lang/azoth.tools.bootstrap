@@ -1,5 +1,7 @@
 using System;
 using System.Numerics;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
@@ -46,7 +48,7 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     /// <remarks>It might be thought this should return the smallest integer type that contains
     /// the value. However, that would lead to unexpected behavior in some cases because small
     /// integer constants might produce small fixed size integers leading to overflow.</remarks>
-    public override DataType ToNonConstantType() => Int;
+    public override DataType ToNonConstValueType() => Int;
 
     public NumericType ToSmallestSignedIntegerType()
     {
@@ -83,6 +85,8 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
 
     public override int GetHashCode() => HashCode.Combine(Value);
     #endregion
+
+    public override IMaybeExpressionAntetype ToAntetype() => new IntegerConstValueAntetype(Value);
 
     public override string ToSourceCodeString()
         => throw new InvalidOperationException("Integer value type has no source code representation");

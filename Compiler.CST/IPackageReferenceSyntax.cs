@@ -3,17 +3,9 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
-public interface IPackageReferenceSyntax
+public interface IPackageReferenceSyntax : ISyntax
 {
     IdentifierName AliasOrName { get; }
     IPackageSymbols Package { get; }
     bool IsTrusted { get; }
-}
-
-
-public interface IPackageReferenceSyntax<out TPackage> : IPackageReferenceSyntax
-    where TPackage : IPackageSymbols
-{
-    new TPackage Package { get; }
-    IPackageSymbols IPackageReferenceSyntax.Package => Package;
 }

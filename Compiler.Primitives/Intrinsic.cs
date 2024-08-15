@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -8,7 +10,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 using static Azoth.Tools.Bootstrap.Compiler.Primitives.SymbolBuilder;
-using Return = Azoth.Tools.Bootstrap.Compiler.Types.Return;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 
@@ -16,12 +17,21 @@ public static class Intrinsic
 {
     public static readonly FixedSymbolTree SymbolTree = DefineIntrinsicSymbols();
 
+    public static readonly PackageSymbol Package = SymbolTree.Package;
+
     public static readonly UserTypeSymbol Promise = Find<UserTypeSymbol>("Promise");
 
     public static readonly IDeclaredUserType PromiseType = Promise.DeclaresType;
+    public static readonly IDeclaredAntetype PromiseAntetype = PromiseType.ToAntetype();
 
     public static CapabilityType PromiseOf(DataType type)
         => PromiseType.WithRead(FixedList.Create(type));
+    public static IMaybeAntetype PromiseOf(IMaybeExpressionAntetype antetype)
+    {
+        if (antetype.ToNonConstValueType() is not IAntetype knownAntetype)
+            return IAntetype.Unknown;
+        return PromiseAntetype.With(FixedList.Create(knownAntetype));
+    }
 
     public static readonly UserTypeSymbol RawHybridBoundedList
         = Find<UserTypeSymbol>("Raw_Hybrid_Bounded_List");
@@ -64,7 +74,7 @@ public static class Intrinsic
 
     private static FixedSymbolTree DefineIntrinsicSymbols()
     {
-        var intrinsicsPackage = new PackageSymbol("azoth.intrinsics");
+        var intrinsicsPackage = new PackageSymbol("azoth.compiler.intrinsics");
         var tree = new SymbolTreeBuilder(intrinsicsPackage);
 
         var intrinsicsNamespace = new LocalNamespaceSymbol(intrinsicsPackage, "intrinsics");
@@ -83,12 +93,12 @@ public static class Intrinsic
 
         // fn read_raw_utf8_bytes_line(bytes: mut Raw_Hybrid_Bounded_List[byte], start: size) -> size
         var readLine = Function(intrinsicsNamespace, "read_raw_utf8_bytes_line",
-            Params(DataType.Size, DataType.Size), Return.Size);
+            Params(DataType.Size, DataType.Size), ReturnType.Size);
         tree.Add(readLine);
 
         // fn ABORT_RAW_UTF8_BYTES(bytes: Raw_Hybrid_Bounded_List[byte], start: size, byte_count: size) -> never
         var abort = Function(intrinsicsNamespace, "ABORT_RAW_UTF8_BYTES",
-            Params(readBytesType, DataType.Size, DataType.Size), Return.Never);
+            Params(readBytesType, DataType.Size, DataType.Size), ReturnType.Never);
         tree.Add(abort);
 
         return tree.Build();
@@ -130,9 +140,9 @@ public static class Intrinsic
             isAbstract: false, isConst: false, "Raw_Hybrid_Bounded_List",
             GenericParameter.Independent(CapabilitySet.Aliasable, "F"), GenericParameter.Independent(CapabilitySet.Aliasable, "T"));
         var fixedType = classType.GenericParameterTypes[0];
-        var readClassParamType = new SelfParameter(false, classType.WithRead(classType.GenericParameterTypes));
+        var readClassParamType = new SelfParameterType(false, classType.WithRead(classType.GenericParameterTypes));
         var mutClassType = classType.WithMutate(classType.GenericParameterTypes);
-        var mutClassParamType = new SelfParameter(false, mutClassType);
+        var mutClassParamType = new SelfParameterType(false, mutClassType);
         var itemType = classType.GenericParameterTypes[1];
         var classSymbol = new UserTypeSymbol(@namespace, classType);
         tree.Add(classSymbol);
@@ -146,16 +156,16 @@ public static class Intrinsic
         tree.Add(getFixed);
 
         // published fn set_fixed(fixed: F);
-        var setFixed = new MethodSymbol(classSymbol, "set_fixed", mutClassParamType, Params(), Return.Void);
+        var setFixed = new MethodSymbol(classSymbol, "set_fixed", mutClassParamType, Params(), ReturnType.Void);
         tree.Add(setFixed);
 
         // published fn get_capacity() -> size;
-        var capacity = new MethodSymbol(classSymbol, "get_capacity", readClassParamType, Params(), Return.Size);
+        var capacity = new MethodSymbol(classSymbol, "get_capacity", readClassParamType, Params(), ReturnType.Size);
         tree.Add(capacity);
 
         // Given setters are not implemented, making this a function for now
         // published fn get_count() -> size
-        var count = new MethodSymbol(classSymbol, "get_count", readClassParamType, Params(), Return.Size);
+        var count = new MethodSymbol(classSymbol, "get_count", readClassParamType, Params(), ReturnType.Size);
         tree.Add(count);
 
         // published /* unsafe */ fn at(self, index: size) -> T
@@ -166,17 +176,17 @@ public static class Intrinsic
         // published /* unsafe */ fn set_at(mut self, index: size, T value)
         // TODO replace with at method returning a `ref var`
         var setAt = new MethodSymbol(classSymbol, "set_at", mutClassParamType,
-            Params(DataType.Size, itemType), Return.Void);
+            Params(DataType.Size, itemType), ReturnType.Void);
         tree.Add(setAt);
 
         // published fn add(mut self, value: T);
         var add = new MethodSymbol(classSymbol, "add", mutClassParamType,
-            Params(itemType), Return.Void);
+            Params(itemType), ReturnType.Void);
         tree.Add(add);
 
         // published fn shrink(mut self, count: size)
         var shrink = new MethodSymbol(classSymbol, "shrink", mutClassParamType,
-            Params(DataType.Size), Return.Void);
+            Params(DataType.Size), ReturnType.Void);
         tree.Add(shrink);
 
         return classType;

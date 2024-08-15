@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
+using System.Threading;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -14,9 +15,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
 {
-    private static readonly IFixedSet<BareReferenceType> AnyType
-        = Declared.AnyType.Instance.BareType.Yield().ToFixedSet<BareReferenceType>();
-    private static readonly Promise<IFixedSet<BareReferenceType>> AnyTypePromise = new(AnyType);
+    private static readonly IFixedSet<BareReferenceType> AnyTypeSet
+        = AnyType.Instance.BareType.Yield().ToFixedSet<BareReferenceType>();
 
     public static ObjectType CreateClass(
         IdentifierName containingPackage,
@@ -25,7 +25,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConst,
         string name)
         => new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true, name,
-            FixedList.Empty<GenericParameterType>(), AnyTypePromise);
+            FixedList.Empty<GenericParameter>(), AnyTypeSet);
 
     public static ObjectType CreateTrait(
         IdentifierName containingPackage,
@@ -33,7 +33,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConst,
         string name)
         => new(containingPackage, containingNamespace, isAbstract: true, isConst, isClass: false, name,
-            FixedList.Empty<GenericParameterType>(), AnyTypePromise);
+            FixedList.Empty<GenericParameter>(), AnyTypeSet);
 
     public static ObjectType CreateClass(
         IdentifierName containingPackage,
@@ -41,10 +41,10 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isAbstract,
         bool isConst,
         string name,
-        IFixedList<GenericParameterType> genericParameterTypes,
-        IPromise<IFixedSet<BareReferenceType>> superTypes)
+        IFixedList<GenericParameter> genericParameters,
+        IFixedSet<BareReferenceType> supertypes)
         => new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true,
-            StandardName.Create(name, genericParameterTypes.Count), genericParameterTypes, superTypes);
+            StandardName.Create(name, genericParameters.Count), genericParameters, supertypes);
 
     public static ObjectType CreateClass(
         IdentifierName containingPackage,
@@ -52,12 +52,12 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isAbstract,
         bool isConst,
         StandardName name,
-        IFixedList<GenericParameterType> genericParametersTypes,
-        IPromise<IFixedSet<BareReferenceType>> superTypes)
+        IFixedList<GenericParameter> genericParameters,
+        IFixedSet<BareReferenceType> supertypes)
     {
-        Requires.That(nameof(genericParametersTypes), name.GenericParameterCount == genericParametersTypes.Count, "Count must match name count");
+        Requires.That(name.GenericParameterCount == genericParameters.Count, nameof(genericParameters), "Count must match name count");
         return new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true, name,
-            genericParametersTypes, superTypes);
+            genericParameters, supertypes);
     }
 
     public static ObjectType CreateTrait(
@@ -65,13 +65,13 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         NamespaceName containingNamespace,
         bool isConst,
         StandardName name,
-        IFixedList<GenericParameterType> genericParametersTypes,
-        IPromise<IFixedSet<BareReferenceType>> superTypes)
+        IFixedList<GenericParameter> genericParameters,
+        IFixedSet<BareReferenceType> supertypes)
     {
-        Requires.That(nameof(genericParametersTypes), name.GenericParameterCount == genericParametersTypes.Count,
+        Requires.That(name.GenericParameterCount == genericParameters.Count, nameof(genericParameters),
             "Count must match name count");
         return new(containingPackage, containingNamespace, isAbstract: true, isConst, isClass: false, name,
-            genericParametersTypes, superTypes);
+            genericParameters, supertypes);
     }
 
     public static ObjectType CreateClass(
@@ -82,11 +82,8 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         string name,
         params GenericParameter[] genericParameters)
     {
-        var declaringTypePromise = new Promise<IDeclaredUserType>();
-        var genericParametersTypes = genericParameters
-            .Select(p => new GenericParameterType(declaringTypePromise, p)).ToFixedList();
         return new(containingPackage, containingNamespace, isAbstract, isConst, isClass: true,
-            StandardName.Create(name, genericParameters.Length), genericParametersTypes, AnyTypePromise);
+            StandardName.Create(name, genericParameters.Length), genericParameters.ToFixedList(), AnyTypeSet);
     }
 
     public static ObjectType CreateTrait(
@@ -96,11 +93,8 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         string name,
         params GenericParameter[] genericParameters)
     {
-        var declaringTypePromise = new Promise<IDeclaredUserType>();
-        var genericParametersTypes = genericParameters
-            .Select(p => new GenericParameterType(declaringTypePromise, p)).ToFixedList();
         return new(containingPackage, containingNamespace, isAbstract: true, isConst, isClass: false,
-            StandardName.Create(name, genericParameters.Length), genericParametersTypes, AnyTypePromise);
+            StandardName.Create(name, genericParameters.Length), genericParameters.ToFixedList(), AnyTypeSet);
     }
 
     private ObjectType(
@@ -110,18 +104,15 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         bool isConstType,
         bool isClass,
         StandardName name,
-        IFixedList<GenericParameterType> genericParametersTypes,
-        IPromise<IFixedSet<BareReferenceType>> supertypes)
-        : base(isConstType, isAbstract, isClass, genericParametersTypes)
+        IFixedList<GenericParameter> genericParameters,
+        IFixedSet<BareReferenceType> supertypes)
+        : base(isConstType, isAbstract, isClass, genericParameters)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
         Name = name;
-        this.supertypes = supertypes;
-        // Fulfill the declaring type promise so the parameters are associated to this type
-        var declaringTypePromise = genericParametersTypes.Select(t => t.DeclaringTypePromise)
-                                                         .Distinct().SingleOrDefault();
-        declaringTypePromise?.Fulfill(this);
+        Supertypes = supertypes;
+        GenericParameterTypes = GenericParameters.Select(p => new GenericParameterType(this, p)).ToFixedList();
     }
 
     public override IdentifierName ContainingPackage { get; }
@@ -130,15 +121,19 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
 
     public override StandardName Name { get; }
 
-    private readonly IPromise<IFixedSet<BareReferenceType>> supertypes;
-    public override IFixedSet<BareReferenceType> Supertypes => supertypes.Result;
+    public override IFixedSet<BareReferenceType> Supertypes { get; }
+    public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
+
+    private IDeclaredAntetype? antetype;
+
+    DeclaredType IDeclaredUserType.AsDeclaredType() => this;
 
     /// <summary>
     /// Make a version of this type for use as the default constructor parameter.
     /// </summary>
     /// <remarks>This is always `init mut` because the type is being initialized and can be mutated
     /// inside the constructor via field initializers.</remarks>
-    public ReferenceType<ObjectType> ToDefaultConstructorSelf()
+    public CapabilityType<ObjectType> ToDefaultConstructorSelf()
         => With(Capability.InitMutable, GenericParameterTypes);
 
     /// <summary>
@@ -146,7 +141,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     /// </summary>
     /// <remarks>This is always either `iso` or `const` depending on whether the type was declared
     /// with `const` because there are no parameters that could break the new objects isolation.</remarks>
-    public ReferenceType<ObjectType> ToDefaultConstructorReturn()
+    public CapabilityType<ObjectType> ToDefaultConstructorReturn()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Isolated, GenericParameterTypes);
 
     /// <summary>
@@ -154,7 +149,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     /// </summary>
     /// <remarks>The capability of the return type is restricted by the parameter types because the
     /// newly constructed object could contain references to them.</remarks>
-    public ReferenceType<ObjectType> ToConstructorReturn(ReferenceType selfParameterType, IEnumerable<Parameter> parameterTypes)
+    public CapabilityType<ObjectType> ToConstructorReturn(CapabilityType selfParameterType, IEnumerable<ParameterType> parameterTypes)
     {
         if (IsDeclaredConst) return With(Capability.Constant, GenericParameterTypes);
         // Read only self constructors cannot return `mut` or `iso`
@@ -163,13 +158,12 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         foreach (var parameterType in parameterTypes)
             switch (parameterType.Type)
             {
-                case ReferenceType when parameterType.IsLent:
-                case ReferenceType { IsConstantReference: true }:
-                case ReferenceType { IsIsolatedReference: true }:
-                case OptionalType { Referent: ReferenceType } when parameterType.IsLent:
-                case OptionalType { Referent: ReferenceType { IsConstantReference: true } }:
-                case OptionalType { Referent: ReferenceType { IsIsolatedReference: true } }:
-                case ValueType:
+                case CapabilityType when parameterType.IsLent:
+                case CapabilityType { IsConstantReference: true }:
+                case CapabilityType { IsIsolatedReference: true }:
+                case OptionalType { Referent: CapabilityType } when parameterType.IsLent:
+                case OptionalType { Referent: CapabilityType { IsConstantReference: true } }:
+                case OptionalType { Referent: CapabilityType { IsIsolatedReference: true } }:
                 case EmptyType:
                 case UnknownType:
                     continue;
@@ -183,25 +177,22 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     public override BareReferenceType<ObjectType> With(IFixedList<DataType> typeArguments)
         => BareType.Create(this, typeArguments);
 
-    public override ReferenceType<ObjectType> With(Capability capability, IFixedList<DataType> typeArguments)
+    public override CapabilityType<ObjectType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
     public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
     /// <summary>
-    /// Make a version of this type that is the default read reference capability for the type. That
-    /// is either read-only or constant.
-    /// </summary>
-    public override ReferenceType<ObjectType> WithRead(IFixedList<DataType> typeArguments)
-        => With(IsDeclaredConst ? Capability.Constant : Capability.Read, typeArguments);
-
-    /// <summary>
     /// Make a version of this type that is the default mutate reference capability for the type.
     /// For constant types, that isn't allowed and a constant reference is returned.
     /// </summary>
-    public ReferenceType<ObjectType> WithMutate(IFixedList<DataType> typeArguments)
+    public CapabilityType<ObjectType> WithMutate(IFixedList<DataType> typeArguments)
         => With(IsDeclaredConst ? Capability.Constant : Capability.Mutable, typeArguments);
+
+    public override IDeclaredAntetype ToAntetype()
+        // Lazy initialize to prevent evaluation of lazy supertypes when constructing ObjectType
+        => LazyInitializer.EnsureInitialized(ref antetype, this.ConstructDeclaredAntetype);
 
     #region Equals
     public override bool Equals(DeclaredType? other)
@@ -214,7 +205,9 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
             && IsAbstract == objectType.IsAbstract
             && IsDeclaredConst == objectType.IsDeclaredConst
             && Name == objectType.Name
-            && GenericParameters.ItemsEqual(objectType.GenericParameters);
+            && GenericParameters.Equals(objectType.GenericParameters);
+        // Supertypes and GenericParameterTypes are not considered because they are derived. Also,
+        // that prevents infinite recursion.
     }
 
     public bool Equals(IDeclaredUserType? other) => Equals(other as DeclaredType);

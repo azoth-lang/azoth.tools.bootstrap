@@ -10,22 +10,24 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class UserTypeSymbol : TypeSymbol
 {
     public override PackageSymbol Package { get; }
-    public override NamespaceSymbol ContainingSymbol { get; }
+    public override Symbol ContainingSymbol { get; }
     public override TypeSymbol? ContextTypeSymbol => null;
     public override StandardName Name { get; }
     public IDeclaredUserType DeclaresType { get; }
 
     public UserTypeSymbol(
-        NamespaceSymbol containingSymbol,
+        Symbol containingSymbol,
         IDeclaredUserType declaresType)
         : base(declaresType.Name)
     {
         // TODO check the declared type is in the containing namespace and package
-        Package = containingSymbol.Package;
+        Package = containingSymbol.Package ?? throw new ArgumentException("Must be a proper container for a type.", nameof(containingSymbol));
         ContainingSymbol = containingSymbol;
         Name = declaresType.Name;
         DeclaresType = declaresType;
     }
+
+    public override DeclaredType GetDeclaredType() => DeclaresType.AsDeclaredType();
 
     #region Equals
     public override bool Equals(Symbol? other)
@@ -35,7 +37,7 @@ public sealed class UserTypeSymbol : TypeSymbol
         return other is UserTypeSymbol otherType
                && ContainingSymbol == otherType.ContainingSymbol
                && Name == otherType.Name
-               && DeclaresType == otherType.DeclaresType;
+               && DeclaresType.Equals(otherType.DeclaresType); // Must use Equals because they are interface types
     }
 
     public override int GetHashCode()

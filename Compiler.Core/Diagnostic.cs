@@ -25,8 +25,8 @@ public class Diagnostic
         if (string.IsNullOrWhiteSpace(message))
             throw new ArgumentException("Can't be null or whitespace", nameof(message));
 
-        Requires.ValidEnum(nameof(level), level);
-        Requires.ValidEnum(nameof(phase), phase);
+        Requires.ValidEnum(level, nameof(level));
+        Requires.ValidEnum(phase, nameof(phase));
 
         File = file;
         Span = span;

@@ -1,4 +1,5 @@
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -24,10 +25,8 @@ public static class DataTypeExtensions
             (_, _) when target.Equals(source) => true,
             (UnknownType, _) or (_, UnknownType) or (_, NeverType)
                 => true,
-            (ValueType t, ValueType s)
+            (CapabilityType t, CapabilityType s)
                 => IsAssignableFrom(t, s),
-            (ReferenceType targetReference, ReferenceType sourceReference)
-                => IsAssignableFrom(targetReference, sourceReference),
             (OptionalType targetOptional, OptionalType sourceOptional)
                 => IsAssignableFrom(targetOptional.Referent, sourceOptional.Referent),
             (OptionalType targetOptional, _)
@@ -38,14 +37,7 @@ public static class DataTypeExtensions
         };
     }
 
-    public static bool IsAssignableFrom(this ValueType target, ValueType source)
-    {
-        if (!target.Capability.IsAssignableFrom(source.Capability)) return false;
-
-        return IsAssignableFrom(target.BareType, source.BareType);
-    }
-
-    public static bool IsAssignableFrom(this ReferenceType target, ReferenceType source)
+    public static bool IsAssignableFrom(this CapabilityType target, CapabilityType source)
     {
         if (!target.Capability.IsAssignableFrom(source.Capability)) return false;
 
@@ -58,20 +50,10 @@ public static class DataTypeExtensions
             && source.ContainingNamespace == NamespaceName.Global;
     }
 
-    public static bool IsAssignableFrom(this BareType target, bool targetAllowsWrite, BareType source)
-    {
-        return target switch
-        {
-            BareReferenceType t => t.IsAssignableFrom(targetAllowsWrite, source),
-            BareValueType t => t.IsAssignableFrom(source),
-            _ => throw ExhaustiveMatch.Failed(target)
-        };
-    }
-
     /// <remarks>We currently support implicit boxing, so any bare type with the correct supertype
     /// is assignable.</remarks>
     public static bool IsAssignableFrom(
-        this BareReferenceType target,
+        this BareType target,
         bool targetAllowsWrite,
         BareType source)
     {
@@ -81,8 +63,8 @@ public static class DataTypeExtensions
         if (target.AllowsVariance || target.HasIndependentTypeArguments)
         {
             var declaredType = target.DeclaredType;
-            var matchingDeclaredType = source.Supertypes.Prepend(source).Where(t => t.DeclaredType == declaredType);
-            foreach (var sourceType in matchingDeclaredType)
+            var matchingSourceTypes = source.Supertypes.Prepend(source).Where(t => t.DeclaredType == declaredType);
+            foreach (var sourceType in matchingSourceTypes)
                 if (IsAssignableFrom(declaredType, targetAllowsWrite, target.GenericTypeArguments, sourceType.GenericTypeArguments))
                     return true;
         }
@@ -90,31 +72,14 @@ public static class DataTypeExtensions
         return false;
     }
 
-    public static bool IsAssignableFrom(this BareValueType target, BareType source)
-    {
-        // Because a value type is never the supertype, we only need to check for equality.
-        if (source.Equals(target)) return true;
-
-        //if (target.AllowsVariance)
-        //{
-        //    var declaredType = target.DeclaredType;
-        //    var matchingDeclaredType = source.Supertypes.Prepend(source).Where(t => t.DeclaredType == declaredType);
-        //    foreach (var sourceType in matchingDeclaredType)
-        //        if (IsAssignableFrom(declaredType, targetAllowsWrite, target.GenericTypeArguments,
-        //                sourceType.GenericTypeArguments))
-        //            return true;
-        //}
-        return false;
-    }
-
     private static bool IsAssignableFrom(
-        DeclaredReferenceType declaredType,
+        DeclaredType declaredType,
         bool targetAllowsWrite,
         IFixedList<DataType> target,
         IFixedList<DataType> source)
     {
-        Requires.That(nameof(target), target.Count == declaredType.GenericParameters.Count, "count must match count of declaredType generic parameters");
-        Requires.That(nameof(source), source.Count == target.Count, "count must match count of target");
+        Requires.That(target.Count == declaredType.GenericParameters.Count, nameof(target), "count must match count of declaredType generic parameters");
+        Requires.That(source.Count == target.Count, nameof(source), "count must match count of target");
         for (int i = 0; i < declaredType.GenericParameters.Count; i++)
         {
             var from = source[i];
@@ -202,7 +167,7 @@ public static class DataTypeExtensions
         return IsAssignableFrom(target.Return, source.Return);
     }
 
-    public static bool IsAssignableFrom(this Parameter target, Parameter source)
+    public static bool IsAssignableFrom(this ParameterType target, ParameterType source)
     {
         // TODO add more flexibility in lent
         if (target.IsLent != source.IsLent) return false;
@@ -211,22 +176,29 @@ public static class DataTypeExtensions
         return source.Type.IsAssignableFrom(target.Type);
     }
 
-    public static bool IsAssignableFrom(this Return target, Return source)
+    public static bool IsAssignableFrom(this ReturnType target, ReturnType source)
         // Return types need to be more general in the target than the source.
         => target.Type.IsAssignableFrom(source.Type);
 
+    /// <summary>
+    /// Replace self viewpoint types using the given type as self.
+    /// </summary>
     public static DataType ReplaceSelfWith(this DataType type, DataType selfType)
     {
-        if (selfType is not ReferenceType selfReferenceType)
+        if (selfType is not CapabilityType selfReferenceType)
             return type;
         return type.ReplaceSelfWith(selfReferenceType.Capability);
     }
 
+    /// <summary>
+    /// Replace self viewpoint types using the given type as self.
+    /// </summary>
     public static DataType ReplaceSelfWith(this DataType type, Capability capability)
     {
         return type switch
         {
             SelfViewpointType t => t.Referent.ReplaceSelfWith(capability).AccessedVia(capability),
+            // TODO doesn't this need to apply to type arguments?
             //ReferenceType t => ReplaceSelfWith(t, capability),
             //OptionalType t => ReplaceSelfWith(t, capability),
             _ => type,
@@ -265,12 +237,12 @@ public static class DataTypeExtensions
     /// If this is a reference type or an optional reference type, the underlying reference type.
     /// Otherwise, <see langword="null"/>.
     /// </summary>
-    public static ReferenceType? UnderlyingReferenceType(this DataType type)
+    public static CapabilityType? UnderlyingReferenceType(this DataType type)
     {
         return type switch
         {
-            ReferenceType referenceType => referenceType,
-            OptionalType { Referent: ReferenceType referenceType } => referenceType,
+            CapabilityType { BareType: BareReferenceType } referenceType => referenceType,
+            OptionalType { Referent: CapabilityType { BareType: BareReferenceType } referenceType } => referenceType,
             _ => null
         };
     }
@@ -281,14 +253,14 @@ public static class DataTypeExtensions
     public static DataType? NumericOperatorCommonType(this DataType leftType, DataType rightType)
         => (leftType, rightType) switch
         {
+            (_, NeverType) => DataType.Never,
+            (NeverType, _) => DataType.Never,
             ({ IsFullyKnown: false }, _) => DataType.Unknown,
             (_, { IsFullyKnown: false }) => DataType.Unknown,
-            (NonEmptyType left, NeverType) => left.AsNumericType()?.Type,
-            (NeverType, NonEmptyType right) => right.AsNumericType()?.Type,
             (OptionalType { Referent: var left }, OptionalType { Referent: var right })
-                => left.NumericOperatorCommonType(right).ToOptional(),
-            (OptionalType { Referent: var left }, _) => left.NumericOperatorCommonType(rightType).ToOptional(),
-            (_, OptionalType { Referent: var right }) => leftType.NumericOperatorCommonType(right).ToOptional(),
+                => left.NumericOperatorCommonType(right)?.MakeOptional(),
+            (OptionalType { Referent: var left }, _) => left.NumericOperatorCommonType(rightType)?.MakeOptional(),
+            (_, OptionalType { Referent: var right }) => leftType.NumericOperatorCommonType(right)?.MakeOptional(),
             (NonEmptyType left, NonEmptyType right)
                 => left.AsNumericType()?.NumericOperatorCommonType(right.AsNumericType()),
             _ => null,

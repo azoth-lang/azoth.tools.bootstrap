@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -71,6 +72,15 @@ public class DotNetFrameworkTests
     }
 
     private string testField = "old";
+
+    [Fact]
+    public void SizeOfSpinLock()
+    {
+        unsafe
+        {
+            Assert.Equal(sizeof(int), sizeof(SpinLock));
+        }
+    }
 
     [Fact]
     public void CanPassFieldByRef()

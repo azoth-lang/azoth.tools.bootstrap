@@ -55,7 +55,7 @@ public class BoolConstValueTypeTests
     {
         var type = BoolConstValueType.False;
 
-        var nonConstant = type.ToNonConstantType();
+        var nonConstant = type.ToNonConstValueType();
 
         Assert.Same(DataType.Bool, nonConstant);
     }

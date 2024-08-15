@@ -21,7 +21,7 @@ public abstract class BareReferenceType : BareType
 
     public abstract override BareReferenceType With(IFixedList<DataType> typeArguments);
 
-    public abstract override ReferenceType With(Capability capability);
+    public abstract override CapabilityType With(Capability capability);
 }
 
 public sealed class BareReferenceType<TDeclared> : BareReferenceType
@@ -48,8 +48,8 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
     public override BareReferenceType<TDeclared> With(IFixedList<DataType> typeArguments)
         => new(DeclaredType, typeArguments);
 
-    public override ReferenceType<TDeclared> With(Capability capability)
-        => new(capability, this);
+    public override CapabilityType<TDeclared> With(Capability capability)
+        => CapabilityType<TDeclared>.Create(capability, this);
 
     #region Equality
     public override bool Equals(BareType? other)
@@ -58,7 +58,7 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
         if (ReferenceEquals(this, other)) return true;
         return other is BareReferenceType<TDeclared> otherType
                && DeclaredType == otherType.DeclaredType
-               && GenericTypeArguments.ItemsEqual(otherType.GenericTypeArguments);
+               && GenericTypeArguments.Equals(otherType.GenericTypeArguments);
     }
 
     public override int GetHashCode() => HashCode.Combine(DeclaredType, GenericTypeArguments);

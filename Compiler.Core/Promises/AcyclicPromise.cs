@@ -30,7 +30,7 @@ public sealed class AcyclicPromise<T> : IPromise<T>
     [DebuggerHidden]
     public void BeginFulfilling()
     {
-        Requires.That(nameof(state), state == PromiseState.Pending, "must be pending is " + state);
+        Requires.That(state == PromiseState.Pending, nameof(state), "must be pending is " + state);
         state = PromiseState.InProgress;
     }
 
@@ -58,7 +58,7 @@ public sealed class AcyclicPromise<T> : IPromise<T>
     [DebuggerHidden]
     public T Fulfill(T value)
     {
-        Requires.That(nameof(state), state == PromiseState.InProgress, "must be in progress is " + state);
+        Requires.That(state == PromiseState.InProgress, nameof(state), "must be in progress is " + state);
         this.value = value;
         state = PromiseState.Fulfilled;
         return value;

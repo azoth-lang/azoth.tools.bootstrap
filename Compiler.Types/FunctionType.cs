@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -10,15 +12,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class FunctionType : NonEmptyType
 {
-    public FunctionType(IFixedList<Parameter> parameters, Return @return)
+    public FunctionType(IEnumerable<ParameterType> parameters, ReturnType @return)
     {
-        Parameters = parameters;
+        Parameters = parameters.ToFixedList();
         Return = @return;
-        IsFullyKnown = parameters.All(p => p.IsFullyKnown) && @return.IsFullyKnown;
+        IsFullyKnown = Parameters.All(p => p.IsFullyKnown) && @return.IsFullyKnown;
     }
 
-    public IFixedList<Parameter> Parameters { get; }
-    public Return Return { get; }
+    public int Arity => Parameters.Count;
+    public IFixedList<ParameterType> Parameters { get; }
+    public ReturnType Return { get; }
 
     public override bool IsFullyKnown { get; }
 
@@ -28,12 +31,25 @@ public sealed class FunctionType : NonEmptyType
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is FunctionType otherType
-               && Parameters.ItemsEqual(otherType.Parameters)
+               && Parameters.Equals(otherType.Parameters)
                && Return == otherType.Return;
     }
 
     public override int GetHashCode() => HashCode.Combine(Parameters, Return);
     #endregion
+
+    public override IMaybeExpressionAntetype ToAntetype()
+    {
+        var parameters = Parameters.Select(p => p.Type.ToAntetype()).OfType<INonVoidAntetype>().ToFixedList();
+        if (parameters.Count != Parameters.Count)
+            // Not all parameters are known and non-void
+            return IAntetype.Unknown;
+
+        if (Return.Type.ToAntetype() is not IAntetype returnAntetype)
+            return IAntetype.Unknown;
+
+        return new FunctionAntetype(parameters, returnAntetype);
+    }
 
     public override string ToSourceCodeString()
         => $"({string.Join(", ", Parameters.Select(t => t.ToSourceCodeString()))}) -> {Return.ToSourceCodeString()}";

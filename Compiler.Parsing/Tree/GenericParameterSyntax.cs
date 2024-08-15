@@ -1,8 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -13,7 +11,6 @@ internal class GenericParameterSyntax : Syntax, IGenericParameterSyntax
     public IdentifierName Name { get; }
     public ParameterIndependence Independence { get; }
     public ParameterVariance Variance { get; }
-    public Promise<GenericParameterTypeSymbol> Symbol { get; } = new();
 
     public GenericParameterSyntax(
         TextSpan span,

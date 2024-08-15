@@ -9,7 +9,7 @@ public static class PseudotypeExtensions
         return (target, source) switch
         {
             (DataType targetType, DataType sourceType) => DataTypeExtensions.IsAssignableFrom(targetType, sourceType),
-            (CapabilityTypeConstraint targetType, ReferenceType sourceType) => targetType.IsAssignableFrom(sourceType),
+            (CapabilityTypeConstraint targetType, CapabilityType sourceType) => targetType.IsAssignableFrom(sourceType),
             (CapabilityTypeConstraint targetType, CapabilityTypeConstraint sourceType) => targetType.IsAssignableFrom(sourceType),
             _ => false,
         };
@@ -19,14 +19,14 @@ public static class PseudotypeExtensions
     {
         return source switch
         {
-            ReferenceType objectType => target.IsAssignableFrom(objectType),
+            CapabilityType objectType => target.IsAssignableFrom(objectType),
             CapabilityTypeConstraint objectTypeConstraint => target.IsAssignableFrom(objectTypeConstraint),
             DataType _ => false,
             _ => throw ExhaustiveMatch.Failed(source),
         };
     }
 
-    public static bool IsAssignableFrom(this CapabilityTypeConstraint target, ReferenceType source)
+    public static bool IsAssignableFrom(this CapabilityTypeConstraint target, CapabilityType source)
         => target.BareType.IsAssignableFrom(target.Capability.AnyCapabilityAllowsWrite, source.BareType)
            && target.Capability.IsAssignableFrom(source.Capability);
 
@@ -34,7 +34,7 @@ public static class PseudotypeExtensions
         => target.BareType.IsAssignableFrom(target.Capability.AnyCapabilityAllowsWrite, source.BareType)
            && target.Capability.IsAssignableFrom(source.Capability);
 
-    public static bool IsAssignableFrom(this ReferenceType target, Pseudotype source)
+    public static bool IsAssignableFrom(this CapabilityType target, Pseudotype source)
     {
         return source switch
         {

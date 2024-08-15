@@ -15,8 +15,5 @@ public class RecursiveDescentParser
         Tokens = tokens;
     }
 
-    protected void Add(Diagnostic diagnostic)
-    {
-        Tokens.Context.Diagnostics.Add(diagnostic);
-    }
+    protected void Add(Diagnostic diagnostic) => Tokens.Context.Diagnostics.Add(diagnostic);
 }

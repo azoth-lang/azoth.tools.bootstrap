@@ -23,12 +23,13 @@ public partial class Parser
             Add(ParseError.LentVarNotAllowed(File, TextSpan.Covering(lentBinding!.Span, mutableBinding!.Span)));
         var identifier = Tokens.RequiredToken<IIdentifierOrUnderscoreToken>();
         var name = identifier.Value;
+        var nameSpan = identifier.Span;
         Tokens.Expect<IColonToken>();
         var type = ParseType();
         IExpressionSyntax? defaultValue = null;
         if (Tokens.Accept<IEqualsToken>()) defaultValue = ParseExpression();
         var span = TextSpan.Covering(lentBinding?.Span, mutableBinding?.Span, type.Span, defaultValue?.Span);
-        return new NamedParameterSyntax(span, isMutableBinding, isLentBinding, name, type, defaultValue);
+        return new NamedParameterSyntax(span, isMutableBinding, isLentBinding, nameSpan, name, type, defaultValue);
     }
 
     public IParameterSyntax ParseMethodParameter()

@@ -1,5 +1,8 @@
 using System;
+using System.Diagnostics;
 using System.Numerics;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -27,7 +30,7 @@ public sealed class FixedSizeIntegerType : IntegerType
 
     public override BareValueType<FixedSizeIntegerType> BareType { get; }
 
-    public override ValueType<FixedSizeIntegerType> Type { get; }
+    public override CapabilityType<FixedSizeIntegerType> Type { get; }
 
     private FixedSizeIntegerType(SpecialTypeName name, int bits)
         : base(name, bits < 0)
@@ -56,6 +59,8 @@ public sealed class FixedSizeIntegerType : IntegerType
     public IntegerType WithSign()
     {
         if (IsSigned) return this;
+        // TODO this implementation doesn't match the description in the comment, but the comment
+        // sounds correct.
         if (this == Byte) return Int32;
         return Int;
     }
@@ -66,9 +71,19 @@ public sealed class FixedSizeIntegerType : IntegerType
         return BareType;
     }
 
-    public override ValueType<FixedSizeIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
+    public override CapabilityType<FixedSizeIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override ValueType<FixedSizeIntegerType> With(Capability capability)
+    public override CapabilityType<FixedSizeIntegerType> With(Capability capability)
         => BareType.With(capability);
+
+    public override IDeclaredAntetype ToAntetype()
+        => Bits switch
+        {
+            8 => IsSigned ? IAntetype.Int8 : IAntetype.Byte,
+            16 => IsSigned ? IAntetype.Int16 : IAntetype.UInt16,
+            32 => IsSigned ? IAntetype.Int32 : IAntetype.UInt32,
+            64 => IsSigned ? IAntetype.Int64 : IAntetype.UInt64,
+            _ => throw new UnreachableException("Bits not an expected value"),
+        };
 }

@@ -4,19 +4,26 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-public sealed class FieldSymbol : NamedBindingSymbol, IFieldSymbol
+public sealed class FieldSymbol : Symbol
 {
+    public override IdentifierName Name { get; }
+    public DataType Type { get; }
     public override UserTypeSymbol ContainingSymbol { get; }
     public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
+    public override PackageSymbol Package { get; }
+    public bool IsMutableBinding { get; }
 
     public FieldSymbol(
         UserTypeSymbol containingSymbol,
         IdentifierName name,
         bool isMutableBinding,
         DataType dataType)
-        : base(containingSymbol, isMutableBinding, false, name, dataType)
     {
+        Name = name;
+        Type = dataType;
+        Package = containingSymbol.Package ?? throw new ArgumentNullException(nameof(containingSymbol));
         ContainingSymbol = containingSymbol;
+        IsMutableBinding = isMutableBinding;
     }
 
     #region Equality

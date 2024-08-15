@@ -10,20 +10,20 @@ public static class OtherSemanticError
 {
     public static Diagnostic CantRebindMutableBinding(CodeFile file, TextSpan span)
     {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             6001, "Variable binding can't rebind previous mutable variable binding");
     }
 
     public static Diagnostic CantRebindAsMutableBinding(CodeFile file, TextSpan span)
     {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             6002, "Mutable variable binding can't rebind previous variable binding");
     }
 
     public static Diagnostic CantShadow(CodeFile file, TextSpan bindingSpan, TextSpan useSpan)
     {
         // TODO that use span needs converted to a line and column
-        return new(file, bindingSpan, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+        return new(file, bindingSpan, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             6003, $"Variable binding can't shadow. Shadowed binding used at {useSpan}");
     }
 
@@ -51,11 +51,12 @@ public static class OtherSemanticError
             6008, "Can't use `self` outside of a method or constructor");
     }
 
-    public static Diagnostic ResultStatementInBody(CodeFile file, TextSpan span)
-    {
-        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            6009, "Result statement (i.e. `=> ...;`) cannot be used in the body of a function, or method, etc.");
-    }
+    // TODO error reported by parser and statement dropped, perhaps should be a semantic error
+    //public static Diagnostic ResultStatementInBody(CodeFile file, TextSpan span)
+    //{
+    //    return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
+    //        6009, "Result statement (i.e. `=> ...;`) cannot be used in the body of a function, or method, etc.");
+    //}
 
     public static Diagnostic StatementAfterResult(CodeFile file, TextSpan span)
     {
@@ -81,19 +82,19 @@ public static class OtherSemanticError
             6013, "Constructor or initializer `self` parameter cannot be `lent`");
     }
 
-    public static Diagnostic CircularDefinition(CodeFile file, TextSpan span, ITypeDeclarationSyntax type)
+    public static Diagnostic CircularDefinition(CodeFile file, TextSpan span, ITypeDefinitionSyntax type)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6014, $"Declaration of type `{type.ContainingNamespaceName}.{type.Name}` is part of a circular definition");
     }
 
-    public static Diagnostic BaseTypeMustBeClass(CodeFile file, StandardName className, ISupertypeNameSyntax baseTypeName)
+    public static Diagnostic BaseTypeMustBeClass(CodeFile file, StandardName className, IStandardTypeNameSyntax baseTypeName)
     {
         return new(file, baseTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6015, $"Class `{className}` cannot have base type `{baseTypeName}` because it is not a class");
     }
 
-    public static Diagnostic SupertypeMustBeClassOrTrait(CodeFile file, StandardName typeName, ISupertypeNameSyntax superTypeName)
+    public static Diagnostic SupertypeMustBeClassOrTrait(CodeFile file, StandardName typeName, IStandardTypeNameSyntax superTypeName)
     {
         return new(file, superTypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6016, $"Type `{typeName}` cannot have super type `{superTypeName}` because it is not a trait or class");
@@ -115,5 +116,17 @@ public static class OtherSemanticError
     {
         return new(file, inExpression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6018, $"`foreach` cannot operate on value of type `{type.ToILString()}` because its iterator does not have a `next()` method.");
+    }
+
+    public static Diagnostic CircularDefinitionInSupertype(CodeFile file, IStandardTypeNameSyntax supertypeName)
+    {
+        return new(file, supertypeName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            6019, $"Circular definition found when trying to evaluate supertype `{supertypeName}`.");
+    }
+
+    public static Diagnostic CannotReturnFromFieldInitializer(CodeFile file, IReturnExpressionSyntax returnExpression)
+    {
+        return new(file, returnExpression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            6020, "Cannot return from a field initializer.");
     }
 }

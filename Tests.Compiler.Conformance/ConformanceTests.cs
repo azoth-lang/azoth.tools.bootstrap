@@ -8,9 +8,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Compiler.API;
-using Azoth.Tools.Bootstrap.Compiler.AST;
-using Azoth.Tools.Bootstrap.Compiler.AST.Interpreter;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Semantics;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 using Azoth.Tools.Bootstrap.Framework;
 using Azoth.Tools.Bootstrap.Tests.Conformance.Helpers;
 using MoreLinq;
@@ -54,20 +54,18 @@ public partial class ConformanceTests
         var code = codeFile.Code.Text;
         var compiler = new AzothCompiler()
         {
-            SaveLivenessAnalysis = true,
             SaveReachabilityGraphs = true,
         };
         var references = new List<PackageReference>();
 
         // Reference Standard Library
         var supportPackage = CompileSupportPackage(compiler);
-        references.Add(new PackageReference(TestsSupportPackage.Name, supportPackage, true));
+        references.Add(new PackageReference(TestsSupportPackage.Name, supportPackage.PackageSymbols, true));
 
         try
         {
             // Analyze
-            var package = compiler.CompilePackage("testPackage", codeFile.Yield(),
-                Enumerable.Empty<CodeFile>(), references);
+            var package = compiler.CompilePackage("testPackage", codeFile.Yield(), [], references);
 
             // Check for compiler errors
             Assert.NotNull(package.Diagnostics);
@@ -87,7 +85,7 @@ public partial class ConformanceTests
             //packageIL.Position = 0;
 
             // Execute and check results
-            var process = Execute(package);
+            var process = Execute(package, supportPackage);
             //var process = Execute(packageIL, stdLibIL);
 
             await process.WaitForExitAsync();
@@ -108,7 +106,7 @@ public partial class ConformanceTests
         }
     }
 
-    private Package CompileSupportPackage(AzothCompiler compiler)
+    private IPackageNode CompileSupportPackage(AzothCompiler compiler)
     {
         try
         {
@@ -116,8 +114,7 @@ public partial class ConformanceTests
             var sourcePaths = CodeFiles.GetIn(sourceDir);
             var rootNamespace = FixedList.Empty<string>();
             var codeFiles = sourcePaths.Select(p => LoadCode(p, sourceDir, rootNamespace)).ToList();
-            var package = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles,
-                Enumerable.Empty<CodeFile>(), Enumerable.Empty<PackageReference>());
+            var package = compiler.CompilePackage(TestsSupportPackage.Name, codeFiles, [], []);
             if (package.Diagnostics.Any(d => d.Level >= DiagnosticLevel.CompilationError))
                 ReportSupportCompilationErrors(package.Diagnostics);
             return package;
@@ -129,7 +126,7 @@ public partial class ConformanceTests
         }
     }
 
-    private void ReportSupportCompilationErrors(IFixedList<Diagnostic> diagnostics)
+    private void ReportSupportCompilationErrors(Diagnostics diagnostics)
     {
         testOutput.WriteLine("Test Support Package Compiler Errors:");
         foreach (var diagnostic in diagnostics)
@@ -156,7 +153,7 @@ public partial class ConformanceTests
         TestCase testCase,
         CodeFile codeFile,
         string code,
-        IFixedList<Diagnostic> diagnostics)
+        Diagnostics diagnostics)
     {
         // Check for compiler errors
         var expectCompileErrors = ExpectCompileErrors(code);
@@ -204,7 +201,7 @@ public partial class ConformanceTests
             }
         }
 
-        if (expectCompileErrors && !errorDiagnostics.Any())
+        if (expectCompileErrors && errorDiagnostics.IsEmpty())
             errors.AppendLine("Expected compilation errors and there were none");
 
         Assert.True(errors.Length == 0, errors.ToString().TrimEnd());
@@ -231,10 +228,10 @@ public partial class ConformanceTests
         }
     }
 
-    private static InterpreterProcess Execute(Package package)
+    private static InterpreterProcess Execute(IPackageNode package, IPackageNode supportPackage)
     {
         var interpreter = new AzothTreeInterpreter();
-        return interpreter.Execute(package);
+        return interpreter.Execute(package, [supportPackage]);
     }
 
     private static int ExpectedExitCode(string code)

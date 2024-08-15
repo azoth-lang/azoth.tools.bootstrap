@@ -1,16 +1,10 @@
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
-using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
-using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -24,10 +18,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IBodyOrBlockSyntax),
     typeof(IElseClauseSyntax),
     typeof(IBindingSyntax),
-    typeof(IDeclarationSyntax),
-    typeof(ITypeDeclarationSyntax),
+    typeof(IDefinitionSyntax),
+    typeof(ITypeDefinitionSyntax),
     typeof(IGenericParameterSyntax),
-    typeof(ISupertypeNameSyntax),
     typeof(IAttributeSyntax),
     typeof(ICapabilityConstraintSyntax),
     typeof(IParameterSyntax),
@@ -37,7 +30,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
     typeof(IReturnTypeSyntax),
     typeof(IStatementSyntax),
     typeof(IPatternSyntax),
-    typeof(IExpressionSyntax))]
+    typeof(IExpressionSyntax),
+    typeof(IInstanceExpressionSyntax))]
 public partial interface IConcreteSyntax
 {
     TextSpan Span { get; }
@@ -47,9 +41,9 @@ public partial interface ICompilationUnitSyntax : IConcreteSyntax
 {
     CodeFile File { get; }
     NamespaceName ImplicitNamespaceName { get; }
-    IFixedList<Diagnostic> Diagnostics { get; }
+    Diagnostics Diagnostics { get; }
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
-    IFixedList<INonMemberDeclarationSyntax> Declarations { get; }
+    IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
 }
 
 public partial interface IUsingDirectiveSyntax : IConcreteSyntax
@@ -77,16 +71,14 @@ public partial interface IElseClauseSyntax : IConcreteSyntax
     typeof(IBlockExpressionSyntax))]
 public partial interface IBlockOrResultSyntax : IElseClauseSyntax
 {
-    IPromise<DataType?> DataType { get; }
 }
 
 [Closed(
     typeof(ILocalBindingSyntax),
-    typeof(IFieldDeclarationSyntax))]
+    typeof(IFieldDefinitionSyntax))]
 public partial interface IBindingSyntax : IConcreteSyntax
 {
     bool IsMutableBinding { get; }
-    IPromise<BindingSymbol> Symbol { get; }
 }
 
 [Closed(
@@ -96,139 +88,126 @@ public partial interface IBindingSyntax : IConcreteSyntax
     typeof(IForeachExpressionSyntax))]
 public partial interface ILocalBindingSyntax : IBindingSyntax
 {
-    new IPromise<NamedBindingSymbol> Symbol { get; }
-    IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
+    TextSpan NameSpan { get; }
 }
 
 [Closed(
-    typeof(IEntityDeclarationSyntax),
-    typeof(INonMemberDeclarationSyntax))]
-public partial interface IDeclarationSyntax : IHasContainingLexicalScope, IConcreteSyntax
+    typeof(IEntityDefinitionSyntax),
+    typeof(INonMemberDefinitionSyntax))]
+public partial interface IDefinitionSyntax : IConcreteSyntax
 {
     CodeFile File { get; }
     TypeName? Name { get; }
     TextSpan NameSpan { get; }
-    IPromise<Symbol> Symbol { get; }
 }
 
 [Closed(
-    typeof(IInvocableDeclarationSyntax),
-    typeof(INonMemberEntityDeclarationSyntax),
-    typeof(ITypeMemberDeclarationSyntax))]
-public partial interface IEntityDeclarationSyntax : IDeclarationSyntax
+    typeof(IInvocableDefinitionSyntax),
+    typeof(INonMemberEntityDefinitionSyntax),
+    typeof(ITypeMemberDefinitionSyntax))]
+public partial interface IEntityDefinitionSyntax : IDefinitionSyntax
 {
     IAccessModifierToken? AccessModifier { get; }
 }
 
 [Closed(
-    typeof(IConcreteInvocableDeclarationSyntax),
-    typeof(IMethodDeclarationSyntax))]
-public partial interface IInvocableDeclarationSyntax : IEntityDeclarationSyntax
+    typeof(IConcreteInvocableDefinitionSyntax),
+    typeof(IMethodDefinitionSyntax))]
+public partial interface IInvocableDefinitionSyntax : IEntityDefinitionSyntax
 {
     IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
-    new IPromise<InvocableSymbol> Symbol { get; }
-    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
 }
 
 [Closed(
-    typeof(IFunctionDeclarationSyntax),
-    typeof(IConcreteMethodDeclarationSyntax),
-    typeof(IConstructorDeclarationSyntax),
-    typeof(IInitializerDeclarationSyntax),
-    typeof(IAssociatedFunctionDeclarationSyntax))]
-public partial interface IConcreteInvocableDeclarationSyntax : IInvocableDeclarationSyntax
+    typeof(IFunctionDefinitionSyntax),
+    typeof(IConcreteMethodDefinitionSyntax),
+    typeof(IConstructorDefinitionSyntax),
+    typeof(IInitializerDefinitionSyntax),
+    typeof(IAssociatedFunctionDefinitionSyntax))]
+public partial interface IConcreteInvocableDefinitionSyntax : IInvocableDefinitionSyntax
 {
     IBodySyntax Body { get; }
 }
 
 [Closed(
-    typeof(INamespaceDeclarationSyntax),
-    typeof(INonMemberEntityDeclarationSyntax))]
-public partial interface INonMemberDeclarationSyntax : IDeclarationSyntax
+    typeof(INamespaceDefinitionSyntax),
+    typeof(INonMemberEntityDefinitionSyntax))]
+public partial interface INonMemberDefinitionSyntax : IDefinitionSyntax
 {
     NamespaceName ContainingNamespaceName { get; }
 }
 
-public partial interface INamespaceDeclarationSyntax : INonMemberDeclarationSyntax
+public partial interface INamespaceDefinitionSyntax : INonMemberDefinitionSyntax
 {
     bool IsGlobalQualified { get; }
     NamespaceName DeclaredNames { get; }
     NamespaceName FullName { get; }
-    new Promise<NamespaceSymbol> Symbol { get; }
-    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
-    IFixedList<INonMemberDeclarationSyntax> Declarations { get; }
+    IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
+}
+
+public partial interface IFunctionDefinitionSyntax : INonMemberEntityDefinitionSyntax, IConcreteInvocableDefinitionSyntax
+{
+    IFixedList<IAttributeSyntax> Attributes { get; }
+    new IdentifierName Name { get; }
+    TypeName INonMemberEntityDefinitionSyntax.Name => Name;
+    TypeName? IDefinitionSyntax.Name => Name;
+    new IFixedList<INamedParameterSyntax> Parameters { get; }
+    IReturnSyntax? Return { get; }
 }
 
 [Closed(
-    typeof(ITypeDeclarationSyntax),
-    typeof(IFunctionDeclarationSyntax))]
-public partial interface INonMemberEntityDeclarationSyntax : IEntityDeclarationSyntax, INonMemberDeclarationSyntax
+    typeof(IFunctionDefinitionSyntax),
+    typeof(ITypeDefinitionSyntax))]
+public partial interface INonMemberEntityDefinitionSyntax : IEntityDefinitionSyntax, INonMemberDefinitionSyntax
 {
     new TypeName Name { get; }
-    TypeName? IDeclarationSyntax.Name => Name;
+    TypeName? IDefinitionSyntax.Name => Name;
 }
 
 [Closed(
-    typeof(IClassOrStructDeclarationSyntax),
-    typeof(ITraitDeclarationSyntax))]
-public partial interface ITypeDeclarationSyntax : IConcreteSyntax, INonMemberEntityDeclarationSyntax, IClassMemberDeclarationSyntax, ITraitMemberDeclarationSyntax, IStructMemberDeclarationSyntax
+    typeof(IClassOrStructDefinitionSyntax),
+    typeof(ITraitDefinitionSyntax))]
+public partial interface ITypeDefinitionSyntax : IConcreteSyntax, INonMemberEntityDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax
 {
     IConstKeywordToken? ConstModifier { get; }
     bool IsConst { get; }
     IMoveKeywordToken? MoveModifier { get; }
     bool IsMove { get; }
     new StandardName Name { get; }
-    TypeName INonMemberEntityDeclarationSyntax.Name => Name;
-    TypeName? IDeclarationSyntax.Name => Name;
+    TypeName INonMemberEntityDefinitionSyntax.Name => Name;
+    TypeName? IDefinitionSyntax.Name => Name;
     IFixedList<IGenericParameterSyntax> GenericParameters { get; }
-    new AcyclicPromise<UserTypeSymbol> Symbol { get; }
-    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
-    IFixedList<ISupertypeNameSyntax> SupertypeNames { get; }
-    IFixedList<ITypeMemberDeclarationSyntax> Members { get; }
+    IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; }
+    IFixedList<ITypeMemberDefinitionSyntax> Members { get; }
 }
 
 [Closed(
-    typeof(IClassDeclarationSyntax),
-    typeof(IStructDeclarationSyntax))]
-public partial interface IClassOrStructDeclarationSyntax : ITypeDeclarationSyntax
+    typeof(IClassDefinitionSyntax),
+    typeof(IStructDefinitionSyntax))]
+public partial interface IClassOrStructDefinitionSyntax : ITypeDefinitionSyntax
 {
 }
 
-public partial interface IClassDeclarationSyntax : IClassOrStructDeclarationSyntax
+public partial interface IClassDefinitionSyntax : IClassOrStructDefinitionSyntax
 {
     IAbstractKeywordToken? AbstractModifier { get; }
     bool IsAbstract { get; }
-    ISupertypeNameSyntax? BaseTypeName { get; }
-    ConstructorSymbol? DefaultConstructorSymbol { get; }
-    new IFixedList<IClassMemberDeclarationSyntax> Members { get; }
-    IFixedList<ITypeMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => Members;
+    IStandardTypeNameSyntax? BaseTypeName { get; }
+    new IFixedList<IClassMemberDefinitionSyntax> Members { get; }
+    IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 }
 
-public partial interface IStructDeclarationSyntax : IClassOrStructDeclarationSyntax
+public partial interface IStructDefinitionSyntax : IClassOrStructDefinitionSyntax
 {
-    InitializerSymbol? DefaultInitializerSymbol { get; }
-    new IFixedList<IStructMemberDeclarationSyntax> Members { get; }
-    IFixedList<ITypeMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => Members;
+    new IFixedList<IStructMemberDefinitionSyntax> Members { get; }
+    IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 }
 
-public partial interface ITraitDeclarationSyntax : ITypeDeclarationSyntax
+public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
 {
-    new IFixedList<ITraitMemberDeclarationSyntax> Members { get; }
-    IFixedList<ITypeMemberDeclarationSyntax> ITypeDeclarationSyntax.Members => Members;
-}
-
-public partial interface IFunctionDeclarationSyntax : INonMemberEntityDeclarationSyntax, IConcreteInvocableDeclarationSyntax
-{
-    IFixedList<IAttributeSyntax> Attributes { get; }
-    new IdentifierName Name { get; }
-    TypeName INonMemberEntityDeclarationSyntax.Name => Name;
-    TypeName? IDeclarationSyntax.Name => Name;
-    new IFixedList<INamedParameterSyntax> Parameters { get; }
-    IReturnSyntax? Return { get; }
-    new AcyclicPromise<FunctionSymbol> Symbol { get; }
-    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
-    IPromise<InvocableSymbol> IInvocableDeclarationSyntax.Symbol => Symbol;
+    new IFixedList<ITraitMemberDefinitionSyntax> Members { get; }
+    IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 }
 
 public partial interface IGenericParameterSyntax : IConcreteSyntax
@@ -237,165 +216,146 @@ public partial interface IGenericParameterSyntax : IConcreteSyntax
     IdentifierName Name { get; }
     ParameterIndependence Independence { get; }
     ParameterVariance Variance { get; }
-    Promise<GenericParameterTypeSymbol> Symbol { get; }
-}
-
-public partial interface ISupertypeNameSyntax : IHasContainingLexicalScope, IConcreteSyntax
-{
-    TypeName Name { get; }
-    IFixedList<ITypeSyntax> TypeArguments { get; }
-    Promise<UserTypeSymbol?> ReferencedSymbol { get; }
 }
 
 [Closed(
-    typeof(IClassMemberDeclarationSyntax),
-    typeof(ITraitMemberDeclarationSyntax),
-    typeof(IStructMemberDeclarationSyntax),
-    typeof(IAlwaysTypeMemberDeclarationSyntax))]
-public partial interface ITypeMemberDeclarationSyntax : IEntityDeclarationSyntax
+    typeof(IClassMemberDefinitionSyntax),
+    typeof(ITraitMemberDefinitionSyntax),
+    typeof(IStructMemberDefinitionSyntax),
+    typeof(IAlwaysTypeMemberDefinitionSyntax))]
+public partial interface ITypeMemberDefinitionSyntax : IEntityDefinitionSyntax
 {
-    ITypeDeclarationSyntax? DeclaringType { get; }
+    ITypeDefinitionSyntax? DefiningType { get; }
 }
 
 [Closed(
-    typeof(ITypeDeclarationSyntax),
-    typeof(IMethodDeclarationSyntax),
-    typeof(IConstructorDeclarationSyntax),
-    typeof(IFieldDeclarationSyntax),
-    typeof(IAssociatedFunctionDeclarationSyntax))]
-public partial interface IClassMemberDeclarationSyntax : ITypeMemberDeclarationSyntax
+    typeof(ITypeDefinitionSyntax),
+    typeof(IMethodDefinitionSyntax),
+    typeof(IConstructorDefinitionSyntax),
+    typeof(IFieldDefinitionSyntax),
+    typeof(IAssociatedFunctionDefinitionSyntax))]
+public partial interface IClassMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
 {
 }
 
 [Closed(
-    typeof(ITypeDeclarationSyntax),
-    typeof(IMethodDeclarationSyntax),
-    typeof(IAssociatedFunctionDeclarationSyntax))]
-public partial interface ITraitMemberDeclarationSyntax : ITypeMemberDeclarationSyntax
+    typeof(ITypeDefinitionSyntax),
+    typeof(IMethodDefinitionSyntax),
+    typeof(IAssociatedFunctionDefinitionSyntax))]
+public partial interface ITraitMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
 {
 }
 
 [Closed(
-    typeof(ITypeDeclarationSyntax),
-    typeof(IConcreteMethodDeclarationSyntax),
-    typeof(IInitializerDeclarationSyntax),
-    typeof(IFieldDeclarationSyntax),
-    typeof(IAssociatedFunctionDeclarationSyntax))]
-public partial interface IStructMemberDeclarationSyntax : ITypeMemberDeclarationSyntax
+    typeof(ITypeDefinitionSyntax),
+    typeof(IConcreteMethodDefinitionSyntax),
+    typeof(IInitializerDefinitionSyntax),
+    typeof(IFieldDefinitionSyntax),
+    typeof(IAssociatedFunctionDefinitionSyntax))]
+public partial interface IStructMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
 {
 }
 
 [Closed(
-    typeof(IMethodDeclarationSyntax),
-    typeof(IFieldDeclarationSyntax),
-    typeof(IAssociatedFunctionDeclarationSyntax))]
-public partial interface IAlwaysTypeMemberDeclarationSyntax : ITypeMemberDeclarationSyntax
+    typeof(IMethodDefinitionSyntax),
+    typeof(IConstructorDefinitionSyntax),
+    typeof(IInitializerDefinitionSyntax),
+    typeof(IFieldDefinitionSyntax),
+    typeof(IAssociatedFunctionDefinitionSyntax))]
+public partial interface IAlwaysTypeMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
 {
-    new ITypeDeclarationSyntax DeclaringType { get; }
-    ITypeDeclarationSyntax? ITypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
+    new ITypeDefinitionSyntax DefiningType { get; }
+    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DefiningType => DefiningType;
 }
 
 [Closed(
-    typeof(IAbstractMethodDeclarationSyntax),
-    typeof(IConcreteMethodDeclarationSyntax))]
-public partial interface IMethodDeclarationSyntax : IAlwaysTypeMemberDeclarationSyntax, IClassMemberDeclarationSyntax, ITraitMemberDeclarationSyntax, IInvocableDeclarationSyntax
+    typeof(IAbstractMethodDefinitionSyntax),
+    typeof(IConcreteMethodDefinitionSyntax))]
+public partial interface IMethodDefinitionSyntax : IAlwaysTypeMemberDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IInvocableDefinitionSyntax
 {
     MethodKind Kind { get; }
     new IdentifierName Name { get; }
-    TypeName? IDeclarationSyntax.Name => Name;
+    TypeName? IDefinitionSyntax.Name => Name;
     IMethodSelfParameterSyntax SelfParameter { get; }
     new IFixedList<INamedParameterSyntax> Parameters { get; }
-    IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDeclarationSyntax.Parameters => Parameters;
+    IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
-    new AcyclicPromise<MethodSymbol> Symbol { get; }
-    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
-    IPromise<InvocableSymbol> IInvocableDeclarationSyntax.Symbol => Symbol;
 }
 
-public partial interface IAbstractMethodDeclarationSyntax : IMethodDeclarationSyntax
+public partial interface IAbstractMethodDefinitionSyntax : IMethodDefinitionSyntax
 {
 }
 
 [Closed(
-    typeof(IStandardMethodDeclarationSyntax),
-    typeof(IGetterMethodDeclarationSyntax),
-    typeof(ISetterMethodDeclarationSyntax))]
-public partial interface IConcreteMethodDeclarationSyntax : IMethodDeclarationSyntax, IStructMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
+    typeof(IStandardMethodDefinitionSyntax),
+    typeof(IGetterMethodDefinitionSyntax),
+    typeof(ISetterMethodDefinitionSyntax))]
+public partial interface IConcreteMethodDefinitionSyntax : IMethodDefinitionSyntax, IStructMemberDefinitionSyntax, IConcreteInvocableDefinitionSyntax
 {
     new IFixedList<INamedParameterSyntax> Parameters { get; }
-    IFixedList<INamedParameterSyntax> IMethodDeclarationSyntax.Parameters => Parameters;
-    IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDeclarationSyntax.Parameters => Parameters;
+    IFixedList<INamedParameterSyntax> IMethodDefinitionSyntax.Parameters => Parameters;
+    IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
 }
 
-public partial interface IStandardMethodDeclarationSyntax : IConcreteMethodDeclarationSyntax
+public partial interface IStandardMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
 }
 
-public partial interface IGetterMethodDeclarationSyntax : IConcreteMethodDeclarationSyntax
+public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
     new IReturnSyntax Return { get; }
 }
 
-public partial interface ISetterMethodDeclarationSyntax : IConcreteMethodDeclarationSyntax
+public partial interface ISetterMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
 }
 
-public partial interface IConstructorDeclarationSyntax : IConcreteInvocableDeclarationSyntax, IClassMemberDeclarationSyntax
+public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IAlwaysTypeMemberDefinitionSyntax, IClassMemberDefinitionSyntax
 {
-    new IClassDeclarationSyntax DeclaringType { get; }
-    ITypeDeclarationSyntax? ITypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
+    new IClassDefinitionSyntax DefiningType { get; }
+    ITypeDefinitionSyntax IAlwaysTypeMemberDefinitionSyntax.DefiningType => DefiningType;
+    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DefiningType => DefiningType;
     new IdentifierName? Name { get; }
-    TypeName? IDeclarationSyntax.Name => Name;
+    TypeName? IDefinitionSyntax.Name => Name;
     IConstructorSelfParameterSyntax SelfParameter { get; }
     new IBlockBodySyntax Body { get; }
-    IBodySyntax IConcreteInvocableDeclarationSyntax.Body => Body;
-    new AcyclicPromise<ConstructorSymbol> Symbol { get; }
-    IPromise<InvocableSymbol> IInvocableDeclarationSyntax.Symbol => Symbol;
-    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
+    IBodySyntax IConcreteInvocableDefinitionSyntax.Body => Body;
 }
 
-public partial interface IInitializerDeclarationSyntax : IConcreteInvocableDeclarationSyntax, IStructMemberDeclarationSyntax
+public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IAlwaysTypeMemberDefinitionSyntax, IStructMemberDefinitionSyntax
 {
-    new IStructDeclarationSyntax DeclaringType { get; }
-    ITypeDeclarationSyntax? ITypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
+    new IStructDefinitionSyntax DefiningType { get; }
+    ITypeDefinitionSyntax IAlwaysTypeMemberDefinitionSyntax.DefiningType => DefiningType;
+    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DefiningType => DefiningType;
     new IdentifierName? Name { get; }
-    TypeName? IDeclarationSyntax.Name => Name;
+    TypeName? IDefinitionSyntax.Name => Name;
     IInitializerSelfParameterSyntax SelfParameter { get; }
     new IBlockBodySyntax Body { get; }
-    IBodySyntax IConcreteInvocableDeclarationSyntax.Body => Body;
-    new AcyclicPromise<InitializerSymbol> Symbol { get; }
-    IPromise<InvocableSymbol> IInvocableDeclarationSyntax.Symbol => Symbol;
-    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
+    IBodySyntax IConcreteInvocableDefinitionSyntax.Body => Body;
 }
 
-public partial interface IFieldDeclarationSyntax : IAlwaysTypeMemberDeclarationSyntax, IClassMemberDeclarationSyntax, IStructMemberDeclarationSyntax, IBindingSyntax
+public partial interface IFieldDefinitionSyntax : IAlwaysTypeMemberDefinitionSyntax, IClassMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IBindingSyntax
 {
-    new IClassOrStructDeclarationSyntax DeclaringType { get; }
-    ITypeDeclarationSyntax IAlwaysTypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
-    ITypeDeclarationSyntax? ITypeMemberDeclarationSyntax.DeclaringType => DeclaringType;
+    new IClassOrStructDefinitionSyntax DefiningType { get; }
+    ITypeDefinitionSyntax IAlwaysTypeMemberDefinitionSyntax.DefiningType => DefiningType;
+    ITypeDefinitionSyntax? ITypeMemberDefinitionSyntax.DefiningType => DefiningType;
     new IdentifierName Name { get; }
-    TypeName? IDeclarationSyntax.Name => Name;
+    TypeName? IDefinitionSyntax.Name => Name;
     ITypeSyntax Type { get; }
-    new AcyclicPromise<FieldSymbol> Symbol { get; }
-    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
-    IPromise<BindingSymbol> IBindingSyntax.Symbol => Symbol;
     IExpressionSyntax? Initializer { get; }
 }
 
-public partial interface IAssociatedFunctionDeclarationSyntax : IAlwaysTypeMemberDeclarationSyntax, IClassMemberDeclarationSyntax, ITraitMemberDeclarationSyntax, IStructMemberDeclarationSyntax, IConcreteInvocableDeclarationSyntax
+public partial interface IAssociatedFunctionDefinitionSyntax : IAlwaysTypeMemberDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IConcreteInvocableDefinitionSyntax
 {
     new IdentifierName Name { get; }
-    TypeName? IDeclarationSyntax.Name => Name;
+    TypeName? IDefinitionSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
-    new AcyclicPromise<FunctionSymbol> Symbol { get; }
-    IPromise<Symbol> IDeclarationSyntax.Symbol => Symbol;
-    IPromise<InvocableSymbol> IInvocableDeclarationSyntax.Symbol => Symbol;
 }
 
 public partial interface IAttributeSyntax : IConcreteSyntax
 {
-    ITypeNameSyntax TypeName { get; }
+    IStandardTypeNameSyntax TypeName { get; }
 }
 
 [Closed(
@@ -425,7 +385,6 @@ public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
 public partial interface IParameterSyntax : IConcreteSyntax
 {
     IdentifierName? Name { get; }
-    IPromise<Pseudotype> DataType { get; }
     bool Unused { get; }
 }
 
@@ -441,12 +400,7 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
     bool IsLentBinding { get; }
     new IdentifierName Name { get; }
     IdentifierName? IParameterSyntax.Name => Name;
-    Promise<int?> DeclarationNumber { get; }
     ITypeSyntax Type { get; }
-    new IPromise<DataType> DataType { get; }
-    IPromise<Pseudotype> IParameterSyntax.DataType => DataType;
-    new Promise<NamedVariableSymbol> Symbol { get; }
-    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IExpressionSyntax? DefaultValue { get; }
 }
 
@@ -457,21 +411,16 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
 public partial interface ISelfParameterSyntax : IParameterSyntax
 {
     bool IsLentBinding { get; }
-    Promise<SelfParameterSymbol> Symbol { get; }
 }
 
 public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilitySyntax Capability { get; }
-    new IPromise<DataType> DataType { get; }
-    IPromise<Pseudotype> IParameterSyntax.DataType => DataType;
 }
 
 public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilitySyntax Capability { get; }
-    new IPromise<DataType> DataType { get; }
-    IPromise<Pseudotype> IParameterSyntax.DataType => DataType;
 }
 
 public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
@@ -483,7 +432,6 @@ public partial interface IFieldParameterSyntax : IConstructorOrInitializerParame
 {
     new IdentifierName Name { get; }
     IdentifierName? IParameterSyntax.Name => Name;
-    Promise<FieldSymbol?> ReferencedSymbol { get; }
     IExpressionSyntax? DefaultValue { get; }
 }
 
@@ -524,10 +472,9 @@ public partial interface ITypeSyntax : IConcreteSyntax
     typeof(IStandardTypeNameSyntax),
     typeof(ISimpleTypeNameSyntax),
     typeof(IQualifiedTypeNameSyntax))]
-public partial interface ITypeNameSyntax : IHasContainingLexicalScope, ITypeSyntax
+public partial interface ITypeNameSyntax : ITypeSyntax
 {
     TypeName Name { get; }
-    Promise<TypeSymbol?> ReferencedSymbol { get; }
 }
 
 [Closed(
@@ -615,7 +562,6 @@ public partial interface ICapabilityViewpointTypeSyntax : IViewpointTypeSyntax
 
 public partial interface ISelfViewpointTypeSyntax : IViewpointTypeSyntax
 {
-    Promise<SelfParameterSymbol?> ReferencedSymbol { get; }
 }
 
 [Closed(
@@ -639,13 +585,9 @@ public partial interface IBodyStatementSyntax : IStatementSyntax
 
 public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyntax, ILocalBindingSyntax
 {
-    TextSpan NameSpan { get; }
     IdentifierName Name { get; }
-    Promise<int?> DeclarationNumber { get; }
     ICapabilitySyntax? Capability { get; }
     ITypeSyntax? Type { get; }
-    new Promise<NamedVariableSymbol> Symbol { get; }
-    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IExpressionSyntax? Initializer { get; }
 }
 
@@ -678,9 +620,6 @@ public partial interface IOptionalOrBindingPatternSyntax : IPatternSyntax
 public partial interface IBindingPatternSyntax : IOptionalOrBindingPatternSyntax, ILocalBindingSyntax
 {
     IdentifierName Name { get; }
-    Promise<int?> DeclarationNumber { get; }
-    new Promise<NamedVariableSymbol> Symbol { get; }
-    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
 }
 
 public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSyntax
@@ -693,21 +632,19 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
     typeof(INameExpressionSyntax))]
 public partial interface IExpressionSyntax : IConcreteSyntax
 {
-    IPromise<DataType?> DataType { get; }
-    Conversion ImplicitConversion { get; }
-    DataType? ConvertedDataType { get; }
 }
 
 [Closed(
     typeof(IDataTypedExpressionSyntax),
     typeof(IAssignableExpressionSyntax),
     typeof(ILiteralExpressionSyntax),
-    typeof(INeverTypedExpressionSyntax),
-    typeof(ISelfExpressionSyntax))]
+    typeof(IBreakExpressionSyntax),
+    typeof(INextExpressionSyntax),
+    typeof(IReturnExpressionSyntax),
+    typeof(ISpecialTypeNameExpressionSyntax),
+    typeof(IInstanceExpressionSyntax))]
 public partial interface ITypedExpressionSyntax : IExpressionSyntax
 {
-    new IPromise<DataType> DataType { get; }
-    IPromise<DataType?> IExpressionSyntax.DataType => DataType;
 }
 
 [Closed(
@@ -732,24 +669,18 @@ public partial interface ITypedExpressionSyntax : IExpressionSyntax
     typeof(IAwaitExpressionSyntax))]
 public partial interface IDataTypedExpressionSyntax : ITypedExpressionSyntax
 {
-    new Promise<DataType> DataType { get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 [Closed(
     typeof(IIdentifierNameExpressionSyntax),
-    typeof(IMemberAccessExpressionSyntax))]
+    typeof(IMemberAccessExpressionSyntax),
+    typeof(IMissingNameSyntax))]
 public partial interface IAssignableExpressionSyntax : ITypedExpressionSyntax
 {
-    IPromise<Symbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IBlockExpressionSyntax : IDataTypedExpressionSyntax, IBlockOrResultSyntax, IBodyOrBlockSyntax
 {
-    new Promise<DataType> DataType { get; }
-    Promise<DataType> IDataTypedExpressionSyntax.DataType => DataType;
-    IPromise<DataType?> IBlockOrResultSyntax.DataType => DataType;
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface INewObjectExpressionSyntax : IDataTypedExpressionSyntax
@@ -758,7 +689,6 @@ public partial interface INewObjectExpressionSyntax : IDataTypedExpressionSyntax
     IdentifierName? ConstructorName { get; }
     TextSpan? ConstructorNameSpan { get; }
     IFixedList<IExpressionSyntax> Arguments { get; }
-    Promise<ConstructorSymbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IUnsafeExpressionSyntax : IDataTypedExpressionSyntax
@@ -778,28 +708,20 @@ public partial interface ILiteralExpressionSyntax : ITypedExpressionSyntax
 public partial interface IBoolLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     bool Value { get; }
-    new Promise<BoolConstValueType> DataType { get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface IIntegerLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     BigInteger Value { get; }
-    new Promise<IntegerConstValueType> DataType { get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface INoneLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
-    new Promise<OptionalType> DataType { get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface IStringLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     string Value { get; }
-    new Promise<DataType> DataType { get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface IAssignmentExpressionSyntax : IDataTypedExpressionSyntax
@@ -862,153 +784,106 @@ public partial interface IWhileExpressionSyntax : IDataTypedExpressionSyntax
 public partial interface IForeachExpressionSyntax : IDataTypedExpressionSyntax, ILocalBindingSyntax
 {
     IdentifierName VariableName { get; }
-    Promise<int?> DeclarationNumber { get; }
     IExpressionSyntax InExpression { get; }
-    Promise<MethodSymbol?> IterateMethod { get; }
-    Promise<MethodSymbol> NextMethod { get; }
     ITypeSyntax? Type { get; }
-    new Promise<NamedVariableSymbol> Symbol { get; }
-    IPromise<NamedBindingSymbol> ILocalBindingSyntax.Symbol => Symbol;
     IBlockExpressionSyntax Block { get; }
 }
 
-[Closed(
-    typeof(IBreakExpressionSyntax),
-    typeof(INextExpressionSyntax),
-    typeof(IReturnExpressionSyntax))]
-public partial interface INeverTypedExpressionSyntax : ITypedExpressionSyntax
-{
-    new Promise<NeverType> DataType { get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
-}
-
-public partial interface IBreakExpressionSyntax : INeverTypedExpressionSyntax
+public partial interface IBreakExpressionSyntax : ITypedExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
 }
 
-public partial interface INextExpressionSyntax : INeverTypedExpressionSyntax
+public partial interface INextExpressionSyntax : ITypedExpressionSyntax
 {
 }
 
-public partial interface IReturnExpressionSyntax : INeverTypedExpressionSyntax
+public partial interface IReturnExpressionSyntax : ITypedExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
 }
 
-public partial interface IInvocationExpressionSyntax : IHasContainingLexicalScope, IDataTypedExpressionSyntax
+public partial interface IInvocationExpressionSyntax : IDataTypedExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
     IFixedList<IExpressionSyntax> Arguments { get; }
-    Promise<Symbol?> ReferencedSymbol { get; }
 }
 
 [Closed(
-    typeof(IInvocableNameExpressionSyntax),
-    typeof(IVariableNameExpressionSyntax),
+    typeof(ISimpleNameSyntax),
     typeof(IStandardNameExpressionSyntax),
-    typeof(ISimpleNameExpressionSyntax))]
+    typeof(ISpecialTypeNameExpressionSyntax),
+    typeof(ISelfExpressionSyntax),
+    typeof(IMemberAccessExpressionSyntax))]
 public partial interface INameExpressionSyntax : IExpressionSyntax
 {
-    IPromise<ISyntaxSemantics> Semantics { get; }
-    IPromise<Symbol?> ReferencedSymbol { get; }
 }
 
 [Closed(
     typeof(IIdentifierNameExpressionSyntax),
-    typeof(IGenericNameExpressionSyntax),
-    typeof(IMemberAccessExpressionSyntax))]
-public partial interface IInvocableNameExpressionSyntax : INameExpressionSyntax
+    typeof(IInstanceExpressionSyntax),
+    typeof(IMissingNameSyntax))]
+public partial interface ISimpleNameSyntax : INameExpressionSyntax
 {
-}
-
-[Closed(
-    typeof(IIdentifierNameExpressionSyntax),
-    typeof(ISelfExpressionSyntax))]
-public partial interface IVariableNameExpressionSyntax : INameExpressionSyntax
-{
-    new IPromise<IVariableNameExpressionSyntaxSemantics> Semantics { get; }
-    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
 }
 
 [Closed(
     typeof(IIdentifierNameExpressionSyntax),
     typeof(IGenericNameExpressionSyntax))]
-public partial interface IStandardNameExpressionSyntax : IHasContainingLexicalScope, INameExpressionSyntax
+public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax
 {
-    StandardName? Name { get; }
+    StandardName Name { get; }
+}
+
+public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressionSyntax, ISimpleNameSyntax, IAssignableExpressionSyntax
+{
+    new IdentifierName Name { get; }
+    StandardName IStandardNameExpressionSyntax.Name => Name;
+}
+
+public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSyntax, ITypedExpressionSyntax
+{
+    SpecialTypeName Name { get; }
+}
+
+public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionSyntax
+{
+    new GenericName Name { get; }
+    StandardName IStandardNameExpressionSyntax.Name => Name;
+    IFixedList<ITypeSyntax> TypeArguments { get; }
 }
 
 [Closed(
-    typeof(IIdentifierNameExpressionSyntax),
-    typeof(ISpecialTypeNameExpressionSyntax))]
-public partial interface ISimpleNameExpressionSyntax : INameExpressionSyntax
+    typeof(ISelfExpressionSyntax))]
+public partial interface IInstanceExpressionSyntax : IConcreteSyntax, ISimpleNameSyntax, ITypedExpressionSyntax
 {
 }
 
-public partial interface IIdentifierNameExpressionSyntax : IInvocableNameExpressionSyntax, ISimpleNameExpressionSyntax, IStandardNameExpressionSyntax, IVariableNameExpressionSyntax, IAssignableExpressionSyntax
-{
-    new IdentifierName? Name { get; }
-    StandardName? IStandardNameExpressionSyntax.Name => Name;
-    new Promise<IIdentifierNameExpressionSyntaxSemantics> Semantics { get; }
-    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
-    IPromise<IVariableNameExpressionSyntaxSemantics> IVariableNameExpressionSyntax.Semantics => Semantics;
-}
-
-public partial interface ISpecialTypeNameExpressionSyntax : ISimpleNameExpressionSyntax
-{
-    SpecialTypeName Name { get; }
-    new Promise<SpecialTypeNameExpressionSyntaxSemantics> Semantics { get; }
-    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
-    new Promise<DataType?> DataType { get; }
-    IPromise<DataType?> IExpressionSyntax.DataType => DataType;
-    new Promise<TypeSymbol?> ReferencedSymbol { get; }
-    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
-}
-
-public partial interface IGenericNameExpressionSyntax : IInvocableNameExpressionSyntax, IStandardNameExpressionSyntax
-{
-    new GenericName Name { get; }
-    StandardName? IStandardNameExpressionSyntax.Name => Name;
-    IFixedList<ITypeSyntax> TypeArguments { get; }
-    new Promise<DataType?> DataType { get; }
-    IPromise<DataType?> IExpressionSyntax.DataType => DataType;
-}
-
-public partial interface ISelfExpressionSyntax : IVariableNameExpressionSyntax, ITypedExpressionSyntax
+public partial interface ISelfExpressionSyntax : INameExpressionSyntax, IInstanceExpressionSyntax
 {
     bool IsImplicit { get; }
-    new Promise<ISelfExpressionSyntaxSemantics> Semantics { get; }
-    IPromise<IVariableNameExpressionSyntaxSemantics> IVariableNameExpressionSyntax.Semantics => Semantics;
-    new IPromise<SelfParameterSymbol?> ReferencedSymbol { get; }
-    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
-    IPromise<Pseudotype> Pseudotype { get; }
 }
 
-public partial interface IMemberAccessExpressionSyntax : IInvocableNameExpressionSyntax, IAssignableExpressionSyntax
+public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, IAssignableExpressionSyntax
 {
     IExpressionSyntax Context { get; }
-    AccessOperator AccessOperator { get; }
     StandardName MemberName { get; }
     IFixedList<ITypeSyntax> TypeArguments { get; }
     TextSpan MemberNameSpan { get; }
-    new Promise<IMemberAccessSyntaxSemantics> Semantics { get; }
-    IPromise<ISyntaxSemantics> INameExpressionSyntax.Semantics => Semantics;
-    new IPromise<Symbol?> ReferencedSymbol { get; }
-    IPromise<Symbol?> INameExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
-    IPromise<Symbol?> IAssignableExpressionSyntax.ReferencedSymbol => ReferencedSymbol;
+}
+
+public partial interface IMissingNameSyntax : ISimpleNameSyntax, IAssignableExpressionSyntax
+{
 }
 
 public partial interface IMoveExpressionSyntax : IDataTypedExpressionSyntax
 {
-    IVariableNameExpressionSyntax Referent { get; }
-    Promise<BindingSymbol?> ReferencedSymbol { get; }
+    ISimpleNameSyntax Referent { get; }
 }
 
 public partial interface IFreezeExpressionSyntax : IDataTypedExpressionSyntax
 {
-    IVariableNameExpressionSyntax Referent { get; }
-    Promise<BindingSymbol?> ReferencedSymbol { get; }
+    ISimpleNameSyntax Referent { get; }
 }
 
 public partial interface IAsyncBlockExpressionSyntax : IDataTypedExpressionSyntax

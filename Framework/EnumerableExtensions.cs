@@ -59,6 +59,9 @@ public static class EnumerableExtensions
     public static Queue<T> ToQueue<T>(this IEnumerable<T> source) => new(source);
 
     [DebuggerStepThrough]
+    public static Buffer<T> ToBuffer<T>(this IEnumerable<T> source) => new(source.ToArray());
+
+    [DebuggerStepThrough]
     public static IEnumerable<T> SelectMany<T>(this IEnumerable<IEnumerable<T>> source)
         => source.SelectMany(items => items);
 
@@ -117,6 +120,9 @@ public static class EnumerableExtensions
     public static IEnumerable<(T1, T2)> EquiZip<T1, T2>(this IEnumerable<T1> first, IEnumerable<T2> second)
         => first.EquiZip(second, (f, s) => (f, s));
 
+    public static bool All<T1, T2>(this IEnumerable<(T1, T2)> source, Func<T1, T2, bool> predicate)
+        => source.All(tuple => predicate(tuple.Item1, tuple.Item2));
+
     public static T? TrySingle<T>(this IEnumerable<T> source)
     {
         using var enumerator = source.GetEnumerator();
@@ -124,5 +130,37 @@ public static class EnumerableExtensions
         var value = enumerator.Current;
         if (!enumerator.MoveNext()) return value;
         return default;
+    }
+
+    public static IEnumerable<T> FallbackIfEmpty<T>(this IEnumerable<T> source, Func<IEnumerable<T>> fallback)
+    {
+        using var e = source.GetEnumerator();
+        if (e.MoveNext())
+        {
+            do
+            {
+                yield return e.Current;
+            } while (e.MoveNext());
+
+            yield break;
+        }
+
+        foreach (var item in fallback())
+            yield return item;
+    }
+
+    public static bool IsEmpty<T>(this IEnumerable<T> source)
+    {
+        using var e = source.GetEnumerator();
+        return !e.MoveNext();
+    }
+
+    public static IEnumerable<T> Do<T>(this IEnumerable<T> source, Action<T> action)
+    {
+        foreach (var item in source)
+        {
+            action(item);
+            yield return item;
+        }
     }
 }

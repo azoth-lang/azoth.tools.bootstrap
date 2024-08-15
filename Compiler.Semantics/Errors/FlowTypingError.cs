@@ -6,22 +6,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 /// <remarks><see cref="ErrorCodeRange"/> for the ranges of various kinds of error codes.</remarks>
 public static class FlowTypingError
 {
-    public static Diagnostic CannotMoveValue(CodeFile file, IMoveExpressionSyntax expression)
+    public static Diagnostic CannotMoveValue(CodeFile file, IExpressionSyntax moveExpression, IExpressionSyntax referent)
     {
-        return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            4001, $"Cannot move value `{file.Code[expression.Referent.Span]}`");
+        return new(file, moveExpression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            4001, $"Cannot move value `{file.Code[referent.Span]}`");
     }
 
-    public static Diagnostic CannotFreezeValue(CodeFile file, IFreezeExpressionSyntax expression)
+    public static Diagnostic CannotFreezeValue(CodeFile file, IExpressionSyntax expression, IExpressionSyntax referent)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            4002, $"Cannot freeze the value `{file.Code[expression.Referent.Span]}`");
-    }
-
-    public static Diagnostic UseOfPossiblyMovedValue(CodeFile file, TextSpan span)
-    {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            4003, "Use of possibly moved value");
+            4002, $"Cannot freeze the value `{file.Code[referent.Span]}`");
     }
 
     public static Diagnostic CannotUnion(CodeFile file, TextSpan span)

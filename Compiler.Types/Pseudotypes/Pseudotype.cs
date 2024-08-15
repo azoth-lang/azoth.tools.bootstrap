@@ -1,10 +1,11 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 [Closed(typeof(DataType), typeof(CapabilityTypeConstraint))]
-public abstract class Pseudotype
+public abstract class Pseudotype : IEquatable<Pseudotype>
 {
     /// <summary>
     /// A known type is one that has no unknown parts.
@@ -15,6 +16,20 @@ public abstract class Pseudotype
     /// Create a type with the upper bound of the capability constraint.
     /// </summary>
     public abstract DataType ToUpperBound();
+
+    /// <summary>
+    /// Convert this type to the equivalent antetype.
+    /// </summary>
+    public abstract IMaybeExpressionAntetype ToAntetype();
+
+    #region Equality
+    public abstract bool Equals(Pseudotype? other);
+
+    public override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is Pseudotype other && Equals(other);
+
+    public abstract override int GetHashCode();
+    #endregion
 
     public sealed override string ToString()
         => throw new NotSupportedException();

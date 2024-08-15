@@ -12,16 +12,16 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Lexing.Helpers;
 
 public static class Arbitrary
 {
-    public static Arbitrary<PsuedoToken> PsuedoToken() => Arb.From(GenPsuedoToken());
+    public static Arbitrary<PseudoToken> PsuedoToken() => Arb.From(GenPsuedoToken());
 
-    public static Arbitrary<List<PsuedoToken>> PsuedoTokenList()
+    public static Arbitrary<List<PseudoToken>> PsuedoTokenList()
         => Arb.From(GenPsuedoTokenList(), ShrinkTokens);
 
     /// <summary>
     /// Shrink a list of tokens by taking a prefix or suffix of the list.
     /// </summary>
     /// <remarks>The default list shrink removes items from the middle too.</remarks>
-    private static IEnumerable<List<PsuedoToken>> ShrinkTokens(List<PsuedoToken> tokens)
+    private static IEnumerable<List<PseudoToken>> ShrinkTokens(List<PseudoToken> tokens)
     {
         foreach (var newSize in Arb.Shrink(tokens.Count).Where(size => size > 0))
         {
@@ -30,7 +30,7 @@ public static class Arbitrary
         }
     }
 
-    private static Gen<List<PsuedoToken>> GenPsuedoTokenList()
+    private static Gen<List<PseudoToken>> GenPsuedoTokenList()
         => Gen.Sized(size => GenAppendedPsuedoTokens(size)
                                 .Select(tokens => tokens.ToEnumerable().ToList()));
 
@@ -51,7 +51,7 @@ public static class Arbitrary
     /// <summary>
     /// Returns <see langword="true"/> if the two tokens need to be separated from each other.
     /// </summary>
-    private static bool SeparateTokens(PsuedoToken t1, PsuedoToken t2)
+    private static bool SeparateTokens(PseudoToken t1, PseudoToken t2)
     {
         switch (t1.Text)
         {
@@ -100,7 +100,7 @@ public static class Arbitrary
         }
     }
 
-    private static Gen<PsuedoToken> GenPsuedoToken()
+    private static Gen<PseudoToken> GenPsuedoToken()
     {
         return Gen.Frequency(
             GenSymbol().WithWeight(20),
@@ -113,10 +113,10 @@ public static class Arbitrary
             GenStringLiteral().WithWeight(5));
     }
 
-    private static Gen<PsuedoToken> GenSymbol()
+    private static Gen<PseudoToken> GenSymbol()
     {
         return Gen.Elements(Symbols.AsEnumerable())
-                  .Select(item => new PsuedoToken(item.Value, item.Key));
+                  .Select(item => new PseudoToken(item.Value, item.Key));
     }
 
     private static Gen<string> GenRegex(string pattern)
@@ -137,58 +137,58 @@ public static class Arbitrary
         return xegar.Generate();
     }
 
-    private static Gen<PsuedoToken> GenWhitespace()
+    private static Gen<PseudoToken> GenWhitespace()
     {
         var whitespaceChar = Gen.Elements(' ', '\t', '\n', '\r');
         return whitespaceChar.NonEmptyListOf()
-            .Select(chars => new PsuedoToken(typeof(IWhitespaceToken), string.Concat(chars)));
+            .Select(chars => new PseudoToken(typeof(IWhitespaceToken), string.Concat(chars)));
     }
 
-    private static Gen<PsuedoToken> GenComment()
+    private static Gen<PseudoToken> GenComment()
     {
         // Covers both block comments and line comments
         // For line comments, end in newline requires escape sequences
         return GenRegex(@"(/\*(\**[^/])*\*/)|" + "(//.*[\r\n])")
-            .Select(s => new PsuedoToken(typeof(ICommentToken), s));
+            .Select(s => new PseudoToken(typeof(ICommentToken), s));
     }
 
-    private static Gen<PsuedoToken> GenBareIdentifier()
+    private static Gen<PseudoToken> GenBareIdentifier()
     {
         return GenRegex("[a-zA-Z_][a-zA-Z_0-9]*")
                .Where(s => !Symbols.ContainsKey(s)) // don't emit keywords
-               .Select(s => new PsuedoToken(typeof(IBareIdentifierToken), s, s));
+               .Select(s => new PseudoToken(typeof(IBareIdentifierToken), s, s));
     }
 
-    private static Gen<PsuedoToken> GenEscapedIdentifier()
+    private static Gen<PseudoToken> GenEscapedIdentifier()
     {
         return GenRegex(@"\\[a-zA-Z_0-9]+")
                .Where(s => !Symbols.ContainsKey(s)) // don't emit keywords
-               .Select(s => new PsuedoToken(typeof(IEscapedIdentifierToken), s, s[1..]));
+               .Select(s => new PseudoToken(typeof(IEscapedIdentifierToken), s, s[1..]));
     }
 
-    private static Gen<PsuedoToken> GenIdentifierString()
+    private static Gen<PseudoToken> GenIdentifierString()
     {
         return GenRegex(@"\\\""([^\\""]|\\(r|n|0|t|\'|\""))*\""").Select(s =>
         {
             var value = s[2..^1].Unescape();
-            return new PsuedoToken(typeof(IIdentifierStringToken), s, value);
+            return new PseudoToken(typeof(IIdentifierStringToken), s, value);
         });
     }
 
-    private static Gen<PsuedoToken> GenIntegerLiteral()
+    private static Gen<PseudoToken> GenIntegerLiteral()
     {
         return Arb.Default.BigInt().Generator.Where(v => v > 0)
-            .Select(v => new PsuedoToken(typeof(IIntegerLiteralToken), v.ToString(CultureInfo.InvariantCulture), v));
+            .Select(v => new PseudoToken(typeof(IIntegerLiteralToken), v.ToString(CultureInfo.InvariantCulture), v));
     }
 
-    private static Gen<PsuedoToken> GenStringLiteral()
+    private static Gen<PseudoToken> GenStringLiteral()
     {
         // @"""([^\\]|\\(r|n|0|t|'|""|\\|u\([0-9a-fA-F]{1,6}\)))*"""
         return GenRegex(@"\""([^\\""]|\\(r|n|0|t|\'|\""))*\""")
             .Select(s =>
             {
                 var value = s[1..^1].Unescape();
-                return new PsuedoToken(typeof(IStringLiteralToken), s, value);
+                return new PseudoToken(typeof(IStringLiteralToken), s, value);
             });
     }
 
@@ -348,13 +348,13 @@ public static class Arbitrary
         { "nonwritable",typeof(INonwritableKeywordToken) },
     }.ToFixedDictionary();
 
-    private readonly record struct AppendedToken(IEnumerable<PsuedoToken> Items, PsuedoToken? LastToken)
+    private readonly record struct AppendedToken(IEnumerable<PseudoToken> Items, PseudoToken? LastToken)
     {
-        public static readonly AppendedToken Empty = new(Enumerable.Empty<PsuedoToken>(), null);
+        public static readonly AppendedToken Empty = new(Enumerable.Empty<PseudoToken>(), null);
 
-        public AppendedToken Append(PsuedoToken token) => new(ToEnumerable(), token);
+        public AppendedToken Append(PseudoToken token) => new(ToEnumerable(), token);
 
-        public IEnumerable<PsuedoToken> ToEnumerable()
+        public IEnumerable<PseudoToken> ToEnumerable()
             => LastToken is { } token ? Items.Append(token) : Items;
     }
 }

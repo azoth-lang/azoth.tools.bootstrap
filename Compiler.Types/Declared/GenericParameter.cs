@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
@@ -13,21 +14,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 /// That is why this class exists to ease refactoring later.</remarks>
 public sealed class GenericParameter : IEquatable<GenericParameter>
 {
-    public static GenericParameter Invariant(ICapabilityConstraint constraint, StandardName name)
+    public static GenericParameter Invariant(ICapabilityConstraint constraint, IdentifierName name)
         => new(constraint, name, ParameterIndependence.None, ParameterVariance.Invariant);
 
-    public static GenericParameter Independent(ICapabilityConstraint constraint, StandardName name)
+    public static GenericParameter Independent(ICapabilityConstraint constraint, IdentifierName name)
         => new(constraint, name, ParameterIndependence.Independent, ParameterVariance.Invariant);
 
-    public static GenericParameter Out(ICapabilityConstraint constraint, StandardName name)
+    public static GenericParameter Out(ICapabilityConstraint constraint, IdentifierName name)
         => new(constraint, name, ParameterIndependence.None, ParameterVariance.Covariant);
 
-    public static GenericParameter In(ICapabilityConstraint constraint, StandardName name)
+    public static GenericParameter In(ICapabilityConstraint constraint, IdentifierName name)
         => new(constraint, name, ParameterIndependence.None, ParameterVariance.Contravariant);
 
-    public GenericParameter(ICapabilityConstraint constraint, StandardName name, ParameterIndependence independence, ParameterVariance variance)
+    public GenericParameter(ICapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
     {
-        Requires.That(nameof(name), name.GenericParameterCount == 0, "Cannot have generic parameters");
+        Requires.That(name.GenericParameterCount == 0, nameof(name), "Cannot have generic parameters");
         Constraint = constraint;
         Independence = independence;
         Variance = variance;
@@ -36,7 +37,7 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
 
     public ICapabilityConstraint Constraint { get; }
 
-    public StandardName Name { get; }
+    public IdentifierName Name { get; }
 
     public ParameterIndependence Independence { get; }
 

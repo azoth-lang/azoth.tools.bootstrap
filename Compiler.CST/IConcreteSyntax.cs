@@ -1,6 +1,6 @@
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
-public partial interface IConcreteSyntax
+public partial interface IConcreteSyntax : ISyntax
 {
     string ToString();
 }

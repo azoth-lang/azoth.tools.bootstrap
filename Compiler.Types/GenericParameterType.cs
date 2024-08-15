@@ -1,5 +1,7 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
+using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -13,22 +15,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class GenericParameterType : NonEmptyType
 {
-    public Promise<IDeclaredUserType> DeclaringTypePromise { get; }
-    public IDeclaredUserType DeclaringType => DeclaringTypePromise.Result;
+    public IDeclaredUserType DeclaringType { get; }
 
     public GenericParameter Parameter { get; }
 
-    public StandardName Name => Parameter.Name;
+    public IdentifierName Name => Parameter.Name;
 
     public override bool IsFullyKnown => true;
 
-    public GenericParameterType(Promise<IDeclaredUserType> declaringTypePromise, GenericParameter parameter)
+    internal GenericParameterType(IDeclaredUserType declaringType, GenericParameter parameter)
     {
-        DeclaringTypePromise = declaringTypePromise;
+        DeclaringType = declaringType;
         Parameter = parameter;
     }
 
-    public override DataType AccessedVia(ICapabilityConstraint capability)
+    public override Type AccessedVia(ICapabilityConstraint capability)
     {
         // Independent type parameters are not affected by the capability
         if (Parameter.HasIndependence) return this;
@@ -46,20 +47,21 @@ public sealed class GenericParameterType : NonEmptyType
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         return other is GenericParameterType otherType
-            && (ReferenceEquals(DeclaringTypePromise, otherType.DeclaringTypePromise)
-                 || DeclaringType == otherType.DeclaringType)
-            && Parameter == otherType.Parameter;
+            && DeclaringType.Equals(otherType.DeclaringType) // Must use Equals because they are interface types
+            && Parameter.Equals(otherType.Parameter);
     }
 
     public override int GetHashCode()
-    {
-        if (!DeclaringTypePromise.IsFulfilled)
-            return HashCode.Combine(DeclaringTypePromise, Parameter);
-        return HashCode.Combine(DeclaringType, Parameter);
-    }
+        => HashCode.Combine(DeclaringType, Parameter);
     #endregion
 
-    public override string ToSourceCodeString() => $"{DeclaringTypePromise}.{Parameter.Name}";
+    public override IMaybeExpressionAntetype ToAntetype()
+    {
+        var declaringAntetype = DeclaringType.ToAntetype();
+        return new GenericParameterAntetype((UserDeclaredGenericAntetype)declaringAntetype, declaringAntetype.GenericParameters.Single(p => p.Name == Name));
+    }
 
-    public override string ToILString() => $"{DeclaringTypePromise}.{Parameter.Name}";
+    public override string ToSourceCodeString() => $"{DeclaringType}.{Parameter.Name}";
+
+    public override string ToILString() => $"{DeclaringType}.{Parameter.Name}";
 }

@@ -3,9 +3,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core;
 public class ParseContext
 {
     public CodeFile File { get; }
-    public Diagnostics Diagnostics { get; }
+    public DiagnosticsBuilder Diagnostics { get; }
 
-    public ParseContext(CodeFile file, Diagnostics diagnostics)
+    public ParseContext(CodeFile file, DiagnosticsBuilder diagnostics)
     {
         File = file;
         Diagnostics = diagnostics;

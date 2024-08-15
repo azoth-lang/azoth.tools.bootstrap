@@ -1,43 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core;
 
-[DebuggerDisplay("Count = {items.Count}")]
-[DebuggerTypeProxy(typeof(CollectionDebugView<>))]
-public class Diagnostics : IEnumerable<Diagnostic>
+public sealed class Diagnostics : IReadOnlyList<Diagnostic>
 {
-    private readonly List<Diagnostic> items = new List<Diagnostic>();
+    public static readonly Diagnostics Empty = new();
 
-    public Diagnostics() { }
+    private readonly IReadOnlyList<Diagnostic> diagnostics;
 
-    public Diagnostics(IEnumerable<Diagnostic> diagnostics)
+    public int Count => diagnostics.Count;
+    public int FatalErrorCount { get; }
+
+    public Diagnostics(DiagnosticsBuilder diagnostics)
     {
-        items.AddRange(diagnostics);
+        FatalErrorCount = diagnostics.FatalErrorCount;
+        // Don't wrap in read only list, as this class is the wrapper
+        this.diagnostics = diagnostics.OrderBy(d => d.File)
+                                      .ThenBy(d => d.StartPosition).ThenBy(d => d.EndPosition)
+                                      .ToList();
     }
 
-    public int Count => items.Count;
-
-    public void Add(Diagnostic diagnostic) => items.Add(diagnostic);
-
-    public void Add(IEnumerable<Diagnostic> diagnostics) => items.AddRange(diagnostics);
-
-    public IFixedList<Diagnostic> Build()
+    private Diagnostics()
     {
-        items.Sort((d1, d2) => d1.StartPosition.CompareTo(d2.StartPosition));
-        return items.ToFixedList();
+        diagnostics = [];
     }
+
+    public Diagnostic this[int index] => diagnostics[index];
+
+    public IEnumerator<Diagnostic> GetEnumerator() => diagnostics.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => diagnostics.GetEnumerator();
 
     public void ThrowIfFatalErrors()
     {
-        if (items.Any(i => i.IsFatal))
-            throw new FatalCompilationErrorException(items.ToFixedList());
+        if (FatalErrorCount > 0)
+            throw new FatalCompilationErrorException(this);
     }
-
-    public IEnumerator<Diagnostic> GetEnumerator() => items.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)items).GetEnumerator();
 }

@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
-using ValueType = Azoth.Tools.Bootstrap.Compiler.Types.ValueType;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 
@@ -15,30 +14,30 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
     public override UserTypeSymbol ContextTypeSymbol { get; }
     public override UserTypeSymbol ContainingSymbol { get; }
     public override IdentifierName? Name { get; }
-    public ValueType SelfParameterType { get; }
-    public ValueType ReturnType { get; }
+    public CapabilityType SelfParameterType { get; }
+    public CapabilityType ReturnType { get; }
     public FunctionType InitializerGroupType { get; }
 
     public InitializerSymbol(
         UserTypeSymbol containingTypeSymbol,
         IdentifierName? initializerName,
-        ValueType selfParameterType,
-        IFixedList<Parameter> parameterTypes)
+        CapabilityType selfParameterType,
+        IFixedList<ParameterType> parameterTypes)
         : base(parameterTypes,
-            new Return(((StructType)containingTypeSymbol.DeclaresType).ToInitializerReturn(selfParameterType, parameterTypes)))
+            new ReturnType(((StructType)containingTypeSymbol.DeclaresType).ToInitializerReturn(selfParameterType, parameterTypes)))
     {
         ContextTypeSymbol = containingTypeSymbol;
         ContainingSymbol = containingTypeSymbol;
         Name = initializerName;
         SelfParameterType = selfParameterType;
-        ReturnType = (ValueType)Return.Type;
+        ReturnType = (CapabilityType)Return.Type;
         InitializerGroupType = new FunctionType(parameterTypes, Return);
     }
 
     public static InitializerSymbol CreateDefault(UserTypeSymbol containingTypeSymbol)
         => new(containingTypeSymbol, null,
             ((StructType)containingTypeSymbol.DeclaresType).ToDefaultInitializerSelf(),
-            FixedList.Empty<Parameter>());
+            FixedList.Empty<ParameterType>());
 
     public override bool Equals(Symbol? other)
     {
@@ -56,7 +55,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
     public override string ToILString()
     {
         var name = Name is not null ? $".{Name}" : "";
-        var selfParameterType = new Parameter(false, SelfParameterType);
+        var selfParameterType = new ParameterType(false, SelfParameterType);
         return $"{ContextTypeSymbol}::init{name}({string.Join(", ", Parameters.Prepend(selfParameterType).Select(d => d.ToILString()))})";
     }
 }

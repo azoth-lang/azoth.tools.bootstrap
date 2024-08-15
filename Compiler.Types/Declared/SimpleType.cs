@@ -21,19 +21,19 @@ public abstract class SimpleType : DeclaredValueType
 
     public abstract BareValueType BareType { get; }
 
-    public abstract ValueType Type { get; }
+    public abstract CapabilityType Type { get; }
 
     private protected SimpleType(SpecialTypeName name)
-        : base(isConstType: true, FixedList.Empty<GenericParameterType>())
+        : base(isConstType: true, FixedList.Empty<GenericParameter>())
     {
         Name = name;
     }
 
     public abstract override BareValueType With(IFixedList<DataType> typeArguments);
 
-    public abstract override ValueType With(Capability capability, IFixedList<DataType> typeArguments);
+    public abstract override CapabilityType With(Capability capability, IFixedList<DataType> typeArguments);
 
-    public abstract ValueType With(Capability capability);
+    public abstract CapabilityType With(Capability capability);
 
     #region Equals
     public override bool Equals(DeclaredType? other)

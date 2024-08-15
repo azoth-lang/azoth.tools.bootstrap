@@ -20,8 +20,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 /// Currently, references are stored as ASTs. To avoid referencing the AST
 /// project from the CST project, a generic type is used.
 /// </remarks>
-public class PackageSyntax<TPackage> : IPackageSyntax
-    where TPackage : IPackageSymbols
+public class PackageSyntax : IPackageSyntax
 {
     public IdentifierName Name => Symbol.Name;
     public PackageSymbol Symbol { get; }
@@ -33,22 +32,21 @@ public class PackageSyntax<TPackage> : IPackageSyntax
     [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
     public IFixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
     public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
-    public IFixedSet<IEntityDeclarationSyntax> EntityDeclarations { get; }
-    public IFixedSet<IEntityDeclarationSyntax> TestingEntityDeclarations { get; }
+    public IFixedSet<IEntityDefinitionSyntax> EntityDeclarations { get; }
+    public IFixedSet<IEntityDefinitionSyntax> TestingEntityDeclarations { get; }
     /// <summary>
     /// All the entity declarations including both regular code and testing code.
     /// </summary>
-    public IFixedSet<IEntityDeclarationSyntax> AllEntityDeclarations { get; }
-    public IFixedSet<IPackageReferenceSyntax<TPackage>> References { get; }
-    IFixedSet<IPackageReferenceSyntax> IPackageSyntax.References => References;
-    public IEnumerable<TPackage> ReferencedPackages => References.Select(r => r.Package);
-    public Diagnostics Diagnostics { get; }
+    public IFixedSet<IEntityDefinitionSyntax> AllEntityDeclarations { get; }
+    public IFixedSet<IPackageReferenceSyntax> References { get; }
+    public IEnumerable<IPackageSymbols> ReferencedPackages => References.Select(r => r.Package);
+    public DiagnosticsBuilder Diagnostics { get; }
 
     public PackageSyntax(
         IdentifierName name,
         IFixedSet<ICompilationUnitSyntax> compilationUnits,
         IFixedSet<ICompilationUnitSyntax> testingCompilationUnits,
-        IFixedSet<IPackageReferenceSyntax<TPackage>> references)
+        IFixedSet<IPackageReferenceSyntax> references)
     {
         Symbol = new PackageSymbol(name);
         var symbolTree = new SymbolTreeBuilder(Symbol);
@@ -62,7 +60,7 @@ public class PackageSyntax<TPackage> : IPackageSyntax
         References = references;
         SymbolTrees = BuiltIn.CreateSymbolForest(SymbolTree, ReferencedPackages.Select(p => p.SymbolTree));
         TestingSymbolTrees = BuiltIn.CreateSymbolForest(TestingSymbolTree, ReferencedPackages.Select(p => p.TestingSymbolTree));
-        Diagnostics = new Diagnostics(CompilationUnits.Concat(TestingCompilationUnits).SelectMany(cu => cu.Diagnostics));
+        Diagnostics = new DiagnosticsBuilder(CompilationUnits.Concat(TestingCompilationUnits).SelectMany(cu => cu.Diagnostics));
     }
 
     /// <remarks>
@@ -71,28 +69,28 @@ public class PackageSyntax<TPackage> : IPackageSyntax
     /// the implicit namespace of a compilation unit or are implicitly declared,
     /// so it wouldn't give a full list of the namespaces.
     /// </remarks>
-    private static IEnumerable<IEntityDeclarationSyntax> GetEntityDeclarations(
+    private static IEnumerable<IEntityDefinitionSyntax> GetEntityDeclarations(
         IFixedSet<ICompilationUnitSyntax> compilationUnits)
     {
-        var declarations = new Queue<IDeclarationSyntax>();
-        declarations.EnqueueRange(compilationUnits.SelectMany(cu => cu.Declarations));
+        var declarations = new Queue<IDefinitionSyntax>();
+        declarations.EnqueueRange(compilationUnits.SelectMany(cu => cu.Definitions));
         while (declarations.TryDequeue(out var declaration))
             switch (declaration)
             {
                 default:
                     throw ExhaustiveMatch.Failed(declaration);
-                case ITypeDeclarationSyntax syn:
+                case ITypeDefinitionSyntax syn:
                     yield return syn;
                     declarations.EnqueueRange(syn.Members);
                     break;
-                case ITypeMemberDeclarationSyntax syn:
+                case ITypeMemberDefinitionSyntax syn:
                     yield return syn;
                     break;
-                case IFunctionDeclarationSyntax syn:
+                case IFunctionDefinitionSyntax syn:
                     yield return syn;
                     break;
-                case INamespaceDeclarationSyntax syn:
-                    declarations.EnqueueRange(syn.Declarations);
+                case INamespaceDefinitionSyntax syn:
+                    declarations.EnqueueRange(syn.Definitions);
                     break;
             }
     }

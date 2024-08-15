@@ -1,4 +1,6 @@
-using System;
+using System.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -19,7 +21,7 @@ public sealed class PointerSizedIntegerType : IntegerType
 
     public override BareValueType<PointerSizedIntegerType> BareType { get; }
 
-    public override ValueType<PointerSizedIntegerType> Type { get; }
+    public override CapabilityType<PointerSizedIntegerType> Type { get; }
 
     private PointerSizedIntegerType(SpecialTypeName name, bool signed)
         : base(name, signed)
@@ -31,14 +33,12 @@ public sealed class PointerSizedIntegerType : IntegerType
     /// <summary>
     /// The current type but signed.
     /// </summary>
-    /// <remarks>If the current type is already signed then this doesn't change anything. If the
-    /// current type is unsigned, then this returns the next larger integer type.</remarks>
     public IntegerType WithSign()
     {
         if (IsSigned) return this;
         if (this == Size) return Offset;
         if (this == NUInt) return NInt;
-        throw new NotImplementedException();
+        throw new UnreachableException("All types should be covered");
     }
 
     public override BareValueType<PointerSizedIntegerType> With(IFixedList<DataType> typeArguments)
@@ -47,9 +47,19 @@ public sealed class PointerSizedIntegerType : IntegerType
         return BareType;
     }
 
-    public override ValueType<PointerSizedIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
+    public override CapabilityType<PointerSizedIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override ValueType<PointerSizedIntegerType> With(Capability capability)
+
+    public override CapabilityType<PointerSizedIntegerType> With(Capability capability)
         => BareType.With(capability);
+
+    public override IDeclaredAntetype ToAntetype()
+    {
+        if (this == Size) return IAntetype.Size;
+        if (this == Offset) return IAntetype.Offset;
+        if (this == NInt) return IAntetype.NInt;
+        if (this == NUInt) return IAntetype.NUInt;
+        throw new UnreachableException();
+    }
 }

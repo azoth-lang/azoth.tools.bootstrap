@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
@@ -13,32 +14,32 @@ public sealed class MethodSymbol : InvocableSymbol
     public override TypeSymbol ContextTypeSymbol => ContainingSymbol;
     public MethodKind Kind { get; }
     public override IdentifierName Name { get; }
-    public SelfParameter SelfParameterType { get; }
+    public SelfParameterType SelfParameterType { get; }
     public FunctionType MethodGroupType { get; }
 
     public MethodSymbol(
         TypeSymbol containingSymbol,
         IdentifierName name,
-        SelfParameter selfParameterType,
-        IFixedList<Parameter> parameters,
-        Return @return)
-        : this(containingSymbol, MethodKind.Standard, name, selfParameterType, parameters, @return)
+        SelfParameterType selfParameterType,
+        IFixedList<ParameterType> parameters,
+        ReturnType returnType)
+        : this(containingSymbol, MethodKind.Standard, name, selfParameterType, parameters, returnType)
     { }
 
     public MethodSymbol(
         TypeSymbol containingSymbol,
         MethodKind kind,
         IdentifierName name,
-        SelfParameter selfParameterType,
-        IFixedList<Parameter> parameters,
-        Return @return)
-        : base(parameters, @return)
+        SelfParameterType selfParameterType,
+        IFixedList<ParameterType> parameters,
+        ReturnType returnType)
+        : base(parameters, returnType)
     {
         ContainingSymbol = containingSymbol;
         Name = name;
         SelfParameterType = selfParameterType;
         Kind = kind;
-        MethodGroupType = new FunctionType(parameters, @return);
+        MethodGroupType = new FunctionType(parameters, returnType);
     }
 
     public override bool Equals(Symbol? other)

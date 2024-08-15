@@ -1,3 +1,5 @@
+using System;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
@@ -19,6 +21,22 @@ public sealed class CapabilityTypeConstraint : Pseudotype
 
     public override DataType ToUpperBound()
         => BareType.With(Capability.UpperBound);
+
+    public override IMaybeExpressionAntetype ToAntetype() => BareType.ToAntetype();
+
+    #region Equality
+    public override bool Equals(Pseudotype? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return other is CapabilityTypeConstraint capabilityTypeConstraint
+               && Capability.Equals(capabilityTypeConstraint.Capability)
+               && BareType.Equals(capabilityTypeConstraint.BareType);
+    }
+
+    public override int GetHashCode() => HashCode.Combine(Capability, BareType);
+    #endregion
+
 
     public override string ToILString() => $"{Capability} {BareType.ToILString()}";
 

@@ -26,7 +26,7 @@ public static class TypeError
         DataType rightOperandType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3001, $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType.ToNonConstantType().ToSourceCodeString()}` and `{rightOperandType.ToNonConstantType().ToSourceCodeString()}`.");
+            3001, $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType.ToNonConstValueType().ToSourceCodeString()}` and `{rightOperandType.ToNonConstValueType().ToSourceCodeString()}`.");
     }
 
     public static Diagnostic OperatorCannotBeAppliedToOperandOfType(
@@ -60,7 +60,7 @@ public static class TypeError
     public static Diagnostic CannotImplicitlyConvert(CodeFile file, IConcreteSyntax expression, DataType ofType, DataType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3006, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstantType().ToSourceCodeString()}` to type `{toType.ToNonConstantType().ToSourceCodeString()}`");
+            3006, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstValueType().ToSourceCodeString()}` to type `{toType.ToNonConstValueType().ToSourceCodeString()}`");
     }
 
     public static Diagnostic MustBeInvocable(CodeFile file, IExpressionSyntax expression)
@@ -96,10 +96,10 @@ public static class TypeError
     public static Diagnostic CannotExplicitlyConvert(CodeFile file, IConcreteSyntax expression, DataType ofType, DataType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3012, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstantType().ToSourceCodeString()}` to type `{toType.ToNonConstantType().ToSourceCodeString()}`");
+            3012, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstValueType().ToSourceCodeString()}` to type `{toType.ToNonConstValueType().ToSourceCodeString()}`");
     }
 
-    public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, IConcreteSyntax expression, Capability capability, DeclaredReferenceType type)
+    public static Diagnostic CannotApplyCapabilityToConstantType(CodeFile file, IConcreteSyntax expression, Capability capability, DeclaredType type)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3013, $"Cannot use `{capability.ToSourceCodeString()}` on constant type `{type}`");
@@ -136,7 +136,7 @@ public static class TypeError
             3018, $"Cannot await non-awaitable type `{type.ToSourceCodeString()}`.");
     }
 
-    public static Diagnostic CapabilityAppliedToTypeParameter(CodeFile file, ITypeNameSyntax typeSyntax)
+    public static Diagnostic CapabilityAppliedToTypeParameter(CodeFile file, ITypeSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3019, $"Reference capabilities cannot be applied to type parameters `{typeSyntax.ToString()}`.");
@@ -166,13 +166,13 @@ public static class TypeError
             3023, $"Cannot access `var` field `{exp.MemberName}` from type `{contextType.ToSourceCodeString()}`.");
     }
 
-    public static Diagnostic CapabilityAppliedToEmptyType(CodeFile file, ITypeNameSyntax typeSyntax)
+    public static Diagnostic CapabilityAppliedToEmptyType(CodeFile file, ICapabilityTypeSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3024, $"Reference capabilities cannot be applied to empty types `{typeSyntax.ToString()}`.");
     }
 
-    public static Diagnostic SupertypeMustBeOutputSafe(CodeFile file, ISupertypeNameSyntax typeSyntax)
+    public static Diagnostic SupertypeMustBeOutputSafe(CodeFile file, IStandardTypeNameSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3025, $"Supertype `{typeSyntax.ToString()}` is not output safe.");
@@ -190,19 +190,19 @@ public static class TypeError
             3027, $"Return type `{type.ToSourceCodeString()}` is not output safe.");
     }
 
-    public static Diagnostic VarFieldMustBeInputAndOutputSafe(CodeFile file, IFieldDeclarationSyntax fieldSyntax, DataType type)
+    public static Diagnostic VarFieldMustBeInputAndOutputSafe(CodeFile file, IFieldDefinitionSyntax fieldSyntax, DataType type)
     {
         return new(file, fieldSyntax.Type.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3028, $"The field `{fieldSyntax.Name}` declared with `var` of type `{type.ToSourceCodeString()}` is not input and output safe.");
     }
 
-    public static Diagnostic LetFieldMustBeOutputSafe(CodeFile file, IFieldDeclarationSyntax fieldSyntax, DataType type)
+    public static Diagnostic LetFieldMustBeOutputSafe(CodeFile file, IFieldDefinitionSyntax fieldSyntax, DataType type)
     {
         return new(file, fieldSyntax.Type.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3029, $"The field `{fieldSyntax.Name}` declared with `let` of type `{type.ToSourceCodeString()}` is not output safe.");
     }
 
-    public static Diagnostic FieldMustMaintainIndependence(CodeFile file, IFieldDeclarationSyntax fieldSyntax, DataType type)
+    public static Diagnostic FieldMustMaintainIndependence(CodeFile file, IFieldDefinitionSyntax fieldSyntax, DataType type)
     {
         return new(file, fieldSyntax.Type.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3030, $"The field `{fieldSyntax.Name}` of type `{type.ToSourceCodeString()}` does not maintain the independence of the type parameters.");
@@ -214,10 +214,10 @@ public static class TypeError
             3031, $"Type parameter `{typeSyntax}` cannot be used here.");
     }
 
-    public static Diagnostic EmptyTypeCannotBeUsedHere(CodeFile file, ITypeNameSyntax typeSyntax)
+    public static Diagnostic SpecialTypeCannotBeUsedHere(CodeFile file, ITypeNameSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3032, $"Empty type `{typeSyntax}` cannot be used here.");
+            3032, $"Special type `{typeSyntax}` cannot be used here.");
     }
 
     public static Diagnostic CapabilityNotCompatibleWithConstraint(CodeFile file, IConcreteSyntax typeSyntax, GenericParameter parameter, DataType arg)
@@ -226,7 +226,7 @@ public static class TypeError
             3033, $"In `{typeSyntax}` the capability of `{arg.ToSourceCodeString()}` is not compatible with the capability constraint on `{parameter}`.");
     }
 
-    public static Diagnostic SupertypeMustMaintainIndependence(CodeFile file, ISupertypeNameSyntax typeSyntax)
+    public static Diagnostic SupertypeMustMaintainIndependence(CodeFile file, IStandardTypeNameSyntax typeSyntax)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3034, $"Supertype `{typeSyntax.ToString()}` does not maintain independence.");
@@ -238,7 +238,7 @@ public static class TypeError
             3035, $"No function in group `{nameSyntax.ToString()}` matches the expected type `{functionType.ToSourceCodeString()}`.");
     }
 
-    public static Diagnostic AmbiguousFunctionGroup(CodeFile file, INameExpressionSyntax nameSyntax, FunctionType functionType)
+    public static Diagnostic AmbiguousFunctionGroup(CodeFile file, INameExpressionSyntax nameSyntax, DataType functionType)
     {
         return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3036, $"Function group `{nameSyntax.ToString()}` has multiple functions that match the expected type `{functionType.ToSourceCodeString()}`.");

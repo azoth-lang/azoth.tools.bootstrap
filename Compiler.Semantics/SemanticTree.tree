@@ -1,0 +1,598 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
+◊root Semantic;
+◊prefix I;
+◊suffix Node;
+◊using System.Collections.Generic;
+◊using System.Numerics;
+◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+◊using Azoth.Tools.Bootstrap.Compiler.Core;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+◊using Azoth.Tools.Bootstrap.Compiler.CST;
+◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
+◊using Azoth.Tools.Bootstrap.Compiler.Types;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
+◊using Azoth.Tools.Bootstrap.Framework;
+
+Semantic <: `ITreeNode` = Syntax:`ISyntax`?;
+// Parent and Package types quoted so that is is not treated as a child node
+Child <: `IChildTreeNode<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageDeclarationNode`;
+
+// ---------- Special Parts
+BodyOrBlock <: Code = Statements:`IStatementNode`*;
+ElseClause <: ControlFlow = Syntax:`IConcreteSyntax` FlowStateAfter:`IFlowState` ValueId:`ValueId`;
+BlockOrResult: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
+
+// ---------- Bindings
+Binding <: Code, BindingDeclaration = IsLentBinding:`bool` BindingValueId:`ValueId`
+    BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
+NamedBinding <: Binding, NamedBindingDeclaration =
+    IsMutableBinding:`bool` BindingType:`DataType`
+    ContainingLexicalScope:`LexicalScope`;
+LocalBinding <: NamedBinding = Syntax:`ILocalBindingSyntax`;
+VariableBinding <: LocalBinding, DataFlow;
+
+// ---------- Packages
+Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
+    References:{PackageReference} IntrinsicsReference:`IPackageReferenceNode`
+    PackageDeclarations:`FixedDictionary<IdentifierName,IPackageDeclarationNode>`
+    MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`Diagnostics`
+    PrimitivesDeclarations:{TypeDeclaration} EntryPoint:`IFunctionDefinitionNode`?
+    PackageSymbols:`IPackageSymbols`;
+
+PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPackageSymbolNode`
+    AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
+
+// ---------- Facets
+PackageFacet <: Child, PackageFacetDeclaration = Syntax:`IPackageSyntax`
+    PackageName:`IdentifierName` PackageSymbol:`PackageSymbol`
+    PackageNameScope:`PackageNameScope`
+    CompilationUnits:{CompilationUnit} Definitions:`IFixedSet<IPackageMemberDefinitionNode>`
+    GlobalNamespace:NamespaceDefinition;
+
+// TODO rename to FacetMemberDefinition
+PackageMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefinition
+    = Attributes:Attribute* AccessModifier:`AccessModifier`;
+
+// ---------- Code Files
+Code <: Child = Syntax:`IConcreteSyntax`? File:`CodeFile`;
+
+CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
+    ContainingDeclaration:`IPackageFacetNode` ContainingSymbol:`PackageSymbol`
+    ImplicitNamespaceName:`NamespaceName` ImplicitNamespace:`INamespaceDefinitionNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
+    UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*
+    ContainingLexicalScope:`NamespaceScope` LexicalScope:`LexicalScope`
+    Diagnostics:`Diagnostics`;
+
+UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
+
+// ---------- Definitions
+Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? Facet:`IPackageFacetNode`
+    ContainingDeclaration:`ISymbolDeclarationNode` ContainingSymbol:`Symbol`
+    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
+InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol` ValueIdScope:`ValueIdScope`;
+ExecutableDefinition <: Definition = ValueIdScope:`ValueIdScope` Entry Exit
+    VariableBindingsMap:`FixedDictionary<IVariableBindingNode,int>`;
+ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition
+    = Parameters:ConstructorOrInitializerParameter* Body?;
+ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition
+    = Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body
+    Type:`FunctionType` Symbol:`FunctionSymbol`;
+
+// ---------- Namespace Definitions
+NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
+    IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
+    UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*
+    Definition:`INamespaceDefinitionNode` ContainingDeclaration:`INamespaceDefinitionNode`
+    ContainingNamespace:`INamespaceDefinitionNode` ContainingSymbol:`NamespaceSymbol`
+    Symbol:`NamespaceSymbol` ContainingLexicalScope:`NamespaceSearchScope`;
+NamespaceBlockMemberDefinition <: Definition;
+NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
+    = MemberNamespaces:NamespaceDefinition* PackageMembers:`IPackageMemberDefinitionNode`*
+    Members:`INamespaceMemberDefinitionNode`*;
+NamespaceMemberDefinition <: NamespaceMemberDeclaration;
+
+// ---------- Function Definition
+FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration, ConcreteFunctionInvocableDefinition
+    = Syntax:`IFunctionDefinitionSyntax`
+    ContainingDeclaration:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
+    Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
+    Entry Body Exit
+    Type:`FunctionType` Symbol:`FunctionSymbol`;
+
+// ---------- Type Definitions
+TypeDefinition <: PackageMemberDefinition, AssociatedMemberDefinition, UserTypeDeclaration
+    = Syntax:`ITypeDefinitionSyntax` IsConst:`bool` Name:`StandardName`
+    DeclaredType:`IDeclaredUserType` Symbol:`UserTypeSymbol`
+    GenericParameters:GenericParameter* SupertypesLexicalScope:`LexicalScope`
+    SupertypeNames:StandardTypeName* Supertypes:{`BareReferenceType`}
+    Members:{TypeMemberDefinition};
+ClassDefinition <: TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
+    Attributes:Attribute* IsAbstract:`bool` GenericParameters:GenericParameter*
+    BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName*
+    DeclaredType:`ObjectType`
+    SourceMembers:`IClassMemberDefinitionNode`* Members:{ClassMemberDefinition}
+    DefaultConstructor:DefaultConstructorDefinition?;
+StructDefinition <: TypeDefinition, StructDeclaration = Syntax:`IStructDefinitionSyntax`
+    Attributes:Attribute* GenericParameters:GenericParameter*
+    SupertypeNames:StandardTypeName*
+    DeclaredType:`StructType`
+    SourceMembers:`IStructMemberDefinitionNode`* Members:{StructMemberDefinition}
+    DefaultInitializer:DefaultInitializerDefinition?;
+TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
+    Attributes:Attribute* GenericParameters:GenericParameter*
+    SupertypeNames:StandardTypeName*
+    DeclaredType:`ObjectType`
+    Members:{TraitMemberDefinition};
+
+// ---------- Type Definition Parts
+GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParameterSyntax`
+    Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`
+    Parameter:`GenericParameter` ContainingDeclaredType:`IDeclaredUserType` DeclaredType:`GenericParameterType`
+    ContainingDeclaration:`IUserTypeDeclarationNode` ContainingSymbol:`UserTypeSymbol`
+    Symbol:`GenericParameterTypeSymbol` Members:{TypeMemberDefinition};
+
+// ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
+TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberDefinitionSyntax`? AccessModifier:`AccessModifier`;
+ClassMemberDefinition <: TypeMemberDefinition, ClassMemberDeclaration = Syntax:`IClassMemberDefinitionSyntax`?;
+TraitMemberDefinition <: TypeMemberDefinition, TraitMemberDeclaration = Syntax:`ITraitMemberDefinitionSyntax`;
+StructMemberDefinition <: TypeMemberDefinition, StructMemberDeclaration = Syntax:`IStructMemberDefinitionSyntax`?;
+AlwaysTypeMemberDefinition <: TypeMemberDefinition = ContainingSymbol:`UserTypeSymbol`;
+AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, NamedDeclaration;
+
+// ---------- Member Definitions
+MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition, MethodDeclaration
+    = Syntax:`IMethodDefinitionSyntax` Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
+    Symbol:`MethodSymbol`;
+// TODO getters and setters can be abstract too
+AbstractMethodDefinition <: MethodDefinition, StandardMethodDeclaration = Syntax:`IAbstractMethodDefinitionSyntax`
+    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
+    ContainingDeclaredType:`ObjectType`;
+ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteInvocableDefinition
+    = Syntax:`IConcreteMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
+    Entry Body Exit;
+// TODO rename to Ordinary or Normal
+StandardMethodDefinition <: ConcreteMethodDefinition, StandardMethodDeclaration
+    = Syntax:`IStandardMethodDefinitionSyntax`
+    SelfParameter:MethodSelfParameter Parameters:NamedParameter*
+    Return:Type? Entry Body Exit;
+GetterMethodDefinition <: ConcreteMethodDefinition, GetterMethodDeclaration = Syntax:`IGetterMethodDefinitionSyntax`
+    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type Entry Body Exit;
+SetterMethodDefinition <: ConcreteMethodDefinition, SetterMethodDeclaration = Syntax:`ISetterMethodDefinitionSyntax`
+    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Entry Body Exit;
+ConstructorDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, ConstructorDeclaration
+    = Syntax:`IConstructorDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*
+    Symbol:`ConstructorSymbol`;
+DefaultConstructorDefinition <: ConstructorDefinition
+    = Parameters:ConstructorOrInitializerParameter* Entry Body? Exit;
+SourceConstructorDefinition <: ConstructorDefinition
+    = Syntax:`IConstructorDefinitionSyntax`
+    SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Entry Body:BlockBody Exit;
+InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, InitializerDeclaration
+    = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*
+    Symbol:`InitializerSymbol`;
+DefaultInitializerDefinition <: InitializerDefinition
+    = Parameters:ConstructorOrInitializerParameter* Entry Body? Exit;
+SourceInitializerDefinition <: InitializerDefinition
+    = Syntax:`IInitializerDefinitionSyntax`
+    SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Entry Body:BlockBody Exit;
+FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, NamedBinding, FieldDeclaration, ExecutableDefinition
+    = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type BindingAntetype:`IMaybeAntetype` BindingType:`DataType`
+    Symbol:`FieldSymbol` Entry Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
+    IntermediateInitializer:`IExpressionNode`? Exit;
+AssociatedFunctionDefinition <: ConcreteFunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
+    = Syntax:`IAssociatedFunctionDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
+   Symbol:`FunctionSymbol` Type:`FunctionType` Entry Body Exit;
+
+// ---------- Attributes
+Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName ReferencedSymbol:`ConstructorSymbol`?;
+
+// ---------- Capabilities
+CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`ICapabilityConstraint`;
+CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint:`CapabilitySet`;
+Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability`;
+
+// ---------- Parameters
+Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
+    BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype` BindingValueId:`ValueId` FlowStateAfter:`IFlowState`;
+/// A non-self parameter that can be declared in a constructor
+ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`
+    BindingType:`DataType` ParameterType:`ParameterType`;
+NamedParameter <: ConstructorOrInitializerParameter, LocalBinding = Syntax:`INamedParameterSyntax`
+    IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName`
+    TypeNode:Type;
+SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool`
+    ContainingTypeDefinition:`ITypeDefinitionNode` ContainingDeclaredType:`IDeclaredUserType`
+    // TODO remove parameter symbols
+    ParameterType:`SelfParameterType`;
+ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax`
+    IsLentBinding:`bool` Capability BindingType:`CapabilityType` ContainingDeclaredType:`ObjectType`;
+InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax`
+    IsLentBinding:`bool` Capability BindingType:`CapabilityType` ContainingDeclaredType:`StructType`;
+MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool`
+    Capability:CapabilityConstraint ;
+FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`
+    ContainingTypeDefinition:`ITypeDefinitionNode` ReferencedField:`IFieldDefinitionNode`?;
+
+// ---------- Function Parts
+Body: BodyOrBlock = FlowStateAfter:`IFlowState`;
+BlockBody: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
+ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement
+    ExpectedAntetype:`IMaybeExpressionAntetype`? ExpectedType:`DataType`?;
+
+// ---------- Types
+Type <: Code = Syntax:`ITypeSyntax` NamedAntetype:`IMaybeAntetype` NamedType:`DataType`;
+// TODO start from generalized names in syntax and rewrite to type names
+TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName` ContainingLexicalScope:`LexicalScope`
+    ReferencedSymbol:`TypeSymbol`? NamedBareType:`BareType`?;
+StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` IsAttributeType:`bool` Name:`StandardName` ReferencedDeclaration:`ITypeDeclarationNode`?;
+SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
+IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax` Name:`IdentifierName`;
+SpecialTypeName <: SimpleTypeName = Syntax:`ISpecialTypeNameSyntax` Name:`SpecialTypeName`
+    ReferencedSymbol:`TypeSymbol`;
+GenericTypeName <: StandardTypeName = Syntax:`IGenericTypeNameSyntax` Name:`GenericName` TypeArguments:Type*;
+QualifiedTypeName <: TypeName = Syntax:`IQualifiedTypeNameSyntax` Context:TypeName QualifiedName:StandardTypeName;
+OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;
+CapabilityType <: Type = Syntax:`ICapabilityTypeSyntax` Capability Referent:Type;
+FunctionType <: Type = Syntax:`IFunctionTypeSyntax` Parameters:ParameterType* Return:Type;
+ParameterType <: Code = Syntax:`IParameterTypeSyntax` IsLent:`bool` Referent:Type Parameter:`ParameterType`;
+ViewpointType <: Type = Syntax:`IViewpointTypeSyntax` Referent:Type;
+CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSyntax` Capability Referent:Type;
+SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type NamedSelfType:`Pseudotype`?;
+
+// ---------- Control Flow
+ControlFlow <: Code = ControlFlowNext:`ControlFlowSet` ControlFlowPrevious:`ControlFlowSet`;
+Entry <: DataFlow;
+Exit <: DataFlow;
+
+// ---------- Data Flow
+DataFlow <: ControlFlow = DataFlowPrevious:`IFixedSet<IDataFlowNode>`
+    DefinitelyAssigned:`BindingFlags<IVariableBindingNode>` DefinitelyUnassigned:`BindingFlags<IVariableBindingNode>`;
+
+// ---------- Statements
+Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?
+    ResultType:`DataType`? ResultValueId:`ValueId`? FlowStateAfter:`IFlowState`;
+ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax`
+    Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode` IntermediateExpression:`IExpressionNode`?
+    ExpectedAntetype:`IMaybeExpressionAntetype`? ExpectedType:`DataType`?;
+BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
+VariableDeclarationStatement <: BodyStatement, VariableBinding = Syntax:`IVariableDeclarationStatementSyntax`
+    IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type?
+    Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
+    IntermediateInitializer:`IExpressionNode`?
+    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
+ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax`
+    Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
+    IntermediateExpression:`IExpressionNode`?;
+
+// ---------- Patterns
+Pattern <: ControlFlow = Syntax:`IPatternSyntax` FlowStateAfter:`IFlowState`;
+BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
+OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
+BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPatternSyntax`
+    IsMutableBinding:`bool` Name:`IdentifierName` ContainingLexicalScope:`LexicalScope` BindingValueId:`ValueId`;
+OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pattern:OptionalOrBindingPattern;
+
+// ---------- Expressions
+// TODO rename Ambiguous to `Unresolved` or `Unbound` because it is not ambiguous, it is just not bound
+AmbiguousExpression <: Code = Syntax:`IExpressionSyntax` ValueId:`ValueId`;
+AmbiguousAssignableExpression <: AmbiguousExpression = Syntax:`IAssignableExpressionSyntax`;
+Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`
+    ExpectedAntetype:`IMaybeExpressionAntetype`? Antetype:`IMaybeExpressionAntetype`
+    ExpectedType:`DataType`? Type:`DataType` FlowStateAfter:`IFlowState`;
+AssignableExpression <: Expression, AmbiguousAssignableExpression = Syntax:`IAssignableExpressionSyntax`;
+BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
+NewObjectExpression <: InvocationExpression = Syntax:`INewObjectExpressionSyntax`
+    ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression*
+    IntermediateArguments:`IExpressionNode?`*
+    ConstructingAntetype:`IMaybeAntetype` ReferencedConstructors:{`IConstructorDeclarationNode`}
+    CompatibleConstructors:{`IConstructorDeclarationNode`} ReferencedConstructor:`IConstructorDeclarationNode`?
+    ContextualizedOverload:`ContextualizedOverload`?;
+UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
+NeverTypedExpression <: Expression = Type:`NeverType`;
+
+// ---------- Literal Expressions
+LiteralExpression <: Expression = Syntax:`ILiteralExpressionSyntax`;
+BoolLiteralExpression <: LiteralExpression = Syntax:`IBoolLiteralExpressionSyntax` Value:`bool` Type:`BoolConstValueType`;
+IntegerLiteralExpression <: LiteralExpression = Syntax:`IIntegerLiteralExpressionSyntax` Value:`BigInteger` Type:`IntegerConstValueType`;
+NoneLiteralExpression <: LiteralExpression = Syntax:`INoneLiteralExpressionSyntax` Type:`OptionalType`;
+StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionSyntax`
+    Value:`string` Type:`DataType` ContainingLexicalScope:`LexicalScope`;
+
+// ---------- Operator Expressions
+AssignmentExpression <: Expression, DataFlow = Syntax:`IAssignmentExpressionSyntax`
+    LeftOperand:AmbiguousAssignableExpression CurrentLeftOperand:`IAmbiguousAssignableExpressionNode` IntermediateLeftOperand:`IAssignableExpressionNode`?
+    Operator:`AssignmentOperator`
+    RightOperand:AmbiguousExpression CurrentRightOperand:`IAmbiguousExpressionNode` IntermediateRightOperand:`IExpressionNode`?;
+BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax`
+    LeftOperand:AmbiguousExpression IntermediateLeftOperand:`IExpressionNode`?
+    Operator:`BinaryOperator`
+    RightOperand:AmbiguousExpression IntermediateRightOperand:`IExpressionNode`?
+    NumericOperatorCommonAntetype:`IAntetype`?
+    ContainingLexicalScope:`LexicalScope`;
+UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` Fixity:`UnaryOperatorFixity`
+    Operator:`UnaryOperator` Operand:AmbiguousExpression IntermediateOperand:`IExpressionNode`?;
+IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression IntermediateReferent:`IExpressionNode`?;
+ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax`
+    Referent:AmbiguousExpression IntermediateReferent:`IExpressionNode?`
+    Operator:`ConversionOperator` ConvertToType:Type;
+ImplicitConversionExpression <: Expression = Referent:Expression CurrentReferent:`IExpressionNode`
+    Antetype:`SimpleAntetype`;
+PatternMatchExpression <: Expression = Syntax:`IPatternMatchExpressionSyntax`
+    Referent:AmbiguousExpression IntermediateReferent:`IExpressionNode`? Pattern;
+
+// ---------- Control Flow Expressions
+IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax`
+    Condition:AmbiguousExpression IntermediateCondition:`IExpressionNode`? ThenBlock:BlockOrResult ElseClause?;
+LoopExpression <: Expression = Syntax:`ILoopExpressionSyntax` Block:BlockExpression;
+WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax`
+    Condition:AmbiguousExpression IntermediateCondition:`IExpressionNode`? Block:BlockExpression;
+ForeachExpression <: Expression, VariableBinding = Syntax:`IForeachExpressionSyntax`
+    IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:AmbiguousExpression
+    IntermediateInExpression:`IExpressionNode`? DeclaredType:Type? Block:BlockExpression
+    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
+    ReferencedIterableDeclaration:`ITypeDeclarationNode`? ReferencedIterateMethod:`IStandardMethodDeclarationNode`?
+    IteratorAntetype:`IMaybeExpressionAntetype` IteratorType:`DataType`
+    ReferencedIteratorDeclaration:`ITypeDeclarationNode`? ReferencedNextMethod:`IStandardMethodDeclarationNode`?
+    IteratedAntetype:`IMaybeAntetype` IteratedType:`DataType`
+    FlowStateBeforeBlock:`IFlowState`;
+BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax`
+    Value:AmbiguousExpression? IntermediateValue:`IExpressionNode`?;
+NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;
+ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax`
+    Value:AmbiguousExpression? CurrentValue:`IAmbiguousExpressionNode`? IntermediateValue:`IExpressionNode`?;
+
+// ---------- Invocation Expressions
+UnresolvedInvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
+    Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
+    Arguments:AmbiguousExpression* CurrentArguments:`IAmbiguousExpressionNode`*;
+InvocationExpression <: Expression =
+    AllArguments:`IEnumerable<IAmbiguousExpressionNode>` AllIntermediateArguments:`IEnumerable<IExpressionNode?>`;
+FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
+    FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
+    IntermediateArguments:`IExpressionNode?`*
+    CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?
+    ContextualizedOverload:`ContextualizedOverload`?;
+MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
+    MethodGroup:MethodGroupName Arguments:AmbiguousExpression* CurrentArguments:`IAmbiguousExpressionNode`*
+    IntermediateArguments:`IExpressionNode?`*
+    CompatibleDeclarations:{`IStandardMethodDeclarationNode`} ReferencedDeclaration:`IStandardMethodDeclarationNode`?
+    ContextualizedOverload:`ContextualizedOverload`?;
+GetterInvocationExpression <: InvocationExpression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:Expression PropertyName:`StandardName`
+    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`IGetterMethodDeclarationNode`?
+    ContextualizedOverload:`ContextualizedOverload`?;
+SetterInvocationExpression <: InvocationExpression = Syntax:`IAssignmentExpressionSyntax`
+    Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression IntermediateValue:`IExpressionNode`?
+    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`ISetterMethodDeclarationNode`?
+    ContextualizedOverload:`ContextualizedOverload`?;
+FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
+    Expression:Expression Arguments:AmbiguousExpression* IntermediateArguments:`IExpressionNode?`*
+    FunctionAntetype:`FunctionAntetype` FunctionType:`FunctionType`;
+InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
+    InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IExpressionNode?`*
+    CompatibleDeclarations:{`IInitializerDeclarationNode`} ReferencedDeclaration:`IInitializerDeclarationNode`?
+    ContextualizedOverload:`ContextualizedOverload`?;
+UnknownInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
+    Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
+
+// ---------- Ambiguous Name Expressions
+// TODO consider renaming to `UnboundNameExpression` because the final tree could have a bound name that is still ambigous (e.g. could not determine what it refers to)
+AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
+AmbiguousName <: AmbiguousNameExpression;
+SimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
+StandardNameExpression <: AmbiguousName = Syntax:`IStandardNameExpressionSyntax`
+    Name:`StandardName` ContainingLexicalScope:`LexicalScope` ReferencedDeclarations:`IDeclarationNode`*;
+IdentifierNameExpression <: AmbiguousName, StandardNameExpression, SimpleName, AmbiguousAssignableExpression
+    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
+GenericNameExpression <: AmbiguousName, StandardNameExpression
+    = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
+MemberAccessExpression <: AmbiguousName, AmbiguousAssignableExpression
+    = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression MemberName:`StandardName` TypeArguments:Type*;
+PropertyName <: AmbiguousName, AmbiguousAssignableExpression
+    = Syntax:`IMemberAccessExpressionSyntax` Context:Expression PropertyName:`StandardName`
+    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`};
+
+// ---------- Name Expressions
+NameExpression <: Expression, AmbiguousNameExpression = Syntax:`INameExpressionSyntax`;
+LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
+// TODO Name <: NameExpression
+NamespaceName <: NameExpression = Type:`UnknownType` ReferencedDeclarations:`INamespaceDeclarationNode`*;
+UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
+QualifiedNamespaceName <: NamespaceName = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName Name:`IdentifierName`;
+FunctionGroupName <: NameExpression = Context:NameExpression? FunctionName:`StandardName` TypeArguments:Type*
+    ReferencedDeclarations:{`IFunctionLikeDeclarationNode`};
+FunctionName <: NameExpression = FunctionGroup:FunctionGroupName FunctionName:`StandardName` TypeArguments:`ITypeNode`*
+    ReferencedDeclaration:`IFunctionLikeDeclarationNode`?;
+MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:Expression CurrentContext:`IExpressionNode` MethodName:`StandardName` TypeArguments:Type*
+    ReferencedDeclarations:{`IStandardMethodDeclarationNode`};
+FieldAccessExpression <: NameExpression, AssignableExpression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
+VariableNameExpression <: LocalBindingNameExpression, AssignableExpression, SimpleName
+    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDefinition:`ILocalBindingNode`
+    DataFlowPrevious:`IFixedSet<IDataFlowNode>`;
+TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
+    Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`
+    NamedAntetype:`IMaybeAntetype` NamedBareType:`BareType`?;
+StandardTypeNameExpression <: TypeNameExpression = Syntax:`IStandardNameExpressionSyntax` TypeArguments:Type*;
+QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:NamespaceName TypeArguments:Type*;
+InitializerGroupName <: NameExpression = Syntax:`INameExpressionSyntax`
+    Context:TypeNameExpression InitializerName:`StandardName`? InitializingAntetype:`IMaybeAntetype`
+    ReferencedDeclarations:{`IInitializerDeclarationNode`};
+// TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression
+SpecialTypeNameExpression <: NameExpression
+    = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol` Type:`UnknownType`;
+InstanceExpression <: NameExpression, SimpleName; // i.e. `self` or `base`
+// TODO BaseExpression <: InstanceExpression
+SelfExpression <: InstanceExpression, LocalBindingNameExpression
+    = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype`
+    ContainingDeclaration:`IExecutableDefinitionNode` ReferencedDefinition:`ISelfParameterNode`?;
+MissingNameExpression <: NameExpression, SimpleName, AssignableExpression
+    = Syntax:`IMissingNameSyntax` Type:`UnknownType`;
+UnknownNameExpression <: NameExpression = Syntax:`INameExpressionSyntax` Type:`UnknownType`;
+UnknownStandardNameExpression <: UnknownNameExpression
+    = Syntax:`IStandardNameExpressionSyntax` Name:`StandardName` ReferencedDeclarations:{`IDeclarationNode`};
+UnknownIdentifierNameExpression <: UnknownStandardNameExpression, SimpleName, AssignableExpression
+    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
+UnknownGenericNameExpression <: UnknownStandardNameExpression
+    = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
+UnknownMemberAccessExpression <: UnknownNameExpression, AssignableExpression
+    = Syntax:`IMemberAccessExpressionSyntax` Context:Expression MemberName:`StandardName` TypeArguments:Type*
+    ReferencedMembers:{`IDeclarationNode`};
+
+// ---------- Capability Expressions
+AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
+RecoveryExpression <: Expression = IsImplicit:`bool`;
+MoveExpression <: RecoveryExpression = Referent:Expression;
+MoveVariableExpression <: MoveExpression = Referent:LocalBindingNameExpression;
+MoveValueExpression <: MoveExpression = Referent:Expression;
+ImplicitTempMoveExpression <: Expression = Referent:Expression;
+AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
+FreezeExpression <: RecoveryExpression = Referent:Expression IsTemporary:`bool`;
+FreezeVariableExpression <: FreezeExpression = Referent:LocalBindingNameExpression;
+FreezeValueExpression <: FreezeExpression = Referent:Expression;
+PrepareToReturnExpression <: Expression = Value:Expression CurrentValue:`IExpressionNode`;
+
+// ---------- Async Expressions
+AsyncBlockExpression <: Expression = Syntax:`IAsyncBlockExpressionSyntax` Block:BlockExpression;
+AsyncStartExpression <: Expression = Syntax:`IAsyncStartExpressionSyntax` Scheduled:`bool`
+    Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
+AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax`
+    Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
+
+
+// -------------------------------------------------------------------------------------------------
+// Declarations
+// -------------------------------------------------------------------------------------------------
+// Declarations are the abstractions of both definitions and symbols. They are used to represent
+// what a name can refer to.
+// -------------------------------------------------------------------------------------------------
+// TODO move into separate aspect
+
+Declaration;
+ChildDeclaration <: Declaration, Child;
+NamedDeclaration <: ChildDeclaration = Name:`TypeName`;
+SymbolDeclaration <: Declaration = Symbol:`Symbol`;
+InvocableDeclaration <: SymbolDeclaration, ChildDeclaration = Symbol:`InvocableSymbol`;
+
+// ---------- Bindings
+BindingDeclaration <: ChildDeclaration;
+NamedBindingDeclaration <: BindingDeclaration, NamedDeclaration = Name:`IdentifierName`;
+
+// ---------- Packages
+PackageDeclaration <: SymbolDeclaration = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`
+    MainFacet:PackageFacetDeclaration TestingFacet:PackageFacetDeclaration;
+
+PackageMemberDeclaration <: NamespaceMemberDeclaration;
+
+// ---------- Facets
+/// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
+PackageFacetDeclaration <: ChildDeclaration, SymbolDeclaration
+    = PackageAliasOrName:`IdentifierName`? PackageName:`IdentifierName`
+    Symbol:`PackageSymbol` GlobalNamespace:NamespaceDeclaration;
+
+PackageFacetChildDeclaration <: ChildDeclaration
+    = Name:`StandardName`? Facet:`IPackageFacetDeclarationNode`;
+
+// ---------- Namespace Declarations
+NamespaceDeclaration <: NamespaceMemberDeclaration = Name:`IdentifierName` Symbol:`NamespaceSymbol`
+    Members:`INamespaceMemberDeclarationNode`* NestedMembers:`INamespaceMemberDeclarationNode`*;
+NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, SymbolDeclaration;
+
+// ---------- Function Declaration
+// TODO better name for this or perhaps just merge AssociatedFunctionDeclaration into FunctionDeclaration
+FunctionLikeDeclaration <: NamedDeclaration, InvocableDeclaration = Symbol:`FunctionSymbol` Type:`FunctionType`;
+FunctionDeclaration <: PackageMemberDeclaration, FunctionLikeDeclaration;
+
+// ---------- Type Declarations
+PrimitiveTypeDeclaration <: TypeDeclaration = Name:`SpecialTypeName` Members:{TypeMemberDeclaration};
+UserTypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
+    = Name:`StandardName` GenericParameters:GenericParameterDeclaration* Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration} InclusiveMembers:{`ITypeMemberDeclarationNode`};
+ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration} InclusiveMembers:{`IClassMemberDeclarationNode`};
+StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration} InclusiveMembers:{`IStructMemberDeclarationNode`};
+TraitDeclaration <: UserTypeDeclaration = Members:{TraitMemberDeclaration} InclusiveMembers:{`ITraitMemberDeclarationNode`};
+
+// ---------- Type Declaration Parts
+GenericParameterDeclaration <: TypeDeclaration, AssociatedMemberDeclaration
+    = Name:`IdentifierName` Symbol:`GenericParameterTypeSymbol` Members:{TypeMemberDeclaration};
+
+// ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
+TypeMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration;
+ClassMemberDeclaration <: TypeMemberDeclaration;
+TraitMemberDeclaration <: TypeMemberDeclaration;
+StructMemberDeclaration <: TypeMemberDeclaration;
+AssociatedMemberDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, SymbolDeclaration;
+InstanceMemberDeclaration <: TypeMemberDeclaration;
+
+// ---------- Member Declarations
+MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration, InvocableDeclaration
+    = Name:`IdentifierName` Symbol:`MethodSymbol`;
+StandardMethodDeclaration <: MethodDeclaration = Arity:`int` MethodGroupType:`FunctionType`;
+PropertyAccessorDeclaration <: MethodDeclaration;
+GetterMethodDeclaration <: PropertyAccessorDeclaration;
+SetterMethodDeclaration <: PropertyAccessorDeclaration;
+ConstructorDeclaration <: ClassMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration
+    = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
+InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration
+    = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
+FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration
+    = Name:`IdentifierName` BindingType:`DataType` Symbol:`FieldSymbol`;
+AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclaration, InvocableDeclaration;
+
+// ---------- Can be Referenced by Type Name
+TypeDeclaration <: NamedDeclaration, SymbolDeclaration
+    = Symbol:`TypeSymbol` Supertypes:{`BareReferenceType`}
+    Members:{TypeMemberDeclaration} InclusiveMembers:{`ITypeMemberDeclarationNode`};
+
+// -------------------------------------------------------------------------------------------------
+// Symbol Nodes
+// -------------------------------------------------------------------------------------------------
+// Implementations of declarations that are derived from symbols.
+// -------------------------------------------------------------------------------------------------
+// TODO move into separate aspect
+
+// ---------- Packages
+PackageSymbol <: PackageDeclaration = MainFacet:PackageFacetDeclaration TestingFacet:PackageFacetDeclaration;
+
+// ---------- Facets
+// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
+PackageFacetSymbol <: PackageFacetDeclaration = GlobalNamespace:NamespaceDeclaration;
+
+// ---------- Namespace Declarations
+NamespaceSymbol <: NamespaceDeclaration = Members:NamespaceMemberDeclaration*;
+
+// ---------- Function Declaration
+FunctionSymbol <: FunctionDeclaration;
+
+// ---------- Type Declarations
+PrimitiveTypeSymbol <: PrimitiveTypeDeclaration = Members:{TypeMemberDeclaration};
+UserTypeSymbol <: UserTypeDeclaration = GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
+ClassSymbol <: ClassDeclaration = GenericParameters:GenericParameterDeclaration* Members:{ClassMemberDeclaration};
+StructSymbol <: StructDeclaration = GenericParameters:GenericParameterDeclaration* Members:{StructMemberDeclaration};
+TraitSymbol <: TraitDeclaration = GenericParameters:GenericParameterDeclaration* Members:{TraitMemberDeclaration};
+
+// ---------- Type Declaration Parts
+GenericParameterSymbol <: GenericParameterDeclaration = Members:{TypeMemberDeclaration};
+
+// ---------- Member Declarations
+MethodSymbol <: MethodDeclaration;
+StandardMethodSymbol <: MethodSymbol, StandardMethodDeclaration;
+GetterMethodSymbol <: MethodSymbol, GetterMethodDeclaration;
+SetterMethodSymbol <: MethodSymbol, SetterMethodDeclaration;
+ConstructorSymbol <: ConstructorDeclaration;
+InitializerSymbol <: InitializerDeclaration;
+FieldSymbol <: FieldDeclaration;
+AssociatedFunctionSymbol <: AssociatedFunctionDeclaration;

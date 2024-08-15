@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -46,19 +48,19 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public IFixedList<GenericParameter> GenericParameters { get; }
     public bool HasIndependentGenericParameters { get; }
     public bool AllowsVariance { get; }
-    public IFixedList<GenericParameterType> GenericParameterTypes { get; }
+    public virtual IFixedList<GenericParameterType> GenericParameterTypes
+        => FixedList.Empty<GenericParameterType>();
     public bool IsGeneric => GenericParameters.Any();
     public abstract IFixedSet<BareReferenceType> Supertypes { get; }
 
     private protected DeclaredType(
         bool isDeclaredConst,
-        IFixedList<GenericParameterType> genericParametersTypes)
+        IFixedList<GenericParameter> genericParameters)
     {
         IsDeclaredConst = isDeclaredConst;
-        GenericParameters = genericParametersTypes.Select(t => t.Parameter).ToFixedList();
+        GenericParameters = genericParameters;
         HasIndependentGenericParameters = GenericParameters.Any(p => p.HasIndependence);
         AllowsVariance = GenericParameters.Any(p => p.Variance != ParameterVariance.Invariant);
-        GenericParameterTypes = genericParametersTypes;
     }
 
     public abstract BareType With(IFixedList<DataType> typeArguments);
@@ -69,8 +71,10 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     /// Make a version of this type that is the default read reference capability for the type. That
     /// is either read-only or constant.
     /// </summary>
-    public virtual CapabilityType WithRead(IFixedList<DataType> typeArguments)
-        => With(IsDeclaredConst ? Capability.Constant : Capability.Read, typeArguments);
+    public CapabilityType WithRead(IFixedList<DataType> typeArguments)
+        => With(typeArguments).WithRead();
+
+    public abstract IDeclaredAntetype ToAntetype();
 
     #region Equality
     public abstract bool Equals(DeclaredType? other);

@@ -73,7 +73,7 @@ internal sealed class TypeReplacements
             {
                 var replacementType = ReplaceTypeParametersIn(optionalType.Referent);
                 if (!ReferenceEquals(optionalType.Referent, replacementType))
-                    return new OptionalType(replacementType);
+                    return OptionalType.Create(replacementType);
                 break;
             }
             case GenericParameterType genericParameterType:
@@ -102,7 +102,7 @@ internal sealed class TypeReplacements
             {
                 var replacementType = ReplaceTypeParametersIn(selfViewpointType.Referent);
                 if (!ReferenceEquals(selfViewpointType.Referent, replacementType))
-                    return new SelfViewpointType(selfViewpointType.Capability, replacementType);
+                    return SelfViewpointType.Create(selfViewpointType.Capability, replacementType);
                 break;
             }
             case EmptyType _:
@@ -140,10 +140,10 @@ internal sealed class TypeReplacements
         return type.With(replacementTypes);
     }
 
-    public Parameter ReplaceTypeParametersIn(Parameter type)
+    public ParameterType ReplaceTypeParametersIn(ParameterType type)
         => type with { Type = ReplaceTypeParametersIn(type.Type) };
 
-    public Return ReplaceTypeParametersIn(Return @return)
+    public ReturnType ReplaceTypeParametersIn(ReturnType @return)
         => @return with { Type = ReplaceTypeParametersIn(@return.Type) };
 
     private IFixedList<DataType> ReplaceTypeParametersIn(IFixedList<DataType> types)
@@ -160,9 +160,9 @@ internal sealed class TypeReplacements
         return typesReplaced ? replacementTypes.ToFixedList() : types;
     }
 
-    private IFixedList<Parameter> ReplaceTypeParametersIn(IFixedList<Parameter> types)
+    private IFixedList<ParameterType> ReplaceTypeParametersIn(IFixedList<ParameterType> types)
     {
-        var replacementTypes = new List<Parameter>();
+        var replacementTypes = new List<ParameterType>();
         var typesReplaced = false;
         foreach (var type in types)
         {

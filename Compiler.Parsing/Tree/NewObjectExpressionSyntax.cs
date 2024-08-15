@@ -1,10 +1,8 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -21,7 +19,6 @@ internal class NewObjectExpressionSyntax : DataTypedExpressionSyntax, INewObject
     public IdentifierName? ConstructorName { [DebuggerStepThrough] get; }
     public TextSpan? ConstructorNameSpan { [DebuggerStepThrough] get; }
     public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
-    public Promise<ConstructorSymbol?> ReferencedSymbol { [DebuggerStepThrough] get; } = new Promise<ConstructorSymbol?>();
 
     public NewObjectExpressionSyntax(
         TextSpan span,

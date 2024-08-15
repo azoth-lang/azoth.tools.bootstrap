@@ -1,3 +1,5 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -12,10 +14,10 @@ public sealed class BigIntegerType : IntegerType
 
     public override BareValueType<BigIntegerType> BareType { get; }
 
-    public override ValueType<BigIntegerType> Type { get; }
+    public override CapabilityType<BigIntegerType> Type { get; }
 
-    private BigIntegerType(SpecialTypeName name, bool signed)
-        : base(name, signed)
+    private BigIntegerType(SpecialTypeName name, bool isSigned)
+        : base(name, isSigned)
     {
         BareType = new(this, FixedList.Empty<DataType>());
         Type = BareType.With(Capability.Constant);
@@ -27,9 +29,11 @@ public sealed class BigIntegerType : IntegerType
         return BareType;
     }
 
-    public override ValueType<BigIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
+    public override CapabilityType<BigIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override ValueType<BigIntegerType> With(Capability capability)
+    public override CapabilityType<BigIntegerType> With(Capability capability)
         => BareType.With(capability);
+
+    public override IDeclaredAntetype ToAntetype() => IsSigned ? IAntetype.Int : IAntetype.UInt;
 }

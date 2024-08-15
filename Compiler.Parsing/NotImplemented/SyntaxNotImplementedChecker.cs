@@ -12,10 +12,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.NotImplemented;
 internal class SyntaxNotImplementedChecker : SyntaxWalker
 {
     private readonly CompilationUnitSyntax compilationUnit;
-    private readonly Diagnostics diagnostics;
+    private readonly DiagnosticsBuilder diagnostics;
     private readonly CodeFile file;
 
-    public SyntaxNotImplementedChecker(CompilationUnitSyntax compilationUnit, Diagnostics diagnostics)
+    public SyntaxNotImplementedChecker(CompilationUnitSyntax compilationUnit, DiagnosticsBuilder diagnostics)
     {
         this.compilationUnit = compilationUnit;
         this.diagnostics = diagnostics;
@@ -36,11 +36,11 @@ internal class SyntaxNotImplementedChecker : SyntaxWalker
                 if (syn.DefaultValue is not null)
                     diagnostics.Add(ParseError.NotImplemented(file, syn.DefaultValue.Span, "Default values"));
                 break;
-            case IConstructorDeclarationSyntax syn:
+            case IConstructorDefinitionSyntax syn:
                 if (syn.Name is not null)
                     diagnostics.Add(ParseError.NotImplemented(file, syn.Span, "Named constructors"));
                 break;
-            case IFieldDeclarationSyntax syn:
+            case IFieldDefinitionSyntax syn:
                 if (syn.Initializer is not null)
                     diagnostics.Add(ParseError.NotImplemented(file, syn.Initializer.Span, "Field initializers"));
                 break;

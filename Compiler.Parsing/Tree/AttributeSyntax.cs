@@ -5,9 +5,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal class AttributeSyntax : Syntax, IAttributeSyntax
 {
-    public ITypeNameSyntax TypeName { get; }
+    public IStandardTypeNameSyntax TypeName { get; }
 
-    public AttributeSyntax(TextSpan span, ITypeNameSyntax typeName)
+    public AttributeSyntax(TextSpan span, IStandardTypeNameSyntax typeName)
         : base(span)
     {
         TypeName = typeName;

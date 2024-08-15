@@ -24,8 +24,8 @@ public abstract class DeclaredReferenceType : DeclaredType
         bool isDeclaredConst,
         bool isAbstract,
         bool isClass,
-        IFixedList<GenericParameterType> genericParametersTypes)
-        : base(isDeclaredConst, genericParametersTypes)
+        IFixedList<GenericParameter> genericParameter)
+        : base(isDeclaredConst, genericParameter)
     {
         IsAbstract = isAbstract;
         IsClass = isClass;
