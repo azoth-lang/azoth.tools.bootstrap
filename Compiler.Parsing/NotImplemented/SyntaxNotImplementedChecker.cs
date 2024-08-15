@@ -1,9 +1,9 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.CST;
-using Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
 using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
+using Azoth.Tools.Bootstrap.Compiler.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.Syntax.Walkers;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.NotImplemented;
 

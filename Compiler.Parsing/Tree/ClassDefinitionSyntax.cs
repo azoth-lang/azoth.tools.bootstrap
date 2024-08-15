@@ -1,8 +1,8 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
-using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -40,7 +40,7 @@ internal class ClassDefinitionSyntax : TypeDefinitionSyntax<IClassMemberDefiniti
     {
         var modifiers = "";
         var accessModifier = AccessModifier.ToAccessModifier();
-        if (accessModifier != CST.AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
+        if (accessModifier != Syntax.AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
         if (AbstractModifier is not null) modifiers += "abstract ";
         if (ConstModifier is not null) modifiers += "const ";
         if (MoveModifier is not null) modifiers += "move ";

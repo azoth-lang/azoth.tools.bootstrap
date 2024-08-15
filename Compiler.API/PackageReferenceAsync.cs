@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.API;
 

@@ -9,7 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CST;
+namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 // ReSharper disable PartialTypeWithSinglePart
 

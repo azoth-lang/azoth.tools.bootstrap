@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.CST;
+namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 /// <summary>
 /// All non-namespace declarations since a namespace doesn't really create

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CST;
+namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 public partial interface IClassDefinitionSyntax
 {

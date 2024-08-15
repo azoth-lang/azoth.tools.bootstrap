@@ -2,7 +2,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CST;
+namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 public interface IPackageSyntax : ISyntax
 {

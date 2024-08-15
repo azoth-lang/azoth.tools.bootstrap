@@ -1,6 +1,6 @@
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CST;
+namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 /// <summary>
 /// Base type for any declaration that declares a callable thing.

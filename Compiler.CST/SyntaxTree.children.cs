@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CST;
+namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public static class ICodeSyntaxExtensions

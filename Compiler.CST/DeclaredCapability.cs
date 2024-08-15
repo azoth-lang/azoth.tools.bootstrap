@@ -1,7 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CST;
+namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 /// <summary>
 /// The reference capability a type was declared with.

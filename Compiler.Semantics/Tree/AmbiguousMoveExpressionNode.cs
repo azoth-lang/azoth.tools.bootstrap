@@ -1,7 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
-using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
+using Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 

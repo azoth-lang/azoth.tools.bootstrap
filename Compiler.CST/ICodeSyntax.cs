@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.CST;
+namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 /// <summary>
 /// Syntax that corresponds to Azoth code.

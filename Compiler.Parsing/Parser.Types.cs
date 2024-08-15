@@ -1,8 +1,8 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
-using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
+using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -91,21 +91,21 @@ public partial class Parser
         switch (Tokens.Current)
         {
             case IQuestionToken:
-                {
-                    var question = Tokens.Consume<IQuestionToken>();
-                    var span = TextSpan.Covering(type.Span, question);
-                    type = new OptionalTypeSyntax(span, type);
-                    return true;
-                }
+            {
+                var question = Tokens.Consume<IQuestionToken>();
+                var span = TextSpan.Covering(type.Span, question);
+                type = new OptionalTypeSyntax(span, type);
+                return true;
+            }
             case IQuestionQuestionToken:
-                {
-                    var questionQuestion = Tokens.ConsumeToken<IQuestionQuestionToken>();
-                    var span = TextSpan.Covering(type.Span, questionQuestion.FirstQuestionSpan);
-                    type = new OptionalTypeSyntax(span, type);
-                    span = TextSpan.Covering(type.Span, questionQuestion.SecondQuestionSpan);
-                    type = new OptionalTypeSyntax(span, type);
-                    return true;
-                }
+            {
+                var questionQuestion = Tokens.ConsumeToken<IQuestionQuestionToken>();
+                var span = TextSpan.Covering(type.Span, questionQuestion.FirstQuestionSpan);
+                type = new OptionalTypeSyntax(span, type);
+                span = TextSpan.Covering(type.Span, questionQuestion.SecondQuestionSpan);
+                type = new OptionalTypeSyntax(span, type);
+                return true;
+            }
             default:
                 return false;
         }

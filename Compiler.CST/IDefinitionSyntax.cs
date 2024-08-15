@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.CST;
+namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 public partial interface IDefinitionSyntax
 {

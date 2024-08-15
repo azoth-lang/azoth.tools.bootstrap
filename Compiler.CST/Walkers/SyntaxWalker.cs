@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Linq;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CST.Walkers;
+namespace Azoth.Tools.Bootstrap.Compiler.Syntax.Walkers;
 
 public abstract class SyntaxWalker<T>
 {

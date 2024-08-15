@@ -1,6 +1,6 @@
-using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.SyntaxBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Validation;
+using Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 

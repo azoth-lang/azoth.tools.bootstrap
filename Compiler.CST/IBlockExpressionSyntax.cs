@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.CST;
+namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 /// <summary>
 /// A block expression. Not to be used to represent function or type bodies.

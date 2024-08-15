@@ -1,7 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CST;
+namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 public enum AccessModifier
 {

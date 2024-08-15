@@ -1,8 +1,8 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
-using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -35,7 +35,7 @@ internal class TraitDefinitionSyntax : TypeDefinitionSyntax<ITraitMemberDefiniti
     {
         var modifiers = "";
         var accessModifier = AccessModifier.ToAccessModifier();
-        if (accessModifier != CST.AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
+        if (accessModifier != Syntax.AccessModifier.Private) modifiers += accessModifier.ToSourceString() + " ";
         if (ConstModifier is not null) modifiers += "const ";
         if (MoveModifier is not null) modifiers += "move ";
         var generics = GenericParameters.Any() ? $"[{string.Join(", ", GenericParameters)}]" : "";
