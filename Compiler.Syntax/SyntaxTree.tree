@@ -47,7 +47,7 @@ InvocableDefinition: EntityDefinition = Parameters:ConstructorOrInitializerParam
 ConcreteInvocableDefinition: InvocableDefinition = Parameters:ConstructorOrInitializerParameter* Body;
 
 // ---------- Namespace Definitions
-NonMemberDefinition: Definition = ContainingNamespaceName:`NamespaceName`;
+NonMemberDefinition: Definition;
 NamespaceDefinition: NonMemberDefinition = IsGlobalQualified:`bool` DeclaredNames:`NamespaceName` UsingDirectives:UsingDirective* Definitions:NonMemberDefinition*;
 
 // ---------- Function Definition

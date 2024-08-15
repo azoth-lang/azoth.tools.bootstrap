@@ -159,7 +159,6 @@ public partial interface IConcreteInvocableDefinitionSyntax : IInvocableDefiniti
     typeof(ITypeDefinitionSyntax))]
 public partial interface INonMemberDefinitionSyntax : IDefinitionSyntax
 {
-    NamespaceName ContainingNamespaceName { get; }
 }
 
 public partial interface INamespaceDefinitionSyntax : INonMemberDefinitionSyntax

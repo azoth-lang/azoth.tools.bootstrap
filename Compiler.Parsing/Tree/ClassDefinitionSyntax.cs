@@ -1,5 +1,4 @@
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -15,7 +14,6 @@ internal class ClassDefinitionSyntax : TypeDefinitionSyntax<IClassMemberDefiniti
     public override IFixedList<IClassMemberDefinitionSyntax> Members { get; }
 
     public ClassDefinitionSyntax(
-        NamespaceName containingNamespaceName,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -28,7 +26,7 @@ internal class ClassDefinitionSyntax : TypeDefinitionSyntax<IClassMemberDefiniti
         IStandardTypeNameSyntax? baseTypeName,
         IFixedList<IStandardTypeNameSyntax> supertypesNames,
         IFixedList<IClassMemberDefinitionSyntax> members)
-        : base(containingNamespaceName, span, file, accessModifier, constModifier, moveModifier,
+        : base(span, file, accessModifier, constModifier, moveModifier,
             nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypesNames)
     {
         AbstractModifier = abstractModifier;

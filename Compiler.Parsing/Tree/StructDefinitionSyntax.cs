@@ -1,5 +1,4 @@
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -13,7 +12,6 @@ internal class StructDefinitionSyntax : TypeDefinitionSyntax<IStructMemberDefini
     public override IFixedList<IStructMemberDefinitionSyntax> Members { get; }
 
     public StructDefinitionSyntax(
-        NamespaceName containingNamespaceName,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -24,7 +22,7 @@ internal class StructDefinitionSyntax : TypeDefinitionSyntax<IStructMemberDefini
         IFixedList<IGenericParameterSyntax> genericParameters,
         IFixedList<IStandardTypeNameSyntax> supertypesNames,
         IFixedList<IStructMemberDefinitionSyntax> members)
-        : base(containingNamespaceName, span, file, accessModifier, constModifier, structKind as IMoveKeywordToken,
+        : base(span, file, accessModifier, constModifier, structKind as IMoveKeywordToken,
             nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypesNames)
     {
         Members = members;

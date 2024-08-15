@@ -9,7 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal sealed class FunctionDefinitionSyntax : InvocableDefinitionSyntax, IFunctionDefinitionSyntax
 {
-    public NamespaceName ContainingNamespaceName { get; }
     public IFixedList<IAttributeSyntax> Attributes { get; }
     public new IdentifierName Name { get; }
     public new IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
@@ -17,7 +16,6 @@ internal sealed class FunctionDefinitionSyntax : InvocableDefinitionSyntax, IFun
     public IBodySyntax Body { [DebuggerStepThrough] get; }
 
     public FunctionDefinitionSyntax(
-        NamespaceName containingNamespaceName,
         TextSpan span,
         CodeFile file,
         IFixedList<IAttributeSyntax> attributes,
@@ -29,7 +27,6 @@ internal sealed class FunctionDefinitionSyntax : InvocableDefinitionSyntax, IFun
         IBodySyntax body)
         : base(span, file, accessModifier, nameSpan, name, parameters)
     {
-        ContainingNamespaceName = containingNamespaceName;
         Name = name;
         Parameters = parameters;
         Body = body;

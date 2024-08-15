@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -24,7 +23,6 @@ internal abstract class TypeDefinitionSyntax<TMember> : NonMemberDefinitionSynta
     private readonly Lazy<IFixedList<ITypeMemberDefinitionSyntax>> members;
 
     protected TypeDefinitionSyntax(
-        NamespaceName containingNamespaceName,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -34,7 +32,7 @@ internal abstract class TypeDefinitionSyntax<TMember> : NonMemberDefinitionSynta
         StandardName name,
         IFixedList<IGenericParameterSyntax> genericParameters,
         IFixedList<IStandardTypeNameSyntax> supertypeNames)
-        : base(containingNamespaceName, span, file, name, nameSpan)
+        : base(span, file, name, nameSpan)
     {
         AccessModifier = accessModifier;
         ConstModifier = constModifier;

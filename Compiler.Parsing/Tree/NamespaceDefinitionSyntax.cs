@@ -1,5 +1,4 @@
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -20,7 +19,6 @@ internal class NamespaceDefinitionSyntax : NonMemberDefinitionSyntax, INamespace
     public IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
 
     public NamespaceDefinitionSyntax(
-        NamespaceName containingNamespaceName,
         TextSpan span,
         CodeFile file,
         bool isGlobalQualified,
@@ -28,7 +26,7 @@ internal class NamespaceDefinitionSyntax : NonMemberDefinitionSyntax, INamespace
         TextSpan nameSpan,
         IFixedList<IUsingDirectiveSyntax> usingDirectives,
         IFixedList<INonMemberDefinitionSyntax> declarations)
-        : base(containingNamespaceName, span, file, declaredNames.Segments.LastOrDefault(), nameSpan)
+        : base(span, file, declaredNames.Segments.LastOrDefault(), nameSpan)
     {
         DeclaredNames = declaredNames;
         UsingDirectives = usingDirectives;

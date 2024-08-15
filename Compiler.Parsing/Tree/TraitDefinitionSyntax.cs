@@ -1,5 +1,4 @@
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -13,8 +12,6 @@ internal class TraitDefinitionSyntax : TypeDefinitionSyntax<ITraitMemberDefiniti
     public override IFixedList<ITraitMemberDefinitionSyntax> Members { get; }
 
     public TraitDefinitionSyntax(
-        NamespaceName containingNamespaceName,
-        ITypeDefinitionSyntax? declaringType,
         TextSpan span,
         CodeFile file,
         IAccessModifierToken? accessModifier,
@@ -25,7 +22,7 @@ internal class TraitDefinitionSyntax : TypeDefinitionSyntax<ITraitMemberDefiniti
         IFixedList<IGenericParameterSyntax> genericParameters,
         IFixedList<IStandardTypeNameSyntax> supertypes,
         IFixedList<ITraitMemberDefinitionSyntax> members)
-        : base(containingNamespaceName, span, file, accessModifier, constModifier, moveModifier,
+        : base(span, file, accessModifier, constModifier, moveModifier,
             nameSpan, StandardName.Create(name, genericParameters.Count), genericParameters, supertypes)
     {
         Members = members;
