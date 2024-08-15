@@ -12,11 +12,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
     typeof(ExternalSymbol))]
 public abstract class Symbol : IEquatable<Symbol>
 {
-    public static ExternalSymbol Void { get; } = new ExternalSymbol("void");
-
-    public static Symbol? CreateExternal(string? name)
-        => name is null or "void" ? null : new ExternalSymbol(name);
-
     [return: NotNullIfNotNull(nameof(syntax))]
     public static Symbol? CreateFromSyntax(Grammar? grammar, SymbolNode? syntax)
     {

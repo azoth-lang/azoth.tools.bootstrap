@@ -2,6 +2,7 @@ using System;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
+
 public sealed class ExternalSymbol : Symbol
 {
     public override string FullName { get; }

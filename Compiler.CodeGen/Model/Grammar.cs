@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
@@ -10,7 +11,6 @@ public sealed class Grammar
 {
     public GrammarNode Syntax { get; }
 
-    public Language Language { get; }
     public string Namespace => Syntax.Namespace;
     public Symbol? DefaultParent { get; }
     public string Prefix => Syntax.Prefix;
@@ -18,9 +18,8 @@ public sealed class Grammar
     public IFixedSet<string> UsingNamespaces => Syntax.UsingNamespaces;
     public IFixedList<Rule> Rules { get; }
 
-    public Grammar(Language language, GrammarNode syntax)
+    public Grammar(GrammarNode syntax)
     {
-        Language = language;
         Syntax = syntax;
         DefaultParent = Symbol.CreateFromSyntax(this, syntax.DefaultParent);
         Rules = syntax.Rules.Select(r => new Rule(this, r)).ToFixedList();
@@ -28,11 +27,7 @@ public sealed class Grammar
     }
 
     public Rule? RuleFor(string shortName)
-        => rulesLookup.TryGetValue(shortName, out var rule) ? rule : null;
-
-    public Rule? RuleFor(Symbol? symbol)
-        => symbol is InternalSymbol internalSymbol
-           && rulesLookup.TryGetValue(internalSymbol.ShortName, out var rule) ? rule : null;
+        => rulesLookup.GetValueOrDefault(shortName);
 
     private readonly FixedDictionary<string, Rule> rulesLookup;
 

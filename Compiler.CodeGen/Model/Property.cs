@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
@@ -48,9 +47,6 @@ public sealed class Property
     /// </summary>
     public bool ReferencesRule => Type.UnderlyingSymbol is InternalSymbol { ReferencedRule: not null };
 
-    public Parameter Parameter => parameter.Value;
-    private readonly Lazy<Parameter> parameter;
-
     public Property(Rule rule, PropertyNode syntax)
     {
         Rule = rule;
@@ -66,14 +62,6 @@ public sealed class Property
             var baseProperties = rule.InheritedPropertiesNamed(this).ToList();
             return baseProperties.Count != 1 || !Types.Type.AreEquivalent(baseProperties[0].Type, Type);
         });
-        parameter = new(() => Parameter.Create(Type, Name.ToCamelCase()));
-    }
-
-    public NonVoidType ComputeFromType()
-    {
-        var fromSymbol = ((InternalSymbol)Type.UnderlyingSymbol).ReferencedRule.ExtendsRule!.Defines;
-        var fromType = Type.WithSymbol(fromSymbol);
-        return fromType;
     }
 
     public override string ToString() => $"{Name}:{Type}";

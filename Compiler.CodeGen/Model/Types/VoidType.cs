@@ -20,7 +20,6 @@ public sealed class VoidType : Type
     }
 
     public override int GetHashCode() => HashCode.Combine(typeof(VoidType));
-
     #endregion
 
     public override int GetEquivalenceHashCode() => HashCode.Combine(typeof(VoidType));

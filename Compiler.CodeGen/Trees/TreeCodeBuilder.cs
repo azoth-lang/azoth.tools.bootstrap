@@ -4,15 +4,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
 public static class TreeCodeBuilder
 {
-    public static string GenerateTree(Language language)
+    public static string GenerateTree(Grammar grammar)
     {
-        var template = new TreeCodeTemplate(language);
+        var template = new TreeCodeTemplate(grammar);
         return template.TransformText();
     }
 
-    public static string GenerateChildren(Language language)
+    public static string GenerateChildren(Grammar grammar)
     {
-        var template = new ChildrenCodeTemplate(language);
+        var template = new ChildrenCodeTemplate(grammar);
         return template.TransformText();
     }
 }
