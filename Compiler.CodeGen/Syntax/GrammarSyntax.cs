@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 public sealed class GrammarSyntax
 {
     public string Namespace { get; }
-    public SymbolSyntax? DefaultParent { get; }
+    public SymbolSyntax? Root { get; }
     public string SymbolPrefix { get; }
     public string SymbolSuffix { get; }
     public IFixedSet<string> UsingNamespaces { get; }
@@ -16,14 +16,14 @@ public sealed class GrammarSyntax
 
     public GrammarSyntax(
         string @namespace,
-        SymbolSyntax? defaultParent,
+        SymbolSyntax? root,
         string symbolPrefix,
         string symbolSuffix,
         IEnumerable<string> usingNamespaces,
         IEnumerable<RuleSyntax> rules)
     {
         Namespace = @namespace;
-        DefaultParent = defaultParent;
+        Root = root;
         SymbolPrefix = symbolPrefix;
         SymbolSuffix = symbolSuffix;
         UsingNamespaces = usingNamespaces.ToFixedSet();

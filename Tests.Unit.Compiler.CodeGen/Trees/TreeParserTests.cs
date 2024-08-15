@@ -18,7 +18,7 @@ public class TreeParserTests
 
         var config = TreeParser.ParseGrammar(grammar);
 
-        Assert.Null(config.DefaultParent);
+        Assert.Null(config.Root);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class TreeParserTests
 
         var config = TreeParser.ParseGrammar(grammar);
 
-        Assert.Equal(Symbol("MyBase"), config.DefaultParent);
+        Assert.Equal(Symbol("MyBase"), config.Root);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class TreeParserTests
 
         var config = TreeParser.ParseGrammar(grammar);
 
-        Assert.Equal(QuotedSymbol("MyBase"), config.DefaultParent);
+        Assert.Equal(QuotedSymbol("MyBase"), config.Root);
     }
 
     [Fact]

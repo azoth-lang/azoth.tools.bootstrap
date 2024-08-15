@@ -210,10 +210,9 @@ internal static class Parsing
 
     private static IEnumerable<SymbolSyntax> ParseSupertypes(string? parents)
     {
-        if (parents is null) return Enumerable.Empty<SymbolSyntax>();
+        if (parents is null) return [];
 
-        return SplitParents(parents)
-               .Select(p => ParseSymbol(p));
+        return SplitParents(parents).Select(p => ParseSymbol(p));
     }
 
     public static IEnumerable<string> SplitParents(string parents)

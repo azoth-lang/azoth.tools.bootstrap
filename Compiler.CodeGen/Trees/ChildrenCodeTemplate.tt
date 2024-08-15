@@ -14,10 +14,10 @@ using ExhaustiveMatching;
 namespace <#=grammar.Namespace #>;
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public static class <#=Emit.TypeName(grammar.DefaultParent)#>Extensions
+public static class <#=Emit.TypeName(grammar.Root)#>Extensions
 {
     [DebuggerStepThrough]
-    public static IEnumerable<<#=Emit.TypeName(grammar.DefaultParent)#>> Children(this <#=Emit.TypeName(grammar.DefaultParent)#> node)
+    public static IEnumerable<<#=Emit.TypeName(grammar.Root)#>> Children(this <#=Emit.TypeName(grammar.Root)#> node)
     {
         switch (node)
         {

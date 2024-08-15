@@ -42,21 +42,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(";\r\n\r\n[GeneratedCode(\"AzothCompilerCodeGen\", null)]\r\npublic static class ");
             
             #line 17 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(grammar.DefaultParent)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(grammar.Root)));
             
             #line default
             #line hidden
             this.Write("Extensions\r\n{\r\n    [DebuggerStepThrough]\r\n    public static IEnumerable<");
             
             #line 20 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(grammar.DefaultParent)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(grammar.Root)));
             
             #line default
             #line hidden
             this.Write("> Children(this ");
             
             #line 20 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(grammar.DefaultParent)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(grammar.Root)));
             
             #line default
             #line hidden

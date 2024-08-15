@@ -12,7 +12,7 @@ public sealed class Grammar
     public GrammarSyntax Syntax { get; }
 
     public string Namespace => Syntax.Namespace;
-    public Symbol? DefaultParent { get; }
+    public Symbol? Root { get; }
     public string SymbolPrefix => Syntax.SymbolPrefix;
     public string SymbolSuffix => Syntax.SymbolSuffix;
     public IFixedSet<string> UsingNamespaces => Syntax.UsingNamespaces;
@@ -21,7 +21,7 @@ public sealed class Grammar
     public Grammar(GrammarSyntax syntax)
     {
         Syntax = syntax;
-        DefaultParent = Symbol.CreateFromSyntax(this, syntax.DefaultParent);
+        Root = Symbol.CreateFromSyntax(this, syntax.Root);
         Rules = syntax.Rules.Select(r => new Rule(this, r)).ToFixedList();
         rulesLookup = Rules.ToFixedDictionary(r => r.Defines.ShortName);
     }
