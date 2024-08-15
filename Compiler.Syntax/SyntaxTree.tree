@@ -49,9 +49,8 @@ FunctionDefinition: NonMemberEntityDefinition <: ConcreteInvocableDefinition = A
 NonMemberEntityDefinition: EntityDefinition <: NonMemberDefinition = Name:`TypeName`;
 TypeDefinition <: NonMemberEntityDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition
     = ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? Name:`StandardName` GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TypeMemberDefinition*;
-ClassOrStructDefinition: TypeDefinition;
-ClassDefinition: ClassOrStructDefinition = AbstractModifier:`IAbstractKeywordToken`? GenericParameters:GenericParameter* BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* Members:ClassMemberDefinition*;
-StructDefinition: ClassOrStructDefinition = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:StructMemberDefinition*;
+ClassDefinition: TypeDefinition = AbstractModifier:`IAbstractKeywordToken`? GenericParameters:GenericParameter* BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* Members:ClassMemberDefinition*;
+StructDefinition: TypeDefinition = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:StructMemberDefinition*;
 TraitDefinition: TypeDefinition = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TraitMemberDefinition*;
 
 // ---------- Type Definition Parts

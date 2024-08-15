@@ -165,7 +165,8 @@ public partial interface INonMemberEntityDefinitionSyntax : IEntityDefinitionSyn
 }
 
 [Closed(
-    typeof(IClassOrStructDefinitionSyntax),
+    typeof(IClassDefinitionSyntax),
+    typeof(IStructDefinitionSyntax),
     typeof(ITraitDefinitionSyntax))]
 public partial interface ITypeDefinitionSyntax : ICodeSyntax, INonMemberEntityDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax
 {
@@ -179,14 +180,7 @@ public partial interface ITypeDefinitionSyntax : ICodeSyntax, INonMemberEntityDe
     IFixedList<ITypeMemberDefinitionSyntax> Members { get; }
 }
 
-[Closed(
-    typeof(IClassDefinitionSyntax),
-    typeof(IStructDefinitionSyntax))]
-public partial interface IClassOrStructDefinitionSyntax : ITypeDefinitionSyntax
-{
-}
-
-public partial interface IClassDefinitionSyntax : IClassOrStructDefinitionSyntax
+public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
 {
     IAbstractKeywordToken? AbstractModifier { get; }
     IStandardTypeNameSyntax? BaseTypeName { get; }
@@ -194,7 +188,7 @@ public partial interface IClassDefinitionSyntax : IClassOrStructDefinitionSyntax
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 }
 
-public partial interface IStructDefinitionSyntax : IClassOrStructDefinitionSyntax
+public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
 {
     new IFixedList<IStructMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
