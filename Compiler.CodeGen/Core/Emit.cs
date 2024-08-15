@@ -34,20 +34,14 @@ internal static class Emit
         return builder.ToString();
     }
 
-    /// <remarks><paramref name="root"/> is distinct from the default parent. The default parent has
-    /// already been applied to the <see cref="Rule"/>. <paramref name="root"/> is used to apply
-    /// a base interface outside of the default parent.</remarks>
-    public static string BaseTypes(Rule rule, string? root = null)
+    public static string BaseTypes(Rule rule)
     {
         var parents = rule.Parents.OfType<ExternalSymbol>().Select(p => p.FullName)
                           .Concat(rule.BaseRules.Select(r => TypeName(r.Defines)))
                           .ToFixedList();
 
         bool anyParents = parents.Any();
-        if (!anyParents && root is null) return "";
-
-        if (root is not null && !anyParents)
-            parents = parents.Append(root).ToFixedList();
+        if (!anyParents) return "";
 
         return " : " + string.Join(", ", parents);
     }

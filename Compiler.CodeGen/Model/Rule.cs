@@ -30,7 +30,7 @@ public class Rule
     public IFixedSet<Rule> DerivedRules => derivedRules.Value;
     private readonly Lazy<IFixedSet<Rule>> derivedRules;
     // TODO this is not the correct term for this. Terminal/Non-Terminal is about whether it is a rule or a token
-    public bool IsTerminal => !DerivedRules.Any();
+    public bool IsTerminal => DerivedRules.IsEmpty;
     public IFixedSet<Rule> DescendantRules => descendantRules.Value;
     private readonly Lazy<IFixedSet<Rule>> descendantRules;
 
@@ -51,32 +51,6 @@ public class Rule
     /// </summary>
     public IFixedList<Property> AllProperties => allProperties.Value;
     private readonly Lazy<IFixedList<Property>> allProperties;
-
-    /// <summary>
-    /// Whether this rule or any decedents of it have been modified.
-    /// </summary>
-    public bool DescendantsModified
-    {
-        get
-        {
-            if (descendantsModified.TryBeginFulfilling(DescendantsModifiedInCycle))
-                descendantsModified.Fulfill(ComputeDescendantsModified());
-
-            return descendantsModified.Result;
-        }
-    }
-    private readonly AcyclicPromise<bool> descendantsModified = new();
-
-    internal bool TryDescendantsModified
-    {
-        get
-        {
-            if (descendantsModified.TryBeginFulfilling())
-                descendantsModified.Fulfill(ComputeDescendantsModified());
-
-            return descendantsModified.ResultOr(false);
-        }
-    }
 
     public Rule(Grammar grammar, RuleNode syntax)
     {
@@ -125,19 +99,4 @@ public class Rule
                .Distinct()
                .Except(inheritedProperties);
     }
-
-    private bool ComputeDescendantsModified()
-    {
-        // Note: added derived rules are not a problem for the cases that matter here
-        return DerivedRules.Any(r => r.TryDescendantsModified)
-               || AllProperties
-                  .Select(p => p.Type.UnderlyingSymbol)
-                  .OfType<InternalSymbol>()
-                  .Select(s => s.ReferencedRule)
-                  .Except(this)
-                  .Any(r => r.TryDescendantsModified);
-    }
-
-    private static void DescendantsModifiedInCycle()
-        => throw new InvalidOperationException("Cycle detected while computing descendants modified");
 }

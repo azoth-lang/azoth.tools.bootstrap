@@ -19,10 +19,4 @@ public static class ShouldEmit
 
     public static bool Constructor(Rule rule)
         => rule.IsTerminal;
-
-    public static bool ExtendsSupertype(Rule rule)
-        => !rule.DescendantsModified;
-
-    public static bool PropertyForward(Property property)
-        => property.ReferencesRule;
 }
