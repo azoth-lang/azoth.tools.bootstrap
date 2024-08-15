@@ -6,10 +6,10 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public static class ICodeSyntaxExtensions
+public static class ISyntaxExtensions
 {
     [DebuggerStepThrough]
-    public static IEnumerable<ICodeSyntax> Children(this ICodeSyntax node)
+    public static IEnumerable<ISyntax> Children(this ISyntax node)
     {
         switch (node)
         {
@@ -22,6 +22,16 @@ public static class ICodeSyntaxExtensions
                     yield return child;
                 yield break;
             case IUsingDirectiveSyntax n:
+                yield break;
+            case IPackageSyntax n:
+                foreach (var child in n.CompilationUnits)
+                    yield return child;
+                foreach (var child in n.TestingCompilationUnits)
+                    yield return child;
+                foreach (var child in n.References)
+                    yield return child;
+                yield break;
+            case IPackageReferenceSyntax n:
                 yield break;
             case INamespaceDefinitionSyntax n:
                 foreach (var child in n.UsingDirectives)

@@ -62,10 +62,10 @@ internal static class Parsing
     {
         if (symbol is null) return null;
         if (symbol == "<default>")
-            return new SymbolSyntax("", false);
+            return new SymbolSyntax("");
         if (symbol.StartsWith('`') && symbol.EndsWith('`'))
             return new SymbolSyntax(symbol[1..^1], true);
-        return new SymbolSyntax(symbol, symbol == "void");
+        return new SymbolSyntax(symbol);
     }
 
     public static IEnumerable<string> ParseToStatements(IEnumerable<string> lines)

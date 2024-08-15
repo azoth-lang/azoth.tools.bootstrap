@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
@@ -14,13 +15,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 // ReSharper disable PartialTypeWithSinglePart
 
 [Closed(
+    typeof(ICodeSyntax),
+    typeof(IPackageSyntax),
+    typeof(IPackageReferenceSyntax))]
+public partial interface ISyntax
+{
+}
+
+[Closed(
     typeof(ICompilationUnitSyntax),
     typeof(IUsingDirectiveSyntax),
     typeof(IBodyOrBlockSyntax),
     typeof(IElseClauseSyntax),
     typeof(IBindingSyntax),
     typeof(IDefinitionSyntax),
-    typeof(ITypeDefinitionSyntax),
     typeof(IGenericParameterSyntax),
     typeof(IAttributeSyntax),
     typeof(ICapabilityConstraintSyntax),
@@ -32,7 +40,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
     typeof(IStatementSyntax),
     typeof(IPatternSyntax),
     typeof(IExpressionSyntax))]
-public partial interface ICodeSyntax
+public partial interface ICodeSyntax : ISyntax
 {
     TextSpan Span { get; }
 }
@@ -89,6 +97,22 @@ public partial interface IBindingSyntax : ICodeSyntax
 public partial interface ILocalBindingSyntax : IBindingSyntax
 {
     TextSpan NameSpan { get; }
+}
+
+public partial interface IPackageSyntax : ISyntax
+{
+    IdentifierName Name { get; }
+    IFixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
+    IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
+    IFixedSet<IPackageReferenceSyntax> References { get; }
+    DiagnosticCollection Diagnostics { get; }
+}
+
+public partial interface IPackageReferenceSyntax : ISyntax
+{
+    IdentifierName AliasOrName { get; }
+    IPackageSymbols Package { get; }
+    bool IsTrusted { get; }
 }
 
 [Closed(
@@ -168,7 +192,7 @@ public partial interface INonMemberEntityDefinitionSyntax : IEntityDefinitionSyn
     typeof(IClassDefinitionSyntax),
     typeof(IStructDefinitionSyntax),
     typeof(ITraitDefinitionSyntax))]
-public partial interface ITypeDefinitionSyntax : ICodeSyntax, INonMemberEntityDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax
+public partial interface ITypeDefinitionSyntax : INonMemberEntityDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax
 {
     IConstKeywordToken? ConstModifier { get; }
     IMoveKeywordToken? MoveModifier { get; }
@@ -626,7 +650,6 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
     typeof(IReturnExpressionSyntax),
     typeof(IInvocationExpressionSyntax),
     typeof(INameExpressionSyntax),
-    typeof(IInstanceExpressionSyntax),
     typeof(IMoveExpressionSyntax),
     typeof(IFreezeExpressionSyntax),
     typeof(IAsyncBlockExpressionSyntax),
@@ -820,7 +843,7 @@ public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionS
 
 [Closed(
     typeof(ISelfExpressionSyntax))]
-public partial interface IInstanceExpressionSyntax : ISimpleNameSyntax, IExpressionSyntax
+public partial interface IInstanceExpressionSyntax : ISimpleNameSyntax
 {
 }
 

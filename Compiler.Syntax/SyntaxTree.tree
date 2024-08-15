@@ -1,5 +1,5 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
-◊root Code;
+◊root <default>;
 ◊prefix I;
 ◊suffix Syntax;
 ◊using System.Numerics;
@@ -8,6 +8,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Compiler.Tokens;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 ◊using Azoth.Tools.Bootstrap.Framework;
@@ -18,19 +19,26 @@
 //     node types even if they appear in different contexts. For example, a `SpecialTypeName` and a
 //     `SpecialTypeNameExpression` should be the same type.
 
+<default>;
+
 Code = Span:`TextSpan`;
-CompilationUnit = File:`CodeFile` ImplicitNamespaceName:`NamespaceName` Diagnostics:`DiagnosticCollection`
+CompilationUnit: Code = File:`CodeFile` ImplicitNamespaceName:`NamespaceName` Diagnostics:`DiagnosticCollection`
     UsingDirectives:UsingDirective* Definitions:NonMemberDefinition*;
-UsingDirective = Name:`NamespaceName`;
+UsingDirective: Code = Name:`NamespaceName`;
 
 // ---------- Special Parts
-BodyOrBlock = Statements:Statement*;
-ElseClause;
+BodyOrBlock: Code = Statements:Statement*;
+ElseClause: Code;
 BlockOrResult: ElseClause;
 
 // ---------- Bindings
-Binding = IsMutableBinding:`bool`;
+Binding: Code = IsMutableBinding:`bool`;
 LocalBinding: Binding = NameSpan:`TextSpan`;
+
+// ---------- Packages
+Package = Name:`IdentifierName` CompilationUnits:{CompilationUnit} TestingCompilationUnits:{CompilationUnit}
+    References:{PackageReference} Diagnostics:`DiagnosticCollection`;
+PackageReference = AliasOrName:`IdentifierName` Package:`IPackageSymbols` IsTrusted:`bool`;
 
 // ---------- Definitions
 Definition: Code = File:`CodeFile` Name:`TypeName`? NameSpan:`TextSpan`;
@@ -47,14 +55,14 @@ FunctionDefinition: NonMemberEntityDefinition <: ConcreteInvocableDefinition = A
 
 // ---------- Type Definitions
 NonMemberEntityDefinition: EntityDefinition <: NonMemberDefinition = Name:`TypeName`;
-TypeDefinition <: NonMemberEntityDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition
+TypeDefinition: NonMemberEntityDefinition <: ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition
     = ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? Name:`StandardName` GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TypeMemberDefinition*;
 ClassDefinition: TypeDefinition = AbstractModifier:`IAbstractKeywordToken`? GenericParameters:GenericParameter* BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* Members:ClassMemberDefinition*;
 StructDefinition: TypeDefinition = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:StructMemberDefinition*;
 TraitDefinition: TypeDefinition = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TraitMemberDefinition*;
 
 // ---------- Type Definition Parts
-GenericParameter = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`;
+GenericParameter: Code = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`;
 
 // ---------- Type Member Definitions (i.e. declarations that can be contained in a type)
 TypeMemberDefinition: EntityDefinition;
@@ -82,15 +90,15 @@ AssociatedFunctionDefinition: AlwaysTypeMemberDefinition <: ClassMemberDefinitio
     = Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
 
 // ---------- Attributes
-Attribute = TypeName:StandardTypeName;
+Attribute: Code = TypeName:StandardTypeName;
 
 // ---------- Capabilities
-CapabilityConstraint = Constraint:`ICapabilityConstraint`;
+CapabilityConstraint: Code = Constraint:`ICapabilityConstraint`;
 CapabilitySet: CapabilityConstraint = Constraint:`CapabilitySet`;
 Capability: CapabilityConstraint = Tokens:`ICapabilityToken`* Declared:`DeclaredCapability` Capability:`Capability`;
 
 // ---------- Parameters and Return
-Parameter = Name:`IdentifierName`? Unused:`bool`;
+Parameter: Code = Name:`IdentifierName`? Unused:`bool`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter: Parameter;
 NamedParameter: ConstructorOrInitializerParameter <: LocalBinding = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` Type DefaultValue:Expression?;
@@ -99,7 +107,7 @@ ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
 InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
 MethodSelfParameter: SelfParameter = IsLentBinding:`bool` Capability:CapabilityConstraint;
 FieldParameter: ConstructorOrInitializerParameter = Name:`IdentifierName` DefaultValue:Expression?;
-Return = Type; // Return type of a function or method
+Return: Code = Type; // Return type of a function or method
 
 // ---------- Function Parts
 Body: BodyOrBlock;
@@ -107,7 +115,7 @@ BlockBody: Body = Statements:BodyStatement*;
 ExpressionBody: Body = ResultStatement Statements:Statement*;
 
 // ---------- Types
-Type;
+Type: Code;
 TypeName: Type = Name:`TypeName`;
 StandardTypeName: TypeName = Name:`StandardName`;
 SimpleTypeName: TypeName;
@@ -118,28 +126,28 @@ QualifiedTypeName: TypeName = Context:TypeName QualifiedName:StandardTypeName;
 OptionalType: Type = Referent:Type;
 CapabilityType: Type = Capability Referent:Type;
 FunctionType: Type = Parameters:ParameterType* Return:ReturnType;
-ParameterType = IsLent:`bool` Referent:Type;
-ReturnType = Referent:Type; // Return type of function type
+ParameterType: Code = IsLent:`bool` Referent:Type;
+ReturnType: Code = Referent:Type; // Return type of function type
 ViewpointType: Type = Referent:Type;
 CapabilityViewpointType: ViewpointType = Capability Referent:Type;
 SelfViewpointType: ViewpointType = Referent:Type;
 
 // ---------- Statements
-Statement;
+Statement: Code;
 ResultStatement: Statement <: BlockOrResult = Expression;
 BodyStatement: Statement;
 VariableDeclarationStatement: BodyStatement <: LocalBinding = NameSpan:`TextSpan` Name:`IdentifierName` Capability? Type? Initializer:Expression?;
 ExpressionStatement: BodyStatement = Expression;
 
 // ---------- Patterns
-Pattern;
+Pattern: Code;
 BindingContextPattern: Pattern = IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern: Pattern;
 BindingPattern: OptionalOrBindingPattern <: LocalBinding = Name:`IdentifierName`;
 OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
-Expression;
+Expression: Code;
 AssignableExpression: Expression;
 BlockExpression: Expression <: BlockOrResult, BodyOrBlock = Statements:Statement*;
 NewObjectExpression: Expression = Type:TypeName ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
@@ -180,7 +188,7 @@ IdentifierNameExpression: NameExpression <: StandardNameExpression, SimpleName, 
     = Name:`IdentifierName`;
 SpecialTypeNameExpression: NameExpression <: Expression = Name:`SpecialTypeName`;
 GenericNameExpression: NameExpression <: StandardNameExpression = Name:`GenericName` TypeArguments:Type*;
-InstanceExpression <: SimpleName, Expression; // i.e. `self` or `base`
+InstanceExpression: SimpleName; // i.e. `self` or `base`
 SelfExpression: NameExpression <: InstanceExpression = IsImplicit:`bool`;
 MemberAccessExpression: NameExpression <: AssignableExpression
     = Context:Expression MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan`;

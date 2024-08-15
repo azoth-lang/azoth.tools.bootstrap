@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -26,7 +25,7 @@ internal class SyntaxNotImplementedChecker : SyntaxWalker
 
     public void Check() => WalkNonNull(compilationUnit);
 
-    protected override void WalkNonNull(ICodeSyntax syntax)
+    protected override void WalkNonNull(ISyntax syntax)
     {
         switch (syntax)
         {
