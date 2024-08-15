@@ -91,19 +91,19 @@ internal static class Parsing
             yield return currentStatement.ToString().Trim();
     }
 
-    public static IEnumerable<RuleSyntax> ParseRules(IEnumerable<string> lines)
+    public static IEnumerable<TreeNodeSyntax> ParseRules(IEnumerable<string> lines)
     {
         var statements = ParseToStatements(lines).ToFixedList();
         foreach (var statement in statements)
             yield return ParseRule(statement);
     }
 
-    public static RuleSyntax ParseRule(string statement)
+    public static TreeNodeSyntax ParseRule(string statement)
     {
         var (declaration, definition) = SplitDeclarationAndDefinition(statement);
         var (defines, supertypes) = ParseDeclaration(declaration);
         var properties = ParseProperties(definition).ToFixedList();
-        return new RuleSyntax(defines, supertypes, properties);
+        return new TreeNodeSyntax(defines, supertypes, properties);
     }
 
     public static (string Declaration, string? Definition) SplitDeclarationAndDefinition(string statement)

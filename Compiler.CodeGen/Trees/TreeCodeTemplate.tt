@@ -12,13 +12,13 @@ namespace <#=tree.Namespace #>;
 
 // ReSharper disable PartialTypeWithSinglePart
 
-<#  foreach(var rule in tree.Rules) {#>
-<#=Emit.ClosedAttribute(rule) #>public partial interface <#= Emit.TypeName(rule.Defines) #><#= Emit.BaseTypes(rule) #>
+<#  foreach(var node in tree.Nodes) {#>
+<#=Emit.ClosedAttribute(node) #>public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(node) #>
 {
-<#      foreach (var property in rule.DeclaredProperties.Where(ShouldEmit.Property)) { #>
+<#      foreach (var property in node.DeclaredProperties.Where(ShouldEmit.Property)) { #>
     <#=Emit.PropertyIsNew(property) #><#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
-<#          foreach (var baseProperty in Build.BaseProperties(rule, property)) { #>
-    <#=Emit.Type(baseProperty.Type) #> <#= Emit.TypeName(baseProperty.Rule.Defines) #>.<#=baseProperty.Name #> => <#=property.Name #>;
+<#          foreach (var baseProperty in Build.BaseProperties(node, property)) { #>
+    <#=Emit.Type(baseProperty.Type) #> <#= Emit.TypeName(baseProperty.Node.Defines) #>.<#=baseProperty.Name #> => <#=property.Name #>;
 <#          } #>
 <#      } #>
 }

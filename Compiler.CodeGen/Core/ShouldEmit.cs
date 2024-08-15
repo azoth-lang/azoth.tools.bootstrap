@@ -14,9 +14,9 @@ public static class ShouldEmit
     public static bool Property(Property property)
         => property.IsDeclared;
 
-    public static bool Class(Rule rule)
-        => !rule.IsAbstract;
+    public static bool Class(TreeNodeModel node)
+        => !node.IsAbstract;
 
-    public static bool Constructor(Rule rule)
-        => !rule.IsAbstract;
+    public static bool Constructor(TreeNodeModel node)
+        => !node.IsAbstract;
 }

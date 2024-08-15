@@ -59,33 +59,33 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(";\r\n\r\n// ReSharper disable PartialTypeWithSinglePart\r\n\r\n");
             
             #line 15 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-  foreach(var rule in tree.Rules) {
+  foreach(var node in tree.Nodes) {
             
             #line default
             #line hidden
             
             #line 16 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClosedAttribute(rule)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClosedAttribute(node)));
             
             #line default
             #line hidden
             this.Write("public partial interface ");
             
             #line 16 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(rule.Defines)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(node.Defines)));
             
             #line default
             #line hidden
             
             #line 16 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseTypes(rule)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseTypes(node)));
             
             #line default
             #line hidden
             this.Write("\r\n{\r\n");
             
             #line 18 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      foreach (var property in rule.DeclaredProperties.Where(ShouldEmit.Property)) { 
+      foreach (var property in node.DeclaredProperties.Where(ShouldEmit.Property)) { 
             
             #line default
             #line hidden
@@ -112,7 +112,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(" { get; }\r\n");
             
             #line 20 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-          foreach (var baseProperty in Build.BaseProperties(rule, property)) { 
+          foreach (var baseProperty in Build.BaseProperties(node, property)) { 
             
             #line default
             #line hidden
@@ -126,7 +126,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(" ");
             
             #line 21 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(baseProperty.Rule.Defines)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(baseProperty.Node.Defines)));
             
             #line default
             #line hidden

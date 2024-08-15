@@ -8,20 +8,20 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
-public class Rule
+public class TreeNodeModel
 {
     public TreeModel Tree { get; }
-    public RuleSyntax Syntax { get; }
+    public TreeNodeSyntax Syntax { get; }
 
     public InternalSymbol Defines { get; }
     public SymbolType DefinesType { get; }
     public IFixedSet<Symbol> Supertypes { get; }
-    private readonly Lazy<IFixedSet<Rule>> supertypeRules;
-    public IFixedSet<Rule> SupertypeRules => supertypeRules.Value;
-    public IFixedSet<Rule> AncestorRules => ancestorRules.Value;
-    private readonly Lazy<IFixedSet<Rule>> ancestorRules;
-    public IFixedSet<Rule> ChildRules => childRules.Value;
-    private readonly Lazy<IFixedSet<Rule>> childRules;
+    private readonly Lazy<IFixedSet<TreeNodeModel>> supertypeNodes;
+    public IFixedSet<TreeNodeModel> SupertypeNodes => supertypeNodes.Value;
+    public IFixedSet<TreeNodeModel> AncestorNodes => ancestorNodes.Value;
+    private readonly Lazy<IFixedSet<TreeNodeModel>> ancestorNodes;
+    public IFixedSet<TreeNodeModel> ChildNodes => childNodes.Value;
+    private readonly Lazy<IFixedSet<TreeNodeModel>> childNodes;
 
     /// <summary>
     /// Whether this tree node is abstract meaning that it cannot be instantiated directly.
@@ -29,10 +29,10 @@ public class Rule
     /// <remarks>Right now, this is determined solely by whether this node has child nodes. If
     /// needed, keywords <c>abstract</c> and <c>concrete</c> could be added to the definition file
     /// to allow overriding this.</remarks>
-    public bool IsAbstract => !ChildRules.IsEmpty;
+    public bool IsAbstract => !ChildNodes.IsEmpty;
 
-    public IFixedSet<Rule> DescendantRules => descendantRules.Value;
-    private readonly Lazy<IFixedSet<Rule>> descendantRules;
+    public IFixedSet<TreeNodeModel> DescendantNodes => descendantNodes.Value;
+    private readonly Lazy<IFixedSet<TreeNodeModel>> descendantNodes;
 
     public IFixedList<Property> DeclaredProperties { get; }
 
@@ -52,7 +52,7 @@ public class Rule
     public IFixedList<Property> AllProperties => allProperties.Value;
     private readonly Lazy<IFixedList<Property>> allProperties;
 
-    public Rule(TreeModel tree, RuleSyntax syntax)
+    public TreeNodeModel(TreeModel tree, TreeNodeSyntax syntax)
     {
         Tree = tree;
         Syntax = syntax;
@@ -62,14 +62,14 @@ public class Rule
         if (Tree.Root is { } root && root != Defines && !Supertypes.Any(s => s is InternalSymbol))
             Supertypes = Supertypes.Append(root).ToFixedSet();
 
-        supertypeRules = new(() => Supertypes.OfType<InternalSymbol>().Select(s => s.ReferencedRule)
+        supertypeNodes = new(() => Supertypes.OfType<InternalSymbol>().Select(s => s.ReferencedNode)
                                              .EliminateRedundantRules().ToFixedSet());
-        ancestorRules = new(() => SupertypeRules.Concat(SupertypeRules.SelectMany(p => p.AncestorRules)).ToFixedSet());
-        childRules = new(() => Tree.Rules.Where(r => r.SupertypeRules.Contains(this)).ToFixedSet());
-        descendantRules = new(() => ChildRules.Concat(ChildRules.SelectMany(r => r.DescendantRules)).ToFixedSet());
+        ancestorNodes = new(() => SupertypeNodes.Concat(SupertypeNodes.SelectMany(p => p.AncestorNodes)).ToFixedSet());
+        childNodes = new(() => Tree.Nodes.Where(r => r.SupertypeNodes.Contains(this)).ToFixedSet());
+        descendantNodes = new(() => ChildNodes.Concat(ChildNodes.SelectMany(r => r.DescendantNodes)).ToFixedSet());
 
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new Property(this, p)).ToFixedList();
-        inheritedProperties = new(() => SupertypeRules.SelectMany(r => r.AllProperties).Distinct().ToFixedList());
+        inheritedProperties = new(() => SupertypeNodes.SelectMany(r => r.AllProperties).Distinct().ToFixedList());
         allProperties = new(() =>
         {
             var rulePropertyNames = DeclaredProperties.Select(p => p.Name).ToFixedSet();
@@ -93,7 +93,7 @@ public class Rule
             return [];
 
         return inheritedProperties
-               .SelectMany(p => p.Rule.InheritedPropertiesNamed(propertyName))
+               .SelectMany(p => p.Node.InheritedPropertiesNamed(propertyName))
                .Distinct()
                .Except(inheritedProperties);
     }

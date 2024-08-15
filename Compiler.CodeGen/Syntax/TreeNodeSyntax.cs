@@ -6,13 +6,13 @@ using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
-public sealed class RuleSyntax
+public sealed class TreeNodeSyntax
 {
     public SymbolSyntax Defines { get; }
     public IFixedSet<SymbolSyntax> Supertypes { get; }
     public IFixedList<PropertySyntax> DeclaredProperties { get; }
 
-    public RuleSyntax(
+    public TreeNodeSyntax(
         SymbolSyntax defines,
         IEnumerable<SymbolSyntax> supertypes,
         IEnumerable<PropertySyntax> declaredProperties)

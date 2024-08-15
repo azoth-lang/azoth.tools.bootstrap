@@ -20,7 +20,7 @@ public sealed class Property
 
     public PropertySyntax Syntax { get; }
 
-    public Rule Rule { get; }
+    public TreeNodeModel Node { get; }
     public string Name => Syntax.Name;
     public NonVoidType Type { get; }
     /// <summary>
@@ -43,23 +43,23 @@ public sealed class Property
     private readonly Lazy<bool> isDeclared;
 
     /// <summary>
-    /// Is the type of this property a reference to another rule?
+    /// Is the type of this property a reference to another node?
     /// </summary>
-    public bool ReferencesRule => Type.UnderlyingSymbol is InternalSymbol { ReferencedRule: not null };
+    public bool ReferencesNode => Type.UnderlyingSymbol is InternalSymbol { ReferencedNode: not null };
 
-    public Property(Rule rule, PropertySyntax syntax)
+    public Property(TreeNodeModel node, PropertySyntax syntax)
     {
-        Rule = rule;
+        Node = node;
         Syntax = syntax;
 
-        var type = Types.Type.CreateFromSyntax(Rule.Tree, syntax.Type);
+        var type = Types.Type.CreateFromSyntax(Node.Tree, syntax.Type);
         if (type is not NonVoidType nonVoidType)
             throw new InvalidOperationException("Property type must be a non-void type.");
         Type = nonVoidType;
-        isNewDefinition = new(() => rule.InheritedPropertiesNamed(this).Any());
+        isNewDefinition = new(() => node.InheritedPropertiesNamed(this).Any());
         isDeclared = new(() =>
         {
-            var baseProperties = rule.InheritedPropertiesNamed(this).ToList();
+            var baseProperties = node.InheritedPropertiesNamed(this).ToList();
             return baseProperties.Count != 1 || !Types.Type.AreEquivalent(baseProperties[0].Type, Type);
         });
     }

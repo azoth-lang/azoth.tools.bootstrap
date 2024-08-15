@@ -16,30 +16,30 @@ public sealed class TreeModel
     public string SymbolPrefix => Syntax.SymbolPrefix;
     public string SymbolSuffix => Syntax.SymbolSuffix;
     public IFixedSet<string> UsingNamespaces => Syntax.UsingNamespaces;
-    public IFixedList<Rule> Rules { get; }
+    public IFixedList<TreeNodeModel> Nodes { get; }
 
     public TreeModel(TreeSyntax syntax)
     {
         Syntax = syntax;
         Root = Symbol.CreateFromSyntax(this, syntax.Root);
-        Rules = syntax.Rules.Select(r => new Rule(this, r)).ToFixedList();
-        rulesLookup = Rules.ToFixedDictionary(r => r.Defines.ShortName);
+        Nodes = syntax.Nodes.Select(r => new TreeNodeModel(this, r)).ToFixedList();
+        nodesLookup = Nodes.ToFixedDictionary(r => r.Defines.ShortName);
     }
 
-    public Rule? RuleFor(string shortName)
-        => rulesLookup.GetValueOrDefault(shortName);
+    public TreeNodeModel? NodeFor(string shortName)
+        => nodesLookup.GetValueOrDefault(shortName);
 
-    private readonly FixedDictionary<string, Rule> rulesLookup;
+    private readonly FixedDictionary<string, TreeNodeModel> nodesLookup;
 
     public void ValidateTreeOrdering()
     {
-        foreach (var rule in Rules.Where(r => !r.IsAbstract))
+        foreach (var rule in Nodes.Where(r => !r.IsAbstract))
         {
             var baseNonTerminalPropertyNames
-                = rule.AncestorRules
+                = rule.AncestorNodes
                   .SelectMany(r => r.DeclaredProperties)
-                  .Where(p => p.ReferencesRule).Select(p => p.Name);
-            var nonTerminalPropertyNames = rule.DeclaredProperties.Where(p => p.ReferencesRule).Select(p => p.Name);
+                  .Where(p => p.ReferencesNode).Select(p => p.Name);
+            var nonTerminalPropertyNames = rule.DeclaredProperties.Where(p => p.ReferencesNode).Select(p => p.Name);
             var missingProperties = baseNonTerminalPropertyNames.Except(nonTerminalPropertyNames).ToList();
             if (missingProperties.Any())
                 throw new ValidationException($"Rule for {rule.Defines} is missing inherited properties: {string.Join(", ", missingProperties)}. Can't determine order to visit children.");

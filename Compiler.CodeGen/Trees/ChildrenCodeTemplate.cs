@@ -64,21 +64,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
                     "      throw ExhaustiveMatch.Failed(node);\r\n");
             
             #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-  foreach(var rule in tree.Rules.Where(r => !r.IsAbstract)) { 
+  foreach(var node in tree.Nodes.Where(r => !r.IsAbstract)) { 
             
             #line default
             #line hidden
             this.Write("            case ");
             
             #line 27 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(rule.Defines)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(node.Defines)));
             
             #line default
             #line hidden
             this.Write(" n:\r\n");
             
             #line 28 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-      foreach(var property in rule.DeclaredProperties.Where(p => p.ReferencesRule)) { 
+      foreach(var property in node.DeclaredProperties.Where(p => p.ReferencesNode)) { 
             
             #line default
             #line hidden

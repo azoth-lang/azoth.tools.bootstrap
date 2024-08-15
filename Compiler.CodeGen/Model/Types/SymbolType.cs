@@ -48,8 +48,8 @@ public sealed class SymbolType : NonOptionalType
         if (Symbol.Equals(type.Symbol)) return true;
         if (Symbol is not InternalSymbol symbol
             || type.Symbol is not InternalSymbol otherSymbol) return false;
-        bool isSubtypeOf = symbol.ReferencedRule.AncestorRules
-                                     .Contains(otherSymbol.ReferencedRule);
+        bool isSubtypeOf = symbol.ReferencedNode.AncestorNodes
+                                     .Contains(otherSymbol.ReferencedNode);
         return isSubtypeOf;
     }
 

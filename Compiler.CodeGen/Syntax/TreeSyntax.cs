@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
+using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
@@ -12,7 +13,7 @@ public sealed class TreeSyntax
     public string SymbolPrefix { get; }
     public string SymbolSuffix { get; }
     public IFixedSet<string> UsingNamespaces { get; }
-    public IFixedList<RuleSyntax> Rules { get; }
+    public IFixedList<TreeNodeSyntax> Nodes { get; }
 
     public TreeSyntax(
         string @namespace,
@@ -20,15 +21,15 @@ public sealed class TreeSyntax
         string symbolPrefix,
         string symbolSuffix,
         IEnumerable<string> usingNamespaces,
-        IEnumerable<RuleSyntax> rules)
+        IEnumerable<TreeNodeSyntax> rules)
     {
         Namespace = @namespace;
         Root = root;
         SymbolPrefix = symbolPrefix;
         SymbolSuffix = symbolSuffix;
         UsingNamespaces = usingNamespaces.ToFixedSet();
-        Rules = rules.ToFixedList();
-        if (Rules.Select(r => r.Defines).Distinct().Count() != Rules.Count)
-            throw new ValidationException("Rule names must be unique");
+        Nodes = rules.ToFixedList();
+        if (Nodes.Select(r => r.Defines).Duplicates().Any())
+            throw new ValidationException("Node names must be unique");
     }
 }

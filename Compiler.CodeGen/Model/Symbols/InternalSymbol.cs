@@ -8,22 +8,22 @@ public sealed class InternalSymbol : Symbol
     private readonly TreeModel tree;
     public string ShortName { get; }
     public override string FullName { get; }
-    private readonly Lazy<Rule> referencedRule;
-    public Rule ReferencedRule => referencedRule.Value;
+    private readonly Lazy<TreeNodeModel> referencedNode;
+    public TreeNodeModel ReferencedNode => referencedNode.Value;
 
     public InternalSymbol(TreeModel tree, string shortName)
     {
         this.tree = tree;
         ShortName = shortName;
         FullName = $"{tree.SymbolPrefix}{shortName}{tree.SymbolSuffix}";
-        referencedRule = new(LookupReferencedRule);
+        referencedNode = new(LookupReferencedNode);
         return;
 
-        Rule LookupReferencedRule()
+        TreeNodeModel LookupReferencedNode()
         {
-            var rule = tree.RuleFor(ShortName);
+            var rule = tree.NodeFor(ShortName);
             if (rule is null)
-                throw new FormatException($"Symbol '{ShortName}' must be quoted because it doesn't reference a rule.");
+                throw new FormatException($"Symbol '{ShortName}' must be quoted because it doesn't reference a tree node.");
             return rule;
         }
     }

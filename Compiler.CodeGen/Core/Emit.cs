@@ -12,9 +12,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
 internal static class Emit
 {
-    public static string ClosedAttribute(Rule rule, string indent = "")
+    public static string ClosedAttribute(TreeNodeModel node, string indent = "")
     {
-        var children = rule.ChildRules;
+        var children = node.ChildNodes;
         if (!children.Any()) return "";
         var builder = new StringBuilder();
         builder.Append(indent);
@@ -34,10 +34,10 @@ internal static class Emit
         return builder.ToString();
     }
 
-    public static string BaseTypes(Rule rule)
+    public static string BaseTypes(TreeNodeModel node)
     {
-        var supertypes = rule.Supertypes.OfType<ExternalSymbol>().Select(p => p.FullName)
-                          .Concat(rule.SupertypeRules.Select(r => TypeName(r.Defines)))
+        var supertypes = node.Supertypes.OfType<ExternalSymbol>().Select(p => p.FullName)
+                          .Concat(node.SupertypeNodes.Select(r => TypeName(r.Defines)))
                           .ToFixedList();
 
         if (supertypes.IsEmpty) return "";
