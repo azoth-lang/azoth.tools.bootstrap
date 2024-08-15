@@ -21,9 +21,7 @@ public partial interface IBodyOrBlockNode
 #endregion
 
 #region Packages
-public partial interface IPackageNode
-{
-}
+public partial interface IPackageNode;
 #endregion
 
 #region Facets
