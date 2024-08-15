@@ -11,7 +11,6 @@ internal class AssociatedFunctionDefinitionSyntax : InvocableDefinitionSyntax, I
 {
     public new IdentifierName Name { get; }
     public new IFixedList<INamedParameterSyntax> Parameters { get; }
-    public override IFixedList<IParameterSyntax> AllParameters => Parameters;
     public IReturnSyntax? Return { get; }
     public IBodySyntax Body { get; }
 

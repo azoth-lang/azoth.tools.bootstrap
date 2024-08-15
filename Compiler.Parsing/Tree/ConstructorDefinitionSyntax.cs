@@ -1,5 +1,4 @@
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -13,7 +12,6 @@ internal sealed class ConstructorDefinitionSyntax : InvocableDefinitionSyntax, I
     public new IdentifierName? Name { get; }
     public IConstructorSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
-    public override IFixedList<IParameterSyntax> AllParameters { get; }
     public IBlockBodySyntax Body { get; }
 
     public ConstructorDefinitionSyntax(
@@ -30,7 +28,6 @@ internal sealed class ConstructorDefinitionSyntax : InvocableDefinitionSyntax, I
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters;
-        AllParameters = parameters.Prepend<IParameterSyntax>(selfParameter).ToFixedList();
         Body = body;
     }
 

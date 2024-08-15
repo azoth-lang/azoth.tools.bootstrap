@@ -12,7 +12,6 @@ internal abstract class InvocableDefinitionSyntax : DefinitionSyntax, IInvocable
 {
     public IAccessModifierToken? AccessModifier { get; }
     public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
-    public abstract IFixedList<IParameterSyntax> AllParameters { get; }
 
     protected InvocableDefinitionSyntax(
         TextSpan span,

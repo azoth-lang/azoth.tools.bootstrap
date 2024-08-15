@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -13,7 +12,6 @@ internal sealed class FunctionDefinitionSyntax : InvocableNonMemberEntityDefinit
     public IFixedList<IAttributeSyntax> Attributes { get; }
     public new IdentifierName Name { get; }
     public new IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
-    public override IFixedList<IParameterSyntax> AllParameters => Parameters;
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }
 

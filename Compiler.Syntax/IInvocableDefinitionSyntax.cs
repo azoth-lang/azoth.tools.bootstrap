@@ -1,11 +1,6 @@
-using Azoth.Tools.Bootstrap.Framework;
-
 namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 /// <summary>
 /// Base type for any declaration that declares a callable thing.
 /// </summary>
-public partial interface IInvocableDefinitionSyntax
-{
-    IFixedList<IParameterSyntax> AllParameters { get; }
-}
+public partial interface IInvocableDefinitionSyntax;

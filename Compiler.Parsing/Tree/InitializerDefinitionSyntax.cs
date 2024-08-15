@@ -13,7 +13,6 @@ internal class InitializerDefinitionSyntax : InvocableDefinitionSyntax, IInitial
     public new IdentifierName? Name { get; }
     public IInitializerSelfParameterSyntax SelfParameter { get; }
     public new IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
-    public override IFixedList<IParameterSyntax> AllParameters { get; }
     public IBlockBodySyntax Body { get; }
 
     public InitializerDefinitionSyntax(
@@ -30,7 +29,6 @@ internal class InitializerDefinitionSyntax : InvocableDefinitionSyntax, IInitial
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters;
-        AllParameters = parameters.Prepend<IParameterSyntax>(selfParameter).ToFixedList();
         Body = body;
     }
 

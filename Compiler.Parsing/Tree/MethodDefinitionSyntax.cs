@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -15,7 +14,6 @@ internal abstract class MethodDefinitionSyntax : InvocableDefinitionSyntax, IMet
     public new IdentifierName Name { [DebuggerStepThrough] get; }
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
     public new IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
-    public override IFixedList<IParameterSyntax> AllParameters { [DebuggerStepThrough] get; }
     public abstract IReturnSyntax? Return { [DebuggerStepThrough] get; }
 
     protected MethodDefinitionSyntax(
@@ -32,6 +30,5 @@ internal abstract class MethodDefinitionSyntax : InvocableDefinitionSyntax, IMet
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters;
-        AllParameters = parameters.Prepend<IParameterSyntax>(selfParameter).ToFixedList();
     }
 }
