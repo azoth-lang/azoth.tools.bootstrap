@@ -12,13 +12,6 @@ public class DiagnosticsBuilder : IReadOnlyCollection<Diagnostic>
 {
     private readonly List<Diagnostic> items = new List<Diagnostic>();
 
-    public DiagnosticsBuilder() { }
-
-    public DiagnosticsBuilder(IEnumerable<Diagnostic> diagnostics)
-    {
-        items.AddRange(diagnostics.Do(UpdateFatalErrorCount));
-    }
-
     public int Count => items.Count;
 
     public int FatalErrorCount { get; private set; }

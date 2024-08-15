@@ -1,18 +1,12 @@
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Primitives;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Framework;
-using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
 /// <summary>
-/// Represents an entire package worth of syntax
+/// Represents an entire package worth of syntax.
 /// </summary>
 /// <remarks>Doesn't inherit from <see cref="IConcreteSyntax"/> because it is never
 /// matched as part of syntax. It is always treated as the singular root.
@@ -22,25 +16,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 /// </remarks>
 public class PackageSyntax : IPackageSyntax
 {
-    public IdentifierName Name => Symbol.Name;
-    public PackageSymbol Symbol { get; }
-    public ISymbolTreeBuilder SymbolTree { get; }
-    public ISymbolTreeBuilder TestingSymbolTree { get; }
-    public SymbolForest SymbolTrees { get; }
-    public SymbolForest TestingSymbolTrees { get; }
-
-    [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+    public IdentifierName Name { get; }
     public IFixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
     public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
-    public IFixedSet<IEntityDefinitionSyntax> EntityDeclarations { get; }
-    public IFixedSet<IEntityDefinitionSyntax> TestingEntityDeclarations { get; }
-    /// <summary>
-    /// All the entity declarations including both regular code and testing code.
-    /// </summary>
-    public IFixedSet<IEntityDefinitionSyntax> AllEntityDeclarations { get; }
     public IFixedSet<IPackageReferenceSyntax> References { get; }
-    public IEnumerable<IPackageSymbols> ReferencedPackages => References.Select(r => r.Package);
-    public DiagnosticsBuilder Diagnostics { get; }
+    public Diagnostics Diagnostics { get; }
 
     public PackageSyntax(
         IdentifierName name,
@@ -48,53 +28,17 @@ public class PackageSyntax : IPackageSyntax
         IFixedSet<ICompilationUnitSyntax> testingCompilationUnits,
         IFixedSet<IPackageReferenceSyntax> references)
     {
-        Symbol = new PackageSymbol(name);
-        var symbolTree = new SymbolTreeBuilder(Symbol);
-        SymbolTree = symbolTree;
-        TestingSymbolTree = new TestingSymbolTreeBuilder(symbolTree);
+        Name = name;
         CompilationUnits = compilationUnits;
         TestingCompilationUnits = testingCompilationUnits;
-        EntityDeclarations = GetEntityDeclarations(CompilationUnits).ToFixedSet();
-        TestingEntityDeclarations = GetEntityDeclarations(TestingCompilationUnits).ToFixedSet();
-        AllEntityDeclarations = EntityDeclarations.Concat(TestingEntityDeclarations).ToFixedSet();
         References = references;
-        SymbolTrees = BuiltIn.CreateSymbolForest(SymbolTree, ReferencedPackages.Select(p => p.SymbolTree));
-        TestingSymbolTrees = BuiltIn.CreateSymbolForest(TestingSymbolTree, ReferencedPackages.Select(p => p.TestingSymbolTree));
-        Diagnostics = new DiagnosticsBuilder(CompilationUnits.Concat(TestingCompilationUnits).SelectMany(cu => cu.Diagnostics));
-    }
-
-    /// <remarks>
-    /// It wouldn't make sense to get all declarations including non-member because
-    /// that includes namespace declarations. However, some namespaces come from
-    /// the implicit namespace of a compilation unit or are implicitly declared,
-    /// so it wouldn't give a full list of the namespaces.
-    /// </remarks>
-    private static IEnumerable<IEntityDefinitionSyntax> GetEntityDeclarations(
-        IFixedSet<ICompilationUnitSyntax> compilationUnits)
-    {
-        var declarations = new Queue<IDefinitionSyntax>();
-        declarations.EnqueueRange(compilationUnits.SelectMany(cu => cu.Definitions));
-        while (declarations.TryDequeue(out var declaration))
-            switch (declaration)
-            {
-                default:
-                    throw ExhaustiveMatch.Failed(declaration);
-                case ITypeDefinitionSyntax syn:
-                    yield return syn;
-                    declarations.EnqueueRange(syn.Members);
-                    break;
-                case ITypeMemberDefinitionSyntax syn:
-                    yield return syn;
-                    break;
-                case IFunctionDefinitionSyntax syn:
-                    yield return syn;
-                    break;
-                case INamespaceDefinitionSyntax syn:
-                    declarations.EnqueueRange(syn.Definitions);
-                    break;
-            }
+        var builder = new DiagnosticsBuilder
+        {
+            CompilationUnits.Concat(TestingCompilationUnits).SelectMany(cu => cu.Diagnostics)
+        };
+        Diagnostics = builder.Build();
     }
 
     public override string ToString()
-        => $"package {Symbol.Name.Text}: {CompilationUnits.Count} Compilation Units";
+        => $"package {Name.Text}: {CompilationUnits.Count} Compilation Units";
 }
