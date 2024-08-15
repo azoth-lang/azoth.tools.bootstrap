@@ -11,11 +11,11 @@ public sealed class AntetypeGenericParameter : IEquatable<AntetypeGenericParamet
 {
     public IdentifierName Name { get; }
 
-    public Variance Variance { get; }
+    public TypeVariance Variance { get; }
 
     public AntetypeGenericParameter(
         IdentifierName name,
-        Variance variance)
+        TypeVariance variance)
     {
         Variance = variance;
         Name = name;

@@ -33,7 +33,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
         GenericParameters = genericParameters.ToFixedList();
         Requires.That(Name.GenericParameterCount == GenericParameters.Count, nameof(genericParameters),
             "Count must match name count");
-        AllowsVariance = GenericParameters.Any(p => p.Variance != Variance.Invariant);
+        AllowsVariance = GenericParameters.Any(p => p.Variance != TypeVariance.Invariant);
         HasReferenceSemantics = hasReferenceSemantics;
         IsAbstract = isAbstract;
         Supertypes = supertypes;

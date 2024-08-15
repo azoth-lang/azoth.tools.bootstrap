@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core;
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Code;
 
 /// A CodeReference to a file on disk referenced by its path.
 public sealed class CodePath : CodeReference, ICodeFileSource

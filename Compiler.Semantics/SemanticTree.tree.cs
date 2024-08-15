@@ -3,6 +3,7 @@ using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.CST;
@@ -540,7 +541,7 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityConstraintNode Constraint { get; }
-    ParameterIndependence Independence { get; }
+    TypeParameterIndependence Independence { get; }
     ParameterVariance Variance { get; }
     GenericParameter Parameter { get; }
     IDeclaredUserType ContainingDeclaredType { get; }

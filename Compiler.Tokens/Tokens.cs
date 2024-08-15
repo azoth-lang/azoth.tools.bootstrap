@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Tokens;

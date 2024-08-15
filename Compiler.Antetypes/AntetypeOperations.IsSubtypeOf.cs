@@ -86,15 +86,15 @@ public static partial class AntetypeOperations
             {
                 default:
                     throw ExhaustiveMatch.Failed(genericParameter.Variance);
-                case Variance.Invariant:
+                case TypeVariance.Invariant:
                     if (!self.Equals(other))
                         return false;
                     break;
-                case Variance.Covariant:
+                case TypeVariance.Covariant:
                     if (!self.IsSubtypeOf(other))
                         return false;
                     break;
-                case Variance.Contravariant:
+                case TypeVariance.Contravariant:
                     if (!other.IsSubtypeOf(self))
                         return false;
                     break;

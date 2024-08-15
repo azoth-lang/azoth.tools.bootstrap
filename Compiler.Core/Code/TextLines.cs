@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core;
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Code;
 
 public class TextLines
 {

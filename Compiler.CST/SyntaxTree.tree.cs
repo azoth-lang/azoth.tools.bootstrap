@@ -1,5 +1,6 @@
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -209,7 +210,7 @@ public partial interface IGenericParameterSyntax : ICodeSyntax
 {
     ICapabilityConstraintSyntax Constraint { get; }
     IdentifierName Name { get; }
-    ParameterIndependence Independence { get; }
+    TypeParameterIndependence Independence { get; }
     ParameterVariance Variance { get; }
 }
 

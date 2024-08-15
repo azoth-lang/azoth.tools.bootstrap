@@ -1,7 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
@@ -9,14 +9,14 @@ internal class GenericParameterSyntax : CodeSyntax, IGenericParameterSyntax
 {
     public ICapabilityConstraintSyntax Constraint { get; }
     public IdentifierName Name { get; }
-    public ParameterIndependence Independence { get; }
+    public TypeParameterIndependence Independence { get; }
     public ParameterVariance Variance { get; }
 
     public GenericParameterSyntax(
         TextSpan span,
         ICapabilityConstraintSyntax constraint,
         IdentifierName name,
-        ParameterIndependence independence,
+        TypeParameterIndependence independence,
         ParameterVariance variance)
         : base(span)
     {
@@ -30,8 +30,8 @@ internal class GenericParameterSyntax : CodeSyntax, IGenericParameterSyntax
     {
         return (Independence, Variance) switch
         {
-            (ParameterIndependence.None, ParameterVariance.Invariant) => Name.ToString(),
-            (ParameterIndependence.None, _) => $"{Name} {Variance.ToSourceCodeString()}",
+            (TypeParameterIndependence.None, ParameterVariance.Invariant) => Name.ToString(),
+            (TypeParameterIndependence.None, _) => $"{Name} {Variance.ToSourceCodeString()}",
             (_, ParameterVariance.Invariant) => $"{Name} {Independence.ToSourceCodeString()}",
             _ => $"{Name} {Independence.ToSourceCodeString()} {Variance.ToSourceCodeString()}"
         };

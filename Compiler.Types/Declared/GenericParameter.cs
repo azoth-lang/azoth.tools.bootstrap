@@ -15,18 +15,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 public sealed class GenericParameter : IEquatable<GenericParameter>
 {
     public static GenericParameter Invariant(ICapabilityConstraint constraint, IdentifierName name)
-        => new(constraint, name, ParameterIndependence.None, ParameterVariance.Invariant);
+        => new(constraint, name, TypeParameterIndependence.None, ParameterVariance.Invariant);
 
     public static GenericParameter Independent(ICapabilityConstraint constraint, IdentifierName name)
-        => new(constraint, name, ParameterIndependence.Independent, ParameterVariance.Invariant);
+        => new(constraint, name, TypeParameterIndependence.Independent, ParameterVariance.Invariant);
 
     public static GenericParameter Out(ICapabilityConstraint constraint, IdentifierName name)
-        => new(constraint, name, ParameterIndependence.None, ParameterVariance.Covariant);
+        => new(constraint, name, TypeParameterIndependence.None, ParameterVariance.Covariant);
 
     public static GenericParameter In(ICapabilityConstraint constraint, IdentifierName name)
-        => new(constraint, name, ParameterIndependence.None, ParameterVariance.Contravariant);
+        => new(constraint, name, TypeParameterIndependence.None, ParameterVariance.Contravariant);
 
-    public GenericParameter(ICapabilityConstraint constraint, IdentifierName name, ParameterIndependence independence, ParameterVariance variance)
+    public GenericParameter(ICapabilityConstraint constraint, IdentifierName name, TypeParameterIndependence independence, ParameterVariance variance)
     {
         Requires.That(name.GenericParameterCount == 0, nameof(name), "Cannot have generic parameters");
         Constraint = constraint;
@@ -39,11 +39,11 @@ public sealed class GenericParameter : IEquatable<GenericParameter>
 
     public IdentifierName Name { get; }
 
-    public ParameterIndependence Independence { get; }
+    public TypeParameterIndependence Independence { get; }
 
     public ParameterVariance Variance { get; }
 
-    public bool HasIndependence => Independence != ParameterIndependence.None;
+    public bool HasIndependence => Independence != TypeParameterIndependence.None;
 
     // TODO When parameters can be values not just types, add: public DataType DataType { get; }
 

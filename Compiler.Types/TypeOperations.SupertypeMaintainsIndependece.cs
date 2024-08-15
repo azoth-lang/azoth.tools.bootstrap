@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public static partial class TypeOperations
 {
-    private static bool SupertypeMaintainsIndependence(this DataType type, bool exact, ParameterIndependence context)
+    private static bool SupertypeMaintainsIndependence(this DataType type, bool exact, TypeParameterIndependence context)
         => type switch
         {
             GenericParameterType t => t.SupertypeMaintainsIndependence(exact, context),
@@ -22,16 +22,16 @@ public static partial class TypeOperations
             _ => throw ExhaustiveMatch.Failed(type),
         };
 
-    private static bool SupertypeMaintainsIndependence(this GenericParameterType type, bool exact, ParameterIndependence context)
+    private static bool SupertypeMaintainsIndependence(this GenericParameterType type, bool exact, TypeParameterIndependence context)
     {
         var independence = type.Parameter.Independence;
         return context switch
         {
-            ParameterIndependence.None => independence == ParameterIndependence.None,
-            ParameterIndependence.SharableIndependent
-                => independence == ParameterIndependence.SharableIndependent
-                   || (!exact && independence == ParameterIndependence.Independent),
-            ParameterIndependence.Independent => independence == ParameterIndependence.Independent,
+            TypeParameterIndependence.None => independence == TypeParameterIndependence.None,
+            TypeParameterIndependence.SharableIndependent
+                => independence == TypeParameterIndependence.SharableIndependent
+                   || (!exact && independence == TypeParameterIndependence.Independent),
+            TypeParameterIndependence.Independent => independence == TypeParameterIndependence.Independent,
             _ => throw ExhaustiveMatch.Failed(context),
         };
     }
@@ -52,10 +52,10 @@ public static partial class TypeOperations
     private static bool SupertypeMaintainsIndependence(this FunctionType type)
     {
         foreach (var parameter in type.Parameters)
-            if (!parameter.Type.SupertypeMaintainsIndependence(false, ParameterIndependence.None))
+            if (!parameter.Type.SupertypeMaintainsIndependence(false, TypeParameterIndependence.None))
                 return false;
 
-        if (!type.Return.Type.SupertypeMaintainsIndependence(false, ParameterIndependence.None))
+        if (!type.Return.Type.SupertypeMaintainsIndependence(false, TypeParameterIndependence.None))
             return false;
 
         return true;

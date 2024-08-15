@@ -37,10 +37,10 @@ public static partial class TypeOperations
     {
         return type.Parameter.Independence switch
         {
-            ParameterIndependence.None => true,
-            ParameterIndependence.SharableIndependent
+            TypeParameterIndependence.None => true,
+            TypeParameterIndependence.SharableIndependent
                 => context >= Independence.BothAllowed,
-            ParameterIndependence.Independent
+            TypeParameterIndependence.Independent
                 => context == Independence.BothAllowed,
             _ => throw ExhaustiveMatch.Failed(type.Parameter.Independence),
         };
@@ -52,9 +52,9 @@ public static partial class TypeOperations
         {
             var parameterIndependenceAllows = parameter.Independence switch
             {
-                ParameterIndependence.SharableIndependent => Independence.OnlyShareableAllowed,
-                ParameterIndependence.Independent => Independence.BothAllowed,
-                ParameterIndependence.None => Independence.Disallowed,
+                TypeParameterIndependence.SharableIndependent => Independence.OnlyShareableAllowed,
+                TypeParameterIndependence.Independent => Independence.BothAllowed,
+                TypeParameterIndependence.None => Independence.Disallowed,
                 _ => throw ExhaustiveMatch.Failed(parameter.Independence),
             };
             var parameterVarianceAllows = parameter.Variance switch

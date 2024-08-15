@@ -99,7 +99,7 @@ public static class DataTypeExtensions
                         {
                             default:
                                 throw ExhaustiveMatch.Failed(genericParameter.Independence);
-                            case ParameterIndependence.Independent:
+                            case TypeParameterIndependence.Independent:
                             {
                                 if (from is not CapabilityType fromCapabilityType
                                     || to is not CapabilityType toCapabilityType)
@@ -111,7 +111,7 @@ public static class DataTypeExtensions
                                     return false;
                                 break;
                             }
-                            case ParameterIndependence.SharableIndependent:
+                            case TypeParameterIndependence.SharableIndependent:
                             {
                                 if (from is not CapabilityType fromCapabilityType
                                     || to is not CapabilityType toCapabilityType)
@@ -131,7 +131,7 @@ public static class DataTypeExtensions
                                 // TODO what about `temp const`?
                                 break;
                             }
-                            case ParameterIndependence.None:
+                            case TypeParameterIndependence.None:
                                 // Invariant and not independent, so not assignable when not equal
                                 return false;
                         }

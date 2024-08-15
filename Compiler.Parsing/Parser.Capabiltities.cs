@@ -1,5 +1,6 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -24,60 +25,60 @@ public partial class Parser
         switch (Tokens.Current)
         {
             case IIsolatedKeywordToken _:
-            {
-                var isolatedKeyword = Tokens.ConsumeToken<IIsolatedKeywordToken>();
-                return new CapabilitySyntax(isolatedKeyword.Span, isolatedKeyword.Yield(), Isolated);
-            }
-            case IMutableKeywordToken _:
-            {
-                var mutableKeyword = Tokens.ConsumeToken<IMutableKeywordToken>();
-                return new CapabilitySyntax(mutableKeyword.Span, mutableKeyword.Yield(), Mutable);
-            }
-            case IConstKeywordToken _:
-            {
-                var constKeyword = Tokens.ConsumeToken<IConstKeywordToken>();
-                return new CapabilitySyntax(constKeyword.Span, constKeyword.Yield(), Constant);
-            }
-            case IIdKeywordToken _:
-            {
-                var idKeyword = Tokens.ConsumeToken<IIdKeywordToken>();
-                return new CapabilitySyntax(idKeyword.Span, idKeyword.Yield(), Identity);
-            }
-            case ITempKeywordToken _:
-            {
-                var tempKeyword = Tokens.ConsumeToken<ITempKeywordToken>();
-                DeclaredCapability declaredCapability;
-                switch (Tokens.Current)
                 {
-                    case IIsolatedKeywordToken _:
-                        declaredCapability = TemporarilyIsolated;
-                        break;
-                    case IConstKeywordToken _:
-                        declaredCapability = TemporarilyConstant;
-                        break;
-                    case IStandardCapabilityToken capabilityToken:
-                    {
-                        var errorSpan = TextSpan.Covering(tempKeyword.Span, capabilityToken.Span);
-                        Add(ParseError.InvalidTempCapability(File, errorSpan));
-                        return ParseStandardCapability();
-                    }
-                    default:
-                        // Treat this as a read-only reference capability
-                        Add(ParseError.InvalidTempCapability(File, tempKeyword.Span));
-                        return new CapabilitySyntax(tempKeyword.Span, Enumerable.Empty<IStandardCapabilityToken>(), Read);
+                    var isolatedKeyword = Tokens.ConsumeToken<IIsolatedKeywordToken>();
+                    return new CapabilitySyntax(isolatedKeyword.Span, isolatedKeyword.Yield(), Isolated);
                 }
+            case IMutableKeywordToken _:
+                {
+                    var mutableKeyword = Tokens.ConsumeToken<IMutableKeywordToken>();
+                    return new CapabilitySyntax(mutableKeyword.Span, mutableKeyword.Yield(), Mutable);
+                }
+            case IConstKeywordToken _:
+                {
+                    var constKeyword = Tokens.ConsumeToken<IConstKeywordToken>();
+                    return new CapabilitySyntax(constKeyword.Span, constKeyword.Yield(), Constant);
+                }
+            case IIdKeywordToken _:
+                {
+                    var idKeyword = Tokens.ConsumeToken<IIdKeywordToken>();
+                    return new CapabilitySyntax(idKeyword.Span, idKeyword.Yield(), Identity);
+                }
+            case ITempKeywordToken _:
+                {
+                    var tempKeyword = Tokens.ConsumeToken<ITempKeywordToken>();
+                    DeclaredCapability declaredCapability;
+                    switch (Tokens.Current)
+                    {
+                        case IIsolatedKeywordToken _:
+                            declaredCapability = TemporarilyIsolated;
+                            break;
+                        case IConstKeywordToken _:
+                            declaredCapability = TemporarilyConstant;
+                            break;
+                        case IStandardCapabilityToken capabilityToken:
+                            {
+                                var errorSpan = TextSpan.Covering(tempKeyword.Span, capabilityToken.Span);
+                                Add(ParseError.InvalidTempCapability(File, errorSpan));
+                                return ParseStandardCapability();
+                            }
+                        default:
+                            // Treat this as a read-only reference capability
+                            Add(ParseError.InvalidTempCapability(File, tempKeyword.Span));
+                            return new CapabilitySyntax(tempKeyword.Span, Enumerable.Empty<IStandardCapabilityToken>(), Read);
+                    }
 
-                var capabilityKeyword = Tokens.ConsumeToken<IStandardCapabilityToken>();
-                var span = TextSpan.Covering(tempKeyword.Span, capabilityKeyword.Span);
-                var tokens = tempKeyword.Yield<IStandardCapabilityToken>().Append(capabilityKeyword);
-                return new CapabilitySyntax(span, tokens, declaredCapability);
-            }
+                    var capabilityKeyword = Tokens.ConsumeToken<IStandardCapabilityToken>();
+                    var span = TextSpan.Covering(tempKeyword.Span, capabilityKeyword.Span);
+                    var tokens = tempKeyword.Yield<IStandardCapabilityToken>().Append(capabilityKeyword);
+                    return new CapabilitySyntax(span, tokens, declaredCapability);
+                }
             case IReadKeywordToken _:
-            {
-                var readKeyword = Tokens.ConsumeToken<IReadKeywordToken>();
-                Add(ParseError.ExplicitRead(File, readKeyword.Span));
-                return new CapabilitySyntax(readKeyword.Span, readKeyword.Yield(), Read);
-            }
+                {
+                    var readKeyword = Tokens.ConsumeToken<IReadKeywordToken>();
+                    Add(ParseError.ExplicitRead(File, readKeyword.Span));
+                    return new CapabilitySyntax(readKeyword.Span, readKeyword.Yield(), Read);
+                }
             default:
                 return CapabilitySyntax.ImplicitReadOnly(Tokens.Current.Span.AtStart());
         }

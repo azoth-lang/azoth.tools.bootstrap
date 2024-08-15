@@ -24,30 +24,30 @@ public static class ParameterVarianceExtensions
 
     /// <param name="nonwritableSelf">Whether the self parameter type is nonwriteable.
     /// <see langword="null"/> is used for base types to indicate that it could behave either way.</param>
-    public static Variance? ToVariance(this ParameterVariance variance, bool? nonwritableSelf)
+    public static TypeVariance? ToVariance(this ParameterVariance variance, bool? nonwritableSelf)
     {
         if (nonwritableSelf is bool knownNonwritableSelf)
             return ToVariance(variance, knownNonwritableSelf);
         return variance switch
         {
-            ParameterVariance.Contravariant => Variance.Contravariant,
-            ParameterVariance.Invariant => Variance.Invariant,
+            ParameterVariance.Contravariant => TypeVariance.Contravariant,
+            ParameterVariance.Invariant => TypeVariance.Invariant,
             ParameterVariance.NonwritableCovariant => null,
-            ParameterVariance.Covariant => Variance.Covariant,
+            ParameterVariance.Covariant => TypeVariance.Covariant,
             _ => throw ExhaustiveMatch.Failed(variance),
         };
     }
 
     /// <param name="nonwritableSelf">Whether the self parameter type is nonwriteable.</param>
-    public static Variance ToVariance(this ParameterVariance variance, bool nonwritableSelf)
+    public static TypeVariance ToVariance(this ParameterVariance variance, bool nonwritableSelf)
         => variance switch
         {
-            ParameterVariance.Contravariant => Variance.Contravariant,
-            ParameterVariance.Invariant => Variance.Invariant,
+            ParameterVariance.Contravariant => TypeVariance.Contravariant,
+            ParameterVariance.Invariant => TypeVariance.Invariant,
             ParameterVariance.NonwritableCovariant
                 // NonwritableCovariant acts like Covariant or Invariant depending on whether self is nonwritable
-                => nonwritableSelf ? Variance.Covariant : Variance.Invariant,
-            ParameterVariance.Covariant => Variance.Covariant,
+                => nonwritableSelf ? TypeVariance.Covariant : TypeVariance.Invariant,
+            ParameterVariance.Covariant => TypeVariance.Covariant,
             _ => throw ExhaustiveMatch.Failed(variance),
         };
 }

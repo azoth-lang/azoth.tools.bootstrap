@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -53,19 +54,19 @@ public partial class Parser
             case ISelfKeywordToken:
                 return ParseConstructorSelfParameter(lentBinding);
             case IDotToken _:
-            {
-                if (lentBinding is not null)
-                    Add(ParseError.LentFieldParameter(File, lentBinding.Span));
+                {
+                    if (lentBinding is not null)
+                        Add(ParseError.LentFieldParameter(File, lentBinding.Span));
 
-                var dot = Tokens.Consume<IDotToken>();
-                var identifier = Tokens.RequiredToken<IIdentifierToken>();
-                var equals = Tokens.AcceptToken<IEqualsToken>();
-                IExpressionSyntax? defaultValue = null;
-                if (equals is not null) defaultValue = ParseExpression();
-                var span = TextSpan.Covering(dot, identifier.Span, defaultValue?.Span);
-                IdentifierName name = identifier.Value;
-                return new FieldParameterSyntax(span, name, defaultValue);
-            }
+                    var dot = Tokens.Consume<IDotToken>();
+                    var identifier = Tokens.RequiredToken<IIdentifierToken>();
+                    var equals = Tokens.AcceptToken<IEqualsToken>();
+                    IExpressionSyntax? defaultValue = null;
+                    if (equals is not null) defaultValue = ParseExpression();
+                    var span = TextSpan.Covering(dot, identifier.Span, defaultValue?.Span);
+                    IdentifierName name = identifier.Value;
+                    return new FieldParameterSyntax(span, name, defaultValue);
+                }
             default:
                 return ParseFunctionParameter(lentBinding);
         }
@@ -81,18 +82,18 @@ public partial class Parser
             case ISelfKeywordToken:
                 return ParseInitializerSelfParameter(lentBinding);
             case IDotToken _:
-            {
-                if (lentBinding is not null) Add(ParseError.LentFieldParameter(File, lentBinding.Span));
+                {
+                    if (lentBinding is not null) Add(ParseError.LentFieldParameter(File, lentBinding.Span));
 
-                var dot = Tokens.Consume<IDotToken>();
-                var identifier = Tokens.RequiredToken<IIdentifierToken>();
-                var equals = Tokens.AcceptToken<IEqualsToken>();
-                IExpressionSyntax? defaultValue = null;
-                if (equals is not null) defaultValue = ParseExpression();
-                var span = TextSpan.Covering(dot, identifier.Span, defaultValue?.Span);
-                IdentifierName name = identifier.Value;
-                return new FieldParameterSyntax(span, name, defaultValue);
-            }
+                    var dot = Tokens.Consume<IDotToken>();
+                    var identifier = Tokens.RequiredToken<IIdentifierToken>();
+                    var equals = Tokens.AcceptToken<IEqualsToken>();
+                    IExpressionSyntax? defaultValue = null;
+                    if (equals is not null) defaultValue = ParseExpression();
+                    var span = TextSpan.Covering(dot, identifier.Span, defaultValue?.Span);
+                    IdentifierName name = identifier.Value;
+                    return new FieldParameterSyntax(span, name, defaultValue);
+                }
             default:
                 return ParseFunctionParameter(lentBinding);
         }

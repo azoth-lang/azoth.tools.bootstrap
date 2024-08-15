@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core;

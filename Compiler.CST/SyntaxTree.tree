@@ -4,6 +4,7 @@
 ◊suffix Syntax;
 ◊using System.Numerics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -54,7 +55,7 @@ StructDefinition: ClassOrStructDefinition = GenericParameters:GenericParameter* 
 TraitDefinition: TypeDefinition = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TraitMemberDefinition*;
 
 // ---------- Type Definition Parts
-GenericParameter = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`ParameterIndependence` Variance:`ParameterVariance`;
+GenericParameter = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`ParameterVariance`;
 
 // ---------- Type Member Definitions (i.e. declarations that can be contained in a type)
 TypeMemberDefinition: EntityDefinition;

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core;
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Code;
 
 /// <summary>
 /// A source for

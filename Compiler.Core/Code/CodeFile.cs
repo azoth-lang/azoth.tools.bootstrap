@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core;
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Code;
 
 /// A CodeFile represents the combination of CodeText and CodeReference
 public class CodeFile : IComparable<CodeFile>

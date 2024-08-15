@@ -1,6 +1,6 @@
 using System;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Core;
+namespace Azoth.Tools.Bootstrap.Compiler.Core.Code;
 
 public readonly struct TextPosition : IEquatable<TextPosition>, IComparable<TextPosition>
 {

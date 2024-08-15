@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -56,21 +57,21 @@ public partial class Parser
         switch (Tokens.Current)
         {
             case IQuestionToken:
-            {
-                var question = Tokens.Consume<IQuestionToken>();
-                var span = TextSpan.Covering(pattern.Span, question);
-                pattern = new OptionalPatternSyntax(span, pattern);
-                return true;
-            }
+                {
+                    var question = Tokens.Consume<IQuestionToken>();
+                    var span = TextSpan.Covering(pattern.Span, question);
+                    pattern = new OptionalPatternSyntax(span, pattern);
+                    return true;
+                }
             case IQuestionQuestionToken:
-            {
-                var questionQuestion = Tokens.ConsumeToken<IQuestionQuestionToken>();
-                var span = TextSpan.Covering(pattern.Span, questionQuestion.FirstQuestionSpan);
-                pattern = new OptionalPatternSyntax(span, pattern);
-                span = TextSpan.Covering(pattern.Span, questionQuestion.SecondQuestionSpan);
-                pattern = new OptionalPatternSyntax(span, pattern);
-                return true;
-            }
+                {
+                    var questionQuestion = Tokens.ConsumeToken<IQuestionQuestionToken>();
+                    var span = TextSpan.Covering(pattern.Span, questionQuestion.FirstQuestionSpan);
+                    pattern = new OptionalPatternSyntax(span, pattern);
+                    span = TextSpan.Covering(pattern.Span, questionQuestion.SecondQuestionSpan);
+                    pattern = new OptionalPatternSyntax(span, pattern);
+                    return true;
+                }
             default:
                 return false;
         }

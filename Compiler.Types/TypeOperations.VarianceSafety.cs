@@ -12,21 +12,21 @@ public static partial class TypeOperations
     /// <param name="nonwritableSelf">Whether the self parameter type is nonwriteable.
     /// <see langword="null"/> is used for base types to indicate that it could behave either way.</param>
     public static bool IsOutputSafe(this Pseudotype type, bool nonwritableSelf)
-        => type.IsVarianceSafe(Variance.Covariant, nonwritableSelf);
+        => type.IsVarianceSafe(TypeVariance.Covariant, nonwritableSelf);
 
     /// <summary>
     /// Check if a bare supertype is output safe.
     /// </summary>
     public static bool IsSupertypeOutputSafe(this BareType type, bool? nonwritableSelf)
-        => type.IsVarianceSafe(null, Variance.Covariant, nonwritableSelf);
+        => type.IsVarianceSafe(null, TypeVariance.Covariant, nonwritableSelf);
 
     public static bool IsInputSafe(this Pseudotype type, bool nonwriteableSelf)
-        => type.IsVarianceSafe(Variance.Contravariant, nonwriteableSelf);
+        => type.IsVarianceSafe(TypeVariance.Contravariant, nonwriteableSelf);
 
     public static bool IsInputAndOutputSafe(this Pseudotype type, bool nonwriteableSelf)
-        => type.IsVarianceSafe(Variance.Invariant, nonwriteableSelf);
+        => type.IsVarianceSafe(TypeVariance.Invariant, nonwriteableSelf);
 
-    private static bool IsVarianceSafe(this Pseudotype type, Variance context, bool? nonwritableSelf)
+    private static bool IsVarianceSafe(this Pseudotype type, TypeVariance context, bool? nonwritableSelf)
     {
         return type switch
         {
@@ -45,7 +45,7 @@ public static partial class TypeOperations
         };
     }
 
-    private static bool IsVarianceSafe(this FunctionType type, Variance context, bool? nonwritableSelf)
+    private static bool IsVarianceSafe(this FunctionType type, TypeVariance context, bool? nonwritableSelf)
     {
         // The parameters are `in` (contravariant)
         foreach (var parameter in type.Parameters)
@@ -62,7 +62,7 @@ public static partial class TypeOperations
     private static bool IsVarianceSafe(
         this BareType type,
         ICapabilityConstraint? typeCapability,
-        Variance context,
+        TypeVariance context,
         bool? nonwritableSelf)
     {
         var nonwritableType = !typeCapability?.AnyCapabilityAllowsWrite;
@@ -73,18 +73,18 @@ public static partial class TypeOperations
             {
                 default:
                     throw ExhaustiveMatch.Failed(variance);
-                case Variance.Contravariant: // i.e. `in`
+                case TypeVariance.Contravariant: // i.e. `in`
                     if (!argument.IsVarianceSafe(context.Inverse(), nonwritableSelf)) return false;
                     break;
-                case Variance.Invariant:
-                    if (!argument.IsVarianceSafe(Variance.Invariant, nonwritableSelf)) return false;
+                case TypeVariance.Invariant:
+                    if (!argument.IsVarianceSafe(TypeVariance.Invariant, nonwritableSelf)) return false;
                     break;
                 case null: // i.e. `nonwriteable out` at the first level
                     if (argument is GenericParameterType { Parameter.Variance: ParameterVariance.Covariant })
                         return false;
                     if (!argument.IsVarianceSafe(context, nonwritableSelf)) return false;
                     break;
-                case Variance.Covariant: // i.e. `out`
+                case TypeVariance.Covariant: // i.e. `out`
                     if (!argument.IsVarianceSafe(context, nonwritableSelf)) return false;
                     break;
             }

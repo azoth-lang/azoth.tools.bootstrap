@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Xunit.Abstractions;
 
 namespace Azoth.Tools.Bootstrap.Tests.Conformance.Helpers;

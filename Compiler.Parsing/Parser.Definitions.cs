@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Lexing;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -223,22 +224,22 @@ public partial class Parser
         return new GenericParameterSyntax(span, constraint, identifier.Value, independence, variance);
     }
 
-    private (ParameterIndependence, TextSpan) ParseIndependence()
+    private (TypeParameterIndependence, TextSpan) ParseIndependence()
     {
         return Tokens.Current switch
         {
-            IIndependentKeywordToken _ => (ParameterIndependence.Independent, Tokens.Consume<IIndependentKeywordToken>()),
+            IIndependentKeywordToken _ => (TypeParameterIndependence.Independent, Tokens.Consume<IIndependentKeywordToken>()),
             IShareableKeywordToken _ => ParseSharableIndependence(),
-            _ => (ParameterIndependence.None, Tokens.Current.Span.AtStart())
+            _ => (TypeParameterIndependence.None, Tokens.Current.Span.AtStart())
         };
     }
 
-    private (ParameterIndependence, TextSpan) ParseSharableIndependence()
+    private (TypeParameterIndependence, TextSpan) ParseSharableIndependence()
     {
         var shareableKeyword = Tokens.Required<IShareableKeywordToken>();
         var independentKeyword = Tokens.Required<IIndependentKeywordToken>();
         var span = TextSpan.Covering(shareableKeyword, independentKeyword);
-        return (ParameterIndependence.SharableIndependent, span);
+        return (TypeParameterIndependence.SharableIndependent, span);
     }
 
     private (ParameterVariance, TextSpan) ParseVariance()
