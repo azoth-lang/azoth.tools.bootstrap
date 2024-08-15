@@ -64,7 +64,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
                     "      throw ExhaustiveMatch.Failed(node);\r\n");
             
             #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-  foreach(var rule in grammar.Rules.Where(r => r.IsTerminal)) { 
+  foreach(var rule in grammar.Rules.Where(r => !r.IsAbstract)) { 
             
             #line default
             #line hidden

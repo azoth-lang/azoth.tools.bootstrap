@@ -23,7 +23,7 @@ public static class <#=Emit.TypeName(grammar.Root)#>Extensions
         {
             default:
                 throw ExhaustiveMatch.Failed(node);
-<#  foreach(var rule in grammar.Rules.Where(r => r.IsTerminal)) { #>
+<#  foreach(var rule in grammar.Rules.Where(r => !r.IsAbstract)) { #>
             case <#=Emit.TypeName(rule.Defines) #> n:
 <#      foreach(var property in rule.DeclaredProperties.Where(p => p.ReferencesRule)) { #>
 <#          if (property.Type is CollectionType) { #>

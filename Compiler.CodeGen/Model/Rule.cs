@@ -23,8 +23,15 @@ public class Rule
     private readonly Lazy<IFixedSet<Rule>> ancestorRules;
     public IFixedSet<Rule> ChildRules => childRules.Value;
     private readonly Lazy<IFixedSet<Rule>> childRules;
-    // TODO this is not the correct term for this. Terminal/Non-Terminal is about whether it is a rule or a token
-    public bool IsTerminal => ChildRules.IsEmpty;
+
+    /// <summary>
+    /// Whether this tree node is abstract meaning that it cannot be instantiated directly.
+    /// </summary>
+    /// <remarks>Right now, this is determined solely by whether this node has child nodes. If
+    /// needed, keywords <c>abstract</c> and <c>concrete</c> could be added to the definition file
+    /// to allow overriding this.</remarks>
+    public bool IsAbstract => !ChildRules.IsEmpty;
+
     public IFixedSet<Rule> DescendantRules => descendantRules.Value;
     private readonly Lazy<IFixedSet<Rule>> descendantRules;
 

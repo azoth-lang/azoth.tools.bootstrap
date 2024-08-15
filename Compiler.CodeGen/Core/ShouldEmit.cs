@@ -15,8 +15,8 @@ public static class ShouldEmit
         => property.IsDeclared;
 
     public static bool Class(Rule rule)
-        => rule.IsTerminal;
+        => !rule.IsAbstract;
 
     public static bool Constructor(Rule rule)
-        => rule.IsTerminal;
+        => !rule.IsAbstract;
 }

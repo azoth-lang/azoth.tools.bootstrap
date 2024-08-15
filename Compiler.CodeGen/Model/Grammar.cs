@@ -33,7 +33,7 @@ public sealed class Grammar
 
     public void ValidateTreeOrdering()
     {
-        foreach (var rule in Rules.Where(r => r.IsTerminal))
+        foreach (var rule in Rules.Where(r => !r.IsAbstract))
         {
             var baseNonTerminalPropertyNames
                 = rule.AncestorRules
