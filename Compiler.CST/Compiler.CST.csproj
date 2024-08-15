@@ -27,7 +27,6 @@
     <ProjectReference Include="..\Framework\Framework.csproj" />
     <ProjectReference Include="..\Compiler.Names\Compiler.Names.csproj" />
     <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />
-    <ProjectReference Include="..\Compiler.Symbols\Compiler.Symbols.csproj" />
     <ProjectReference Include="..\Compiler.Tokens\Compiler.Tokens.csproj" />
   </ItemGroup>
   <ItemGroup>

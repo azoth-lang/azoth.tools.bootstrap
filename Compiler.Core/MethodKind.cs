@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
+namespace Azoth.Tools.Bootstrap.Compiler.Core;
 
 public enum MethodKind
 {

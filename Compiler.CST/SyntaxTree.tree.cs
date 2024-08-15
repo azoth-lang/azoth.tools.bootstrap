@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.CST.Semantics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -107,7 +106,6 @@ public partial interface IDefinitionSyntax : IConcreteSyntax
     CodeFile File { get; }
     TypeName? Name { get; }
     TextSpan NameSpan { get; }
-    IPromise<Symbol> Symbol { get; }
 }
 
 [Closed(
@@ -125,8 +123,6 @@ public partial interface IEntityDefinitionSyntax : IDefinitionSyntax
 public partial interface IInvocableDefinitionSyntax : IEntityDefinitionSyntax
 {
     IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
-    new IPromise<InvocableSymbol> Symbol { get; }
-    IPromise<Symbol> IDefinitionSyntax.Symbol => Symbol;
 }
 
 [Closed(
@@ -153,8 +149,6 @@ public partial interface INamespaceDefinitionSyntax : INonMemberDefinitionSyntax
     bool IsGlobalQualified { get; }
     NamespaceName DeclaredNames { get; }
     NamespaceName FullName { get; }
-    new Promise<NamespaceSymbol> Symbol { get; }
-    IPromise<Symbol> IDefinitionSyntax.Symbol => Symbol;
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
 }
@@ -167,9 +161,6 @@ public partial interface IFunctionDefinitionSyntax : INonMemberEntityDefinitionS
     TypeName? IDefinitionSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
-    new AcyclicPromise<FunctionSymbol> Symbol { get; }
-    IPromise<Symbol> IDefinitionSyntax.Symbol => Symbol;
-    IPromise<InvocableSymbol> IInvocableDefinitionSyntax.Symbol => Symbol;
 }
 
 [Closed(
@@ -194,8 +185,6 @@ public partial interface ITypeDefinitionSyntax : IConcreteSyntax, INonMemberEnti
     TypeName INonMemberEntityDefinitionSyntax.Name => Name;
     TypeName? IDefinitionSyntax.Name => Name;
     IFixedList<IGenericParameterSyntax> GenericParameters { get; }
-    new AcyclicPromise<UserTypeSymbol> Symbol { get; }
-    IPromise<Symbol> IDefinitionSyntax.Symbol => Symbol;
     IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; }
     IFixedList<ITypeMemberDefinitionSyntax> Members { get; }
 }
@@ -212,14 +201,12 @@ public partial interface IClassDefinitionSyntax : IClassOrStructDefinitionSyntax
     IAbstractKeywordToken? AbstractModifier { get; }
     bool IsAbstract { get; }
     IStandardTypeNameSyntax? BaseTypeName { get; }
-    ConstructorSymbol? DefaultConstructorSymbol { get; }
     new IFixedList<IClassMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 }
 
 public partial interface IStructDefinitionSyntax : IClassOrStructDefinitionSyntax
 {
-    InitializerSymbol? DefaultInitializerSymbol { get; }
     new IFixedList<IStructMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 }
@@ -236,7 +223,6 @@ public partial interface IGenericParameterSyntax : IConcreteSyntax
     IdentifierName Name { get; }
     ParameterIndependence Independence { get; }
     ParameterVariance Variance { get; }
-    Promise<GenericParameterTypeSymbol> Symbol { get; }
 }
 
 [Closed(
@@ -301,9 +287,6 @@ public partial interface IMethodDefinitionSyntax : IAlwaysTypeMemberDefinitionSy
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
-    new AcyclicPromise<MethodSymbol> Symbol { get; }
-    IPromise<Symbol> IDefinitionSyntax.Symbol => Symbol;
-    IPromise<InvocableSymbol> IInvocableDefinitionSyntax.Symbol => Symbol;
 }
 
 public partial interface IAbstractMethodDefinitionSyntax : IMethodDefinitionSyntax
@@ -344,9 +327,6 @@ public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefini
     IConstructorSelfParameterSyntax SelfParameter { get; }
     new IBlockBodySyntax Body { get; }
     IBodySyntax IConcreteInvocableDefinitionSyntax.Body => Body;
-    new AcyclicPromise<ConstructorSymbol> Symbol { get; }
-    IPromise<InvocableSymbol> IInvocableDefinitionSyntax.Symbol => Symbol;
-    IPromise<Symbol> IDefinitionSyntax.Symbol => Symbol;
 }
 
 public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IAlwaysTypeMemberDefinitionSyntax, IStructMemberDefinitionSyntax
@@ -359,9 +339,6 @@ public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefini
     IInitializerSelfParameterSyntax SelfParameter { get; }
     new IBlockBodySyntax Body { get; }
     IBodySyntax IConcreteInvocableDefinitionSyntax.Body => Body;
-    new AcyclicPromise<InitializerSymbol> Symbol { get; }
-    IPromise<InvocableSymbol> IInvocableDefinitionSyntax.Symbol => Symbol;
-    IPromise<Symbol> IDefinitionSyntax.Symbol => Symbol;
 }
 
 public partial interface IFieldDefinitionSyntax : IAlwaysTypeMemberDefinitionSyntax, IClassMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IBindingSyntax
@@ -372,8 +349,6 @@ public partial interface IFieldDefinitionSyntax : IAlwaysTypeMemberDefinitionSyn
     new IdentifierName Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     ITypeSyntax Type { get; }
-    new AcyclicPromise<FieldSymbol> Symbol { get; }
-    IPromise<Symbol> IDefinitionSyntax.Symbol => Symbol;
     IExpressionSyntax? Initializer { get; }
 }
 
@@ -383,9 +358,6 @@ public partial interface IAssociatedFunctionDefinitionSyntax : IAlwaysTypeMember
     TypeName? IDefinitionSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IReturnSyntax? Return { get; }
-    new AcyclicPromise<FunctionSymbol> Symbol { get; }
-    IPromise<Symbol> IDefinitionSyntax.Symbol => Symbol;
-    IPromise<InvocableSymbol> IInvocableDefinitionSyntax.Symbol => Symbol;
 }
 
 public partial interface IAttributeSyntax : IConcreteSyntax
@@ -475,7 +447,6 @@ public partial interface IFieldParameterSyntax : IConstructorOrInitializerParame
 {
     new IdentifierName Name { get; }
     IdentifierName? IParameterSyntax.Name => Name;
-    Promise<FieldSymbol?> ReferencedSymbol { get; }
     IExpressionSyntax? DefaultValue { get; }
 }
 
@@ -519,7 +490,6 @@ public partial interface ITypeSyntax : IConcreteSyntax
 public partial interface ITypeNameSyntax : ITypeSyntax
 {
     TypeName Name { get; }
-    Promise<TypeSymbol?> ReferencedSymbol { get; }
 }
 
 [Closed(
@@ -746,7 +716,6 @@ public partial interface INewObjectExpressionSyntax : IDataTypedExpressionSyntax
     IdentifierName? ConstructorName { get; }
     TextSpan? ConstructorNameSpan { get; }
     IFixedList<IExpressionSyntax> Arguments { get; }
-    Promise<ConstructorSymbol?> ReferencedSymbol { get; }
 }
 
 public partial interface IUnsafeExpressionSyntax : IDataTypedExpressionSyntax
@@ -862,8 +831,6 @@ public partial interface IForeachExpressionSyntax : IDataTypedExpressionSyntax, 
     IdentifierName VariableName { get; }
     Promise<int?> DeclarationNumber { get; }
     IExpressionSyntax InExpression { get; }
-    Promise<MethodSymbol?> IterateMethod { get; }
-    Promise<MethodSymbol> NextMethod { get; }
     ITypeSyntax? Type { get; }
     IBlockExpressionSyntax Block { get; }
 }
@@ -886,7 +853,6 @@ public partial interface IInvocationExpressionSyntax : IDataTypedExpressionSynta
 {
     IExpressionSyntax Expression { get; }
     IFixedList<IExpressionSyntax> Arguments { get; }
-    Promise<Symbol?> ReferencedSymbol { get; }
 }
 
 [Closed(
