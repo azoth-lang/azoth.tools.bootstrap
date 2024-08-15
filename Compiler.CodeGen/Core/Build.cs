@@ -9,8 +9,7 @@ internal static class Build
     public static IEnumerable<string> OrderedNamespaces(TreeModel tree, params string[] additionalNamespaces)
         => tree.UsingNamespaces.Concat(additionalNamespaces).Distinct().OrderBy(v => v, NamespaceComparer.Instance);
 
-    public static IEnumerable<Property> BaseProperties(TreeNodeModel node, Property property)
-        => node.InheritedPropertiesNamed(property)
-        .Concat(node.InheritedPropertiesWithoutMostSpecificImplementationNamed(property))
+    public static IEnumerable<PropertyModel> BaseProperties(TreeNodeModel node, PropertyModel property)
+        => node.InheritedPropertiesNamedSameAs(property)
         .Where(p => p.IsDeclared);
 }

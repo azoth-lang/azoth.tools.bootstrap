@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
+using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
@@ -15,8 +16,14 @@ public class TreeNodeModel
 
     public InternalSymbol Defines { get; }
     public SymbolType DefinesType { get; }
+    /// <summary>
+    /// The directly declared supertypes of this node.
+    /// </summary>
     public IFixedSet<Symbol> Supertypes { get; }
     private readonly Lazy<IFixedSet<TreeNodeModel>> supertypeNodes;
+    /// <summary>
+    /// The tree nodes corresponding to the directly declared supertypes of this node.
+    /// </summary>
     public IFixedSet<TreeNodeModel> SupertypeNodes => supertypeNodes.Value;
     public IFixedSet<TreeNodeModel> AncestorNodes => ancestorNodes.Value;
     private readonly Lazy<IFixedSet<TreeNodeModel>> ancestorNodes;
@@ -34,23 +41,42 @@ public class TreeNodeModel
     public IFixedSet<TreeNodeModel> DescendantNodes => descendantNodes.Value;
     private readonly Lazy<IFixedSet<TreeNodeModel>> descendantNodes;
 
-    public IFixedList<Property> DeclaredProperties { get; }
+    /// <summary>
+    /// The properties declared for the node in the definition file.
+    /// </summary>
+    public IFixedList<PropertyModel> DeclaredProperties { get; }
 
     /// <summary>
-    /// Properties inherited from the parents of a rule. If the same property is defined on multiple
-    /// parents, it will be listed multiple times.
+    /// Properties that are implicitly declared on the node because multiple supertypes define the
+    /// same property with the same type.
     /// </summary>
-    public IFixedList<Property> InheritedProperties => inheritedProperties.Value;
-    private readonly Lazy<IFixedList<Property>> inheritedProperties;
+    public IFixedList<PropertyModel> ImplicitlyDeclaredProperties => implicitlyDeclaredProperties.Value;
+    private readonly Lazy<IFixedList<PropertyModel>> implicitlyDeclaredProperties;
 
     /// <summary>
-    /// Get all properties for a rule. If that rule defines the property itself, that
-    /// is the one definition. When the rule doesn't define the property, base classes are
-    /// recursively searched for definitions. Multiple definitions are returned when multiple
-    /// parents of a rule contain definitions of the property without it being defined on that rule.
+    /// The combination of declared and implicitly declared properties.
     /// </summary>
-    public IFixedList<Property> AllProperties => allProperties.Value;
-    private readonly Lazy<IFixedList<Property>> allProperties;
+    public IEnumerable<PropertyModel> AllDeclaredProperties
+        => DeclaredProperties.Concat(ImplicitlyDeclaredProperties);
+
+    /// <summary>
+    /// Properties inherited from the supertypes of a rule. If the same property is defined on
+    /// multiple supertypes, it will be listed multiple times. However, if a property is
+    /// inherited from a common supertype through multiple paths it will be listed once.
+    /// </summary>
+    /// <remarks>This is regardless of whether they are overriden on this node.</remarks>
+    public IFixedList<PropertyModel> InheritedProperties => inheritedProperties.Value;
+    private readonly Lazy<IFixedList<PropertyModel>> inheritedProperties;
+
+    /// <summary>
+    /// Get all properties for a node. If the node defines the property itself
+    /// (explicitly or implicitly), that is the one definition. When the node doesn't define the
+    /// property, supertypes are recursively searched for definitions.
+    /// </summary>
+    /// <remarks>This will not return duplicate property names unless two supertypes declare
+    /// conflicting properties.</remarks>
+    public IFixedList<PropertyModel> AllProperties => allProperties.Value;
+    private readonly Lazy<IFixedList<PropertyModel>> allProperties;
 
     public TreeNodeModel(TreeModel tree, TreeNodeSyntax syntax)
     {
@@ -68,33 +94,66 @@ public class TreeNodeModel
         childNodes = new(() => Tree.Nodes.Where(r => r.SupertypeNodes.Contains(this)).ToFixedSet());
         descendantNodes = new(() => ChildNodes.Concat(ChildNodes.SelectMany(r => r.DescendantNodes)).ToFixedSet());
 
-        DeclaredProperties = syntax.DeclaredProperties.Select(p => new Property(this, p)).ToFixedList();
-        inheritedProperties = new(() => SupertypeNodes.SelectMany(r => r.AllProperties).Distinct().ToFixedList());
-        allProperties = new(() =>
-        {
-            var rulePropertyNames = DeclaredProperties.Select(p => p.Name).ToFixedSet();
-            return DeclaredProperties
-                   .Concat(InheritedProperties.Where(p => !rulePropertyNames.Contains(p.Name)))
-                   .ToFixedList();
-        });
+        DeclaredProperties = syntax.DeclaredProperties.Select(p => new PropertyModel(this, p)).ToFixedList();
+        inheritedProperties = new(()
+            => MostSpecificProperties(SupertypeNodes.SelectMany(r => r.AllProperties).Distinct()).ToFixedList());
+        implicitlyDeclaredProperties = new(()
+            => InheritedProperties.AllExcept(DeclaredProperties, PropertyModel.NameComparer)
+                                  .GroupBy(p => p.Name)
+                                  .Select(ImplicitlyDeclaredProperty)
+                                  .WhereNotNull().ToFixedList());
+
+        allProperties = new(() => AllDeclaredProperties
+                                  .Concat(InheritedProperties.AllExcept(AllDeclaredProperties, PropertyModel.NameComparer))
+                                  .ToFixedList());
     }
 
-    public IEnumerable<Property> InheritedPropertiesNamed(Property property)
+    /// <summary>
+    /// The distinct properties with the same name that are inherited from supertypes.
+    /// </summary>
+    public IEnumerable<PropertyModel> InheritedPropertiesNamedSameAs(PropertyModel property)
         => InheritedPropertiesNamed(property.Name);
-    public IEnumerable<Property> InheritedPropertiesNamed(string propertyName)
+    private IEnumerable<PropertyModel> InheritedPropertiesNamed(string propertyName)
+        => InheritedProperties.Where(p => p.Name == propertyName).Distinct();
+
+    public IEnumerable<PropertyModel> PropertiesNamed(string propertyName)
         => InheritedProperties.Where(p => p.Name == propertyName);
 
-    public IEnumerable<Property> InheritedPropertiesWithoutMostSpecificImplementationNamed(Property property)
-        => InheritedPropertiesWithoutMostSpecificImplementationNamed(property.Name);
-    public IEnumerable<Property> InheritedPropertiesWithoutMostSpecificImplementationNamed(string propertyName)
-    {
-        var inheritedProperties = InheritedPropertiesNamed(propertyName).ToFixedSet();
-        if (inheritedProperties.Count <= 1)
-            return [];
+    private static IEnumerable<PropertyModel> MostSpecificProperties(IEnumerable<PropertyModel> propertyModels)
+        => propertyModels.GroupBy(p => p.Name).SelectMany(MostSpecificProperties);
 
-        return inheritedProperties
-               .SelectMany(p => p.Node.InheritedPropertiesNamed(propertyName))
-               .Distinct()
-               .Except(inheritedProperties);
+    private static IEnumerable<PropertyModel> MostSpecificProperties(IGrouping<string, PropertyModel> properties)
+    {
+        var mostSpecific = new List<PropertyModel>();
+        foreach (var property in properties)
+        {
+            for (var i = mostSpecific.Count - 1; i >= 0; i--)
+            {
+                var mostSpecificProperty = mostSpecific[i];
+                if (IsMoreSpecific(mostSpecificProperty, property))
+                    goto nextProperty;
+                if (IsMoreSpecific(property, mostSpecificProperty))
+                    mostSpecific.RemoveAt(i);
+            }
+            mostSpecific.Add(property);
+
+        nextProperty:;
+        }
+        return mostSpecific;
     }
+
+    private PropertyModel? ImplicitlyDeclaredProperty(IGrouping<string, PropertyModel> properties)
+    {
+        var name = properties.Key;
+        var (type, count) = properties.CountBy(p => p.Type).TrySingle();
+        return count switch
+        {
+            0 => null, // Multiple types
+            1 => null, // Single property that doesn't need to be redeclared
+            _ => new PropertyModel(this, name, type),
+        };
+    }
+
+    private static bool IsMoreSpecific(PropertyModel property, PropertyModel other)
+        => property.Node.AncestorNodes.Contains(other.Node);
 }

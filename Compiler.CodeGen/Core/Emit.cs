@@ -15,7 +15,7 @@ internal static class Emit
     public static string ClosedAttribute(TreeNodeModel node, string indent = "")
     {
         var children = node.ChildNodes;
-        if (!children.Any()) return "";
+        if (!children.Any()) return $"// [Closed(typeof({node.Defines.ClassName}))]{Environment.NewLine}";
         var builder = new StringBuilder();
         builder.Append(indent);
         builder.AppendLine("[Closed(");
@@ -57,10 +57,11 @@ internal static class Emit
             ListType t => $"IFixedList<{Type(t.ElementType, emitSymbol)}>",
             SetType t => $"IFixedSet<{Type(t.ElementType, emitSymbol)}>",
             OptionalType t => $"{Type(t.UnderlyingType, emitSymbol)}?",
-            VoidType _ => "void",
             _ => throw ExhaustiveMatch.Failed(type)
         };
 
-    public static string PropertyIsNew(Property property)
+    public static string ClassName(InternalSymbol symbol) => symbol.ClassName;
+
+    public static string PropertyIsNew(PropertyModel property)
         => property.IsNewDefinition ? "new " : "";
 }

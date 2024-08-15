@@ -8,7 +8,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
@@ -58,24 +57,6 @@ public partial interface IParameterNode
 {
     IPreviousValueId PreviousValueId();
     IFlowState FlowStateBefore();
-}
-
-public partial interface INamedParameterNode
-{
-    new DataType BindingType { get; }
-    new ValueId BindingValueId { get; }
-    ValueId IParameterNode.BindingValueId => BindingValueId;
-    ValueId IBindingNode.BindingValueId => BindingValueId;
-}
-
-public partial interface ISelfParameterNode
-{
-    new IMaybeAntetype BindingAntetype { get; }
-    IMaybeAntetype IBindingNode.BindingAntetype => BindingAntetype;
-    IMaybeAntetype IParameterNode.BindingAntetype => BindingAntetype;
-    new Pseudotype BindingType { get; }
-    Pseudotype IBindingNode.BindingType => BindingType;
-    Pseudotype IParameterNode.BindingType => BindingType;
 }
 #endregion
 
@@ -159,16 +140,7 @@ public partial interface IExpressionNode
 
 public partial interface IBlockExpressionNode
 {
-    new IMaybeAntetype Antetype { get; }
-    // TODO this ought to have been generated
-    IMaybeAntetype IBlockOrResultNode.Antetype => Antetype;
-    IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
-    new DataType Type { get; }
-    DataType IBlockOrResultNode.Type => Type;
-    DataType IExpressionNode.Type => Type;
-    new ValueId ValueId { get; }
     IFlowState FlowStateBefore();
-    new IFlowState FlowStateAfter { get; }
 }
 
 public partial interface INewObjectExpressionNode
@@ -186,13 +158,6 @@ public partial interface ILiteralExpressionNode
 #endregion
 
 #region Control Flow Expressions
-public partial interface IIfExpressionNode
-{
-    new ValueId ValueId { get; }
-    ValueId IElseClauseNode.ValueId => ValueId;
-    ValueId IAmbiguousExpressionNode.ValueId => ValueId;
-}
-
 public partial interface IForeachExpressionNode
 {
     // TODO some way to code gen this hiding

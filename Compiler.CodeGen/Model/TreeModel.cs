@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
+using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
@@ -33,18 +34,15 @@ public sealed class TreeModel
 
     private readonly FixedDictionary<string, TreeNodeModel> nodesLookup;
 
-    public void ValidateTreeOrdering()
+    public void ValidateAmbiguousProperties()
     {
-        foreach (var rule in Nodes.Where(r => !r.IsAbstract))
-        {
-            var baseNonTerminalPropertyNames
-                = rule.AncestorNodes
-                  .SelectMany(r => r.DeclaredProperties)
-                  .Where(p => p.ReferencesNode).Select(p => p.Name);
-            var nonTerminalPropertyNames = rule.DeclaredProperties.Where(p => p.ReferencesNode).Select(p => p.Name);
-            var missingProperties = baseNonTerminalPropertyNames.Except(nonTerminalPropertyNames).ToList();
-            if (missingProperties.Any())
-                throw new ValidationException($"Rule for {rule.Defines} is missing inherited properties: {string.Join(", ", missingProperties)}. Can't determine order to visit children.");
-        }
+        foreach (var node in Nodes)
+            if (node.AllProperties.Duplicates(PropertyModel.NameComparer).Any())
+            {
+                var ambiguousNames = node.AllProperties.Duplicates(PropertyModel.NameComparer).Select(p => p.Name).ToList();
+                throw new Exception(
+                    $"Node {node.Defines} has ambiguous properties {string.Join(", ", ambiguousNames)}."
+                    + $" Duplicate properties are: {string.Join(", ", ambiguousNames.SelectMany(node.PropertiesNamed))}");
+            }
     }
 }

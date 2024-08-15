@@ -20,9 +20,6 @@ public sealed class ListType : CollectionType
     public override int GetHashCode() => HashCode.Combine(ElementType, typeof(ListType));
     #endregion
 
-    public override int GetEquivalenceHashCode()
-        => HashCode.Combine(ElementType.GetEquivalenceHashCode(), typeof(ListType));
-
     public override ListType WithSymbol(Symbol symbol)
         => new ListType(ElementType.WithSymbol(symbol));
 

@@ -11,8 +11,8 @@ internal static class TreeNodeModelExtensions
     /// </summary>
     public static IEnumerable<TreeNodeModel> EliminateRedundantRules(this IEnumerable<TreeNodeModel> nodes)
     {
-        var ruleSet = nodes.ToFixedSet();
-        var supertypeRules = ruleSet.SelectMany(r => r.SupertypeNodes).ToFixedSet();
-        return ruleSet.Except(supertypeRules);
+        var nodeSet = nodes.ToFixedSet();
+        var supertypeRules = nodeSet.SelectMany(r => r.SupertypeNodes).ToFixedSet();
+        return nodeSet.Except(supertypeRules);
     }
 }

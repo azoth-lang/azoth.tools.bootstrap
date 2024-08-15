@@ -20,11 +20,11 @@ public sealed class TreeNodeSyntax
         Defines = defines;
         var supertypesList = supertypes.ToFixedList();
         if (supertypesList.Duplicates().Any())
-            throw new ArgumentException($"Rule for {defines} contains duplicate supertype definitions");
+            throw new ArgumentException($"Node {defines} contains duplicate supertype definitions.");
         Supertypes = supertypesList.ToFixedSet();
         DeclaredProperties = declaredProperties.ToFixedList();
         if (DeclaredProperties.Select(p => p.Name).Distinct().Count() != DeclaredProperties.Count)
-            throw new ArgumentException($"Rule for {defines} contains duplicate property definitions");
+            throw new ArgumentException($"Node {defines} contains duplicate property definitions.");
     }
 
     public override string ToString()

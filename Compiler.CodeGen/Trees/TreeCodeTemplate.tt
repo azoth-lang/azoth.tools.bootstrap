@@ -15,11 +15,20 @@ namespace <#=tree.Namespace #>;
 <#  foreach(var node in tree.Nodes) {#>
 <#=Emit.ClosedAttribute(node) #>public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(node) #>
 {
-<#      foreach (var property in node.DeclaredProperties.Where(ShouldEmit.Property)) { #>
+<#      foreach (var property in node.AllDeclaredProperties.Where(ShouldEmit.Property)) { #>
     <#=Emit.PropertyIsNew(property) #><#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
 <#          foreach (var baseProperty in Build.BaseProperties(node, property)) { #>
     <#=Emit.Type(baseProperty.Type) #> <#= Emit.TypeName(baseProperty.Node.Defines) #>.<#=baseProperty.Name #> => <#=property.Name #>;
 <#          } #>
+<#      } #>
+}
+
+<#  } #>
+<#  foreach(var node in tree.Nodes.Where(n => !n.IsAbstract)) {#>
+file class <#= Emit.ClassName(node.Defines) #> // : <#= Emit.TypeName(node.Defines) #>
+{
+<#      foreach (var property in node.AllProperties) { #>
+    public <#=Emit.Type(property.Type) #> <#=property.Name #> { get; } = default!;
 <#      } #>
 }
 

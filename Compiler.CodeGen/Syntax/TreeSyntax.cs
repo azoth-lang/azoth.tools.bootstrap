@@ -37,6 +37,6 @@ public sealed class TreeSyntax
         UsingNamespaces = usingNamespaces.ToFixedSet();
         Nodes = nodes.ToFixedList();
         if (Nodes.Select(r => r.Defines).Duplicates().Any())
-            throw new ValidationException("Node names must be unique");
+            throw new ValidationException("Node names must be unique.");
     }
 }

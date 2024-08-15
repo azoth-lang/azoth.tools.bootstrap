@@ -36,8 +36,6 @@ public sealed class SymbolType : NonOptionalType
     public override int GetHashCode() => HashCode.Combine(Symbol);
     #endregion
 
-    public override int GetEquivalenceHashCode() => Symbol.GetEquivalenceHashCode();
-
     public override SymbolType WithSymbol(Symbol symbol) => new(symbol);
 
     public override bool IsSubtypeOf(Type other)

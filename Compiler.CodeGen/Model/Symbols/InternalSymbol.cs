@@ -46,7 +46,5 @@ public sealed class InternalSymbol : Symbol
         => HashCode.Combine(ShortName, RuntimeHelpers.GetHashCode(tree));
     #endregion
 
-    public override int GetEquivalenceHashCode() => HashCode.Combine(ShortName);
-
     public override string ToString() => ShortName;
 }

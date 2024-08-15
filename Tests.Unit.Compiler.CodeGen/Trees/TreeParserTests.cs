@@ -135,7 +135,7 @@ public class TreeParserTests
 
         var rule = Assert.Single(config.Nodes);
         Assert.Equal(Symbol("SubType"), rule.Defines);
-        var expectedParents = FixedList(Symbol("MyBase"));
+        var expectedParents = FixedList<SymbolSyntax>();
         Assert.Equal(expectedParents, rule.Supertypes);
         Assert.Empty(rule.DeclaredProperties);
     }
@@ -335,7 +335,7 @@ public class TreeParserTests
 
         var ex = Assert.Throws<ArgumentException>(() => TreeParser.Parse(grammar));
 
-        Assert.Equal("Rule for MyNonterminal contains duplicate property definitions", ex.Message);
+        Assert.Equal("Node MyNonterminal contains duplicate property definitions.", ex.Message);
     }
     #endregion
 

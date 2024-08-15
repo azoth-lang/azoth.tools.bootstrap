@@ -67,7 +67,7 @@ public static class Program
             var treeSyntax = TreeParser.Parse(inputFile);
             var tree = new TreeModel(treeSyntax);
 
-            tree.ValidateTreeOrdering();
+            tree.ValidateAmbiguousProperties();
 
             var treeCode = TreeCodeBuilder.GenerateTree(tree);
             WriteIfChanged(treeOutputPath, treeCode);

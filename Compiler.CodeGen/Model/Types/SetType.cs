@@ -19,9 +19,6 @@ public sealed class SetType : CollectionType
     public override int GetHashCode() => HashCode.Combine(ElementType, typeof(SetType));
     #endregion
 
-    public override int GetEquivalenceHashCode()
-        => HashCode.Combine(ElementType.GetEquivalenceHashCode(), typeof(SetType));
-
     public override SetType WithSymbol(Symbol symbol)
         => new SetType(ElementType.WithSymbol(symbol));
 

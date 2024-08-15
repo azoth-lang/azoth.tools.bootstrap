@@ -3,6 +3,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
+// TODO merge up into Type
 [Closed(typeof(NonOptionalType), typeof(OptionalType))]
 public abstract class NonVoidType : Type
 {

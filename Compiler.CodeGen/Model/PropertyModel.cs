@@ -7,21 +7,20 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
-public sealed class Property
+public sealed class PropertyModel
 {
-    public static IEqualityComparer<Property> NameAndTypeComparer { get; }
-        = EqualityComparer<Property>.Create((p1, p2) => p1!.Name == p2!.Name && p1.Type == p2.Type,
+    public static IEqualityComparer<PropertyModel> NameAndTypeComparer { get; }
+        = EqualityComparer<PropertyModel>.Create((p1, p2) => p1?.Name == p2?.Name && p1?.Type == p2?.Type,
             p => HashCode.Combine(p.Name, p.Type));
 
-    public static IEqualityComparer<Property> NameAndTypeEquivalenceComparer { get; }
-        = EqualityComparer<Property>.Create(
-            (p1, p2) => p1?.Name == p2?.Name && Types.Type.EquivalenceComparer.Equals(p1?.Type, p2?.Type),
-            p => HashCode.Combine(p.Name, Types.Type.EquivalenceComparer.GetHashCode(p.Type)));
+    public static IEqualityComparer<PropertyModel> NameComparer { get; }
+        = EqualityComparer<PropertyModel>.Create((p1, p2) => p1?.Name == p2?.Name,
+            p => HashCode.Combine(p.Name));
 
-    public PropertySyntax Syntax { get; }
+    public PropertySyntax? Syntax { get; }
 
     public TreeNodeModel Node { get; }
-    public string Name => Syntax.Name;
+    public string Name { get; }
     public NonVoidType Type { get; }
     /// <summary>
     /// Something is a new definition if it replaces some parent definition.
@@ -30,7 +29,7 @@ public sealed class Property
     private readonly Lazy<bool> isNewDefinition;
 
     /// <summary>
-    /// Whether this property is declared in the rule interface.
+    /// Whether this property is declared in the node interface.
     /// </summary>
     /// <remarks>
     /// A property needs declared under three conditions:
@@ -47,22 +46,37 @@ public sealed class Property
     /// </summary>
     public bool ReferencesNode => Type.UnderlyingSymbol is InternalSymbol { ReferencedNode: not null };
 
-    public Property(TreeNodeModel node, PropertySyntax syntax)
+    public PropertyModel(TreeNodeModel node, PropertySyntax syntax)
     {
         Node = node;
         Syntax = syntax;
+        Name = Syntax.Name;
 
         var type = Types.Type.CreateFromSyntax(Node.Tree, syntax.Type);
         if (type is not NonVoidType nonVoidType)
             throw new InvalidOperationException("Property type must be a non-void type.");
         Type = nonVoidType;
-        isNewDefinition = new(() => node.InheritedPropertiesNamed(this).Any());
+        isNewDefinition = new(() => node.InheritedPropertiesNamedSameAs(this).Any());
         isDeclared = new(() =>
         {
-            var baseProperties = node.InheritedPropertiesNamed(this).ToList();
-            return baseProperties.Count != 1 || !Types.Type.AreEquivalent(baseProperties[0].Type, Type);
+            var baseProperties = node.InheritedPropertiesNamedSameAs(this).ToList();
+            return baseProperties.Count != 1 || baseProperties[0].Type != Type;
         });
     }
 
-    public override string ToString() => $"{Name}:{Type}";
+    public PropertyModel(TreeNodeModel node, string name, NonVoidType type)
+    {
+        Node = node;
+        Name = name;
+        Type = type;
+
+        isNewDefinition = new(() => node.InheritedPropertiesNamedSameAs(this).Any());
+        isDeclared = new(() =>
+        {
+            var baseProperties = node.InheritedPropertiesNamedSameAs(this).ToList();
+            return baseProperties.Count != 1 || baseProperties[0].Type != Type;
+        });
+    }
+
+    public override string ToString() => $"{Node.Defines}.{Name}:{Type}";
 }

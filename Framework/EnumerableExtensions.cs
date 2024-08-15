@@ -155,12 +155,14 @@ public static class EnumerableExtensions
         return !e.MoveNext();
     }
 
-    public static IEnumerable<T> Do<T>(this IEnumerable<T> source, Action<T> action)
+    /// <summary>
+    /// An except operation that preserves duplicates in the first.
+    /// </summary>
+    public static IEnumerable<T> AllExcept<T>(this IEnumerable<T> first, IEnumerable<T> second, IEqualityComparer<T> comparer)
     {
-        foreach (var item in source)
-        {
-            action(item);
-            yield return item;
-        }
+        var set = new HashSet<T>(second, comparer);
+        foreach (var item in first)
+            if (!set.Contains(item))
+                yield return item;
     }
 }

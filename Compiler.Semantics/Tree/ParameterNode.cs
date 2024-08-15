@@ -13,7 +13,7 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
     protected AttributeLock SyncLock;
     public abstract override IParameterSyntax Syntax { get; }
     public abstract IdentifierName? Name { get; }
-    public bool Unused => Syntax.Unused;
+    public bool Unused => Name?.Text.StartsWith('_') ?? false;
     public abstract IMaybeAntetype BindingAntetype { get; }
     public abstract Pseudotype BindingType { get; }
     private ValueId bindingValueId;

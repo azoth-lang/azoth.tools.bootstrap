@@ -14,6 +14,7 @@ internal class NamespaceSymbolNode : PackageFacetChildSymbolNode, INamespaceSymb
 
     public override IdentifierName Name => Symbol.Name;
     TypeName INamedDeclarationNode.Name => Name;
+    StandardName INamespaceMemberDeclarationNode.Name => Name;
 
     private ValueAttribute<IFixedList<INamespaceMemberDeclarationNode>> members;
     public IFixedList<INamespaceMemberDeclarationNode> Members

@@ -11,7 +11,7 @@ public static class ShouldEmit
     /// 3. the property is defined in multiple parents, in that case it is
     ///    ambiguous unless it is redefined in the current interface.
     /// </summary>
-    public static bool Property(Property property)
+    public static bool Property(PropertyModel property)
         => property.IsDeclared;
 
     public static bool Class(TreeNodeModel node)

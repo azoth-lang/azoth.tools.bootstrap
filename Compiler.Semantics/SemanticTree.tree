@@ -2,6 +2,7 @@
 ◊root Semantic;
 ◊prefix I;
 ◊suffix Node;
+◊class-suffix Node;
 ◊using System.Collections.Generic;
 ◊using System.Numerics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
@@ -57,7 +58,7 @@ PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPacka
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
 
 // ---------- Facets
-PackageFacet <: Child, PackageFacetDeclaration = Syntax:`IPackageSyntax`
+PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageSyntax`
     PackageName:`IdentifierName` PackageSymbol:`PackageSymbol`
     PackageNameScope:`PackageNameScope`
     CompilationUnits:{CompilationUnit} Definitions:`IFixedSet<IPackageMemberDefinitionNode>`
@@ -147,11 +148,12 @@ GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParamete
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
 TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberDefinitionSyntax`? AccessModifier:`AccessModifier`;
-ClassMemberDefinition <: TypeMemberDefinition, ClassMemberDeclaration = Syntax:`IClassMemberDefinitionSyntax`?;
-TraitMemberDefinition <: TypeMemberDefinition, TraitMemberDeclaration = Syntax:`ITraitMemberDefinitionSyntax`;
-StructMemberDefinition <: TypeMemberDefinition, StructMemberDeclaration = Syntax:`IStructMemberDefinitionSyntax`?;
+ClassMemberDefinition <: TypeMemberDefinition, ClassMemberDeclaration;
+TraitMemberDefinition <: TypeMemberDefinition, TraitMemberDeclaration;
+StructMemberDefinition <: TypeMemberDefinition, StructMemberDeclaration;
 AlwaysTypeMemberDefinition <: TypeMemberDefinition = ContainingSymbol:`UserTypeSymbol`;
-AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, NamedDeclaration;
+AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, NamedDeclaration
+    = Name:`StandardName`;
 
 // ---------- Member Definitions
 MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition, MethodDeclaration
@@ -294,7 +296,8 @@ Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`
     ExpectedAntetype:`IMaybeExpressionAntetype`? Antetype:`IMaybeExpressionAntetype`
     ExpectedType:`DataType`? Type:`DataType` FlowStateAfter:`IFlowState`;
 AssignableExpression <: Expression, AmbiguousAssignableExpression = Syntax:`IAssignableExpressionSyntax`;
-BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
+BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*
+    Antetype:`IMaybeAntetype`;
 NewObjectExpression <: InvocationExpression = Syntax:`INewObjectExpressionSyntax`
     ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression*
     IntermediateArguments:`IExpressionNode?`*
@@ -437,7 +440,7 @@ InitializerGroupName <: NameExpression = Syntax:`INameExpressionSyntax`
 // TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression
 SpecialTypeNameExpression <: NameExpression
     = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol` Type:`UnknownType`;
-InstanceExpression <: NameExpression, SimpleName; // i.e. `self` or `base`
+InstanceExpression <: NameExpression, SimpleName = Syntax:`IInstanceExpressionSyntax`; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression, LocalBindingNameExpression
     = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype`
@@ -512,7 +515,8 @@ PackageFacetChildDeclaration <: ChildDeclaration
 // ---------- Namespace Declarations
 NamespaceDeclaration <: NamespaceMemberDeclaration = Name:`IdentifierName` Symbol:`NamespaceSymbol`
     Members:`INamespaceMemberDeclarationNode`* NestedMembers:`INamespaceMemberDeclarationNode`*;
-NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, SymbolDeclaration;
+NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, SymbolDeclaration
+    = Name:`StandardName`;
 
 // ---------- Function Declaration
 // TODO better name for this or perhaps just merge AssociatedFunctionDeclaration into FunctionDeclaration
@@ -552,7 +556,8 @@ InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration, 
     = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
 FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration
     = Name:`IdentifierName` BindingType:`DataType` Symbol:`FieldSymbol`;
-AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclaration, InvocableDeclaration;
+AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclaration, InvocableDeclaration
+    = Name:`StandardName`;
 
 // ---------- Can be Referenced by Type Name
 TypeDeclaration <: NamedDeclaration, SymbolDeclaration

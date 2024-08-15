@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Framework;
+using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
@@ -28,7 +29,7 @@ public class DiagnosticCollectionBuilder : IReadOnlyCollection<Diagnostic>
     }
 
     public void Add(IEnumerable<Diagnostic> diagnostics)
-        => items.AddRange(diagnostics.Do(UpdateFatalErrorCount));
+        => items.AddRange(diagnostics.Pipe(UpdateFatalErrorCount));
 
     private void UpdateFatalErrorCount(Diagnostic diagnostic)
     {

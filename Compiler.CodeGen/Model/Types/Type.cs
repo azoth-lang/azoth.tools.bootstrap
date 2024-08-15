@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
@@ -9,17 +8,9 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-[Closed(
-    typeof(NonVoidType),
-    typeof(VoidType))]
+[Closed(typeof(NonVoidType))]
 public abstract class Type : IEquatable<Type>
 {
-    public static IEqualityComparer<Type> EquivalenceComparer { get; }
-        = EqualityComparer<Type>.Create(AreEquivalent, t => t.GetEquivalenceHashCode());
-
-    public static VoidType Void => VoidType.Instance;
-    public static SymbolType VoidSymbol { get; } = new SymbolType(new ExternalSymbol("Void"));
-
     [return: NotNullIfNotNull(nameof(syntax))]
     public static Type? CreateFromSyntax(TreeModel tree, TypeSyntax? syntax)
     {
@@ -62,23 +53,6 @@ public abstract class Type : IEquatable<Type>
 
     public static bool operator !=(Type? left, Type? right) => !Equals(left, right);
     #endregion
-
-    public static bool AreEquivalent(Type? a, Type? b)
-    {
-        if (ReferenceEquals(a, b)) return true;
-        if (a is null || b is null) return false;
-        return (a, b) switch
-        {
-            (ListType left, ListType right) => AreEquivalent(left.ElementType, right.ElementType),
-            (SetType left, SetType right) => AreEquivalent(left.ElementType, right.ElementType),
-            (OptionalType left, OptionalType right) => AreEquivalent(left.UnderlyingType, right.UnderlyingType),
-            (SymbolType left, SymbolType right) => Symbol.AreEquivalent(left.Symbol, right.Symbol),
-            (VoidType, VoidType) => true,
-            _ => false
-        };
-    }
-
-    public abstract int GetEquivalenceHashCode();
 
     public abstract Type WithSymbol(Symbol symbol);
 

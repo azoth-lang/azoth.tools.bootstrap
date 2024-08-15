@@ -2,6 +2,7 @@
 ◊root <default>;
 ◊prefix I;
 ◊suffix Syntax;
+◊class-suffix Syntax;
 ◊using System.Numerics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Code;
@@ -96,7 +97,7 @@ CapabilitySet <: CapabilityConstraint = Constraint:`CapabilitySet`;
 Capability <: CapabilityConstraint = Tokens:`ICapabilityToken`* Declared:`DeclaredCapability` Capability:`Capability`;
 
 // ---------- Parameters and Return
-Parameter <: Code = Name:`IdentifierName`? Unused:`bool`;
+Parameter <: Code = Name:`IdentifierName`?;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter;
 NamedParameter <: ConstructorOrInitializerParameter, LocalBinding = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` Type DefaultValue:Expression?;
