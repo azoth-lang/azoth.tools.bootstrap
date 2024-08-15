@@ -14,8 +14,6 @@ public class SharingSetSnapshot
         Variables = variables;
     }
 
-    public SharingSetMutable MutableCopy() => new(IsLent, Variables);
-
     public override string ToString()
     {
         var result = $"Count {Variables.Count}";

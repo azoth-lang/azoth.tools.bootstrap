@@ -5,15 +5,15 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using DotNet.Collections.Generic;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
+namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
-internal class SemanticNamespaceSymbolNodeBuilder
+internal class NamespaceDefinitionNodeBuilder
 {
     private readonly PackageSymbol packageSymbol;
     private readonly ConcurrentDictionary<NamespaceSymbol, ConcurrentDictionary<IdentifierName, NamespaceSymbol>> childNamespaces = new();
     private readonly MultiMapHashSet<NamespaceSymbol, IPackageMemberDefinitionNode> childMembers = new();
 
-    public SemanticNamespaceSymbolNodeBuilder(PackageSymbol packageSymbol)
+    public NamespaceDefinitionNodeBuilder(PackageSymbol packageSymbol)
     {
         this.packageSymbol = packageSymbol;
         childNamespaces.GetOrAdd(packageSymbol, new ConcurrentDictionary<IdentifierName, NamespaceSymbol>());

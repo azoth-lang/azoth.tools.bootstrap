@@ -9,10 +9,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Basic.Flow.SharingVariables;
 public class TempConversionTo : ISharingVariable
 {
     public TempConversion TempConversion { get; }
-    public bool IsVariableOrParameter => false;
+
     /// <remarks>The to side is NOT affected by any restrictions.</remarks>
     public CapabilityRestrictions RestrictionsImposed => CapabilityRestrictions.None;
-    public bool SharingIsTracked => true;
+
     public bool KeepsSetAlive => false;
     public TempConversionFrom From => TempConversion.From;
 

@@ -28,13 +28,4 @@ internal static class BindingSymbolExtensions
         // Constant and Identity capabilities never need tracked
         return capability != Capability.Constant && capability != Capability.Identity;
     }
-
-    /// <summary>
-    /// Whether reference sharing is tracked for this symbol once it has the given capability.
-    /// </summary>
-    public static bool SharingIsTracked(this BindingSymbol symbol, FlowCapabilities? flowCapabilities)
-    {
-        if (flowCapabilities?.Outer.Modified == Capability.Identity) return false;
-        return symbol.SharingIsTracked();
-    }
 }

@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols.Namespaces;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -19,7 +18,7 @@ internal static class SymbolNodeAspect
     public static INamespaceDefinitionNode PackageFacet_GlobalNamespace(IPackageFacetNode node)
     {
         var packageSymbol = node.PackageSymbol;
-        var builder = new SemanticNamespaceSymbolNodeBuilder(packageSymbol);
+        var builder = new NamespaceDefinitionNodeBuilder(packageSymbol);
         foreach (var cu in node.CompilationUnits)
             BuildNamespace(packageSymbol, cu.ImplicitNamespaceName, cu.Definitions);
         return Child.Attach(node, builder.Build());

@@ -17,15 +17,6 @@ public sealed class ExternalReference : ISharingVariable
     private static ExternalReference Factory(uint number) => new(number);
     #endregion
 
-    public static readonly ExternalReference NonLentParameters = new(0);
-
-    public static ExternalReference CreateLentParameter(uint number)
-    {
-        if (number == 0)
-            throw new ArgumentOutOfRangeException(nameof(number), "Lent parameter numbers must be > 0.");
-        return Create(number);
-    }
-
     private readonly uint number;
 
     public bool IsVariableOrParameter => false;

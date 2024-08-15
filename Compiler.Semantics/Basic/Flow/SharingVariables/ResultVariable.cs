@@ -17,21 +17,15 @@ public sealed class ResultVariable : ICapabilitySharingVariable
     private static ResultVariable Factory(ulong number) => new(number);
     #endregion
 
-    public static readonly ResultVariable First = Create(0);
-
     private readonly ulong number;
 
-    public bool IsVariableOrParameter => false;
     public CapabilityRestrictions RestrictionsImposed => CapabilityRestrictions.None;
-    public bool SharingIsTracked => true;
     public bool KeepsSetAlive => true;
 
     private ResultVariable(ulong number)
     {
         this.number = number;
     }
-
-    public ResultVariable NextResult() => Create(number + 1);
 
     #region Equality
     public bool Equals(ISharingVariable? other) =>
