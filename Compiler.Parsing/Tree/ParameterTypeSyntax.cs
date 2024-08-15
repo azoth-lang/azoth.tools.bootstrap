@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class ParameterTypeSyntax : Syntax, IParameterTypeSyntax
+internal class ParameterTypeSyntax : CodeSyntax, IParameterTypeSyntax
 {
     public bool IsLent { get; }
     public ITypeSyntax Referent { get; }

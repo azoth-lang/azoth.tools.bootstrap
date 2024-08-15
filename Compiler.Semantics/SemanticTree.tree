@@ -31,7 +31,7 @@ Child <: `IChildTreeNode<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPack
 
 // ---------- Special Parts
 BodyOrBlock <: Code = Statements:`IStatementNode`*;
-ElseClause <: ControlFlow = Syntax:`IConcreteSyntax` FlowStateAfter:`IFlowState` ValueId:`ValueId`;
+ElseClause <: ControlFlow = Syntax:`ICodeSyntax` FlowStateAfter:`IFlowState` ValueId:`ValueId`;
 BlockOrResult: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings
@@ -66,7 +66,7 @@ PackageMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefini
     = Attributes:Attribute* AccessModifier:`AccessModifier`;
 
 // ---------- Code Files
-Code <: Child = Syntax:`IConcreteSyntax`? File:`CodeFile`;
+Code <: Child = Syntax:`ICodeSyntax`? File:`CodeFile`;
 
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
     ContainingDeclaration:`IPackageFacetNode` ContainingSymbol:`PackageSymbol`

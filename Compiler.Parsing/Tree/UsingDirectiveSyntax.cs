@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class UsingDirectiveSyntax : Syntax, IUsingDirectiveSyntax
+internal class UsingDirectiveSyntax : CodeSyntax, IUsingDirectiveSyntax
 {
     // For now, we only support namespace names
     public NamespaceName Name { get; }

@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class GenericParameterSyntax : Syntax, IGenericParameterSyntax
+internal class GenericParameterSyntax : CodeSyntax, IGenericParameterSyntax
 {
     public ICapabilityConstraintSyntax Constraint { get; }
     public IdentifierName Name { get; }

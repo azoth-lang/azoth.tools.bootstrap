@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal sealed class BindingPatternSyntax : Syntax, IBindingPatternSyntax
+internal sealed class BindingPatternSyntax : CodeSyntax, IBindingPatternSyntax
 {
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }

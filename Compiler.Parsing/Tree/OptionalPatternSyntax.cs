@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class OptionalPatternSyntax : Syntax, IOptionalPatternSyntax
+internal class OptionalPatternSyntax : CodeSyntax, IOptionalPatternSyntax
 {
     public IOptionalOrBindingPatternSyntax Pattern { get; }
 

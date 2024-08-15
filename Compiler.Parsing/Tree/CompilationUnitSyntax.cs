@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class CompilationUnitSyntax : Syntax, ICompilationUnitSyntax
+internal class CompilationUnitSyntax : CodeSyntax, ICompilationUnitSyntax
 {
     public CodeFile File { get; }
     public NamespaceName ImplicitNamespaceName { get; }

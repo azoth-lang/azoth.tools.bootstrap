@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class BlockBodySyntax : Syntax, IBlockBodySyntax
+internal class BlockBodySyntax : CodeSyntax, IBlockBodySyntax
 {
     public IFixedList<IBodyStatementSyntax> Statements { [DebuggerStepThrough] get; }
 

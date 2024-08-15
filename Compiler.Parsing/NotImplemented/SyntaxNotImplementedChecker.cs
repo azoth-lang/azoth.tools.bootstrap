@@ -24,7 +24,7 @@ internal class SyntaxNotImplementedChecker : SyntaxWalker
 
     public void Check() => WalkNonNull(compilationUnit);
 
-    protected override void WalkNonNull(IConcreteSyntax syntax)
+    protected override void WalkNonNull(ICodeSyntax syntax)
     {
         switch (syntax)
         {

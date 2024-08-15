@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class DefinitionSyntax : Syntax, IDefinitionSyntax
+internal abstract class DefinitionSyntax : CodeSyntax, IDefinitionSyntax
 {
     public CodeFile File { get; }
     public TypeName? Name { get; }

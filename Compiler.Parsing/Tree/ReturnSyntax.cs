@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal sealed class ReturnSyntax : Syntax, IReturnSyntax
+internal sealed class ReturnSyntax : CodeSyntax, IReturnSyntax
 {
     public ITypeSyntax Type { get; }
 

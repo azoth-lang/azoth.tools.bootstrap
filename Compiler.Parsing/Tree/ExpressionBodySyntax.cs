@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class ExpressionBodySyntax : Syntax, IExpressionBodySyntax
+internal class ExpressionBodySyntax : CodeSyntax, IExpressionBodySyntax
 {
     public IResultStatementSyntax ResultStatement { get; }
 

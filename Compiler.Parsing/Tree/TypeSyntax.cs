@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class TypeSyntax : Syntax, ITypeSyntax
+internal abstract class TypeSyntax : CodeSyntax, ITypeSyntax
 {
     private DataType? namedType;
 

@@ -5,11 +5,11 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-internal abstract class Syntax : IConcreteSyntax
+internal abstract class CodeSyntax : ICodeSyntax
 {
     public TextSpan Span { get; }
 
-    protected Syntax(TextSpan span)
+    protected CodeSyntax(TextSpan span)
     {
         Span = span;
     }

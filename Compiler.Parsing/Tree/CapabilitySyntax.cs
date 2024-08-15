@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class CapabilitySyntax : Syntax, ICapabilitySyntax
+internal class CapabilitySyntax : CodeSyntax, ICapabilitySyntax
 {
     public static CapabilitySyntax ImplicitReadOnly(TextSpan span)
     {

@@ -1,6 +1,8 @@
 namespace Azoth.Tools.Bootstrap.Compiler.CST;
 
-// TODO maybe it would be better to rename this to IConcreteSyntax and IConcreteSyntax to ICodeSyntax
+/// <summary>
+/// 
+/// </summary>
 public interface ISyntax
 {
 }

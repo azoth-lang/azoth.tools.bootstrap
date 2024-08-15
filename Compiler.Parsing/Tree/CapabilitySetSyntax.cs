@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class CapabilitySetSyntax : Syntax, ICapabilitySetSyntax
+internal class CapabilitySetSyntax : CodeSyntax, ICapabilitySetSyntax
 {
     public static CapabilitySetSyntax ImplicitAliasable(TextSpan span)
     {

@@ -1,5 +1,5 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.CST;
-◊root Concrete;
+◊root Code;
 ◊prefix I;
 ◊suffix Syntax;
 ◊using System.Numerics;
@@ -12,12 +12,12 @@
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // TODO:
-//     The syntax tree ought to be indepdendent of semantics. It should not try to enforce rules
+//     The syntax tree ought to be independent of semantics. It should not try to enforce rules
 //     such as that certian kinds of expressions are expected in certian places. It should collapse
 //     node types even if they appear in different contexts. For example, a `SpecialTypeName` and a
 //     `SpecialTypeNameExpression` should be the same type.
 
-Concrete = Span:`TextSpan`;
+Code = Span:`TextSpan`;
 CompilationUnit = File:`CodeFile` ImplicitNamespaceName:`NamespaceName` Diagnostics:`Diagnostics`
     UsingDirectives:UsingDirective* Definitions:NonMemberDefinition*;
 UsingDirective = Name:`NamespaceName`;
@@ -32,7 +32,7 @@ Binding = IsMutableBinding:`bool`;
 LocalBinding: Binding = NameSpan:`TextSpan`;
 
 // ---------- Definitions
-Definition: Concrete = File:`CodeFile` Name:`TypeName`? NameSpan:`TextSpan`;
+Definition: Code = File:`CodeFile` Name:`TypeName`? NameSpan:`TextSpan`;
 EntityDefinition: Definition = AccessModifier:`IAccessModifierToken`?;
 InvocableDefinition: EntityDefinition = Parameters:ConstructorOrInitializerParameter*;
 ConcreteInvocableDefinition: InvocableDefinition = Parameters:ConstructorOrInitializerParameter* Body;

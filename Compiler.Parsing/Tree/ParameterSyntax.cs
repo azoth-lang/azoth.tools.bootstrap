@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal abstract class ParameterSyntax : Syntax, IParameterSyntax
+internal abstract class ParameterSyntax : CodeSyntax, IParameterSyntax
 {
     [DebuggerHidden]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

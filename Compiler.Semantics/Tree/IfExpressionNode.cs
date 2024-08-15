@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
 {
     public override IIfExpressionSyntax Syntax { get; }
-    IConcreteSyntax IElseClauseNode.Syntax => Syntax;
+    ICodeSyntax IElseClauseNode.Syntax => Syntax;
     private RewritableChild<IAmbiguousExpressionNode> condition;
     private bool conditionCached;
     public IAmbiguousExpressionNode Condition

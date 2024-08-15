@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class ControlFlowNode : ChildNode, IControlFlowNode
 {
-    public sealed override IConcreteSyntax? Syntax => null;
+    public sealed override ICodeSyntax? Syntax => null;
     public CodeFile File => InheritedFile();
     public abstract ControlFlowSet ControlFlowNext { get; }
     private ControlFlowSet? controlFlowPrevious;

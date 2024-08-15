@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CST;
 /// <summary>
 /// Represents an entire package worth of syntax.
 /// </summary>
-/// <remarks>Doesn't inherit from <see cref="IConcreteSyntax"/> because it is never
+/// <remarks>Doesn't inherit from <see cref="ICodeSyntax"/> because it is never
 /// matched as part of syntax. It is always treated as the singular root.
 ///
 /// Currently, references are stored as ASTs. To avoid referencing the AST

@@ -3,7 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.CST;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
-internal class BindingContextPatternSyntax : Syntax, IBindingContextPatternSyntax
+internal class BindingContextPatternSyntax : CodeSyntax, IBindingContextPatternSyntax
 {
     public bool IsMutableBinding { get; }
     public IPatternSyntax Pattern { get; }
