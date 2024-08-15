@@ -15,7 +15,7 @@ public sealed class InternalSymbol : Symbol
     {
         this.grammar = grammar;
         ShortName = shortName;
-        FullName = $"{grammar.Prefix}{shortName}{grammar.Suffix}";
+        FullName = $"{grammar.SymbolPrefix}{shortName}{grammar.SymbolSuffix}";
         referencedRule = new(LookupReferencedRule);
         return;
 

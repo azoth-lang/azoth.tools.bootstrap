@@ -9,23 +9,23 @@ public sealed class GrammarSyntax
 {
     public string Namespace { get; }
     public SymbolSyntax? DefaultParent { get; }
-    public string Prefix { get; }
-    public string Suffix { get; }
+    public string SymbolPrefix { get; }
+    public string SymbolSuffix { get; }
     public IFixedSet<string> UsingNamespaces { get; }
     public IFixedList<RuleSyntax> Rules { get; }
 
     public GrammarSyntax(
         string @namespace,
         SymbolSyntax? defaultParent,
-        string prefix,
-        string suffix,
+        string symbolPrefix,
+        string symbolSuffix,
         IEnumerable<string> usingNamespaces,
         IEnumerable<RuleSyntax> rules)
     {
         Namespace = @namespace;
         DefaultParent = defaultParent;
-        Prefix = prefix;
-        Suffix = suffix;
+        SymbolPrefix = symbolPrefix;
+        SymbolSuffix = symbolSuffix;
         UsingNamespaces = usingNamespaces.ToFixedSet();
         Rules = rules.ToFixedList();
         if (Rules.Select(r => r.Defines).Distinct().Count() != Rules.Count)

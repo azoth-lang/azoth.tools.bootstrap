@@ -28,7 +28,7 @@ public class TreeParserTests
 
         var config = TreeParser.ParseGrammar(grammar);
 
-        Assert.Equal("", config.Prefix);
+        Assert.Equal("", config.SymbolPrefix);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class TreeParserTests
 
         var config = TreeParser.ParseGrammar(grammar);
 
-        Assert.Equal("", config.Suffix);
+        Assert.Equal("", config.SymbolSuffix);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class TreeParserTests
 
         var config = TreeParser.ParseGrammar(grammar);
 
-        Assert.Equal("MyPrefix", config.Prefix);
+        Assert.Equal("MyPrefix", config.SymbolPrefix);
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class TreeParserTests
 
         var config = TreeParser.ParseGrammar(grammar);
 
-        Assert.Equal("MySuffix", config.Suffix);
+        Assert.Equal("MySuffix", config.SymbolSuffix);
     }
 
     [Fact]
@@ -349,38 +349,19 @@ public class TreeParserTests
     }
     #endregion
 
-    private static SymbolSyntax Symbol(string text)
-    {
-        return new SymbolSyntax(text);
-    }
+    private static SymbolSyntax Symbol(string text) => new(text);
 
-    private static SymbolSyntax QuotedSymbol(string text)
-    {
-        return new SymbolSyntax(text, true);
-    }
+    private static SymbolSyntax QuotedSymbol(string text) => new(text, true);
 
     private static TypeSyntax Type(SymbolSyntax symbol)
-    {
-        return new TypeSyntax(symbol, CollectionKind.None, false);
-    }
+        => new(symbol, CollectionKind.None, false);
 
     private static TypeSyntax OptionalType(SymbolSyntax symbol)
-    {
-        return new TypeSyntax(symbol, CollectionKind.None, true);
-    }
+        => new(symbol, CollectionKind.None, true);
 
     private static TypeSyntax ListType(SymbolSyntax symbol)
-    {
-        return new TypeSyntax(symbol, CollectionKind.List, false);
-    }
-
-    private static TypeSyntax RefType(SymbolSyntax symbol)
-    {
-        return new TypeSyntax(symbol, CollectionKind.None, false);
-    }
+        => new(symbol, CollectionKind.List, false);
 
     private static IFixedList<T> FixedList<T>(params T[] values)
-    {
-        return Framework.FixedList.Create(values);
-    }
+        => Framework.FixedList.Create(values);
 }

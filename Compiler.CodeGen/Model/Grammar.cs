@@ -13,8 +13,8 @@ public sealed class Grammar
 
     public string Namespace => Syntax.Namespace;
     public Symbol? DefaultParent { get; }
-    public string Prefix => Syntax.Prefix;
-    public string Suffix => Syntax.Suffix;
+    public string SymbolPrefix => Syntax.SymbolPrefix;
+    public string SymbolSuffix => Syntax.SymbolSuffix;
     public IFixedSet<string> UsingNamespaces => Syntax.UsingNamespaces;
     public IFixedList<Rule> Rules { get; }
 
