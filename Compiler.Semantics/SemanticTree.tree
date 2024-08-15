@@ -34,7 +34,7 @@ Child <: `IChildTreeNode<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPack
 // ---------- Special Parts
 BodyOrBlock <: Code = Statements:`IStatementNode`*;
 ElseClause <: ControlFlow = Syntax:`ICodeSyntax` FlowStateAfter:`IFlowState` ValueId:`ValueId`;
-BlockOrResult: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
+BlockOrResult <: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings
 Binding <: Code, BindingDeclaration = IsLentBinding:`bool` BindingValueId:`ValueId`
@@ -228,9 +228,9 @@ FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyn
     ContainingTypeDefinition:`ITypeDefinitionNode` ReferencedField:`IFieldDefinitionNode`?;
 
 // ---------- Function Parts
-Body: BodyOrBlock = FlowStateAfter:`IFlowState`;
-BlockBody: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
-ExpressionBody: Body = Syntax:`IExpressionBodySyntax` ResultStatement
+Body <: BodyOrBlock = FlowStateAfter:`IFlowState`;
+BlockBody <: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
+ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement
     ExpectedAntetype:`IMaybeExpressionAntetype`? ExpectedType:`DataType`?;
 
 // ---------- Types
@@ -265,16 +265,16 @@ DataFlow <: ControlFlow = DataFlowPrevious:`IFixedSet<IDataFlowNode>`
 // ---------- Statements
 Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?
     ResultType:`DataType`? ResultValueId:`ValueId`? FlowStateAfter:`IFlowState`;
-ResultStatement: Statement <: BlockOrResult = Syntax:`IResultStatementSyntax`
+ResultStatement <: Statement, BlockOrResult = Syntax:`IResultStatementSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode` IntermediateExpression:`IExpressionNode`?
     ExpectedAntetype:`IMaybeExpressionAntetype`? ExpectedType:`DataType`?;
-BodyStatement: Statement = Syntax:`IBodyStatementSyntax`;
+BodyStatement <: Statement = Syntax:`IBodyStatementSyntax`;
 VariableDeclarationStatement <: BodyStatement, VariableBinding = Syntax:`IVariableDeclarationStatementSyntax`
     IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type?
     Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
     IntermediateInitializer:`IExpressionNode`?
     ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
-ExpressionStatement: BodyStatement = Syntax:`IExpressionStatementSyntax`
+ExpressionStatement <: BodyStatement = Syntax:`IExpressionStatementSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
     IntermediateExpression:`IExpressionNode`?;
 

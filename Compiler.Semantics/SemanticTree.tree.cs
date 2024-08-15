@@ -31,6 +31,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 [Closed(
     typeof(IChildNode),
     typeof(IBodyOrBlockNode),
+    typeof(IBlockOrResultNode),
     typeof(INamedBindingNode),
     typeof(IVariableBindingNode),
     typeof(ICompilationUnitNode),
@@ -53,6 +54,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IInitializerSelfParameterNode),
     typeof(IMethodSelfParameterNode),
     typeof(IFieldParameterNode),
+    typeof(IBlockBodyNode),
+    typeof(IExpressionBodyNode),
     typeof(ITypeNode),
     typeof(IStandardTypeNameNode),
     typeof(ISimpleTypeNameNode),
@@ -63,6 +66,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
     typeof(IControlFlowNode),
     typeof(IEntryNode),
     typeof(IExitNode),
+    typeof(IBodyStatementNode),
     typeof(IBindingContextPatternNode),
     typeof(IOptionalOrBindingPatternNode),
     typeof(IAmbiguousExpressionNode),
@@ -168,7 +172,7 @@ public partial interface IElseClauseNode : IControlFlowNode
 [Closed(
     typeof(IResultStatementNode),
     typeof(IBlockExpressionNode))]
-public partial interface IBlockOrResultNode : IElseClauseNode
+public partial interface IBlockOrResultNode : ISemanticNode, IElseClauseNode
 {
     IMaybeAntetype Antetype { get; }
     DataType Type { get; }
@@ -987,7 +991,7 @@ public partial interface IBodyNode : IBodyOrBlockNode
     IFlowState FlowStateAfter { get; }
 }
 
-public partial interface IBlockBodyNode : IBodyNode
+public partial interface IBlockBodyNode : ISemanticNode, IBodyNode
 {
     new IBlockBodySyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -996,7 +1000,7 @@ public partial interface IBlockBodyNode : IBodyNode
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements => Statements;
 }
 
-public partial interface IExpressionBodyNode : IBodyNode
+public partial interface IExpressionBodyNode : ISemanticNode, IBodyNode
 {
     new IExpressionBodySyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -1213,8 +1217,8 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
 {
     new IResultStatementSyntax Syntax { get; }
     IStatementSyntax IStatementNode.Syntax => Syntax;
-    ICodeSyntax IElseClauseNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    ICodeSyntax IElseClauseNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
     IAmbiguousExpressionNode CurrentExpression { get; }
@@ -1226,10 +1230,12 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
 [Closed(
     typeof(IVariableDeclarationStatementNode),
     typeof(IExpressionStatementNode))]
-public partial interface IBodyStatementNode : IStatementNode
+public partial interface IBodyStatementNode : ISemanticNode, IStatementNode
 {
     new IBodyStatementSyntax Syntax { get; }
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IStatementSyntax IStatementNode.Syntax => Syntax;
+    ICodeSyntax? ICodeNode.Syntax => Syntax;
 }
 
 public partial interface IVariableDeclarationStatementNode : IBodyStatementNode, IVariableBindingNode
@@ -1392,8 +1398,8 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
 {
     new IBlockExpressionSyntax Syntax { get; }
     IExpressionSyntax IExpressionNode.Syntax => Syntax;
-    ICodeSyntax IElseClauseNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    ICodeSyntax IElseClauseNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     new IFixedList<IStatementNode> Statements { get; }
