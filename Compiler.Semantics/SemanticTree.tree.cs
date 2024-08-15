@@ -2421,2240 +2421,4479 @@ public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDecl
 
 file class PackageNode // : IPackageNode
 {
-    public IPackageSyntax Syntax { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public PackageSymbol Symbol { get; } = default!;
-    public IFixedSet<IPackageReferenceNode> References { get; } = default!;
-    public IPackageReferenceNode IntrinsicsReference { get; } = default!;
-    public FixedDictionary<IdentifierName,IPackageDeclarationNode> PackageDeclarations { get; } = default!;
-    public IPackageFacetNode MainFacet { get; } = default!;
-    public IPackageFacetNode TestingFacet { get; } = default!;
-    public DiagnosticCollection Diagnostics { get; } = default!;
-    public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; } = default!;
-    public IFunctionDefinitionNode? EntryPoint { get; } = default!;
-    public IPackageSymbols PackageSymbols { get; } = default!;
-    public IdentifierName? AliasOrName { get; } = default!;
+    public IPackageSyntax Syntax { get; }
+    public IdentifierName Name { get; }
+    public PackageSymbol Symbol { get; }
+    public IFixedSet<IPackageReferenceNode> References { get; }
+    public IPackageReferenceNode IntrinsicsReference { get; }
+    public FixedDictionary<IdentifierName,IPackageDeclarationNode> PackageDeclarations { get; }
+    public IPackageFacetNode MainFacet { get; }
+    public IPackageFacetNode TestingFacet { get; }
+    public DiagnosticCollection Diagnostics { get; }
+    public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
+    public IFunctionDefinitionNode? EntryPoint { get; }
+    public IPackageSymbols PackageSymbols { get; }
+    public IdentifierName? AliasOrName { get; }
+
+    public PackageNode(IPackageSyntax syntax, IdentifierName name, PackageSymbol symbol, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, FixedDictionary<IdentifierName,IPackageDeclarationNode> packageDeclarations, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint, IPackageSymbols packageSymbols, IdentifierName? aliasOrName)
+    {
+        Syntax = syntax;
+        Name = name;
+        Symbol = symbol;
+        References = references;
+        IntrinsicsReference = intrinsicsReference;
+        PackageDeclarations = packageDeclarations;
+        MainFacet = mainFacet;
+        TestingFacet = testingFacet;
+        Diagnostics = diagnostics;
+        PrimitivesDeclarations = primitivesDeclarations;
+        EntryPoint = entryPoint;
+        PackageSymbols = packageSymbols;
+        AliasOrName = aliasOrName;
+    }
 }
 
 file class PackageReferenceNode // : IPackageReferenceNode
 {
-    public IPackageReferenceSyntax? Syntax { get; } = default!;
-    public IPackageSymbolNode SymbolNode { get; } = default!;
-    public IdentifierName AliasOrName { get; } = default!;
-    public IPackageSymbols PackageSymbols { get; } = default!;
-    public bool IsTrusted { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IPackageReferenceSyntax? Syntax { get; }
+    public IPackageSymbolNode SymbolNode { get; }
+    public IdentifierName AliasOrName { get; }
+    public IPackageSymbols PackageSymbols { get; }
+    public bool IsTrusted { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public PackageReferenceNode(IPackageReferenceSyntax? syntax, IPackageSymbolNode symbolNode, IdentifierName aliasOrName, IPackageSymbols packageSymbols, bool isTrusted, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        SymbolNode = symbolNode;
+        AliasOrName = aliasOrName;
+        PackageSymbols = packageSymbols;
+        IsTrusted = isTrusted;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class PackageFacetNode // : IPackageFacetNode
 {
-    public IPackageSyntax Syntax { get; } = default!;
-    public IdentifierName PackageName { get; } = default!;
-    public PackageSymbol PackageSymbol { get; } = default!;
-    public PackageNameScope PackageNameScope { get; } = default!;
-    public IFixedSet<ICompilationUnitNode> CompilationUnits { get; } = default!;
-    public IFixedSet<IPackageMemberDefinitionNode> Definitions { get; } = default!;
-    public INamespaceDefinitionNode GlobalNamespace { get; } = default!;
-    public IdentifierName? PackageAliasOrName { get; } = default!;
-    public PackageSymbol Symbol { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IPackageSyntax Syntax { get; }
+    public IdentifierName PackageName { get; }
+    public PackageSymbol PackageSymbol { get; }
+    public PackageNameScope PackageNameScope { get; }
+    public IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
+    public IFixedSet<IPackageMemberDefinitionNode> Definitions { get; }
+    public INamespaceDefinitionNode GlobalNamespace { get; }
+    public IdentifierName? PackageAliasOrName { get; }
+    public PackageSymbol Symbol { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public PackageFacetNode(IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, PackageNameScope packageNameScope, IFixedSet<ICompilationUnitNode> compilationUnits, IFixedSet<IPackageMemberDefinitionNode> definitions, INamespaceDefinitionNode globalNamespace, IdentifierName? packageAliasOrName, PackageSymbol symbol, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        PackageName = packageName;
+        PackageSymbol = packageSymbol;
+        PackageNameScope = packageNameScope;
+        CompilationUnits = compilationUnits;
+        Definitions = definitions;
+        GlobalNamespace = globalNamespace;
+        PackageAliasOrName = packageAliasOrName;
+        Symbol = symbol;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class CompilationUnitNode // : ICompilationUnitNode
 {
-    public ICompilationUnitSyntax Syntax { get; } = default!;
-    public IPackageFacetNode ContainingDeclaration { get; } = default!;
-    public PackageSymbol ContainingSymbol { get; } = default!;
-    public NamespaceName ImplicitNamespaceName { get; } = default!;
-    public INamespaceDefinitionNode ImplicitNamespace { get; } = default!;
-    public NamespaceSymbol ImplicitNamespaceSymbol { get; } = default!;
-    public IFixedList<IUsingDirectiveNode> UsingDirectives { get; } = default!;
-    public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; } = default!;
-    public NamespaceScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public DiagnosticCollection Diagnostics { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public ICompilationUnitSyntax Syntax { get; }
+    public IPackageFacetNode ContainingDeclaration { get; }
+    public PackageSymbol ContainingSymbol { get; }
+    public NamespaceName ImplicitNamespaceName { get; }
+    public INamespaceDefinitionNode ImplicitNamespace { get; }
+    public NamespaceSymbol ImplicitNamespaceSymbol { get; }
+    public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
+    public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
+    public NamespaceScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public DiagnosticCollection Diagnostics { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public CompilationUnitNode(ICompilationUnitSyntax syntax, IPackageFacetNode containingDeclaration, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, INamespaceDefinitionNode implicitNamespace, NamespaceSymbol implicitNamespaceSymbol, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> definitions, NamespaceScope containingLexicalScope, LexicalScope lexicalScope, DiagnosticCollection diagnostics, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        ImplicitNamespaceName = implicitNamespaceName;
+        ImplicitNamespace = implicitNamespace;
+        ImplicitNamespaceSymbol = implicitNamespaceSymbol;
+        UsingDirectives = usingDirectives;
+        Definitions = definitions;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        Diagnostics = diagnostics;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class UsingDirectiveNode // : IUsingDirectiveNode
 {
-    public IUsingDirectiveSyntax Syntax { get; } = default!;
-    public NamespaceName Name { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IUsingDirectiveSyntax Syntax { get; }
+    public NamespaceName Name { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public UsingDirectiveNode(IUsingDirectiveSyntax syntax, NamespaceName name, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Name = name;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class NamespaceBlockDefinitionNode // : INamespaceBlockDefinitionNode
 {
-    public INamespaceDefinitionSyntax Syntax { get; } = default!;
-    public bool IsGlobalQualified { get; } = default!;
-    public NamespaceName DeclaredNames { get; } = default!;
-    public IFixedList<IUsingDirectiveNode> UsingDirectives { get; } = default!;
-    public IFixedList<INamespaceBlockMemberDefinitionNode> Members { get; } = default!;
-    public INamespaceDefinitionNode Definition { get; } = default!;
-    public INamespaceDefinitionNode ContainingDeclaration { get; } = default!;
-    public INamespaceDefinitionNode ContainingNamespace { get; } = default!;
-    public NamespaceSymbol ContainingSymbol { get; } = default!;
-    public NamespaceSymbol Symbol { get; } = default!;
-    public NamespaceSearchScope ContainingLexicalScope { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public StandardName? Name { get; } = default!;
+    public INamespaceDefinitionSyntax Syntax { get; }
+    public bool IsGlobalQualified { get; }
+    public NamespaceName DeclaredNames { get; }
+    public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
+    public IFixedList<INamespaceBlockMemberDefinitionNode> Members { get; }
+    public INamespaceDefinitionNode Definition { get; }
+    public INamespaceDefinitionNode ContainingDeclaration { get; }
+    public INamespaceDefinitionNode ContainingNamespace { get; }
+    public NamespaceSymbol ContainingSymbol { get; }
+    public NamespaceSymbol Symbol { get; }
+    public NamespaceSearchScope ContainingLexicalScope { get; }
+    public IPackageFacetNode Facet { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public StandardName? Name { get; }
+
+    public NamespaceBlockDefinitionNode(INamespaceDefinitionSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> members, INamespaceDefinitionNode definition, INamespaceDefinitionNode containingDeclaration, INamespaceDefinitionNode containingNamespace, NamespaceSymbol containingSymbol, NamespaceSymbol symbol, NamespaceSearchScope containingLexicalScope, IPackageFacetNode facet, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, StandardName? name)
+    {
+        Syntax = syntax;
+        IsGlobalQualified = isGlobalQualified;
+        DeclaredNames = declaredNames;
+        UsingDirectives = usingDirectives;
+        Members = members;
+        Definition = definition;
+        ContainingDeclaration = containingDeclaration;
+        ContainingNamespace = containingNamespace;
+        ContainingSymbol = containingSymbol;
+        Symbol = symbol;
+        ContainingLexicalScope = containingLexicalScope;
+        Facet = facet;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        Name = name;
+    }
 }
 
 file class NamespaceDefinitionNode // : INamespaceDefinitionNode
 {
-    public IFixedList<INamespaceDefinitionNode> MemberNamespaces { get; } = default!;
-    public IFixedList<IPackageMemberDefinitionNode> PackageMembers { get; } = default!;
-    public IFixedList<INamespaceMemberDefinitionNode> Members { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public NamespaceSymbol Symbol { get; } = default!;
-    public IFixedList<INamespaceMemberDeclarationNode> NestedMembers { get; } = default!;
+    public IFixedList<INamespaceDefinitionNode> MemberNamespaces { get; }
+    public IFixedList<IPackageMemberDefinitionNode> PackageMembers { get; }
+    public IFixedList<INamespaceMemberDefinitionNode> Members { get; }
+    public IdentifierName Name { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public NamespaceSymbol Symbol { get; }
+    public IFixedList<INamespaceMemberDeclarationNode> NestedMembers { get; }
+
+    public NamespaceDefinitionNode(IFixedList<INamespaceDefinitionNode> memberNamespaces, IFixedList<IPackageMemberDefinitionNode> packageMembers, IFixedList<INamespaceMemberDefinitionNode> members, IdentifierName name, IPackageFacetDeclarationNode facet, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, NamespaceSymbol symbol, IFixedList<INamespaceMemberDeclarationNode> nestedMembers)
+    {
+        MemberNamespaces = memberNamespaces;
+        PackageMembers = packageMembers;
+        Members = members;
+        Name = name;
+        Facet = facet;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Symbol = symbol;
+        NestedMembers = nestedMembers;
+    }
 }
 
 file class FunctionDefinitionNode // : IFunctionDefinitionNode
 {
-    public IFunctionDefinitionSyntax Syntax { get; } = default!;
-    public INamespaceDeclarationNode ContainingDeclaration { get; } = default!;
-    public NamespaceSymbol ContainingSymbol { get; } = default!;
-    public IFixedList<IAttributeNode> Attributes { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public IFixedList<INamedParameterNode> Parameters { get; } = default!;
-    public ITypeNode? Return { get; } = default!;
-    public IEntryNode Entry { get; } = default!;
-    public IBodyNode Body { get; } = default!;
-    public IExitNode Exit { get; } = default!;
-    public FunctionType Type { get; } = default!;
-    public FunctionSymbol Symbol { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ValueIdScope ValueIdScope { get; } = default!;
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; } = default!;
+    public IFunctionDefinitionSyntax Syntax { get; }
+    public INamespaceDeclarationNode ContainingDeclaration { get; }
+    public NamespaceSymbol ContainingSymbol { get; }
+    public IFixedList<IAttributeNode> Attributes { get; }
+    public IdentifierName Name { get; }
+    public IFixedList<INamedParameterNode> Parameters { get; }
+    public ITypeNode? Return { get; }
+    public IEntryNode Entry { get; }
+    public IBodyNode Body { get; }
+    public IExitNode Exit { get; }
+    public FunctionType Type { get; }
+    public FunctionSymbol Symbol { get; }
+    public AccessModifier AccessModifier { get; }
+    public IPackageFacetNode Facet { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ValueIdScope ValueIdScope { get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; }
+
+    public FunctionDefinitionNode(IFunctionDefinitionSyntax syntax, INamespaceDeclarationNode containingDeclaration, NamespaceSymbol containingSymbol, IFixedList<IAttributeNode> attributes, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type, FunctionSymbol symbol, AccessModifier accessModifier, IPackageFacetNode facet, LexicalScope containingLexicalScope, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ValueIdScope valueIdScope, FixedDictionary<IVariableBindingNode,int> variableBindingsMap)
+    {
+        Syntax = syntax;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        Attributes = attributes;
+        Name = name;
+        Parameters = parameters;
+        Return = @return;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+        Type = type;
+        Symbol = symbol;
+        AccessModifier = accessModifier;
+        Facet = facet;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ValueIdScope = valueIdScope;
+        VariableBindingsMap = variableBindingsMap;
+    }
 }
 
 file class ClassDefinitionNode // : IClassDefinitionNode
 {
-    public IClassDefinitionSyntax Syntax { get; } = default!;
-    public IFixedList<IAttributeNode> Attributes { get; } = default!;
-    public bool IsAbstract { get; } = default!;
-    public IFixedList<IGenericParameterNode> GenericParameters { get; } = default!;
-    public IStandardTypeNameNode? BaseTypeName { get; } = default!;
-    public IFixedList<IStandardTypeNameNode> SupertypeNames { get; } = default!;
-    public ObjectType DeclaredType { get; } = default!;
-    public IFixedList<IClassMemberDefinitionNode> SourceMembers { get; } = default!;
-    public IFixedSet<IClassMemberDefinitionNode> Members { get; } = default!;
-    public IDefaultConstructorDefinitionNode? DefaultConstructor { get; } = default!;
-    public bool IsConst { get; } = default!;
-    public StandardName Name { get; } = default!;
-    public UserTypeSymbol Symbol { get; } = default!;
-    public LexicalScope SupertypesLexicalScope { get; } = default!;
-    public IFixedSet<BareReferenceType> Supertypes { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public ISymbolDeclarationNode ContainingDeclaration { get; } = default!;
-    public Symbol ContainingSymbol { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public IFixedSet<IClassMemberDeclarationNode> InclusiveMembers { get; } = default!;
+    public IClassDefinitionSyntax Syntax { get; }
+    public IFixedList<IAttributeNode> Attributes { get; }
+    public bool IsAbstract { get; }
+    public IFixedList<IGenericParameterNode> GenericParameters { get; }
+    public IStandardTypeNameNode? BaseTypeName { get; }
+    public IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
+    public ObjectType DeclaredType { get; }
+    public IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
+    public IFixedSet<IClassMemberDefinitionNode> Members { get; }
+    public IDefaultConstructorDefinitionNode? DefaultConstructor { get; }
+    public bool IsConst { get; }
+    public StandardName Name { get; }
+    public UserTypeSymbol Symbol { get; }
+    public LexicalScope SupertypesLexicalScope { get; }
+    public IFixedSet<BareReferenceType> Supertypes { get; }
+    public AccessModifier AccessModifier { get; }
+    public IPackageFacetNode Facet { get; }
+    public ISymbolDeclarationNode ContainingDeclaration { get; }
+    public Symbol ContainingSymbol { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public IFixedSet<IClassMemberDeclarationNode> InclusiveMembers { get; }
+
+    public ClassDefinitionNode(IClassDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, bool isAbstract, IFixedList<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedList<IClassMemberDefinitionNode> sourceMembers, IFixedSet<IClassMemberDefinitionNode> members, IDefaultConstructorDefinitionNode? defaultConstructor, bool isConst, StandardName name, UserTypeSymbol symbol, LexicalScope supertypesLexicalScope, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, Symbol containingSymbol, LexicalScope containingLexicalScope, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, IFixedSet<IClassMemberDeclarationNode> inclusiveMembers)
+    {
+        Syntax = syntax;
+        Attributes = attributes;
+        IsAbstract = isAbstract;
+        GenericParameters = genericParameters;
+        BaseTypeName = baseTypeName;
+        SupertypeNames = supertypeNames;
+        DeclaredType = declaredType;
+        SourceMembers = sourceMembers;
+        Members = members;
+        DefaultConstructor = defaultConstructor;
+        IsConst = isConst;
+        Name = name;
+        Symbol = symbol;
+        SupertypesLexicalScope = supertypesLexicalScope;
+        Supertypes = supertypes;
+        AccessModifier = accessModifier;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        InclusiveMembers = inclusiveMembers;
+    }
 }
 
 file class StructDefinitionNode // : IStructDefinitionNode
 {
-    public IStructDefinitionSyntax Syntax { get; } = default!;
-    public IFixedList<IAttributeNode> Attributes { get; } = default!;
-    public IFixedList<IGenericParameterNode> GenericParameters { get; } = default!;
-    public IFixedList<IStandardTypeNameNode> SupertypeNames { get; } = default!;
-    public StructType DeclaredType { get; } = default!;
-    public IFixedList<IStructMemberDefinitionNode> SourceMembers { get; } = default!;
-    public IFixedSet<IStructMemberDefinitionNode> Members { get; } = default!;
-    public IDefaultInitializerDefinitionNode? DefaultInitializer { get; } = default!;
-    public bool IsConst { get; } = default!;
-    public StandardName Name { get; } = default!;
-    public UserTypeSymbol Symbol { get; } = default!;
-    public LexicalScope SupertypesLexicalScope { get; } = default!;
-    public IFixedSet<BareReferenceType> Supertypes { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public ISymbolDeclarationNode ContainingDeclaration { get; } = default!;
-    public Symbol ContainingSymbol { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public IFixedSet<IStructMemberDeclarationNode> InclusiveMembers { get; } = default!;
+    public IStructDefinitionSyntax Syntax { get; }
+    public IFixedList<IAttributeNode> Attributes { get; }
+    public IFixedList<IGenericParameterNode> GenericParameters { get; }
+    public IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
+    public StructType DeclaredType { get; }
+    public IFixedList<IStructMemberDefinitionNode> SourceMembers { get; }
+    public IFixedSet<IStructMemberDefinitionNode> Members { get; }
+    public IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
+    public bool IsConst { get; }
+    public StandardName Name { get; }
+    public UserTypeSymbol Symbol { get; }
+    public LexicalScope SupertypesLexicalScope { get; }
+    public IFixedSet<BareReferenceType> Supertypes { get; }
+    public AccessModifier AccessModifier { get; }
+    public IPackageFacetNode Facet { get; }
+    public ISymbolDeclarationNode ContainingDeclaration { get; }
+    public Symbol ContainingSymbol { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public IFixedSet<IStructMemberDeclarationNode> InclusiveMembers { get; }
+
+    public StructDefinitionNode(IStructDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, StructType declaredType, IFixedList<IStructMemberDefinitionNode> sourceMembers, IFixedSet<IStructMemberDefinitionNode> members, IDefaultInitializerDefinitionNode? defaultInitializer, bool isConst, StandardName name, UserTypeSymbol symbol, LexicalScope supertypesLexicalScope, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, Symbol containingSymbol, LexicalScope containingLexicalScope, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, IFixedSet<IStructMemberDeclarationNode> inclusiveMembers)
+    {
+        Syntax = syntax;
+        Attributes = attributes;
+        GenericParameters = genericParameters;
+        SupertypeNames = supertypeNames;
+        DeclaredType = declaredType;
+        SourceMembers = sourceMembers;
+        Members = members;
+        DefaultInitializer = defaultInitializer;
+        IsConst = isConst;
+        Name = name;
+        Symbol = symbol;
+        SupertypesLexicalScope = supertypesLexicalScope;
+        Supertypes = supertypes;
+        AccessModifier = accessModifier;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        InclusiveMembers = inclusiveMembers;
+    }
 }
 
 file class TraitDefinitionNode // : ITraitDefinitionNode
 {
-    public ITraitDefinitionSyntax Syntax { get; } = default!;
-    public IFixedList<IAttributeNode> Attributes { get; } = default!;
-    public IFixedList<IGenericParameterNode> GenericParameters { get; } = default!;
-    public IFixedList<IStandardTypeNameNode> SupertypeNames { get; } = default!;
-    public ObjectType DeclaredType { get; } = default!;
-    public IFixedSet<ITraitMemberDefinitionNode> Members { get; } = default!;
-    public bool IsConst { get; } = default!;
-    public StandardName Name { get; } = default!;
-    public UserTypeSymbol Symbol { get; } = default!;
-    public LexicalScope SupertypesLexicalScope { get; } = default!;
-    public IFixedSet<BareReferenceType> Supertypes { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public ISymbolDeclarationNode ContainingDeclaration { get; } = default!;
-    public Symbol ContainingSymbol { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers { get; } = default!;
+    public ITraitDefinitionSyntax Syntax { get; }
+    public IFixedList<IAttributeNode> Attributes { get; }
+    public IFixedList<IGenericParameterNode> GenericParameters { get; }
+    public IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
+    public ObjectType DeclaredType { get; }
+    public IFixedSet<ITraitMemberDefinitionNode> Members { get; }
+    public bool IsConst { get; }
+    public StandardName Name { get; }
+    public UserTypeSymbol Symbol { get; }
+    public LexicalScope SupertypesLexicalScope { get; }
+    public IFixedSet<BareReferenceType> Supertypes { get; }
+    public AccessModifier AccessModifier { get; }
+    public IPackageFacetNode Facet { get; }
+    public ISymbolDeclarationNode ContainingDeclaration { get; }
+    public Symbol ContainingSymbol { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers { get; }
+
+    public TraitDefinitionNode(ITraitDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedSet<ITraitMemberDefinitionNode> members, bool isConst, StandardName name, UserTypeSymbol symbol, LexicalScope supertypesLexicalScope, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, Symbol containingSymbol, LexicalScope containingLexicalScope, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, IFixedSet<ITraitMemberDeclarationNode> inclusiveMembers)
+    {
+        Syntax = syntax;
+        Attributes = attributes;
+        GenericParameters = genericParameters;
+        SupertypeNames = supertypeNames;
+        DeclaredType = declaredType;
+        Members = members;
+        IsConst = isConst;
+        Name = name;
+        Symbol = symbol;
+        SupertypesLexicalScope = supertypesLexicalScope;
+        Supertypes = supertypes;
+        AccessModifier = accessModifier;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        InclusiveMembers = inclusiveMembers;
+    }
 }
 
 file class GenericParameterNode // : IGenericParameterNode
 {
-    public IGenericParameterSyntax Syntax { get; } = default!;
-    public ICapabilityConstraintNode Constraint { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public TypeParameterIndependence Independence { get; } = default!;
-    public TypeParameterVariance Variance { get; } = default!;
-    public GenericParameter Parameter { get; } = default!;
-    public IDeclaredUserType ContainingDeclaredType { get; } = default!;
-    public GenericParameterType DeclaredType { get; } = default!;
-    public IUserTypeDeclarationNode ContainingDeclaration { get; } = default!;
-    public UserTypeSymbol ContainingSymbol { get; } = default!;
-    public GenericParameterTypeSymbol Symbol { get; } = default!;
-    public IFixedSet<ITypeMemberDefinitionNode> Members { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public IFixedSet<BareReferenceType> Supertypes { get; } = default!;
-    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
+    public IGenericParameterSyntax Syntax { get; }
+    public ICapabilityConstraintNode Constraint { get; }
+    public IdentifierName Name { get; }
+    public TypeParameterIndependence Independence { get; }
+    public TypeParameterVariance Variance { get; }
+    public GenericParameter Parameter { get; }
+    public IDeclaredUserType ContainingDeclaredType { get; }
+    public GenericParameterType DeclaredType { get; }
+    public IUserTypeDeclarationNode ContainingDeclaration { get; }
+    public UserTypeSymbol ContainingSymbol { get; }
+    public GenericParameterTypeSymbol Symbol { get; }
+    public IFixedSet<ITypeMemberDefinitionNode> Members { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public IFixedSet<BareReferenceType> Supertypes { get; }
+    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+
+    public GenericParameterNode(IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, IDeclaredUserType containingDeclaredType, GenericParameterType declaredType, IUserTypeDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, GenericParameterTypeSymbol symbol, IFixedSet<ITypeMemberDefinitionNode> members, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IPackageFacetDeclarationNode facet)
+    {
+        Syntax = syntax;
+        Constraint = constraint;
+        Name = name;
+        Independence = independence;
+        Variance = variance;
+        Parameter = parameter;
+        ContainingDeclaredType = containingDeclaredType;
+        DeclaredType = declaredType;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        Symbol = symbol;
+        Members = members;
+        File = file;
+        Parent = parent;
+        Package = package;
+        Supertypes = supertypes;
+        InclusiveMembers = inclusiveMembers;
+        Facet = facet;
+    }
 }
 
 file class AbstractMethodDefinitionNode // : IAbstractMethodDefinitionNode
 {
-    public IAbstractMethodDefinitionSyntax Syntax { get; } = default!;
-    public IMethodSelfParameterNode SelfParameter { get; } = default!;
-    public IFixedList<INamedParameterNode> Parameters { get; } = default!;
-    public ITypeNode? Return { get; } = default!;
-    public ObjectType ContainingDeclaredType { get; } = default!;
-    public MethodKind Kind { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public MethodSymbol Symbol { get; } = default!;
-    public UserTypeSymbol ContainingSymbol { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public ISymbolDeclarationNode ContainingDeclaration { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ValueIdScope ValueIdScope { get; } = default!;
-    public int Arity { get; } = default!;
-    public FunctionType MethodGroupType { get; } = default!;
+    public IAbstractMethodDefinitionSyntax Syntax { get; }
+    public IMethodSelfParameterNode SelfParameter { get; }
+    public IFixedList<INamedParameterNode> Parameters { get; }
+    public ITypeNode? Return { get; }
+    public ObjectType ContainingDeclaredType { get; }
+    public MethodKind Kind { get; }
+    public IdentifierName Name { get; }
+    public MethodSymbol Symbol { get; }
+    public UserTypeSymbol ContainingSymbol { get; }
+    public AccessModifier AccessModifier { get; }
+    public IPackageFacetNode Facet { get; }
+    public ISymbolDeclarationNode ContainingDeclaration { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ValueIdScope ValueIdScope { get; }
+    public int Arity { get; }
+    public FunctionType MethodGroupType { get; }
+
+    public AbstractMethodDefinitionNode(IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, ObjectType containingDeclaredType, MethodKind kind, IdentifierName name, MethodSymbol symbol, UserTypeSymbol containingSymbol, AccessModifier accessModifier, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, LexicalScope containingLexicalScope, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ValueIdScope valueIdScope, int arity, FunctionType methodGroupType)
+    {
+        Syntax = syntax;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Return = @return;
+        ContainingDeclaredType = containingDeclaredType;
+        Kind = kind;
+        Name = name;
+        Symbol = symbol;
+        ContainingSymbol = containingSymbol;
+        AccessModifier = accessModifier;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ValueIdScope = valueIdScope;
+        Arity = arity;
+        MethodGroupType = methodGroupType;
+    }
 }
 
 file class StandardMethodDefinitionNode // : IStandardMethodDefinitionNode
 {
-    public IStandardMethodDefinitionSyntax Syntax { get; } = default!;
-    public IMethodSelfParameterNode SelfParameter { get; } = default!;
-    public IFixedList<INamedParameterNode> Parameters { get; } = default!;
-    public ITypeNode? Return { get; } = default!;
-    public IEntryNode Entry { get; } = default!;
-    public IBodyNode Body { get; } = default!;
-    public IExitNode Exit { get; } = default!;
-    public MethodKind Kind { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public MethodSymbol Symbol { get; } = default!;
-    public UserTypeSymbol ContainingSymbol { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public ISymbolDeclarationNode ContainingDeclaration { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ValueIdScope ValueIdScope { get; } = default!;
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; } = default!;
-    public int Arity { get; } = default!;
-    public FunctionType MethodGroupType { get; } = default!;
+    public IStandardMethodDefinitionSyntax Syntax { get; }
+    public IMethodSelfParameterNode SelfParameter { get; }
+    public IFixedList<INamedParameterNode> Parameters { get; }
+    public ITypeNode? Return { get; }
+    public IEntryNode Entry { get; }
+    public IBodyNode Body { get; }
+    public IExitNode Exit { get; }
+    public MethodKind Kind { get; }
+    public IdentifierName Name { get; }
+    public MethodSymbol Symbol { get; }
+    public UserTypeSymbol ContainingSymbol { get; }
+    public AccessModifier AccessModifier { get; }
+    public IPackageFacetNode Facet { get; }
+    public ISymbolDeclarationNode ContainingDeclaration { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ValueIdScope ValueIdScope { get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; }
+    public int Arity { get; }
+    public FunctionType MethodGroupType { get; }
+
+    public StandardMethodDefinitionNode(IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, MethodKind kind, IdentifierName name, MethodSymbol symbol, UserTypeSymbol containingSymbol, AccessModifier accessModifier, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, LexicalScope containingLexicalScope, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ValueIdScope valueIdScope, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, int arity, FunctionType methodGroupType)
+    {
+        Syntax = syntax;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Return = @return;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+        Kind = kind;
+        Name = name;
+        Symbol = symbol;
+        ContainingSymbol = containingSymbol;
+        AccessModifier = accessModifier;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ValueIdScope = valueIdScope;
+        VariableBindingsMap = variableBindingsMap;
+        Arity = arity;
+        MethodGroupType = methodGroupType;
+    }
 }
 
 file class GetterMethodDefinitionNode // : IGetterMethodDefinitionNode
 {
-    public IGetterMethodDefinitionSyntax Syntax { get; } = default!;
-    public IMethodSelfParameterNode SelfParameter { get; } = default!;
-    public IFixedList<INamedParameterNode> Parameters { get; } = default!;
-    public ITypeNode Return { get; } = default!;
-    public IEntryNode Entry { get; } = default!;
-    public IBodyNode Body { get; } = default!;
-    public IExitNode Exit { get; } = default!;
-    public MethodKind Kind { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public MethodSymbol Symbol { get; } = default!;
-    public UserTypeSymbol ContainingSymbol { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public ISymbolDeclarationNode ContainingDeclaration { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ValueIdScope ValueIdScope { get; } = default!;
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; } = default!;
+    public IGetterMethodDefinitionSyntax Syntax { get; }
+    public IMethodSelfParameterNode SelfParameter { get; }
+    public IFixedList<INamedParameterNode> Parameters { get; }
+    public ITypeNode Return { get; }
+    public IEntryNode Entry { get; }
+    public IBodyNode Body { get; }
+    public IExitNode Exit { get; }
+    public MethodKind Kind { get; }
+    public IdentifierName Name { get; }
+    public MethodSymbol Symbol { get; }
+    public UserTypeSymbol ContainingSymbol { get; }
+    public AccessModifier AccessModifier { get; }
+    public IPackageFacetNode Facet { get; }
+    public ISymbolDeclarationNode ContainingDeclaration { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ValueIdScope ValueIdScope { get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; }
+
+    public GetterMethodDefinitionNode(IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit, MethodKind kind, IdentifierName name, MethodSymbol symbol, UserTypeSymbol containingSymbol, AccessModifier accessModifier, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, LexicalScope containingLexicalScope, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ValueIdScope valueIdScope, FixedDictionary<IVariableBindingNode,int> variableBindingsMap)
+    {
+        Syntax = syntax;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Return = @return;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+        Kind = kind;
+        Name = name;
+        Symbol = symbol;
+        ContainingSymbol = containingSymbol;
+        AccessModifier = accessModifier;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ValueIdScope = valueIdScope;
+        VariableBindingsMap = variableBindingsMap;
+    }
 }
 
 file class SetterMethodDefinitionNode // : ISetterMethodDefinitionNode
 {
-    public ISetterMethodDefinitionSyntax Syntax { get; } = default!;
-    public IMethodSelfParameterNode SelfParameter { get; } = default!;
-    public IFixedList<INamedParameterNode> Parameters { get; } = default!;
-    public ITypeNode? Return { get; } = default!;
-    public IEntryNode Entry { get; } = default!;
-    public IBodyNode Body { get; } = default!;
-    public IExitNode Exit { get; } = default!;
-    public MethodKind Kind { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public MethodSymbol Symbol { get; } = default!;
-    public UserTypeSymbol ContainingSymbol { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public ISymbolDeclarationNode ContainingDeclaration { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ValueIdScope ValueIdScope { get; } = default!;
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; } = default!;
+    public ISetterMethodDefinitionSyntax Syntax { get; }
+    public IMethodSelfParameterNode SelfParameter { get; }
+    public IFixedList<INamedParameterNode> Parameters { get; }
+    public ITypeNode? Return { get; }
+    public IEntryNode Entry { get; }
+    public IBodyNode Body { get; }
+    public IExitNode Exit { get; }
+    public MethodKind Kind { get; }
+    public IdentifierName Name { get; }
+    public MethodSymbol Symbol { get; }
+    public UserTypeSymbol ContainingSymbol { get; }
+    public AccessModifier AccessModifier { get; }
+    public IPackageFacetNode Facet { get; }
+    public ISymbolDeclarationNode ContainingDeclaration { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ValueIdScope ValueIdScope { get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; }
+
+    public SetterMethodDefinitionNode(ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, MethodKind kind, IdentifierName name, MethodSymbol symbol, UserTypeSymbol containingSymbol, AccessModifier accessModifier, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, LexicalScope containingLexicalScope, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ValueIdScope valueIdScope, FixedDictionary<IVariableBindingNode,int> variableBindingsMap)
+    {
+        Syntax = syntax;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Return = @return;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+        Kind = kind;
+        Name = name;
+        Symbol = symbol;
+        ContainingSymbol = containingSymbol;
+        AccessModifier = accessModifier;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ValueIdScope = valueIdScope;
+        VariableBindingsMap = variableBindingsMap;
+    }
 }
 
 file class DefaultConstructorDefinitionNode // : IDefaultConstructorDefinitionNode
 {
-    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; } = default!;
-    public IEntryNode Entry { get; } = default!;
-    public IBodyNode? Body { get; } = default!;
-    public IExitNode Exit { get; } = default!;
-    public IConstructorDefinitionSyntax? Syntax { get; } = default!;
-    public IdentifierName? Name { get; } = default!;
-    public ConstructorSymbol Symbol { get; } = default!;
-    public ValueIdScope ValueIdScope { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public ISymbolDeclarationNode ContainingDeclaration { get; } = default!;
-    public UserTypeSymbol ContainingSymbol { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
+    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
+    public IEntryNode Entry { get; }
+    public IBodyNode? Body { get; }
+    public IExitNode Exit { get; }
+    public IConstructorDefinitionSyntax? Syntax { get; }
+    public IdentifierName? Name { get; }
+    public ConstructorSymbol Symbol { get; }
+    public ValueIdScope ValueIdScope { get; }
+    public IPackageFacetNode Facet { get; }
+    public ISymbolDeclarationNode ContainingDeclaration { get; }
+    public UserTypeSymbol ContainingSymbol { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; }
+    public AccessModifier AccessModifier { get; }
+
+    public DefaultConstructorDefinitionNode(IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit, IConstructorDefinitionSyntax? syntax, IdentifierName? name, ConstructorSymbol symbol, ValueIdScope valueIdScope, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, LexicalScope containingLexicalScope, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier)
+    {
+        Parameters = parameters;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+        Syntax = syntax;
+        Name = name;
+        Symbol = symbol;
+        ValueIdScope = valueIdScope;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        VariableBindingsMap = variableBindingsMap;
+        AccessModifier = accessModifier;
+    }
 }
 
 file class SourceConstructorDefinitionNode // : ISourceConstructorDefinitionNode
 {
-    public IConstructorDefinitionSyntax Syntax { get; } = default!;
-    public IConstructorSelfParameterNode SelfParameter { get; } = default!;
-    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; } = default!;
-    public IEntryNode Entry { get; } = default!;
-    public IBlockBodyNode Body { get; } = default!;
-    public IExitNode Exit { get; } = default!;
-    public IdentifierName? Name { get; } = default!;
-    public ConstructorSymbol Symbol { get; } = default!;
-    public ValueIdScope ValueIdScope { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public ISymbolDeclarationNode ContainingDeclaration { get; } = default!;
-    public UserTypeSymbol ContainingSymbol { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
+    public IConstructorDefinitionSyntax Syntax { get; }
+    public IConstructorSelfParameterNode SelfParameter { get; }
+    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
+    public IEntryNode Entry { get; }
+    public IBlockBodyNode Body { get; }
+    public IExitNode Exit { get; }
+    public IdentifierName? Name { get; }
+    public ConstructorSymbol Symbol { get; }
+    public ValueIdScope ValueIdScope { get; }
+    public IPackageFacetNode Facet { get; }
+    public ISymbolDeclarationNode ContainingDeclaration { get; }
+    public UserTypeSymbol ContainingSymbol { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; }
+    public AccessModifier AccessModifier { get; }
+
+    public SourceConstructorDefinitionNode(IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit, IdentifierName? name, ConstructorSymbol symbol, ValueIdScope valueIdScope, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, LexicalScope containingLexicalScope, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier)
+    {
+        Syntax = syntax;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+        Name = name;
+        Symbol = symbol;
+        ValueIdScope = valueIdScope;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        VariableBindingsMap = variableBindingsMap;
+        AccessModifier = accessModifier;
+    }
 }
 
 file class DefaultInitializerDefinitionNode // : IDefaultInitializerDefinitionNode
 {
-    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; } = default!;
-    public IEntryNode Entry { get; } = default!;
-    public IBodyNode? Body { get; } = default!;
-    public IExitNode Exit { get; } = default!;
-    public IInitializerDefinitionSyntax? Syntax { get; } = default!;
-    public IdentifierName? Name { get; } = default!;
-    public InitializerSymbol Symbol { get; } = default!;
-    public ValueIdScope ValueIdScope { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public ISymbolDeclarationNode ContainingDeclaration { get; } = default!;
-    public UserTypeSymbol ContainingSymbol { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
+    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
+    public IEntryNode Entry { get; }
+    public IBodyNode? Body { get; }
+    public IExitNode Exit { get; }
+    public IInitializerDefinitionSyntax? Syntax { get; }
+    public IdentifierName? Name { get; }
+    public InitializerSymbol Symbol { get; }
+    public ValueIdScope ValueIdScope { get; }
+    public IPackageFacetNode Facet { get; }
+    public ISymbolDeclarationNode ContainingDeclaration { get; }
+    public UserTypeSymbol ContainingSymbol { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; }
+    public AccessModifier AccessModifier { get; }
+
+    public DefaultInitializerDefinitionNode(IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit, IInitializerDefinitionSyntax? syntax, IdentifierName? name, InitializerSymbol symbol, ValueIdScope valueIdScope, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, LexicalScope containingLexicalScope, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier)
+    {
+        Parameters = parameters;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+        Syntax = syntax;
+        Name = name;
+        Symbol = symbol;
+        ValueIdScope = valueIdScope;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        VariableBindingsMap = variableBindingsMap;
+        AccessModifier = accessModifier;
+    }
 }
 
 file class SourceInitializerDefinitionNode // : ISourceInitializerDefinitionNode
 {
-    public IInitializerDefinitionSyntax Syntax { get; } = default!;
-    public IInitializerSelfParameterNode SelfParameter { get; } = default!;
-    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; } = default!;
-    public IEntryNode Entry { get; } = default!;
-    public IBlockBodyNode Body { get; } = default!;
-    public IExitNode Exit { get; } = default!;
-    public IdentifierName? Name { get; } = default!;
-    public InitializerSymbol Symbol { get; } = default!;
-    public ValueIdScope ValueIdScope { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public ISymbolDeclarationNode ContainingDeclaration { get; } = default!;
-    public UserTypeSymbol ContainingSymbol { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
+    public IInitializerDefinitionSyntax Syntax { get; }
+    public IInitializerSelfParameterNode SelfParameter { get; }
+    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
+    public IEntryNode Entry { get; }
+    public IBlockBodyNode Body { get; }
+    public IExitNode Exit { get; }
+    public IdentifierName? Name { get; }
+    public InitializerSymbol Symbol { get; }
+    public ValueIdScope ValueIdScope { get; }
+    public IPackageFacetNode Facet { get; }
+    public ISymbolDeclarationNode ContainingDeclaration { get; }
+    public UserTypeSymbol ContainingSymbol { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; }
+    public AccessModifier AccessModifier { get; }
+
+    public SourceInitializerDefinitionNode(IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit, IdentifierName? name, InitializerSymbol symbol, ValueIdScope valueIdScope, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, LexicalScope containingLexicalScope, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier)
+    {
+        Syntax = syntax;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+        Name = name;
+        Symbol = symbol;
+        ValueIdScope = valueIdScope;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        VariableBindingsMap = variableBindingsMap;
+        AccessModifier = accessModifier;
+    }
 }
 
 file class FieldDefinitionNode // : IFieldDefinitionNode
 {
-    public IFieldDefinitionSyntax Syntax { get; } = default!;
-    public bool IsMutableBinding { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public ITypeNode TypeNode { get; } = default!;
-    public IMaybeAntetype BindingAntetype { get; } = default!;
-    public DataType BindingType { get; } = default!;
-    public FieldSymbol Symbol { get; } = default!;
-    public IEntryNode Entry { get; } = default!;
-    public IAmbiguousExpressionNode? Initializer { get; } = default!;
-    public IAmbiguousExpressionNode? CurrentInitializer { get; } = default!;
-    public IExpressionNode? IntermediateInitializer { get; } = default!;
-    public IExitNode Exit { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public UserTypeSymbol ContainingSymbol { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public ISymbolDeclarationNode ContainingDeclaration { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public bool IsLentBinding { get; } = default!;
-    public ValueId BindingValueId { get; } = default!;
-    public ValueIdScope ValueIdScope { get; } = default!;
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; } = default!;
+    public IFieldDefinitionSyntax Syntax { get; }
+    public bool IsMutableBinding { get; }
+    public IdentifierName Name { get; }
+    public ITypeNode TypeNode { get; }
+    public IMaybeAntetype BindingAntetype { get; }
+    public DataType BindingType { get; }
+    public FieldSymbol Symbol { get; }
+    public IEntryNode Entry { get; }
+    public IAmbiguousExpressionNode? Initializer { get; }
+    public IAmbiguousExpressionNode? CurrentInitializer { get; }
+    public IExpressionNode? IntermediateInitializer { get; }
+    public IExitNode Exit { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public UserTypeSymbol ContainingSymbol { get; }
+    public AccessModifier AccessModifier { get; }
+    public IPackageFacetNode Facet { get; }
+    public ISymbolDeclarationNode ContainingDeclaration { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public bool IsLentBinding { get; }
+    public ValueId BindingValueId { get; }
+    public ValueIdScope ValueIdScope { get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; }
+
+    public FieldDefinitionNode(IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, FieldSymbol symbol, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer, IExitNode exit, LexicalScope containingLexicalScope, UserTypeSymbol containingSymbol, AccessModifier accessModifier, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, bool isLentBinding, ValueId bindingValueId, ValueIdScope valueIdScope, FixedDictionary<IVariableBindingNode,int> variableBindingsMap)
+    {
+        Syntax = syntax;
+        IsMutableBinding = isMutableBinding;
+        Name = name;
+        TypeNode = typeNode;
+        BindingAntetype = bindingAntetype;
+        BindingType = bindingType;
+        Symbol = symbol;
+        Entry = entry;
+        Initializer = initializer;
+        CurrentInitializer = currentInitializer;
+        IntermediateInitializer = intermediateInitializer;
+        Exit = exit;
+        ContainingLexicalScope = containingLexicalScope;
+        ContainingSymbol = containingSymbol;
+        AccessModifier = accessModifier;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        IsLentBinding = isLentBinding;
+        BindingValueId = bindingValueId;
+        ValueIdScope = valueIdScope;
+        VariableBindingsMap = variableBindingsMap;
+    }
 }
 
 file class AssociatedFunctionDefinitionNode // : IAssociatedFunctionDefinitionNode
 {
-    public IAssociatedFunctionDefinitionSyntax Syntax { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public IFixedList<INamedParameterNode> Parameters { get; } = default!;
-    public ITypeNode? Return { get; } = default!;
-    public FunctionSymbol Symbol { get; } = default!;
-    public FunctionType Type { get; } = default!;
-    public IEntryNode Entry { get; } = default!;
-    public IBodyNode Body { get; } = default!;
-    public IExitNode Exit { get; } = default!;
-    public ValueIdScope ValueIdScope { get; } = default!;
-    public IPackageFacetNode Facet { get; } = default!;
-    public ISymbolDeclarationNode ContainingDeclaration { get; } = default!;
-    public UserTypeSymbol ContainingSymbol { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; } = default!;
-    public AccessModifier AccessModifier { get; } = default!;
+    public IAssociatedFunctionDefinitionSyntax Syntax { get; }
+    public IdentifierName Name { get; }
+    public IFixedList<INamedParameterNode> Parameters { get; }
+    public ITypeNode? Return { get; }
+    public FunctionSymbol Symbol { get; }
+    public FunctionType Type { get; }
+    public IEntryNode Entry { get; }
+    public IBodyNode Body { get; }
+    public IExitNode Exit { get; }
+    public ValueIdScope ValueIdScope { get; }
+    public IPackageFacetNode Facet { get; }
+    public ISymbolDeclarationNode ContainingDeclaration { get; }
+    public UserTypeSymbol ContainingSymbol { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; }
+    public AccessModifier AccessModifier { get; }
+
+    public AssociatedFunctionDefinitionNode(IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, FunctionSymbol symbol, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit, ValueIdScope valueIdScope, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, LexicalScope containingLexicalScope, LexicalScope lexicalScope, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier)
+    {
+        Syntax = syntax;
+        Name = name;
+        Parameters = parameters;
+        Return = @return;
+        Symbol = symbol;
+        Type = type;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+        ValueIdScope = valueIdScope;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        File = file;
+        Parent = parent;
+        Package = package;
+        VariableBindingsMap = variableBindingsMap;
+        AccessModifier = accessModifier;
+    }
 }
 
 file class AttributeNode // : IAttributeNode
 {
-    public IAttributeSyntax Syntax { get; } = default!;
-    public IStandardTypeNameNode TypeName { get; } = default!;
-    public ConstructorSymbol? ReferencedSymbol { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IAttributeSyntax Syntax { get; }
+    public IStandardTypeNameNode TypeName { get; }
+    public ConstructorSymbol? ReferencedSymbol { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public AttributeNode(IAttributeSyntax syntax, IStandardTypeNameNode typeName, ConstructorSymbol? referencedSymbol, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        TypeName = typeName;
+        ReferencedSymbol = referencedSymbol;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class CapabilitySetNode // : ICapabilitySetNode
 {
-    public ICapabilitySetSyntax Syntax { get; } = default!;
-    public CapabilitySet Constraint { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public ICapabilitySetSyntax Syntax { get; }
+    public CapabilitySet Constraint { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public CapabilitySetNode(ICapabilitySetSyntax syntax, CapabilitySet constraint, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Constraint = constraint;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class CapabilityNode // : ICapabilityNode
 {
-    public ICapabilitySyntax Syntax { get; } = default!;
-    public Capability Capability { get; } = default!;
-    public ICapabilityConstraint Constraint { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public ICapabilitySyntax Syntax { get; }
+    public Capability Capability { get; }
+    public ICapabilityConstraint Constraint { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public CapabilityNode(ICapabilitySyntax syntax, Capability capability, ICapabilityConstraint constraint, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Capability = capability;
+        Constraint = constraint;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class NamedParameterNode // : INamedParameterNode
 {
-    public INamedParameterSyntax Syntax { get; } = default!;
-    public bool IsMutableBinding { get; } = default!;
-    public bool IsLentBinding { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public ITypeNode TypeNode { get; } = default!;
-    public DataType BindingType { get; } = default!;
-    public IMaybeAntetype BindingAntetype { get; } = default!;
-    public ValueId BindingValueId { get; } = default!;
-    public ParameterType ParameterType { get; } = default!;
-    public bool Unused { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
+    public INamedParameterSyntax Syntax { get; }
+    public bool IsMutableBinding { get; }
+    public bool IsLentBinding { get; }
+    public IdentifierName Name { get; }
+    public ITypeNode TypeNode { get; }
+    public DataType BindingType { get; }
+    public IMaybeAntetype BindingAntetype { get; }
+    public ValueId BindingValueId { get; }
+    public ParameterType ParameterType { get; }
+    public bool Unused { get; }
+    public IFlowState FlowStateAfter { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+
+    public NamedParameterNode(INamedParameterSyntax syntax, bool isMutableBinding, bool isLentBinding, IdentifierName name, ITypeNode typeNode, DataType bindingType, IMaybeAntetype bindingAntetype, ValueId bindingValueId, ParameterType parameterType, bool unused, IFlowState flowStateAfter, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, LexicalScope containingLexicalScope)
+    {
+        Syntax = syntax;
+        IsMutableBinding = isMutableBinding;
+        IsLentBinding = isLentBinding;
+        Name = name;
+        TypeNode = typeNode;
+        BindingType = bindingType;
+        BindingAntetype = bindingAntetype;
+        BindingValueId = bindingValueId;
+        ParameterType = parameterType;
+        Unused = unused;
+        FlowStateAfter = flowStateAfter;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ContainingLexicalScope = containingLexicalScope;
+    }
 }
 
 file class ConstructorSelfParameterNode // : IConstructorSelfParameterNode
 {
-    public IConstructorSelfParameterSyntax Syntax { get; } = default!;
-    public bool IsLentBinding { get; } = default!;
-    public ICapabilityNode Capability { get; } = default!;
-    public CapabilityType BindingType { get; } = default!;
-    public ObjectType ContainingDeclaredType { get; } = default!;
-    public ITypeDefinitionNode ContainingTypeDefinition { get; } = default!;
-    public SelfParameterType ParameterType { get; } = default!;
-    public IMaybeAntetype BindingAntetype { get; } = default!;
-    public ValueId BindingValueId { get; } = default!;
-    public IdentifierName? Name { get; } = default!;
-    public bool Unused { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IConstructorSelfParameterSyntax Syntax { get; }
+    public bool IsLentBinding { get; }
+    public ICapabilityNode Capability { get; }
+    public CapabilityType BindingType { get; }
+    public ObjectType ContainingDeclaredType { get; }
+    public ITypeDefinitionNode ContainingTypeDefinition { get; }
+    public SelfParameterType ParameterType { get; }
+    public IMaybeAntetype BindingAntetype { get; }
+    public ValueId BindingValueId { get; }
+    public IdentifierName? Name { get; }
+    public bool Unused { get; }
+    public IFlowState FlowStateAfter { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public ConstructorSelfParameterNode(IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType, ObjectType containingDeclaredType, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, ValueId bindingValueId, IdentifierName? name, bool unused, IFlowState flowStateAfter, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        IsLentBinding = isLentBinding;
+        Capability = capability;
+        BindingType = bindingType;
+        ContainingDeclaredType = containingDeclaredType;
+        ContainingTypeDefinition = containingTypeDefinition;
+        ParameterType = parameterType;
+        BindingAntetype = bindingAntetype;
+        BindingValueId = bindingValueId;
+        Name = name;
+        Unused = unused;
+        FlowStateAfter = flowStateAfter;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class InitializerSelfParameterNode // : IInitializerSelfParameterNode
 {
-    public IInitializerSelfParameterSyntax Syntax { get; } = default!;
-    public bool IsLentBinding { get; } = default!;
-    public ICapabilityNode Capability { get; } = default!;
-    public CapabilityType BindingType { get; } = default!;
-    public StructType ContainingDeclaredType { get; } = default!;
-    public ITypeDefinitionNode ContainingTypeDefinition { get; } = default!;
-    public SelfParameterType ParameterType { get; } = default!;
-    public IMaybeAntetype BindingAntetype { get; } = default!;
-    public ValueId BindingValueId { get; } = default!;
-    public IdentifierName? Name { get; } = default!;
-    public bool Unused { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IInitializerSelfParameterSyntax Syntax { get; }
+    public bool IsLentBinding { get; }
+    public ICapabilityNode Capability { get; }
+    public CapabilityType BindingType { get; }
+    public StructType ContainingDeclaredType { get; }
+    public ITypeDefinitionNode ContainingTypeDefinition { get; }
+    public SelfParameterType ParameterType { get; }
+    public IMaybeAntetype BindingAntetype { get; }
+    public ValueId BindingValueId { get; }
+    public IdentifierName? Name { get; }
+    public bool Unused { get; }
+    public IFlowState FlowStateAfter { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public InitializerSelfParameterNode(IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType, StructType containingDeclaredType, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, ValueId bindingValueId, IdentifierName? name, bool unused, IFlowState flowStateAfter, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        IsLentBinding = isLentBinding;
+        Capability = capability;
+        BindingType = bindingType;
+        ContainingDeclaredType = containingDeclaredType;
+        ContainingTypeDefinition = containingTypeDefinition;
+        ParameterType = parameterType;
+        BindingAntetype = bindingAntetype;
+        BindingValueId = bindingValueId;
+        Name = name;
+        Unused = unused;
+        FlowStateAfter = flowStateAfter;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class MethodSelfParameterNode // : IMethodSelfParameterNode
 {
-    public IMethodSelfParameterSyntax Syntax { get; } = default!;
-    public bool IsLentBinding { get; } = default!;
-    public ICapabilityConstraintNode Capability { get; } = default!;
-    public ITypeDefinitionNode ContainingTypeDefinition { get; } = default!;
-    public IDeclaredUserType ContainingDeclaredType { get; } = default!;
-    public SelfParameterType ParameterType { get; } = default!;
-    public IMaybeAntetype BindingAntetype { get; } = default!;
-    public Pseudotype BindingType { get; } = default!;
-    public ValueId BindingValueId { get; } = default!;
-    public IdentifierName? Name { get; } = default!;
-    public bool Unused { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IMethodSelfParameterSyntax Syntax { get; }
+    public bool IsLentBinding { get; }
+    public ICapabilityConstraintNode Capability { get; }
+    public ITypeDefinitionNode ContainingTypeDefinition { get; }
+    public IDeclaredUserType ContainingDeclaredType { get; }
+    public SelfParameterType ParameterType { get; }
+    public IMaybeAntetype BindingAntetype { get; }
+    public Pseudotype BindingType { get; }
+    public ValueId BindingValueId { get; }
+    public IdentifierName? Name { get; }
+    public bool Unused { get; }
+    public IFlowState FlowStateAfter { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public MethodSelfParameterNode(IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability, ITypeDefinitionNode containingTypeDefinition, IDeclaredUserType containingDeclaredType, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, ValueId bindingValueId, IdentifierName? name, bool unused, IFlowState flowStateAfter, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        IsLentBinding = isLentBinding;
+        Capability = capability;
+        ContainingTypeDefinition = containingTypeDefinition;
+        ContainingDeclaredType = containingDeclaredType;
+        ParameterType = parameterType;
+        BindingAntetype = bindingAntetype;
+        BindingType = bindingType;
+        BindingValueId = bindingValueId;
+        Name = name;
+        Unused = unused;
+        FlowStateAfter = flowStateAfter;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class FieldParameterNode // : IFieldParameterNode
 {
-    public IFieldParameterSyntax Syntax { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public ITypeDefinitionNode ContainingTypeDefinition { get; } = default!;
-    public IFieldDefinitionNode? ReferencedField { get; } = default!;
-    public DataType BindingType { get; } = default!;
-    public ParameterType ParameterType { get; } = default!;
-    public bool Unused { get; } = default!;
-    public IMaybeAntetype BindingAntetype { get; } = default!;
-    public ValueId BindingValueId { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IFieldParameterSyntax Syntax { get; }
+    public IdentifierName Name { get; }
+    public ITypeDefinitionNode ContainingTypeDefinition { get; }
+    public IFieldDefinitionNode? ReferencedField { get; }
+    public DataType BindingType { get; }
+    public ParameterType ParameterType { get; }
+    public bool Unused { get; }
+    public IMaybeAntetype BindingAntetype { get; }
+    public ValueId BindingValueId { get; }
+    public IFlowState FlowStateAfter { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public FieldParameterNode(IFieldParameterSyntax syntax, IdentifierName name, ITypeDefinitionNode containingTypeDefinition, IFieldDefinitionNode? referencedField, DataType bindingType, ParameterType parameterType, bool unused, IMaybeAntetype bindingAntetype, ValueId bindingValueId, IFlowState flowStateAfter, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Name = name;
+        ContainingTypeDefinition = containingTypeDefinition;
+        ReferencedField = referencedField;
+        BindingType = bindingType;
+        ParameterType = parameterType;
+        Unused = unused;
+        BindingAntetype = bindingAntetype;
+        BindingValueId = bindingValueId;
+        FlowStateAfter = flowStateAfter;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class BlockBodyNode // : IBlockBodyNode
 {
-    public IBlockBodySyntax Syntax { get; } = default!;
-    public IFixedList<IBodyStatementNode> Statements { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IBlockBodySyntax Syntax { get; }
+    public IFixedList<IBodyStatementNode> Statements { get; }
+    public IFlowState FlowStateAfter { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public BlockBodyNode(IBlockBodySyntax syntax, IFixedList<IBodyStatementNode> statements, IFlowState flowStateAfter, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Statements = statements;
+        FlowStateAfter = flowStateAfter;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class ExpressionBodyNode // : IExpressionBodyNode
 {
-    public IExpressionBodySyntax Syntax { get; } = default!;
-    public IResultStatementNode ResultStatement { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public IFixedList<IStatementNode> Statements { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IExpressionBodySyntax Syntax { get; }
+    public IResultStatementNode ResultStatement { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public IFixedList<IStatementNode> Statements { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public ExpressionBodyNode(IExpressionBodySyntax syntax, IResultStatementNode resultStatement, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, IFlowState flowStateAfter, IFixedList<IStatementNode> statements, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        ResultStatement = resultStatement;
+        ExpectedAntetype = expectedAntetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Statements = statements;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class IdentifierTypeNameNode // : IIdentifierTypeNameNode
 {
-    public IIdentifierTypeNameSyntax Syntax { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public bool IsAttributeType { get; } = default!;
-    public ITypeDeclarationNode? ReferencedDeclaration { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public TypeSymbol? ReferencedSymbol { get; } = default!;
-    public BareType? NamedBareType { get; } = default!;
-    public IMaybeAntetype NamedAntetype { get; } = default!;
-    public DataType NamedType { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IIdentifierTypeNameSyntax Syntax { get; }
+    public IdentifierName Name { get; }
+    public bool IsAttributeType { get; }
+    public ITypeDeclarationNode? ReferencedDeclaration { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public TypeSymbol? ReferencedSymbol { get; }
+    public BareType? NamedBareType { get; }
+    public IMaybeAntetype NamedAntetype { get; }
+    public DataType NamedType { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public IdentifierTypeNameNode(IIdentifierTypeNameSyntax syntax, IdentifierName name, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, LexicalScope containingLexicalScope, TypeSymbol? referencedSymbol, BareType? namedBareType, IMaybeAntetype namedAntetype, DataType namedType, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Name = name;
+        IsAttributeType = isAttributeType;
+        ReferencedDeclaration = referencedDeclaration;
+        ContainingLexicalScope = containingLexicalScope;
+        ReferencedSymbol = referencedSymbol;
+        NamedBareType = namedBareType;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class SpecialTypeNameNode // : ISpecialTypeNameNode
 {
-    public ISpecialTypeNameSyntax Syntax { get; } = default!;
-    public SpecialTypeName Name { get; } = default!;
-    public TypeSymbol ReferencedSymbol { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public BareType? NamedBareType { get; } = default!;
-    public IMaybeAntetype NamedAntetype { get; } = default!;
-    public DataType NamedType { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public ISpecialTypeNameSyntax Syntax { get; }
+    public SpecialTypeName Name { get; }
+    public TypeSymbol ReferencedSymbol { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public BareType? NamedBareType { get; }
+    public IMaybeAntetype NamedAntetype { get; }
+    public DataType NamedType { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public SpecialTypeNameNode(ISpecialTypeNameSyntax syntax, SpecialTypeName name, TypeSymbol referencedSymbol, LexicalScope containingLexicalScope, BareType? namedBareType, IMaybeAntetype namedAntetype, DataType namedType, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Name = name;
+        ReferencedSymbol = referencedSymbol;
+        ContainingLexicalScope = containingLexicalScope;
+        NamedBareType = namedBareType;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class GenericTypeNameNode // : IGenericTypeNameNode
 {
-    public IGenericTypeNameSyntax Syntax { get; } = default!;
-    public GenericName Name { get; } = default!;
-    public IFixedList<ITypeNode> TypeArguments { get; } = default!;
-    public bool IsAttributeType { get; } = default!;
-    public ITypeDeclarationNode? ReferencedDeclaration { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public TypeSymbol? ReferencedSymbol { get; } = default!;
-    public BareType? NamedBareType { get; } = default!;
-    public IMaybeAntetype NamedAntetype { get; } = default!;
-    public DataType NamedType { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IGenericTypeNameSyntax Syntax { get; }
+    public GenericName Name { get; }
+    public IFixedList<ITypeNode> TypeArguments { get; }
+    public bool IsAttributeType { get; }
+    public ITypeDeclarationNode? ReferencedDeclaration { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public TypeSymbol? ReferencedSymbol { get; }
+    public BareType? NamedBareType { get; }
+    public IMaybeAntetype NamedAntetype { get; }
+    public DataType NamedType { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public GenericTypeNameNode(IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, LexicalScope containingLexicalScope, TypeSymbol? referencedSymbol, BareType? namedBareType, IMaybeAntetype namedAntetype, DataType namedType, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Name = name;
+        TypeArguments = typeArguments;
+        IsAttributeType = isAttributeType;
+        ReferencedDeclaration = referencedDeclaration;
+        ContainingLexicalScope = containingLexicalScope;
+        ReferencedSymbol = referencedSymbol;
+        NamedBareType = namedBareType;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class QualifiedTypeNameNode // : IQualifiedTypeNameNode
 {
-    public IQualifiedTypeNameSyntax Syntax { get; } = default!;
-    public ITypeNameNode Context { get; } = default!;
-    public IStandardTypeNameNode QualifiedName { get; } = default!;
-    public TypeName Name { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public TypeSymbol? ReferencedSymbol { get; } = default!;
-    public BareType? NamedBareType { get; } = default!;
-    public IMaybeAntetype NamedAntetype { get; } = default!;
-    public DataType NamedType { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IQualifiedTypeNameSyntax Syntax { get; }
+    public ITypeNameNode Context { get; }
+    public IStandardTypeNameNode QualifiedName { get; }
+    public TypeName Name { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public TypeSymbol? ReferencedSymbol { get; }
+    public BareType? NamedBareType { get; }
+    public IMaybeAntetype NamedAntetype { get; }
+    public DataType NamedType { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public QualifiedTypeNameNode(IQualifiedTypeNameSyntax syntax, ITypeNameNode context, IStandardTypeNameNode qualifiedName, TypeName name, LexicalScope containingLexicalScope, TypeSymbol? referencedSymbol, BareType? namedBareType, IMaybeAntetype namedAntetype, DataType namedType, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Context = context;
+        QualifiedName = qualifiedName;
+        Name = name;
+        ContainingLexicalScope = containingLexicalScope;
+        ReferencedSymbol = referencedSymbol;
+        NamedBareType = namedBareType;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class OptionalTypeNode // : IOptionalTypeNode
 {
-    public IOptionalTypeSyntax Syntax { get; } = default!;
-    public ITypeNode Referent { get; } = default!;
-    public IMaybeAntetype NamedAntetype { get; } = default!;
-    public DataType NamedType { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IOptionalTypeSyntax Syntax { get; }
+    public ITypeNode Referent { get; }
+    public IMaybeAntetype NamedAntetype { get; }
+    public DataType NamedType { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public OptionalTypeNode(IOptionalTypeSyntax syntax, ITypeNode referent, IMaybeAntetype namedAntetype, DataType namedType, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Referent = referent;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class CapabilityTypeNode // : ICapabilityTypeNode
 {
-    public ICapabilityTypeSyntax Syntax { get; } = default!;
-    public ICapabilityNode Capability { get; } = default!;
-    public ITypeNode Referent { get; } = default!;
-    public IMaybeAntetype NamedAntetype { get; } = default!;
-    public DataType NamedType { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public ICapabilityTypeSyntax Syntax { get; }
+    public ICapabilityNode Capability { get; }
+    public ITypeNode Referent { get; }
+    public IMaybeAntetype NamedAntetype { get; }
+    public DataType NamedType { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public CapabilityTypeNode(ICapabilityTypeSyntax syntax, ICapabilityNode capability, ITypeNode referent, IMaybeAntetype namedAntetype, DataType namedType, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Capability = capability;
+        Referent = referent;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class FunctionTypeNode // : IFunctionTypeNode
 {
-    public IFunctionTypeSyntax Syntax { get; } = default!;
-    public IFixedList<IParameterTypeNode> Parameters { get; } = default!;
-    public ITypeNode Return { get; } = default!;
-    public IMaybeAntetype NamedAntetype { get; } = default!;
-    public DataType NamedType { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IFunctionTypeSyntax Syntax { get; }
+    public IFixedList<IParameterTypeNode> Parameters { get; }
+    public ITypeNode Return { get; }
+    public IMaybeAntetype NamedAntetype { get; }
+    public DataType NamedType { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public FunctionTypeNode(IFunctionTypeSyntax syntax, IFixedList<IParameterTypeNode> parameters, ITypeNode @return, IMaybeAntetype namedAntetype, DataType namedType, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Parameters = parameters;
+        Return = @return;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class ParameterTypeNode // : IParameterTypeNode
 {
-    public IParameterTypeSyntax Syntax { get; } = default!;
-    public bool IsLent { get; } = default!;
-    public ITypeNode Referent { get; } = default!;
-    public ParameterType Parameter { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IParameterTypeSyntax Syntax { get; }
+    public bool IsLent { get; }
+    public ITypeNode Referent { get; }
+    public ParameterType Parameter { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public ParameterTypeNode(IParameterTypeSyntax syntax, bool isLent, ITypeNode referent, ParameterType parameter, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        IsLent = isLent;
+        Referent = referent;
+        Parameter = parameter;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class CapabilityViewpointTypeNode // : ICapabilityViewpointTypeNode
 {
-    public ICapabilityViewpointTypeSyntax Syntax { get; } = default!;
-    public ICapabilityNode Capability { get; } = default!;
-    public ITypeNode Referent { get; } = default!;
-    public IMaybeAntetype NamedAntetype { get; } = default!;
-    public DataType NamedType { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public ICapabilityViewpointTypeSyntax Syntax { get; }
+    public ICapabilityNode Capability { get; }
+    public ITypeNode Referent { get; }
+    public IMaybeAntetype NamedAntetype { get; }
+    public DataType NamedType { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public CapabilityViewpointTypeNode(ICapabilityViewpointTypeSyntax syntax, ICapabilityNode capability, ITypeNode referent, IMaybeAntetype namedAntetype, DataType namedType, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Capability = capability;
+        Referent = referent;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class SelfViewpointTypeNode // : ISelfViewpointTypeNode
 {
-    public ISelfViewpointTypeSyntax Syntax { get; } = default!;
-    public ITypeNode Referent { get; } = default!;
-    public Pseudotype? NamedSelfType { get; } = default!;
-    public IMaybeAntetype NamedAntetype { get; } = default!;
-    public DataType NamedType { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public ISelfViewpointTypeSyntax Syntax { get; }
+    public ITypeNode Referent { get; }
+    public Pseudotype? NamedSelfType { get; }
+    public IMaybeAntetype NamedAntetype { get; }
+    public DataType NamedType { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public SelfViewpointTypeNode(ISelfViewpointTypeSyntax syntax, ITypeNode referent, Pseudotype? namedSelfType, IMaybeAntetype namedAntetype, DataType namedType, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Referent = referent;
+        NamedSelfType = namedSelfType;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class EntryNode // : IEntryNode
 {
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; } = default!;
-    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; } = default!;
-    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
-    public ICodeSyntax? Syntax { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+    public ICodeSyntax? Syntax { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public EntryNode(IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, ICodeSyntax? syntax, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        DataFlowPrevious = dataFlowPrevious;
+        DefinitelyAssigned = definitelyAssigned;
+        DefinitelyUnassigned = definitelyUnassigned;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        Syntax = syntax;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class ExitNode // : IExitNode
 {
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; } = default!;
-    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; } = default!;
-    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
-    public ICodeSyntax? Syntax { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+    public ICodeSyntax? Syntax { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public ExitNode(IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, ICodeSyntax? syntax, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        DataFlowPrevious = dataFlowPrevious;
+        DefinitelyAssigned = definitelyAssigned;
+        DefinitelyUnassigned = definitelyUnassigned;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        Syntax = syntax;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class ResultStatementNode // : IResultStatementNode
 {
-    public IResultStatementSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode Expression { get; } = default!;
-    public IAmbiguousExpressionNode CurrentExpression { get; } = default!;
-    public IExpressionNode? IntermediateExpression { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public IMaybeAntetype? ResultAntetype { get; } = default!;
-    public DataType? ResultType { get; } = default!;
-    public ValueId? ResultValueId { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public IMaybeAntetype Antetype { get; } = default!;
-    public DataType Type { get; } = default!;
-    public ValueId ValueId { get; } = default!;
+    public IResultStatementSyntax Syntax { get; }
+    public IAmbiguousExpressionNode Expression { get; }
+    public IAmbiguousExpressionNode CurrentExpression { get; }
+    public IExpressionNode? IntermediateExpression { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public IMaybeAntetype? ResultAntetype { get; }
+    public DataType? ResultType { get; }
+    public ValueId? ResultValueId { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public IMaybeAntetype Antetype { get; }
+    public DataType Type { get; }
+    public ValueId ValueId { get; }
+
+    public ResultStatementNode(IResultStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, IFlowState flowStateAfter, IMaybeAntetype? resultAntetype, DataType? resultType, ValueId? resultValueId, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, IMaybeAntetype antetype, DataType type, ValueId valueId)
+    {
+        Syntax = syntax;
+        Expression = expression;
+        CurrentExpression = currentExpression;
+        IntermediateExpression = intermediateExpression;
+        ExpectedAntetype = expectedAntetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ResultAntetype = resultAntetype;
+        ResultType = resultType;
+        ResultValueId = resultValueId;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        File = file;
+        Parent = parent;
+        Package = package;
+        Antetype = antetype;
+        Type = type;
+        ValueId = valueId;
+    }
 }
 
 file class VariableDeclarationStatementNode // : IVariableDeclarationStatementNode
 {
-    public IVariableDeclarationStatementSyntax Syntax { get; } = default!;
-    public bool IsMutableBinding { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public ICapabilityNode? Capability { get; } = default!;
-    public ITypeNode? Type { get; } = default!;
-    public IAmbiguousExpressionNode? Initializer { get; } = default!;
-    public IAmbiguousExpressionNode? CurrentInitializer { get; } = default!;
-    public IExpressionNode? IntermediateInitializer { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public IMaybeAntetype? ResultAntetype { get; } = default!;
-    public DataType? ResultType { get; } = default!;
-    public ValueId? ResultValueId { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public DataType BindingType { get; } = default!;
-    public bool IsLentBinding { get; } = default!;
-    public ValueId BindingValueId { get; } = default!;
-    public IMaybeAntetype BindingAntetype { get; } = default!;
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; } = default!;
-    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; } = default!;
-    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; } = default!;
+    public IVariableDeclarationStatementSyntax Syntax { get; }
+    public bool IsMutableBinding { get; }
+    public IdentifierName Name { get; }
+    public ICapabilityNode? Capability { get; }
+    public ITypeNode? Type { get; }
+    public IAmbiguousExpressionNode? Initializer { get; }
+    public IAmbiguousExpressionNode? CurrentInitializer { get; }
+    public IExpressionNode? IntermediateInitializer { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public IMaybeAntetype? ResultAntetype { get; }
+    public DataType? ResultType { get; }
+    public ValueId? ResultValueId { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public DataType BindingType { get; }
+    public bool IsLentBinding { get; }
+    public ValueId BindingValueId { get; }
+    public IMaybeAntetype BindingAntetype { get; }
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; }
+
+    public VariableDeclarationStatementNode(IVariableDeclarationStatementSyntax syntax, bool isMutableBinding, IdentifierName name, ICapabilityNode? capability, ITypeNode? type, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer, LexicalScope containingLexicalScope, LexicalScope lexicalScope, IMaybeAntetype? resultAntetype, DataType? resultType, ValueId? resultValueId, IFlowState flowStateAfter, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, DataType bindingType, bool isLentBinding, ValueId bindingValueId, IMaybeAntetype bindingAntetype, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
+    {
+        Syntax = syntax;
+        IsMutableBinding = isMutableBinding;
+        Name = name;
+        Capability = capability;
+        Type = type;
+        Initializer = initializer;
+        CurrentInitializer = currentInitializer;
+        IntermediateInitializer = intermediateInitializer;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        ResultAntetype = resultAntetype;
+        ResultType = resultType;
+        ResultValueId = resultValueId;
+        FlowStateAfter = flowStateAfter;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        File = file;
+        Parent = parent;
+        Package = package;
+        BindingType = bindingType;
+        IsLentBinding = isLentBinding;
+        BindingValueId = bindingValueId;
+        BindingAntetype = bindingAntetype;
+        DataFlowPrevious = dataFlowPrevious;
+        DefinitelyAssigned = definitelyAssigned;
+        DefinitelyUnassigned = definitelyUnassigned;
+    }
 }
 
 file class ExpressionStatementNode // : IExpressionStatementNode
 {
-    public IExpressionStatementSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode Expression { get; } = default!;
-    public IAmbiguousExpressionNode CurrentExpression { get; } = default!;
-    public IExpressionNode? IntermediateExpression { get; } = default!;
-    public IMaybeAntetype? ResultAntetype { get; } = default!;
-    public DataType? ResultType { get; } = default!;
-    public ValueId? ResultValueId { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IExpressionStatementSyntax Syntax { get; }
+    public IAmbiguousExpressionNode Expression { get; }
+    public IAmbiguousExpressionNode CurrentExpression { get; }
+    public IExpressionNode? IntermediateExpression { get; }
+    public IMaybeAntetype? ResultAntetype { get; }
+    public DataType? ResultType { get; }
+    public ValueId? ResultValueId { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public ExpressionStatementNode(IExpressionStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression, IMaybeAntetype? resultAntetype, DataType? resultType, ValueId? resultValueId, IFlowState flowStateAfter, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Expression = expression;
+        CurrentExpression = currentExpression;
+        IntermediateExpression = intermediateExpression;
+        ResultAntetype = resultAntetype;
+        ResultType = resultType;
+        ResultValueId = resultValueId;
+        FlowStateAfter = flowStateAfter;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class BindingContextPatternNode // : IBindingContextPatternNode
 {
-    public IBindingContextPatternSyntax Syntax { get; } = default!;
-    public bool IsMutableBinding { get; } = default!;
-    public IPatternNode Pattern { get; } = default!;
-    public ITypeNode? Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IBindingContextPatternSyntax Syntax { get; }
+    public bool IsMutableBinding { get; }
+    public IPatternNode Pattern { get; }
+    public ITypeNode? Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public BindingContextPatternNode(IBindingContextPatternSyntax syntax, bool isMutableBinding, IPatternNode pattern, ITypeNode? type, IFlowState flowStateAfter, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        IsMutableBinding = isMutableBinding;
+        Pattern = pattern;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class BindingPatternNode // : IBindingPatternNode
 {
-    public IBindingPatternSyntax Syntax { get; } = default!;
-    public bool IsMutableBinding { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public ValueId BindingValueId { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public DataType BindingType { get; } = default!;
-    public bool IsLentBinding { get; } = default!;
-    public IMaybeAntetype BindingAntetype { get; } = default!;
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; } = default!;
-    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; } = default!;
-    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; } = default!;
+    public IBindingPatternSyntax Syntax { get; }
+    public bool IsMutableBinding { get; }
+    public IdentifierName Name { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public ValueId BindingValueId { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public DataType BindingType { get; }
+    public bool IsLentBinding { get; }
+    public IMaybeAntetype BindingAntetype { get; }
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; }
+
+    public BindingPatternNode(IBindingPatternSyntax syntax, bool isMutableBinding, IdentifierName name, LexicalScope containingLexicalScope, ValueId bindingValueId, IFlowState flowStateAfter, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, DataType bindingType, bool isLentBinding, IMaybeAntetype bindingAntetype, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
+    {
+        Syntax = syntax;
+        IsMutableBinding = isMutableBinding;
+        Name = name;
+        ContainingLexicalScope = containingLexicalScope;
+        BindingValueId = bindingValueId;
+        FlowStateAfter = flowStateAfter;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        File = file;
+        Parent = parent;
+        Package = package;
+        BindingType = bindingType;
+        IsLentBinding = isLentBinding;
+        BindingAntetype = bindingAntetype;
+        DataFlowPrevious = dataFlowPrevious;
+        DefinitelyAssigned = definitelyAssigned;
+        DefinitelyUnassigned = definitelyUnassigned;
+    }
 }
 
 file class OptionalPatternNode // : IOptionalPatternNode
 {
-    public IOptionalPatternSyntax Syntax { get; } = default!;
-    public IOptionalOrBindingPatternNode Pattern { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IOptionalPatternSyntax Syntax { get; }
+    public IOptionalOrBindingPatternNode Pattern { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public OptionalPatternNode(IOptionalPatternSyntax syntax, IOptionalOrBindingPatternNode pattern, IFlowState flowStateAfter, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Pattern = pattern;
+        FlowStateAfter = flowStateAfter;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class BlockExpressionNode // : IBlockExpressionNode
 {
-    public IBlockExpressionSyntax Syntax { get; } = default!;
-    public IFixedList<IStatementNode> Statements { get; } = default!;
-    public IMaybeAntetype Antetype { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IBlockExpressionSyntax Syntax { get; }
+    public IFixedList<IStatementNode> Statements { get; }
+    public IMaybeAntetype Antetype { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public DataType? ExpectedType { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public BlockExpressionNode(IBlockExpressionSyntax syntax, IFixedList<IStatementNode> statements, IMaybeAntetype antetype, DataType type, IFlowState flowStateAfter, ValueId valueId, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Statements = statements;
+        Antetype = antetype;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        ExpectedAntetype = expectedAntetype;
+        ExpectedType = expectedType;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class NewObjectExpressionNode // : INewObjectExpressionNode
 {
-    public INewObjectExpressionSyntax Syntax { get; } = default!;
-    public ITypeNameNode ConstructingType { get; } = default!;
-    public IdentifierName? ConstructorName { get; } = default!;
-    public IFixedList<IAmbiguousExpressionNode> Arguments { get; } = default!;
-    public IFixedList<IExpressionNode?> IntermediateArguments { get; } = default!;
-    public IMaybeAntetype ConstructingAntetype { get; } = default!;
-    public IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { get; } = default!;
-    public IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; } = default!;
-    public IConstructorDeclarationNode? ReferencedConstructor { get; } = default!;
-    public ContextualizedOverload? ContextualizedOverload { get; } = default!;
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; } = default!;
-    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public INewObjectExpressionSyntax Syntax { get; }
+    public ITypeNameNode ConstructingType { get; }
+    public IdentifierName? ConstructorName { get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    public IFixedList<IExpressionNode?> IntermediateArguments { get; }
+    public IMaybeAntetype ConstructingAntetype { get; }
+    public IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { get; }
+    public IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
+    public IConstructorDeclarationNode? ReferencedConstructor { get; }
+    public ContextualizedOverload? ContextualizedOverload { get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public NewObjectExpressionNode(INewObjectExpressionSyntax syntax, ITypeNameNode constructingType, IdentifierName? constructorName, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IMaybeAntetype constructingAntetype, IFixedSet<IConstructorDeclarationNode> referencedConstructors, IFixedSet<IConstructorDeclarationNode> compatibleConstructors, IConstructorDeclarationNode? referencedConstructor, ContextualizedOverload? contextualizedOverload, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        ConstructingType = constructingType;
+        ConstructorName = constructorName;
+        Arguments = arguments;
+        IntermediateArguments = intermediateArguments;
+        ConstructingAntetype = constructingAntetype;
+        ReferencedConstructors = referencedConstructors;
+        CompatibleConstructors = compatibleConstructors;
+        ReferencedConstructor = referencedConstructor;
+        ContextualizedOverload = contextualizedOverload;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class UnsafeExpressionNode // : IUnsafeExpressionNode
 {
-    public IUnsafeExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode Expression { get; } = default!;
-    public IExpressionNode? IntermediateExpression { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IUnsafeExpressionSyntax Syntax { get; }
+    public IAmbiguousExpressionNode Expression { get; }
+    public IExpressionNode? IntermediateExpression { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public UnsafeExpressionNode(IUnsafeExpressionSyntax syntax, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Expression = expression;
+        IntermediateExpression = intermediateExpression;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class BoolLiteralExpressionNode // : IBoolLiteralExpressionNode
 {
-    public IBoolLiteralExpressionSyntax Syntax { get; } = default!;
-    public bool Value { get; } = default!;
-    public BoolConstValueType Type { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IBoolLiteralExpressionSyntax Syntax { get; }
+    public bool Value { get; }
+    public BoolConstValueType Type { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public BoolLiteralExpressionNode(IBoolLiteralExpressionSyntax syntax, bool value, BoolConstValueType type, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Value = value;
+        Type = type;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class IntegerLiteralExpressionNode // : IIntegerLiteralExpressionNode
 {
-    public IIntegerLiteralExpressionSyntax Syntax { get; } = default!;
-    public BigInteger Value { get; } = default!;
-    public IntegerConstValueType Type { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IIntegerLiteralExpressionSyntax Syntax { get; }
+    public BigInteger Value { get; }
+    public IntegerConstValueType Type { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public IntegerLiteralExpressionNode(IIntegerLiteralExpressionSyntax syntax, BigInteger value, IntegerConstValueType type, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Value = value;
+        Type = type;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class NoneLiteralExpressionNode // : INoneLiteralExpressionNode
 {
-    public INoneLiteralExpressionSyntax Syntax { get; } = default!;
-    public OptionalType Type { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public INoneLiteralExpressionSyntax Syntax { get; }
+    public OptionalType Type { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public NoneLiteralExpressionNode(INoneLiteralExpressionSyntax syntax, OptionalType type, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Type = type;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class StringLiteralExpressionNode // : IStringLiteralExpressionNode
 {
-    public IStringLiteralExpressionSyntax Syntax { get; } = default!;
-    public string Value { get; } = default!;
-    public DataType Type { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IStringLiteralExpressionSyntax Syntax { get; }
+    public string Value { get; }
+    public DataType Type { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public StringLiteralExpressionNode(IStringLiteralExpressionSyntax syntax, string value, DataType type, LexicalScope containingLexicalScope, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Value = value;
+        Type = type;
+        ContainingLexicalScope = containingLexicalScope;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class AssignmentExpressionNode // : IAssignmentExpressionNode
 {
-    public IAssignmentExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousAssignableExpressionNode LeftOperand { get; } = default!;
-    public IAmbiguousAssignableExpressionNode CurrentLeftOperand { get; } = default!;
-    public IAssignableExpressionNode? IntermediateLeftOperand { get; } = default!;
-    public AssignmentOperator Operator { get; } = default!;
-    public IAmbiguousExpressionNode RightOperand { get; } = default!;
-    public IAmbiguousExpressionNode CurrentRightOperand { get; } = default!;
-    public IExpressionNode? IntermediateRightOperand { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; } = default!;
-    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; } = default!;
-    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; } = default!;
+    public IAssignmentExpressionSyntax Syntax { get; }
+    public IAmbiguousAssignableExpressionNode LeftOperand { get; }
+    public IAmbiguousAssignableExpressionNode CurrentLeftOperand { get; }
+    public IAssignableExpressionNode? IntermediateLeftOperand { get; }
+    public AssignmentOperator Operator { get; }
+    public IAmbiguousExpressionNode RightOperand { get; }
+    public IAmbiguousExpressionNode CurrentRightOperand { get; }
+    public IExpressionNode? IntermediateRightOperand { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; }
+
+    public AssignmentExpressionNode(IAssignmentExpressionSyntax syntax, IAmbiguousAssignableExpressionNode leftOperand, IAmbiguousAssignableExpressionNode currentLeftOperand, IAssignableExpressionNode? intermediateLeftOperand, AssignmentOperator @operator, IAmbiguousExpressionNode rightOperand, IAmbiguousExpressionNode currentRightOperand, IExpressionNode? intermediateRightOperand, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
+    {
+        Syntax = syntax;
+        LeftOperand = leftOperand;
+        CurrentLeftOperand = currentLeftOperand;
+        IntermediateLeftOperand = intermediateLeftOperand;
+        Operator = @operator;
+        RightOperand = rightOperand;
+        CurrentRightOperand = currentRightOperand;
+        IntermediateRightOperand = intermediateRightOperand;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        DataFlowPrevious = dataFlowPrevious;
+        DefinitelyAssigned = definitelyAssigned;
+        DefinitelyUnassigned = definitelyUnassigned;
+    }
 }
 
 file class BinaryOperatorExpressionNode // : IBinaryOperatorExpressionNode
 {
-    public IBinaryOperatorExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode LeftOperand { get; } = default!;
-    public IExpressionNode? IntermediateLeftOperand { get; } = default!;
-    public BinaryOperator Operator { get; } = default!;
-    public IAmbiguousExpressionNode RightOperand { get; } = default!;
-    public IExpressionNode? IntermediateRightOperand { get; } = default!;
-    public IAntetype? NumericOperatorCommonAntetype { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IBinaryOperatorExpressionSyntax Syntax { get; }
+    public IAmbiguousExpressionNode LeftOperand { get; }
+    public IExpressionNode? IntermediateLeftOperand { get; }
+    public BinaryOperator Operator { get; }
+    public IAmbiguousExpressionNode RightOperand { get; }
+    public IExpressionNode? IntermediateRightOperand { get; }
+    public IAntetype? NumericOperatorCommonAntetype { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public BinaryOperatorExpressionNode(IBinaryOperatorExpressionSyntax syntax, IAmbiguousExpressionNode leftOperand, IExpressionNode? intermediateLeftOperand, BinaryOperator @operator, IAmbiguousExpressionNode rightOperand, IExpressionNode? intermediateRightOperand, IAntetype? numericOperatorCommonAntetype, LexicalScope containingLexicalScope, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        LeftOperand = leftOperand;
+        IntermediateLeftOperand = intermediateLeftOperand;
+        Operator = @operator;
+        RightOperand = rightOperand;
+        IntermediateRightOperand = intermediateRightOperand;
+        NumericOperatorCommonAntetype = numericOperatorCommonAntetype;
+        ContainingLexicalScope = containingLexicalScope;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class UnaryOperatorExpressionNode // : IUnaryOperatorExpressionNode
 {
-    public IUnaryOperatorExpressionSyntax Syntax { get; } = default!;
-    public UnaryOperatorFixity Fixity { get; } = default!;
-    public UnaryOperator Operator { get; } = default!;
-    public IAmbiguousExpressionNode Operand { get; } = default!;
-    public IExpressionNode? IntermediateOperand { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IUnaryOperatorExpressionSyntax Syntax { get; }
+    public UnaryOperatorFixity Fixity { get; }
+    public UnaryOperator Operator { get; }
+    public IAmbiguousExpressionNode Operand { get; }
+    public IExpressionNode? IntermediateOperand { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public UnaryOperatorExpressionNode(IUnaryOperatorExpressionSyntax syntax, UnaryOperatorFixity fixity, UnaryOperator @operator, IAmbiguousExpressionNode operand, IExpressionNode? intermediateOperand, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Fixity = fixity;
+        Operator = @operator;
+        Operand = operand;
+        IntermediateOperand = intermediateOperand;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class IdExpressionNode // : IIdExpressionNode
 {
-    public IIdExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode Referent { get; } = default!;
-    public IExpressionNode? IntermediateReferent { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IIdExpressionSyntax Syntax { get; }
+    public IAmbiguousExpressionNode Referent { get; }
+    public IExpressionNode? IntermediateReferent { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public IdExpressionNode(IIdExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Referent = referent;
+        IntermediateReferent = intermediateReferent;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class ConversionExpressionNode // : IConversionExpressionNode
 {
-    public IConversionExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode Referent { get; } = default!;
-    public IExpressionNode? IntermediateReferent { get; } = default!;
-    public ConversionOperator Operator { get; } = default!;
-    public ITypeNode ConvertToType { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IConversionExpressionSyntax Syntax { get; }
+    public IAmbiguousExpressionNode Referent { get; }
+    public IExpressionNode? IntermediateReferent { get; }
+    public ConversionOperator Operator { get; }
+    public ITypeNode ConvertToType { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public ConversionExpressionNode(IConversionExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent, ConversionOperator @operator, ITypeNode convertToType, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Referent = referent;
+        IntermediateReferent = intermediateReferent;
+        Operator = @operator;
+        ConvertToType = convertToType;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class ImplicitConversionExpressionNode // : IImplicitConversionExpressionNode
 {
-    public IExpressionNode Referent { get; } = default!;
-    public IExpressionNode CurrentReferent { get; } = default!;
-    public SimpleAntetype Antetype { get; } = default!;
-    public IExpressionSyntax Syntax { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IExpressionNode Referent { get; }
+    public IExpressionNode CurrentReferent { get; }
+    public SimpleAntetype Antetype { get; }
+    public IExpressionSyntax Syntax { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public ImplicitConversionExpressionNode(IExpressionNode referent, IExpressionNode currentReferent, SimpleAntetype antetype, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Referent = referent;
+        CurrentReferent = currentReferent;
+        Antetype = antetype;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class PatternMatchExpressionNode // : IPatternMatchExpressionNode
 {
-    public IPatternMatchExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode Referent { get; } = default!;
-    public IExpressionNode? IntermediateReferent { get; } = default!;
-    public IPatternNode Pattern { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IPatternMatchExpressionSyntax Syntax { get; }
+    public IAmbiguousExpressionNode Referent { get; }
+    public IExpressionNode? IntermediateReferent { get; }
+    public IPatternNode Pattern { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public PatternMatchExpressionNode(IPatternMatchExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent, IPatternNode pattern, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Referent = referent;
+        IntermediateReferent = intermediateReferent;
+        Pattern = pattern;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class IfExpressionNode // : IIfExpressionNode
 {
-    public IIfExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode Condition { get; } = default!;
-    public IExpressionNode? IntermediateCondition { get; } = default!;
-    public IBlockOrResultNode ThenBlock { get; } = default!;
-    public IElseClauseNode? ElseClause { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IIfExpressionSyntax Syntax { get; }
+    public IAmbiguousExpressionNode Condition { get; }
+    public IExpressionNode? IntermediateCondition { get; }
+    public IBlockOrResultNode ThenBlock { get; }
+    public IElseClauseNode? ElseClause { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public IfExpressionNode(IIfExpressionSyntax syntax, IAmbiguousExpressionNode condition, IExpressionNode? intermediateCondition, IBlockOrResultNode thenBlock, IElseClauseNode? elseClause, IFlowState flowStateAfter, ValueId valueId, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Condition = condition;
+        IntermediateCondition = intermediateCondition;
+        ThenBlock = thenBlock;
+        ElseClause = elseClause;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class LoopExpressionNode // : ILoopExpressionNode
 {
-    public ILoopExpressionSyntax Syntax { get; } = default!;
-    public IBlockExpressionNode Block { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public ILoopExpressionSyntax Syntax { get; }
+    public IBlockExpressionNode Block { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public LoopExpressionNode(ILoopExpressionSyntax syntax, IBlockExpressionNode block, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Block = block;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class WhileExpressionNode // : IWhileExpressionNode
 {
-    public IWhileExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode Condition { get; } = default!;
-    public IExpressionNode? IntermediateCondition { get; } = default!;
-    public IBlockExpressionNode Block { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IWhileExpressionSyntax Syntax { get; }
+    public IAmbiguousExpressionNode Condition { get; }
+    public IExpressionNode? IntermediateCondition { get; }
+    public IBlockExpressionNode Block { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public WhileExpressionNode(IWhileExpressionSyntax syntax, IAmbiguousExpressionNode condition, IExpressionNode? intermediateCondition, IBlockExpressionNode block, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Condition = condition;
+        IntermediateCondition = intermediateCondition;
+        Block = block;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class ForeachExpressionNode // : IForeachExpressionNode
 {
-    public IForeachExpressionSyntax Syntax { get; } = default!;
-    public bool IsMutableBinding { get; } = default!;
-    public IdentifierName VariableName { get; } = default!;
-    public IAmbiguousExpressionNode InExpression { get; } = default!;
-    public IExpressionNode? IntermediateInExpression { get; } = default!;
-    public ITypeNode? DeclaredType { get; } = default!;
-    public IBlockExpressionNode Block { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public LexicalScope LexicalScope { get; } = default!;
-    public ITypeDeclarationNode? ReferencedIterableDeclaration { get; } = default!;
-    public IStandardMethodDeclarationNode? ReferencedIterateMethod { get; } = default!;
-    public IMaybeExpressionAntetype IteratorAntetype { get; } = default!;
-    public DataType IteratorType { get; } = default!;
-    public ITypeDeclarationNode? ReferencedIteratorDeclaration { get; } = default!;
-    public IStandardMethodDeclarationNode? ReferencedNextMethod { get; } = default!;
-    public IMaybeAntetype IteratedAntetype { get; } = default!;
-    public DataType IteratedType { get; } = default!;
-    public IFlowState FlowStateBeforeBlock { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
-    public DataType BindingType { get; } = default!;
-    public bool IsLentBinding { get; } = default!;
-    public ValueId BindingValueId { get; } = default!;
-    public IMaybeAntetype BindingAntetype { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; } = default!;
-    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; } = default!;
-    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; } = default!;
+    public IForeachExpressionSyntax Syntax { get; }
+    public bool IsMutableBinding { get; }
+    public IdentifierName VariableName { get; }
+    public IAmbiguousExpressionNode InExpression { get; }
+    public IExpressionNode? IntermediateInExpression { get; }
+    public ITypeNode? DeclaredType { get; }
+    public IBlockExpressionNode Block { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public LexicalScope LexicalScope { get; }
+    public ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
+    public IStandardMethodDeclarationNode? ReferencedIterateMethod { get; }
+    public IMaybeExpressionAntetype IteratorAntetype { get; }
+    public DataType IteratorType { get; }
+    public ITypeDeclarationNode? ReferencedIteratorDeclaration { get; }
+    public IStandardMethodDeclarationNode? ReferencedNextMethod { get; }
+    public IMaybeAntetype IteratedAntetype { get; }
+    public DataType IteratedType { get; }
+    public IFlowState FlowStateBeforeBlock { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+    public DataType BindingType { get; }
+    public bool IsLentBinding { get; }
+    public ValueId BindingValueId { get; }
+    public IMaybeAntetype BindingAntetype { get; }
+    public IdentifierName Name { get; }
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; }
+
+    public ForeachExpressionNode(IForeachExpressionSyntax syntax, bool isMutableBinding, IdentifierName variableName, IAmbiguousExpressionNode inExpression, IExpressionNode? intermediateInExpression, ITypeNode? declaredType, IBlockExpressionNode block, LexicalScope containingLexicalScope, LexicalScope lexicalScope, ITypeDeclarationNode? referencedIterableDeclaration, IStandardMethodDeclarationNode? referencedIterateMethod, IMaybeExpressionAntetype iteratorAntetype, DataType iteratorType, ITypeDeclarationNode? referencedIteratorDeclaration, IStandardMethodDeclarationNode? referencedNextMethod, IMaybeAntetype iteratedAntetype, DataType iteratedType, IFlowState flowStateBeforeBlock, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, DataType bindingType, bool isLentBinding, ValueId bindingValueId, IMaybeAntetype bindingAntetype, IdentifierName name, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
+    {
+        Syntax = syntax;
+        IsMutableBinding = isMutableBinding;
+        VariableName = variableName;
+        InExpression = inExpression;
+        IntermediateInExpression = intermediateInExpression;
+        DeclaredType = declaredType;
+        Block = block;
+        ContainingLexicalScope = containingLexicalScope;
+        LexicalScope = lexicalScope;
+        ReferencedIterableDeclaration = referencedIterableDeclaration;
+        ReferencedIterateMethod = referencedIterateMethod;
+        IteratorAntetype = iteratorAntetype;
+        IteratorType = iteratorType;
+        ReferencedIteratorDeclaration = referencedIteratorDeclaration;
+        ReferencedNextMethod = referencedNextMethod;
+        IteratedAntetype = iteratedAntetype;
+        IteratedType = iteratedType;
+        FlowStateBeforeBlock = flowStateBeforeBlock;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        BindingType = bindingType;
+        IsLentBinding = isLentBinding;
+        BindingValueId = bindingValueId;
+        BindingAntetype = bindingAntetype;
+        Name = name;
+        DataFlowPrevious = dataFlowPrevious;
+        DefinitelyAssigned = definitelyAssigned;
+        DefinitelyUnassigned = definitelyUnassigned;
+    }
 }
 
 file class BreakExpressionNode // : IBreakExpressionNode
 {
-    public IBreakExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode? Value { get; } = default!;
-    public IExpressionNode? IntermediateValue { get; } = default!;
-    public NeverType Type { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IBreakExpressionSyntax Syntax { get; }
+    public IAmbiguousExpressionNode? Value { get; }
+    public IExpressionNode? IntermediateValue { get; }
+    public NeverType Type { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public BreakExpressionNode(IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? value, IExpressionNode? intermediateValue, NeverType type, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Value = value;
+        IntermediateValue = intermediateValue;
+        Type = type;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class NextExpressionNode // : INextExpressionNode
 {
-    public INextExpressionSyntax Syntax { get; } = default!;
-    public NeverType Type { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public INextExpressionSyntax Syntax { get; }
+    public NeverType Type { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public NextExpressionNode(INextExpressionSyntax syntax, NeverType type, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Type = type;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class ReturnExpressionNode // : IReturnExpressionNode
 {
-    public IReturnExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode? Value { get; } = default!;
-    public IAmbiguousExpressionNode? CurrentValue { get; } = default!;
-    public IExpressionNode? IntermediateValue { get; } = default!;
-    public NeverType Type { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IReturnExpressionSyntax Syntax { get; }
+    public IAmbiguousExpressionNode? Value { get; }
+    public IAmbiguousExpressionNode? CurrentValue { get; }
+    public IExpressionNode? IntermediateValue { get; }
+    public NeverType Type { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public ReturnExpressionNode(IReturnExpressionSyntax syntax, IAmbiguousExpressionNode? value, IAmbiguousExpressionNode? currentValue, IExpressionNode? intermediateValue, NeverType type, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Value = value;
+        CurrentValue = currentValue;
+        IntermediateValue = intermediateValue;
+        Type = type;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class UnresolvedInvocationExpressionNode // : IUnresolvedInvocationExpressionNode
 {
-    public IInvocationExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode Expression { get; } = default!;
-    public IAmbiguousExpressionNode CurrentExpression { get; } = default!;
-    public IFixedList<IAmbiguousExpressionNode> Arguments { get; } = default!;
-    public IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IInvocationExpressionSyntax Syntax { get; }
+    public IAmbiguousExpressionNode Expression { get; }
+    public IAmbiguousExpressionNode CurrentExpression { get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public UnresolvedInvocationExpressionNode(IInvocationExpressionSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IAmbiguousExpressionNode> currentArguments, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Expression = expression;
+        CurrentExpression = currentExpression;
+        Arguments = arguments;
+        CurrentArguments = currentArguments;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class FunctionInvocationExpressionNode // : IFunctionInvocationExpressionNode
 {
-    public IInvocationExpressionSyntax Syntax { get; } = default!;
-    public IFunctionGroupNameNode FunctionGroup { get; } = default!;
-    public IFixedList<IAmbiguousExpressionNode> Arguments { get; } = default!;
-    public IFixedList<IExpressionNode?> IntermediateArguments { get; } = default!;
-    public IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { get; } = default!;
-    public IFunctionLikeDeclarationNode? ReferencedDeclaration { get; } = default!;
-    public ContextualizedOverload? ContextualizedOverload { get; } = default!;
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; } = default!;
-    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IInvocationExpressionSyntax Syntax { get; }
+    public IFunctionGroupNameNode FunctionGroup { get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    public IFixedList<IExpressionNode?> IntermediateArguments { get; }
+    public IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { get; }
+    public IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
+    public ContextualizedOverload? ContextualizedOverload { get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public FunctionInvocationExpressionNode(IInvocationExpressionSyntax syntax, IFunctionGroupNameNode functionGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IFunctionLikeDeclarationNode> compatibleDeclarations, IFunctionLikeDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        FunctionGroup = functionGroup;
+        Arguments = arguments;
+        IntermediateArguments = intermediateArguments;
+        CompatibleDeclarations = compatibleDeclarations;
+        ReferencedDeclaration = referencedDeclaration;
+        ContextualizedOverload = contextualizedOverload;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class MethodInvocationExpressionNode // : IMethodInvocationExpressionNode
 {
-    public IInvocationExpressionSyntax Syntax { get; } = default!;
-    public IMethodGroupNameNode MethodGroup { get; } = default!;
-    public IFixedList<IAmbiguousExpressionNode> Arguments { get; } = default!;
-    public IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; } = default!;
-    public IFixedList<IExpressionNode?> IntermediateArguments { get; } = default!;
-    public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; } = default!;
-    public IStandardMethodDeclarationNode? ReferencedDeclaration { get; } = default!;
-    public ContextualizedOverload? ContextualizedOverload { get; } = default!;
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; } = default!;
-    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IInvocationExpressionSyntax Syntax { get; }
+    public IMethodGroupNameNode MethodGroup { get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
+    public IFixedList<IExpressionNode?> IntermediateArguments { get; }
+    public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
+    public IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
+    public ContextualizedOverload? ContextualizedOverload { get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public MethodInvocationExpressionNode(IInvocationExpressionSyntax syntax, IMethodGroupNameNode methodGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IAmbiguousExpressionNode> currentArguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IStandardMethodDeclarationNode> compatibleDeclarations, IStandardMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        MethodGroup = methodGroup;
+        Arguments = arguments;
+        CurrentArguments = currentArguments;
+        IntermediateArguments = intermediateArguments;
+        CompatibleDeclarations = compatibleDeclarations;
+        ReferencedDeclaration = referencedDeclaration;
+        ContextualizedOverload = contextualizedOverload;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class GetterInvocationExpressionNode // : IGetterInvocationExpressionNode
 {
-    public IMemberAccessExpressionSyntax Syntax { get; } = default!;
-    public IExpressionNode Context { get; } = default!;
-    public StandardName PropertyName { get; } = default!;
-    public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; } = default!;
-    public IGetterMethodDeclarationNode? ReferencedDeclaration { get; } = default!;
-    public ContextualizedOverload? ContextualizedOverload { get; } = default!;
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; } = default!;
-    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IMemberAccessExpressionSyntax Syntax { get; }
+    public IExpressionNode Context { get; }
+    public StandardName PropertyName { get; }
+    public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
+    public IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
+    public ContextualizedOverload? ContextualizedOverload { get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public GetterInvocationExpressionNode(IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, IGetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Context = context;
+        PropertyName = propertyName;
+        ReferencedPropertyAccessors = referencedPropertyAccessors;
+        ReferencedDeclaration = referencedDeclaration;
+        ContextualizedOverload = contextualizedOverload;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class SetterInvocationExpressionNode // : ISetterInvocationExpressionNode
 {
-    public IAssignmentExpressionSyntax Syntax { get; } = default!;
-    public IExpressionNode Context { get; } = default!;
-    public StandardName PropertyName { get; } = default!;
-    public IAmbiguousExpressionNode Value { get; } = default!;
-    public IExpressionNode? IntermediateValue { get; } = default!;
-    public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; } = default!;
-    public ISetterMethodDeclarationNode? ReferencedDeclaration { get; } = default!;
-    public ContextualizedOverload? ContextualizedOverload { get; } = default!;
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; } = default!;
-    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IAssignmentExpressionSyntax Syntax { get; }
+    public IExpressionNode Context { get; }
+    public StandardName PropertyName { get; }
+    public IAmbiguousExpressionNode Value { get; }
+    public IExpressionNode? IntermediateValue { get; }
+    public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
+    public ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
+    public ContextualizedOverload? ContextualizedOverload { get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public SetterInvocationExpressionNode(IAssignmentExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IAmbiguousExpressionNode value, IExpressionNode? intermediateValue, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, ISetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Context = context;
+        PropertyName = propertyName;
+        Value = value;
+        IntermediateValue = intermediateValue;
+        ReferencedPropertyAccessors = referencedPropertyAccessors;
+        ReferencedDeclaration = referencedDeclaration;
+        ContextualizedOverload = contextualizedOverload;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class FunctionReferenceInvocationExpressionNode // : IFunctionReferenceInvocationExpressionNode
 {
-    public IInvocationExpressionSyntax Syntax { get; } = default!;
-    public IExpressionNode Expression { get; } = default!;
-    public IFixedList<IAmbiguousExpressionNode> Arguments { get; } = default!;
-    public IFixedList<IExpressionNode?> IntermediateArguments { get; } = default!;
-    public FunctionAntetype FunctionAntetype { get; } = default!;
-    public FunctionType FunctionType { get; } = default!;
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; } = default!;
-    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IInvocationExpressionSyntax Syntax { get; }
+    public IExpressionNode Expression { get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    public IFixedList<IExpressionNode?> IntermediateArguments { get; }
+    public FunctionAntetype FunctionAntetype { get; }
+    public FunctionType FunctionType { get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public FunctionReferenceInvocationExpressionNode(IInvocationExpressionSyntax syntax, IExpressionNode expression, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, FunctionAntetype functionAntetype, FunctionType functionType, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Expression = expression;
+        Arguments = arguments;
+        IntermediateArguments = intermediateArguments;
+        FunctionAntetype = functionAntetype;
+        FunctionType = functionType;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class InitializerInvocationExpressionNode // : IInitializerInvocationExpressionNode
 {
-    public IInvocationExpressionSyntax Syntax { get; } = default!;
-    public IInitializerGroupNameNode InitializerGroup { get; } = default!;
-    public IFixedList<IAmbiguousExpressionNode> Arguments { get; } = default!;
-    public IFixedList<IExpressionNode?> IntermediateArguments { get; } = default!;
-    public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; } = default!;
-    public IInitializerDeclarationNode? ReferencedDeclaration { get; } = default!;
-    public ContextualizedOverload? ContextualizedOverload { get; } = default!;
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; } = default!;
-    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IInvocationExpressionSyntax Syntax { get; }
+    public IInitializerGroupNameNode InitializerGroup { get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    public IFixedList<IExpressionNode?> IntermediateArguments { get; }
+    public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
+    public IInitializerDeclarationNode? ReferencedDeclaration { get; }
+    public ContextualizedOverload? ContextualizedOverload { get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public InitializerInvocationExpressionNode(IInvocationExpressionSyntax syntax, IInitializerGroupNameNode initializerGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IInitializerDeclarationNode> compatibleDeclarations, IInitializerDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        InitializerGroup = initializerGroup;
+        Arguments = arguments;
+        IntermediateArguments = intermediateArguments;
+        CompatibleDeclarations = compatibleDeclarations;
+        ReferencedDeclaration = referencedDeclaration;
+        ContextualizedOverload = contextualizedOverload;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class UnknownInvocationExpressionNode // : IUnknownInvocationExpressionNode
 {
-    public IInvocationExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode Expression { get; } = default!;
-    public IFixedList<IAmbiguousExpressionNode> Arguments { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IInvocationExpressionSyntax Syntax { get; }
+    public IAmbiguousExpressionNode Expression { get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public UnknownInvocationExpressionNode(IInvocationExpressionSyntax syntax, IAmbiguousExpressionNode expression, IFixedList<IAmbiguousExpressionNode> arguments, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Expression = expression;
+        Arguments = arguments;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class IdentifierNameExpressionNode // : IIdentifierNameExpressionNode
 {
-    public IIdentifierNameExpressionSyntax Syntax { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public IFixedList<IDeclarationNode> ReferencedDeclarations { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IIdentifierNameExpressionSyntax Syntax { get; }
+    public IdentifierName Name { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public IFixedList<IDeclarationNode> ReferencedDeclarations { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public IdentifierNameExpressionNode(IIdentifierNameExpressionSyntax syntax, IdentifierName name, LexicalScope containingLexicalScope, IFixedList<IDeclarationNode> referencedDeclarations, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Name = name;
+        ContainingLexicalScope = containingLexicalScope;
+        ReferencedDeclarations = referencedDeclarations;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class GenericNameExpressionNode // : IGenericNameExpressionNode
 {
-    public IGenericNameExpressionSyntax Syntax { get; } = default!;
-    public GenericName Name { get; } = default!;
-    public IFixedList<ITypeNode> TypeArguments { get; } = default!;
-    public LexicalScope ContainingLexicalScope { get; } = default!;
-    public IFixedList<IDeclarationNode> ReferencedDeclarations { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IGenericNameExpressionSyntax Syntax { get; }
+    public GenericName Name { get; }
+    public IFixedList<ITypeNode> TypeArguments { get; }
+    public LexicalScope ContainingLexicalScope { get; }
+    public IFixedList<IDeclarationNode> ReferencedDeclarations { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public GenericNameExpressionNode(IGenericNameExpressionSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments, LexicalScope containingLexicalScope, IFixedList<IDeclarationNode> referencedDeclarations, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Name = name;
+        TypeArguments = typeArguments;
+        ContainingLexicalScope = containingLexicalScope;
+        ReferencedDeclarations = referencedDeclarations;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class MemberAccessExpressionNode // : IMemberAccessExpressionNode
 {
-    public IMemberAccessExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode Context { get; } = default!;
-    public StandardName MemberName { get; } = default!;
-    public IFixedList<ITypeNode> TypeArguments { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IMemberAccessExpressionSyntax Syntax { get; }
+    public IAmbiguousExpressionNode Context { get; }
+    public StandardName MemberName { get; }
+    public IFixedList<ITypeNode> TypeArguments { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public MemberAccessExpressionNode(IMemberAccessExpressionSyntax syntax, IAmbiguousExpressionNode context, StandardName memberName, IFixedList<ITypeNode> typeArguments, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Context = context;
+        MemberName = memberName;
+        TypeArguments = typeArguments;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class PropertyNameNode // : IPropertyNameNode
 {
-    public IMemberAccessExpressionSyntax Syntax { get; } = default!;
-    public IExpressionNode Context { get; } = default!;
-    public StandardName PropertyName { get; } = default!;
-    public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IMemberAccessExpressionSyntax Syntax { get; }
+    public IExpressionNode Context { get; }
+    public StandardName PropertyName { get; }
+    public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public PropertyNameNode(IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Context = context;
+        PropertyName = propertyName;
+        ReferencedPropertyAccessors = referencedPropertyAccessors;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class UnqualifiedNamespaceNameNode // : IUnqualifiedNamespaceNameNode
 {
-    public IIdentifierNameExpressionSyntax Syntax { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public UnknownType Type { get; } = default!;
-    public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IIdentifierNameExpressionSyntax Syntax { get; }
+    public IdentifierName Name { get; }
+    public UnknownType Type { get; }
+    public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public UnqualifiedNamespaceNameNode(IIdentifierNameExpressionSyntax syntax, IdentifierName name, UnknownType type, IFixedList<INamespaceDeclarationNode> referencedDeclarations, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Name = name;
+        Type = type;
+        ReferencedDeclarations = referencedDeclarations;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class QualifiedNamespaceNameNode // : IQualifiedNamespaceNameNode
 {
-    public IMemberAccessExpressionSyntax Syntax { get; } = default!;
-    public INamespaceNameNode Context { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public UnknownType Type { get; } = default!;
-    public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IMemberAccessExpressionSyntax Syntax { get; }
+    public INamespaceNameNode Context { get; }
+    public IdentifierName Name { get; }
+    public UnknownType Type { get; }
+    public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public QualifiedNamespaceNameNode(IMemberAccessExpressionSyntax syntax, INamespaceNameNode context, IdentifierName name, UnknownType type, IFixedList<INamespaceDeclarationNode> referencedDeclarations, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Context = context;
+        Name = name;
+        Type = type;
+        ReferencedDeclarations = referencedDeclarations;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class FunctionGroupNameNode // : IFunctionGroupNameNode
 {
-    public INameExpressionNode? Context { get; } = default!;
-    public StandardName FunctionName { get; } = default!;
-    public IFixedList<ITypeNode> TypeArguments { get; } = default!;
-    public IFixedSet<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; } = default!;
-    public INameExpressionSyntax Syntax { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public INameExpressionNode? Context { get; }
+    public StandardName FunctionName { get; }
+    public IFixedList<ITypeNode> TypeArguments { get; }
+    public IFixedSet<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }
+    public INameExpressionSyntax Syntax { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public FunctionGroupNameNode(INameExpressionNode? context, StandardName functionName, IFixedList<ITypeNode> typeArguments, IFixedSet<IFunctionLikeDeclarationNode> referencedDeclarations, INameExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Context = context;
+        FunctionName = functionName;
+        TypeArguments = typeArguments;
+        ReferencedDeclarations = referencedDeclarations;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class FunctionNameNode // : IFunctionNameNode
 {
-    public IFunctionGroupNameNode FunctionGroup { get; } = default!;
-    public StandardName FunctionName { get; } = default!;
-    public IFixedList<ITypeNode> TypeArguments { get; } = default!;
-    public IFunctionLikeDeclarationNode? ReferencedDeclaration { get; } = default!;
-    public INameExpressionSyntax Syntax { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IFunctionGroupNameNode FunctionGroup { get; }
+    public StandardName FunctionName { get; }
+    public IFixedList<ITypeNode> TypeArguments { get; }
+    public IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
+    public INameExpressionSyntax Syntax { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public FunctionNameNode(IFunctionGroupNameNode functionGroup, StandardName functionName, IFixedList<ITypeNode> typeArguments, IFunctionLikeDeclarationNode? referencedDeclaration, INameExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        FunctionGroup = functionGroup;
+        FunctionName = functionName;
+        TypeArguments = typeArguments;
+        ReferencedDeclaration = referencedDeclaration;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class MethodGroupNameNode // : IMethodGroupNameNode
 {
-    public IMemberAccessExpressionSyntax Syntax { get; } = default!;
-    public IExpressionNode Context { get; } = default!;
-    public IExpressionNode CurrentContext { get; } = default!;
-    public StandardName MethodName { get; } = default!;
-    public IFixedList<ITypeNode> TypeArguments { get; } = default!;
-    public IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IMemberAccessExpressionSyntax Syntax { get; }
+    public IExpressionNode Context { get; }
+    public IExpressionNode CurrentContext { get; }
+    public StandardName MethodName { get; }
+    public IFixedList<ITypeNode> TypeArguments { get; }
+    public IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public MethodGroupNameNode(IMemberAccessExpressionSyntax syntax, IExpressionNode context, IExpressionNode currentContext, StandardName methodName, IFixedList<ITypeNode> typeArguments, IFixedSet<IStandardMethodDeclarationNode> referencedDeclarations, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Context = context;
+        CurrentContext = currentContext;
+        MethodName = methodName;
+        TypeArguments = typeArguments;
+        ReferencedDeclarations = referencedDeclarations;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class FieldAccessExpressionNode // : IFieldAccessExpressionNode
 {
-    public IMemberAccessExpressionSyntax Syntax { get; } = default!;
-    public IExpressionNode Context { get; } = default!;
-    public IdentifierName FieldName { get; } = default!;
-    public IFieldDeclarationNode ReferencedDeclaration { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IMemberAccessExpressionSyntax Syntax { get; }
+    public IExpressionNode Context { get; }
+    public IdentifierName FieldName { get; }
+    public IFieldDeclarationNode ReferencedDeclaration { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public FieldAccessExpressionNode(IMemberAccessExpressionSyntax syntax, IExpressionNode context, IdentifierName fieldName, IFieldDeclarationNode referencedDeclaration, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Context = context;
+        FieldName = fieldName;
+        ReferencedDeclaration = referencedDeclaration;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class VariableNameExpressionNode // : IVariableNameExpressionNode
 {
-    public IIdentifierNameExpressionSyntax Syntax { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public ILocalBindingNode ReferencedDefinition { get; } = default!;
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IIdentifierNameExpressionSyntax Syntax { get; }
+    public IdentifierName Name { get; }
+    public ILocalBindingNode ReferencedDefinition { get; }
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public VariableNameExpressionNode(IIdentifierNameExpressionSyntax syntax, IdentifierName name, ILocalBindingNode referencedDefinition, IFixedSet<IDataFlowNode> dataFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Name = name;
+        ReferencedDefinition = referencedDefinition;
+        DataFlowPrevious = dataFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class StandardTypeNameExpressionNode // : IStandardTypeNameExpressionNode
 {
-    public IStandardNameExpressionSyntax Syntax { get; } = default!;
-    public IFixedList<ITypeNode> TypeArguments { get; } = default!;
-    public StandardName Name { get; } = default!;
-    public ITypeDeclarationNode ReferencedDeclaration { get; } = default!;
-    public IMaybeAntetype NamedAntetype { get; } = default!;
-    public BareType? NamedBareType { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IStandardNameExpressionSyntax Syntax { get; }
+    public IFixedList<ITypeNode> TypeArguments { get; }
+    public StandardName Name { get; }
+    public ITypeDeclarationNode ReferencedDeclaration { get; }
+    public IMaybeAntetype NamedAntetype { get; }
+    public BareType? NamedBareType { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public StandardTypeNameExpressionNode(IStandardNameExpressionSyntax syntax, IFixedList<ITypeNode> typeArguments, StandardName name, ITypeDeclarationNode referencedDeclaration, IMaybeAntetype namedAntetype, BareType? namedBareType, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        TypeArguments = typeArguments;
+        Name = name;
+        ReferencedDeclaration = referencedDeclaration;
+        NamedAntetype = namedAntetype;
+        NamedBareType = namedBareType;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class QualifiedTypeNameExpressionNode // : IQualifiedTypeNameExpressionNode
 {
-    public IMemberAccessExpressionSyntax Syntax { get; } = default!;
-    public INamespaceNameNode Context { get; } = default!;
-    public IFixedList<ITypeNode> TypeArguments { get; } = default!;
-    public StandardName Name { get; } = default!;
-    public ITypeDeclarationNode ReferencedDeclaration { get; } = default!;
-    public IMaybeAntetype NamedAntetype { get; } = default!;
-    public BareType? NamedBareType { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IMemberAccessExpressionSyntax Syntax { get; }
+    public INamespaceNameNode Context { get; }
+    public IFixedList<ITypeNode> TypeArguments { get; }
+    public StandardName Name { get; }
+    public ITypeDeclarationNode ReferencedDeclaration { get; }
+    public IMaybeAntetype NamedAntetype { get; }
+    public BareType? NamedBareType { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public QualifiedTypeNameExpressionNode(IMemberAccessExpressionSyntax syntax, INamespaceNameNode context, IFixedList<ITypeNode> typeArguments, StandardName name, ITypeDeclarationNode referencedDeclaration, IMaybeAntetype namedAntetype, BareType? namedBareType, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Context = context;
+        TypeArguments = typeArguments;
+        Name = name;
+        ReferencedDeclaration = referencedDeclaration;
+        NamedAntetype = namedAntetype;
+        NamedBareType = namedBareType;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class InitializerGroupNameNode // : IInitializerGroupNameNode
 {
-    public INameExpressionSyntax Syntax { get; } = default!;
-    public ITypeNameExpressionNode Context { get; } = default!;
-    public StandardName? InitializerName { get; } = default!;
-    public IMaybeAntetype InitializingAntetype { get; } = default!;
-    public IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public INameExpressionSyntax Syntax { get; }
+    public ITypeNameExpressionNode Context { get; }
+    public StandardName? InitializerName { get; }
+    public IMaybeAntetype InitializingAntetype { get; }
+    public IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public InitializerGroupNameNode(INameExpressionSyntax syntax, ITypeNameExpressionNode context, StandardName? initializerName, IMaybeAntetype initializingAntetype, IFixedSet<IInitializerDeclarationNode> referencedDeclarations, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Context = context;
+        InitializerName = initializerName;
+        InitializingAntetype = initializingAntetype;
+        ReferencedDeclarations = referencedDeclarations;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class SpecialTypeNameExpressionNode // : ISpecialTypeNameExpressionNode
 {
-    public ISpecialTypeNameExpressionSyntax Syntax { get; } = default!;
-    public SpecialTypeName Name { get; } = default!;
-    public TypeSymbol ReferencedSymbol { get; } = default!;
-    public UnknownType Type { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public ISpecialTypeNameExpressionSyntax Syntax { get; }
+    public SpecialTypeName Name { get; }
+    public TypeSymbol ReferencedSymbol { get; }
+    public UnknownType Type { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public SpecialTypeNameExpressionNode(ISpecialTypeNameExpressionSyntax syntax, SpecialTypeName name, TypeSymbol referencedSymbol, UnknownType type, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Name = name;
+        ReferencedSymbol = referencedSymbol;
+        Type = type;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class SelfExpressionNode // : ISelfExpressionNode
 {
-    public ISelfExpressionSyntax Syntax { get; } = default!;
-    public bool IsImplicit { get; } = default!;
-    public Pseudotype Pseudotype { get; } = default!;
-    public IExecutableDefinitionNode ContainingDeclaration { get; } = default!;
-    public ISelfParameterNode? ReferencedDefinition { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public ISelfExpressionSyntax Syntax { get; }
+    public bool IsImplicit { get; }
+    public Pseudotype Pseudotype { get; }
+    public IExecutableDefinitionNode ContainingDeclaration { get; }
+    public ISelfParameterNode? ReferencedDefinition { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public SelfExpressionNode(ISelfExpressionSyntax syntax, bool isImplicit, Pseudotype pseudotype, IExecutableDefinitionNode containingDeclaration, ISelfParameterNode? referencedDefinition, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        IsImplicit = isImplicit;
+        Pseudotype = pseudotype;
+        ContainingDeclaration = containingDeclaration;
+        ReferencedDefinition = referencedDefinition;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class MissingNameExpressionNode // : IMissingNameExpressionNode
 {
-    public IMissingNameSyntax Syntax { get; } = default!;
-    public UnknownType Type { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IMissingNameSyntax Syntax { get; }
+    public UnknownType Type { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public MissingNameExpressionNode(IMissingNameSyntax syntax, UnknownType type, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Type = type;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class UnknownIdentifierNameExpressionNode // : IUnknownIdentifierNameExpressionNode
 {
-    public IIdentifierNameExpressionSyntax Syntax { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public IFixedSet<IDeclarationNode> ReferencedDeclarations { get; } = default!;
-    public UnknownType Type { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IIdentifierNameExpressionSyntax Syntax { get; }
+    public IdentifierName Name { get; }
+    public IFixedSet<IDeclarationNode> ReferencedDeclarations { get; }
+    public UnknownType Type { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public UnknownIdentifierNameExpressionNode(IIdentifierNameExpressionSyntax syntax, IdentifierName name, IFixedSet<IDeclarationNode> referencedDeclarations, UnknownType type, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Name = name;
+        ReferencedDeclarations = referencedDeclarations;
+        Type = type;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class UnknownGenericNameExpressionNode // : IUnknownGenericNameExpressionNode
 {
-    public IGenericNameExpressionSyntax Syntax { get; } = default!;
-    public GenericName Name { get; } = default!;
-    public IFixedList<ITypeNode> TypeArguments { get; } = default!;
-    public IFixedSet<IDeclarationNode> ReferencedDeclarations { get; } = default!;
-    public UnknownType Type { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IGenericNameExpressionSyntax Syntax { get; }
+    public GenericName Name { get; }
+    public IFixedList<ITypeNode> TypeArguments { get; }
+    public IFixedSet<IDeclarationNode> ReferencedDeclarations { get; }
+    public UnknownType Type { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public UnknownGenericNameExpressionNode(IGenericNameExpressionSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments, IFixedSet<IDeclarationNode> referencedDeclarations, UnknownType type, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Name = name;
+        TypeArguments = typeArguments;
+        ReferencedDeclarations = referencedDeclarations;
+        Type = type;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class UnknownMemberAccessExpressionNode // : IUnknownMemberAccessExpressionNode
 {
-    public IMemberAccessExpressionSyntax Syntax { get; } = default!;
-    public IExpressionNode Context { get; } = default!;
-    public StandardName MemberName { get; } = default!;
-    public IFixedList<ITypeNode> TypeArguments { get; } = default!;
-    public IFixedSet<IDeclarationNode> ReferencedMembers { get; } = default!;
-    public UnknownType Type { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IMemberAccessExpressionSyntax Syntax { get; }
+    public IExpressionNode Context { get; }
+    public StandardName MemberName { get; }
+    public IFixedList<ITypeNode> TypeArguments { get; }
+    public IFixedSet<IDeclarationNode> ReferencedMembers { get; }
+    public UnknownType Type { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public UnknownMemberAccessExpressionNode(IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName memberName, IFixedList<ITypeNode> typeArguments, IFixedSet<IDeclarationNode> referencedMembers, UnknownType type, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Context = context;
+        MemberName = memberName;
+        TypeArguments = typeArguments;
+        ReferencedMembers = referencedMembers;
+        Type = type;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class AmbiguousMoveExpressionNode // : IAmbiguousMoveExpressionNode
 {
-    public IMoveExpressionSyntax Syntax { get; } = default!;
-    public ISimpleNameNode Referent { get; } = default!;
-    public INameExpressionNode? IntermediateReferent { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IMoveExpressionSyntax Syntax { get; }
+    public ISimpleNameNode Referent { get; }
+    public INameExpressionNode? IntermediateReferent { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public AmbiguousMoveExpressionNode(IMoveExpressionSyntax syntax, ISimpleNameNode referent, INameExpressionNode? intermediateReferent, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Referent = referent;
+        IntermediateReferent = intermediateReferent;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class MoveVariableExpressionNode // : IMoveVariableExpressionNode
 {
-    public ILocalBindingNameExpressionNode Referent { get; } = default!;
-    public bool IsImplicit { get; } = default!;
-    public IExpressionSyntax Syntax { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public ILocalBindingNameExpressionNode Referent { get; }
+    public bool IsImplicit { get; }
+    public IExpressionSyntax Syntax { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public MoveVariableExpressionNode(ILocalBindingNameExpressionNode referent, bool isImplicit, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Referent = referent;
+        IsImplicit = isImplicit;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class MoveValueExpressionNode // : IMoveValueExpressionNode
 {
-    public IExpressionNode Referent { get; } = default!;
-    public bool IsImplicit { get; } = default!;
-    public IExpressionSyntax Syntax { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IExpressionNode Referent { get; }
+    public bool IsImplicit { get; }
+    public IExpressionSyntax Syntax { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public MoveValueExpressionNode(IExpressionNode referent, bool isImplicit, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Referent = referent;
+        IsImplicit = isImplicit;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class ImplicitTempMoveExpressionNode // : IImplicitTempMoveExpressionNode
 {
-    public IExpressionNode Referent { get; } = default!;
-    public IExpressionSyntax Syntax { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IExpressionNode Referent { get; }
+    public IExpressionSyntax Syntax { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public ImplicitTempMoveExpressionNode(IExpressionNode referent, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Referent = referent;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class AmbiguousFreezeExpressionNode // : IAmbiguousFreezeExpressionNode
 {
-    public IFreezeExpressionSyntax Syntax { get; } = default!;
-    public ISimpleNameNode Referent { get; } = default!;
-    public INameExpressionNode? IntermediateReferent { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IFreezeExpressionSyntax Syntax { get; }
+    public ISimpleNameNode Referent { get; }
+    public INameExpressionNode? IntermediateReferent { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public AmbiguousFreezeExpressionNode(IFreezeExpressionSyntax syntax, ISimpleNameNode referent, INameExpressionNode? intermediateReferent, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Syntax = syntax;
+        Referent = referent;
+        IntermediateReferent = intermediateReferent;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class FreezeVariableExpressionNode // : IFreezeVariableExpressionNode
 {
-    public ILocalBindingNameExpressionNode Referent { get; } = default!;
-    public bool IsTemporary { get; } = default!;
-    public bool IsImplicit { get; } = default!;
-    public IExpressionSyntax Syntax { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public ILocalBindingNameExpressionNode Referent { get; }
+    public bool IsTemporary { get; }
+    public bool IsImplicit { get; }
+    public IExpressionSyntax Syntax { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public FreezeVariableExpressionNode(ILocalBindingNameExpressionNode referent, bool isTemporary, bool isImplicit, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Referent = referent;
+        IsTemporary = isTemporary;
+        IsImplicit = isImplicit;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class FreezeValueExpressionNode // : IFreezeValueExpressionNode
 {
-    public IExpressionNode Referent { get; } = default!;
-    public bool IsTemporary { get; } = default!;
-    public bool IsImplicit { get; } = default!;
-    public IExpressionSyntax Syntax { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IExpressionNode Referent { get; }
+    public bool IsTemporary { get; }
+    public bool IsImplicit { get; }
+    public IExpressionSyntax Syntax { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public FreezeValueExpressionNode(IExpressionNode referent, bool isTemporary, bool isImplicit, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Referent = referent;
+        IsTemporary = isTemporary;
+        IsImplicit = isImplicit;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class PrepareToReturnExpressionNode // : IPrepareToReturnExpressionNode
 {
-    public IExpressionNode Value { get; } = default!;
-    public IExpressionNode CurrentValue { get; } = default!;
-    public IExpressionSyntax Syntax { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IExpressionNode Value { get; }
+    public IExpressionNode CurrentValue { get; }
+    public IExpressionSyntax Syntax { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public PrepareToReturnExpressionNode(IExpressionNode value, IExpressionNode currentValue, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Value = value;
+        CurrentValue = currentValue;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class AsyncBlockExpressionNode // : IAsyncBlockExpressionNode
 {
-    public IAsyncBlockExpressionSyntax Syntax { get; } = default!;
-    public IBlockExpressionNode Block { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IAsyncBlockExpressionSyntax Syntax { get; }
+    public IBlockExpressionNode Block { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public AsyncBlockExpressionNode(IAsyncBlockExpressionSyntax syntax, IBlockExpressionNode block, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Block = block;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class AsyncStartExpressionNode // : IAsyncStartExpressionNode
 {
-    public IAsyncStartExpressionSyntax Syntax { get; } = default!;
-    public bool Scheduled { get; } = default!;
-    public IAmbiguousExpressionNode Expression { get; } = default!;
-    public IExpressionNode? IntermediateExpression { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IAsyncStartExpressionSyntax Syntax { get; }
+    public bool Scheduled { get; }
+    public IAmbiguousExpressionNode Expression { get; }
+    public IExpressionNode? IntermediateExpression { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public AsyncStartExpressionNode(IAsyncStartExpressionSyntax syntax, bool scheduled, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Scheduled = scheduled;
+        Expression = expression;
+        IntermediateExpression = intermediateExpression;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class AwaitExpressionNode // : IAwaitExpressionNode
 {
-    public IAwaitExpressionSyntax Syntax { get; } = default!;
-    public IAmbiguousExpressionNode Expression { get; } = default!;
-    public IExpressionNode? IntermediateExpression { get; } = default!;
-    public IMaybeExpressionAntetype? ExpectedAntetype { get; } = default!;
-    public IMaybeExpressionAntetype Antetype { get; } = default!;
-    public DataType? ExpectedType { get; } = default!;
-    public DataType Type { get; } = default!;
-    public IFlowState FlowStateAfter { get; } = default!;
-    public ValueId ValueId { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public ControlFlowSet ControlFlowNext { get; } = default!;
-    public ControlFlowSet ControlFlowPrevious { get; } = default!;
+    public IAwaitExpressionSyntax Syntax { get; }
+    public IAmbiguousExpressionNode Expression { get; }
+    public IExpressionNode? IntermediateExpression { get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { get; }
+    public IMaybeExpressionAntetype Antetype { get; }
+    public DataType? ExpectedType { get; }
+    public DataType Type { get; }
+    public IFlowState FlowStateAfter { get; }
+    public ValueId ValueId { get; }
+    public CodeFile File { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public ControlFlowSet ControlFlowNext { get; }
+    public ControlFlowSet ControlFlowPrevious { get; }
+
+    public AwaitExpressionNode(IAwaitExpressionSyntax syntax, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ValueId valueId, CodeFile file, ISemanticNode parent, IPackageDeclarationNode package, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious)
+    {
+        Syntax = syntax;
+        Expression = expression;
+        IntermediateExpression = intermediateExpression;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        ValueId = valueId;
+        File = file;
+        Parent = parent;
+        Package = package;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+    }
 }
 
 file class PackageSymbolNode // : IPackageSymbolNode
 {
-    public IPackageFacetDeclarationNode MainFacet { get; } = default!;
-    public IPackageFacetDeclarationNode TestingFacet { get; } = default!;
-    public IdentifierName? AliasOrName { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public PackageSymbol Symbol { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
+    public IPackageFacetDeclarationNode MainFacet { get; }
+    public IPackageFacetDeclarationNode TestingFacet { get; }
+    public IdentifierName? AliasOrName { get; }
+    public IdentifierName Name { get; }
+    public PackageSymbol Symbol { get; }
+    public ISyntax? Syntax { get; }
+
+    public PackageSymbolNode(IPackageFacetDeclarationNode mainFacet, IPackageFacetDeclarationNode testingFacet, IdentifierName? aliasOrName, IdentifierName name, PackageSymbol symbol, ISyntax? syntax)
+    {
+        MainFacet = mainFacet;
+        TestingFacet = testingFacet;
+        AliasOrName = aliasOrName;
+        Name = name;
+        Symbol = symbol;
+        Syntax = syntax;
+    }
 }
 
 file class PackageFacetSymbolNode // : IPackageFacetSymbolNode
 {
-    public INamespaceDeclarationNode GlobalNamespace { get; } = default!;
-    public IdentifierName? PackageAliasOrName { get; } = default!;
-    public IdentifierName PackageName { get; } = default!;
-    public PackageSymbol Symbol { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public INamespaceDeclarationNode GlobalNamespace { get; }
+    public IdentifierName? PackageAliasOrName { get; }
+    public IdentifierName PackageName { get; }
+    public PackageSymbol Symbol { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public PackageFacetSymbolNode(INamespaceDeclarationNode globalNamespace, IdentifierName? packageAliasOrName, IdentifierName packageName, PackageSymbol symbol, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        GlobalNamespace = globalNamespace;
+        PackageAliasOrName = packageAliasOrName;
+        PackageName = packageName;
+        Symbol = symbol;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class NamespaceSymbolNode // : INamespaceSymbolNode
 {
-    public IFixedList<INamespaceMemberDeclarationNode> Members { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public NamespaceSymbol Symbol { get; } = default!;
-    public IFixedList<INamespaceMemberDeclarationNode> NestedMembers { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IFixedList<INamespaceMemberDeclarationNode> Members { get; }
+    public IdentifierName Name { get; }
+    public NamespaceSymbol Symbol { get; }
+    public IFixedList<INamespaceMemberDeclarationNode> NestedMembers { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public NamespaceSymbolNode(IFixedList<INamespaceMemberDeclarationNode> members, IdentifierName name, NamespaceSymbol symbol, IFixedList<INamespaceMemberDeclarationNode> nestedMembers, IPackageFacetDeclarationNode facet, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Members = members;
+        Name = name;
+        Symbol = symbol;
+        NestedMembers = nestedMembers;
+        Facet = facet;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class FunctionSymbolNode // : IFunctionSymbolNode
 {
-    public StandardName Name { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public FunctionSymbol Symbol { get; } = default!;
-    public FunctionType Type { get; } = default!;
+    public StandardName Name { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public FunctionSymbol Symbol { get; }
+    public FunctionType Type { get; }
+
+    public FunctionSymbolNode(StandardName name, IPackageFacetDeclarationNode facet, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, FunctionSymbol symbol, FunctionType type)
+    {
+        Name = name;
+        Facet = facet;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Symbol = symbol;
+        Type = type;
+    }
 }
 
 file class PrimitiveTypeSymbolNode // : IPrimitiveTypeSymbolNode
 {
-    public IFixedSet<ITypeMemberDeclarationNode> Members { get; } = default!;
-    public SpecialTypeName Name { get; } = default!;
-    public TypeSymbol Symbol { get; } = default!;
-    public IFixedSet<BareReferenceType> Supertypes { get; } = default!;
-    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IFixedSet<ITypeMemberDeclarationNode> Members { get; }
+    public SpecialTypeName Name { get; }
+    public TypeSymbol Symbol { get; }
+    public IFixedSet<BareReferenceType> Supertypes { get; }
+    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public PrimitiveTypeSymbolNode(IFixedSet<ITypeMemberDeclarationNode> members, SpecialTypeName name, TypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Members = members;
+        Name = name;
+        Symbol = symbol;
+        Supertypes = supertypes;
+        InclusiveMembers = inclusiveMembers;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class UserTypeSymbolNode // : IUserTypeSymbolNode
 {
-    public IFixedList<IGenericParameterDeclarationNode> GenericParameters { get; } = default!;
-    public IFixedSet<ITypeMemberDeclarationNode> Members { get; } = default!;
-    public StandardName Name { get; } = default!;
-    public UserTypeSymbol Symbol { get; } = default!;
-    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public IFixedSet<BareReferenceType> Supertypes { get; } = default!;
+    public IFixedList<IGenericParameterDeclarationNode> GenericParameters { get; }
+    public IFixedSet<ITypeMemberDeclarationNode> Members { get; }
+    public StandardName Name { get; }
+    public UserTypeSymbol Symbol { get; }
+    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public IFixedSet<BareReferenceType> Supertypes { get; }
+
+    public UserTypeSymbolNode(IFixedList<IGenericParameterDeclarationNode> genericParameters, IFixedSet<ITypeMemberDeclarationNode> members, StandardName name, UserTypeSymbol symbol, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IPackageFacetDeclarationNode facet, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IFixedSet<BareReferenceType> supertypes)
+    {
+        GenericParameters = genericParameters;
+        Members = members;
+        Name = name;
+        Symbol = symbol;
+        InclusiveMembers = inclusiveMembers;
+        Facet = facet;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Supertypes = supertypes;
+    }
 }
 
 file class ClassSymbolNode // : IClassSymbolNode
 {
-    public IFixedList<IGenericParameterDeclarationNode> GenericParameters { get; } = default!;
-    public IFixedSet<IClassMemberDeclarationNode> Members { get; } = default!;
-    public IFixedSet<IClassMemberDeclarationNode> InclusiveMembers { get; } = default!;
-    public StandardName Name { get; } = default!;
-    public UserTypeSymbol Symbol { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public IFixedSet<BareReferenceType> Supertypes { get; } = default!;
+    public IFixedList<IGenericParameterDeclarationNode> GenericParameters { get; }
+    public IFixedSet<IClassMemberDeclarationNode> Members { get; }
+    public IFixedSet<IClassMemberDeclarationNode> InclusiveMembers { get; }
+    public StandardName Name { get; }
+    public UserTypeSymbol Symbol { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public IFixedSet<BareReferenceType> Supertypes { get; }
+
+    public ClassSymbolNode(IFixedList<IGenericParameterDeclarationNode> genericParameters, IFixedSet<IClassMemberDeclarationNode> members, IFixedSet<IClassMemberDeclarationNode> inclusiveMembers, StandardName name, UserTypeSymbol symbol, IPackageFacetDeclarationNode facet, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IFixedSet<BareReferenceType> supertypes)
+    {
+        GenericParameters = genericParameters;
+        Members = members;
+        InclusiveMembers = inclusiveMembers;
+        Name = name;
+        Symbol = symbol;
+        Facet = facet;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Supertypes = supertypes;
+    }
 }
 
 file class StructSymbolNode // : IStructSymbolNode
 {
-    public IFixedList<IGenericParameterDeclarationNode> GenericParameters { get; } = default!;
-    public IFixedSet<IStructMemberDeclarationNode> Members { get; } = default!;
-    public IFixedSet<IStructMemberDeclarationNode> InclusiveMembers { get; } = default!;
-    public StandardName Name { get; } = default!;
-    public UserTypeSymbol Symbol { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public IFixedSet<BareReferenceType> Supertypes { get; } = default!;
+    public IFixedList<IGenericParameterDeclarationNode> GenericParameters { get; }
+    public IFixedSet<IStructMemberDeclarationNode> Members { get; }
+    public IFixedSet<IStructMemberDeclarationNode> InclusiveMembers { get; }
+    public StandardName Name { get; }
+    public UserTypeSymbol Symbol { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public IFixedSet<BareReferenceType> Supertypes { get; }
+
+    public StructSymbolNode(IFixedList<IGenericParameterDeclarationNode> genericParameters, IFixedSet<IStructMemberDeclarationNode> members, IFixedSet<IStructMemberDeclarationNode> inclusiveMembers, StandardName name, UserTypeSymbol symbol, IPackageFacetDeclarationNode facet, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IFixedSet<BareReferenceType> supertypes)
+    {
+        GenericParameters = genericParameters;
+        Members = members;
+        InclusiveMembers = inclusiveMembers;
+        Name = name;
+        Symbol = symbol;
+        Facet = facet;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Supertypes = supertypes;
+    }
 }
 
 file class TraitSymbolNode // : ITraitSymbolNode
 {
-    public IFixedList<IGenericParameterDeclarationNode> GenericParameters { get; } = default!;
-    public IFixedSet<ITraitMemberDeclarationNode> Members { get; } = default!;
-    public IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers { get; } = default!;
-    public StandardName Name { get; } = default!;
-    public UserTypeSymbol Symbol { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public IFixedSet<BareReferenceType> Supertypes { get; } = default!;
+    public IFixedList<IGenericParameterDeclarationNode> GenericParameters { get; }
+    public IFixedSet<ITraitMemberDeclarationNode> Members { get; }
+    public IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers { get; }
+    public StandardName Name { get; }
+    public UserTypeSymbol Symbol { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public IFixedSet<BareReferenceType> Supertypes { get; }
+
+    public TraitSymbolNode(IFixedList<IGenericParameterDeclarationNode> genericParameters, IFixedSet<ITraitMemberDeclarationNode> members, IFixedSet<ITraitMemberDeclarationNode> inclusiveMembers, StandardName name, UserTypeSymbol symbol, IPackageFacetDeclarationNode facet, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IFixedSet<BareReferenceType> supertypes)
+    {
+        GenericParameters = genericParameters;
+        Members = members;
+        InclusiveMembers = inclusiveMembers;
+        Name = name;
+        Symbol = symbol;
+        Facet = facet;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Supertypes = supertypes;
+    }
 }
 
 file class GenericParameterSymbolNode // : IGenericParameterSymbolNode
 {
-    public IFixedSet<ITypeMemberDeclarationNode> Members { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public GenericParameterTypeSymbol Symbol { get; } = default!;
-    public IFixedSet<BareReferenceType> Supertypes { get; } = default!;
-    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
+    public IFixedSet<ITypeMemberDeclarationNode> Members { get; }
+    public IdentifierName Name { get; }
+    public GenericParameterTypeSymbol Symbol { get; }
+    public IFixedSet<BareReferenceType> Supertypes { get; }
+    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+
+    public GenericParameterSymbolNode(IFixedSet<ITypeMemberDeclarationNode> members, IdentifierName name, GenericParameterTypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet)
+    {
+        Members = members;
+        Name = name;
+        Symbol = symbol;
+        Supertypes = supertypes;
+        InclusiveMembers = inclusiveMembers;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+    }
 }
 
 file class StandardMethodSymbolNode // : IStandardMethodSymbolNode
 {
-    public IdentifierName Name { get; } = default!;
-    public MethodSymbol Symbol { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public int Arity { get; } = default!;
-    public FunctionType MethodGroupType { get; } = default!;
+    public IdentifierName Name { get; }
+    public MethodSymbol Symbol { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public int Arity { get; }
+    public FunctionType MethodGroupType { get; }
+
+    public StandardMethodSymbolNode(IdentifierName name, MethodSymbol symbol, IPackageFacetDeclarationNode facet, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, int arity, FunctionType methodGroupType)
+    {
+        Name = name;
+        Symbol = symbol;
+        Facet = facet;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Arity = arity;
+        MethodGroupType = methodGroupType;
+    }
 }
 
 file class GetterMethodSymbolNode // : IGetterMethodSymbolNode
 {
-    public IdentifierName Name { get; } = default!;
-    public MethodSymbol Symbol { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IdentifierName Name { get; }
+    public MethodSymbol Symbol { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public GetterMethodSymbolNode(IdentifierName name, MethodSymbol symbol, IPackageFacetDeclarationNode facet, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Name = name;
+        Symbol = symbol;
+        Facet = facet;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class SetterMethodSymbolNode // : ISetterMethodSymbolNode
 {
-    public IdentifierName Name { get; } = default!;
-    public MethodSymbol Symbol { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IdentifierName Name { get; }
+    public MethodSymbol Symbol { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public SetterMethodSymbolNode(IdentifierName name, MethodSymbol symbol, IPackageFacetDeclarationNode facet, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Name = name;
+        Symbol = symbol;
+        Facet = facet;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class ConstructorSymbolNode // : IConstructorSymbolNode
 {
-    public IdentifierName? Name { get; } = default!;
-    public ConstructorSymbol Symbol { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IdentifierName? Name { get; }
+    public ConstructorSymbol Symbol { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public ConstructorSymbolNode(IdentifierName? name, ConstructorSymbol symbol, IPackageFacetDeclarationNode facet, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Name = name;
+        Symbol = symbol;
+        Facet = facet;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class InitializerSymbolNode // : IInitializerSymbolNode
 {
-    public IdentifierName? Name { get; } = default!;
-    public InitializerSymbol Symbol { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
+    public IdentifierName? Name { get; }
+    public InitializerSymbol Symbol { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+
+    public InitializerSymbolNode(IdentifierName? name, InitializerSymbol symbol, IPackageFacetDeclarationNode facet, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package)
+    {
+        Name = name;
+        Symbol = symbol;
+        Facet = facet;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+    }
 }
 
 file class FieldSymbolNode // : IFieldSymbolNode
 {
-    public IdentifierName Name { get; } = default!;
-    public DataType BindingType { get; } = default!;
-    public FieldSymbol Symbol { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
+    public IdentifierName Name { get; }
+    public DataType BindingType { get; }
+    public FieldSymbol Symbol { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+
+    public FieldSymbolNode(IdentifierName name, DataType bindingType, FieldSymbol symbol, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet)
+    {
+        Name = name;
+        BindingType = bindingType;
+        Symbol = symbol;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+    }
 }
 
 file class AssociatedFunctionSymbolNode // : IAssociatedFunctionSymbolNode
 {
-    public StandardName Name { get; } = default!;
-    public IPackageFacetDeclarationNode Facet { get; } = default!;
-    public ISyntax? Syntax { get; } = default!;
-    public ISemanticNode Parent { get; } = default!;
-    public IPackageDeclarationNode Package { get; } = default!;
-    public FunctionSymbol Symbol { get; } = default!;
-    public FunctionType Type { get; } = default!;
+    public StandardName Name { get; }
+    public IPackageFacetDeclarationNode Facet { get; }
+    public ISyntax? Syntax { get; }
+    public ISemanticNode Parent { get; }
+    public IPackageDeclarationNode Package { get; }
+    public FunctionSymbol Symbol { get; }
+    public FunctionType Type { get; }
+
+    public AssociatedFunctionSymbolNode(StandardName name, IPackageFacetDeclarationNode facet, ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, FunctionSymbol symbol, FunctionType type)
+    {
+        Name = name;
+        Facet = facet;
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Symbol = symbol;
+        Type = type;
+    }
 }
 

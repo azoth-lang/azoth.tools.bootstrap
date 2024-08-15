@@ -64,4 +64,7 @@ internal static class Emit
 
     public static string PropertyIsNew(PropertyModel property)
         => property.IsNewDefinition ? "new " : "";
+
+    public static string ParameterName(PropertyModel property)
+        => property.Name.ToCamelCase();
 }

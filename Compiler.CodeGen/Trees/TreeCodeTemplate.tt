@@ -28,8 +28,15 @@ namespace <#=tree.Namespace #>;
 file class <#= Emit.ClassName(node.Defines) #> // : <#= Emit.TypeName(node.Defines) #>
 {
 <#      foreach (var property in node.AllProperties) { #>
-    public <#=Emit.Type(property.Type) #> <#=property.Name #> { get; } = default!;
+    public <#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
 <#      } #>
+
+    public <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", node.AllProperties.Select(p => $"{Emit.Type(p.Type)} {Emit.ParameterName(p)}")) #>)
+    {
+<#      foreach (var property in node.AllProperties) { #>
+        <#=property.Name #> = <#=Emit.ParameterName(property) #>;
+<#      } #>
+    }
 }
 
 <#  } #>

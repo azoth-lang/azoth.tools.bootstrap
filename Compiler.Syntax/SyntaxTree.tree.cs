@@ -945,629 +945,1257 @@ public partial interface IAwaitExpressionSyntax : IExpressionSyntax
 
 file class CompilationUnitSyntax // : ICompilationUnitSyntax
 {
-    public CodeFile File { get; } = default!;
-    public NamespaceName ImplicitNamespaceName { get; } = default!;
-    public DiagnosticCollection Diagnostics { get; } = default!;
-    public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; } = default!;
-    public IFixedList<INonMemberDefinitionSyntax> Definitions { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public CodeFile File { get; }
+    public NamespaceName ImplicitNamespaceName { get; }
+    public DiagnosticCollection Diagnostics { get; }
+    public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
+    public IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
+    public TextSpan Span { get; }
+
+    public CompilationUnitSyntax(CodeFile file, NamespaceName implicitNamespaceName, DiagnosticCollection diagnostics, IFixedList<IUsingDirectiveSyntax> usingDirectives, IFixedList<INonMemberDefinitionSyntax> definitions, TextSpan span)
+    {
+        File = file;
+        ImplicitNamespaceName = implicitNamespaceName;
+        Diagnostics = diagnostics;
+        UsingDirectives = usingDirectives;
+        Definitions = definitions;
+        Span = span;
+    }
 }
 
 file class UsingDirectiveSyntax // : IUsingDirectiveSyntax
 {
-    public NamespaceName Name { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public NamespaceName Name { get; }
+    public TextSpan Span { get; }
+
+    public UsingDirectiveSyntax(NamespaceName name, TextSpan span)
+    {
+        Name = name;
+        Span = span;
+    }
 }
 
 file class PackageSyntax // : IPackageSyntax
 {
-    public IdentifierName Name { get; } = default!;
-    public IFixedSet<ICompilationUnitSyntax> CompilationUnits { get; } = default!;
-    public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; } = default!;
-    public IFixedSet<IPackageReferenceSyntax> References { get; } = default!;
-    public DiagnosticCollection Diagnostics { get; } = default!;
+    public IdentifierName Name { get; }
+    public IFixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
+    public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
+    public IFixedSet<IPackageReferenceSyntax> References { get; }
+    public DiagnosticCollection Diagnostics { get; }
+
+    public PackageSyntax(IdentifierName name, IFixedSet<ICompilationUnitSyntax> compilationUnits, IFixedSet<ICompilationUnitSyntax> testingCompilationUnits, IFixedSet<IPackageReferenceSyntax> references, DiagnosticCollection diagnostics)
+    {
+        Name = name;
+        CompilationUnits = compilationUnits;
+        TestingCompilationUnits = testingCompilationUnits;
+        References = references;
+        Diagnostics = diagnostics;
+    }
 }
 
 file class PackageReferenceSyntax // : IPackageReferenceSyntax
 {
-    public IdentifierName AliasOrName { get; } = default!;
-    public IPackageSymbols Package { get; } = default!;
-    public bool IsTrusted { get; } = default!;
+    public IdentifierName AliasOrName { get; }
+    public IPackageSymbols Package { get; }
+    public bool IsTrusted { get; }
+
+    public PackageReferenceSyntax(IdentifierName aliasOrName, IPackageSymbols package, bool isTrusted)
+    {
+        AliasOrName = aliasOrName;
+        Package = package;
+        IsTrusted = isTrusted;
+    }
 }
 
 file class NamespaceDefinitionSyntax // : INamespaceDefinitionSyntax
 {
-    public bool IsGlobalQualified { get; } = default!;
-    public NamespaceName DeclaredNames { get; } = default!;
-    public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; } = default!;
-    public IFixedList<INonMemberDefinitionSyntax> Definitions { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public TypeName? Name { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public bool IsGlobalQualified { get; }
+    public NamespaceName DeclaredNames { get; }
+    public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
+    public IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
+    public CodeFile File { get; }
+    public TypeName? Name { get; }
+    public TextSpan NameSpan { get; }
+    public TextSpan Span { get; }
+
+    public NamespaceDefinitionSyntax(bool isGlobalQualified, NamespaceName declaredNames, IFixedList<IUsingDirectiveSyntax> usingDirectives, IFixedList<INonMemberDefinitionSyntax> definitions, CodeFile file, TypeName? name, TextSpan nameSpan, TextSpan span)
+    {
+        IsGlobalQualified = isGlobalQualified;
+        DeclaredNames = declaredNames;
+        UsingDirectives = usingDirectives;
+        Definitions = definitions;
+        File = file;
+        Name = name;
+        NameSpan = nameSpan;
+        Span = span;
+    }
 }
 
 file class FunctionDefinitionSyntax // : IFunctionDefinitionSyntax
 {
-    public IFixedList<IAttributeSyntax> Attributes { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public IFixedList<INamedParameterSyntax> Parameters { get; } = default!;
-    public IReturnSyntax? Return { get; } = default!;
-    public IBodySyntax Body { get; } = default!;
-    public IAccessModifierToken? AccessModifier { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IFixedList<IAttributeSyntax> Attributes { get; }
+    public IdentifierName Name { get; }
+    public IFixedList<INamedParameterSyntax> Parameters { get; }
+    public IReturnSyntax? Return { get; }
+    public IBodySyntax Body { get; }
+    public IAccessModifierToken? AccessModifier { get; }
+    public CodeFile File { get; }
+    public TextSpan NameSpan { get; }
+    public TextSpan Span { get; }
+
+    public FunctionDefinitionSyntax(IFixedList<IAttributeSyntax> attributes, IdentifierName name, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    {
+        Attributes = attributes;
+        Name = name;
+        Parameters = parameters;
+        Return = @return;
+        Body = body;
+        AccessModifier = accessModifier;
+        File = file;
+        NameSpan = nameSpan;
+        Span = span;
+    }
 }
 
 file class ClassDefinitionSyntax // : IClassDefinitionSyntax
 {
-    public IAbstractKeywordToken? AbstractModifier { get; } = default!;
-    public IFixedList<IGenericParameterSyntax> GenericParameters { get; } = default!;
-    public IStandardTypeNameSyntax? BaseTypeName { get; } = default!;
-    public IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; } = default!;
-    public IFixedList<IClassMemberDefinitionSyntax> Members { get; } = default!;
-    public IConstKeywordToken? ConstModifier { get; } = default!;
-    public IMoveKeywordToken? MoveModifier { get; } = default!;
-    public StandardName Name { get; } = default!;
-    public IAccessModifierToken? AccessModifier { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IAbstractKeywordToken? AbstractModifier { get; }
+    public IFixedList<IGenericParameterSyntax> GenericParameters { get; }
+    public IStandardTypeNameSyntax? BaseTypeName { get; }
+    public IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; }
+    public IFixedList<IClassMemberDefinitionSyntax> Members { get; }
+    public IConstKeywordToken? ConstModifier { get; }
+    public IMoveKeywordToken? MoveModifier { get; }
+    public StandardName Name { get; }
+    public IAccessModifierToken? AccessModifier { get; }
+    public CodeFile File { get; }
+    public TextSpan NameSpan { get; }
+    public TextSpan Span { get; }
+
+    public ClassDefinitionSyntax(IAbstractKeywordToken? abstractModifier, IFixedList<IGenericParameterSyntax> genericParameters, IStandardTypeNameSyntax? baseTypeName, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<IClassMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    {
+        AbstractModifier = abstractModifier;
+        GenericParameters = genericParameters;
+        BaseTypeName = baseTypeName;
+        SupertypeNames = supertypeNames;
+        Members = members;
+        ConstModifier = constModifier;
+        MoveModifier = moveModifier;
+        Name = name;
+        AccessModifier = accessModifier;
+        File = file;
+        NameSpan = nameSpan;
+        Span = span;
+    }
 }
 
 file class StructDefinitionSyntax // : IStructDefinitionSyntax
 {
-    public IFixedList<IGenericParameterSyntax> GenericParameters { get; } = default!;
-    public IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; } = default!;
-    public IFixedList<IStructMemberDefinitionSyntax> Members { get; } = default!;
-    public IConstKeywordToken? ConstModifier { get; } = default!;
-    public IMoveKeywordToken? MoveModifier { get; } = default!;
-    public StandardName Name { get; } = default!;
-    public IAccessModifierToken? AccessModifier { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IFixedList<IGenericParameterSyntax> GenericParameters { get; }
+    public IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; }
+    public IFixedList<IStructMemberDefinitionSyntax> Members { get; }
+    public IConstKeywordToken? ConstModifier { get; }
+    public IMoveKeywordToken? MoveModifier { get; }
+    public StandardName Name { get; }
+    public IAccessModifierToken? AccessModifier { get; }
+    public CodeFile File { get; }
+    public TextSpan NameSpan { get; }
+    public TextSpan Span { get; }
+
+    public StructDefinitionSyntax(IFixedList<IGenericParameterSyntax> genericParameters, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<IStructMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    {
+        GenericParameters = genericParameters;
+        SupertypeNames = supertypeNames;
+        Members = members;
+        ConstModifier = constModifier;
+        MoveModifier = moveModifier;
+        Name = name;
+        AccessModifier = accessModifier;
+        File = file;
+        NameSpan = nameSpan;
+        Span = span;
+    }
 }
 
 file class TraitDefinitionSyntax // : ITraitDefinitionSyntax
 {
-    public IFixedList<IGenericParameterSyntax> GenericParameters { get; } = default!;
-    public IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; } = default!;
-    public IFixedList<ITraitMemberDefinitionSyntax> Members { get; } = default!;
-    public IConstKeywordToken? ConstModifier { get; } = default!;
-    public IMoveKeywordToken? MoveModifier { get; } = default!;
-    public StandardName Name { get; } = default!;
-    public IAccessModifierToken? AccessModifier { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IFixedList<IGenericParameterSyntax> GenericParameters { get; }
+    public IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; }
+    public IFixedList<ITraitMemberDefinitionSyntax> Members { get; }
+    public IConstKeywordToken? ConstModifier { get; }
+    public IMoveKeywordToken? MoveModifier { get; }
+    public StandardName Name { get; }
+    public IAccessModifierToken? AccessModifier { get; }
+    public CodeFile File { get; }
+    public TextSpan NameSpan { get; }
+    public TextSpan Span { get; }
+
+    public TraitDefinitionSyntax(IFixedList<IGenericParameterSyntax> genericParameters, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<ITraitMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    {
+        GenericParameters = genericParameters;
+        SupertypeNames = supertypeNames;
+        Members = members;
+        ConstModifier = constModifier;
+        MoveModifier = moveModifier;
+        Name = name;
+        AccessModifier = accessModifier;
+        File = file;
+        NameSpan = nameSpan;
+        Span = span;
+    }
 }
 
 file class GenericParameterSyntax // : IGenericParameterSyntax
 {
-    public ICapabilityConstraintSyntax Constraint { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public TypeParameterIndependence Independence { get; } = default!;
-    public TypeParameterVariance Variance { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ICapabilityConstraintSyntax Constraint { get; }
+    public IdentifierName Name { get; }
+    public TypeParameterIndependence Independence { get; }
+    public TypeParameterVariance Variance { get; }
+    public TextSpan Span { get; }
+
+    public GenericParameterSyntax(ICapabilityConstraintSyntax constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, TextSpan span)
+    {
+        Constraint = constraint;
+        Name = name;
+        Independence = independence;
+        Variance = variance;
+        Span = span;
+    }
 }
 
 file class AbstractMethodDefinitionSyntax // : IAbstractMethodDefinitionSyntax
 {
-    public IMethodSelfParameterSyntax SelfParameter { get; } = default!;
-    public IFixedList<INamedParameterSyntax> Parameters { get; } = default!;
-    public IReturnSyntax? Return { get; } = default!;
-    public MethodKind Kind { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public IAccessModifierToken? AccessModifier { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IMethodSelfParameterSyntax SelfParameter { get; }
+    public IFixedList<INamedParameterSyntax> Parameters { get; }
+    public IReturnSyntax? Return { get; }
+    public MethodKind Kind { get; }
+    public IdentifierName Name { get; }
+    public IAccessModifierToken? AccessModifier { get; }
+    public CodeFile File { get; }
+    public TextSpan NameSpan { get; }
+    public TextSpan Span { get; }
+
+    public AbstractMethodDefinitionSyntax(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    {
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Return = @return;
+        Kind = kind;
+        Name = name;
+        AccessModifier = accessModifier;
+        File = file;
+        NameSpan = nameSpan;
+        Span = span;
+    }
 }
 
 file class StandardMethodDefinitionSyntax // : IStandardMethodDefinitionSyntax
 {
-    public IMethodSelfParameterSyntax SelfParameter { get; } = default!;
-    public IFixedList<INamedParameterSyntax> Parameters { get; } = default!;
-    public IReturnSyntax? Return { get; } = default!;
-    public IBodySyntax Body { get; } = default!;
-    public MethodKind Kind { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public IAccessModifierToken? AccessModifier { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IMethodSelfParameterSyntax SelfParameter { get; }
+    public IFixedList<INamedParameterSyntax> Parameters { get; }
+    public IReturnSyntax? Return { get; }
+    public IBodySyntax Body { get; }
+    public MethodKind Kind { get; }
+    public IdentifierName Name { get; }
+    public IAccessModifierToken? AccessModifier { get; }
+    public CodeFile File { get; }
+    public TextSpan NameSpan { get; }
+    public TextSpan Span { get; }
+
+    public StandardMethodDefinitionSyntax(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    {
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Return = @return;
+        Body = body;
+        Kind = kind;
+        Name = name;
+        AccessModifier = accessModifier;
+        File = file;
+        NameSpan = nameSpan;
+        Span = span;
+    }
 }
 
 file class GetterMethodDefinitionSyntax // : IGetterMethodDefinitionSyntax
 {
-    public IMethodSelfParameterSyntax SelfParameter { get; } = default!;
-    public IFixedList<INamedParameterSyntax> Parameters { get; } = default!;
-    public IReturnSyntax Return { get; } = default!;
-    public IBodySyntax Body { get; } = default!;
-    public MethodKind Kind { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public IAccessModifierToken? AccessModifier { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IMethodSelfParameterSyntax SelfParameter { get; }
+    public IFixedList<INamedParameterSyntax> Parameters { get; }
+    public IReturnSyntax Return { get; }
+    public IBodySyntax Body { get; }
+    public MethodKind Kind { get; }
+    public IdentifierName Name { get; }
+    public IAccessModifierToken? AccessModifier { get; }
+    public CodeFile File { get; }
+    public TextSpan NameSpan { get; }
+    public TextSpan Span { get; }
+
+    public GetterMethodDefinitionSyntax(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax @return, IBodySyntax body, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    {
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Return = @return;
+        Body = body;
+        Kind = kind;
+        Name = name;
+        AccessModifier = accessModifier;
+        File = file;
+        NameSpan = nameSpan;
+        Span = span;
+    }
 }
 
 file class SetterMethodDefinitionSyntax // : ISetterMethodDefinitionSyntax
 {
-    public IMethodSelfParameterSyntax SelfParameter { get; } = default!;
-    public IFixedList<INamedParameterSyntax> Parameters { get; } = default!;
-    public IReturnSyntax? Return { get; } = default!;
-    public IBodySyntax Body { get; } = default!;
-    public MethodKind Kind { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public IAccessModifierToken? AccessModifier { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IMethodSelfParameterSyntax SelfParameter { get; }
+    public IFixedList<INamedParameterSyntax> Parameters { get; }
+    public IReturnSyntax? Return { get; }
+    public IBodySyntax Body { get; }
+    public MethodKind Kind { get; }
+    public IdentifierName Name { get; }
+    public IAccessModifierToken? AccessModifier { get; }
+    public CodeFile File { get; }
+    public TextSpan NameSpan { get; }
+    public TextSpan Span { get; }
+
+    public SetterMethodDefinitionSyntax(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    {
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Return = @return;
+        Body = body;
+        Kind = kind;
+        Name = name;
+        AccessModifier = accessModifier;
+        File = file;
+        NameSpan = nameSpan;
+        Span = span;
+    }
 }
 
 file class ConstructorDefinitionSyntax // : IConstructorDefinitionSyntax
 {
-    public IdentifierName? Name { get; } = default!;
-    public IConstructorSelfParameterSyntax SelfParameter { get; } = default!;
-    public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; } = default!;
-    public IBlockBodySyntax Body { get; } = default!;
-    public IAccessModifierToken? AccessModifier { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IdentifierName? Name { get; }
+    public IConstructorSelfParameterSyntax SelfParameter { get; }
+    public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
+    public IBlockBodySyntax Body { get; }
+    public IAccessModifierToken? AccessModifier { get; }
+    public CodeFile File { get; }
+    public TextSpan NameSpan { get; }
+    public TextSpan Span { get; }
+
+    public ConstructorDefinitionSyntax(IdentifierName? name, IConstructorSelfParameterSyntax selfParameter, IFixedList<IConstructorOrInitializerParameterSyntax> parameters, IBlockBodySyntax body, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    {
+        Name = name;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Body = body;
+        AccessModifier = accessModifier;
+        File = file;
+        NameSpan = nameSpan;
+        Span = span;
+    }
 }
 
 file class InitializerDefinitionSyntax // : IInitializerDefinitionSyntax
 {
-    public IdentifierName? Name { get; } = default!;
-    public IInitializerSelfParameterSyntax SelfParameter { get; } = default!;
-    public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; } = default!;
-    public IBlockBodySyntax Body { get; } = default!;
-    public IAccessModifierToken? AccessModifier { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IdentifierName? Name { get; }
+    public IInitializerSelfParameterSyntax SelfParameter { get; }
+    public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
+    public IBlockBodySyntax Body { get; }
+    public IAccessModifierToken? AccessModifier { get; }
+    public CodeFile File { get; }
+    public TextSpan NameSpan { get; }
+    public TextSpan Span { get; }
+
+    public InitializerDefinitionSyntax(IdentifierName? name, IInitializerSelfParameterSyntax selfParameter, IFixedList<IConstructorOrInitializerParameterSyntax> parameters, IBlockBodySyntax body, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    {
+        Name = name;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Body = body;
+        AccessModifier = accessModifier;
+        File = file;
+        NameSpan = nameSpan;
+        Span = span;
+    }
 }
 
 file class FieldDefinitionSyntax // : IFieldDefinitionSyntax
 {
-    public IdentifierName Name { get; } = default!;
-    public ITypeSyntax Type { get; } = default!;
-    public IExpressionSyntax? Initializer { get; } = default!;
-    public IAccessModifierToken? AccessModifier { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
-    public bool IsMutableBinding { get; } = default!;
+    public IdentifierName Name { get; }
+    public ITypeSyntax Type { get; }
+    public IExpressionSyntax? Initializer { get; }
+    public IAccessModifierToken? AccessModifier { get; }
+    public CodeFile File { get; }
+    public TextSpan NameSpan { get; }
+    public TextSpan Span { get; }
+    public bool IsMutableBinding { get; }
+
+    public FieldDefinitionSyntax(IdentifierName name, ITypeSyntax type, IExpressionSyntax? initializer, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span, bool isMutableBinding)
+    {
+        Name = name;
+        Type = type;
+        Initializer = initializer;
+        AccessModifier = accessModifier;
+        File = file;
+        NameSpan = nameSpan;
+        Span = span;
+        IsMutableBinding = isMutableBinding;
+    }
 }
 
 file class AssociatedFunctionDefinitionSyntax // : IAssociatedFunctionDefinitionSyntax
 {
-    public IdentifierName Name { get; } = default!;
-    public IFixedList<INamedParameterSyntax> Parameters { get; } = default!;
-    public IReturnSyntax? Return { get; } = default!;
-    public IBodySyntax Body { get; } = default!;
-    public IAccessModifierToken? AccessModifier { get; } = default!;
-    public CodeFile File { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IdentifierName Name { get; }
+    public IFixedList<INamedParameterSyntax> Parameters { get; }
+    public IReturnSyntax? Return { get; }
+    public IBodySyntax Body { get; }
+    public IAccessModifierToken? AccessModifier { get; }
+    public CodeFile File { get; }
+    public TextSpan NameSpan { get; }
+    public TextSpan Span { get; }
+
+    public AssociatedFunctionDefinitionSyntax(IdentifierName name, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    {
+        Name = name;
+        Parameters = parameters;
+        Return = @return;
+        Body = body;
+        AccessModifier = accessModifier;
+        File = file;
+        NameSpan = nameSpan;
+        Span = span;
+    }
 }
 
 file class AttributeSyntax // : IAttributeSyntax
 {
-    public IStandardTypeNameSyntax TypeName { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IStandardTypeNameSyntax TypeName { get; }
+    public TextSpan Span { get; }
+
+    public AttributeSyntax(IStandardTypeNameSyntax typeName, TextSpan span)
+    {
+        TypeName = typeName;
+        Span = span;
+    }
 }
 
 file class CapabilitySetSyntax // : ICapabilitySetSyntax
 {
-    public CapabilitySet Constraint { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public CapabilitySet Constraint { get; }
+    public TextSpan Span { get; }
+
+    public CapabilitySetSyntax(CapabilitySet constraint, TextSpan span)
+    {
+        Constraint = constraint;
+        Span = span;
+    }
 }
 
 file class CapabilitySyntax // : ICapabilitySyntax
 {
-    public IFixedList<ICapabilityToken> Tokens { get; } = default!;
-    public DeclaredCapability Declared { get; } = default!;
-    public Capability Capability { get; } = default!;
-    public ICapabilityConstraint Constraint { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IFixedList<ICapabilityToken> Tokens { get; }
+    public DeclaredCapability Declared { get; }
+    public Capability Capability { get; }
+    public ICapabilityConstraint Constraint { get; }
+    public TextSpan Span { get; }
+
+    public CapabilitySyntax(IFixedList<ICapabilityToken> tokens, DeclaredCapability declared, Capability capability, ICapabilityConstraint constraint, TextSpan span)
+    {
+        Tokens = tokens;
+        Declared = declared;
+        Capability = capability;
+        Constraint = constraint;
+        Span = span;
+    }
 }
 
 file class NamedParameterSyntax // : INamedParameterSyntax
 {
-    public bool IsMutableBinding { get; } = default!;
-    public bool IsLentBinding { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public ITypeSyntax Type { get; } = default!;
-    public IExpressionSyntax? DefaultValue { get; } = default!;
-    public TextSpan Span { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
+    public bool IsMutableBinding { get; }
+    public bool IsLentBinding { get; }
+    public IdentifierName Name { get; }
+    public ITypeSyntax Type { get; }
+    public IExpressionSyntax? DefaultValue { get; }
+    public TextSpan Span { get; }
+    public TextSpan NameSpan { get; }
+
+    public NamedParameterSyntax(bool isMutableBinding, bool isLentBinding, IdentifierName name, ITypeSyntax type, IExpressionSyntax? defaultValue, TextSpan span, TextSpan nameSpan)
+    {
+        IsMutableBinding = isMutableBinding;
+        IsLentBinding = isLentBinding;
+        Name = name;
+        Type = type;
+        DefaultValue = defaultValue;
+        Span = span;
+        NameSpan = nameSpan;
+    }
 }
 
 file class ConstructorSelfParameterSyntax // : IConstructorSelfParameterSyntax
 {
-    public ICapabilitySyntax Capability { get; } = default!;
-    public bool IsLentBinding { get; } = default!;
-    public IdentifierName? Name { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ICapabilitySyntax Capability { get; }
+    public bool IsLentBinding { get; }
+    public IdentifierName? Name { get; }
+    public TextSpan Span { get; }
+
+    public ConstructorSelfParameterSyntax(ICapabilitySyntax capability, bool isLentBinding, IdentifierName? name, TextSpan span)
+    {
+        Capability = capability;
+        IsLentBinding = isLentBinding;
+        Name = name;
+        Span = span;
+    }
 }
 
 file class InitializerSelfParameterSyntax // : IInitializerSelfParameterSyntax
 {
-    public ICapabilitySyntax Capability { get; } = default!;
-    public bool IsLentBinding { get; } = default!;
-    public IdentifierName? Name { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ICapabilitySyntax Capability { get; }
+    public bool IsLentBinding { get; }
+    public IdentifierName? Name { get; }
+    public TextSpan Span { get; }
+
+    public InitializerSelfParameterSyntax(ICapabilitySyntax capability, bool isLentBinding, IdentifierName? name, TextSpan span)
+    {
+        Capability = capability;
+        IsLentBinding = isLentBinding;
+        Name = name;
+        Span = span;
+    }
 }
 
 file class MethodSelfParameterSyntax // : IMethodSelfParameterSyntax
 {
-    public ICapabilityConstraintSyntax Capability { get; } = default!;
-    public bool IsLentBinding { get; } = default!;
-    public IdentifierName? Name { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ICapabilityConstraintSyntax Capability { get; }
+    public bool IsLentBinding { get; }
+    public IdentifierName? Name { get; }
+    public TextSpan Span { get; }
+
+    public MethodSelfParameterSyntax(ICapabilityConstraintSyntax capability, bool isLentBinding, IdentifierName? name, TextSpan span)
+    {
+        Capability = capability;
+        IsLentBinding = isLentBinding;
+        Name = name;
+        Span = span;
+    }
 }
 
 file class FieldParameterSyntax // : IFieldParameterSyntax
 {
-    public IdentifierName Name { get; } = default!;
-    public IExpressionSyntax? DefaultValue { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IdentifierName Name { get; }
+    public IExpressionSyntax? DefaultValue { get; }
+    public TextSpan Span { get; }
+
+    public FieldParameterSyntax(IdentifierName name, IExpressionSyntax? defaultValue, TextSpan span)
+    {
+        Name = name;
+        DefaultValue = defaultValue;
+        Span = span;
+    }
 }
 
 file class ReturnSyntax // : IReturnSyntax
 {
-    public ITypeSyntax Type { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ITypeSyntax Type { get; }
+    public TextSpan Span { get; }
+
+    public ReturnSyntax(ITypeSyntax type, TextSpan span)
+    {
+        Type = type;
+        Span = span;
+    }
 }
 
 file class BlockBodySyntax // : IBlockBodySyntax
 {
-    public IFixedList<IBodyStatementSyntax> Statements { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IFixedList<IBodyStatementSyntax> Statements { get; }
+    public TextSpan Span { get; }
+
+    public BlockBodySyntax(IFixedList<IBodyStatementSyntax> statements, TextSpan span)
+    {
+        Statements = statements;
+        Span = span;
+    }
 }
 
 file class ExpressionBodySyntax // : IExpressionBodySyntax
 {
-    public IResultStatementSyntax ResultStatement { get; } = default!;
-    public IFixedList<IStatementSyntax> Statements { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IResultStatementSyntax ResultStatement { get; }
+    public IFixedList<IStatementSyntax> Statements { get; }
+    public TextSpan Span { get; }
+
+    public ExpressionBodySyntax(IResultStatementSyntax resultStatement, IFixedList<IStatementSyntax> statements, TextSpan span)
+    {
+        ResultStatement = resultStatement;
+        Statements = statements;
+        Span = span;
+    }
 }
 
 file class IdentifierTypeNameSyntax // : IIdentifierTypeNameSyntax
 {
-    public IdentifierName Name { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IdentifierName Name { get; }
+    public TextSpan Span { get; }
+
+    public IdentifierTypeNameSyntax(IdentifierName name, TextSpan span)
+    {
+        Name = name;
+        Span = span;
+    }
 }
 
 file class SpecialTypeNameSyntax // : ISpecialTypeNameSyntax
 {
-    public SpecialTypeName Name { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public SpecialTypeName Name { get; }
+    public TextSpan Span { get; }
+
+    public SpecialTypeNameSyntax(SpecialTypeName name, TextSpan span)
+    {
+        Name = name;
+        Span = span;
+    }
 }
 
 file class GenericTypeNameSyntax // : IGenericTypeNameSyntax
 {
-    public GenericName Name { get; } = default!;
-    public IFixedList<ITypeSyntax> TypeArguments { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public GenericName Name { get; }
+    public IFixedList<ITypeSyntax> TypeArguments { get; }
+    public TextSpan Span { get; }
+
+    public GenericTypeNameSyntax(GenericName name, IFixedList<ITypeSyntax> typeArguments, TextSpan span)
+    {
+        Name = name;
+        TypeArguments = typeArguments;
+        Span = span;
+    }
 }
 
 file class QualifiedTypeNameSyntax // : IQualifiedTypeNameSyntax
 {
-    public ITypeNameSyntax Context { get; } = default!;
-    public IStandardTypeNameSyntax QualifiedName { get; } = default!;
-    public TypeName Name { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ITypeNameSyntax Context { get; }
+    public IStandardTypeNameSyntax QualifiedName { get; }
+    public TypeName Name { get; }
+    public TextSpan Span { get; }
+
+    public QualifiedTypeNameSyntax(ITypeNameSyntax context, IStandardTypeNameSyntax qualifiedName, TypeName name, TextSpan span)
+    {
+        Context = context;
+        QualifiedName = qualifiedName;
+        Name = name;
+        Span = span;
+    }
 }
 
 file class OptionalTypeSyntax // : IOptionalTypeSyntax
 {
-    public ITypeSyntax Referent { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ITypeSyntax Referent { get; }
+    public TextSpan Span { get; }
+
+    public OptionalTypeSyntax(ITypeSyntax referent, TextSpan span)
+    {
+        Referent = referent;
+        Span = span;
+    }
 }
 
 file class CapabilityTypeSyntax // : ICapabilityTypeSyntax
 {
-    public ICapabilitySyntax Capability { get; } = default!;
-    public ITypeSyntax Referent { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ICapabilitySyntax Capability { get; }
+    public ITypeSyntax Referent { get; }
+    public TextSpan Span { get; }
+
+    public CapabilityTypeSyntax(ICapabilitySyntax capability, ITypeSyntax referent, TextSpan span)
+    {
+        Capability = capability;
+        Referent = referent;
+        Span = span;
+    }
 }
 
 file class FunctionTypeSyntax // : IFunctionTypeSyntax
 {
-    public IFixedList<IParameterTypeSyntax> Parameters { get; } = default!;
-    public IReturnTypeSyntax Return { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IFixedList<IParameterTypeSyntax> Parameters { get; }
+    public IReturnTypeSyntax Return { get; }
+    public TextSpan Span { get; }
+
+    public FunctionTypeSyntax(IFixedList<IParameterTypeSyntax> parameters, IReturnTypeSyntax @return, TextSpan span)
+    {
+        Parameters = parameters;
+        Return = @return;
+        Span = span;
+    }
 }
 
 file class ParameterTypeSyntax // : IParameterTypeSyntax
 {
-    public bool IsLent { get; } = default!;
-    public ITypeSyntax Referent { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public bool IsLent { get; }
+    public ITypeSyntax Referent { get; }
+    public TextSpan Span { get; }
+
+    public ParameterTypeSyntax(bool isLent, ITypeSyntax referent, TextSpan span)
+    {
+        IsLent = isLent;
+        Referent = referent;
+        Span = span;
+    }
 }
 
 file class ReturnTypeSyntax // : IReturnTypeSyntax
 {
-    public ITypeSyntax Referent { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ITypeSyntax Referent { get; }
+    public TextSpan Span { get; }
+
+    public ReturnTypeSyntax(ITypeSyntax referent, TextSpan span)
+    {
+        Referent = referent;
+        Span = span;
+    }
 }
 
 file class CapabilityViewpointTypeSyntax // : ICapabilityViewpointTypeSyntax
 {
-    public ICapabilitySyntax Capability { get; } = default!;
-    public ITypeSyntax Referent { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ICapabilitySyntax Capability { get; }
+    public ITypeSyntax Referent { get; }
+    public TextSpan Span { get; }
+
+    public CapabilityViewpointTypeSyntax(ICapabilitySyntax capability, ITypeSyntax referent, TextSpan span)
+    {
+        Capability = capability;
+        Referent = referent;
+        Span = span;
+    }
 }
 
 file class SelfViewpointTypeSyntax // : ISelfViewpointTypeSyntax
 {
-    public ITypeSyntax Referent { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ITypeSyntax Referent { get; }
+    public TextSpan Span { get; }
+
+    public SelfViewpointTypeSyntax(ITypeSyntax referent, TextSpan span)
+    {
+        Referent = referent;
+        Span = span;
+    }
 }
 
 file class ResultStatementSyntax // : IResultStatementSyntax
 {
-    public IExpressionSyntax Expression { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax Expression { get; }
+    public TextSpan Span { get; }
+
+    public ResultStatementSyntax(IExpressionSyntax expression, TextSpan span)
+    {
+        Expression = expression;
+        Span = span;
+    }
 }
 
 file class VariableDeclarationStatementSyntax // : IVariableDeclarationStatementSyntax
 {
-    public TextSpan NameSpan { get; } = default!;
-    public IdentifierName Name { get; } = default!;
-    public ICapabilitySyntax? Capability { get; } = default!;
-    public ITypeSyntax? Type { get; } = default!;
-    public IExpressionSyntax? Initializer { get; } = default!;
-    public TextSpan Span { get; } = default!;
-    public bool IsMutableBinding { get; } = default!;
+    public TextSpan NameSpan { get; }
+    public IdentifierName Name { get; }
+    public ICapabilitySyntax? Capability { get; }
+    public ITypeSyntax? Type { get; }
+    public IExpressionSyntax? Initializer { get; }
+    public TextSpan Span { get; }
+    public bool IsMutableBinding { get; }
+
+    public VariableDeclarationStatementSyntax(TextSpan nameSpan, IdentifierName name, ICapabilitySyntax? capability, ITypeSyntax? type, IExpressionSyntax? initializer, TextSpan span, bool isMutableBinding)
+    {
+        NameSpan = nameSpan;
+        Name = name;
+        Capability = capability;
+        Type = type;
+        Initializer = initializer;
+        Span = span;
+        IsMutableBinding = isMutableBinding;
+    }
 }
 
 file class ExpressionStatementSyntax // : IExpressionStatementSyntax
 {
-    public IExpressionSyntax Expression { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax Expression { get; }
+    public TextSpan Span { get; }
+
+    public ExpressionStatementSyntax(IExpressionSyntax expression, TextSpan span)
+    {
+        Expression = expression;
+        Span = span;
+    }
 }
 
 file class BindingContextPatternSyntax // : IBindingContextPatternSyntax
 {
-    public bool IsMutableBinding { get; } = default!;
-    public IPatternSyntax Pattern { get; } = default!;
-    public ITypeSyntax? Type { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public bool IsMutableBinding { get; }
+    public IPatternSyntax Pattern { get; }
+    public ITypeSyntax? Type { get; }
+    public TextSpan Span { get; }
+
+    public BindingContextPatternSyntax(bool isMutableBinding, IPatternSyntax pattern, ITypeSyntax? type, TextSpan span)
+    {
+        IsMutableBinding = isMutableBinding;
+        Pattern = pattern;
+        Type = type;
+        Span = span;
+    }
 }
 
 file class BindingPatternSyntax // : IBindingPatternSyntax
 {
-    public IdentifierName Name { get; } = default!;
-    public TextSpan Span { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public bool IsMutableBinding { get; } = default!;
+    public IdentifierName Name { get; }
+    public TextSpan Span { get; }
+    public TextSpan NameSpan { get; }
+    public bool IsMutableBinding { get; }
+
+    public BindingPatternSyntax(IdentifierName name, TextSpan span, TextSpan nameSpan, bool isMutableBinding)
+    {
+        Name = name;
+        Span = span;
+        NameSpan = nameSpan;
+        IsMutableBinding = isMutableBinding;
+    }
 }
 
 file class OptionalPatternSyntax // : IOptionalPatternSyntax
 {
-    public IOptionalOrBindingPatternSyntax Pattern { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IOptionalOrBindingPatternSyntax Pattern { get; }
+    public TextSpan Span { get; }
+
+    public OptionalPatternSyntax(IOptionalOrBindingPatternSyntax pattern, TextSpan span)
+    {
+        Pattern = pattern;
+        Span = span;
+    }
 }
 
 file class BlockExpressionSyntax // : IBlockExpressionSyntax
 {
-    public IFixedList<IStatementSyntax> Statements { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IFixedList<IStatementSyntax> Statements { get; }
+    public TextSpan Span { get; }
+
+    public BlockExpressionSyntax(IFixedList<IStatementSyntax> statements, TextSpan span)
+    {
+        Statements = statements;
+        Span = span;
+    }
 }
 
 file class NewObjectExpressionSyntax // : INewObjectExpressionSyntax
 {
-    public ITypeNameSyntax Type { get; } = default!;
-    public IdentifierName? ConstructorName { get; } = default!;
-    public TextSpan? ConstructorNameSpan { get; } = default!;
-    public IFixedList<IExpressionSyntax> Arguments { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ITypeNameSyntax Type { get; }
+    public IdentifierName? ConstructorName { get; }
+    public TextSpan? ConstructorNameSpan { get; }
+    public IFixedList<IExpressionSyntax> Arguments { get; }
+    public TextSpan Span { get; }
+
+    public NewObjectExpressionSyntax(ITypeNameSyntax type, IdentifierName? constructorName, TextSpan? constructorNameSpan, IFixedList<IExpressionSyntax> arguments, TextSpan span)
+    {
+        Type = type;
+        ConstructorName = constructorName;
+        ConstructorNameSpan = constructorNameSpan;
+        Arguments = arguments;
+        Span = span;
+    }
 }
 
 file class UnsafeExpressionSyntax // : IUnsafeExpressionSyntax
 {
-    public IExpressionSyntax Expression { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax Expression { get; }
+    public TextSpan Span { get; }
+
+    public UnsafeExpressionSyntax(IExpressionSyntax expression, TextSpan span)
+    {
+        Expression = expression;
+        Span = span;
+    }
 }
 
 file class BoolLiteralExpressionSyntax // : IBoolLiteralExpressionSyntax
 {
-    public bool Value { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public bool Value { get; }
+    public TextSpan Span { get; }
+
+    public BoolLiteralExpressionSyntax(bool value, TextSpan span)
+    {
+        Value = value;
+        Span = span;
+    }
 }
 
 file class IntegerLiteralExpressionSyntax // : IIntegerLiteralExpressionSyntax
 {
-    public BigInteger Value { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public BigInteger Value { get; }
+    public TextSpan Span { get; }
+
+    public IntegerLiteralExpressionSyntax(BigInteger value, TextSpan span)
+    {
+        Value = value;
+        Span = span;
+    }
 }
 
 file class NoneLiteralExpressionSyntax // : INoneLiteralExpressionSyntax
 {
-    public TextSpan Span { get; } = default!;
+    public TextSpan Span { get; }
+
+    public NoneLiteralExpressionSyntax(TextSpan span)
+    {
+        Span = span;
+    }
 }
 
 file class StringLiteralExpressionSyntax // : IStringLiteralExpressionSyntax
 {
-    public string Value { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public string Value { get; }
+    public TextSpan Span { get; }
+
+    public StringLiteralExpressionSyntax(string value, TextSpan span)
+    {
+        Value = value;
+        Span = span;
+    }
 }
 
 file class AssignmentExpressionSyntax // : IAssignmentExpressionSyntax
 {
-    public IAssignableExpressionSyntax LeftOperand { get; } = default!;
-    public AssignmentOperator Operator { get; } = default!;
-    public IExpressionSyntax RightOperand { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IAssignableExpressionSyntax LeftOperand { get; }
+    public AssignmentOperator Operator { get; }
+    public IExpressionSyntax RightOperand { get; }
+    public TextSpan Span { get; }
+
+    public AssignmentExpressionSyntax(IAssignableExpressionSyntax leftOperand, AssignmentOperator @operator, IExpressionSyntax rightOperand, TextSpan span)
+    {
+        LeftOperand = leftOperand;
+        Operator = @operator;
+        RightOperand = rightOperand;
+        Span = span;
+    }
 }
 
 file class BinaryOperatorExpressionSyntax // : IBinaryOperatorExpressionSyntax
 {
-    public IExpressionSyntax LeftOperand { get; } = default!;
-    public BinaryOperator Operator { get; } = default!;
-    public IExpressionSyntax RightOperand { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax LeftOperand { get; }
+    public BinaryOperator Operator { get; }
+    public IExpressionSyntax RightOperand { get; }
+    public TextSpan Span { get; }
+
+    public BinaryOperatorExpressionSyntax(IExpressionSyntax leftOperand, BinaryOperator @operator, IExpressionSyntax rightOperand, TextSpan span)
+    {
+        LeftOperand = leftOperand;
+        Operator = @operator;
+        RightOperand = rightOperand;
+        Span = span;
+    }
 }
 
 file class UnaryOperatorExpressionSyntax // : IUnaryOperatorExpressionSyntax
 {
-    public UnaryOperatorFixity Fixity { get; } = default!;
-    public UnaryOperator Operator { get; } = default!;
-    public IExpressionSyntax Operand { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public UnaryOperatorFixity Fixity { get; }
+    public UnaryOperator Operator { get; }
+    public IExpressionSyntax Operand { get; }
+    public TextSpan Span { get; }
+
+    public UnaryOperatorExpressionSyntax(UnaryOperatorFixity fixity, UnaryOperator @operator, IExpressionSyntax operand, TextSpan span)
+    {
+        Fixity = fixity;
+        Operator = @operator;
+        Operand = operand;
+        Span = span;
+    }
 }
 
 file class IdExpressionSyntax // : IIdExpressionSyntax
 {
-    public IExpressionSyntax Referent { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax Referent { get; }
+    public TextSpan Span { get; }
+
+    public IdExpressionSyntax(IExpressionSyntax referent, TextSpan span)
+    {
+        Referent = referent;
+        Span = span;
+    }
 }
 
 file class ConversionExpressionSyntax // : IConversionExpressionSyntax
 {
-    public IExpressionSyntax Referent { get; } = default!;
-    public ConversionOperator Operator { get; } = default!;
-    public ITypeSyntax ConvertToType { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax Referent { get; }
+    public ConversionOperator Operator { get; }
+    public ITypeSyntax ConvertToType { get; }
+    public TextSpan Span { get; }
+
+    public ConversionExpressionSyntax(IExpressionSyntax referent, ConversionOperator @operator, ITypeSyntax convertToType, TextSpan span)
+    {
+        Referent = referent;
+        Operator = @operator;
+        ConvertToType = convertToType;
+        Span = span;
+    }
 }
 
 file class PatternMatchExpressionSyntax // : IPatternMatchExpressionSyntax
 {
-    public IExpressionSyntax Referent { get; } = default!;
-    public IPatternSyntax Pattern { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax Referent { get; }
+    public IPatternSyntax Pattern { get; }
+    public TextSpan Span { get; }
+
+    public PatternMatchExpressionSyntax(IExpressionSyntax referent, IPatternSyntax pattern, TextSpan span)
+    {
+        Referent = referent;
+        Pattern = pattern;
+        Span = span;
+    }
 }
 
 file class IfExpressionSyntax // : IIfExpressionSyntax
 {
-    public IExpressionSyntax Condition { get; } = default!;
-    public IBlockOrResultSyntax ThenBlock { get; } = default!;
-    public IElseClauseSyntax? ElseClause { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax Condition { get; }
+    public IBlockOrResultSyntax ThenBlock { get; }
+    public IElseClauseSyntax? ElseClause { get; }
+    public TextSpan Span { get; }
+
+    public IfExpressionSyntax(IExpressionSyntax condition, IBlockOrResultSyntax thenBlock, IElseClauseSyntax? elseClause, TextSpan span)
+    {
+        Condition = condition;
+        ThenBlock = thenBlock;
+        ElseClause = elseClause;
+        Span = span;
+    }
 }
 
 file class LoopExpressionSyntax // : ILoopExpressionSyntax
 {
-    public IBlockExpressionSyntax Block { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IBlockExpressionSyntax Block { get; }
+    public TextSpan Span { get; }
+
+    public LoopExpressionSyntax(IBlockExpressionSyntax block, TextSpan span)
+    {
+        Block = block;
+        Span = span;
+    }
 }
 
 file class WhileExpressionSyntax // : IWhileExpressionSyntax
 {
-    public IExpressionSyntax Condition { get; } = default!;
-    public IBlockExpressionSyntax Block { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax Condition { get; }
+    public IBlockExpressionSyntax Block { get; }
+    public TextSpan Span { get; }
+
+    public WhileExpressionSyntax(IExpressionSyntax condition, IBlockExpressionSyntax block, TextSpan span)
+    {
+        Condition = condition;
+        Block = block;
+        Span = span;
+    }
 }
 
 file class ForeachExpressionSyntax // : IForeachExpressionSyntax
 {
-    public IdentifierName VariableName { get; } = default!;
-    public IExpressionSyntax InExpression { get; } = default!;
-    public ITypeSyntax? Type { get; } = default!;
-    public IBlockExpressionSyntax Block { get; } = default!;
-    public TextSpan Span { get; } = default!;
-    public TextSpan NameSpan { get; } = default!;
-    public bool IsMutableBinding { get; } = default!;
+    public IdentifierName VariableName { get; }
+    public IExpressionSyntax InExpression { get; }
+    public ITypeSyntax? Type { get; }
+    public IBlockExpressionSyntax Block { get; }
+    public TextSpan Span { get; }
+    public TextSpan NameSpan { get; }
+    public bool IsMutableBinding { get; }
+
+    public ForeachExpressionSyntax(IdentifierName variableName, IExpressionSyntax inExpression, ITypeSyntax? type, IBlockExpressionSyntax block, TextSpan span, TextSpan nameSpan, bool isMutableBinding)
+    {
+        VariableName = variableName;
+        InExpression = inExpression;
+        Type = type;
+        Block = block;
+        Span = span;
+        NameSpan = nameSpan;
+        IsMutableBinding = isMutableBinding;
+    }
 }
 
 file class BreakExpressionSyntax // : IBreakExpressionSyntax
 {
-    public IExpressionSyntax? Value { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax? Value { get; }
+    public TextSpan Span { get; }
+
+    public BreakExpressionSyntax(IExpressionSyntax? value, TextSpan span)
+    {
+        Value = value;
+        Span = span;
+    }
 }
 
 file class NextExpressionSyntax // : INextExpressionSyntax
 {
-    public TextSpan Span { get; } = default!;
+    public TextSpan Span { get; }
+
+    public NextExpressionSyntax(TextSpan span)
+    {
+        Span = span;
+    }
 }
 
 file class ReturnExpressionSyntax // : IReturnExpressionSyntax
 {
-    public IExpressionSyntax? Value { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax? Value { get; }
+    public TextSpan Span { get; }
+
+    public ReturnExpressionSyntax(IExpressionSyntax? value, TextSpan span)
+    {
+        Value = value;
+        Span = span;
+    }
 }
 
 file class InvocationExpressionSyntax // : IInvocationExpressionSyntax
 {
-    public IExpressionSyntax Expression { get; } = default!;
-    public IFixedList<IExpressionSyntax> Arguments { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax Expression { get; }
+    public IFixedList<IExpressionSyntax> Arguments { get; }
+    public TextSpan Span { get; }
+
+    public InvocationExpressionSyntax(IExpressionSyntax expression, IFixedList<IExpressionSyntax> arguments, TextSpan span)
+    {
+        Expression = expression;
+        Arguments = arguments;
+        Span = span;
+    }
 }
 
 file class IdentifierNameExpressionSyntax // : IIdentifierNameExpressionSyntax
 {
-    public IdentifierName Name { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IdentifierName Name { get; }
+    public TextSpan Span { get; }
+
+    public IdentifierNameExpressionSyntax(IdentifierName name, TextSpan span)
+    {
+        Name = name;
+        Span = span;
+    }
 }
 
 file class SpecialTypeNameExpressionSyntax // : ISpecialTypeNameExpressionSyntax
 {
-    public SpecialTypeName Name { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public SpecialTypeName Name { get; }
+    public TextSpan Span { get; }
+
+    public SpecialTypeNameExpressionSyntax(SpecialTypeName name, TextSpan span)
+    {
+        Name = name;
+        Span = span;
+    }
 }
 
 file class GenericNameExpressionSyntax // : IGenericNameExpressionSyntax
 {
-    public GenericName Name { get; } = default!;
-    public IFixedList<ITypeSyntax> TypeArguments { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public GenericName Name { get; }
+    public IFixedList<ITypeSyntax> TypeArguments { get; }
+    public TextSpan Span { get; }
+
+    public GenericNameExpressionSyntax(GenericName name, IFixedList<ITypeSyntax> typeArguments, TextSpan span)
+    {
+        Name = name;
+        TypeArguments = typeArguments;
+        Span = span;
+    }
 }
 
 file class SelfExpressionSyntax // : ISelfExpressionSyntax
 {
-    public bool IsImplicit { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public bool IsImplicit { get; }
+    public TextSpan Span { get; }
+
+    public SelfExpressionSyntax(bool isImplicit, TextSpan span)
+    {
+        IsImplicit = isImplicit;
+        Span = span;
+    }
 }
 
 file class MemberAccessExpressionSyntax // : IMemberAccessExpressionSyntax
 {
-    public IExpressionSyntax Context { get; } = default!;
-    public StandardName MemberName { get; } = default!;
-    public IFixedList<ITypeSyntax> TypeArguments { get; } = default!;
-    public TextSpan MemberNameSpan { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax Context { get; }
+    public StandardName MemberName { get; }
+    public IFixedList<ITypeSyntax> TypeArguments { get; }
+    public TextSpan MemberNameSpan { get; }
+    public TextSpan Span { get; }
+
+    public MemberAccessExpressionSyntax(IExpressionSyntax context, StandardName memberName, IFixedList<ITypeSyntax> typeArguments, TextSpan memberNameSpan, TextSpan span)
+    {
+        Context = context;
+        MemberName = memberName;
+        TypeArguments = typeArguments;
+        MemberNameSpan = memberNameSpan;
+        Span = span;
+    }
 }
 
 file class MissingNameSyntax // : IMissingNameSyntax
 {
-    public TextSpan Span { get; } = default!;
+    public TextSpan Span { get; }
+
+    public MissingNameSyntax(TextSpan span)
+    {
+        Span = span;
+    }
 }
 
 file class MoveExpressionSyntax // : IMoveExpressionSyntax
 {
-    public ISimpleNameSyntax Referent { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ISimpleNameSyntax Referent { get; }
+    public TextSpan Span { get; }
+
+    public MoveExpressionSyntax(ISimpleNameSyntax referent, TextSpan span)
+    {
+        Referent = referent;
+        Span = span;
+    }
 }
 
 file class FreezeExpressionSyntax // : IFreezeExpressionSyntax
 {
-    public ISimpleNameSyntax Referent { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public ISimpleNameSyntax Referent { get; }
+    public TextSpan Span { get; }
+
+    public FreezeExpressionSyntax(ISimpleNameSyntax referent, TextSpan span)
+    {
+        Referent = referent;
+        Span = span;
+    }
 }
 
 file class AsyncBlockExpressionSyntax // : IAsyncBlockExpressionSyntax
 {
-    public IBlockExpressionSyntax Block { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IBlockExpressionSyntax Block { get; }
+    public TextSpan Span { get; }
+
+    public AsyncBlockExpressionSyntax(IBlockExpressionSyntax block, TextSpan span)
+    {
+        Block = block;
+        Span = span;
+    }
 }
 
 file class AsyncStartExpressionSyntax // : IAsyncStartExpressionSyntax
 {
-    public bool Scheduled { get; } = default!;
-    public IExpressionSyntax Expression { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public bool Scheduled { get; }
+    public IExpressionSyntax Expression { get; }
+    public TextSpan Span { get; }
+
+    public AsyncStartExpressionSyntax(bool scheduled, IExpressionSyntax expression, TextSpan span)
+    {
+        Scheduled = scheduled;
+        Expression = expression;
+        Span = span;
+    }
 }
 
 file class AwaitExpressionSyntax // : IAwaitExpressionSyntax
 {
-    public IExpressionSyntax Expression { get; } = default!;
-    public TextSpan Span { get; } = default!;
+    public IExpressionSyntax Expression { get; }
+    public TextSpan Span { get; }
+
+    public AwaitExpressionSyntax(IExpressionSyntax expression, TextSpan span)
+    {
+        Expression = expression;
+        Span = span;
+    }
 }
 
