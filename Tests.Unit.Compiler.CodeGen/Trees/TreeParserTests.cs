@@ -187,7 +187,7 @@ public class TreeParserTests
         var config = TreeParser.ParseGrammar(grammar);
 
         var rule = Assert.Single(config.Rules);
-        Assert.Equal(new SymbolNode("SubType"), rule.Defines);
+        Assert.Equal(new SymbolSyntax("SubType"), rule.Defines);
         var expectedParents = FixedList(QuotedSymbol("BaseType1"), Symbol("BaseType2"));
         Assert.Equal(expectedParents, rule.Parents);
         Assert.Empty(rule.DeclaredProperties);
@@ -307,7 +307,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Rules);
         var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
-        Assert.Equal(new TypeNode(Symbol("MyType"), CollectionKind.List, true), property.Type);
+        Assert.Equal(new TypeSyntax(Symbol("MyType"), CollectionKind.List, true), property.Type);
     }
 
     [Fact]
@@ -349,34 +349,34 @@ public class TreeParserTests
     }
     #endregion
 
-    private static SymbolNode Symbol(string text)
+    private static SymbolSyntax Symbol(string text)
     {
-        return new SymbolNode(text);
+        return new SymbolSyntax(text);
     }
 
-    private static SymbolNode QuotedSymbol(string text)
+    private static SymbolSyntax QuotedSymbol(string text)
     {
-        return new SymbolNode(text, true);
+        return new SymbolSyntax(text, true);
     }
 
-    private static TypeNode Type(SymbolNode symbol)
+    private static TypeSyntax Type(SymbolSyntax symbol)
     {
-        return new TypeNode(symbol, CollectionKind.None, false);
+        return new TypeSyntax(symbol, CollectionKind.None, false);
     }
 
-    private static TypeNode OptionalType(SymbolNode symbol)
+    private static TypeSyntax OptionalType(SymbolSyntax symbol)
     {
-        return new TypeNode(symbol, CollectionKind.None, true);
+        return new TypeSyntax(symbol, CollectionKind.None, true);
     }
 
-    private static TypeNode ListType(SymbolNode symbol)
+    private static TypeSyntax ListType(SymbolSyntax symbol)
     {
-        return new TypeNode(symbol, CollectionKind.List, false);
+        return new TypeSyntax(symbol, CollectionKind.List, false);
     }
 
-    private static TypeNode RefType(SymbolNode symbol)
+    private static TypeSyntax RefType(SymbolSyntax symbol)
     {
-        return new TypeNode(symbol, CollectionKind.None, false);
+        return new TypeSyntax(symbol, CollectionKind.None, false);
     }
 
     private static IFixedList<T> FixedList<T>(params T[] values)

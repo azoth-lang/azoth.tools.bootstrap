@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 public class Rule
 {
     public Grammar Grammar { get; }
-    public RuleNode Syntax { get; }
+    public RuleSyntax Syntax { get; }
 
     public InternalSymbol Defines { get; }
     public SymbolType DefinesType { get; }
@@ -52,7 +52,7 @@ public class Rule
     public IFixedList<Property> AllProperties => allProperties.Value;
     private readonly Lazy<IFixedList<Property>> allProperties;
 
-    public Rule(Grammar grammar, RuleNode syntax)
+    public Rule(Grammar grammar, RuleSyntax syntax)
     {
         Grammar = grammar;
         Syntax = syntax;

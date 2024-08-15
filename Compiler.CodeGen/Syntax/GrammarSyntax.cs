@@ -5,22 +5,22 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
-public sealed class GrammarNode
+public sealed class GrammarSyntax
 {
     public string Namespace { get; }
-    public SymbolNode? DefaultParent { get; }
+    public SymbolSyntax? DefaultParent { get; }
     public string Prefix { get; }
     public string Suffix { get; }
     public IFixedSet<string> UsingNamespaces { get; }
-    public IFixedList<RuleNode> Rules { get; }
+    public IFixedList<RuleSyntax> Rules { get; }
 
-    public GrammarNode(
+    public GrammarSyntax(
         string @namespace,
-        SymbolNode? defaultParent,
+        SymbolSyntax? defaultParent,
         string prefix,
         string suffix,
         IEnumerable<string> usingNamespaces,
-        IEnumerable<RuleNode> rules)
+        IEnumerable<RuleSyntax> rules)
     {
         Namespace = @namespace;
         DefaultParent = defaultParent;

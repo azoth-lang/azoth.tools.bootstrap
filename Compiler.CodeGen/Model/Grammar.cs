@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
 public sealed class Grammar
 {
-    public GrammarNode Syntax { get; }
+    public GrammarSyntax Syntax { get; }
 
     public string Namespace => Syntax.Namespace;
     public Symbol? DefaultParent { get; }
@@ -18,7 +18,7 @@ public sealed class Grammar
     public IFixedSet<string> UsingNamespaces => Syntax.UsingNamespaces;
     public IFixedList<Rule> Rules { get; }
 
-    public Grammar(GrammarNode syntax)
+    public Grammar(GrammarSyntax syntax)
     {
         Syntax = syntax;
         DefaultParent = Symbol.CreateFromSyntax(this, syntax.DefaultParent);

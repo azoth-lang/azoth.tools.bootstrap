@@ -18,7 +18,7 @@ public sealed class Property
             (p1, p2) => p1?.Name == p2?.Name && Types.Type.EquivalenceComparer.Equals(p1?.Type, p2?.Type),
             p => HashCode.Combine(p.Name, Types.Type.EquivalenceComparer.GetHashCode(p.Type)));
 
-    public PropertyNode Syntax { get; }
+    public PropertySyntax Syntax { get; }
 
     public Rule Rule { get; }
     public string Name => Syntax.Name;
@@ -47,7 +47,7 @@ public sealed class Property
     /// </summary>
     public bool ReferencesRule => Type.UnderlyingSymbol is InternalSymbol { ReferencedRule: not null };
 
-    public Property(Rule rule, PropertyNode syntax)
+    public Property(Rule rule, PropertySyntax syntax)
     {
         Rule = rule;
         Syntax = syntax;

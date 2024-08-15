@@ -10,10 +10,10 @@ public sealed class SymbolType : NonOptionalType
     public static SymbolType? Create(Symbol? symbol)
         => symbol is null ? null : new SymbolType(symbol);
 
-    public static SymbolType CreateFromSyntax(Grammar grammar, SymbolNode syntax)
+    public static SymbolType CreateFromSyntax(Grammar grammar, SymbolSyntax syntax)
         => new(Symbol.CreateFromSyntax(grammar, syntax));
 
-    public static SymbolType CreateExternalFromSyntax(SymbolNode syntax)
+    public static SymbolType CreateExternalFromSyntax(SymbolSyntax syntax)
         => new(Symbol.CreateExternalFromSyntax(syntax));
 
     public Symbol Symbol { get; }

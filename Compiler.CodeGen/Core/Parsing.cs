@@ -58,14 +58,14 @@ internal static class Parsing
     }
 
     [return: NotNullIfNotNull(nameof(symbol))]
-    public static SymbolNode? ParseSymbol(string? symbol)
+    public static SymbolSyntax? ParseSymbol(string? symbol)
     {
         if (symbol is null) return null;
         if (symbol == "<default>")
-            return new SymbolNode("", false);
+            return new SymbolSyntax("", false);
         if (symbol.StartsWith('`') && symbol.EndsWith('`'))
-            return new SymbolNode(symbol[1..^1], true);
-        return new SymbolNode(symbol, symbol == "void");
+            return new SymbolSyntax(symbol[1..^1], true);
+        return new SymbolSyntax(symbol, symbol == "void");
     }
 
     public static IEnumerable<string> ParseToStatements(IEnumerable<string> lines)
@@ -91,19 +91,19 @@ internal static class Parsing
             yield return currentStatement.ToString().Trim();
     }
 
-    public static IEnumerable<RuleNode> ParseRules(IEnumerable<string> lines)
+    public static IEnumerable<RuleSyntax> ParseRules(IEnumerable<string> lines)
     {
         var statements = ParseToStatements(lines).ToFixedList();
         foreach (var statement in statements)
             yield return ParseRule(statement);
     }
 
-    public static RuleNode ParseRule(string statement)
+    public static RuleSyntax ParseRule(string statement)
     {
         var (declaration, definition) = SplitDeclarationAndDefinition(statement);
         var (defines, parent, supertypes) = ParseDeclaration(declaration);
         var properties = ParseProperties(definition).ToFixedList();
-        return new RuleNode(defines, parent, supertypes, properties);
+        return new RuleSyntax(defines, parent, supertypes, properties);
     }
 
     public static (string Declaration, string? Definition) SplitDeclarationAndDefinition(string statement)
@@ -114,7 +114,7 @@ internal static class Parsing
         return (equalSplit[0].Trim(), equalSplit.Length > 1 ? equalSplit[1].Trim() : null);
     }
 
-    private static IEnumerable<PropertyNode> ParseProperties(string? definition)
+    private static IEnumerable<PropertySyntax> ParseProperties(string? definition)
     {
         if (definition is null) yield break;
 
@@ -123,10 +123,10 @@ internal static class Parsing
             yield return ParseProperty(property);
     }
 
-    public static PropertyNode ParseProperty(string property)
-        => ParseBinding(property, null, (name, type) => new PropertyNode(name, type));
+    public static PropertySyntax ParseProperty(string property)
+        => ParseBinding(property, null, (name, type) => new PropertySyntax(name, type));
 
-    private static T ParseBinding<T>(string property, string? defaultName, Func<string, TypeNode, T> create)
+    private static T ParseBinding<T>(string property, string? defaultName, Func<string, TypeSyntax, T> create)
     {
         var isOptional = property.EndsWith('?');
         property = isOptional ? property[..^1] : property;
@@ -139,7 +139,7 @@ internal static class Parsing
             {
                 var type = parts[0];
                 var collectionKind = ParseCollectionKind(ref type);
-                var grammarType = new TypeNode(ParseSymbol(type), collectionKind, isOptional);
+                var grammarType = new TypeSyntax(ParseSymbol(type), collectionKind, isOptional);
                 var name = defaultName ?? grammarType.Symbol.Text;
                 return create(name, grammarType);
             }
@@ -148,7 +148,7 @@ internal static class Parsing
                 var name = parts[0];
                 var type = parts[1];
                 var collectionKind = ParseCollectionKind(ref type);
-                var grammarType = new TypeNode(ParseSymbol(type), collectionKind, isOptional);
+                var grammarType = new TypeSyntax(ParseSymbol(type), collectionKind, isOptional);
                 return create(name, grammarType);
             }
             default:
@@ -173,7 +173,7 @@ internal static class Parsing
     public static IEnumerable<string> SplitProperties(string definition)
         => definition.SplitOrEmpty(' ').Where(v => !string.IsNullOrWhiteSpace(v));
 
-    private static (SymbolNode Defines, SymbolNode? Parent, IEnumerable<SymbolNode> Supertypes) ParseDeclaration(string declaration)
+    private static (SymbolSyntax Defines, SymbolSyntax? Parent, IEnumerable<SymbolSyntax> Supertypes) ParseDeclaration(string declaration)
     {
         var (defines, parent, parents) = SplitDeclaration(declaration);
         var definesSymbol = ParseSymbol(defines);
@@ -208,9 +208,9 @@ internal static class Parsing
         return (remainder, parent, parents);
     }
 
-    private static IEnumerable<SymbolNode> ParseSupertypes(string? parents)
+    private static IEnumerable<SymbolSyntax> ParseSupertypes(string? parents)
     {
-        if (parents is null) return Enumerable.Empty<SymbolNode>();
+        if (parents is null) return Enumerable.Empty<SymbolSyntax>();
 
         return SplitParents(parents)
                .Select(p => ParseSymbol(p));
@@ -219,6 +219,6 @@ internal static class Parsing
     public static IEnumerable<string> SplitParents(string parents)
         => parents.Split(',').Select(p => p.Trim());
 
-    public static IEnumerable<RuleNode> ParseRules(IFixedList<string> lines, SymbolNode? defaultParent)
+    public static IEnumerable<RuleSyntax> ParseRules(IFixedList<string> lines, SymbolSyntax? defaultParent)
         => ParseRules(lines).Select(r => r.WithDefaultParent(defaultParent));
 }

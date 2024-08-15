@@ -21,7 +21,7 @@ public abstract class Type : IEquatable<Type>
     public static SymbolType VoidSymbol { get; } = new SymbolType(new ExternalSymbol("Void"));
 
     [return: NotNullIfNotNull(nameof(syntax))]
-    public static Type? CreateFromSyntax(Grammar grammar, TypeNode? syntax)
+    public static Type? CreateFromSyntax(Grammar grammar, TypeSyntax? syntax)
     {
         if (syntax is null)
             return null;
@@ -29,14 +29,14 @@ public abstract class Type : IEquatable<Type>
     }
 
     [return: NotNullIfNotNull(nameof(syntax))]
-    public static Type? CreateExternalFromSyntax(TypeNode? syntax)
+    public static Type? CreateExternalFromSyntax(TypeSyntax? syntax)
     {
         if (syntax is null)
             return null;
         return CreateDerivedType(SymbolType.CreateExternalFromSyntax(syntax.Symbol), syntax);
     }
 
-    private static NonVoidType CreateDerivedType(SymbolType underlyingType, TypeNode syntax)
+    private static NonVoidType CreateDerivedType(SymbolType underlyingType, TypeSyntax syntax)
     {
         var type = syntax.CollectionKind switch
         {

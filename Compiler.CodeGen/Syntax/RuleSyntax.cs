@@ -5,19 +5,19 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
-public sealed class RuleNode
+public sealed class RuleSyntax
 {
-    public SymbolNode Defines { get; }
-    public SymbolNode? Parent { get; }
-    public IFixedSet<SymbolNode> Supertypes { get; }
-    public IFixedList<SymbolNode> Parents { get; }
-    public IFixedList<PropertyNode> DeclaredProperties { get; }
+    public SymbolSyntax Defines { get; }
+    public SymbolSyntax? Parent { get; }
+    public IFixedSet<SymbolSyntax> Supertypes { get; }
+    public IFixedList<SymbolSyntax> Parents { get; }
+    public IFixedList<PropertySyntax> DeclaredProperties { get; }
 
-    public RuleNode(
-        SymbolNode defines,
-        SymbolNode? parent,
-        IEnumerable<SymbolNode> supertypes,
-        IEnumerable<PropertyNode> declaredProperties)
+    public RuleSyntax(
+        SymbolSyntax defines,
+        SymbolSyntax? parent,
+        IEnumerable<SymbolSyntax> supertypes,
+        IEnumerable<PropertySyntax> declaredProperties)
     {
         Defines = defines;
         Parent = parent;
@@ -30,12 +30,12 @@ public sealed class RuleNode
             throw new ArgumentException($"Rule for {defines} contains duplicate property definitions");
     }
 
-    public RuleNode WithDefaultParent(SymbolNode? defaultParent)
+    public RuleSyntax WithDefaultParent(SymbolSyntax? defaultParent)
     {
         if (Parent is not null
             || defaultParent is null
             || Defines == defaultParent) return this;
-        return new RuleNode(Defines, defaultParent, Supertypes, DeclaredProperties);
+        return new RuleSyntax(Defines, defaultParent, Supertypes, DeclaredProperties);
     }
 
     public override string ToString()

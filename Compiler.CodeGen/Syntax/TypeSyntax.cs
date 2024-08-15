@@ -5,7 +5,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public sealed record TypeNode(SymbolNode Symbol, CollectionKind CollectionKind, bool IsOptional)
+public sealed record TypeSyntax(SymbolSyntax Symbol, CollectionKind CollectionKind, bool IsOptional)
 {
     public override string ToString()
     {

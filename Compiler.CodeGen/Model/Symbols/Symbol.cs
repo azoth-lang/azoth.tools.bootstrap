@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 public abstract class Symbol : IEquatable<Symbol>
 {
     [return: NotNullIfNotNull(nameof(syntax))]
-    public static Symbol? CreateFromSyntax(Grammar? grammar, SymbolNode? syntax)
+    public static Symbol? CreateFromSyntax(Grammar? grammar, SymbolSyntax? syntax)
     {
         if (syntax is null)
             return null;
@@ -23,7 +23,7 @@ public abstract class Symbol : IEquatable<Symbol>
     }
 
     [return: NotNullIfNotNull(nameof(syntax))]
-    public static InternalSymbol? CreateInternalFromSyntax(Grammar grammar, SymbolNode? syntax)
+    public static InternalSymbol? CreateInternalFromSyntax(Grammar grammar, SymbolSyntax? syntax)
     {
         if (syntax is null) return null;
         if (syntax.IsQuoted) throw new ArgumentException("Internal symbol cannot be quoted.", nameof(syntax));
@@ -31,7 +31,7 @@ public abstract class Symbol : IEquatable<Symbol>
     }
 
     [return: NotNullIfNotNull(nameof(syntax))]
-    public static ExternalSymbol? CreateExternalFromSyntax(SymbolNode? syntax)
+    public static ExternalSymbol? CreateExternalFromSyntax(SymbolSyntax? syntax)
     {
         if (syntax is null) return null;
         if (!syntax.IsQuoted)
