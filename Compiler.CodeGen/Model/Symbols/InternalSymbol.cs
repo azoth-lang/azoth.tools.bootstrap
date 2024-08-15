@@ -8,6 +8,7 @@ public sealed class InternalSymbol : Symbol
     private readonly TreeModel tree;
     public string ShortName { get; }
     public override string FullName { get; }
+    public string ClassName { get; }
     private readonly Lazy<TreeNodeModel> referencedNode;
     public TreeNodeModel ReferencedNode => referencedNode.Value;
 
@@ -16,6 +17,7 @@ public sealed class InternalSymbol : Symbol
         this.tree = tree;
         ShortName = shortName;
         FullName = $"{tree.SymbolPrefix}{shortName}{tree.SymbolSuffix}";
+        ClassName = $"{tree.ClassPrefix}{shortName}{tree.ClassSuffix}";
         referencedNode = new(LookupReferencedNode);
         return;
 

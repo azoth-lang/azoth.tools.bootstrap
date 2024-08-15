@@ -12,10 +12,13 @@ internal static class TreeParser
 
         var ns = Parsing.GetRequiredConfig(lines, "namespace");
         var rootType = Parsing.ParseSymbol(Parsing.GetConfig(lines, "root"));
-        var prefix = Parsing.GetConfig(lines, "prefix") ?? "";
-        var suffix = Parsing.GetConfig(lines, "suffix") ?? "";
+        var symbolPrefix = Parsing.GetConfig(lines, "prefix") ?? "";
+        var symbolSuffix = Parsing.GetConfig(lines, "suffix") ?? "";
+        var classPrefix = Parsing.GetConfig(lines, "class-prefix") ?? "";
+        var classSuffix = Parsing.GetConfig(lines, "class-suffix") ?? "";
         var usingNamespaces = Parsing.ParseUsingNamespaces(lines);
         var rules = Parsing.ParseRules(lines);
-        return new TreeSyntax(ns, rootType, prefix, suffix, usingNamespaces, rules);
+        return new TreeSyntax(ns, rootType, symbolPrefix, symbolSuffix, classPrefix, classSuffix,
+            usingNamespaces, rules);
     }
 }

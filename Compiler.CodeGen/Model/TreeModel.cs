@@ -15,6 +15,8 @@ public sealed class TreeModel
     public Symbol? Root { get; }
     public string SymbolPrefix => Syntax.SymbolPrefix;
     public string SymbolSuffix => Syntax.SymbolSuffix;
+    public string ClassPrefix => Syntax.ClassPrefix;
+    public string ClassSuffix => Syntax.ClassSuffix;
     public IFixedSet<string> UsingNamespaces => Syntax.UsingNamespaces;
     public IFixedList<TreeNodeModel> Nodes { get; }
 

@@ -12,6 +12,9 @@ public sealed class TreeSyntax
     public SymbolSyntax? Root { get; }
     public string SymbolPrefix { get; }
     public string SymbolSuffix { get; }
+    public string ClassPrefix { get; }
+    public string ClassSuffix { get; }
+
     public IFixedSet<string> UsingNamespaces { get; }
     public IFixedList<TreeNodeSyntax> Nodes { get; }
 
@@ -20,15 +23,19 @@ public sealed class TreeSyntax
         SymbolSyntax? root,
         string symbolPrefix,
         string symbolSuffix,
+        string classPrefix,
+        string classSuffix,
         IEnumerable<string> usingNamespaces,
-        IEnumerable<TreeNodeSyntax> rules)
+        IEnumerable<TreeNodeSyntax> nodes)
     {
         Namespace = @namespace;
         Root = root;
         SymbolPrefix = symbolPrefix;
         SymbolSuffix = symbolSuffix;
+        ClassPrefix = classPrefix;
+        ClassSuffix = classSuffix;
         UsingNamespaces = usingNamespaces.ToFixedSet();
-        Nodes = rules.ToFixedList();
+        Nodes = nodes.ToFixedList();
         if (Nodes.Select(r => r.Defines).Duplicates().Any())
             throw new ValidationException("Node names must be unique");
     }
