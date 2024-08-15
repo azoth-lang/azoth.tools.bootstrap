@@ -1,9 +1,7 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -17,7 +15,6 @@ internal sealed class ConstructorDefinitionSyntax : InvocableDefinitionSyntax, I
     public new IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
     public override IFixedList<IParameterSyntax> AllParameters { get; }
     public IBlockBodySyntax Body { get; }
-    public new AcyclicPromise<ConstructorSymbol> Symbol { get; }
 
     public ConstructorDefinitionSyntax(
         IClassDefinitionSyntax declaringClass,
@@ -29,8 +26,7 @@ internal sealed class ConstructorDefinitionSyntax : InvocableDefinitionSyntax, I
         IConstructorSelfParameterSyntax selfParameter,
         IFixedList<IConstructorOrInitializerParameterSyntax> parameters,
         IBlockBodySyntax body)
-        : base(span, file, accessModifier, nameSpan, name, parameters,
-            new AcyclicPromise<ConstructorSymbol>())
+        : base(span, file, accessModifier, nameSpan, name, parameters)
     {
         DefiningType = declaringClass;
         Name = name;
@@ -38,7 +34,6 @@ internal sealed class ConstructorDefinitionSyntax : InvocableDefinitionSyntax, I
         Parameters = parameters;
         AllParameters = parameters.Prepend<IParameterSyntax>(selfParameter).ToFixedList();
         Body = body;
-        Symbol = (AcyclicPromise<ConstructorSymbol>)base.Symbol;
     }
 
     public override string ToString()

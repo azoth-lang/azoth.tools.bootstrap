@@ -1,9 +1,7 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -17,7 +15,6 @@ internal class InitializerDefinitionSyntax : InvocableDefinitionSyntax, IInitial
     public new IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
     public override IFixedList<IParameterSyntax> AllParameters { get; }
     public IBlockBodySyntax Body { get; }
-    public new AcyclicPromise<InitializerSymbol> Symbol { get; }
 
     public InitializerDefinitionSyntax(
         IStructDefinitionSyntax declaringStruct,
@@ -29,7 +26,7 @@ internal class InitializerDefinitionSyntax : InvocableDefinitionSyntax, IInitial
         IInitializerSelfParameterSyntax selfParameter,
         IFixedList<IConstructorOrInitializerParameterSyntax> parameters,
         IBlockBodySyntax body)
-        : base(span, file, accessModifier, nameSpan, name, parameters, new AcyclicPromise<InitializerSymbol>())
+        : base(span, file, accessModifier, nameSpan, name, parameters)
     {
         DefiningType = declaringStruct;
         Name = name;
@@ -37,7 +34,6 @@ internal class InitializerDefinitionSyntax : InvocableDefinitionSyntax, IInitial
         Parameters = parameters;
         AllParameters = parameters.Prepend<IParameterSyntax>(selfParameter).ToFixedList();
         Body = body;
-        Symbol = (AcyclicPromise<InitializerSymbol>)base.Symbol;
     }
 
     public override string ToString()

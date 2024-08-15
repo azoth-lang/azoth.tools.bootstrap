@@ -1,8 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -16,7 +14,6 @@ internal class AssociatedFunctionDefinitionSyntax : InvocableDefinitionSyntax, I
     public override IFixedList<IParameterSyntax> AllParameters => Parameters;
     public IReturnSyntax? Return { get; }
     public IBodySyntax Body { get; }
-    public new AcyclicPromise<FunctionSymbol> Symbol { get; }
 
     public AssociatedFunctionDefinitionSyntax(
         ITypeDefinitionSyntax declaringType,
@@ -28,14 +25,13 @@ internal class AssociatedFunctionDefinitionSyntax : InvocableDefinitionSyntax, I
         IFixedList<INamedParameterSyntax> parameters,
         IReturnSyntax? @return,
         IBodySyntax body)
-        : base(span, file, accessModifier, nameSpan, name, parameters, new AcyclicPromise<FunctionSymbol>())
+        : base(span, file, accessModifier, nameSpan, name, parameters)
     {
         DefiningType = declaringType;
         Name = name;
         Parameters = parameters;
         Body = body;
         Return = @return;
-        Symbol = (AcyclicPromise<FunctionSymbol>)base.Symbol;
     }
 
     public override string ToString()

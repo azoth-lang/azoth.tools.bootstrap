@@ -1,9 +1,6 @@
-using System;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
@@ -11,28 +8,13 @@ internal abstract class NonMemberDefinitionSyntax : DefinitionSyntax, INonMember
 {
     public NamespaceName ContainingNamespaceName { get; }
 
-    private NamespaceSymbol? containingNamespaceSymbol;
-    public NamespaceSymbol ContainingNamespaceSymbol
-    {
-        get =>
-            containingNamespaceSymbol
-            ?? throw new InvalidOperationException($"{ContainingNamespaceSymbol} not yet assigned");
-        set
-        {
-            if (containingNamespaceSymbol is not null)
-                throw new InvalidOperationException($"Can't set {nameof(ContainingNamespaceSymbol)} repeatedly");
-            containingNamespaceSymbol = value;
-        }
-    }
-
     protected NonMemberDefinitionSyntax(
         NamespaceName containingNamespaceName,
         TextSpan span,
         CodeFile file,
         TypeName? name,
-        TextSpan nameSpan,
-        IPromise<Symbol> symbol)
-        : base(span, file, name, nameSpan, symbol)
+        TextSpan nameSpan)
+        : base(span, file, name, nameSpan)
     {
         ContainingNamespaceName = containingNamespaceName;
     }

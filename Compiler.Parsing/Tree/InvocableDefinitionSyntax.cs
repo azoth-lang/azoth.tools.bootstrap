@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -14,7 +12,6 @@ internal abstract class InvocableDefinitionSyntax : DefinitionSyntax, IInvocable
     public IAccessModifierToken? AccessModifier { get; }
     public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
     public abstract IFixedList<IParameterSyntax> AllParameters { get; }
-    public new IPromise<InvocableSymbol> Symbol { get; }
 
     protected InvocableDefinitionSyntax(
         TextSpan span,
@@ -22,12 +19,10 @@ internal abstract class InvocableDefinitionSyntax : DefinitionSyntax, IInvocable
         IAccessModifierToken? accessModifier,
         TextSpan nameSpan,
         IdentifierName? name,
-        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
-        IPromise<InvocableSymbol> symbol)
-        : base(span, file, name, nameSpan, symbol)
+        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters)
+        : base(span, file, name, nameSpan)
     {
         AccessModifier = accessModifier;
         Parameters = parameters.ToFixedList();
-        Symbol = symbol;
     }
 }

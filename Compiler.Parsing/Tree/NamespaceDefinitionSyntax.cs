@@ -1,9 +1,7 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -18,7 +16,6 @@ internal class NamespaceDefinitionSyntax : NonMemberDefinitionSyntax, INamespace
     public bool IsGlobalQualified { get; }
     public NamespaceName DeclaredNames { get; }
     public NamespaceName FullName { get; }
-    public new Promise<NamespaceSymbol> Symbol { get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     public IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
 
@@ -31,14 +28,13 @@ internal class NamespaceDefinitionSyntax : NonMemberDefinitionSyntax, INamespace
         TextSpan nameSpan,
         IFixedList<IUsingDirectiveSyntax> usingDirectives,
         IFixedList<INonMemberDefinitionSyntax> declarations)
-        : base(containingNamespaceName, span, file, declaredNames.Segments.LastOrDefault(), nameSpan, new Promise<NamespaceSymbol>())
+        : base(containingNamespaceName, span, file, declaredNames.Segments.LastOrDefault(), nameSpan)
     {
         DeclaredNames = declaredNames;
         FullName = containingNamespaceName.Qualify(declaredNames);
         UsingDirectives = usingDirectives;
         Definitions = declarations;
         IsGlobalQualified = isGlobalQualified;
-        Symbol = (Promise<NamespaceSymbol>)base.Symbol;
     }
 
     public override string ToString() => $"namespace ::{FullName} {{ … }}";

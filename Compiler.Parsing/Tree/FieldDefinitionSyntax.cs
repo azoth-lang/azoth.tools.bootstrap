@@ -1,9 +1,7 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -13,7 +11,6 @@ internal class FieldDefinitionSyntax : MemberDefinitionSyntax, IFieldDefinitionS
     public new IClassOrStructDefinitionSyntax DefiningType { get; }
     public bool IsMutableBinding { get; }
     public new IdentifierName Name { get; }
-    public new AcyclicPromise<FieldSymbol> Symbol { [DebuggerStepThrough] get; }
     public ITypeSyntax Type { get; }
     public IExpressionSyntax? Initializer { [DebuggerStepThrough] get; }
 
@@ -27,14 +24,13 @@ internal class FieldDefinitionSyntax : MemberDefinitionSyntax, IFieldDefinitionS
         IdentifierName name,
         ITypeSyntax type,
         IExpressionSyntax? initializer)
-        : base(declaringType, span, file, accessModifier, nameSpan, name, new AcyclicPromise<FieldSymbol>())
+        : base(declaringType, span, file, accessModifier, nameSpan, name)
     {
         DefiningType = declaringType;
         IsMutableBinding = mutableBinding;
         Name = name;
         Type = type;
         Initializer = initializer!;
-        Symbol = (AcyclicPromise<FieldSymbol>)base.Symbol;
     }
 
     public override string ToString()

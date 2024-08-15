@@ -1,10 +1,8 @@
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -19,7 +17,6 @@ internal abstract class MethodDefinitionSyntax : InvocableDefinitionSyntax, IMet
     public new IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public override IFixedList<IParameterSyntax> AllParameters { [DebuggerStepThrough] get; }
     public abstract IReturnSyntax? Return { [DebuggerStepThrough] get; }
-    public new AcyclicPromise<MethodSymbol> Symbol { [DebuggerStepThrough] get; }
 
     protected MethodDefinitionSyntax(
         ITypeDefinitionSyntax declaringType,
@@ -31,13 +28,12 @@ internal abstract class MethodDefinitionSyntax : InvocableDefinitionSyntax, IMet
         IMethodSelfParameterSyntax selfParameter,
         IFixedList<INamedParameterSyntax> parameters)
         : base(span, file, accessModifier, nameSpan, name,
-            parameters, new AcyclicPromise<MethodSymbol>())
+            parameters)
     {
         DefiningType = declaringType;
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters;
         AllParameters = parameters.Prepend<IParameterSyntax>(selfParameter).ToFixedList();
-        Symbol = (AcyclicPromise<MethodSymbol>)base.Symbol;
     }
 }

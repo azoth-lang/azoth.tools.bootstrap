@@ -3,8 +3,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -16,7 +14,6 @@ internal class ClassDefinitionSyntax : TypeDefinitionSyntax<IClassMemberDefiniti
     public bool IsAbstract { get; }
     public IStandardTypeNameSyntax? BaseTypeName { get; }
     public override IFixedList<IClassMemberDefinitionSyntax> Members { get; }
-    public ConstructorSymbol? DefaultConstructorSymbol { get; private set; }
 
     public ClassDefinitionSyntax(
         NamespaceName containingNamespaceName,
@@ -42,20 +39,6 @@ internal class ClassDefinitionSyntax : TypeDefinitionSyntax<IClassMemberDefiniti
         var (members, bodySpan) = parseMembers(this);
         Members = members;
         Span = TextSpan.Covering(headerSpan, bodySpan);
-    }
-
-    public void CreateDefaultConstructor(ISymbolTreeBuilder symbolTree)
-    {
-        if (Members.Any(m => m is IConstructorDefinitionSyntax))
-            return;
-
-        if (DefaultConstructorSymbol is not null)
-            throw new InvalidOperationException($"Can't {nameof(CreateDefaultConstructor)} twice");
-
-        var constructorSymbol = ConstructorSymbol.CreateDefault(Symbol.Result);
-
-        symbolTree.Add(constructorSymbol);
-        DefaultConstructorSymbol = constructorSymbol;
     }
 
     public override string ToString()

@@ -4,7 +4,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
@@ -17,8 +16,6 @@ internal class ForeachExpressionSyntax : DataTypedExpressionSyntax, IForeachExpr
 
     public ITypeSyntax? Type { [DebuggerStepThrough] get; }
     public IExpressionSyntax InExpression { [DebuggerStepThrough] get; }
-    public Promise<MethodSymbol?> IterateMethod { get; } = new Promise<MethodSymbol?>();
-    public Promise<MethodSymbol> NextMethod { get; } = new Promise<MethodSymbol>();
 
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
 

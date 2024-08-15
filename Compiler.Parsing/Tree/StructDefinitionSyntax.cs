@@ -3,8 +3,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -13,7 +11,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 internal class StructDefinitionSyntax : TypeDefinitionSyntax<IStructMemberDefinitionSyntax>, IStructDefinitionSyntax
 {
     public override IFixedList<IStructMemberDefinitionSyntax> Members { get; }
-    public InitializerSymbol? DefaultInitializerSymbol { get; private set; }
 
     public StructDefinitionSyntax(
         NamespaceName containingNamespaceName,
@@ -34,20 +31,6 @@ internal class StructDefinitionSyntax : TypeDefinitionSyntax<IStructMemberDefini
         var (members, bodySpan) = parseMembers(this);
         Members = members;
         Span = TextSpan.Covering(headerSpan, bodySpan);
-    }
-
-    public void CreateDefaultInitializer(ISymbolTreeBuilder symbolTree)
-    {
-        if (Members.Any(m => m is IInitializerDefinitionSyntax))
-            return;
-
-        if (DefaultInitializerSymbol is not null)
-            throw new InvalidOperationException($"Can't {nameof(CreateDefaultInitializer)} twice");
-
-        var constructorSymbol = InitializerSymbol.CreateDefault(Symbol.Result);
-
-        symbolTree.Add(constructorSymbol);
-        DefaultInitializerSymbol = constructorSymbol;
     }
 
     public override string ToString()
