@@ -37,7 +37,7 @@ internal sealed class StringLiteralExpressionNode : LiteralExpressionNode, IStri
         Syntax = syntax;
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ExpressionTypesAspect.StringLiteralExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

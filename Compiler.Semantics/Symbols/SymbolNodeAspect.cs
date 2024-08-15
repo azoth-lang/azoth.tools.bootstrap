@@ -102,7 +102,7 @@ internal static class SymbolNodeAspect
         return symbolNode;
     }
 
-    public static void StandardTypeName_ContributeDiagnostics(IStandardTypeNameNode node, DiagnosticsBuilder diagnostics)
+    public static void StandardTypeName_ContributeDiagnostics(IStandardTypeNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ReferencedDeclaration is not null)
             return;

@@ -21,7 +21,7 @@ public class PackageSyntax : IPackageSyntax
     public IFixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
     public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
     public IFixedSet<IPackageReferenceSyntax> References { get; }
-    public DiagnosticsCollection Diagnostics { get; }
+    public DiagnosticCollection Diagnostics { get; }
 
     public PackageSyntax(
         IdentifierName name,
@@ -33,7 +33,7 @@ public class PackageSyntax : IPackageSyntax
         CompilationUnits = compilationUnits;
         TestingCompilationUnits = testingCompilationUnits;
         References = references;
-        var builder = new DiagnosticsBuilder
+        var builder = new DiagnosticCollectionBuilder
         {
             CompilationUnits.Concat(TestingCompilationUnits).SelectMany(cu => cu.Diagnostics)
         };

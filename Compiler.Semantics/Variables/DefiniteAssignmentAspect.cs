@@ -55,7 +55,7 @@ internal static class DefiniteAssignmentAspect
         return previous.Select(d => d.DefinitelyAssigned).Aggregate((a, b) => a.Intersect(b));
     }
 
-    public static void VariableNameExpression_ContributeDiagnostics(IVariableNameExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void VariableNameExpression_ContributeDiagnostics(IVariableNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node is not { ReferencedDefinition: IVariableBindingNode variableBinding })
             return;

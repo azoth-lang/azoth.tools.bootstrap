@@ -27,9 +27,9 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
         => packageDeclarations.TryGetValue(out var value) ? value
             : packageDeclarations.GetValue(this, SymbolNodeAspect.Package_PackageDeclarations);
-    private DiagnosticsCollection? diagnostics;
+    private DiagnosticCollection? diagnostics;
     private bool diagnosticsCached;
-    public DiagnosticsCollection Diagnostics
+    public DiagnosticCollection Diagnostics
         => GrammarAttribute.IsCached(in diagnosticsCached) ? diagnostics!
             : this.Synthetic(ref diagnosticsCached, ref diagnostics,
                 DiagnosticsAspect.Package);

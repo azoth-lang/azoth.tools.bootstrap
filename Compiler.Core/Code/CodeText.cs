@@ -1,12 +1,10 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Code;
 
 /// The text of a source code file
-public class CodeText
+public sealed class CodeText
 {
-
     public string Text { get; }
 
     public int Length => Text.Length;
@@ -15,7 +13,6 @@ public class CodeText
 
     private readonly Lazy<TextLines> lines;
 
-    [SuppressMessage("Design", "CA1043:Use Integral Or String Argument For Indexers", Justification = "TextSpan is a struct and represents an index range")]
     public string this[TextSpan span] => Text.Substring(span.Start, span.Length);
     public char this[int index] => Text[index];
 
@@ -25,15 +22,9 @@ public class CodeText
         lines = new Lazy<TextLines>(GetLines);
     }
 
-    private TextLines GetLines()
-    {
-        return new TextLines(Text);
-    }
+    private TextLines GetLines() => new(Text);
 
-    public TextPosition PositionOfStart(in TextSpan span)
-    {
-        return PositionOf(span.Start);
-    }
+    public TextPosition PositionOfStart(in TextSpan span) => PositionOf(span.Start);
 
     public TextPosition PositionOfEnd(in TextSpan span)
     {

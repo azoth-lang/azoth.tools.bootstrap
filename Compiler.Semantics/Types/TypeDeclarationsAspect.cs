@@ -23,20 +23,20 @@ internal static class TypeDeclarationsAspect
             GetGenericParameters(node), node.Supertypes);
     }
 
-    public static void ClassDeclaration_ContributeDiagnostics(IClassDefinitionNode node, DiagnosticsBuilder diagnostics)
+    public static void ClassDeclaration_ContributeDiagnostics(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         CheckBaseTypeMustBeAClass(node, diagnostics);
 
         CheckBaseTypeMustMaintainIndependence(node, diagnostics);
     }
 
-    private static void CheckBaseTypeMustBeAClass(IClassDefinitionNode node, DiagnosticsBuilder diagnostics)
+    private static void CheckBaseTypeMustBeAClass(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.BaseTypeName?.ReferencedSymbol is not null and not UserTypeSymbol { DeclaresType.IsClass: true })
             diagnostics.Add(OtherSemanticError.BaseTypeMustBeClass(node.File, node.Name, node.BaseTypeName.Syntax));
     }
 
-    private static void CheckBaseTypeMustMaintainIndependence(IClassDefinitionNode node, DiagnosticsBuilder diagnostics)
+    private static void CheckBaseTypeMustMaintainIndependence(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var declaresType = node.Symbol.DeclaresType;
         // TODO nested classes and traits need to be checked if nested inside of generic types?
@@ -134,7 +134,7 @@ internal static class TypeDeclarationsAspect
         }
     }
 
-    public static void TypeDeclaration_ContributeDiagnostics(ITypeDefinitionNode node, DiagnosticsBuilder diagnostics)
+    public static void TypeDeclaration_ContributeDiagnostics(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         CheckSupertypesForCycle(node, diagnostics);
 
@@ -148,7 +148,7 @@ internal static class TypeDeclarationsAspect
         CheckSupertypesMaintainIndependence(node, diagnostics);
     }
 
-    private static void CheckSupertypesForCycle(ITypeDefinitionNode node, DiagnosticsBuilder diagnostics)
+    private static void CheckSupertypesForCycle(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var declaredType = node.DeclaredType;
         foreach (var supertypeName in node.AllSupertypeNames)
@@ -159,13 +159,13 @@ internal static class TypeDeclarationsAspect
     private static bool InheritsFrom(this IStandardTypeNameNode node, IDeclaredUserType type)
         => node.ReferencedDeclaration?.Supertypes.Any(t => t.DeclaredType.Equals(type)) ?? false;
 
-    private static void CheckTypeArgumentsAreConstructable(ITypeDefinitionNode node, DiagnosticsBuilder diagnostics)
+    private static void CheckTypeArgumentsAreConstructable(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         foreach (IStandardTypeNameNode supertypeName in node.SupertypeNames)
             ExpressionTypesAspect.CheckTypeArgumentsAreConstructable(supertypeName, diagnostics);
     }
 
-    private static void CheckSupertypesMustBeClassOrTrait(ITypeDefinitionNode typeNode, DiagnosticsBuilder diagnostics)
+    private static void CheckSupertypesMustBeClassOrTrait(ITypeDefinitionNode typeNode, DiagnosticCollectionBuilder diagnostics)
     {
         foreach (var node in typeNode.SupertypeNames)
             // Null symbol will report a separate name binding error
@@ -173,7 +173,7 @@ internal static class TypeDeclarationsAspect
                 diagnostics.Add(OtherSemanticError.SupertypeMustBeClassOrTrait(node.File, typeNode.Name, node.Syntax));
     }
 
-    private static void CheckAllSupertypesAreOutputSafe(ITypeDefinitionNode node, DiagnosticsBuilder diagnostics)
+    private static void CheckAllSupertypesAreOutputSafe(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var declaresType = node.Symbol.DeclaresType;
         // TODO nested classes and traits need to be checked if nested inside of generic types
@@ -189,7 +189,7 @@ internal static class TypeDeclarationsAspect
 
     private static void CheckSupertypesMaintainIndependence(
         ITypeDefinitionNode typeDefinition,
-        DiagnosticsBuilder diagnostics)
+        DiagnosticCollectionBuilder diagnostics)
     {
         var declaresType = typeDefinition.Symbol.DeclaresType;
         // TODO nested classes and traits need to be checked if nested inside of generic types?

@@ -19,7 +19,7 @@ internal static class TypeModifiersAspect
     private static AccessModifier EntityDeclarationAccessModifier(IEntityDefinitionSyntax entityDefinitionSyntax)
         => entityDefinitionSyntax.AccessModifier?.ToAccessModifier() ?? AccessModifier.Private;
 
-    public static void AbstractMethodDeclaration_ContributeDiagnostics(IAbstractMethodDefinitionNode node, DiagnosticsBuilder diagnostics)
+    public static void AbstractMethodDeclaration_ContributeDiagnostics(IAbstractMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var concreteClass = !node.ContainingDeclaredType.IsAbstract;
         if (concreteClass)

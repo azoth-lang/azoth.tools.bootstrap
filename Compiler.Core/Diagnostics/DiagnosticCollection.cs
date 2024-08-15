@@ -4,16 +4,19 @@ using System.Linq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
-public sealed class DiagnosticsCollection : IReadOnlyList<Diagnostic>
+/// <summary>
+/// An immutable collection of diagnostics in sorted order.
+/// </summary>
+public sealed class DiagnosticCollection : IReadOnlyList<Diagnostic>
 {
-    public static readonly DiagnosticsCollection Empty = new();
+    public static readonly DiagnosticCollection Empty = new();
 
     private readonly IReadOnlyList<Diagnostic> diagnostics;
 
     public int Count => diagnostics.Count;
     public int FatalErrorCount { get; }
 
-    public DiagnosticsCollection(DiagnosticsBuilder diagnostics)
+    public DiagnosticCollection(DiagnosticCollectionBuilder diagnostics)
     {
         FatalErrorCount = diagnostics.FatalErrorCount;
         // Don't wrap in read only list, as this class is the wrapper
@@ -22,7 +25,7 @@ public sealed class DiagnosticsCollection : IReadOnlyList<Diagnostic>
                                       .ToList();
     }
 
-    private DiagnosticsCollection()
+    private DiagnosticCollection()
     {
         diagnostics = [];
     }

@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
-public class Diagnostic
+public sealed class Diagnostic
 {
     public CodeFile File { get; }
     public TextSpan Span { get; }

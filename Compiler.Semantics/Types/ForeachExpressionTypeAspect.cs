@@ -46,7 +46,7 @@ internal static class ForeachExpressionTypeAspect
             // TODO when the `foreach` has a type other than void, correctly handle the value id
             .Constant(node.ValueId);
 
-    public static void ForeachExpression_ContributeDiagnostics(IForeachExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void ForeachExpression_ContributeDiagnostics(IForeachExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var iterableType = node.IntermediateInExpression?.Type ?? DataType.Unknown;
         if (iterableType is UnknownType)

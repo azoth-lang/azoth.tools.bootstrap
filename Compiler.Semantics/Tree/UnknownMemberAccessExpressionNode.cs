@@ -41,7 +41,7 @@ internal class UnknownMemberAccessExpressionNode : UnknownNameExpressionNode, IU
         ReferencedMembers = referencedMembers.ToFixedSet();
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         BindingAmbiguousNamesAspect.UnknownMemberAccessExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

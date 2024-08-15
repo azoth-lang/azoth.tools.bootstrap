@@ -57,7 +57,7 @@ internal sealed class FreezeValueExpressionNode : ExpressionNode, IFreezeValueEx
         return false;
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ExpressionTypesAspect.FreezeValueExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

@@ -78,13 +78,13 @@ internal static class SymbolAspect
                                  .SingleOrDefault(s => s.Arity == 0);
     }
 
-    public static void Attribute_ContributeDiagnostics(IAttributeNode node, DiagnosticsBuilder diagnostics)
+    public static void Attribute_ContributeDiagnostics(IAttributeNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ReferencedSymbol is null)
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.TypeName.Syntax.Span));
     }
 
-    public static void NamedParameter_ContributeDiagnostics(INamedParameterNode node, DiagnosticsBuilder diagnostics)
+    public static void NamedParameter_ContributeDiagnostics(INamedParameterNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var type = node.BindingType;
         if (node.IsLentBinding && !type.CanBeLent())

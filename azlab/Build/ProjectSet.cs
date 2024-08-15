@@ -253,7 +253,7 @@ internal class ProjectSet : IEnumerable<Project>
         return cacheDir;
     }
 
-    private static bool OutputDiagnostics(Project project, DiagnosticsCollection diagnostics, AsyncLock consoleLock)
+    private static bool OutputDiagnostics(Project project, DiagnosticCollection diagnostics, AsyncLock consoleLock)
     {
         if (!diagnostics.Any())
             return false;

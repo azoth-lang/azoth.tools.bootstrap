@@ -60,7 +60,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
         IsDeclaredConst = isDeclaredConst;
         GenericParameters = genericParameters;
         HasIndependentGenericParameters = GenericParameters.Any(p => p.HasIndependence);
-        AllowsVariance = GenericParameters.Any(p => p.Variance != ParameterVariance.Invariant);
+        AllowsVariance = GenericParameters.Any(p => p.Variance != TypeParameterVariance.Invariant);
     }
 
     public abstract BareType With(IFixedList<DataType> typeArguments);

@@ -28,7 +28,7 @@ internal sealed class AttributeNode : CodeNode, IAttributeNode
         return base.InheritedIsAttributeType(child, descendant);
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         SymbolAspect.Attribute_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

@@ -19,7 +19,7 @@
 //     `SpecialTypeNameExpression` should be the same type.
 
 Code = Span:`TextSpan`;
-CompilationUnit = File:`CodeFile` ImplicitNamespaceName:`NamespaceName` Diagnostics:`DiagnosticsCollection`
+CompilationUnit = File:`CodeFile` ImplicitNamespaceName:`NamespaceName` Diagnostics:`DiagnosticCollection`
     UsingDirectives:UsingDirective* Definitions:NonMemberDefinition*;
 UsingDirective = Name:`NamespaceName`;
 
@@ -55,7 +55,7 @@ StructDefinition: ClassOrStructDefinition = GenericParameters:GenericParameter* 
 TraitDefinition: TypeDefinition = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TraitMemberDefinition*;
 
 // ---------- Type Definition Parts
-GenericParameter = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`ParameterVariance`;
+GenericParameter = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`;
 
 // ---------- Type Member Definitions (i.e. declarations that can be contained in a type)
 TypeMemberDefinition: EntityDefinition;

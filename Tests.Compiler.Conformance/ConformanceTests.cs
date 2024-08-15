@@ -128,7 +128,7 @@ public partial class ConformanceTests
         }
     }
 
-    private void ReportSupportCompilationErrors(DiagnosticsCollection diagnostics)
+    private void ReportSupportCompilationErrors(DiagnosticCollection diagnostics)
     {
         testOutput.WriteLine("Test Support Package Compiler Errors:");
         foreach (var diagnostic in diagnostics)
@@ -155,7 +155,7 @@ public partial class ConformanceTests
         TestCase testCase,
         CodeFile codeFile,
         string code,
-        DiagnosticsCollection diagnostics)
+        DiagnosticCollection diagnostics)
     {
         // Check for compiler errors
         var expectCompileErrors = ExpectCompileErrors(code);

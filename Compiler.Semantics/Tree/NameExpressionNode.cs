@@ -51,7 +51,7 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
     internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => false;
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ExpressionTypesAspect.Expression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

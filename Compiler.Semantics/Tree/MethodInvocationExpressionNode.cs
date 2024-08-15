@@ -135,7 +135,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         return base.InheritedExpectedType(child, descendant, ctx);
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         OverloadResolutionAspect.MethodInvocationExpression_ContributeDiagnostics(this, diagnostics);
         ExpressionTypesAspect.MethodInvocationExpression_ContributeDiagnostics(this, diagnostics);

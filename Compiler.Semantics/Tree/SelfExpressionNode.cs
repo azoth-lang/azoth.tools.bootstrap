@@ -58,7 +58,7 @@ internal sealed class SelfExpressionNode : NameExpressionNode, ISelfExpressionNo
         Syntax = syntax;
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         BindingNamesAspect.SelfExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

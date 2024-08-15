@@ -7,5 +7,5 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Lexing.Fakes;
 public static class FakeParseContext
 {
     public static ParseContext For(string text)
-        => new(FakeCodeFile.For(text), new DiagnosticsBuilder());
+        => new(FakeCodeFile.For(text), new DiagnosticCollectionBuilder());
 }

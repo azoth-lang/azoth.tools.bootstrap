@@ -41,7 +41,7 @@ internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Referent.GetFlowLexicalScope();
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ExpressionTypesAspect.IdExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

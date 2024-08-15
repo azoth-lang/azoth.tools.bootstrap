@@ -225,7 +225,7 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
     new IPackageFacetNode TestingFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
-    DiagnosticsCollection Diagnostics { get; }
+    DiagnosticCollection Diagnostics { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
     IFunctionDefinitionNode? EntryPoint { get; }
     IPackageSymbols PackageSymbols { get; }
@@ -297,7 +297,7 @@ public partial interface ICompilationUnitNode : ISemanticNode, ICodeNode
     IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
     NamespaceScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
-    DiagnosticsCollection Diagnostics { get; }
+    DiagnosticCollection Diagnostics { get; }
 }
 
 public partial interface IUsingDirectiveNode : ISemanticNode, ICodeNode
@@ -542,7 +542,7 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityConstraintNode Constraint { get; }
     TypeParameterIndependence Independence { get; }
-    ParameterVariance Variance { get; }
+    TypeParameterVariance Variance { get; }
     GenericParameter Parameter { get; }
     IDeclaredUserType ContainingDeclaredType { get; }
     GenericParameterType DeclaredType { get; }

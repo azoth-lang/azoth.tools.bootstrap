@@ -35,7 +35,7 @@ internal sealed class CapabilityViewpointTypeNode : TypeNode, ICapabilityViewpoi
         Referent = Child.Attach(this, referent);
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         TypeExpressionsAspect.CapabilityViewpointType_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

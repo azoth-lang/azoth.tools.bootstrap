@@ -108,7 +108,7 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
         return base.InheritedExpectedType(child, descendant, ctx);
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ExpressionTypesAspect.FunctionReferenceInvocation_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

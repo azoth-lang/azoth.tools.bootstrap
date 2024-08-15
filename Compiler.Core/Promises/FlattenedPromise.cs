@@ -1,6 +1,6 @@
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 
-internal class FlattenedPromise<T> : IPromise<T>
+internal sealed class FlattenedPromise<T> : IPromise<T>
 {
     private readonly IPromise<IPromise<T>> promise;
 

@@ -5,10 +5,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
-// TODO rename to DiagnosticsBuilder (and maybe introduce an immutable diagnostics class)
 [DebuggerDisplay("Count = {items.Count}")]
 [DebuggerTypeProxy(typeof(CollectionDebugView<>))]
-public class DiagnosticsBuilder : IReadOnlyCollection<Diagnostic>
+public class DiagnosticCollectionBuilder : IReadOnlyCollection<Diagnostic>
 {
     private readonly List<Diagnostic> items = new List<Diagnostic>();
 
@@ -22,7 +21,7 @@ public class DiagnosticsBuilder : IReadOnlyCollection<Diagnostic>
         UpdateFatalErrorCount(diagnostic);
     }
 
-    public void Add(DiagnosticsCollection diagnostics)
+    public void Add(DiagnosticCollection diagnostics)
     {
         items.AddRange(diagnostics);
         FatalErrorCount += diagnostics.FatalErrorCount;
@@ -37,7 +36,7 @@ public class DiagnosticsBuilder : IReadOnlyCollection<Diagnostic>
             FatalErrorCount++;
     }
 
-    public DiagnosticsCollection Build() => new(this);
+    public DiagnosticCollection Build() => new(this);
 
     public IEnumerator<Diagnostic> GetEnumerator() => items.GetEnumerator();
 

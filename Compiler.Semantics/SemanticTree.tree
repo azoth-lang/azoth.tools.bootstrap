@@ -49,7 +49,7 @@ VariableBinding <: LocalBinding, DataFlow;
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
     References:{PackageReference} IntrinsicsReference:`IPackageReferenceNode`
     PackageDeclarations:`FixedDictionary<IdentifierName,IPackageDeclarationNode>`
-    MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`DiagnosticsCollection`
+    MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`DiagnosticCollection`
     PrimitivesDeclarations:{TypeDeclaration} EntryPoint:`IFunctionDefinitionNode`?
     PackageSymbols:`IPackageSymbols`;
 
@@ -75,7 +75,7 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
     ImplicitNamespaceName:`NamespaceName` ImplicitNamespace:`INamespaceDefinitionNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*
     ContainingLexicalScope:`NamespaceScope` LexicalScope:`LexicalScope`
-    Diagnostics:`DiagnosticsCollection`;
+    Diagnostics:`DiagnosticCollection`;
 
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
@@ -140,7 +140,7 @@ TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSy
 
 // ---------- Type Definition Parts
 GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParameterSyntax`
-    Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`ParameterVariance`
+    Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`
     Parameter:`GenericParameter` ContainingDeclaredType:`IDeclaredUserType` DeclaredType:`GenericParameterType`
     ContainingDeclaration:`IUserTypeDeclarationNode` ContainingSymbol:`UserTypeSymbol`
     Symbol:`GenericParameterTypeSymbol` Members:{TypeMemberDefinition};

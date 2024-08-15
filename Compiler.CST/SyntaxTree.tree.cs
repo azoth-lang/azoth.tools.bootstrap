@@ -41,7 +41,7 @@ public partial interface ICompilationUnitSyntax : ICodeSyntax
 {
     CodeFile File { get; }
     NamespaceName ImplicitNamespaceName { get; }
-    DiagnosticsCollection Diagnostics { get; }
+    DiagnosticCollection Diagnostics { get; }
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
 }
@@ -211,7 +211,7 @@ public partial interface IGenericParameterSyntax : ICodeSyntax
     ICapabilityConstraintSyntax Constraint { get; }
     IdentifierName Name { get; }
     TypeParameterIndependence Independence { get; }
-    ParameterVariance Variance { get; }
+    TypeParameterVariance Variance { get; }
 }
 
 [Closed(

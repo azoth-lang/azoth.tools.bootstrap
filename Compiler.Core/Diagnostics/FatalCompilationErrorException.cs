@@ -2,11 +2,11 @@ using System;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
-public class FatalCompilationErrorException : Exception
+public sealed class FatalCompilationErrorException : Exception
 {
-    public DiagnosticsCollection Diagnostics { get; }
+    public DiagnosticCollection Diagnostics { get; }
 
-    public FatalCompilationErrorException(DiagnosticsCollection diagnostics)
+    public FatalCompilationErrorException(DiagnosticCollection diagnostics)
     {
         Diagnostics = diagnostics;
     }

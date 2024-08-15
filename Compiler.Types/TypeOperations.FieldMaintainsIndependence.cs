@@ -60,15 +60,15 @@ public static partial class TypeOperations
             var parameterVarianceAllows = parameter.Variance switch
             {
                 // TODO does this need to flip the behavior of nested type arguments?
-                ParameterVariance.Contravariant // i.e. `in`
+                TypeParameterVariance.Contravariant // i.e. `in`
                     => parameter.Constraint == CapabilitySet.Shareable
                         ? Independence.OnlyShareableAllowed
                         : Independence.Disallowed,
-                ParameterVariance.Invariant
+                TypeParameterVariance.Invariant
                     => Independence.Disallowed,
-                ParameterVariance.NonwritableCovariant
+                TypeParameterVariance.NonwritableCovariant
                     => Independence.Disallowed,
-                ParameterVariance.Covariant // i.e. `out`
+                TypeParameterVariance.Covariant // i.e. `out`
                     => Independence.Disallowed, // TODO if field is `let`, then Independence.BothAllowed
                 _ => throw ExhaustiveMatch.Failed(parameter.Variance),
             };

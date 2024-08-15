@@ -14,7 +14,7 @@ public class LexResult
 {
     public CodeFile File { get; }
     public IFixedList<IToken> Tokens { get; }
-    public DiagnosticsCollection Diagnostics { get; }
+    public DiagnosticCollection Diagnostics { get; }
 
     public LexResult(ITokenIterator<IToken> iterator)
     {

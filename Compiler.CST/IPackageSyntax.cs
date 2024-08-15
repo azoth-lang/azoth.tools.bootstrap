@@ -11,5 +11,5 @@ public interface IPackageSyntax : ISyntax
     IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
     IFixedSet<IPackageReferenceSyntax> References { get; }
 
-    DiagnosticsCollection Diagnostics { get; }
+    DiagnosticCollection Diagnostics { get; }
 }

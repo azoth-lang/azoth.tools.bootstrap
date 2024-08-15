@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Code;
 
-public class TextLines
+public sealed class TextLines
 {
     public int Count => startOfLine.Count;
     public IReadOnlyList<int> StartOfLine { get; }

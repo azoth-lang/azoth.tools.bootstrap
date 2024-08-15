@@ -176,7 +176,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         // Include the BindingValueId in the value id flow
         => BindingValueId;
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ForeachExpressionTypeAspect.ForeachExpression_ContributeDiagnostics(this, diagnostics);
         ShadowingAspect.VariableBinding_ContributeDiagnostics(this, diagnostics);

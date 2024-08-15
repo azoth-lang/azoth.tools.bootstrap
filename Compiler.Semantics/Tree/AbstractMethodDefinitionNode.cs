@@ -39,7 +39,7 @@ internal sealed class AbstractMethodDefinitionNode : MethodDefinitionNode, IAbst
     protected override ObjectType InheritedContainingDeclaredType(IInheritanceContext ctx)
         => (ObjectType)base.InheritedContainingDeclaredType(ctx);
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         TypeModifiersAspect.AbstractMethodDeclaration_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

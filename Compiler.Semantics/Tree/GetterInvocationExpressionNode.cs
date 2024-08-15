@@ -83,7 +83,7 @@ internal sealed class GetterInvocationExpressionNode : ExpressionNode, IGetterIn
         return base.InheritedExpectedType(child, descendant, ctx);
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ExpressionTypesAspect.GetterInvocationExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

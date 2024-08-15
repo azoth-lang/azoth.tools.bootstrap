@@ -18,7 +18,7 @@ internal static class TypeExpressionsAspect
     public static DataType CapabilityType_NamedType(ICapabilityTypeNode node)
         => (node.Referent as ITypeNameNode)?.NamedBareType?.With(node.Capability.Capability) ?? node.Referent.NamedType;
 
-    public static void CapabilityType_ContributeDiagnostics(ICapabilityTypeNode node, DiagnosticsBuilder diagnostics)
+    public static void CapabilityType_ContributeDiagnostics(ICapabilityTypeNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var capability = node.Capability.Capability;
         if (capability.AllowsWrite && node.NamedType is CapabilityType { IsDeclaredConst: true } capabilityType)
@@ -45,7 +45,7 @@ internal static class TypeExpressionsAspect
 
     public static void CapabilityViewpointType_ContributeDiagnostics(
         ICapabilityViewpointTypeNode node,
-        DiagnosticsBuilder diagnostics)
+        DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Referent.NamedType is not GenericParameterType)
             diagnostics.Add(TypeError.CapabilityViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
@@ -70,7 +70,7 @@ internal static class TypeExpressionsAspect
         return referentType;
     }
 
-    public static void SelfViewpointType_ContributeDiagnostics(ISelfViewpointTypeNode node, DiagnosticsBuilder diagnostics)
+    public static void SelfViewpointType_ContributeDiagnostics(ISelfViewpointTypeNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.NamedSelfType is not (CapabilityType or CapabilityTypeConstraint))
             diagnostics.Add(TypeError.SelfViewpointNotAvailable(node.File, node.Syntax));

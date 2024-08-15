@@ -33,7 +33,7 @@ public static class ExpressionTypesAspect
     public static ValueId AmbiguousExpression_ValueId(IAmbiguousExpressionNode node)
         => node.PreviousValueId().CreateNext();
 
-    public static void Expression_ContributeDiagnostics(IExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void Expression_ContributeDiagnostics(IExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ExpectedType is not DataType expectedType)
             return;
@@ -64,7 +64,7 @@ public static class ExpressionTypesAspect
         return intermediateReferent.FlowStateAfter.Transform(intermediateReferent.ValueId, node.ValueId, node.Type);
     }
 
-    public static void IdExpression_ContributeDiagnostics(IIdExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void IdExpression_ContributeDiagnostics(IIdExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Type is not UnknownType)
             return;
@@ -117,7 +117,7 @@ public static class ExpressionTypesAspect
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static void FunctionInvocationExpression_ContributeDiagnostics(IFunctionInvocationExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void FunctionInvocationExpression_ContributeDiagnostics(IFunctionInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var flowStateBefore = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.IntermediateArguments);
@@ -128,7 +128,7 @@ public static class ExpressionTypesAspect
         IInvocationExpressionNode node,
         IFlowState flowStateBefore,
         IEnumerable<ArgumentValueId> argumentValueIds,
-        DiagnosticsBuilder diagnostics)
+        DiagnosticCollectionBuilder diagnostics)
     {
         var valueIds = flowStateBefore.CombineArgumentsDisallowedDueToLent(argumentValueIds);
         foreach (var valueId in valueIds)
@@ -154,7 +154,7 @@ public static class ExpressionTypesAspect
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static void FunctionReferenceInvocation_ContributeDiagnostics(IFunctionReferenceInvocationExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void FunctionReferenceInvocation_ContributeDiagnostics(IFunctionReferenceInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var flowStateBefore = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.Expression.FlowStateAfter;
         var contextualizedOverload = ContextualizedOverload.Create(node.FunctionType);
@@ -182,7 +182,7 @@ public static class ExpressionTypesAspect
 
     public static void StringLiteralExpression_ContributeDiagnostics(
         IStringLiteralExpressionNode node,
-        DiagnosticsBuilder diagnostics)
+        DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Type is UnknownType)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "Could not find string type for string literal."));
@@ -274,7 +274,7 @@ public static class ExpressionTypesAspect
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static void MethodInvocationExpression_ContributeDiagnostics(IMethodInvocationExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void MethodInvocationExpression_ContributeDiagnostics(IMethodInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var flowStateBefore = node.IntermediateArguments.LastOrDefault()?.FlowStateAfter ?? node.MethodGroup.Context.FlowStateAfter;
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.MethodGroup.Context, node.IntermediateArguments);
@@ -301,7 +301,7 @@ public static class ExpressionTypesAspect
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static void GetterInvocationExpression_ContributeDiagnostics(IGetterInvocationExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void GetterInvocationExpression_ContributeDiagnostics(IGetterInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var flowStateBefore = node.Context.FlowStateAfter;
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Context, []);
@@ -331,7 +331,7 @@ public static class ExpressionTypesAspect
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static void SetterInvocationExpression_ContributeDiagnostics(ISetterInvocationExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void SetterInvocationExpression_ContributeDiagnostics(ISetterInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var value = node.IntermediateValue!;
         var flowStateBefore = value.FlowStateAfter;
@@ -377,7 +377,7 @@ public static class ExpressionTypesAspect
     public static IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node)
         => node.Context.FlowStateAfter.AccessField(node);
 
-    public static void FieldAccessExpression_ContributeDiagnostics(IFieldAccessExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void FieldAccessExpression_ContributeDiagnostics(IFieldAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Parent is IAssignmentExpressionNode assignmentNode && assignmentNode.LeftOperand == node)
             // In this case, a different error will be reported and CannotAccessMutableBindingFieldOfIdentityReference
@@ -418,7 +418,7 @@ public static class ExpressionTypesAspect
     }
 
 
-    public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         CheckConstructingType(node.ConstructingType, diagnostics);
 
@@ -427,7 +427,7 @@ public static class ExpressionTypesAspect
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
-    private static void CheckConstructingType(ITypeNameNode node, DiagnosticsBuilder diagnostics)
+    private static void CheckConstructingType(ITypeNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         switch (node)
         {
@@ -445,7 +445,7 @@ public static class ExpressionTypesAspect
         }
     }
 
-    public static void CheckTypeArgumentsAreConstructable(IStandardTypeNameNode node, DiagnosticsBuilder diagnostics)
+    public static void CheckTypeArgumentsAreConstructable(IStandardTypeNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var bareType = node.NamedBareType;
         if (bareType is null) return;
@@ -487,7 +487,7 @@ public static class ExpressionTypesAspect
             node.IntermediateRightOperand.ValueId, node.ValueId) ?? IFlowState.Empty;
     }
 
-    public static void AssignmentExpression_ContributeDiagnostics(IAssignmentExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void AssignmentExpression_ContributeDiagnostics(IAssignmentExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.IntermediateLeftOperand is IFieldAccessExpressionNode fieldAccess)
         {
@@ -562,7 +562,7 @@ public static class ExpressionTypesAspect
             node.IntermediateRightOperand.ValueId, node.IntermediateLeftOperand?.ValueId, node.ValueId)
            ?? IFlowState.Empty;
 
-    public static void BinaryOperatorExpression_ContributeDiagnostics(IBinaryOperatorExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void BinaryOperatorExpression_ContributeDiagnostics(IBinaryOperatorExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Type == DataType.Unknown)
             diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandsOfType(node.File,
@@ -588,7 +588,7 @@ public static class ExpressionTypesAspect
         return flowStateBefore.Combine(node.ThenBlock.ValueId, node.ElseClause?.ValueId, node.ValueId);
     }
 
-    public static void IfExpression_ContributeDiagnostics(IIfExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void IfExpression_ContributeDiagnostics(IIfExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node is { ThenBlock: { } thenBlock, ElseClause: { } elseClause })
         {
@@ -665,7 +665,7 @@ public static class ExpressionTypesAspect
             .Transform(node.IntermediateReferent?.ValueId, node.ValueId, node.Type);
     }
 
-    public static void ConversionExpression_ContributeDiagnostics(IConversionExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void ConversionExpression_ContributeDiagnostics(IConversionExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var convertFromType = node.IntermediateReferent!.Type;
         var convertToType = node.ConvertToType.NamedType;
@@ -744,7 +744,7 @@ public static class ExpressionTypesAspect
             : flowStateBefore.FreezeValue(referentValueId, node.ValueId);
     }
 
-    public static void FreezeVariableExpression_ContributeDiagnostics(IFreezeVariableExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void FreezeVariableExpression_ContributeDiagnostics(IFreezeVariableExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
             return;
@@ -755,7 +755,7 @@ public static class ExpressionTypesAspect
             diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
     }
 
-    public static void FreezeValueExpression_ContributeDiagnostics(IFreezeExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void FreezeValueExpression_ContributeDiagnostics(IFreezeExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Referent.Type is not CapabilityType capabilityType) return;
 
@@ -782,7 +782,7 @@ public static class ExpressionTypesAspect
         return flowStateBefore.MoveVariable(node.Referent.ReferencedDefinition, node.Referent.ValueId, node.ValueId);
     }
 
-    public static void MoveVariableExpression_ContributeDiagnostics(IMoveVariableExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void MoveVariableExpression_ContributeDiagnostics(IMoveVariableExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
             return;
@@ -799,7 +799,7 @@ public static class ExpressionTypesAspect
         return flowStateBefore.MoveValue(node.Referent.ValueId, node.ValueId);
     }
 
-    public static void MoveValueExpression_ContributeDiagnostics(IMoveValueExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void MoveValueExpression_ContributeDiagnostics(IMoveValueExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Referent.Type is not CapabilityType capabilityType) return;
 
@@ -838,7 +838,7 @@ public static class ExpressionTypesAspect
         // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
         => IFlowState.Empty.Constant(node.ValueId);
 
-    public static void ReturnExpression_ContributeDiagnostics(IReturnExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void ReturnExpression_ContributeDiagnostics(IReturnExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.IntermediateValue is not { } value)
             return;

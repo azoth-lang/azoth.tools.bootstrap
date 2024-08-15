@@ -68,7 +68,7 @@ public static partial class TypeOperations
         var nonwritableType = !typeCapability?.AnyCapabilityAllowsWrite;
         foreach (var (parameter, argument) in type.GenericParameterArguments)
         {
-            var variance = parameter.Variance.ToVariance(nonwritableType);
+            var variance = parameter.Variance.ToTypeVariance(nonwritableType);
             switch (variance)
             {
                 default:
@@ -80,7 +80,7 @@ public static partial class TypeOperations
                     if (!argument.IsVarianceSafe(TypeVariance.Invariant, nonwritableSelf)) return false;
                     break;
                 case null: // i.e. `nonwriteable out` at the first level
-                    if (argument is GenericParameterType { Parameter.Variance: ParameterVariance.Covariant })
+                    if (argument is GenericParameterType { Parameter.Variance: TypeParameterVariance.Covariant })
                         return false;
                     if (!argument.IsVarianceSafe(context, nonwritableSelf)) return false;
                     break;

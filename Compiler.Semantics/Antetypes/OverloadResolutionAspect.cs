@@ -34,7 +34,7 @@ internal static class OverloadResolutionAspect
 
     public static void FunctionInvocationExpression_ContributeDiagnostics(
         IFunctionInvocationExpressionNode node,
-        DiagnosticsBuilder diagnostics)
+        DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ReferencedDeclaration is not null)
             return;
@@ -84,7 +84,7 @@ internal static class OverloadResolutionAspect
 
     public static void MethodInvocationExpression_ContributeDiagnostics(
         IMethodInvocationExpressionNode node,
-        DiagnosticsBuilder diagnostics)
+        DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ReferencedDeclaration is not null) return;
 
@@ -166,7 +166,7 @@ internal static class OverloadResolutionAspect
     public static IConstructorDeclarationNode? NewObjectExpression_ReferencedConstructor(INewObjectExpressionNode node)
         => node.CompatibleConstructors.TrySingle();
 
-    public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         switch (node.ConstructingAntetype)
         {

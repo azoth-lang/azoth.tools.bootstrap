@@ -3,12 +3,12 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core;
 
-public class ParseContext
+public sealed class ParseContext
 {
     public CodeFile File { get; }
-    public DiagnosticsBuilder Diagnostics { get; }
+    public DiagnosticCollectionBuilder Diagnostics { get; }
 
-    public ParseContext(CodeFile file, DiagnosticsBuilder diagnostics)
+    public ParseContext(CodeFile file, DiagnosticCollectionBuilder diagnostics)
     {
         File = file;
         Diagnostics = diagnostics;

@@ -2,6 +2,9 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core;
 
+/// <summary>
+/// The variance of a type as defined by type theory.
+/// </summary>
 public enum TypeVariance
 {
     Contravariant = -1,
@@ -14,12 +17,12 @@ public static class TypeVarianceExtensions
     /// <summary>
     /// Is the given variance compatible with this one?
     /// </summary>
-    /// <param name="nonwritableSelf">Whether the self parameter type is nonwriteable.
+    /// <param name="nonwritableSelf">Whether the self parameter type is non-writeable.
     /// <see langword="null"/> is used for base types to indicate that it could behave either way.</param>
-    public static bool CompatibleWith(this TypeVariance contextVariance, ParameterVariance parameterVariance, bool? nonwritableSelf)
+    public static bool CompatibleWith(this TypeVariance contextVariance, TypeParameterVariance parameterVariance, bool? nonwritableSelf)
     {
         // if NonwritableCovariant could behave either way, then the most restrictive is used
-        var variance = parameterVariance.ToVariance(nonwritableSelf) ?? TypeVariance.Covariant;
+        var variance = parameterVariance.ToTypeVariance(nonwritableSelf) ?? TypeVariance.Covariant;
         return contextVariance switch
         {
             TypeVariance.Contravariant => variance <= TypeVariance.Invariant,

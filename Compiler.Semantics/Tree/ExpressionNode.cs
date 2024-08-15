@@ -90,7 +90,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => false;
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ExpressionTypesAspect.Expression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

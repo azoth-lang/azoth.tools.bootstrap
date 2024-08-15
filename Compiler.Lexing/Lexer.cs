@@ -19,7 +19,7 @@ public class Lexer
     public ITokenIterator<IToken> Lex(ParseContext context)
         => new TokenIterator<IToken>(context, Lex(context.File, context.Diagnostics));
 
-    private static IEnumerable<IToken> Lex(CodeFile file, DiagnosticsBuilder diagnostics)
+    private static IEnumerable<IToken> Lex(CodeFile file, DiagnosticCollectionBuilder diagnostics)
     {
         var code = file.Code;
         var text = code.Text;

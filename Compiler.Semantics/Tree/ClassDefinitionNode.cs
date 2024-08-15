@@ -48,7 +48,7 @@ internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinition
         SourceMembers = ChildList.Attach(this, sourceMembers);
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         TypeDeclarationsAspect.ClassDeclaration_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

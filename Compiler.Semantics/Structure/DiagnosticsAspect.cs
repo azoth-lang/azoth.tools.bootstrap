@@ -7,9 +7,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal static class DiagnosticsAspect
 {
-    public static DiagnosticsCollection Package(IPackageNode node)
+    public static DiagnosticCollection Package(IPackageNode node)
     {
-        var diagnostics = new DiagnosticsBuilder
+        var diagnostics = new DiagnosticCollectionBuilder
         {
             CollectForFacet(node.MainFacet),
             CollectForFacet(node.TestingFacet)
@@ -20,6 +20,6 @@ internal static class DiagnosticsAspect
     private static IEnumerable<Diagnostic> CollectForFacet(IPackageFacetNode node)
         => node.CompilationUnits.SelectMany(cu => cu.Diagnostics);
 
-    public static void CompilationUnit_ContributeDiagnostics(ICompilationUnitNode node, DiagnosticsBuilder diagnostics)
+    public static void CompilationUnit_ContributeDiagnostics(ICompilationUnitNode node, DiagnosticCollectionBuilder diagnostics)
         => diagnostics.Add(node.Syntax.Diagnostics);
 }

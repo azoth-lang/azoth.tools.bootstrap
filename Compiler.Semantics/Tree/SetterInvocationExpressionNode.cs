@@ -111,7 +111,7 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
         return base.InheritedExpectedType(child, descendant, ctx);
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ExpressionTypesAspect.SetterInvocationExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

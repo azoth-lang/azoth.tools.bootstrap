@@ -89,7 +89,7 @@ public static class DataTypeExtensions
             {
                 default:
                     throw ExhaustiveMatch.Failed(genericParameter.Variance);
-                case ParameterVariance.Invariant:
+                case TypeParameterVariance.Invariant:
                     if (from != to)
                     {
                         // When target allows write, acts invariant regardless of independence
@@ -137,16 +137,16 @@ public static class DataTypeExtensions
                         }
                     }
                     break;
-                case ParameterVariance.NonwritableCovariant:
+                case TypeParameterVariance.NonwritableCovariant:
                     if (!targetAllowsWrite)
-                        goto case ParameterVariance.Covariant;
+                        goto case TypeParameterVariance.Covariant;
 
-                    goto case ParameterVariance.Invariant;
-                case ParameterVariance.Covariant:
+                    goto case TypeParameterVariance.Invariant;
+                case TypeParameterVariance.Covariant:
                     if (!to.IsAssignableFrom(from))
                         return false;
                     break;
-                case ParameterVariance.Contravariant:
+                case TypeParameterVariance.Contravariant:
                     if (!from.IsAssignableFrom(to))
                         return false;
                     break;

@@ -10,14 +10,14 @@ internal class GenericParameterSyntax : CodeSyntax, IGenericParameterSyntax
     public ICapabilityConstraintSyntax Constraint { get; }
     public IdentifierName Name { get; }
     public TypeParameterIndependence Independence { get; }
-    public ParameterVariance Variance { get; }
+    public TypeParameterVariance Variance { get; }
 
     public GenericParameterSyntax(
         TextSpan span,
         ICapabilityConstraintSyntax constraint,
         IdentifierName name,
         TypeParameterIndependence independence,
-        ParameterVariance variance)
+        TypeParameterVariance variance)
         : base(span)
     {
         Constraint = constraint;
@@ -30,9 +30,9 @@ internal class GenericParameterSyntax : CodeSyntax, IGenericParameterSyntax
     {
         return (Independence, Variance) switch
         {
-            (TypeParameterIndependence.None, ParameterVariance.Invariant) => Name.ToString(),
+            (TypeParameterIndependence.None, TypeParameterVariance.Invariant) => Name.ToString(),
             (TypeParameterIndependence.None, _) => $"{Name} {Variance.ToSourceCodeString()}",
-            (_, ParameterVariance.Invariant) => $"{Name} {Independence.ToSourceCodeString()}",
+            (_, TypeParameterVariance.Invariant) => $"{Name} {Independence.ToSourceCodeString()}",
             _ => $"{Name} {Independence.ToSourceCodeString()} {Variance.ToSourceCodeString()}"
         };
     }

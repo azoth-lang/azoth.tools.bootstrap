@@ -102,7 +102,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ExpressionTypesAspect.BinaryOperatorExpression_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

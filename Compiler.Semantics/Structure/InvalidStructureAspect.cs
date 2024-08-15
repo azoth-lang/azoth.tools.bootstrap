@@ -8,7 +8,7 @@ internal class InvalidStructureAspect
 {
     public static void BlockExpression_ContributeDiagnostics(
         IBlockExpressionNode node,
-        DiagnosticsBuilder diagnostics)
+        DiagnosticCollectionBuilder diagnostics)
     {
         // Check if there is a statement after a result statement
         IResultStatementNode? resultStatement = null;
@@ -22,7 +22,7 @@ internal class InvalidStructureAspect
                 resultStatement = result;
     }
 
-    public static void ReturnExpression_ContributeDiagnostics(IReturnExpressionNode node, DiagnosticsBuilder diagnostics)
+    public static void ReturnExpression_ContributeDiagnostics(IReturnExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var expectedReturnType = node.ExpectedReturnType;
         switch (expectedReturnType)

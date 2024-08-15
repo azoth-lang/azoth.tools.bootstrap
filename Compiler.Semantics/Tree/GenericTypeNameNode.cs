@@ -47,7 +47,7 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         SymbolNodeAspect.StandardTypeName_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

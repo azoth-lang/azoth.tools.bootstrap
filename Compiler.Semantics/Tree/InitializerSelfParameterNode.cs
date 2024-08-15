@@ -25,7 +25,7 @@ internal sealed class InitializerSelfParameterNode : SelfParameterNode, IInitial
         Capability = Child.Attach(this, capability);
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         TypeMemberDeclarationsAspect.InitializerSelfParameter_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

@@ -25,7 +25,7 @@ internal sealed class ConstructorSelfParameterNode : SelfParameterNode, IConstru
         Capability = Child.Attach(this, capability);
     }
 
-    protected override void CollectDiagnostics(DiagnosticsBuilder diagnostics)
+    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         TypeMemberDeclarationsAspect.ConstructorSelfParameter_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);

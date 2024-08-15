@@ -6,16 +6,12 @@ public static class UnaryOperatorExtensions
 {
     public static string ToSymbolString(this UnaryOperator @operator)
     {
-        switch (@operator)
+        return @operator switch
         {
-            default:
-                throw ExhaustiveMatch.Failed(@operator);
-            case UnaryOperator.Not:
-                return "not ";
-            case UnaryOperator.Minus:
-                return "-";
-            case UnaryOperator.Plus:
-                return "+";
-        }
+            UnaryOperator.Not => "not ",
+            UnaryOperator.Minus => "-",
+            UnaryOperator.Plus => "+",
+            _ => throw ExhaustiveMatch.Failed(@operator)
+        };
     }
 }
