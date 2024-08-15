@@ -2,14 +2,10 @@ using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
-using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -76,7 +72,6 @@ public partial interface IElseClauseSyntax : IConcreteSyntax
     typeof(IBlockExpressionSyntax))]
 public partial interface IBlockOrResultSyntax : IElseClauseSyntax
 {
-    IPromise<DataType?> DataType { get; }
 }
 
 [Closed(
@@ -391,7 +386,6 @@ public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
 public partial interface IParameterSyntax : IConcreteSyntax
 {
     IdentifierName? Name { get; }
-    IPromise<Pseudotype> DataType { get; }
     bool Unused { get; }
 }
 
@@ -409,8 +403,6 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
     IdentifierName? IParameterSyntax.Name => Name;
     Promise<int?> DeclarationNumber { get; }
     ITypeSyntax Type { get; }
-    new IPromise<DataType> DataType { get; }
-    IPromise<Pseudotype> IParameterSyntax.DataType => DataType;
     IExpressionSyntax? DefaultValue { get; }
 }
 
@@ -426,15 +418,11 @@ public partial interface ISelfParameterSyntax : IParameterSyntax
 public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilitySyntax Capability { get; }
-    new IPromise<DataType> DataType { get; }
-    IPromise<Pseudotype> IParameterSyntax.DataType => DataType;
 }
 
 public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilitySyntax Capability { get; }
-    new IPromise<DataType> DataType { get; }
-    IPromise<Pseudotype> IParameterSyntax.DataType => DataType;
 }
 
 public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
@@ -498,7 +486,6 @@ public partial interface IStandardTypeNameSyntax : ITypeNameSyntax
 {
     new StandardName Name { get; }
     TypeName ITypeNameSyntax.Name => Name;
-    BareType? NamedBareType { get; }
 }
 
 [Closed(
@@ -649,9 +636,6 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
     typeof(INameExpressionSyntax))]
 public partial interface IExpressionSyntax : IConcreteSyntax
 {
-    IPromise<DataType?> DataType { get; }
-    Conversion ImplicitConversion { get; }
-    DataType? ConvertedDataType { get; }
 }
 
 [Closed(
@@ -663,8 +647,6 @@ public partial interface IExpressionSyntax : IConcreteSyntax
     typeof(IInstanceExpressionSyntax))]
 public partial interface ITypedExpressionSyntax : IExpressionSyntax
 {
-    new IPromise<DataType> DataType { get; }
-    IPromise<DataType?> IExpressionSyntax.DataType => DataType;
 }
 
 [Closed(
@@ -689,8 +671,6 @@ public partial interface ITypedExpressionSyntax : IExpressionSyntax
     typeof(IAwaitExpressionSyntax))]
 public partial interface IDataTypedExpressionSyntax : ITypedExpressionSyntax
 {
-    new Promise<DataType> DataType { get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 [Closed(
@@ -703,10 +683,6 @@ public partial interface IAssignableExpressionSyntax : ITypedExpressionSyntax
 
 public partial interface IBlockExpressionSyntax : IDataTypedExpressionSyntax, IBlockOrResultSyntax, IBodyOrBlockSyntax
 {
-    new Promise<DataType> DataType { get; }
-    Promise<DataType> IDataTypedExpressionSyntax.DataType => DataType;
-    IPromise<DataType?> IBlockOrResultSyntax.DataType => DataType;
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface INewObjectExpressionSyntax : IDataTypedExpressionSyntax
@@ -728,8 +704,6 @@ public partial interface IUnsafeExpressionSyntax : IDataTypedExpressionSyntax
     typeof(IReturnExpressionSyntax))]
 public partial interface INeverTypedExpressionSyntax : ITypedExpressionSyntax
 {
-    new Promise<NeverType> DataType { get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 [Closed(
@@ -744,28 +718,20 @@ public partial interface ILiteralExpressionSyntax : ITypedExpressionSyntax
 public partial interface IBoolLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     bool Value { get; }
-    new Promise<BoolConstValueType> DataType { get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface IIntegerLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     BigInteger Value { get; }
-    new Promise<IntegerConstValueType> DataType { get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface INoneLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
-    new Promise<OptionalType> DataType { get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface IStringLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     string Value { get; }
-    new Promise<DataType> DataType { get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface IAssignmentExpressionSyntax : IDataTypedExpressionSyntax
@@ -889,9 +855,6 @@ public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressi
 public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSyntax, ITypedExpressionSyntax
 {
     SpecialTypeName Name { get; }
-    new IPromise<DataType> DataType { get; }
-    IPromise<DataType?> IExpressionSyntax.DataType => DataType;
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType;
 }
 
 public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionSyntax
@@ -899,8 +862,6 @@ public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionS
     new GenericName Name { get; }
     StandardName IStandardNameExpressionSyntax.Name => Name;
     IFixedList<ITypeSyntax> TypeArguments { get; }
-    new Promise<DataType> DataType { get; }
-    IPromise<DataType?> IExpressionSyntax.DataType => DataType;
 }
 
 [Closed(
@@ -912,7 +873,6 @@ public partial interface IInstanceExpressionSyntax : IConcreteSyntax, ISimpleNam
 public partial interface ISelfExpressionSyntax : INameExpressionSyntax, IInstanceExpressionSyntax
 {
     bool IsImplicit { get; }
-    IPromise<Pseudotype> Pseudotype { get; }
 }
 
 public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, IAssignableExpressionSyntax

@@ -6,14 +6,10 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
-◊using Azoth.Tools.Bootstrap.Compiler.CST.Conversions;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Tokens;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
-◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // TODO:
@@ -30,7 +26,7 @@ UsingDirective = Name:`NamespaceName`;
 // ---------- Special Parts
 BodyOrBlock = Statements:Statement*;
 ElseClause;
-BlockOrResult: ElseClause = DataType:`IPromise<DataType?>`;
+BlockOrResult: ElseClause;
 
 // ---------- Bindings
 Binding = IsMutableBinding:`bool`;
@@ -96,13 +92,13 @@ CapabilitySet: CapabilityConstraint = Constraint:`CapabilitySet`;
 Capability: CapabilityConstraint = Tokens:`ICapabilityToken`* Declared:`DeclaredCapability` Capability:`Capability`;
 
 // ---------- Parameters and Return
-Parameter = Name:`IdentifierName`? DataType:`IPromise<Pseudotype>` Unused:`bool`;
+Parameter = Name:`IdentifierName`? Unused:`bool`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter: Parameter;
-NamedParameter: ConstructorOrInitializerParameter <: LocalBinding = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`Promise<int?>` Type DataType:`IPromise<DataType>` DefaultValue:Expression?;
+NamedParameter: ConstructorOrInitializerParameter <: LocalBinding = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` DeclarationNumber:`Promise<int?>` Type DefaultValue:Expression?;
 SelfParameter: Parameter = IsLentBinding:`bool`;
-ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability DataType:`IPromise<DataType>`;
-InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability DataType:`IPromise<DataType>`;
+ConstructorSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
+InitializerSelfParameter: SelfParameter = IsLentBinding:`bool` Capability;
 MethodSelfParameter: SelfParameter = IsLentBinding:`bool` Capability:CapabilityConstraint;
 FieldParameter: ConstructorOrInitializerParameter = Name:`IdentifierName` DefaultValue:Expression?;
 Return = Type; // Return type of a function or method
@@ -115,7 +111,7 @@ ExpressionBody: Body = ResultStatement Statements:Statement*;
 // ---------- Types
 Type;
 TypeName: Type = Name:`TypeName`;
-StandardTypeName: TypeName = Name:`StandardName` NamedBareType:`BareType`?;
+StandardTypeName: TypeName = Name:`StandardName`;
 SimpleTypeName: TypeName;
 IdentifierTypeName: TypeName <: StandardTypeName, SimpleTypeName = Name:`IdentifierName`;
 SpecialTypeName: SimpleTypeName = Name:`SpecialTypeName`;
@@ -145,21 +141,21 @@ BindingPattern: OptionalOrBindingPattern <: LocalBinding = Name:`IdentifierName`
 OptionalPattern: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
-Expression = DataType:`IPromise<DataType?>` ImplicitConversion:`Conversion` ConvertedDataType:`DataType`?;
-TypedExpression: Expression = DataType:`IPromise<DataType>`;
-DataTypedExpression: TypedExpression = DataType:`Promise<DataType>`;
+Expression;
+TypedExpression: Expression;
+DataTypedExpression: TypedExpression;
 AssignableExpression: TypedExpression;
-BlockExpression: DataTypedExpression <: BlockOrResult, BodyOrBlock = Statements:Statement* DataType:`Promise<DataType>`;
+BlockExpression: DataTypedExpression <: BlockOrResult, BodyOrBlock = Statements:Statement*;
 NewObjectExpression: DataTypedExpression = Type:TypeName ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
 UnsafeExpression: DataTypedExpression = Expression;
-NeverTypedExpression: TypedExpression = DataType:`Promise<NeverType>`;
+NeverTypedExpression: TypedExpression;
 
 // ---------- Literal Expressions
 LiteralExpression: TypedExpression;
-BoolLiteralExpression: LiteralExpression = Value:`bool` DataType:`Promise<BoolConstValueType>`;
-IntegerLiteralExpression: LiteralExpression = Value:`BigInteger` DataType:`Promise<IntegerConstValueType>`;
-NoneLiteralExpression: LiteralExpression = DataType:`Promise<OptionalType>`;
-StringLiteralExpression: LiteralExpression = Value:`string` DataType:`Promise<DataType>`;
+BoolLiteralExpression: LiteralExpression = Value:`bool`;
+IntegerLiteralExpression: LiteralExpression = Value:`BigInteger` ;
+NoneLiteralExpression: LiteralExpression;
+StringLiteralExpression: LiteralExpression = Value:`string`;
 
 // ---------- Operator Expressions
 AssignmentExpression: DataTypedExpression = LeftOperand:AssignableExpression Operator:`AssignmentOperator` RightOperand:Expression;
@@ -187,10 +183,10 @@ SimpleName: NameExpression;
 StandardNameExpression: NameExpression = Name:`StandardName`;
 IdentifierNameExpression: NameExpression <: StandardNameExpression, SimpleName, AssignableExpression
     = Name:`IdentifierName`;
-SpecialTypeNameExpression: NameExpression <: TypedExpression = Name:`SpecialTypeName` DataType:`IPromise<DataType>`;
-GenericNameExpression: NameExpression <: StandardNameExpression = Name:`GenericName` TypeArguments:Type* DataType:`Promise<DataType>`;
+SpecialTypeNameExpression: NameExpression <: TypedExpression = Name:`SpecialTypeName`;
+GenericNameExpression: NameExpression <: StandardNameExpression = Name:`GenericName` TypeArguments:Type*;
 InstanceExpression <: SimpleName, TypedExpression; // i.e. `self` or `base`
-SelfExpression: NameExpression <: InstanceExpression = IsImplicit:`bool` Pseudotype:`IPromise<Pseudotype>`;
+SelfExpression: NameExpression <: InstanceExpression = IsImplicit:`bool`;
 MemberAccessExpression: NameExpression <: AssignableExpression
     = Context:Expression MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan`;
 MissingName: NameExpression <: SimpleName, AssignableExpression;

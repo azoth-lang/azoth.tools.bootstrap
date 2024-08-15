@@ -1,10 +1,8 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
-using Azoth.Tools.Bootstrap.Compiler.Core.Promises;
 using Azoth.Tools.Bootstrap.Compiler.CST;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
@@ -15,8 +13,6 @@ internal sealed class MemberAccessExpressionSyntax : NameExpressionSyntax, IMemb
     public StandardName MemberName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
     public TextSpan MemberNameSpan { get; }
-    public override IPromise<DataType?> DataType { [DebuggerStepThrough] get; }
-    IPromise<DataType> ITypedExpressionSyntax.DataType => DataType!;
 
     public MemberAccessExpressionSyntax(
         TextSpan span,
@@ -27,7 +23,6 @@ internal sealed class MemberAccessExpressionSyntax : NameExpressionSyntax, IMemb
         Context = context;
         MemberName = member.Name!;
         TypeArguments = FixedList.Empty<ITypeSyntax>();
-        DataType = Types.DataType.PromiseOfUnknown;
         MemberNameSpan = member.Span;
     }
 
