@@ -69,7 +69,3 @@
 // =============================================================================
 
 ↑ computed MethodDefinition.ToString(): `string`;
-= computed AbstractMethodDefinition.ToString();
-= computed GetterMethodDefinition.ToString();
-= computed SetterMethodDefinition.ToString();
-= computed StandardMethodDefinition.ToString();

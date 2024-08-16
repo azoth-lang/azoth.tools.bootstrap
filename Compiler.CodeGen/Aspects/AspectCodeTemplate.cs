@@ -68,7 +68,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Aspects
             this.Write("\r\n{\r\n");
             
             #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
-  foreach(var equation in aspect.Equations) { 
+  foreach(var equation in aspect.AllDeclaredEquations) { 
             
             #line default
             #line hidden

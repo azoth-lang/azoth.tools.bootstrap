@@ -84,14 +84,15 @@ public sealed class TreeModel : IHasUsingNamespaces
     /// <summary>
     /// This checks that each attribute has a definition for each concrete node.
     /// </summary>
+    // TODO with implicitly declared equations, this check should never fail. However, something similar might be needed for other cases.
     private bool ValidateUndefinedAttributes()
     {
         var errors = false;
         foreach (var node in Nodes.Where(n => !n.IsAbstract))
         {
-            var actualEquations = node.ActualEquations.ToFixedDictionary(e => e.Name);
+            var actualEquations = node.ActualEquations.Select(e => e.Name).ToFixedSet();
             foreach (var synthesizedAttribute in AttributesRequiringEquations(node))
-                if (!actualEquations.ContainsKey(synthesizedAttribute.Name))
+                if (!actualEquations.Contains(synthesizedAttribute.Name))
                 {
                     errors = true;
                     Console.Error.WriteLine($"ERROR: Node '{node.Defines}' is missing an equation for attribute '{synthesizedAttribute.Name}'.");

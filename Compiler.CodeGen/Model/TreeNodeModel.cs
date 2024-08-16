@@ -101,6 +101,12 @@ public class TreeNodeModel
     public IFixedList<EquationModel> DeclaredEquations => declaredEquations.Value;
     private readonly Lazy<IFixedList<EquationModel>> declaredEquations;
 
+    public IFixedList<SynthesizedAttributeEquationModel> ImplicitlyDeclaredEquations => implicitlyDeclaredEquations.Value;
+    private readonly Lazy<IFixedList<SynthesizedAttributeEquationModel>> implicitlyDeclaredEquations;
+
+    public IEnumerable<EquationModel> AllDeclaredEquations
+        => DeclaredEquations.Concat(ImplicitlyDeclaredEquations);
+
     public IFixedList<SynthesizedAttributeEquationModel> InheritedEquations => inheritedEquations.Value;
     private readonly Lazy<IFixedList<SynthesizedAttributeEquationModel>> inheritedEquations;
 
@@ -151,16 +157,19 @@ public class TreeNodeModel
         });
 
         // Equations
-        declaredEquations = new(() => Tree.Aspects.SelectMany(a => a.Equations).Where(e => e.NodeSymbol == Defines).ToFixedList());
+        declaredEquations = new(() => Tree.Aspects.SelectMany(a => a.DeclaredEquations).Where(e => e.NodeSymbol == Defines).ToFixedList());
         inheritedEquations = new(()
             => MostSpecificMembers(SupertypeNodes.SelectMany(r => r.ActualEquations).Distinct()).ToFixedList());
-        actualEquations = new(() =>
+        implicitlyDeclaredEquations = new(()
+            =>
         {
-            var declaredSynthesizedEquations = DeclaredEquations.OfType<SynthesizedAttributeEquationModel>().ToList();
-            return declaredSynthesizedEquations
-                   .Concat(InheritedEquations.AllExcept(declaredSynthesizedEquations, SynthesizedAttributeEquationModel.NameComparer))
-                   .ToFixedList();
+            if (IsAbstract) return FixedList.Empty<SynthesizedAttributeEquationModel>();
+            var actualEquationsNames = ComputeActualSynthesizedEquations(DeclaredEquations).Select(eq => eq.Name).ToFixedSet();
+            return InheritedAttributes.OfType<SynthesizedAttributeModel>()
+                                      .Where(a => a.DefaultExpression is null && !actualEquationsNames.Contains(a.Name))
+                                      .Select(ImplicitlyDeclaredEquation).ToFixedList();
         });
+        actualEquations = new(() => ComputeActualSynthesizedEquations(AllDeclaredEquations).ToFixedList());
     }
 
     /// <summary>
@@ -214,4 +223,16 @@ public class TreeNodeModel
     private static bool IsMoreSpecific<T>(T property, T other)
         where T : IMemberModel
         => property.Node.AncestorNodes.Contains(other.Node);
+
+    private IEnumerable<SynthesizedAttributeEquationModel> ComputeActualSynthesizedEquations(
+        IEnumerable<EquationModel> declaredEquations)
+    {
+        var declaredSynthesizedEquations = declaredEquations.OfType<SynthesizedAttributeEquationModel>().ToList();
+        var actualSynthesizedEquations = declaredSynthesizedEquations.Concat(
+            InheritedEquations.AllExcept(declaredSynthesizedEquations, SynthesizedAttributeEquationModel.NameComparer));
+        return actualSynthesizedEquations;
+    }
+
+    private SynthesizedAttributeEquationModel ImplicitlyDeclaredEquation(SynthesizedAttributeModel attribute)
+        => new(this, attribute);
 }
