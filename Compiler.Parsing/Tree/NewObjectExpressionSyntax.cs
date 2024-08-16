@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -35,7 +34,7 @@ internal class NewObjectExpressionSyntax : ExpressionSyntax, INewObjectExpressio
         ConstructorNameSpan = constructorNameSpan;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
 
     public override string ToString()
     {

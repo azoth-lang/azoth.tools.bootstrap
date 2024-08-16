@@ -20,7 +20,7 @@ internal class BlockExpressionSyntax : ExpressionSyntax, IBlockExpressionSyntax
         Statements = statements;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
     public override string ToString()
     {

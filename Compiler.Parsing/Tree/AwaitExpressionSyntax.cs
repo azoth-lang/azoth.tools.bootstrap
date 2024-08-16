@@ -15,7 +15,7 @@ internal class AwaitExpressionSyntax : ExpressionSyntax, IAwaitExpressionSyntax
         Expression = expression;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Unary;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Unary;
 
     public override string ToString() => $"await {Expression.ToGroupedString(ExpressionPrecedence)}";
 }

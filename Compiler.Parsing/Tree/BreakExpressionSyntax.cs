@@ -18,7 +18,7 @@ internal class BreakExpressionSyntax : ExpressionSyntax, IBreakExpressionSyntax
         Value = value;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => Value is not null ? OperatorPrecedence.Min : OperatorPrecedence.Primary;
+    public override OperatorPrecedence ExpressionPrecedence => Value is not null ? OperatorPrecedence.Min : OperatorPrecedence.Primary;
 
     public override string ToString()
     {

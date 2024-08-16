@@ -12,7 +12,7 @@ internal class NextExpressionSyntax : ExpressionSyntax, INextExpressionSyntax
     {
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
     public override string ToString() => "next";
 }

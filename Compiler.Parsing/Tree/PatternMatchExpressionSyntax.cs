@@ -17,7 +17,7 @@ internal class PatternMatchExpressionSyntax : ExpressionSyntax, IPatternMatchExp
         Pattern = pattern;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Conversion;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Conversion;
 
     public override string ToString() =>
         $"{Referent.ToGroupedString(ExpressionPrecedence)} is {Pattern}";

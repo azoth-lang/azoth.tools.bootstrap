@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -17,7 +16,7 @@ internal sealed class StringLiteralExpressionSyntax : LiteralExpressionSyntax, I
         Value = value;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
     public override string ToString() => $"\"{Value.Escape()}\"";
 }

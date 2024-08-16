@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -18,7 +17,7 @@ internal class ReturnExpressionSyntax : ExpressionSyntax, IReturnExpressionSynta
         Value = value;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
 
     public override string ToString()
         => Value is null ? "return" : $"return {Value}";

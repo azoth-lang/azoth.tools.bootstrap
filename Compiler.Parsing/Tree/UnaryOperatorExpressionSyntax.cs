@@ -25,7 +25,7 @@ internal class UnaryOperatorExpressionSyntax : ExpressionSyntax, IUnaryOperatorE
         Operand = operand;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Unary;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Unary;
 
     public override string ToString()
     {

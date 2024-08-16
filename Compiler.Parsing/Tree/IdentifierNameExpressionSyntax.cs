@@ -19,6 +19,6 @@ internal sealed class IdentifierNameExpressionSyntax : NameExpressionSyntax, IId
         Name = name;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
     public override string ToString() => Name.ToString();
 }

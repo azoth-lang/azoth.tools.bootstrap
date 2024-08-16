@@ -10,6 +10,6 @@ internal sealed class MissingNameSyntax : NameExpressionSyntax, IMissingNameSynt
     public MissingNameSyntax(TextSpan span)
         : base(span) { }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
     public override string ToString() => "⧼unknown⧽";
 }

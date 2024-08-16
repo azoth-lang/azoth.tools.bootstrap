@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -17,7 +16,7 @@ internal class AsyncStartExpressionSyntax : ExpressionSyntax, IAsyncStartExpress
         Expression = expression;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
 
     public override string ToString()
     {

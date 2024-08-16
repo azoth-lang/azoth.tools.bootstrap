@@ -27,7 +27,7 @@ internal sealed class MemberAccessExpressionSyntax : NameExpressionSyntax, IMemb
         MemberNameSpan = member.Span;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
     public override string ToString()
         => $"{Context.ToGroupedString(ExpressionPrecedence)}.{MemberName}";

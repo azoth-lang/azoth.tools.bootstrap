@@ -16,7 +16,7 @@ internal class IdExpressionSyntax : ExpressionSyntax, IIdExpressionSyntax
         Referent = referent;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Min;
 
     public override string ToString() => $"id {Referent}";
 }

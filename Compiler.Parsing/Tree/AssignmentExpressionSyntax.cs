@@ -22,7 +22,7 @@ internal sealed class AssignmentExpressionSyntax : ExpressionSyntax, IAssignment
         RightOperand = rightOperand;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Assignment;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Assignment;
 
     public override string ToString()
         => $"{LeftOperand.ToGroupedString(ExpressionPrecedence)} {Operator.ToSymbolString()} {RightOperand.ToGroupedString(ExpressionPrecedence)}";

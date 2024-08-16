@@ -11,7 +11,7 @@ internal abstract class ExpressionSyntax : CodeSyntax, IExpressionSyntax
     {
     }
 
-    protected abstract OperatorPrecedence ExpressionPrecedence { get; }
+    public abstract OperatorPrecedence ExpressionPrecedence { get; }
 
     public string ToGroupedString(OperatorPrecedence surroundingPrecedence)
         => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();

@@ -16,7 +16,7 @@ internal class LoopExpressionSyntax : ExpressionSyntax, ILoopExpressionSyntax
         Block = block;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
     public override string ToString() => $"loop {Block}";
 }

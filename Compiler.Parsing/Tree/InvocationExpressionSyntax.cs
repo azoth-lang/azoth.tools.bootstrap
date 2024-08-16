@@ -22,7 +22,7 @@ internal class InvocationExpressionSyntax : ExpressionSyntax, IInvocationExpress
         Arguments = arguments;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
     public override string ToString() => $"{Expression}({string.Join(", ", Arguments)})";
 }

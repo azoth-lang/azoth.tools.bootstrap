@@ -15,7 +15,7 @@ internal class AsyncBlockExpressionSyntax : ExpressionSyntax, IAsyncBlockExpress
         Block = block;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
+    public override OperatorPrecedence ExpressionPrecedence => OperatorPrecedence.Primary;
 
     public override string ToString() => $"async {Block}";
 }

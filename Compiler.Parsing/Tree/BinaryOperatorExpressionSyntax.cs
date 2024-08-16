@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -23,7 +22,7 @@ internal class BinaryOperatorExpressionSyntax : ExpressionSyntax, IBinaryOperato
         RightOperand = rightOperand;
     }
 
-    protected override OperatorPrecedence ExpressionPrecedence => Operator.Precedence();
+    public override OperatorPrecedence ExpressionPrecedence => Operator.Precedence();
 
     public override string ToString()
         => $"{LeftOperand.ToGroupedString(ExpressionPrecedence)} {Operator.ToSymbolString()} {RightOperand.ToGroupedString(ExpressionPrecedence)}";

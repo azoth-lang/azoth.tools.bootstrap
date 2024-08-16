@@ -18,7 +18,7 @@ public sealed class TreeModel : IHasUsingNamespaces
     public string SymbolSuffix => Syntax.SymbolSuffix;
     public string ClassPrefix => Syntax.ClassPrefix;
     public string ClassSuffix => Syntax.ClassSuffix;
-    public IFixedSet<string> UsingNamespaces => Syntax.UsingNamespaces;
+    public IFixedSet<string> UsingNamespaces { get; }
     public IFixedList<TreeNodeModel> Nodes { get; }
     public IFixedList<AspectModel> Aspects { get; }
 
@@ -26,6 +26,8 @@ public sealed class TreeModel : IHasUsingNamespaces
     {
         Syntax = syntax;
         Root = Symbol.CreateFromSyntax(this, syntax.Root);
+        UsingNamespaces = syntax.UsingNamespaces
+                                .Concat(aspects.SelectMany(a => a.UsingNamespaces)).ToFixedSet();
         Nodes = syntax.Nodes.Select(r => new TreeNodeModel(this, r)).ToFixedList();
         nodesLookup = Nodes.ToFixedDictionary(r => r.Defines.ShortName);
 
