@@ -59,6 +59,9 @@ public partial interface ICompilationUnitSyntax : ICodeSyntax
     DiagnosticCollection Diagnostics { get; }
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
+
+    public static ICompilationUnitSyntax Create(CodeFile file, NamespaceName implicitNamespaceName, DiagnosticCollection diagnostics, IFixedList<IUsingDirectiveSyntax> usingDirectives, IFixedList<INonMemberDefinitionSyntax> definitions, TextSpan span)
+        => new CompilationUnitSyntax(file, implicitNamespaceName, diagnostics, usingDirectives, definitions, span);
 }
 
 // [Closed(typeof(UsingDirectiveSyntax))]
@@ -66,6 +69,9 @@ public partial interface ICompilationUnitSyntax : ICodeSyntax
 public partial interface IUsingDirectiveSyntax : ICodeSyntax
 {
     NamespaceName Name { get; }
+
+    public static IUsingDirectiveSyntax Create(NamespaceName name, TextSpan span)
+        => new UsingDirectiveSyntax(name, span);
 }
 
 [Closed(
@@ -122,6 +128,9 @@ public partial interface IPackageSyntax : ISyntax
     IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
     IFixedSet<IPackageReferenceSyntax> References { get; }
     DiagnosticCollection Diagnostics { get; }
+
+    public static IPackageSyntax Create(IdentifierName name, IFixedSet<ICompilationUnitSyntax> compilationUnits, IFixedSet<ICompilationUnitSyntax> testingCompilationUnits, IFixedSet<IPackageReferenceSyntax> references, DiagnosticCollection diagnostics)
+        => new PackageSyntax(name, compilationUnits, testingCompilationUnits, references, diagnostics);
 }
 
 // [Closed(typeof(PackageReferenceSyntax))]
@@ -131,6 +140,9 @@ public partial interface IPackageReferenceSyntax : ISyntax
     IdentifierName AliasOrName { get; }
     IPackageSymbols Package { get; }
     bool IsTrusted { get; }
+
+    public static IPackageReferenceSyntax Create(IdentifierName aliasOrName, IPackageSymbols package, bool isTrusted)
+        => new PackageReferenceSyntax(aliasOrName, package, isTrusted);
 }
 
 [Closed(
@@ -191,6 +203,9 @@ public partial interface INamespaceDefinitionSyntax : INonMemberDefinitionSyntax
     NamespaceName DeclaredNames { get; }
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
+
+    public static INamespaceDefinitionSyntax Create(bool isGlobalQualified, NamespaceName declaredNames, IFixedList<IUsingDirectiveSyntax> usingDirectives, IFixedList<INonMemberDefinitionSyntax> definitions, CodeFile file, TypeName? name, TextSpan nameSpan, TextSpan span)
+        => new NamespaceDefinitionSyntax(isGlobalQualified, declaredNames, usingDirectives, definitions, file, name, nameSpan, span);
 }
 
 // [Closed(typeof(FunctionDefinitionSyntax))]
@@ -203,6 +218,9 @@ public partial interface IFunctionDefinitionSyntax : IConcreteInvocableDefinitio
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
+
+    public static IFunctionDefinitionSyntax Create(IFixedList<IAttributeSyntax> attributes, IdentifierName name, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+        => new FunctionDefinitionSyntax(attributes, name, parameters, @return, body, accessModifier, file, nameSpan, span);
 }
 
 [Closed(
@@ -229,6 +247,9 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
     IStandardTypeNameSyntax? BaseTypeName { get; }
     new IFixedList<IClassMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
+
+    public static IClassDefinitionSyntax Create(IAbstractKeywordToken? abstractModifier, IFixedList<IGenericParameterSyntax> genericParameters, IStandardTypeNameSyntax? baseTypeName, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<IClassMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, CodeFile file, TextSpan nameSpan, TextSpan span, IAccessModifierToken? accessModifier)
+        => new ClassDefinitionSyntax(abstractModifier, genericParameters, baseTypeName, supertypeNames, members, constModifier, moveModifier, name, file, nameSpan, span, accessModifier);
 }
 
 // [Closed(typeof(StructDefinitionSyntax))]
@@ -237,6 +258,9 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
 {
     new IFixedList<IStructMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
+
+    public static IStructDefinitionSyntax Create(IFixedList<IGenericParameterSyntax> genericParameters, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<IStructMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, CodeFile file, TextSpan nameSpan, TextSpan span, IAccessModifierToken? accessModifier)
+        => new StructDefinitionSyntax(genericParameters, supertypeNames, members, constModifier, moveModifier, name, file, nameSpan, span, accessModifier);
 }
 
 // [Closed(typeof(TraitDefinitionSyntax))]
@@ -245,6 +269,9 @@ public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
 {
     new IFixedList<ITraitMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
+
+    public static ITraitDefinitionSyntax Create(IFixedList<IGenericParameterSyntax> genericParameters, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<ITraitMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, CodeFile file, TextSpan nameSpan, TextSpan span, IAccessModifierToken? accessModifier)
+        => new TraitDefinitionSyntax(genericParameters, supertypeNames, members, constModifier, moveModifier, name, file, nameSpan, span, accessModifier);
 }
 
 // [Closed(typeof(GenericParameterSyntax))]
@@ -255,6 +282,9 @@ public partial interface IGenericParameterSyntax : ICodeSyntax
     IdentifierName Name { get; }
     TypeParameterIndependence Independence { get; }
     TypeParameterVariance Variance { get; }
+
+    public static IGenericParameterSyntax Create(ICapabilityConstraintSyntax constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, TextSpan span)
+        => new GenericParameterSyntax(constraint, name, independence, variance, span);
 }
 
 [Closed(
@@ -316,6 +346,9 @@ public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax,
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAbstractMethodDefinitionSyntax : IMethodDefinitionSyntax
 {
+
+    public static IAbstractMethodDefinitionSyntax Create(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+        => new AbstractMethodDefinitionSyntax(selfParameter, parameters, @return, kind, name, accessModifier, file, nameSpan, span);
 }
 
 [Closed(
@@ -331,6 +364,9 @@ public partial interface IConcreteMethodDefinitionSyntax : IMethodDefinitionSynt
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStandardMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
+
+    public static IStandardMethodDefinitionSyntax Create(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+        => new StandardMethodDefinitionSyntax(selfParameter, parameters, @return, body, kind, name, accessModifier, file, nameSpan, span);
 }
 
 // [Closed(typeof(GetterMethodDefinitionSyntax))]
@@ -339,12 +375,18 @@ public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefiniti
 {
     new IReturnSyntax Return { get; }
     IReturnSyntax? IMethodDefinitionSyntax.Return => Return;
+
+    public static IGetterMethodDefinitionSyntax Create(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax @return, IBodySyntax body, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+        => new GetterMethodDefinitionSyntax(selfParameter, parameters, @return, body, kind, name, accessModifier, file, nameSpan, span);
 }
 
 // [Closed(typeof(SetterMethodDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISetterMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
+
+    public static ISetterMethodDefinitionSyntax Create(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+        => new SetterMethodDefinitionSyntax(selfParameter, parameters, @return, body, kind, name, accessModifier, file, nameSpan, span);
 }
 
 // [Closed(typeof(ConstructorDefinitionSyntax))]
@@ -356,6 +398,9 @@ public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefini
     IConstructorSelfParameterSyntax SelfParameter { get; }
     new IBlockBodySyntax Body { get; }
     IBodySyntax IConcreteInvocableDefinitionSyntax.Body => Body;
+
+    public static IConstructorDefinitionSyntax Create(IdentifierName? name, IConstructorSelfParameterSyntax selfParameter, IFixedList<IConstructorOrInitializerParameterSyntax> parameters, IBlockBodySyntax body, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+        => new ConstructorDefinitionSyntax(name, selfParameter, parameters, body, accessModifier, file, nameSpan, span);
 }
 
 // [Closed(typeof(InitializerDefinitionSyntax))]
@@ -367,6 +412,9 @@ public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefini
     IInitializerSelfParameterSyntax SelfParameter { get; }
     new IBlockBodySyntax Body { get; }
     IBodySyntax IConcreteInvocableDefinitionSyntax.Body => Body;
+
+    public static IInitializerDefinitionSyntax Create(IdentifierName? name, IInitializerSelfParameterSyntax selfParameter, IFixedList<IConstructorOrInitializerParameterSyntax> parameters, IBlockBodySyntax body, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+        => new InitializerDefinitionSyntax(name, selfParameter, parameters, body, accessModifier, file, nameSpan, span);
 }
 
 // [Closed(typeof(FieldDefinitionSyntax))]
@@ -377,6 +425,9 @@ public partial interface IFieldDefinitionSyntax : IClassMemberDefinitionSyntax, 
     TypeName? IDefinitionSyntax.Name => Name;
     ITypeSyntax Type { get; }
     IExpressionSyntax? Initializer { get; }
+
+    public static IFieldDefinitionSyntax Create(IdentifierName name, ITypeSyntax type, IExpressionSyntax? initializer, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span, bool isMutableBinding)
+        => new FieldDefinitionSyntax(name, type, initializer, accessModifier, file, nameSpan, span, isMutableBinding);
 }
 
 // [Closed(typeof(AssociatedFunctionDefinitionSyntax))]
@@ -388,6 +439,9 @@ public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefin
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
+
+    public static IAssociatedFunctionDefinitionSyntax Create(IdentifierName name, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+        => new AssociatedFunctionDefinitionSyntax(name, parameters, @return, body, accessModifier, file, nameSpan, span);
 }
 
 // [Closed(typeof(AttributeSyntax))]
@@ -395,6 +449,9 @@ public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefin
 public partial interface IAttributeSyntax : ICodeSyntax
 {
     IStandardTypeNameSyntax TypeName { get; }
+
+    public static IAttributeSyntax Create(IStandardTypeNameSyntax typeName, TextSpan span)
+        => new AttributeSyntax(typeName, span);
 }
 
 [Closed(
@@ -412,6 +469,9 @@ public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
 {
     new CapabilitySet Constraint { get; }
     ICapabilityConstraint ICapabilityConstraintSyntax.Constraint => Constraint;
+
+    public static ICapabilitySetSyntax Create(CapabilitySet constraint, TextSpan span)
+        => new CapabilitySetSyntax(constraint, span);
 }
 
 // [Closed(typeof(CapabilitySyntax))]
@@ -421,6 +481,9 @@ public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
     IFixedList<ICapabilityToken> Tokens { get; }
     DeclaredCapability Declared { get; }
     Capability Capability { get; }
+
+    public static ICapabilitySyntax Create(IFixedList<ICapabilityToken> tokens, DeclaredCapability declared, Capability capability, ICapabilityConstraint constraint, TextSpan span)
+        => new CapabilitySyntax(tokens, declared, capability, constraint, span);
 }
 
 [Closed(
@@ -449,6 +512,9 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
     IdentifierName? IParameterSyntax.Name => Name;
     ITypeSyntax Type { get; }
     IExpressionSyntax? DefaultValue { get; }
+
+    public static INamedParameterSyntax Create(bool isMutableBinding, bool isLentBinding, IdentifierName name, ITypeSyntax type, IExpressionSyntax? defaultValue, TextSpan span, TextSpan nameSpan)
+        => new NamedParameterSyntax(isMutableBinding, isLentBinding, name, type, defaultValue, span, nameSpan);
 }
 
 [Closed(
@@ -466,6 +532,9 @@ public partial interface ISelfParameterSyntax : IParameterSyntax
 public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilitySyntax Capability { get; }
+
+    public static IConstructorSelfParameterSyntax Create(ICapabilitySyntax capability, bool isLentBinding, IdentifierName? name, TextSpan span)
+        => new ConstructorSelfParameterSyntax(capability, isLentBinding, name, span);
 }
 
 // [Closed(typeof(InitializerSelfParameterSyntax))]
@@ -473,6 +542,9 @@ public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
 public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilitySyntax Capability { get; }
+
+    public static IInitializerSelfParameterSyntax Create(ICapabilitySyntax capability, bool isLentBinding, IdentifierName? name, TextSpan span)
+        => new InitializerSelfParameterSyntax(capability, isLentBinding, name, span);
 }
 
 // [Closed(typeof(MethodSelfParameterSyntax))]
@@ -480,6 +552,9 @@ public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
 public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilityConstraintSyntax Capability { get; }
+
+    public static IMethodSelfParameterSyntax Create(ICapabilityConstraintSyntax capability, bool isLentBinding, IdentifierName? name, TextSpan span)
+        => new MethodSelfParameterSyntax(capability, isLentBinding, name, span);
 }
 
 // [Closed(typeof(FieldParameterSyntax))]
@@ -489,6 +564,9 @@ public partial interface IFieldParameterSyntax : IConstructorOrInitializerParame
     new IdentifierName Name { get; }
     IdentifierName? IParameterSyntax.Name => Name;
     IExpressionSyntax? DefaultValue { get; }
+
+    public static IFieldParameterSyntax Create(IdentifierName name, IExpressionSyntax? defaultValue, TextSpan span)
+        => new FieldParameterSyntax(name, defaultValue, span);
 }
 
 // [Closed(typeof(ReturnSyntax))]
@@ -496,6 +574,9 @@ public partial interface IFieldParameterSyntax : IConstructorOrInitializerParame
 public partial interface IReturnSyntax : ICodeSyntax
 {
     ITypeSyntax Type { get; }
+
+    public static IReturnSyntax Create(ITypeSyntax type, TextSpan span)
+        => new ReturnSyntax(type, span);
 }
 
 [Closed(
@@ -512,6 +593,9 @@ public partial interface IBlockBodySyntax : IBodySyntax
 {
     new IFixedList<IBodyStatementSyntax> Statements { get; }
     IFixedList<IStatementSyntax> IBodyOrBlockSyntax.Statements => Statements;
+
+    public static IBlockBodySyntax Create(IFixedList<IBodyStatementSyntax> statements, TextSpan span)
+        => new BlockBodySyntax(statements, span);
 }
 
 // [Closed(typeof(ExpressionBodySyntax))]
@@ -519,6 +603,9 @@ public partial interface IBlockBodySyntax : IBodySyntax
 public partial interface IExpressionBodySyntax : IBodySyntax
 {
     IResultStatementSyntax ResultStatement { get; }
+
+    public static IExpressionBodySyntax Create(IResultStatementSyntax resultStatement, IFixedList<IStatementSyntax> statements, TextSpan span)
+        => new ExpressionBodySyntax(resultStatement, statements, span);
 }
 
 [Closed(
@@ -566,6 +653,9 @@ public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax, IS
 {
     new IdentifierName Name { get; }
     StandardName IStandardTypeNameSyntax.Name => Name;
+
+    public static IIdentifierTypeNameSyntax Create(IdentifierName name, TextSpan span)
+        => new IdentifierTypeNameSyntax(name, span);
 }
 
 // [Closed(typeof(SpecialTypeNameSyntax))]
@@ -574,6 +664,9 @@ public partial interface ISpecialTypeNameSyntax : ISimpleTypeNameSyntax
 {
     new SpecialTypeName Name { get; }
     TypeName ITypeNameSyntax.Name => Name;
+
+    public static ISpecialTypeNameSyntax Create(SpecialTypeName name, TextSpan span)
+        => new SpecialTypeNameSyntax(name, span);
 }
 
 // [Closed(typeof(GenericTypeNameSyntax))]
@@ -583,6 +676,9 @@ public partial interface IGenericTypeNameSyntax : IStandardTypeNameSyntax
     new GenericName Name { get; }
     StandardName IStandardTypeNameSyntax.Name => Name;
     IFixedList<ITypeSyntax> TypeArguments { get; }
+
+    public static IGenericTypeNameSyntax Create(GenericName name, IFixedList<ITypeSyntax> typeArguments, TextSpan span)
+        => new GenericTypeNameSyntax(name, typeArguments, span);
 }
 
 // [Closed(typeof(QualifiedTypeNameSyntax))]
@@ -591,6 +687,9 @@ public partial interface IQualifiedTypeNameSyntax : ITypeNameSyntax
 {
     ITypeNameSyntax Context { get; }
     IStandardTypeNameSyntax QualifiedName { get; }
+
+    public static IQualifiedTypeNameSyntax Create(ITypeNameSyntax context, IStandardTypeNameSyntax qualifiedName, TypeName name, TextSpan span)
+        => new QualifiedTypeNameSyntax(context, qualifiedName, name, span);
 }
 
 // [Closed(typeof(OptionalTypeSyntax))]
@@ -598,6 +697,9 @@ public partial interface IQualifiedTypeNameSyntax : ITypeNameSyntax
 public partial interface IOptionalTypeSyntax : ITypeSyntax
 {
     ITypeSyntax Referent { get; }
+
+    public static IOptionalTypeSyntax Create(ITypeSyntax referent, TextSpan span)
+        => new OptionalTypeSyntax(referent, span);
 }
 
 // [Closed(typeof(CapabilityTypeSyntax))]
@@ -606,6 +708,9 @@ public partial interface ICapabilityTypeSyntax : ITypeSyntax
 {
     ICapabilitySyntax Capability { get; }
     ITypeSyntax Referent { get; }
+
+    public static ICapabilityTypeSyntax Create(ICapabilitySyntax capability, ITypeSyntax referent, TextSpan span)
+        => new CapabilityTypeSyntax(capability, referent, span);
 }
 
 // [Closed(typeof(FunctionTypeSyntax))]
@@ -614,6 +719,9 @@ public partial interface IFunctionTypeSyntax : ITypeSyntax
 {
     IFixedList<IParameterTypeSyntax> Parameters { get; }
     IReturnTypeSyntax Return { get; }
+
+    public static IFunctionTypeSyntax Create(IFixedList<IParameterTypeSyntax> parameters, IReturnTypeSyntax @return, TextSpan span)
+        => new FunctionTypeSyntax(parameters, @return, span);
 }
 
 // [Closed(typeof(ParameterTypeSyntax))]
@@ -622,6 +730,9 @@ public partial interface IParameterTypeSyntax : ICodeSyntax
 {
     bool IsLent { get; }
     ITypeSyntax Referent { get; }
+
+    public static IParameterTypeSyntax Create(bool isLent, ITypeSyntax referent, TextSpan span)
+        => new ParameterTypeSyntax(isLent, referent, span);
 }
 
 // [Closed(typeof(ReturnTypeSyntax))]
@@ -629,6 +740,9 @@ public partial interface IParameterTypeSyntax : ICodeSyntax
 public partial interface IReturnTypeSyntax : ICodeSyntax
 {
     ITypeSyntax Referent { get; }
+
+    public static IReturnTypeSyntax Create(ITypeSyntax referent, TextSpan span)
+        => new ReturnTypeSyntax(referent, span);
 }
 
 [Closed(
@@ -645,12 +759,18 @@ public partial interface IViewpointTypeSyntax : ITypeSyntax
 public partial interface ICapabilityViewpointTypeSyntax : IViewpointTypeSyntax
 {
     ICapabilitySyntax Capability { get; }
+
+    public static ICapabilityViewpointTypeSyntax Create(ICapabilitySyntax capability, ITypeSyntax referent, TextSpan span)
+        => new CapabilityViewpointTypeSyntax(capability, referent, span);
 }
 
 // [Closed(typeof(SelfViewpointTypeSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISelfViewpointTypeSyntax : IViewpointTypeSyntax
 {
+
+    public static ISelfViewpointTypeSyntax Create(ITypeSyntax referent, TextSpan span)
+        => new SelfViewpointTypeSyntax(referent, span);
 }
 
 [Closed(
@@ -666,6 +786,9 @@ public partial interface IStatementSyntax : ICodeSyntax
 public partial interface IResultStatementSyntax : IStatementSyntax, IBlockOrResultSyntax
 {
     IExpressionSyntax Expression { get; }
+
+    public static IResultStatementSyntax Create(IExpressionSyntax expression, TextSpan span)
+        => new ResultStatementSyntax(expression, span);
 }
 
 [Closed(
@@ -684,6 +807,9 @@ public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyn
     ICapabilitySyntax? Capability { get; }
     ITypeSyntax? Type { get; }
     IExpressionSyntax? Initializer { get; }
+
+    public static IVariableDeclarationStatementSyntax Create(TextSpan nameSpan, IdentifierName name, ICapabilitySyntax? capability, ITypeSyntax? type, IExpressionSyntax? initializer, TextSpan span, bool isMutableBinding)
+        => new VariableDeclarationStatementSyntax(nameSpan, name, capability, type, initializer, span, isMutableBinding);
 }
 
 // [Closed(typeof(ExpressionStatementSyntax))]
@@ -691,6 +817,9 @@ public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyn
 public partial interface IExpressionStatementSyntax : IBodyStatementSyntax
 {
     IExpressionSyntax Expression { get; }
+
+    public static IExpressionStatementSyntax Create(IExpressionSyntax expression, TextSpan span)
+        => new ExpressionStatementSyntax(expression, span);
 }
 
 [Closed(
@@ -708,6 +837,9 @@ public partial interface IBindingContextPatternSyntax : IPatternSyntax
     bool IsMutableBinding { get; }
     IPatternSyntax Pattern { get; }
     ITypeSyntax? Type { get; }
+
+    public static IBindingContextPatternSyntax Create(bool isMutableBinding, IPatternSyntax pattern, ITypeSyntax? type, TextSpan span)
+        => new BindingContextPatternSyntax(isMutableBinding, pattern, type, span);
 }
 
 [Closed(
@@ -723,6 +855,9 @@ public partial interface IOptionalOrBindingPatternSyntax : IPatternSyntax
 public partial interface IBindingPatternSyntax : IOptionalOrBindingPatternSyntax, ILocalBindingSyntax
 {
     IdentifierName Name { get; }
+
+    public static IBindingPatternSyntax Create(IdentifierName name, TextSpan span, TextSpan nameSpan, bool isMutableBinding)
+        => new BindingPatternSyntax(name, span, nameSpan, isMutableBinding);
 }
 
 // [Closed(typeof(OptionalPatternSyntax))]
@@ -730,6 +865,9 @@ public partial interface IBindingPatternSyntax : IOptionalOrBindingPatternSyntax
 public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSyntax
 {
     IOptionalOrBindingPatternSyntax Pattern { get; }
+
+    public static IOptionalPatternSyntax Create(IOptionalOrBindingPatternSyntax pattern, TextSpan span)
+        => new OptionalPatternSyntax(pattern, span);
 }
 
 [Closed(
@@ -781,6 +919,9 @@ public partial interface IBlockExpressionSyntax : IExpressionSyntax, IBlockOrRes
 {
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
+
+    public static IBlockExpressionSyntax Create(IFixedList<IStatementSyntax> statements, TextSpan span)
+        => new BlockExpressionSyntax(statements, span);
 }
 
 // [Closed(typeof(NewObjectExpressionSyntax))]
@@ -793,6 +934,9 @@ public partial interface INewObjectExpressionSyntax : IExpressionSyntax
     IFixedList<IExpressionSyntax> Arguments { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
+
+    public static INewObjectExpressionSyntax Create(ITypeNameSyntax type, IdentifierName? constructorName, TextSpan? constructorNameSpan, IFixedList<IExpressionSyntax> arguments, TextSpan span)
+        => new NewObjectExpressionSyntax(type, constructorName, constructorNameSpan, arguments, span);
 }
 
 // [Closed(typeof(UnsafeExpressionSyntax))]
@@ -802,6 +946,9 @@ public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
     IExpressionSyntax Expression { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
+
+    public static IUnsafeExpressionSyntax Create(IExpressionSyntax expression, TextSpan span)
+        => new UnsafeExpressionSyntax(expression, span);
 }
 
 [Closed(
@@ -821,6 +968,9 @@ public partial interface ILiteralExpressionSyntax : IExpressionSyntax
 public partial interface IBoolLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     bool Value { get; }
+
+    public static IBoolLiteralExpressionSyntax Create(bool value, TextSpan span)
+        => new BoolLiteralExpressionSyntax(value, span);
 }
 
 // [Closed(typeof(IntegerLiteralExpressionSyntax))]
@@ -828,12 +978,18 @@ public partial interface IBoolLiteralExpressionSyntax : ILiteralExpressionSyntax
 public partial interface IIntegerLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     BigInteger Value { get; }
+
+    public static IIntegerLiteralExpressionSyntax Create(BigInteger value, TextSpan span)
+        => new IntegerLiteralExpressionSyntax(value, span);
 }
 
 // [Closed(typeof(NoneLiteralExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INoneLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
+
+    public static INoneLiteralExpressionSyntax Create(TextSpan span)
+        => new NoneLiteralExpressionSyntax(span);
 }
 
 // [Closed(typeof(StringLiteralExpressionSyntax))]
@@ -841,6 +997,9 @@ public partial interface INoneLiteralExpressionSyntax : ILiteralExpressionSyntax
 public partial interface IStringLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     string Value { get; }
+
+    public static IStringLiteralExpressionSyntax Create(string value, TextSpan span)
+        => new StringLiteralExpressionSyntax(value, span);
 }
 
 // [Closed(typeof(AssignmentExpressionSyntax))]
@@ -852,6 +1011,9 @@ public partial interface IAssignmentExpressionSyntax : IExpressionSyntax
     IExpressionSyntax RightOperand { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Assignment;
+
+    public static IAssignmentExpressionSyntax Create(IAssignableExpressionSyntax leftOperand, AssignmentOperator @operator, IExpressionSyntax rightOperand, TextSpan span)
+        => new AssignmentExpressionSyntax(leftOperand, @operator, rightOperand, span);
 }
 
 // [Closed(typeof(BinaryOperatorExpressionSyntax))]
@@ -863,6 +1025,9 @@ public partial interface IBinaryOperatorExpressionSyntax : IExpressionSyntax
     IExpressionSyntax RightOperand { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => Operator.Precedence();
+
+    public static IBinaryOperatorExpressionSyntax Create(IExpressionSyntax leftOperand, BinaryOperator @operator, IExpressionSyntax rightOperand, TextSpan span)
+        => new BinaryOperatorExpressionSyntax(leftOperand, @operator, rightOperand, span);
 }
 
 // [Closed(typeof(UnaryOperatorExpressionSyntax))]
@@ -874,6 +1039,9 @@ public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
     IExpressionSyntax Operand { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Unary;
+
+    public static IUnaryOperatorExpressionSyntax Create(UnaryOperatorFixity fixity, UnaryOperator @operator, IExpressionSyntax operand, TextSpan span)
+        => new UnaryOperatorExpressionSyntax(fixity, @operator, operand, span);
 }
 
 // [Closed(typeof(IdExpressionSyntax))]
@@ -883,6 +1051,9 @@ public partial interface IIdExpressionSyntax : IExpressionSyntax
     IExpressionSyntax Referent { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
+
+    public static IIdExpressionSyntax Create(IExpressionSyntax referent, TextSpan span)
+        => new IdExpressionSyntax(referent, span);
 }
 
 // [Closed(typeof(ConversionExpressionSyntax))]
@@ -894,6 +1065,9 @@ public partial interface IConversionExpressionSyntax : IExpressionSyntax
     ITypeSyntax ConvertToType { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Conversion;
+
+    public static IConversionExpressionSyntax Create(IExpressionSyntax referent, ConversionOperator @operator, ITypeSyntax convertToType, TextSpan span)
+        => new ConversionExpressionSyntax(referent, @operator, convertToType, span);
 }
 
 // [Closed(typeof(PatternMatchExpressionSyntax))]
@@ -904,6 +1078,9 @@ public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
     IPatternSyntax Pattern { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Conversion;
+
+    public static IPatternMatchExpressionSyntax Create(IExpressionSyntax referent, IPatternSyntax pattern, TextSpan span)
+        => new PatternMatchExpressionSyntax(referent, pattern, span);
 }
 
 // [Closed(typeof(IfExpressionSyntax))]
@@ -915,6 +1092,9 @@ public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyn
     IElseClauseSyntax? ElseClause { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
+
+    public static IIfExpressionSyntax Create(IExpressionSyntax condition, IBlockOrResultSyntax thenBlock, IElseClauseSyntax? elseClause, TextSpan span)
+        => new IfExpressionSyntax(condition, thenBlock, elseClause, span);
 }
 
 // [Closed(typeof(LoopExpressionSyntax))]
@@ -924,6 +1104,9 @@ public partial interface ILoopExpressionSyntax : IExpressionSyntax
     IBlockExpressionSyntax Block { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
+
+    public static ILoopExpressionSyntax Create(IBlockExpressionSyntax block, TextSpan span)
+        => new LoopExpressionSyntax(block, span);
 }
 
 // [Closed(typeof(WhileExpressionSyntax))]
@@ -934,6 +1117,9 @@ public partial interface IWhileExpressionSyntax : IExpressionSyntax
     IBlockExpressionSyntax Block { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
+
+    public static IWhileExpressionSyntax Create(IExpressionSyntax condition, IBlockExpressionSyntax block, TextSpan span)
+        => new WhileExpressionSyntax(condition, block, span);
 }
 
 // [Closed(typeof(ForeachExpressionSyntax))]
@@ -946,6 +1132,9 @@ public partial interface IForeachExpressionSyntax : IExpressionSyntax, ILocalBin
     IBlockExpressionSyntax Block { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
+
+    public static IForeachExpressionSyntax Create(IdentifierName variableName, IExpressionSyntax inExpression, ITypeSyntax? type, IBlockExpressionSyntax block, TextSpan span, TextSpan nameSpan, bool isMutableBinding)
+        => new ForeachExpressionSyntax(variableName, inExpression, type, block, span, nameSpan, isMutableBinding);
 }
 
 // [Closed(typeof(BreakExpressionSyntax))]
@@ -955,6 +1144,9 @@ public partial interface IBreakExpressionSyntax : IExpressionSyntax
     IExpressionSyntax? Value { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => Value is not null ? OperatorPrecedence.Min : OperatorPrecedence.Primary;
+
+    public static IBreakExpressionSyntax Create(IExpressionSyntax? value, TextSpan span)
+        => new BreakExpressionSyntax(value, span);
 }
 
 // [Closed(typeof(NextExpressionSyntax))]
@@ -963,6 +1155,9 @@ public partial interface INextExpressionSyntax : IExpressionSyntax
 {
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
+
+    public static INextExpressionSyntax Create(TextSpan span)
+        => new NextExpressionSyntax(span);
 }
 
 // [Closed(typeof(ReturnExpressionSyntax))]
@@ -972,6 +1167,9 @@ public partial interface IReturnExpressionSyntax : IExpressionSyntax
     IExpressionSyntax? Value { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
+
+    public static IReturnExpressionSyntax Create(IExpressionSyntax? value, TextSpan span)
+        => new ReturnExpressionSyntax(value, span);
 }
 
 // [Closed(typeof(InvocationExpressionSyntax))]
@@ -982,6 +1180,9 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
     IFixedList<IExpressionSyntax> Arguments { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
+
+    public static IInvocationExpressionSyntax Create(IExpressionSyntax expression, IFixedList<IExpressionSyntax> arguments, TextSpan span)
+        => new InvocationExpressionSyntax(expression, arguments, span);
 }
 
 [Closed(
@@ -1021,6 +1222,9 @@ public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressi
 {
     new IdentifierName Name { get; }
     StandardName IStandardNameExpressionSyntax.Name => Name;
+
+    public static IIdentifierNameExpressionSyntax Create(IdentifierName name, TextSpan span)
+        => new IdentifierNameExpressionSyntax(name, span);
 }
 
 // [Closed(typeof(SpecialTypeNameExpressionSyntax))]
@@ -1028,6 +1232,9 @@ public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressi
 public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSyntax
 {
     SpecialTypeName Name { get; }
+
+    public static ISpecialTypeNameExpressionSyntax Create(SpecialTypeName name, TextSpan span)
+        => new SpecialTypeNameExpressionSyntax(name, span);
 }
 
 // [Closed(typeof(GenericNameExpressionSyntax))]
@@ -1037,6 +1244,9 @@ public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionS
     new GenericName Name { get; }
     StandardName IStandardNameExpressionSyntax.Name => Name;
     IFixedList<ITypeSyntax> TypeArguments { get; }
+
+    public static IGenericNameExpressionSyntax Create(GenericName name, IFixedList<ITypeSyntax> typeArguments, TextSpan span)
+        => new GenericNameExpressionSyntax(name, typeArguments, span);
 }
 
 [Closed(
@@ -1051,6 +1261,9 @@ public partial interface IInstanceExpressionSyntax : ISimpleNameSyntax
 public partial interface ISelfExpressionSyntax : INameExpressionSyntax, IInstanceExpressionSyntax
 {
     bool IsImplicit { get; }
+
+    public static ISelfExpressionSyntax Create(bool isImplicit, TextSpan span)
+        => new SelfExpressionSyntax(isImplicit, span);
 }
 
 // [Closed(typeof(MemberAccessExpressionSyntax))]
@@ -1061,12 +1274,18 @@ public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, 
     StandardName MemberName { get; }
     IFixedList<ITypeSyntax> TypeArguments { get; }
     TextSpan MemberNameSpan { get; }
+
+    public static IMemberAccessExpressionSyntax Create(IExpressionSyntax context, StandardName memberName, IFixedList<ITypeSyntax> typeArguments, TextSpan memberNameSpan, TextSpan span)
+        => new MemberAccessExpressionSyntax(context, memberName, typeArguments, memberNameSpan, span);
 }
 
 // [Closed(typeof(MissingNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMissingNameSyntax : ISimpleNameSyntax, IAssignableExpressionSyntax
 {
+
+    public static IMissingNameSyntax Create(TextSpan span)
+        => new MissingNameSyntax(span);
 }
 
 // [Closed(typeof(MoveExpressionSyntax))]
@@ -1076,6 +1295,9 @@ public partial interface IMoveExpressionSyntax : IExpressionSyntax
     ISimpleNameSyntax Referent { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
+
+    public static IMoveExpressionSyntax Create(ISimpleNameSyntax referent, TextSpan span)
+        => new MoveExpressionSyntax(referent, span);
 }
 
 // [Closed(typeof(FreezeExpressionSyntax))]
@@ -1085,6 +1307,9 @@ public partial interface IFreezeExpressionSyntax : IExpressionSyntax
     ISimpleNameSyntax Referent { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
+
+    public static IFreezeExpressionSyntax Create(ISimpleNameSyntax referent, TextSpan span)
+        => new FreezeExpressionSyntax(referent, span);
 }
 
 // [Closed(typeof(AsyncBlockExpressionSyntax))]
@@ -1094,6 +1319,9 @@ public partial interface IAsyncBlockExpressionSyntax : IExpressionSyntax
     IBlockExpressionSyntax Block { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
+
+    public static IAsyncBlockExpressionSyntax Create(IBlockExpressionSyntax block, TextSpan span)
+        => new AsyncBlockExpressionSyntax(block, span);
 }
 
 // [Closed(typeof(AsyncStartExpressionSyntax))]
@@ -1104,6 +1332,9 @@ public partial interface IAsyncStartExpressionSyntax : IExpressionSyntax
     IExpressionSyntax Expression { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
+
+    public static IAsyncStartExpressionSyntax Create(bool scheduled, IExpressionSyntax expression, TextSpan span)
+        => new AsyncStartExpressionSyntax(scheduled, expression, span);
 }
 
 // [Closed(typeof(AwaitExpressionSyntax))]
@@ -1113,6 +1344,9 @@ public partial interface IAwaitExpressionSyntax : IExpressionSyntax
     IExpressionSyntax Expression { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Unary;
+
+    public static IAwaitExpressionSyntax Create(IExpressionSyntax expression, TextSpan span)
+        => new AwaitExpressionSyntax(expression, span);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
