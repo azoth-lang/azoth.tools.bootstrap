@@ -89,8 +89,8 @@ public class TreeNodeModel
     /// <summary>
     /// Attributes declared against this specific node in the definition files.
     /// </summary>
-    public IFixedList<AttributeModel> DeclaredAttributes => declaredAttributes.Value;
-    private readonly Lazy<IFixedList<AttributeModel>> declaredAttributes;
+    public IFixedList<AspectAttributeModel> DeclaredAttributes => declaredAttributes.Value;
+    private readonly Lazy<IFixedList<AspectAttributeModel>> declaredAttributes;
 
     /// <summary>
     /// Equations declared against this specific node in the definition files.
@@ -139,7 +139,7 @@ public class TreeNodeModel
         });
 
         // Attributes
-        declaredAttributes = new(() => Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.Node == Defines).ToFixedList());
+        declaredAttributes = new(() => Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.NodeSymbol == Defines).ToFixedList());
         declaredEquations = new(() => Tree.Aspects.SelectMany(a => a.Equations).Where(e => e.Node == Defines).ToFixedList());
     }
 

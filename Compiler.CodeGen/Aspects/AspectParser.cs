@@ -21,11 +21,11 @@ public static class AspectParser
         return new(ns, name, usingNamespaces, attributes, equations);
     }
 
-    private static (IEnumerable<AttributeSyntax> Attributes, IEnumerable<EquationSyntax> Equations) ParseAttributesAndEquations(
+    private static (IEnumerable<AspectAttributeSyntax> Attributes, IEnumerable<EquationSyntax> Equations) ParseAttributesAndEquations(
         IFixedList<string> lines)
     {
         var statements = ParseToStatements(lines).ToFixedList();
-        var attributes = new List<AttributeSyntax>();
+        var attributes = new List<AspectAttributeSyntax>();
         var equations = new List<EquationSyntax>();
         foreach (var statement in statements)
         {
@@ -37,11 +37,11 @@ public static class AspectParser
         return (attributes, equations);
     }
 
-    private static AttributeSyntax ParseAttribute(string statement)
+    private static AspectAttributeSyntax ParseAttribute(string statement)
         => statement[0] switch
         {
             '↑' => ParseSynthesizedAttribute(statement),
-            _ => throw new Exception($"Unknown attribute kind: {statement}"),
+            _ => throw new($"Unknown attribute kind: {statement}"),
         };
 
     private static SynthesizedAttributeSyntax ParseSynthesizedAttribute(string statement)

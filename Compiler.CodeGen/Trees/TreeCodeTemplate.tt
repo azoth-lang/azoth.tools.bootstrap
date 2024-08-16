@@ -36,7 +36,7 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#      foreach (var equation in node.DeclaredEquations) { #>
 <#          switch (equation) { #>
 <#              case SynthesizedAttributeEquationModel eq: #>
-    <#=Emit.Type(eq.Type) #> <#= Emit.TypeName(eq.Attribute.Node) #>.<#=eq.Name #><#=eq.Parameters #><#=Emit.Body(eq) #>
+    <#=Emit.Type(eq.Type) #> <#= Emit.TypeName(eq.Attribute.NodeSymbol) #>.<#=eq.Name #><#=eq.Parameters #><#=Emit.Body(eq) #>
 <#                  break;#>
 <#          } #>
 <#      } #>

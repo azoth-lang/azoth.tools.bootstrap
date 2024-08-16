@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 

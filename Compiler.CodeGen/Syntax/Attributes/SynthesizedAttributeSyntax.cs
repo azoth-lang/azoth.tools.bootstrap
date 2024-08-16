@@ -1,6 +1,6 @@
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
-public sealed class SynthesizedAttributeSyntax : AttributeSyntax
+public sealed class SynthesizedAttributeSyntax : AspectAttributeSyntax
 {
     public string? Parameters { get; }
     public TypeSyntax Type { get; }

@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 
-public sealed class PropertyModel
+/// <summary>
+/// The semantic model for a property attribute. That is an attribute that is defined as a property
+/// as part of the node definition.
+/// </summary>
+public sealed class PropertyModel : AttributeModel
 {
     public static IEqualityComparer<PropertyModel> NameAndTypeComparer { get; }
         = EqualityComparer<PropertyModel>.Create((p1, p2) => p1?.Name == p2?.Name && p1?.Type == p2?.Type,
@@ -17,10 +21,10 @@ public sealed class PropertyModel
         = EqualityComparer<PropertyModel>.Create((p1, p2) => p1?.Name == p2?.Name,
             p => HashCode.Combine(p.Name));
 
-    public PropertySyntax? Syntax { get; }
+    public override PropertySyntax? Syntax { get; }
 
     public TreeNodeModel Node { get; }
-    public string Name { get; }
+    public override string Name { get; }
     public TypeModel Type { get; }
     /// <summary>
     /// Something is a new definition if it replaces some parent definition.

@@ -251,7 +251,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(" ");
             
             #line 39 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(eq.Attribute.Node)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(eq.Attribute.NodeSymbol)));
             
             #line default
             #line hidden

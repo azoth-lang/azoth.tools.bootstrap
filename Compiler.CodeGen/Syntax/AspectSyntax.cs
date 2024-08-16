@@ -10,14 +10,14 @@ public sealed class AspectSyntax
     public string Namespace { get; }
     public string Name { get; }
     public IFixedSet<string> UsingNamespaces { get; }
-    public IFixedList<AttributeSyntax> Attributes { get; }
+    public IFixedList<AspectAttributeSyntax> Attributes { get; }
     public IFixedList<EquationSyntax> Equations { get; }
 
     public AspectSyntax(
         string @namespace,
         string name,
         IEnumerable<string> usingNamespaces,
-        IEnumerable<AttributeSyntax> attributes,
+        IEnumerable<AspectAttributeSyntax> attributes,
         IEnumerable<EquationSyntax> equations)
     {
         Namespace = @namespace;
