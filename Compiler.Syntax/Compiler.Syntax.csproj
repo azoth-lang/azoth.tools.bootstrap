@@ -41,6 +41,6 @@
     </Compile>
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SyntaxTree.tree&quot;" />
+    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SyntaxTree.tree&quot; &quot;$(ProjectDir)Formatting.aspect&quot;" />
   </Target>
 </Project>

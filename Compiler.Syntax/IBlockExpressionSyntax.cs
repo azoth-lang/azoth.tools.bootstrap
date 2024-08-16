@@ -3,6 +3,4 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 /// <summary>
 /// A block expression. Not to be used to represent function or type bodies.
 /// </summary>
-public partial interface IBlockExpressionSyntax
-{
-}
+public partial interface IBlockExpressionSyntax;

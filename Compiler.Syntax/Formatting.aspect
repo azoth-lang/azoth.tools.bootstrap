@@ -1,0 +1,29 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
+◊name FormattingAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
+
+// Attribute Syntax
+// ----------------
+// Synthesized:
+//      ↑ (child)? Node.Attribute:TypeSymbol (=> <C# Expression>)?;
+//      ↑ (child)? Node.Method(<params>):TypeSymbol (=> <C# Expression>)?;
+//      = (eager|lazy|computed)? Node.Attribute(:TypeSymbol)? (=> <C# Expression>)?;
+//      = Node.Method(<params/param-names>)(:TypeSymbol)? (=> <C# Expression>)?;
+// Inherited:
+//      ↓ (computed)? (child)? Node.Attribute:TypeSymbol;
+//      ↓ (child)? Node.Method():TypeSymbol; // Always computed
+//      = Node.*.(Attribute|Method()) (=> <C# Expression>)?;
+//      = Node.**.(Attribute|Method()) (=> <C# Expression>)?; // Broadcast
+//      = Node.Child.(Attribute|Method()) (=> <C# Expression>)?;
+//      = Node.ChildList[i].(Attribute|Method()) (=> <C# Expression>)?;
+//      = Node.Child.**.(Attribute|Method()) (=> <C# Expression>)?; // Broadcast
+// Inherited from Previous: ⮡  (child)? Node.Attribute:TypeSymbol;
+// Circular: ⟳ Node.Attribute:TypeSymbol;
+// Collection: [*] Node.Attribute:TypeSymbol; // TODO how to set builders?
+
+↑ Expression.ExpressionPrecedence:`OperatorPrecedence`;
+
+= AssignmentExpression.ExpressionPrecedence => OperatorPrecedence.Assignment;
+
+↑ string Expression.ToGroupedString(OperatorPrecedence surroundingPrecedence)
+    => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();

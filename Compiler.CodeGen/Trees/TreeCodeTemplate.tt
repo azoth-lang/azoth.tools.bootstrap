@@ -4,7 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
-<#  foreach(var usingNamespace in Build.OrderedNamespaces(tree, "ExhaustiveMatching")) { #>
+<#  foreach(var usingNamespace in Build.OrderedNamespaces(tree, "ExhaustiveMatching", "System.CodeDom.Compiler")) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
@@ -13,7 +13,8 @@ namespace <#=tree.Namespace #>;
 // ReSharper disable PartialTypeWithSinglePart
 
 <#  foreach(var node in tree.Nodes) {#>
-<#=Emit.ClosedAttribute(node) #>public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(node) #>
+<#=Emit.ClosedAttribute(node) #>[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(node) #>
 {
 <#      foreach (var property in node.PropertiesRequiringDeclaration) { #>
     <#=Emit.PropertyIsNew(property) #><#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
@@ -25,6 +26,7 @@ namespace <#=tree.Namespace #>;
 
 <#  } #>
 <#  foreach(var node in tree.Nodes.Where(n => !n.IsAbstract)) {#>
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class <#= Emit.ClassName(node.Defines) #> // : <#= Emit.TypeName(node.Defines) #>
 {
 <#      foreach (var property in node.AllProperties) { #>

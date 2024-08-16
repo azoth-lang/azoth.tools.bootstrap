@@ -1,9 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Aspects;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
+using Azoth.Tools.Bootstrap.Framework;
 using McMaster.Extensions.CommandLineUtils;
+using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen;
 
@@ -29,9 +35,7 @@ public static class Program
             if (langDirPath is not null)
                 Console.WriteLine($"Language Path: {langDirPath}");
 
-            bool success = true;
-            foreach (var inputPath in inputFileArgs.Values)
-                success &= Generate(inputPath!);
+            bool success = Generate(inputFileArgs.Values!);
 
             return success ? 0 : 1;
         });
@@ -39,41 +43,69 @@ public static class Program
         return app.Execute(args);
     }
 
-    private static bool Generate(string inputPath)
+    private static bool Generate(IReadOnlyList<string> inputPath)
     {
-        var extension = Path.GetExtension(inputPath);
-        switch (extension)
+        var pathLookup = inputPath.ToLookup(Path.GetExtension);
+        foreach (var group in pathLookup)
+            switch (group.Key)
+            {
+                case ".tree":
+                case ".aspect":
+                    continue;
+                default:
+                    Console.WriteLine($"Unknown file extension: {group.Key}");
+                    return false;
+            }
+
+        var treePaths = pathLookup[".tree"].ToFixedList();
+        if (treePaths.IsEmpty)
         {
-            case ".tree":
-                return GenerateTree(inputPath);
-            default:
-                Console.WriteLine($"Unknown file extension: {extension}");
-                return false;
+            Console.WriteLine("No tree files specified");
+            return false;
         }
+
+        if (treePaths.Count > 1)
+        {
+            Console.WriteLine("Multiple tree files specified");
+            return false;
+        }
+
+        var treePath = treePaths[0];
+        var aspectPaths = pathLookup[".aspect"].ToFixedList();
+
+        return GenerateTree(treePath, aspectPaths);
     }
 
-    private static bool GenerateTree(string inputPath)
+    private static bool GenerateTree(string treePath, IFixedList<string> aspectPaths)
     {
         try
         {
-            var treeOutputPath = Path.ChangeExtension(inputPath, ".tree.cs");
-            var childrenOutputPath = Path.ChangeExtension(inputPath, ".children.cs");
-            Console.WriteLine($"Input:  {inputPath}");
+            var treeOutputPath = Path.ChangeExtension(treePath, ".tree.cs");
+            var childrenOutputPath = Path.ChangeExtension(treePath, ".children.cs");
+            Console.WriteLine($"Tree Input:  {treePath}");
             Console.WriteLine($"Tree Output: {treeOutputPath}");
             Console.WriteLine($"Children Output: {childrenOutputPath}");
 
-            var inputFile = File.ReadAllText(inputPath)
-                            ?? throw new InvalidOperationException("null from reading input file");
-            var treeSyntax = TreeParser.Parse(inputFile);
-            var tree = new TreeModel(treeSyntax);
+            var treeSyntax = TreeParser.Parse(File.ReadAllText(treePath));
+            var aspectSyntax = new List<AspectSyntax>();
+            foreach (var aspectPath in aspectPaths)
+            {
+                Console.WriteLine($"Aspect Input: {aspectPath}");
+                var aspect = AspectParser.Parse(File.ReadAllText(aspectPath));
+                aspectSyntax.Add(aspect);
+            }
 
+            var tree = new TreeModel(treeSyntax);
             tree.ValidateAmbiguousProperties();
 
-            var treeCode = TreeCodeBuilder.GenerateTree(tree);
-            WriteIfChanged(treeOutputPath, treeCode);
+            {
+                var treeCode = TreeCodeBuilder.GenerateTree(tree);
+                WriteIfChanged(treeOutputPath, treeCode);
 
-            var walkerCode = TreeCodeBuilder.GenerateChildren(tree);
-            WriteIfChanged(childrenOutputPath, walkerCode);
+                var walkerCode = TreeCodeBuilder.GenerateChildren(tree);
+                WriteIfChanged(childrenOutputPath, walkerCode);
+            }
+
             return true;
         }
         catch (Exception ex)

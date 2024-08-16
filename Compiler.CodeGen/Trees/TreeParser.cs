@@ -6,9 +6,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
 internal static class TreeParser
 {
-    public static TreeSyntax Parse(string grammar)
+    public static TreeSyntax Parse(string treeDefinition)
     {
-        var lines = Parsing.ParseLines(grammar).ToFixedList();
+        var lines = Parsing.ParseLines(treeDefinition).ToFixedList();
 
         var ns = Parsing.GetRequiredConfig(lines, "namespace");
         var rootType = Parsing.ParseSymbol(Parsing.GetConfig(lines, "root"));

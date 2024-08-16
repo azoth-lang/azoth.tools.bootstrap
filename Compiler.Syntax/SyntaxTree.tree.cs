@@ -1,3 +1,4 @@
+using System.CodeDom.Compiler;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
@@ -18,6 +19,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
     typeof(ICodeSyntax),
     typeof(IPackageSyntax),
     typeof(IPackageReferenceSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISyntax
 {
 }
@@ -40,12 +42,14 @@ public partial interface ISyntax
     typeof(IStatementSyntax),
     typeof(IPatternSyntax),
     typeof(IExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ICodeSyntax : ISyntax
 {
     TextSpan Span { get; }
 }
 
 // [Closed(typeof(CompilationUnitSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ICompilationUnitSyntax : ICodeSyntax
 {
     CodeFile File { get; }
@@ -56,6 +60,7 @@ public partial interface ICompilationUnitSyntax : ICodeSyntax
 }
 
 // [Closed(typeof(UsingDirectiveSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUsingDirectiveSyntax : ICodeSyntax
 {
     NamespaceName Name { get; }
@@ -64,6 +69,7 @@ public partial interface IUsingDirectiveSyntax : ICodeSyntax
 [Closed(
     typeof(IBodySyntax),
     typeof(IBlockExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBodyOrBlockSyntax : ICodeSyntax
 {
     IFixedList<IStatementSyntax> Statements { get; }
@@ -72,6 +78,7 @@ public partial interface IBodyOrBlockSyntax : ICodeSyntax
 [Closed(
     typeof(IBlockOrResultSyntax),
     typeof(IIfExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IElseClauseSyntax : ICodeSyntax
 {
 }
@@ -79,6 +86,7 @@ public partial interface IElseClauseSyntax : ICodeSyntax
 [Closed(
     typeof(IResultStatementSyntax),
     typeof(IBlockExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBlockOrResultSyntax : IElseClauseSyntax
 {
 }
@@ -86,6 +94,7 @@ public partial interface IBlockOrResultSyntax : IElseClauseSyntax
 [Closed(
     typeof(ILocalBindingSyntax),
     typeof(IFieldDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBindingSyntax : ICodeSyntax
 {
     bool IsMutableBinding { get; }
@@ -96,12 +105,14 @@ public partial interface IBindingSyntax : ICodeSyntax
     typeof(IVariableDeclarationStatementSyntax),
     typeof(IBindingPatternSyntax),
     typeof(IForeachExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ILocalBindingSyntax : IBindingSyntax
 {
     TextSpan NameSpan { get; }
 }
 
 // [Closed(typeof(PackageSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageSyntax : ISyntax
 {
     IdentifierName Name { get; }
@@ -112,6 +123,7 @@ public partial interface IPackageSyntax : ISyntax
 }
 
 // [Closed(typeof(PackageReferenceSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageReferenceSyntax : ISyntax
 {
     IdentifierName AliasOrName { get; }
@@ -122,6 +134,7 @@ public partial interface IPackageReferenceSyntax : ISyntax
 [Closed(
     typeof(IEntityDefinitionSyntax),
     typeof(INonMemberDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IDefinitionSyntax : ICodeSyntax
 {
     CodeFile File { get; }
@@ -132,6 +145,7 @@ public partial interface IDefinitionSyntax : ICodeSyntax
 [Closed(
     typeof(IInvocableDefinitionSyntax),
     typeof(ITypeMemberDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IEntityDefinitionSyntax : IDefinitionSyntax
 {
     IAccessModifierToken? AccessModifier { get; }
@@ -140,6 +154,7 @@ public partial interface IEntityDefinitionSyntax : IDefinitionSyntax
 [Closed(
     typeof(IConcreteInvocableDefinitionSyntax),
     typeof(IMethodDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInvocableDefinitionSyntax : IEntityDefinitionSyntax
 {
     IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
@@ -151,6 +166,7 @@ public partial interface IInvocableDefinitionSyntax : IEntityDefinitionSyntax
     typeof(IConstructorDefinitionSyntax),
     typeof(IInitializerDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IConcreteInvocableDefinitionSyntax : IInvocableDefinitionSyntax
 {
     IBodySyntax Body { get; }
@@ -160,11 +176,13 @@ public partial interface IConcreteInvocableDefinitionSyntax : IInvocableDefiniti
     typeof(INamespaceDefinitionSyntax),
     typeof(IFunctionDefinitionSyntax),
     typeof(ITypeDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INonMemberDefinitionSyntax : IDefinitionSyntax
 {
 }
 
 // [Closed(typeof(NamespaceDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamespaceDefinitionSyntax : INonMemberDefinitionSyntax
 {
     bool IsGlobalQualified { get; }
@@ -174,6 +192,7 @@ public partial interface INamespaceDefinitionSyntax : INonMemberDefinitionSyntax
 }
 
 // [Closed(typeof(FunctionDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFunctionDefinitionSyntax : IConcreteInvocableDefinitionSyntax, INonMemberDefinitionSyntax
 {
     IFixedList<IAttributeSyntax> Attributes { get; }
@@ -188,6 +207,7 @@ public partial interface IFunctionDefinitionSyntax : IConcreteInvocableDefinitio
     typeof(IClassDefinitionSyntax),
     typeof(IStructDefinitionSyntax),
     typeof(ITraitDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeDefinitionSyntax : INonMemberDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax
 {
     IConstKeywordToken? ConstModifier { get; }
@@ -200,6 +220,7 @@ public partial interface ITypeDefinitionSyntax : INonMemberDefinitionSyntax, ICl
 }
 
 // [Closed(typeof(ClassDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
 {
     IAbstractKeywordToken? AbstractModifier { get; }
@@ -209,6 +230,7 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
 }
 
 // [Closed(typeof(StructDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
 {
     new IFixedList<IStructMemberDefinitionSyntax> Members { get; }
@@ -216,6 +238,7 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
 }
 
 // [Closed(typeof(TraitDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
 {
     new IFixedList<ITraitMemberDefinitionSyntax> Members { get; }
@@ -223,6 +246,7 @@ public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
 }
 
 // [Closed(typeof(GenericParameterSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IGenericParameterSyntax : ICodeSyntax
 {
     ICapabilityConstraintSyntax Constraint { get; }
@@ -235,6 +259,7 @@ public partial interface IGenericParameterSyntax : ICodeSyntax
     typeof(IClassMemberDefinitionSyntax),
     typeof(ITraitMemberDefinitionSyntax),
     typeof(IStructMemberDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeMemberDefinitionSyntax : IEntityDefinitionSyntax
 {
 }
@@ -245,6 +270,7 @@ public partial interface ITypeMemberDefinitionSyntax : IEntityDefinitionSyntax
     typeof(IConstructorDefinitionSyntax),
     typeof(IFieldDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IClassMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
 {
 }
@@ -253,6 +279,7 @@ public partial interface IClassMemberDefinitionSyntax : ITypeMemberDefinitionSyn
     typeof(ITypeDefinitionSyntax),
     typeof(IMethodDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITraitMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
 {
 }
@@ -263,6 +290,7 @@ public partial interface ITraitMemberDefinitionSyntax : ITypeMemberDefinitionSyn
     typeof(IInitializerDefinitionSyntax),
     typeof(IFieldDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStructMemberDefinitionSyntax : ITypeMemberDefinitionSyntax
 {
 }
@@ -270,6 +298,7 @@ public partial interface IStructMemberDefinitionSyntax : ITypeMemberDefinitionSy
 [Closed(
     typeof(IAbstractMethodDefinitionSyntax),
     typeof(IConcreteMethodDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IInvocableDefinitionSyntax
 {
     MethodKind Kind { get; }
@@ -282,6 +311,7 @@ public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax,
 }
 
 // [Closed(typeof(AbstractMethodDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAbstractMethodDefinitionSyntax : IMethodDefinitionSyntax
 {
 }
@@ -290,16 +320,19 @@ public partial interface IAbstractMethodDefinitionSyntax : IMethodDefinitionSynt
     typeof(IStandardMethodDefinitionSyntax),
     typeof(IGetterMethodDefinitionSyntax),
     typeof(ISetterMethodDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IConcreteMethodDefinitionSyntax : IMethodDefinitionSyntax, IStructMemberDefinitionSyntax, IConcreteInvocableDefinitionSyntax
 {
 }
 
 // [Closed(typeof(StandardMethodDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStandardMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
 }
 
 // [Closed(typeof(GetterMethodDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
     new IReturnSyntax Return { get; }
@@ -307,11 +340,13 @@ public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefiniti
 }
 
 // [Closed(typeof(SetterMethodDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISetterMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
 }
 
 // [Closed(typeof(ConstructorDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IClassMemberDefinitionSyntax
 {
     new IdentifierName? Name { get; }
@@ -322,6 +357,7 @@ public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefini
 }
 
 // [Closed(typeof(InitializerDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IStructMemberDefinitionSyntax
 {
     new IdentifierName? Name { get; }
@@ -332,6 +368,7 @@ public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefini
 }
 
 // [Closed(typeof(FieldDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFieldDefinitionSyntax : IClassMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IBindingSyntax
 {
     new IdentifierName Name { get; }
@@ -341,6 +378,7 @@ public partial interface IFieldDefinitionSyntax : IClassMemberDefinitionSyntax, 
 }
 
 // [Closed(typeof(AssociatedFunctionDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IConcreteInvocableDefinitionSyntax
 {
     new IdentifierName Name { get; }
@@ -351,6 +389,7 @@ public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefin
 }
 
 // [Closed(typeof(AttributeSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAttributeSyntax : ICodeSyntax
 {
     IStandardTypeNameSyntax TypeName { get; }
@@ -359,12 +398,14 @@ public partial interface IAttributeSyntax : ICodeSyntax
 [Closed(
     typeof(ICapabilitySetSyntax),
     typeof(ICapabilitySyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ICapabilityConstraintSyntax : ICodeSyntax
 {
     ICapabilityConstraint Constraint { get; }
 }
 
 // [Closed(typeof(CapabilitySetSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
 {
     new CapabilitySet Constraint { get; }
@@ -372,6 +413,7 @@ public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
 }
 
 // [Closed(typeof(CapabilitySyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
 {
     IFixedList<ICapabilityToken> Tokens { get; }
@@ -382,6 +424,7 @@ public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
 [Closed(
     typeof(IConstructorOrInitializerParameterSyntax),
     typeof(ISelfParameterSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IParameterSyntax : ICodeSyntax
 {
     IdentifierName? Name { get; }
@@ -390,11 +433,13 @@ public partial interface IParameterSyntax : ICodeSyntax
 [Closed(
     typeof(INamedParameterSyntax),
     typeof(IFieldParameterSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IConstructorOrInitializerParameterSyntax : IParameterSyntax
 {
 }
 
 // [Closed(typeof(NamedParameterSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamedParameterSyntax : IConstructorOrInitializerParameterSyntax, ILocalBindingSyntax
 {
     bool IsLentBinding { get; }
@@ -408,30 +453,35 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
     typeof(IConstructorSelfParameterSyntax),
     typeof(IInitializerSelfParameterSyntax),
     typeof(IMethodSelfParameterSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISelfParameterSyntax : IParameterSyntax
 {
     bool IsLentBinding { get; }
 }
 
 // [Closed(typeof(ConstructorSelfParameterSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilitySyntax Capability { get; }
 }
 
 // [Closed(typeof(InitializerSelfParameterSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilitySyntax Capability { get; }
 }
 
 // [Closed(typeof(MethodSelfParameterSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
 {
     ICapabilityConstraintSyntax Capability { get; }
 }
 
 // [Closed(typeof(FieldParameterSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFieldParameterSyntax : IConstructorOrInitializerParameterSyntax
 {
     new IdentifierName Name { get; }
@@ -440,6 +490,7 @@ public partial interface IFieldParameterSyntax : IConstructorOrInitializerParame
 }
 
 // [Closed(typeof(ReturnSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IReturnSyntax : ICodeSyntax
 {
     ITypeSyntax Type { get; }
@@ -448,11 +499,13 @@ public partial interface IReturnSyntax : ICodeSyntax
 [Closed(
     typeof(IBlockBodySyntax),
     typeof(IExpressionBodySyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBodySyntax : IBodyOrBlockSyntax
 {
 }
 
 // [Closed(typeof(BlockBodySyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBlockBodySyntax : IBodySyntax
 {
     new IFixedList<IBodyStatementSyntax> Statements { get; }
@@ -460,6 +513,7 @@ public partial interface IBlockBodySyntax : IBodySyntax
 }
 
 // [Closed(typeof(ExpressionBodySyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExpressionBodySyntax : IBodySyntax
 {
     IResultStatementSyntax ResultStatement { get; }
@@ -471,6 +525,7 @@ public partial interface IExpressionBodySyntax : IBodySyntax
     typeof(ICapabilityTypeSyntax),
     typeof(IFunctionTypeSyntax),
     typeof(IViewpointTypeSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeSyntax : ICodeSyntax
 {
 }
@@ -479,6 +534,7 @@ public partial interface ITypeSyntax : ICodeSyntax
     typeof(IStandardTypeNameSyntax),
     typeof(ISimpleTypeNameSyntax),
     typeof(IQualifiedTypeNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeNameSyntax : ITypeSyntax
 {
     TypeName Name { get; }
@@ -487,6 +543,7 @@ public partial interface ITypeNameSyntax : ITypeSyntax
 [Closed(
     typeof(IIdentifierTypeNameSyntax),
     typeof(IGenericTypeNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStandardTypeNameSyntax : ITypeNameSyntax
 {
     new StandardName Name { get; }
@@ -496,11 +553,13 @@ public partial interface IStandardTypeNameSyntax : ITypeNameSyntax
 [Closed(
     typeof(IIdentifierTypeNameSyntax),
     typeof(ISpecialTypeNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISimpleTypeNameSyntax : ITypeNameSyntax
 {
 }
 
 // [Closed(typeof(IdentifierTypeNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax, ISimpleTypeNameSyntax
 {
     new IdentifierName Name { get; }
@@ -508,6 +567,7 @@ public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax, IS
 }
 
 // [Closed(typeof(SpecialTypeNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISpecialTypeNameSyntax : ISimpleTypeNameSyntax
 {
     new SpecialTypeName Name { get; }
@@ -515,6 +575,7 @@ public partial interface ISpecialTypeNameSyntax : ISimpleTypeNameSyntax
 }
 
 // [Closed(typeof(GenericTypeNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IGenericTypeNameSyntax : IStandardTypeNameSyntax
 {
     new GenericName Name { get; }
@@ -523,6 +584,7 @@ public partial interface IGenericTypeNameSyntax : IStandardTypeNameSyntax
 }
 
 // [Closed(typeof(QualifiedTypeNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IQualifiedTypeNameSyntax : ITypeNameSyntax
 {
     ITypeNameSyntax Context { get; }
@@ -530,12 +592,14 @@ public partial interface IQualifiedTypeNameSyntax : ITypeNameSyntax
 }
 
 // [Closed(typeof(OptionalTypeSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IOptionalTypeSyntax : ITypeSyntax
 {
     ITypeSyntax Referent { get; }
 }
 
 // [Closed(typeof(CapabilityTypeSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ICapabilityTypeSyntax : ITypeSyntax
 {
     ICapabilitySyntax Capability { get; }
@@ -543,6 +607,7 @@ public partial interface ICapabilityTypeSyntax : ITypeSyntax
 }
 
 // [Closed(typeof(FunctionTypeSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFunctionTypeSyntax : ITypeSyntax
 {
     IFixedList<IParameterTypeSyntax> Parameters { get; }
@@ -550,6 +615,7 @@ public partial interface IFunctionTypeSyntax : ITypeSyntax
 }
 
 // [Closed(typeof(ParameterTypeSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IParameterTypeSyntax : ICodeSyntax
 {
     bool IsLent { get; }
@@ -557,6 +623,7 @@ public partial interface IParameterTypeSyntax : ICodeSyntax
 }
 
 // [Closed(typeof(ReturnTypeSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IReturnTypeSyntax : ICodeSyntax
 {
     ITypeSyntax Referent { get; }
@@ -565,18 +632,21 @@ public partial interface IReturnTypeSyntax : ICodeSyntax
 [Closed(
     typeof(ICapabilityViewpointTypeSyntax),
     typeof(ISelfViewpointTypeSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IViewpointTypeSyntax : ITypeSyntax
 {
     ITypeSyntax Referent { get; }
 }
 
 // [Closed(typeof(CapabilityViewpointTypeSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ICapabilityViewpointTypeSyntax : IViewpointTypeSyntax
 {
     ICapabilitySyntax Capability { get; }
 }
 
 // [Closed(typeof(SelfViewpointTypeSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISelfViewpointTypeSyntax : IViewpointTypeSyntax
 {
 }
@@ -584,11 +654,13 @@ public partial interface ISelfViewpointTypeSyntax : IViewpointTypeSyntax
 [Closed(
     typeof(IResultStatementSyntax),
     typeof(IBodyStatementSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStatementSyntax : ICodeSyntax
 {
 }
 
 // [Closed(typeof(ResultStatementSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IResultStatementSyntax : IStatementSyntax, IBlockOrResultSyntax
 {
     IExpressionSyntax Expression { get; }
@@ -597,11 +669,13 @@ public partial interface IResultStatementSyntax : IStatementSyntax, IBlockOrResu
 [Closed(
     typeof(IVariableDeclarationStatementSyntax),
     typeof(IExpressionStatementSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBodyStatementSyntax : IStatementSyntax
 {
 }
 
 // [Closed(typeof(VariableDeclarationStatementSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyntax, ILocalBindingSyntax
 {
     IdentifierName Name { get; }
@@ -611,6 +685,7 @@ public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyn
 }
 
 // [Closed(typeof(ExpressionStatementSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExpressionStatementSyntax : IBodyStatementSyntax
 {
     IExpressionSyntax Expression { get; }
@@ -619,11 +694,13 @@ public partial interface IExpressionStatementSyntax : IBodyStatementSyntax
 [Closed(
     typeof(IBindingContextPatternSyntax),
     typeof(IOptionalOrBindingPatternSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPatternSyntax : ICodeSyntax
 {
 }
 
 // [Closed(typeof(BindingContextPatternSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBindingContextPatternSyntax : IPatternSyntax
 {
     bool IsMutableBinding { get; }
@@ -634,17 +711,20 @@ public partial interface IBindingContextPatternSyntax : IPatternSyntax
 [Closed(
     typeof(IBindingPatternSyntax),
     typeof(IOptionalPatternSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IOptionalOrBindingPatternSyntax : IPatternSyntax
 {
 }
 
 // [Closed(typeof(BindingPatternSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBindingPatternSyntax : IOptionalOrBindingPatternSyntax, ILocalBindingSyntax
 {
     IdentifierName Name { get; }
 }
 
 // [Closed(typeof(OptionalPatternSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSyntax
 {
     IOptionalOrBindingPatternSyntax Pattern { get; }
@@ -676,6 +756,7 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
     typeof(IAsyncBlockExpressionSyntax),
     typeof(IAsyncStartExpressionSyntax),
     typeof(IAwaitExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExpressionSyntax : ICodeSyntax
 {
 }
@@ -684,16 +765,19 @@ public partial interface IExpressionSyntax : ICodeSyntax
     typeof(IIdentifierNameExpressionSyntax),
     typeof(IMemberAccessExpressionSyntax),
     typeof(IMissingNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAssignableExpressionSyntax : IExpressionSyntax
 {
 }
 
 // [Closed(typeof(BlockExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBlockExpressionSyntax : IExpressionSyntax, IBlockOrResultSyntax, IBodyOrBlockSyntax
 {
 }
 
 // [Closed(typeof(NewObjectExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INewObjectExpressionSyntax : IExpressionSyntax
 {
     ITypeNameSyntax Type { get; }
@@ -703,6 +787,7 @@ public partial interface INewObjectExpressionSyntax : IExpressionSyntax
 }
 
 // [Closed(typeof(UnsafeExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
@@ -713,34 +798,40 @@ public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
     typeof(IIntegerLiteralExpressionSyntax),
     typeof(INoneLiteralExpressionSyntax),
     typeof(IStringLiteralExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ILiteralExpressionSyntax : IExpressionSyntax
 {
 }
 
 // [Closed(typeof(BoolLiteralExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBoolLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     bool Value { get; }
 }
 
 // [Closed(typeof(IntegerLiteralExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IIntegerLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     BigInteger Value { get; }
 }
 
 // [Closed(typeof(NoneLiteralExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INoneLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
 }
 
 // [Closed(typeof(StringLiteralExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStringLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     string Value { get; }
 }
 
 // [Closed(typeof(AssignmentExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAssignmentExpressionSyntax : IExpressionSyntax
 {
     IAssignableExpressionSyntax LeftOperand { get; }
@@ -749,6 +840,7 @@ public partial interface IAssignmentExpressionSyntax : IExpressionSyntax
 }
 
 // [Closed(typeof(BinaryOperatorExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBinaryOperatorExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax LeftOperand { get; }
@@ -757,6 +849,7 @@ public partial interface IBinaryOperatorExpressionSyntax : IExpressionSyntax
 }
 
 // [Closed(typeof(UnaryOperatorExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
 {
     UnaryOperatorFixity Fixity { get; }
@@ -765,12 +858,14 @@ public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
 }
 
 // [Closed(typeof(IdExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IIdExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
 }
 
 // [Closed(typeof(ConversionExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IConversionExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
@@ -779,6 +874,7 @@ public partial interface IConversionExpressionSyntax : IExpressionSyntax
 }
 
 // [Closed(typeof(PatternMatchExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
@@ -786,6 +882,7 @@ public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
 }
 
 // [Closed(typeof(IfExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyntax
 {
     IExpressionSyntax Condition { get; }
@@ -794,12 +891,14 @@ public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyn
 }
 
 // [Closed(typeof(LoopExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ILoopExpressionSyntax : IExpressionSyntax
 {
     IBlockExpressionSyntax Block { get; }
 }
 
 // [Closed(typeof(WhileExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IWhileExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Condition { get; }
@@ -807,6 +906,7 @@ public partial interface IWhileExpressionSyntax : IExpressionSyntax
 }
 
 // [Closed(typeof(ForeachExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IForeachExpressionSyntax : IExpressionSyntax, ILocalBindingSyntax
 {
     IdentifierName VariableName { get; }
@@ -816,23 +916,27 @@ public partial interface IForeachExpressionSyntax : IExpressionSyntax, ILocalBin
 }
 
 // [Closed(typeof(BreakExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBreakExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
 }
 
 // [Closed(typeof(NextExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INextExpressionSyntax : IExpressionSyntax
 {
 }
 
 // [Closed(typeof(ReturnExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IReturnExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
 }
 
 // [Closed(typeof(InvocationExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
@@ -845,6 +949,7 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
     typeof(ISpecialTypeNameExpressionSyntax),
     typeof(ISelfExpressionSyntax),
     typeof(IMemberAccessExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameExpressionSyntax : IExpressionSyntax
 {
 }
@@ -853,6 +958,7 @@ public partial interface INameExpressionSyntax : IExpressionSyntax
     typeof(IIdentifierNameExpressionSyntax),
     typeof(IInstanceExpressionSyntax),
     typeof(IMissingNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISimpleNameSyntax : INameExpressionSyntax
 {
 }
@@ -860,12 +966,14 @@ public partial interface ISimpleNameSyntax : INameExpressionSyntax
 [Closed(
     typeof(IIdentifierNameExpressionSyntax),
     typeof(IGenericNameExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax
 {
     StandardName Name { get; }
 }
 
 // [Closed(typeof(IdentifierNameExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressionSyntax, ISimpleNameSyntax, IAssignableExpressionSyntax
 {
     new IdentifierName Name { get; }
@@ -873,12 +981,14 @@ public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressi
 }
 
 // [Closed(typeof(SpecialTypeNameExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSyntax
 {
     SpecialTypeName Name { get; }
 }
 
 // [Closed(typeof(GenericNameExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionSyntax
 {
     new GenericName Name { get; }
@@ -888,17 +998,20 @@ public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionS
 
 [Closed(
     typeof(ISelfExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInstanceExpressionSyntax : ISimpleNameSyntax
 {
 }
 
 // [Closed(typeof(SelfExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISelfExpressionSyntax : INameExpressionSyntax, IInstanceExpressionSyntax
 {
     bool IsImplicit { get; }
 }
 
 // [Closed(typeof(MemberAccessExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, IAssignableExpressionSyntax
 {
     IExpressionSyntax Context { get; }
@@ -908,29 +1021,34 @@ public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, 
 }
 
 // [Closed(typeof(MissingNameSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMissingNameSyntax : ISimpleNameSyntax, IAssignableExpressionSyntax
 {
 }
 
 // [Closed(typeof(MoveExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMoveExpressionSyntax : IExpressionSyntax
 {
     ISimpleNameSyntax Referent { get; }
 }
 
 // [Closed(typeof(FreezeExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFreezeExpressionSyntax : IExpressionSyntax
 {
     ISimpleNameSyntax Referent { get; }
 }
 
 // [Closed(typeof(AsyncBlockExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAsyncBlockExpressionSyntax : IExpressionSyntax
 {
     IBlockExpressionSyntax Block { get; }
 }
 
 // [Closed(typeof(AsyncStartExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAsyncStartExpressionSyntax : IExpressionSyntax
 {
     bool Scheduled { get; }
@@ -938,11 +1056,13 @@ public partial interface IAsyncStartExpressionSyntax : IExpressionSyntax
 }
 
 // [Closed(typeof(AwaitExpressionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAwaitExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class CompilationUnitSyntax // : ICompilationUnitSyntax
 {
     public CodeFile File { get; }
@@ -963,6 +1083,7 @@ file class CompilationUnitSyntax // : ICompilationUnitSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class UsingDirectiveSyntax // : IUsingDirectiveSyntax
 {
     public NamespaceName Name { get; }
@@ -975,6 +1096,7 @@ file class UsingDirectiveSyntax // : IUsingDirectiveSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class PackageSyntax // : IPackageSyntax
 {
     public IdentifierName Name { get; }
@@ -993,6 +1115,7 @@ file class PackageSyntax // : IPackageSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class PackageReferenceSyntax // : IPackageReferenceSyntax
 {
     public IdentifierName AliasOrName { get; }
@@ -1007,6 +1130,7 @@ file class PackageReferenceSyntax // : IPackageReferenceSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class NamespaceDefinitionSyntax // : INamespaceDefinitionSyntax
 {
     public bool IsGlobalQualified { get; }
@@ -1031,6 +1155,7 @@ file class NamespaceDefinitionSyntax // : INamespaceDefinitionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class FunctionDefinitionSyntax // : IFunctionDefinitionSyntax
 {
     public IFixedList<IAttributeSyntax> Attributes { get; }
@@ -1057,6 +1182,7 @@ file class FunctionDefinitionSyntax // : IFunctionDefinitionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class ClassDefinitionSyntax // : IClassDefinitionSyntax
 {
     public IAbstractKeywordToken? AbstractModifier { get; }
@@ -1089,6 +1215,7 @@ file class ClassDefinitionSyntax // : IClassDefinitionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class StructDefinitionSyntax // : IStructDefinitionSyntax
 {
     public IFixedList<IGenericParameterSyntax> GenericParameters { get; }
@@ -1117,6 +1244,7 @@ file class StructDefinitionSyntax // : IStructDefinitionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class TraitDefinitionSyntax // : ITraitDefinitionSyntax
 {
     public IFixedList<IGenericParameterSyntax> GenericParameters { get; }
@@ -1145,6 +1273,7 @@ file class TraitDefinitionSyntax // : ITraitDefinitionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class GenericParameterSyntax // : IGenericParameterSyntax
 {
     public ICapabilityConstraintSyntax Constraint { get; }
@@ -1163,6 +1292,7 @@ file class GenericParameterSyntax // : IGenericParameterSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class AbstractMethodDefinitionSyntax // : IAbstractMethodDefinitionSyntax
 {
     public IMethodSelfParameterSyntax SelfParameter { get; }
@@ -1189,6 +1319,7 @@ file class AbstractMethodDefinitionSyntax // : IAbstractMethodDefinitionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class StandardMethodDefinitionSyntax // : IStandardMethodDefinitionSyntax
 {
     public IMethodSelfParameterSyntax SelfParameter { get; }
@@ -1217,6 +1348,7 @@ file class StandardMethodDefinitionSyntax // : IStandardMethodDefinitionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class GetterMethodDefinitionSyntax // : IGetterMethodDefinitionSyntax
 {
     public IMethodSelfParameterSyntax SelfParameter { get; }
@@ -1245,6 +1377,7 @@ file class GetterMethodDefinitionSyntax // : IGetterMethodDefinitionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class SetterMethodDefinitionSyntax // : ISetterMethodDefinitionSyntax
 {
     public IMethodSelfParameterSyntax SelfParameter { get; }
@@ -1273,6 +1406,7 @@ file class SetterMethodDefinitionSyntax // : ISetterMethodDefinitionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class ConstructorDefinitionSyntax // : IConstructorDefinitionSyntax
 {
     public IdentifierName? Name { get; }
@@ -1297,6 +1431,7 @@ file class ConstructorDefinitionSyntax // : IConstructorDefinitionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class InitializerDefinitionSyntax // : IInitializerDefinitionSyntax
 {
     public IdentifierName? Name { get; }
@@ -1321,6 +1456,7 @@ file class InitializerDefinitionSyntax // : IInitializerDefinitionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class FieldDefinitionSyntax // : IFieldDefinitionSyntax
 {
     public IdentifierName Name { get; }
@@ -1345,6 +1481,7 @@ file class FieldDefinitionSyntax // : IFieldDefinitionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class AssociatedFunctionDefinitionSyntax // : IAssociatedFunctionDefinitionSyntax
 {
     public IdentifierName Name { get; }
@@ -1369,6 +1506,7 @@ file class AssociatedFunctionDefinitionSyntax // : IAssociatedFunctionDefinition
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class AttributeSyntax // : IAttributeSyntax
 {
     public IStandardTypeNameSyntax TypeName { get; }
@@ -1381,6 +1519,7 @@ file class AttributeSyntax // : IAttributeSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class CapabilitySetSyntax // : ICapabilitySetSyntax
 {
     public CapabilitySet Constraint { get; }
@@ -1393,6 +1532,7 @@ file class CapabilitySetSyntax // : ICapabilitySetSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class CapabilitySyntax // : ICapabilitySyntax
 {
     public IFixedList<ICapabilityToken> Tokens { get; }
@@ -1411,6 +1551,7 @@ file class CapabilitySyntax // : ICapabilitySyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class NamedParameterSyntax // : INamedParameterSyntax
 {
     public bool IsMutableBinding { get; }
@@ -1433,6 +1574,7 @@ file class NamedParameterSyntax // : INamedParameterSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class ConstructorSelfParameterSyntax // : IConstructorSelfParameterSyntax
 {
     public ICapabilitySyntax Capability { get; }
@@ -1449,6 +1591,7 @@ file class ConstructorSelfParameterSyntax // : IConstructorSelfParameterSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class InitializerSelfParameterSyntax // : IInitializerSelfParameterSyntax
 {
     public ICapabilitySyntax Capability { get; }
@@ -1465,6 +1608,7 @@ file class InitializerSelfParameterSyntax // : IInitializerSelfParameterSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class MethodSelfParameterSyntax // : IMethodSelfParameterSyntax
 {
     public ICapabilityConstraintSyntax Capability { get; }
@@ -1481,6 +1625,7 @@ file class MethodSelfParameterSyntax // : IMethodSelfParameterSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class FieldParameterSyntax // : IFieldParameterSyntax
 {
     public IdentifierName Name { get; }
@@ -1495,6 +1640,7 @@ file class FieldParameterSyntax // : IFieldParameterSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class ReturnSyntax // : IReturnSyntax
 {
     public ITypeSyntax Type { get; }
@@ -1507,6 +1653,7 @@ file class ReturnSyntax // : IReturnSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class BlockBodySyntax // : IBlockBodySyntax
 {
     public IFixedList<IBodyStatementSyntax> Statements { get; }
@@ -1519,6 +1666,7 @@ file class BlockBodySyntax // : IBlockBodySyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class ExpressionBodySyntax // : IExpressionBodySyntax
 {
     public IResultStatementSyntax ResultStatement { get; }
@@ -1533,6 +1681,7 @@ file class ExpressionBodySyntax // : IExpressionBodySyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class IdentifierTypeNameSyntax // : IIdentifierTypeNameSyntax
 {
     public IdentifierName Name { get; }
@@ -1545,6 +1694,7 @@ file class IdentifierTypeNameSyntax // : IIdentifierTypeNameSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class SpecialTypeNameSyntax // : ISpecialTypeNameSyntax
 {
     public SpecialTypeName Name { get; }
@@ -1557,6 +1707,7 @@ file class SpecialTypeNameSyntax // : ISpecialTypeNameSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class GenericTypeNameSyntax // : IGenericTypeNameSyntax
 {
     public GenericName Name { get; }
@@ -1571,6 +1722,7 @@ file class GenericTypeNameSyntax // : IGenericTypeNameSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class QualifiedTypeNameSyntax // : IQualifiedTypeNameSyntax
 {
     public ITypeNameSyntax Context { get; }
@@ -1587,6 +1739,7 @@ file class QualifiedTypeNameSyntax // : IQualifiedTypeNameSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class OptionalTypeSyntax // : IOptionalTypeSyntax
 {
     public ITypeSyntax Referent { get; }
@@ -1599,6 +1752,7 @@ file class OptionalTypeSyntax // : IOptionalTypeSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class CapabilityTypeSyntax // : ICapabilityTypeSyntax
 {
     public ICapabilitySyntax Capability { get; }
@@ -1613,6 +1767,7 @@ file class CapabilityTypeSyntax // : ICapabilityTypeSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class FunctionTypeSyntax // : IFunctionTypeSyntax
 {
     public IFixedList<IParameterTypeSyntax> Parameters { get; }
@@ -1627,6 +1782,7 @@ file class FunctionTypeSyntax // : IFunctionTypeSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class ParameterTypeSyntax // : IParameterTypeSyntax
 {
     public bool IsLent { get; }
@@ -1641,6 +1797,7 @@ file class ParameterTypeSyntax // : IParameterTypeSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class ReturnTypeSyntax // : IReturnTypeSyntax
 {
     public ITypeSyntax Referent { get; }
@@ -1653,6 +1810,7 @@ file class ReturnTypeSyntax // : IReturnTypeSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class CapabilityViewpointTypeSyntax // : ICapabilityViewpointTypeSyntax
 {
     public ICapabilitySyntax Capability { get; }
@@ -1667,6 +1825,7 @@ file class CapabilityViewpointTypeSyntax // : ICapabilityViewpointTypeSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class SelfViewpointTypeSyntax // : ISelfViewpointTypeSyntax
 {
     public ITypeSyntax Referent { get; }
@@ -1679,6 +1838,7 @@ file class SelfViewpointTypeSyntax // : ISelfViewpointTypeSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class ResultStatementSyntax // : IResultStatementSyntax
 {
     public IExpressionSyntax Expression { get; }
@@ -1691,6 +1851,7 @@ file class ResultStatementSyntax // : IResultStatementSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class VariableDeclarationStatementSyntax // : IVariableDeclarationStatementSyntax
 {
     public TextSpan NameSpan { get; }
@@ -1713,6 +1874,7 @@ file class VariableDeclarationStatementSyntax // : IVariableDeclarationStatement
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class ExpressionStatementSyntax // : IExpressionStatementSyntax
 {
     public IExpressionSyntax Expression { get; }
@@ -1725,6 +1887,7 @@ file class ExpressionStatementSyntax // : IExpressionStatementSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class BindingContextPatternSyntax // : IBindingContextPatternSyntax
 {
     public bool IsMutableBinding { get; }
@@ -1741,6 +1904,7 @@ file class BindingContextPatternSyntax // : IBindingContextPatternSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class BindingPatternSyntax // : IBindingPatternSyntax
 {
     public IdentifierName Name { get; }
@@ -1757,6 +1921,7 @@ file class BindingPatternSyntax // : IBindingPatternSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class OptionalPatternSyntax // : IOptionalPatternSyntax
 {
     public IOptionalOrBindingPatternSyntax Pattern { get; }
@@ -1769,6 +1934,7 @@ file class OptionalPatternSyntax // : IOptionalPatternSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class BlockExpressionSyntax // : IBlockExpressionSyntax
 {
     public IFixedList<IStatementSyntax> Statements { get; }
@@ -1781,6 +1947,7 @@ file class BlockExpressionSyntax // : IBlockExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class NewObjectExpressionSyntax // : INewObjectExpressionSyntax
 {
     public ITypeNameSyntax Type { get; }
@@ -1799,6 +1966,7 @@ file class NewObjectExpressionSyntax // : INewObjectExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class UnsafeExpressionSyntax // : IUnsafeExpressionSyntax
 {
     public IExpressionSyntax Expression { get; }
@@ -1811,6 +1979,7 @@ file class UnsafeExpressionSyntax // : IUnsafeExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class BoolLiteralExpressionSyntax // : IBoolLiteralExpressionSyntax
 {
     public bool Value { get; }
@@ -1823,6 +1992,7 @@ file class BoolLiteralExpressionSyntax // : IBoolLiteralExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class IntegerLiteralExpressionSyntax // : IIntegerLiteralExpressionSyntax
 {
     public BigInteger Value { get; }
@@ -1835,6 +2005,7 @@ file class IntegerLiteralExpressionSyntax // : IIntegerLiteralExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class NoneLiteralExpressionSyntax // : INoneLiteralExpressionSyntax
 {
     public TextSpan Span { get; }
@@ -1845,6 +2016,7 @@ file class NoneLiteralExpressionSyntax // : INoneLiteralExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class StringLiteralExpressionSyntax // : IStringLiteralExpressionSyntax
 {
     public string Value { get; }
@@ -1857,6 +2029,7 @@ file class StringLiteralExpressionSyntax // : IStringLiteralExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class AssignmentExpressionSyntax // : IAssignmentExpressionSyntax
 {
     public IAssignableExpressionSyntax LeftOperand { get; }
@@ -1873,6 +2046,7 @@ file class AssignmentExpressionSyntax // : IAssignmentExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class BinaryOperatorExpressionSyntax // : IBinaryOperatorExpressionSyntax
 {
     public IExpressionSyntax LeftOperand { get; }
@@ -1889,6 +2063,7 @@ file class BinaryOperatorExpressionSyntax // : IBinaryOperatorExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class UnaryOperatorExpressionSyntax // : IUnaryOperatorExpressionSyntax
 {
     public UnaryOperatorFixity Fixity { get; }
@@ -1905,6 +2080,7 @@ file class UnaryOperatorExpressionSyntax // : IUnaryOperatorExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class IdExpressionSyntax // : IIdExpressionSyntax
 {
     public IExpressionSyntax Referent { get; }
@@ -1917,6 +2093,7 @@ file class IdExpressionSyntax // : IIdExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class ConversionExpressionSyntax // : IConversionExpressionSyntax
 {
     public IExpressionSyntax Referent { get; }
@@ -1933,6 +2110,7 @@ file class ConversionExpressionSyntax // : IConversionExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class PatternMatchExpressionSyntax // : IPatternMatchExpressionSyntax
 {
     public IExpressionSyntax Referent { get; }
@@ -1947,6 +2125,7 @@ file class PatternMatchExpressionSyntax // : IPatternMatchExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class IfExpressionSyntax // : IIfExpressionSyntax
 {
     public IExpressionSyntax Condition { get; }
@@ -1963,6 +2142,7 @@ file class IfExpressionSyntax // : IIfExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class LoopExpressionSyntax // : ILoopExpressionSyntax
 {
     public IBlockExpressionSyntax Block { get; }
@@ -1975,6 +2155,7 @@ file class LoopExpressionSyntax // : ILoopExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class WhileExpressionSyntax // : IWhileExpressionSyntax
 {
     public IExpressionSyntax Condition { get; }
@@ -1989,6 +2170,7 @@ file class WhileExpressionSyntax // : IWhileExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class ForeachExpressionSyntax // : IForeachExpressionSyntax
 {
     public IdentifierName VariableName { get; }
@@ -2011,6 +2193,7 @@ file class ForeachExpressionSyntax // : IForeachExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class BreakExpressionSyntax // : IBreakExpressionSyntax
 {
     public IExpressionSyntax? Value { get; }
@@ -2023,6 +2206,7 @@ file class BreakExpressionSyntax // : IBreakExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class NextExpressionSyntax // : INextExpressionSyntax
 {
     public TextSpan Span { get; }
@@ -2033,6 +2217,7 @@ file class NextExpressionSyntax // : INextExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class ReturnExpressionSyntax // : IReturnExpressionSyntax
 {
     public IExpressionSyntax? Value { get; }
@@ -2045,6 +2230,7 @@ file class ReturnExpressionSyntax // : IReturnExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class InvocationExpressionSyntax // : IInvocationExpressionSyntax
 {
     public IExpressionSyntax Expression { get; }
@@ -2059,6 +2245,7 @@ file class InvocationExpressionSyntax // : IInvocationExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class IdentifierNameExpressionSyntax // : IIdentifierNameExpressionSyntax
 {
     public IdentifierName Name { get; }
@@ -2071,6 +2258,7 @@ file class IdentifierNameExpressionSyntax // : IIdentifierNameExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class SpecialTypeNameExpressionSyntax // : ISpecialTypeNameExpressionSyntax
 {
     public SpecialTypeName Name { get; }
@@ -2083,6 +2271,7 @@ file class SpecialTypeNameExpressionSyntax // : ISpecialTypeNameExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class GenericNameExpressionSyntax // : IGenericNameExpressionSyntax
 {
     public GenericName Name { get; }
@@ -2097,6 +2286,7 @@ file class GenericNameExpressionSyntax // : IGenericNameExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class SelfExpressionSyntax // : ISelfExpressionSyntax
 {
     public bool IsImplicit { get; }
@@ -2109,6 +2299,7 @@ file class SelfExpressionSyntax // : ISelfExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class MemberAccessExpressionSyntax // : IMemberAccessExpressionSyntax
 {
     public IExpressionSyntax Context { get; }
@@ -2127,6 +2318,7 @@ file class MemberAccessExpressionSyntax // : IMemberAccessExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class MissingNameSyntax // : IMissingNameSyntax
 {
     public TextSpan Span { get; }
@@ -2137,6 +2329,7 @@ file class MissingNameSyntax // : IMissingNameSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class MoveExpressionSyntax // : IMoveExpressionSyntax
 {
     public ISimpleNameSyntax Referent { get; }
@@ -2149,6 +2342,7 @@ file class MoveExpressionSyntax // : IMoveExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class FreezeExpressionSyntax // : IFreezeExpressionSyntax
 {
     public ISimpleNameSyntax Referent { get; }
@@ -2161,6 +2355,7 @@ file class FreezeExpressionSyntax // : IFreezeExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class AsyncBlockExpressionSyntax // : IAsyncBlockExpressionSyntax
 {
     public IBlockExpressionSyntax Block { get; }
@@ -2173,6 +2368,7 @@ file class AsyncBlockExpressionSyntax // : IAsyncBlockExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class AsyncStartExpressionSyntax // : IAsyncStartExpressionSyntax
 {
     public bool Scheduled { get; }
@@ -2187,6 +2383,7 @@ file class AsyncStartExpressionSyntax // : IAsyncStartExpressionSyntax
     }
 }
 
+[GeneratedCode("AzothCompilerCodeGen", null)]
 file class AwaitExpressionSyntax // : IAwaitExpressionSyntax
 {
     public IExpressionSyntax Expression { get; }
