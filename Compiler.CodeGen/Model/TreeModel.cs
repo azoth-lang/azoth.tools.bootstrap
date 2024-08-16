@@ -52,15 +52,26 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     private readonly FixedDictionary<string, TreeNodeModel> nodesLookup;
 
-    public void ValidateAmbiguousProperties()
+    public void Validate()
     {
+        bool errors = false;
         foreach (var node in Nodes)
             if (node.AllProperties.Duplicates(PropertyModel.NameComparer).Any())
             {
+                errors = true;
                 var ambiguousNames = node.AllProperties.Duplicates(PropertyModel.NameComparer).Select(p => p.Name).ToList();
-                throw new Exception(
-                    $"Node {node.Defines} has ambiguous properties {string.Join(", ", ambiguousNames)}."
-                    + $" Duplicate properties are: {string.Join(", ", ambiguousNames.SelectMany(node.PropertiesNamed))}");
+                Console.Error.WriteLine($"ERROR: Node '{node.Defines}' has ambiguous properties.");
+                foreach (var ambiguousName in ambiguousNames)
+                {
+                    Console.Error.WriteLine($"    '{ambiguousName}' defined as:");
+                    foreach (var property in ambiguousNames.SelectMany(node.PropertiesNamed))
+                    {
+                        Console.Error.WriteLine($"        '{property}'");
+                    }
+                }
             }
+
+        if (errors)
+            throw new Exception("Invalid definitions. See console output for errors.");
     }
 }

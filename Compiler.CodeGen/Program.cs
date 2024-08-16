@@ -95,7 +95,7 @@ public static class Program
             }
 
             var tree = new TreeModel(treeSyntax, aspectSyntax);
-            tree.ValidateAmbiguousProperties();
+            tree.Validate();
 
             {
                 var treeCode = TreeCodeBuilder.GenerateTree(tree);
