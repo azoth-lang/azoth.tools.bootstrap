@@ -769,15 +769,15 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     IdentifierName? IParameterNode.Name => Name;
     IdentifierName INamedBindingDeclarationNode.Name => Name;
     ITypeNode TypeNode { get; }
-    new DataType BindingType { get; }
-    DataType IConstructorOrInitializerParameterNode.BindingType => BindingType;
-    DataType INamedBindingNode.BindingType => BindingType;
     new IMaybeAntetype BindingAntetype { get; }
     IMaybeAntetype IParameterNode.BindingAntetype => BindingAntetype;
     IMaybeAntetype IBindingNode.BindingAntetype => BindingAntetype;
     new ValueId BindingValueId { get; }
     ValueId IParameterNode.BindingValueId => BindingValueId;
     ValueId IBindingNode.BindingValueId => BindingValueId;
+    new DataType BindingType { get; }
+    DataType IConstructorOrInitializerParameterNode.BindingType => BindingType;
+    DataType INamedBindingNode.BindingType => BindingType;
 }
 
 [Closed(
@@ -1288,15 +1288,15 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
     new IMaybeAntetype Antetype { get; }
     IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
     IMaybeAntetype IBlockOrResultNode.Antetype => Antetype;
+    new ValueId ValueId { get; }
+    ValueId IAmbiguousExpressionNode.ValueId => ValueId;
+    ValueId IElseClauseNode.ValueId => ValueId;
     new DataType Type { get; }
     DataType IExpressionNode.Type => Type;
     DataType IBlockOrResultNode.Type => Type;
     new IFlowState FlowStateAfter { get; }
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
-    new ValueId ValueId { get; }
-    ValueId IAmbiguousExpressionNode.ValueId => ValueId;
-    ValueId IElseClauseNode.ValueId => ValueId;
 }
 
 // [Closed(typeof(NewObjectExpressionNode))]
@@ -1487,12 +1487,12 @@ public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
     IExpressionNode? IntermediateCondition { get; }
     IBlockOrResultNode ThenBlock { get; }
     IElseClauseNode? ElseClause { get; }
-    new IFlowState FlowStateAfter { get; }
-    IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
-    IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
     new ValueId ValueId { get; }
     ValueId IAmbiguousExpressionNode.ValueId => ValueId;
     ValueId IElseClauseNode.ValueId => ValueId;
+    new IFlowState FlowStateAfter { get; }
+    IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
+    IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
 }
 
 // [Closed(typeof(LoopExpressionNode))]

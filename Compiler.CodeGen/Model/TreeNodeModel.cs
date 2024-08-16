@@ -86,7 +86,7 @@ public class TreeNodeModel
     /// <summary>
     /// Get the actual attributes for a node. This will use inherited attributes if an attribute
     /// declared on this node does not require a declaration. Attributes will be ordered by
-    /// declaration and then by supertype order.
+    /// supertype and declaration order.
     /// </summary>
     /// <remarks>This will not return duplicate attribute names unless two supertypes declare
     /// conflicting attributes.</remarks>
@@ -144,8 +144,9 @@ public class TreeNodeModel
             var attributeLookup = AttributesRequiringDeclaration
                                  .Concat(InheritedAttributes.AllExcept(AttributesRequiringDeclaration, AttributeModel.NameComparer))
                                  .ToLookup(p => p.Name);
-            var attributeOrder = AllDeclaredAttributes.Concat(SupertypeNodes.SelectMany(s => s.ActualAttributes))
-                                                     .DistinctBy(p => p.Name);
+            var attributeOrder = SupertypeNodes.SelectMany(s => s.ActualAttributes)
+                                               .Except(AllDeclaredAttributes, AttributeModel.NameComparer)
+                                               .Concat(AllDeclaredAttributes);
             return attributeOrder.SelectMany(p => attributeLookup[p.Name]).ToFixedList();
         });
 
