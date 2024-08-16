@@ -38,8 +38,9 @@ public sealed class TreeModel : IHasUsingNamespaces
         Aspects = aspects.Select(a => new AspectModel(this, a)).ToFixedList();
     }
 
-    public TreeNodeModel? NodeFor(string shortName)
-        => nodesLookup.GetValueOrDefault(shortName);
+    public TreeNodeModel? NodeFor(InternalSymbol symbol) => NodeFor(symbol.ShortName);
+
+    public TreeNodeModel? NodeFor(string shortName) => nodesLookup.GetValueOrDefault(shortName);
 
     public T? AttributeFor<T>(InternalSymbol nodeSymbol, string name)
         where T : AttributeModel

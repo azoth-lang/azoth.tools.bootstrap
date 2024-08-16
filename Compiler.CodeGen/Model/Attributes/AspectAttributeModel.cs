@@ -1,3 +1,4 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
@@ -22,6 +23,8 @@ public abstract class AspectAttributeModel : AttributeModel
     public AspectModel Aspect { get; }
     public abstract override AttributeSyntax Syntax { get; }
     public InternalSymbol NodeSymbol { get; }
+    public override TreeNodeModel Node => node.Value;
+    private readonly Lazy<TreeNodeModel> node;
     public sealed override string Name => Syntax.Name;
     public sealed override TypeModel Type { get; }
 
@@ -30,5 +33,8 @@ public abstract class AspectAttributeModel : AttributeModel
         Aspect = aspect;
         NodeSymbol = Symbol.CreateInternalFromSyntax(aspect.Tree, node);
         Type = TypeModel.CreateFromSyntax(aspect.Tree, type);
+
+        this.node = new(() => aspect.Tree.NodeFor(NodeSymbol)
+                         ?? throw new($"Attribute '{Syntax}' refers to node '{NodeSymbol}' that does not exist."));
     }
 }

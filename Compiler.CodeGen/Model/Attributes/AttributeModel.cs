@@ -20,6 +20,7 @@ public abstract class AttributeModel
         = EqualityComparer<AttributeModel>.Create((p1, p2) => p1?.Name == p2?.Name, p => HashCode.Combine(p.Name));
 
     public abstract AttributeSyntax? Syntax { get; }
+    public abstract TreeNodeModel Node { get; }
     public abstract string Name { get; }
     public abstract TypeModel Type { get; }
 }

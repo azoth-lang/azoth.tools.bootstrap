@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
@@ -15,7 +14,7 @@ public sealed class PropertyModel : AttributeModel
 {
     public override PropertySyntax? Syntax { get; }
 
-    public TreeNodeModel Node { get; }
+    public override TreeNodeModel Node { get; }
     public override string Name { get; }
     public override TypeModel Type { get; }
     /// <summary>
