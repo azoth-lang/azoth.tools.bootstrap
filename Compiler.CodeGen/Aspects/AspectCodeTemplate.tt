@@ -4,6 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(aspect, "System.CodeDom.Compiler")) { #>
 using <#=usingNamespace #>;
 <#  } #>
@@ -13,6 +14,13 @@ namespace <#=aspect.Namespace #>;
 // ReSharper disable PartialTypeWithSinglePart
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public static partial class <#= aspect.Name #>
+internal static partial class <#= aspect.Name #>
 {
+<#  foreach(var equation in aspect.Equations) { #>
+<#          switch (equation) { #>
+<#              case SynthesizedAttributeEquationModel eq when ShouldEmit.EquationPartialImplementation(eq): #>
+    public static partial <#= Emit.Type(eq.Type) #> <#=eq.NodeSymbol.ShortName #>_<#= eq.Name #>(<#= Emit.TypeName(eq.Node.Defines) #> node);
+<#                  break;#>
+<#          } #>
+<#  } #>
 }

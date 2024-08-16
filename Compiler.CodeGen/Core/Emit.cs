@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
@@ -70,6 +71,16 @@ internal static class Emit
     public static string ParameterName(AttributeModel attribute)
         => attribute.Name.ToCamelCase();
 
+    public static string Override(SynthesizedAttributeEquationModel equation)
+        => ObjectMembers.Contains(equation.Name) ? "override " : "";
+
+    private static readonly IFixedSet<string> ObjectMembers = new HashSet<string>()
+    {
+        "ToString",
+        "GetHashCode",
+        "Equals",
+    }.ToFixedSet();
+
     public static string Body(SynthesizedAttributeModel attribute)
     {
         if (attribute.DefaultExpression is not null)
@@ -82,13 +93,14 @@ internal static class Emit
 
     public static string Body(SynthesizedAttributeEquationModel equation)
     {
-        switch (equation.EvaluationStrategy)
+        switch (equation.Strategy)
         {
             default:
-                throw ExhaustiveMatch.Failed(equation.EvaluationStrategy);
+                throw ExhaustiveMatch.Failed(equation.Strategy);
             case EvaluationStrategy.Eager:
+                throw new NotSupportedException("Eager equations must be inside constructor.");
             case EvaluationStrategy.Lazy:
-                return ";";
+                throw new NotImplementedException("Lazy equations.");
             case EvaluationStrategy.Computed:
                 var builder = new StringBuilder();
                 builder.AppendLine();
@@ -102,7 +114,7 @@ internal static class Emit
                     builder.Append(equation.NodeSymbol);
                     builder.Append('_');
                     builder.Append(equation.Name);
-                    builder.Append("()");
+                    builder.Append("(this)");
                 }
                 builder.Append(';');
                 return builder.ToString();

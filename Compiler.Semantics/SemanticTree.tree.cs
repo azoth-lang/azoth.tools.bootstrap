@@ -31,6 +31,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantTypeDeclarationBody
 // ReSharper disable ReturnTypeCanBeNotNullable
+// ReSharper disable ConvertToPrimaryConstructor
 
 [Closed(
     typeof(IChildNode),

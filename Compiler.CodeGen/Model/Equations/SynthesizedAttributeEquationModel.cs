@@ -15,7 +15,7 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel, IMemberMo
     public override SynthesizedAttributeEquationSyntax Syntax { get; }
     public override SynthesizedAttributeModel Attribute => attribute.Value;
     private readonly Lazy<SynthesizedAttributeModel> attribute;
-    public EvaluationStrategy EvaluationStrategy { get; }
+    public EvaluationStrategy Strategy { get; }
     public string Name => Syntax.Name;
     public string Parameters => Syntax.Parameters ?? "";
     public TypeModel? TypeOverride { get; }
@@ -26,12 +26,14 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel, IMemberMo
         : base(aspect, syntax.Node)
     {
         Syntax = syntax;
-        EvaluationStrategy = ComputeEvaluationStrategy(syntax);
+        Strategy = ComputeStrategy(syntax);
         TypeOverride = TypeModel.CreateFromSyntax(Aspect.Tree, syntax.TypeOverride);
+        if (Strategy == EvaluationStrategy.Lazy && Expression is not null)
+            throw new($"{NodeSymbol}.{Name} has an expression but is marked as lazy.");
         attribute = new(GetAttribute<SynthesizedAttributeModel>);
     }
 
-    private static EvaluationStrategy ComputeEvaluationStrategy(SynthesizedAttributeEquationSyntax syntax)
+    private static EvaluationStrategy ComputeStrategy(SynthesizedAttributeEquationSyntax syntax)
         => syntax.EvaluationStrategy
            ?? (syntax.Expression is not null ? EvaluationStrategy.Computed : EvaluationStrategy.Lazy);
 

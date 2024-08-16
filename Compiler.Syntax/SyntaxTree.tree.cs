@@ -17,6 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantTypeDeclarationBody
 // ReSharper disable ReturnTypeCanBeNotNullable
+// ReSharper disable ConvertToPrimaryConstructor
 
 [Closed(
     typeof(ICodeSyntax),
@@ -340,6 +341,7 @@ public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax,
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
+    string ToString();
 }
 
 // [Closed(typeof(AbstractMethodDefinitionSyntax))]
@@ -1590,6 +1592,8 @@ file sealed class AbstractMethodDefinitionSyntax : IAbstractMethodDefinitionSynt
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.AbstractMethodDefinition_ToString(this);
 
     public AbstractMethodDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return)
     {
@@ -1616,6 +1620,8 @@ file sealed class StandardMethodDefinitionSyntax : IStandardMethodDefinitionSynt
     public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.StandardMethodDefinition_ToString(this);
 
     public StandardMethodDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body)
     {
@@ -1643,6 +1649,8 @@ file sealed class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
     public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnSyntax Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.GetterMethodDefinition_ToString(this);
 
     public GetterMethodDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax @return, IBodySyntax body)
     {
@@ -1670,6 +1678,8 @@ file sealed class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
     public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.SetterMethodDefinition_ToString(this);
 
     public SetterMethodDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body)
     {
@@ -2218,6 +2228,8 @@ file sealed class BlockExpressionSyntax : IBlockExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IFixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public BlockExpressionSyntax(TextSpan span, IFixedList<IStatementSyntax> statements)
     {
@@ -2234,6 +2246,8 @@ file sealed class NewObjectExpressionSyntax : INewObjectExpressionSyntax
     public IdentifierName? ConstructorName { [DebuggerStepThrough] get; }
     public TextSpan? ConstructorNameSpan { [DebuggerStepThrough] get; }
     public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Min;
 
     public NewObjectExpressionSyntax(TextSpan span, ITypeNameSyntax type, IdentifierName? constructorName, TextSpan? constructorNameSpan, IFixedList<IExpressionSyntax> arguments)
     {
@@ -2250,6 +2264,8 @@ file sealed class UnsafeExpressionSyntax : IUnsafeExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public UnsafeExpressionSyntax(TextSpan span, IExpressionSyntax expression)
     {
@@ -2263,6 +2279,8 @@ file sealed class BoolLiteralExpressionSyntax : IBoolLiteralExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool Value { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public BoolLiteralExpressionSyntax(TextSpan span, bool value)
     {
@@ -2276,6 +2294,8 @@ file sealed class IntegerLiteralExpressionSyntax : IIntegerLiteralExpressionSynt
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public BigInteger Value { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public IntegerLiteralExpressionSyntax(TextSpan span, BigInteger value)
     {
@@ -2288,6 +2308,8 @@ file sealed class IntegerLiteralExpressionSyntax : IIntegerLiteralExpressionSynt
 file sealed class NoneLiteralExpressionSyntax : INoneLiteralExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public NoneLiteralExpressionSyntax(TextSpan span)
     {
@@ -2300,6 +2322,8 @@ file sealed class StringLiteralExpressionSyntax : IStringLiteralExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public string Value { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public StringLiteralExpressionSyntax(TextSpan span, string value)
     {
@@ -2315,6 +2339,8 @@ file sealed class AssignmentExpressionSyntax : IAssignmentExpressionSyntax
     public IAssignableExpressionSyntax LeftOperand { [DebuggerStepThrough] get; }
     public AssignmentOperator Operator { [DebuggerStepThrough] get; }
     public IExpressionSyntax RightOperand { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Assignment;
 
     public AssignmentExpressionSyntax(TextSpan span, IAssignableExpressionSyntax leftOperand, AssignmentOperator @operator, IExpressionSyntax rightOperand)
     {
@@ -2332,6 +2358,8 @@ file sealed class BinaryOperatorExpressionSyntax : IBinaryOperatorExpressionSynt
     public IExpressionSyntax LeftOperand { [DebuggerStepThrough] get; }
     public BinaryOperator Operator { [DebuggerStepThrough] get; }
     public IExpressionSyntax RightOperand { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => Operator.Precedence();
 
     public BinaryOperatorExpressionSyntax(TextSpan span, IExpressionSyntax leftOperand, BinaryOperator @operator, IExpressionSyntax rightOperand)
     {
@@ -2349,6 +2377,8 @@ file sealed class UnaryOperatorExpressionSyntax : IUnaryOperatorExpressionSyntax
     public UnaryOperatorFixity Fixity { [DebuggerStepThrough] get; }
     public UnaryOperator Operator { [DebuggerStepThrough] get; }
     public IExpressionSyntax Operand { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Unary;
 
     public UnaryOperatorExpressionSyntax(TextSpan span, UnaryOperatorFixity fixity, UnaryOperator @operator, IExpressionSyntax operand)
     {
@@ -2364,6 +2394,8 @@ file sealed class IdExpressionSyntax : IIdExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Min;
 
     public IdExpressionSyntax(TextSpan span, IExpressionSyntax referent)
     {
@@ -2379,6 +2411,8 @@ file sealed class ConversionExpressionSyntax : IConversionExpressionSyntax
     public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
     public ConversionOperator Operator { [DebuggerStepThrough] get; }
     public ITypeSyntax ConvertToType { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Conversion;
 
     public ConversionExpressionSyntax(TextSpan span, IExpressionSyntax referent, ConversionOperator @operator, ITypeSyntax convertToType)
     {
@@ -2395,6 +2429,8 @@ file sealed class PatternMatchExpressionSyntax : IPatternMatchExpressionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
     public IPatternSyntax Pattern { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Conversion;
 
     public PatternMatchExpressionSyntax(TextSpan span, IExpressionSyntax referent, IPatternSyntax pattern)
     {
@@ -2411,6 +2447,8 @@ file sealed class IfExpressionSyntax : IIfExpressionSyntax
     public IExpressionSyntax Condition { [DebuggerStepThrough] get; }
     public IBlockOrResultSyntax ThenBlock { [DebuggerStepThrough] get; }
     public IElseClauseSyntax? ElseClause { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Min;
 
     public IfExpressionSyntax(TextSpan span, IExpressionSyntax condition, IBlockOrResultSyntax thenBlock, IElseClauseSyntax? elseClause)
     {
@@ -2426,6 +2464,8 @@ file sealed class LoopExpressionSyntax : ILoopExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public LoopExpressionSyntax(TextSpan span, IBlockExpressionSyntax block)
     {
@@ -2440,6 +2480,8 @@ file sealed class WhileExpressionSyntax : IWhileExpressionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Condition { [DebuggerStepThrough] get; }
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Min;
 
     public WhileExpressionSyntax(TextSpan span, IExpressionSyntax condition, IBlockExpressionSyntax block)
     {
@@ -2459,6 +2501,8 @@ file sealed class ForeachExpressionSyntax : IForeachExpressionSyntax
     public IExpressionSyntax InExpression { [DebuggerStepThrough] get; }
     public ITypeSyntax? Type { [DebuggerStepThrough] get; }
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Min;
 
     public ForeachExpressionSyntax(TextSpan span, bool isMutableBinding, TextSpan nameSpan, IdentifierName variableName, IExpressionSyntax inExpression, ITypeSyntax? type, IBlockExpressionSyntax block)
     {
@@ -2477,6 +2521,8 @@ file sealed class BreakExpressionSyntax : IBreakExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => Value is not null ? OperatorPrecedence.Min : OperatorPrecedence.Primary;
 
     public BreakExpressionSyntax(TextSpan span, IExpressionSyntax? value)
     {
@@ -2489,6 +2535,8 @@ file sealed class BreakExpressionSyntax : IBreakExpressionSyntax
 file sealed class NextExpressionSyntax : INextExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public NextExpressionSyntax(TextSpan span)
     {
@@ -2501,6 +2549,8 @@ file sealed class ReturnExpressionSyntax : IReturnExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Min;
 
     public ReturnExpressionSyntax(TextSpan span, IExpressionSyntax? value)
     {
@@ -2515,6 +2565,8 @@ file sealed class InvocationExpressionSyntax : IInvocationExpressionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
     public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public InvocationExpressionSyntax(TextSpan span, IExpressionSyntax expression, IFixedList<IExpressionSyntax> arguments)
     {
@@ -2529,6 +2581,8 @@ file sealed class IdentifierNameExpressionSyntax : IIdentifierNameExpressionSynt
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public IdentifierNameExpressionSyntax(TextSpan span, IdentifierName name)
     {
@@ -2542,6 +2596,8 @@ file sealed class SpecialTypeNameExpressionSyntax : ISpecialTypeNameExpressionSy
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public SpecialTypeName Name { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public SpecialTypeNameExpressionSyntax(TextSpan span, SpecialTypeName name)
     {
@@ -2556,6 +2612,8 @@ file sealed class GenericNameExpressionSyntax : IGenericNameExpressionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public GenericName Name { [DebuggerStepThrough] get; }
     public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public GenericNameExpressionSyntax(TextSpan span, GenericName name, IFixedList<ITypeSyntax> typeArguments)
     {
@@ -2570,6 +2628,8 @@ file sealed class SelfExpressionSyntax : ISelfExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public SelfExpressionSyntax(TextSpan span, bool isImplicit)
     {
@@ -2586,6 +2646,8 @@ file sealed class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
     public StandardName MemberName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
     public TextSpan MemberNameSpan { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public MemberAccessExpressionSyntax(TextSpan span, IExpressionSyntax context, StandardName memberName, IFixedList<ITypeSyntax> typeArguments, TextSpan memberNameSpan)
     {
@@ -2601,6 +2663,8 @@ file sealed class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
 file sealed class MissingNameSyntax : IMissingNameSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public MissingNameSyntax(TextSpan span)
     {
@@ -2613,6 +2677,8 @@ file sealed class MoveExpressionSyntax : IMoveExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ISimpleNameSyntax Referent { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Min;
 
     public MoveExpressionSyntax(TextSpan span, ISimpleNameSyntax referent)
     {
@@ -2626,6 +2692,8 @@ file sealed class FreezeExpressionSyntax : IFreezeExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ISimpleNameSyntax Referent { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Min;
 
     public FreezeExpressionSyntax(TextSpan span, ISimpleNameSyntax referent)
     {
@@ -2639,6 +2707,8 @@ file sealed class AsyncBlockExpressionSyntax : IAsyncBlockExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 
     public AsyncBlockExpressionSyntax(TextSpan span, IBlockExpressionSyntax block)
     {
@@ -2653,6 +2723,8 @@ file sealed class AsyncStartExpressionSyntax : IAsyncStartExpressionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool Scheduled { [DebuggerStepThrough] get; }
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Min;
 
     public AsyncStartExpressionSyntax(TextSpan span, bool scheduled, IExpressionSyntax expression)
     {
@@ -2667,6 +2739,8 @@ file sealed class AwaitExpressionSyntax : IAwaitExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
+    public OperatorPrecedence ExpressionPrecedence
+        => OperatorPrecedence.Unary;
 
     public AwaitExpressionSyntax(TextSpan span, IExpressionSyntax expression)
     {
