@@ -5,11 +5,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 public sealed class ListType : CollectionType
 {
-    internal ListType(NonVoidType elementType)
+    internal ListType(TypeModel elementType)
         : base(elementType) { }
 
     #region Equality
-    public override bool Equals(Type? other)
+    public override bool Equals(TypeModel? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -23,7 +23,7 @@ public sealed class ListType : CollectionType
     public override ListType WithSymbol(Symbol symbol)
         => new ListType(ElementType.WithSymbol(symbol));
 
-    public override bool IsSubtypeOf(Type other)
+    public override bool IsSubtypeOf(TypeModel other)
     {
         if (other is OptionalType optionalType) return IsSubtypeOf(optionalType.UnderlyingType);
         return other is ListType listType && ElementType.IsSubtypeOf(listType.ElementType);

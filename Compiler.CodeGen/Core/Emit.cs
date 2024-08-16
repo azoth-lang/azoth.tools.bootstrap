@@ -6,7 +6,6 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
-using Type = Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
@@ -48,9 +47,9 @@ internal static class Emit
     public static string TypeName(Symbol symbol)
         => symbol.FullName;
 
-    public static string Type(Type type) => Type(type, TypeName);
+    public static string Type(TypeModel type) => Type(type, TypeName);
 
-    private static string Type(Type type, Func<Symbol, string> emitSymbol)
+    private static string Type(TypeModel type, Func<Symbol, string> emitSymbol)
         => type switch
         {
             SymbolType t => emitSymbol(t.Symbol),

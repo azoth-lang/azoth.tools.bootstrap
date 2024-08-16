@@ -20,13 +20,17 @@ public sealed class TreeModel : IHasUsingNamespaces
     public string ClassSuffix => Syntax.ClassSuffix;
     public IFixedSet<string> UsingNamespaces => Syntax.UsingNamespaces;
     public IFixedList<TreeNodeModel> Nodes { get; }
+    public IFixedList<AspectModel> Aspects { get; }
 
-    public TreeModel(TreeSyntax syntax)
+    public TreeModel(TreeSyntax syntax, List<AspectSyntax> aspects)
     {
         Syntax = syntax;
         Root = Symbol.CreateFromSyntax(this, syntax.Root);
         Nodes = syntax.Nodes.Select(r => new TreeNodeModel(this, r)).ToFixedList();
         nodesLookup = Nodes.ToFixedDictionary(r => r.Defines.ShortName);
+
+        // Now that the three is fully created, it is safe to create the aspects
+        Aspects = aspects.Select(a => new AspectModel(this, a)).ToFixedList();
     }
 
     public TreeNodeModel? NodeFor(string shortName)

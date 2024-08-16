@@ -3,18 +3,18 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
-public sealed class OptionalType : NonVoidType
+public sealed class OptionalType : TypeModel
 {
-    public NonVoidType UnderlyingType { get; }
+    public TypeModel UnderlyingType { get; }
 
-    public OptionalType(NonVoidType underlyingType)
+    public OptionalType(TypeModel underlyingType)
         : base(underlyingType.UnderlyingSymbol)
     {
         UnderlyingType = underlyingType;
     }
 
     #region Equality
-    public override bool Equals(Type? other)
+    public override bool Equals(TypeModel? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -28,7 +28,7 @@ public sealed class OptionalType : NonVoidType
     public override OptionalType WithSymbol(Symbol symbol)
         => new OptionalType(UnderlyingType.WithSymbol(symbol));
 
-    public override bool IsSubtypeOf(Type other)
+    public override bool IsSubtypeOf(TypeModel other)
         => other is OptionalType optionalType && UnderlyingType.IsSubtypeOf(optionalType.UnderlyingType);
 
     public override NonOptionalType ToNonOptional() => UnderlyingType.ToNonOptional();

@@ -761,6 +761,7 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExpressionSyntax : ICodeSyntax
 {
+    // attribute ExpressionPrecedence
 }
 
 [Closed(

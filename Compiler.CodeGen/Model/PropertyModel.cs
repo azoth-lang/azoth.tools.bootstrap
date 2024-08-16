@@ -21,7 +21,7 @@ public sealed class PropertyModel
 
     public TreeNodeModel Node { get; }
     public string Name { get; }
-    public NonVoidType Type { get; }
+    public TypeModel Type { get; }
     /// <summary>
     /// Something is a new definition if it replaces some parent definition.
     /// </summary>
@@ -52,10 +52,7 @@ public sealed class PropertyModel
         Syntax = syntax;
         Name = Syntax.Name;
 
-        var type = Types.Type.CreateFromSyntax(Node.Tree, syntax.Type);
-        if (type is not NonVoidType nonVoidType)
-            throw new InvalidOperationException("Property type must be a non-void type.");
-        Type = nonVoidType;
+        Type = TypeModel.CreateFromSyntax(Node.Tree, syntax.Type);
         isNewDefinition = new(() => node.InheritedPropertiesNamedSameAs(this).Any());
         isDeclarationRequired = new(() =>
         {
@@ -64,7 +61,7 @@ public sealed class PropertyModel
         });
     }
 
-    public PropertyModel(TreeNodeModel node, string name, NonVoidType type)
+    public PropertyModel(TreeNodeModel node, string name, TypeModel type)
     {
         Node = node;
         Name = name;

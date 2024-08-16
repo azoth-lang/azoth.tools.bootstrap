@@ -37,13 +37,11 @@ public static class AspectParser
     }
 
     private static AttributeSyntax ParseAttribute(string statement)
-    {
-        return statement[0] switch
+        => statement[0] switch
         {
             '↑' => ParseSynthesizedAttribute(statement),
             _ => throw new Exception($"Unknown attribute kind: {statement}"),
         };
-    }
 
     private static SynthesizedAttributeSyntax ParseSynthesizedAttribute(string statement)
     {
@@ -54,14 +52,14 @@ public static class AspectParser
         var (definition, defaultExpression) = OptionalSplitTwo(statement, "=>", "Too many `=>` in: '{0}'");
         (definition, var type) = SplitTwo(definition, ":", "Should be exactly one `:` in: '{0}'");
         (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
-        var (attribute, parameters) = OptionalSplitTwo(definition, "(", "Too many `(` in: '{0}'");
+        var (name, parameters) = OptionalSplitTwo(definition, "(", "Too many `(` in: '{0}'");
         if (parameters is not null)
             // Put left paren back on parameters
             parameters = "(" + parameters;
-
-        return new(new SymbolSyntax(node), attribute, parameters);
+        var typeSyntax = ParseType(type);
+        return new(new SymbolSyntax(node), name, parameters, typeSyntax, defaultExpression);
     }
 
     private static EquationSyntax ParseEquation(string statement)
-        => throw new System.NotImplementedException();
+        => throw new NotImplementedException();
 }

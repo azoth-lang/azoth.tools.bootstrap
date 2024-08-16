@@ -3,13 +3,22 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 public sealed class SynthesizedAttributeSyntax : AttributeSyntax
 {
     public SymbolSyntax Node { get; }
-    public string Attribute { get; }
+    public string Name { get; }
     public string? Parameters { get; }
+    public TypeSyntax Type { get; }
+    public string? DefaultExpression { get; }
 
-    public SynthesizedAttributeSyntax(SymbolSyntax node, string attribute, string? parameters)
+    public SynthesizedAttributeSyntax(
+        SymbolSyntax node,
+        string name,
+        string? parameters,
+        TypeSyntax type,
+        string? defaultExpression)
     {
         Node = node;
-        Attribute = attribute;
+        Name = name;
         Parameters = parameters;
+        Type = type;
+        DefaultExpression = defaultExpression;
     }
 }

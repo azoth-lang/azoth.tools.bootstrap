@@ -13,9 +13,6 @@ public sealed class SymbolType : NonOptionalType
     public static SymbolType CreateFromSyntax(TreeModel tree, SymbolSyntax syntax)
         => new(Symbol.CreateFromSyntax(tree, syntax));
 
-    public static SymbolType CreateExternalFromSyntax(SymbolSyntax syntax)
-        => new(Symbol.CreateExternalFromSyntax(syntax));
-
     public Symbol Symbol { get; }
 
     public SymbolType(Symbol symbol)
@@ -25,7 +22,7 @@ public sealed class SymbolType : NonOptionalType
     }
 
     #region Equality
-    public override bool Equals(Type? other)
+    public override bool Equals(TypeModel? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -38,7 +35,7 @@ public sealed class SymbolType : NonOptionalType
 
     public override SymbolType WithSymbol(Symbol symbol) => new(symbol);
 
-    public override bool IsSubtypeOf(Type other)
+    public override bool IsSubtypeOf(TypeModel other)
     {
         if (other is OptionalType optionalType)
             return IsSubtypeOf(optionalType.UnderlyingType);

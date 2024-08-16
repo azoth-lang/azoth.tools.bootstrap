@@ -5,11 +5,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 public sealed class SetType : CollectionType
 {
-    internal SetType(NonVoidType underlyingType)
+    internal SetType(TypeModel underlyingType)
         : base(underlyingType) { }
 
     #region Equality
-    public override bool Equals(Type? other)
+    public override bool Equals(TypeModel? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -22,7 +22,7 @@ public sealed class SetType : CollectionType
     public override SetType WithSymbol(Symbol symbol)
         => new SetType(ElementType.WithSymbol(symbol));
 
-    public override bool IsSubtypeOf(Type other)
+    public override bool IsSubtypeOf(TypeModel other)
     {
         if (other is OptionalType optionalType) return IsSubtypeOf(optionalType.UnderlyingType);
         return other is SetType setType && ElementType.IsSubtypeOf(setType.ElementType);

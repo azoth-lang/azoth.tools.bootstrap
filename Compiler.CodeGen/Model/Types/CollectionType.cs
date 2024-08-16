@@ -8,9 +8,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
     typeof(SetType))]
 public abstract class CollectionType : NonOptionalType
 {
-    public NonVoidType ElementType { get; }
+    public TypeModel ElementType { get; }
 
-    private protected CollectionType(NonVoidType elementType)
+    private protected CollectionType(TypeModel elementType)
         : base(elementType.UnderlyingSymbol)
     {
         ElementType = elementType;

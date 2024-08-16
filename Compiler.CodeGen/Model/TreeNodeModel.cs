@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
@@ -84,6 +85,9 @@ public class TreeNodeModel
     public IFixedList<PropertyModel> AllProperties => allProperties.Value;
     private readonly Lazy<IFixedList<PropertyModel>> allProperties;
 
+    public IFixedList<AttributeModel> Attributes => attributes.Value;
+    private readonly Lazy<IFixedList<AttributeModel>> attributes;
+
     public TreeNodeModel(TreeModel tree, TreeNodeSyntax syntax)
     {
         Tree = tree;
@@ -120,6 +124,8 @@ public class TreeNodeModel
                                                      .DistinctBy(p => p.Name);
             return propertyOrder.SelectMany(p => propertyLookup[p.Name]).ToFixedList();
         });
+
+        attributes = new(() => Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.Node == Defines).ToFixedList());
     }
 
     /// <summary>

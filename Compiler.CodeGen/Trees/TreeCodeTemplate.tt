@@ -4,6 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(tree, "ExhaustiveMatching", "System.CodeDom.Compiler")) { #>
 using <#=usingNamespace #>;
 <#  } #>
@@ -22,6 +23,13 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
     <#=Emit.PropertyIsNew(property) #><#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
 <#          foreach (var baseProperty in Build.BaseProperties(node, property)) { #>
     <#=Emit.Type(baseProperty.Type) #> <#= Emit.TypeName(baseProperty.Node.Defines) #>.<#=baseProperty.Name #> => <#=property.Name #>;
+<#          } #>
+<#      } #>
+<#      foreach (var attribute in node.Attributes) { #>
+<#          switch (attribute) { #>
+<#              case SynthesizedAttributeModel attr: #>
+    // attribute <#=attr.Name #>
+<#                  break;#>
 <#          } #>
 <#      } #>
 }
