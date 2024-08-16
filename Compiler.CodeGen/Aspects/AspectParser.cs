@@ -11,8 +11,9 @@ public static class AspectParser
         var lines = Parsing.ParseLines(aspectDefinition).ToFixedList();
 
         var ns = Parsing.GetRequiredConfig(lines, "namespace");
-        var name = Parsing.GetRequiredConfig(lines, "namespace");
+        var name = Parsing.GetRequiredConfig(lines, "name");
+        var usingNamespaces = Parsing.ParseUsingNamespaces(lines);
 
-        return new AspectSyntax(ns, name);
+        return new AspectSyntax(ns, name, usingNamespaces);
     }
 }

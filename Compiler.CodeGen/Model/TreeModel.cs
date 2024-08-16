@@ -8,7 +8,7 @@ using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
-public sealed class TreeModel
+public sealed class TreeModel : IHasUsingNamespaces
 {
     public TreeSyntax Syntax { get; }
 

@@ -28,6 +28,11 @@
     <ProjectReference Include="..\Framework\Framework.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Aspects\AspectCodeTemplate.tt">
+      <CustomToolNamespace>Azoth.Tools.Bootstrap.Compiler.CodeGen.Aspects</CustomToolNamespace>
+      <LastGenOutput>AspectCodeTemplate.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
     <None Update="Trees\TreeCodeTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TreeCodeTemplate.cs</LastGenOutput>
@@ -43,6 +48,11 @@
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Aspects\AspectCodeTemplate.cs">
+      <DependentUpon>AspectCodeTemplate.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="Trees\TreeCodeTemplate.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

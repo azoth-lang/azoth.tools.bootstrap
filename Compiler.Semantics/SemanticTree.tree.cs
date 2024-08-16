@@ -28,6 +28,8 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable RedundantTypeDeclarationBody
+// ReSharper disable ReturnTypeCanBeNotNullable
 
 [Closed(
     typeof(IChildNode),

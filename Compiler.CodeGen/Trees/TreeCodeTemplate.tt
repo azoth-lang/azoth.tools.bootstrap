@@ -11,6 +11,8 @@ using <#=usingNamespace #>;
 namespace <#=tree.Namespace #>;
 
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable RedundantTypeDeclarationBody
+// ReSharper disable ReturnTypeCanBeNotNullable
 
 <#  foreach(var node in tree.Nodes) {#>
 <#=Emit.ClosedAttribute(node) #>[GeneratedCode("AzothCompilerCodeGen", null)]

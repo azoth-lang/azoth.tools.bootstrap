@@ -96,6 +96,7 @@ public static class Program
             }
 
             var tree = new TreeModel(treeSyntax);
+            var aspects = aspectSyntax.Select(a => new AspectModel(a)).ToFixedList();
             tree.ValidateAmbiguousProperties();
 
             {
@@ -104,6 +105,15 @@ public static class Program
 
                 var walkerCode = TreeCodeBuilder.GenerateChildren(tree);
                 WriteIfChanged(childrenOutputPath, walkerCode);
+            }
+
+            foreach (var (aspect, path) in aspects.EquiZip(aspectPaths))
+            {
+                var directory = Path.GetDirectoryName(path)!;
+                var aspectOutputPath = Path.Combine(directory, aspect.Name + ".g.cs");
+                Console.WriteLine($"Aspect Output: {aspectOutputPath}");
+                var aspectCode = AspectCodeBuilder.GenerateAspect(aspect);
+                WriteIfChanged(aspectOutputPath, aspectCode);
             }
 
             return true;

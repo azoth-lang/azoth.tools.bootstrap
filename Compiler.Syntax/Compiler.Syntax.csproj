@@ -39,6 +39,9 @@
     <Compile Update="SyntaxTree.children.cs">
       <DependentUpon>SyntaxTree.tree</DependentUpon>
     </Compile>
+    <Compile Update="FormattingAspect.g.cs">
+      <DependentUpon>Formatting.aspect</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SyntaxTree.tree&quot; &quot;$(ProjectDir)Formatting.aspect&quot;" />

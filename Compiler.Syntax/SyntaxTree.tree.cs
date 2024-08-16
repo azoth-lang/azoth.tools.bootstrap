@@ -14,6 +14,8 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable RedundantTypeDeclarationBody
+// ReSharper disable ReturnTypeCanBeNotNullable
 
 [Closed(
     typeof(ICodeSyntax),
