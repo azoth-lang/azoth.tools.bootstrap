@@ -121,7 +121,7 @@ public class TreeNodeModel
         inheritedProperties = new(()
             => MostSpecificProperties(SupertypeNodes.SelectMany(r => r.ActualProperties).Distinct()).ToFixedList());
         implicitlyDeclaredProperties = new(()
-            => InheritedProperties.AllExcept(DeclaredProperties, PropertyModel.NameComparer)
+            => InheritedProperties.AllExcept<PropertyModel>(DeclaredProperties, AttributeModel.NameComparer)
                                   .GroupBy(p => p.Name)
                                   .Select(ImplicitlyDeclaredProperty).WhereNotNull()
                                   .Assert(p => p.IsDeclarationRequired, p => new($"Implicit property {p} no declared."))
@@ -131,7 +131,7 @@ public class TreeNodeModel
         allProperties = new(() =>
         {
             var propertyLookup = PropertiesRequiringDeclaration
-                                 .Concat(InheritedProperties.AllExcept(PropertiesRequiringDeclaration, PropertyModel.NameComparer))
+                                 .Concat(InheritedProperties.AllExcept<PropertyModel>(PropertiesRequiringDeclaration, AttributeModel.NameComparer))
                                  .ToLookup(p => p.Name);
             var propertyOrder = AllDeclaredProperties.Concat(SupertypeNodes.SelectMany(s => s.ActualProperties))
                                                      .DistinctBy(p => p.Name);

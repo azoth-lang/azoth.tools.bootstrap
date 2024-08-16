@@ -18,4 +18,10 @@ public sealed class SynthesizedAttributeSyntax : AspectAttributeSyntax
         Type = type;
         DefaultExpression = defaultExpression;
     }
+
+    public override string ToString()
+    {
+        var expression = DefaultExpression is not null ? $" => {DefaultExpression}" : "";
+        return $"↑ {Node}.{Name}{Parameters}: {Type}{expression};";
+    }
 }

@@ -13,19 +13,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 /// </summary>
 public sealed class PropertyModel : AttributeModel
 {
-    public static IEqualityComparer<PropertyModel> NameAndTypeComparer { get; }
-        = EqualityComparer<PropertyModel>.Create((p1, p2) => p1?.Name == p2?.Name && p1?.Type == p2?.Type,
-            p => HashCode.Combine(p.Name, p.Type));
-
-    public static IEqualityComparer<PropertyModel> NameComparer { get; }
-        = EqualityComparer<PropertyModel>.Create((p1, p2) => p1?.Name == p2?.Name,
-            p => HashCode.Combine(p.Name));
-
     public override PropertySyntax? Syntax { get; }
 
     public TreeNodeModel Node { get; }
     public override string Name { get; }
-    public TypeModel Type { get; }
+    public override TypeModel Type { get; }
     /// <summary>
     /// Something is a new definition if it replaces some parent definition.
     /// </summary>
