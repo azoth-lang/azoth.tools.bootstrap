@@ -62,44 +62,38 @@ public class TreeNodeModel
     public IFixedList<PropertyModel> ImplicitlyDeclaredProperties => implicitlyDeclaredProperties.Value;
     private readonly Lazy<IFixedList<PropertyModel>> implicitlyDeclaredProperties;
 
-
     /// <summary>
-    /// The combination of declared and implicitly declared properties.
+    /// The combination of declared and implicitly declared attributes.
     /// </summary>
-    public IEnumerable<PropertyModel> AllDeclaredProperties
-        => DeclaredProperties.Concat(ImplicitlyDeclaredProperties);
+    public IEnumerable<AttributeModel> AllDeclaredAttributes
+        => DeclaredAttributes.Concat(ImplicitlyDeclaredProperties);
 
     /// <summary>
-    /// Properties that must be declared in the node interface.
+    /// Attributes that must be declared in the node interface.
     /// </summary>
-    public IFixedList<PropertyModel> PropertiesRequiringDeclaration => propertiesRequiringDeclaration.Value;
-    private readonly Lazy<IFixedList<PropertyModel>> propertiesRequiringDeclaration;
+    public IFixedList<AttributeModel> AttributesRequiringDeclaration => attributesRequiringDeclaration.Value;
+    private readonly Lazy<IFixedList<AttributeModel>> attributesRequiringDeclaration;
 
     /// <summary>
-    /// Properties inherited from the supertypes of a rule. If the same property is defined on
-    /// multiple supertypes, it will be listed multiple times. However, if a property is
+    /// Attributes inherited from the supertypes of a node. If the same attribute is defined on
+    /// multiple supertypes, it will be listed multiple times. However, if a is
     /// inherited from a common supertype through multiple paths it will be listed once.
     /// </summary>
     /// <remarks>This is regardless of whether they are overriden on this node.</remarks>
-    public IFixedList<PropertyModel> InheritedProperties => inheritedProperties.Value;
-    private readonly Lazy<IFixedList<PropertyModel>> inheritedProperties;
+    public IFixedList<AttributeModel> InheritedAttributes => inheritedAttributes.Value;
+    private readonly Lazy<IFixedList<AttributeModel>> inheritedAttributes;
 
     /// <summary>
-    /// Get the actual properties for a node. This will use inherited properties if a property
-    /// declared on this node does not require a declaration. Properties will be ordered by
+    /// Get the actual attributes for a node. This will use inherited attributes if an attribute
+    /// declared on this node does not require a declaration. Attributes will be ordered by
     /// declaration and then by supertype order.
     /// </summary>
-    /// <remarks>This will not return duplicate property names unless two supertypes declare
-    /// conflicting properties.</remarks>
-    public IFixedList<PropertyModel> ActualProperties => actualProperties.Value;
-    private readonly Lazy<IFixedList<PropertyModel>> actualProperties;
+    /// <remarks>This will not return duplicate attribute names unless two supertypes declare
+    /// conflicting attributes.</remarks>
+    public IFixedList<AttributeModel> ActualAttributes => actualAttributes.Value;
+    private readonly Lazy<IFixedList<AttributeModel>> actualAttributes;
 
-    /// <summary>
-    /// Attributes declared against this specific node in the definition files.
-    /// </summary>
-    // TODO remove
-    public IFixedList<AspectAttributeModel> AspectDeclaredAttributes => aspectDeclaredAttributes.Value;
-    private readonly Lazy<IFixedList<AspectAttributeModel>> aspectDeclaredAttributes;
+    public IEnumerable<PropertyModel> ActualProperties => ActualAttributes.OfType<PropertyModel>();
 
     /// <summary>
     /// Equations declared against this specific node in the definition files.
@@ -125,62 +119,62 @@ public class TreeNodeModel
         childNodes = new(() => Tree.Nodes.Where(r => r.SupertypeNodes.Contains(this)).ToFixedSet());
         descendantNodes = new(() => ChildNodes.Concat(ChildNodes.SelectMany(r => r.DescendantNodes)).ToFixedSet());
 
-        // Properties
+        // Attributes
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new PropertyModel(this, p)).ToFixedList();
         declaredAttributes = new(() => DeclaredProperties.Concat<AttributeModel>(Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.NodeSymbol == Defines)).ToFixedList());
-        inheritedProperties = new(()
-            => MostSpecificProperties(SupertypeNodes.SelectMany(r => r.ActualProperties).Distinct()).ToFixedList());
+        inheritedAttributes = new(()
+            => MostSpecificAttributes(SupertypeNodes.SelectMany(r => r.ActualAttributes).Distinct()).ToFixedList());
         implicitlyDeclaredProperties = new(()
-            => InheritedProperties.AllExcept<PropertyModel>(DeclaredProperties, AttributeModel.NameComparer)
+            => InheritedAttributes.OfType<PropertyModel>()
+                                  .AllExcept<PropertyModel>(DeclaredProperties, AttributeModel.NameComparer)
                                   .GroupBy(p => p.Name)
                                   .Select(ImplicitlyDeclaredProperty).WhereNotNull()
                                   .Assert(p => p.IsDeclarationRequired, p => new($"Implicit property {p} no declared."))
                                   .ToFixedList());
-        propertiesRequiringDeclaration = new(()
-            => AllDeclaredProperties.Where(p => p.IsDeclarationRequired).ToFixedList());
-        actualProperties = new(() =>
+        attributesRequiringDeclaration = new(()
+            => AllDeclaredAttributes.Where(p => p.IsDeclarationRequired).ToFixedList());
+        actualAttributes = new(() =>
         {
-            var propertyLookup = PropertiesRequiringDeclaration
-                                 .Concat(InheritedProperties.AllExcept<PropertyModel>(PropertiesRequiringDeclaration, AttributeModel.NameComparer))
+            var propertyLookup = AttributesRequiringDeclaration
+                                 .Concat(InheritedAttributes.AllExcept(AttributesRequiringDeclaration, AttributeModel.NameComparer))
                                  .ToLookup(p => p.Name);
-            var propertyOrder = AllDeclaredProperties.Concat(SupertypeNodes.SelectMany(s => s.ActualProperties))
+            var propertyOrder = AllDeclaredAttributes.Concat(SupertypeNodes.SelectMany(s => s.ActualAttributes))
                                                      .DistinctBy(p => p.Name);
             return propertyOrder.SelectMany(p => propertyLookup[p.Name]).ToFixedList();
         });
 
-        // Attributes
-        aspectDeclaredAttributes = new(() => Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.NodeSymbol == Defines).ToFixedList());
+        // Equations
         declaredEquations = new(() => Tree.Aspects.SelectMany(a => a.Equations).Where(e => e.Node == Defines).ToFixedList());
     }
 
     /// <summary>
-    /// The distinct properties with the same name that are inherited from supertypes.
+    /// The distinct attributes with the same name that are inherited from supertypes.
     /// </summary>
-    public IEnumerable<PropertyModel> InheritedPropertiesNamedSameAs(PropertyModel property)
-        => InheritedPropertiesNamed(property.Name);
-    private IEnumerable<PropertyModel> InheritedPropertiesNamed(string propertyName)
-        => InheritedProperties.Where(p => p.Name == propertyName).Distinct();
+    public IEnumerable<AttributeModel> InheritedAttributesNamedSameAs(AttributeModel attribute)
+        => InheritedAttributesNamed(attribute.Name);
+    private IEnumerable<AttributeModel> InheritedAttributesNamed(string name)
+        => InheritedAttributes.Where(p => p.Name == name).Distinct();
 
-    public IEnumerable<PropertyModel> PropertiesNamed(string propertyName)
-        => ActualProperties.Where(p => p.Name == propertyName);
+    public IEnumerable<AttributeModel> AttributesNamed(string name)
+        => ActualAttributes.Where(p => p.Name == name);
 
-    private static IEnumerable<PropertyModel> MostSpecificProperties(IEnumerable<PropertyModel> propertyModels)
-        => propertyModels.GroupBy(p => p.Name).SelectMany(MostSpecificProperties);
+    private static IEnumerable<AttributeModel> MostSpecificAttributes(IEnumerable<AttributeModel> attributes)
+        => attributes.GroupBy(p => p.Name).SelectMany(MostSpecificAttributes);
 
-    private static IEnumerable<PropertyModel> MostSpecificProperties(IGrouping<string, PropertyModel> properties)
+    private static IEnumerable<AttributeModel> MostSpecificAttributes(IGrouping<string, AttributeModel> attributes)
     {
-        var mostSpecific = new List<PropertyModel>();
-        foreach (var property in properties)
+        var mostSpecific = new List<AttributeModel>();
+        foreach (var attribute in attributes)
         {
             for (var i = mostSpecific.Count - 1; i >= 0; i--)
             {
-                var mostSpecificProperty = mostSpecific[i];
-                if (IsMoreSpecific(mostSpecificProperty, property))
+                var mostSpecificAttribute = mostSpecific[i];
+                if (IsMoreSpecific(mostSpecificAttribute, attribute))
                     goto nextProperty;
-                if (IsMoreSpecific(property, mostSpecificProperty))
+                if (IsMoreSpecific(attribute, mostSpecificAttribute))
                     mostSpecific.RemoveAt(i);
             }
-            mostSpecific.Add(property);
+            mostSpecific.Add(attribute);
 
         nextProperty:;
         }
@@ -199,6 +193,6 @@ public class TreeNodeModel
         };
     }
 
-    private static bool IsMoreSpecific(PropertyModel property, PropertyModel other)
+    private static bool IsMoreSpecific(AttributeModel property, AttributeModel other)
         => property.Node.AncestorNodes.Contains(other.Node);
 }

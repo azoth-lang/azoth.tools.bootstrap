@@ -46,8 +46,7 @@ public sealed class TreeModel : IHasUsingNamespaces
         where T : AttributeModel
     {
         var node = NodeFor(nodeSymbol.ShortName)!;
-        var attribute = node.AspectDeclaredAttributes.Concat(node.SupertypeNodes.SelectMany(s => s.AspectDeclaredAttributes))
-                            .OfType<T>().FirstOrDefault(a => a.Name == name);
+        var attribute = node.ActualAttributes.OfType<T>().FirstOrDefault(a => a.Name == name);
         return attribute;
     }
 
@@ -55,32 +54,32 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     public void Validate()
     {
-        var errors = ValidateAmbiguousProperties();
+        var errors = ValidateAmbiguousAttributes();
         errors |= ValidateUndefinedAttributes();
         if (errors)
-            throw new Exception("Invalid definitions. See console output for errors.");
+            throw new("Invalid definitions. See console output for errors.");
     }
 
 
     /// <summary>
-    /// This checks that there are no properties that have conflicting definitions due to the
-    /// inheritance of properties from supertypes.
+    /// This checks that there are no attributes that have conflicting definitions due to the
+    /// inheritance of attributes from supertypes.
     /// </summary>
-    private bool ValidateAmbiguousProperties()
+    private bool ValidateAmbiguousAttributes()
     {
         var errors = false;
         foreach (var node in Nodes)
-            if (node.ActualProperties.Duplicates(PropertyModel.NameComparer).Any())
+            if (node.ActualAttributes.Duplicates(AttributeModel.NameComparer).Any())
             {
                 errors = true;
-                var ambiguousNames = node.ActualProperties.Duplicates(PropertyModel.NameComparer).Select(p => p.Name).ToList();
-                Console.Error.WriteLine($"ERROR: Node '{node.Defines}' has ambiguous properties.");
+                var ambiguousNames = node.ActualAttributes.Duplicates(AttributeModel.NameComparer).Select(p => p.Name).ToList();
+                Console.Error.WriteLine($"ERROR: Node '{node.Defines}' has ambiguous attributes.");
                 foreach (var ambiguousName in ambiguousNames)
                 {
                     Console.Error.WriteLine($"    '{ambiguousName}' defined as:");
-                    foreach (var property in ambiguousNames.SelectMany(node.PropertiesNamed))
+                    foreach (var attribute in ambiguousNames.SelectMany(node.AttributesNamed))
                     {
-                        Console.Error.WriteLine($"        '{property}'");
+                        Console.Error.WriteLine($"        '{attribute}'");
                     }
                 }
             }

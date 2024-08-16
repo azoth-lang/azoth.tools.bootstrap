@@ -20,17 +20,17 @@ namespace <#=tree.Namespace #>;
 <#=Emit.ClosedAttribute(node) #>[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(node) #>
 {
-<#      foreach (var property in node.PropertiesRequiringDeclaration) { #>
-    <#=Emit.PropertyIsNew(property) #><#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
-<#          foreach (var baseProperty in Build.BaseProperties(node, property)) { #>
-    <#=Emit.Type(baseProperty.Type) #> <#= Emit.TypeName(baseProperty.Node.Defines) #>.<#=baseProperty.Name #> => <#=property.Name #>;
-<#          } #>
-<#      } #>
-<#      foreach (var attribute in node.AspectDeclaredAttributes) { #>
+<#      foreach (var attribute in node.AttributesRequiringDeclaration) { #>
 <#          switch (attribute) { #>
+<#              case PropertyModel attr: #>
+    <#=Emit.IsNew(attr) #><#=Emit.Type(attr.Type) #> <#=attr.Name #> { get; }
+<#                  break;#>
 <#              case SynthesizedAttributeModel attr: #>
     <#=Emit.Type(attr.Type) #> <#=attr.Name #><#=attr.Parameters #><#=Emit.Body(attr) #>
 <#                  break;#>
+<#          } #>
+<#          foreach (var baseAttribute in Build.BaseAttributes(node, attribute)) { #>
+    <#=Emit.Type(baseAttribute.Type) #> <#= Emit.TypeName(baseAttribute.Node.Defines) #>.<#=baseAttribute.Name #> => <#=attribute.Name #>;
 <#          } #>
 <#      } #>
 <#      foreach (var equation in node.DeclaredEquations) { #>

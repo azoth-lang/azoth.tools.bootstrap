@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using ExhaustiveMatching;
@@ -23,4 +25,38 @@ public abstract class AttributeModel
     public abstract TreeNodeModel Node { get; }
     public abstract string Name { get; }
     public abstract TypeModel Type { get; }
+
+    /// <summary>
+    /// Something is a new definition if it replaces some parent definition.
+    /// </summary>
+    public bool IsNewDefinition => isNewDefinition.Value;
+    private readonly Lazy<bool> isNewDefinition;
+
+    /// <summary>
+    /// Whether this property is declared in the node interface.
+    /// </summary>
+    /// <remarks>
+    /// A property needs declared under three conditions:
+    /// 1. there is no definition of the property in the parent
+    /// 2. the single parent definition has a different type
+    /// 3. the property is defined in multiple parents, in that case it is
+    ///    ambiguous unless it is redefined in the current interface.
+    /// </remarks>
+    public bool IsDeclarationRequired => isDeclarationRequired.Value;
+    private readonly Lazy<bool> isDeclarationRequired;
+
+    /// <summary>
+    /// Is the type of this property a reference to another node?
+    /// </summary>
+    public bool ReferencesNode => Type.UnderlyingSymbol is InternalSymbol { ReferencedNode: not null };
+
+    protected AttributeModel()
+    {
+        isNewDefinition = new(() => Node.InheritedAttributesNamedSameAs(this).Any());
+        isDeclarationRequired = new(() =>
+        {
+            var baseProperties = Node.InheritedAttributesNamedSameAs(this).ToList();
+            return baseProperties.Count != 1 || baseProperties[0].Type != Type;
+        });
+    }
 }

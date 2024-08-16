@@ -64,11 +64,11 @@ internal static class Emit
 
     public static string ClassName(InternalSymbol symbol) => symbol.ClassName;
 
-    public static string PropertyIsNew(PropertyModel property)
-        => property.IsNewDefinition ? "new " : "";
+    public static string IsNew(AttributeModel attribute)
+        => attribute.IsNewDefinition ? "new " : "";
 
-    public static string ParameterName(PropertyModel property)
-        => property.Name.ToCamelCase();
+    public static string ParameterName(AttributeModel attribute)
+        => attribute.Name.ToCamelCase();
 
     public static string Body(SynthesizedAttributeModel attribute)
     {
