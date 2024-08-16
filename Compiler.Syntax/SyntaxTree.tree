@@ -72,7 +72,7 @@ StructMemberDefinition <: TypeMemberDefinition;
 
 // ---------- Member Definitions
 MethodDefinition <: TypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition
-    = Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return?;
+    = Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return?;
 AbstractMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return?;
 ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteInvocableDefinition
     = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;

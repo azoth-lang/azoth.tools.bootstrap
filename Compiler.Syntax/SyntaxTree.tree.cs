@@ -1,4 +1,5 @@
 using System.CodeDom.Compiler;
+using System.Diagnostics;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
@@ -333,7 +334,6 @@ public partial interface IStructMemberDefinitionSyntax : ITypeMemberDefinitionSy
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IInvocableDefinitionSyntax
 {
-    MethodKind Kind { get; }
     new IdentifierName Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     IMethodSelfParameterSyntax SelfParameter { get; }
@@ -347,8 +347,8 @@ public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax,
 public partial interface IAbstractMethodDefinitionSyntax : IMethodDefinitionSyntax
 {
 
-    public static IAbstractMethodDefinitionSyntax Create(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
-        => new AbstractMethodDefinitionSyntax(selfParameter, parameters, @return, kind, name, accessModifier, file, nameSpan, span);
+    public static IAbstractMethodDefinitionSyntax Create(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+        => new AbstractMethodDefinitionSyntax(selfParameter, parameters, @return, name, accessModifier, file, nameSpan, span);
 }
 
 [Closed(
@@ -365,8 +365,8 @@ public partial interface IConcreteMethodDefinitionSyntax : IMethodDefinitionSynt
 public partial interface IStandardMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
 
-    public static IStandardMethodDefinitionSyntax Create(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
-        => new StandardMethodDefinitionSyntax(selfParameter, parameters, @return, body, kind, name, accessModifier, file, nameSpan, span);
+    public static IStandardMethodDefinitionSyntax Create(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+        => new StandardMethodDefinitionSyntax(selfParameter, parameters, @return, body, name, accessModifier, file, nameSpan, span);
 }
 
 // [Closed(typeof(GetterMethodDefinitionSyntax))]
@@ -376,8 +376,8 @@ public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefiniti
     new IReturnSyntax Return { get; }
     IReturnSyntax? IMethodDefinitionSyntax.Return => Return;
 
-    public static IGetterMethodDefinitionSyntax Create(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax @return, IBodySyntax body, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
-        => new GetterMethodDefinitionSyntax(selfParameter, parameters, @return, body, kind, name, accessModifier, file, nameSpan, span);
+    public static IGetterMethodDefinitionSyntax Create(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax @return, IBodySyntax body, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+        => new GetterMethodDefinitionSyntax(selfParameter, parameters, @return, body, name, accessModifier, file, nameSpan, span);
 }
 
 // [Closed(typeof(SetterMethodDefinitionSyntax))]
@@ -385,8 +385,8 @@ public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefiniti
 public partial interface ISetterMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
 
-    public static ISetterMethodDefinitionSyntax Create(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
-        => new SetterMethodDefinitionSyntax(selfParameter, parameters, @return, body, kind, name, accessModifier, file, nameSpan, span);
+    public static ISetterMethodDefinitionSyntax Create(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+        => new SetterMethodDefinitionSyntax(selfParameter, parameters, @return, body, name, accessModifier, file, nameSpan, span);
 }
 
 // [Closed(typeof(ConstructorDefinitionSyntax))]
@@ -1350,14 +1350,14 @@ public partial interface IAwaitExpressionSyntax : IExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class CompilationUnitSyntax : ICompilationUnitSyntax
+file sealed class CompilationUnitSyntax : ICompilationUnitSyntax
 {
-    public CodeFile File { get; }
-    public NamespaceName ImplicitNamespaceName { get; }
-    public DiagnosticCollection Diagnostics { get; }
-    public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
-    public IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
-    public TextSpan Span { get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public NamespaceName ImplicitNamespaceName { [DebuggerStepThrough] get; }
+    public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
+    public IFixedList<IUsingDirectiveSyntax> UsingDirectives { [DebuggerStepThrough] get; }
+    public IFixedList<INonMemberDefinitionSyntax> Definitions { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public CompilationUnitSyntax(CodeFile file, NamespaceName implicitNamespaceName, DiagnosticCollection diagnostics, IFixedList<IUsingDirectiveSyntax> usingDirectives, IFixedList<INonMemberDefinitionSyntax> definitions, TextSpan span)
     {
@@ -1371,10 +1371,10 @@ file class CompilationUnitSyntax : ICompilationUnitSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class UsingDirectiveSyntax : IUsingDirectiveSyntax
+file sealed class UsingDirectiveSyntax : IUsingDirectiveSyntax
 {
-    public NamespaceName Name { get; }
-    public TextSpan Span { get; }
+    public NamespaceName Name { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public UsingDirectiveSyntax(NamespaceName name, TextSpan span)
     {
@@ -1384,13 +1384,13 @@ file class UsingDirectiveSyntax : IUsingDirectiveSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class PackageSyntax : IPackageSyntax
+file sealed class PackageSyntax : IPackageSyntax
 {
-    public IdentifierName Name { get; }
-    public IFixedSet<ICompilationUnitSyntax> CompilationUnits { get; }
-    public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { get; }
-    public IFixedSet<IPackageReferenceSyntax> References { get; }
-    public DiagnosticCollection Diagnostics { get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IFixedSet<ICompilationUnitSyntax> CompilationUnits { [DebuggerStepThrough] get; }
+    public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { [DebuggerStepThrough] get; }
+    public IFixedSet<IPackageReferenceSyntax> References { [DebuggerStepThrough] get; }
+    public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
 
     public PackageSyntax(IdentifierName name, IFixedSet<ICompilationUnitSyntax> compilationUnits, IFixedSet<ICompilationUnitSyntax> testingCompilationUnits, IFixedSet<IPackageReferenceSyntax> references, DiagnosticCollection diagnostics)
     {
@@ -1403,11 +1403,11 @@ file class PackageSyntax : IPackageSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class PackageReferenceSyntax : IPackageReferenceSyntax
+file sealed class PackageReferenceSyntax : IPackageReferenceSyntax
 {
-    public IdentifierName AliasOrName { get; }
-    public IPackageSymbols Package { get; }
-    public bool IsTrusted { get; }
+    public IdentifierName AliasOrName { [DebuggerStepThrough] get; }
+    public IPackageSymbols Package { [DebuggerStepThrough] get; }
+    public bool IsTrusted { [DebuggerStepThrough] get; }
 
     public PackageReferenceSyntax(IdentifierName aliasOrName, IPackageSymbols package, bool isTrusted)
     {
@@ -1418,16 +1418,16 @@ file class PackageReferenceSyntax : IPackageReferenceSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class NamespaceDefinitionSyntax : INamespaceDefinitionSyntax
+file sealed class NamespaceDefinitionSyntax : INamespaceDefinitionSyntax
 {
-    public bool IsGlobalQualified { get; }
-    public NamespaceName DeclaredNames { get; }
-    public IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
-    public IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
-    public CodeFile File { get; }
-    public TypeName? Name { get; }
-    public TextSpan NameSpan { get; }
-    public TextSpan Span { get; }
+    public bool IsGlobalQualified { [DebuggerStepThrough] get; }
+    public NamespaceName DeclaredNames { [DebuggerStepThrough] get; }
+    public IFixedList<IUsingDirectiveSyntax> UsingDirectives { [DebuggerStepThrough] get; }
+    public IFixedList<INonMemberDefinitionSyntax> Definitions { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TypeName? Name { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public NamespaceDefinitionSyntax(bool isGlobalQualified, NamespaceName declaredNames, IFixedList<IUsingDirectiveSyntax> usingDirectives, IFixedList<INonMemberDefinitionSyntax> definitions, CodeFile file, TypeName? name, TextSpan nameSpan, TextSpan span)
     {
@@ -1443,17 +1443,17 @@ file class NamespaceDefinitionSyntax : INamespaceDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class FunctionDefinitionSyntax : IFunctionDefinitionSyntax
+file sealed class FunctionDefinitionSyntax : IFunctionDefinitionSyntax
 {
-    public IFixedList<IAttributeSyntax> Attributes { get; }
-    public IdentifierName Name { get; }
-    public IFixedList<INamedParameterSyntax> Parameters { get; }
-    public IReturnSyntax? Return { get; }
-    public IBodySyntax Body { get; }
-    public IAccessModifierToken? AccessModifier { get; }
-    public CodeFile File { get; }
-    public TextSpan NameSpan { get; }
-    public TextSpan Span { get; }
+    public IFixedList<IAttributeSyntax> Attributes { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public IReturnSyntax? Return { [DebuggerStepThrough] get; }
+    public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public FunctionDefinitionSyntax(IFixedList<IAttributeSyntax> attributes, IdentifierName name, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
     {
@@ -1470,20 +1470,20 @@ file class FunctionDefinitionSyntax : IFunctionDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ClassDefinitionSyntax : IClassDefinitionSyntax
+file sealed class ClassDefinitionSyntax : IClassDefinitionSyntax
 {
-    public IAbstractKeywordToken? AbstractModifier { get; }
-    public IFixedList<IGenericParameterSyntax> GenericParameters { get; }
-    public IStandardTypeNameSyntax? BaseTypeName { get; }
-    public IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; }
-    public IFixedList<IClassMemberDefinitionSyntax> Members { get; }
-    public IConstKeywordToken? ConstModifier { get; }
-    public IMoveKeywordToken? MoveModifier { get; }
-    public StandardName Name { get; }
-    public CodeFile File { get; }
-    public TextSpan NameSpan { get; }
-    public TextSpan Span { get; }
-    public IAccessModifierToken? AccessModifier { get; }
+    public IAbstractKeywordToken? AbstractModifier { [DebuggerStepThrough] get; }
+    public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
+    public IStandardTypeNameSyntax? BaseTypeName { [DebuggerStepThrough] get; }
+    public IFixedList<IStandardTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
+    public IFixedList<IClassMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
+    public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
+    public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
 
     public ClassDefinitionSyntax(IAbstractKeywordToken? abstractModifier, IFixedList<IGenericParameterSyntax> genericParameters, IStandardTypeNameSyntax? baseTypeName, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<IClassMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, CodeFile file, TextSpan nameSpan, TextSpan span, IAccessModifierToken? accessModifier)
     {
@@ -1503,18 +1503,18 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class StructDefinitionSyntax : IStructDefinitionSyntax
+file sealed class StructDefinitionSyntax : IStructDefinitionSyntax
 {
-    public IFixedList<IGenericParameterSyntax> GenericParameters { get; }
-    public IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; }
-    public IFixedList<IStructMemberDefinitionSyntax> Members { get; }
-    public IConstKeywordToken? ConstModifier { get; }
-    public IMoveKeywordToken? MoveModifier { get; }
-    public StandardName Name { get; }
-    public CodeFile File { get; }
-    public TextSpan NameSpan { get; }
-    public TextSpan Span { get; }
-    public IAccessModifierToken? AccessModifier { get; }
+    public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
+    public IFixedList<IStandardTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
+    public IFixedList<IStructMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
+    public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
+    public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
 
     public StructDefinitionSyntax(IFixedList<IGenericParameterSyntax> genericParameters, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<IStructMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, CodeFile file, TextSpan nameSpan, TextSpan span, IAccessModifierToken? accessModifier)
     {
@@ -1532,18 +1532,18 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class TraitDefinitionSyntax : ITraitDefinitionSyntax
+file sealed class TraitDefinitionSyntax : ITraitDefinitionSyntax
 {
-    public IFixedList<IGenericParameterSyntax> GenericParameters { get; }
-    public IFixedList<IStandardTypeNameSyntax> SupertypeNames { get; }
-    public IFixedList<ITraitMemberDefinitionSyntax> Members { get; }
-    public IConstKeywordToken? ConstModifier { get; }
-    public IMoveKeywordToken? MoveModifier { get; }
-    public StandardName Name { get; }
-    public CodeFile File { get; }
-    public TextSpan NameSpan { get; }
-    public TextSpan Span { get; }
-    public IAccessModifierToken? AccessModifier { get; }
+    public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
+    public IFixedList<IStandardTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
+    public IFixedList<ITraitMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
+    public IConstKeywordToken? ConstModifier { [DebuggerStepThrough] get; }
+    public IMoveKeywordToken? MoveModifier { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
 
     public TraitDefinitionSyntax(IFixedList<IGenericParameterSyntax> genericParameters, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<ITraitMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, CodeFile file, TextSpan nameSpan, TextSpan span, IAccessModifierToken? accessModifier)
     {
@@ -1561,13 +1561,13 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class GenericParameterSyntax : IGenericParameterSyntax
+file sealed class GenericParameterSyntax : IGenericParameterSyntax
 {
-    public ICapabilityConstraintSyntax Constraint { get; }
-    public IdentifierName Name { get; }
-    public TypeParameterIndependence Independence { get; }
-    public TypeParameterVariance Variance { get; }
-    public TextSpan Span { get; }
+    public ICapabilityConstraintSyntax Constraint { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public TypeParameterIndependence Independence { [DebuggerStepThrough] get; }
+    public TypeParameterVariance Variance { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public GenericParameterSyntax(ICapabilityConstraintSyntax constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, TextSpan span)
     {
@@ -1580,24 +1580,22 @@ file class GenericParameterSyntax : IGenericParameterSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class AbstractMethodDefinitionSyntax : IAbstractMethodDefinitionSyntax
+file sealed class AbstractMethodDefinitionSyntax : IAbstractMethodDefinitionSyntax
 {
-    public IMethodSelfParameterSyntax SelfParameter { get; }
-    public IFixedList<INamedParameterSyntax> Parameters { get; }
-    public IReturnSyntax? Return { get; }
-    public MethodKind Kind { get; }
-    public IdentifierName Name { get; }
-    public IAccessModifierToken? AccessModifier { get; }
-    public CodeFile File { get; }
-    public TextSpan NameSpan { get; }
-    public TextSpan Span { get; }
+    public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
+    public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public IReturnSyntax? Return { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
-    public AbstractMethodDefinitionSyntax(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    public AbstractMethodDefinitionSyntax(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
     {
         SelfParameter = selfParameter;
         Parameters = parameters;
         Return = @return;
-        Kind = kind;
         Name = name;
         AccessModifier = accessModifier;
         File = file;
@@ -1607,55 +1605,24 @@ file class AbstractMethodDefinitionSyntax : IAbstractMethodDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class StandardMethodDefinitionSyntax : IStandardMethodDefinitionSyntax
+file sealed class StandardMethodDefinitionSyntax : IStandardMethodDefinitionSyntax
 {
-    public IMethodSelfParameterSyntax SelfParameter { get; }
-    public IFixedList<INamedParameterSyntax> Parameters { get; }
-    public IReturnSyntax? Return { get; }
-    public IBodySyntax Body { get; }
-    public MethodKind Kind { get; }
-    public IdentifierName Name { get; }
-    public IAccessModifierToken? AccessModifier { get; }
-    public CodeFile File { get; }
-    public TextSpan NameSpan { get; }
-    public TextSpan Span { get; }
+    public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
+    public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public IReturnSyntax? Return { [DebuggerStepThrough] get; }
+    public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
-    public StandardMethodDefinitionSyntax(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
-    {
-        SelfParameter = selfParameter;
-        Parameters = parameters;
-        Return = @return;
-        Body = body;
-        Kind = kind;
-        Name = name;
-        AccessModifier = accessModifier;
-        File = file;
-        NameSpan = nameSpan;
-        Span = span;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
-{
-    public IMethodSelfParameterSyntax SelfParameter { get; }
-    public IFixedList<INamedParameterSyntax> Parameters { get; }
-    public IReturnSyntax Return { get; }
-    public IBodySyntax Body { get; }
-    public MethodKind Kind { get; }
-    public IdentifierName Name { get; }
-    public IAccessModifierToken? AccessModifier { get; }
-    public CodeFile File { get; }
-    public TextSpan NameSpan { get; }
-    public TextSpan Span { get; }
-
-    public GetterMethodDefinitionSyntax(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax @return, IBodySyntax body, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    public StandardMethodDefinitionSyntax(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
     {
         SelfParameter = selfParameter;
         Parameters = parameters;
         Return = @return;
         Body = body;
-        Kind = kind;
         Name = name;
         AccessModifier = accessModifier;
         File = file;
@@ -1665,26 +1632,24 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
+file sealed class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
 {
-    public IMethodSelfParameterSyntax SelfParameter { get; }
-    public IFixedList<INamedParameterSyntax> Parameters { get; }
-    public IReturnSyntax? Return { get; }
-    public IBodySyntax Body { get; }
-    public MethodKind Kind { get; }
-    public IdentifierName Name { get; }
-    public IAccessModifierToken? AccessModifier { get; }
-    public CodeFile File { get; }
-    public TextSpan NameSpan { get; }
-    public TextSpan Span { get; }
+    public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
+    public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public IReturnSyntax Return { [DebuggerStepThrough] get; }
+    public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
-    public SetterMethodDefinitionSyntax(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, MethodKind kind, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    public GetterMethodDefinitionSyntax(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax @return, IBodySyntax body, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
     {
         SelfParameter = selfParameter;
         Parameters = parameters;
         Return = @return;
         Body = body;
-        Kind = kind;
         Name = name;
         AccessModifier = accessModifier;
         File = file;
@@ -1694,16 +1659,43 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ConstructorDefinitionSyntax : IConstructorDefinitionSyntax
+file sealed class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
 {
-    public IdentifierName? Name { get; }
-    public IConstructorSelfParameterSyntax SelfParameter { get; }
-    public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
-    public IBlockBodySyntax Body { get; }
-    public IAccessModifierToken? AccessModifier { get; }
-    public CodeFile File { get; }
-    public TextSpan NameSpan { get; }
-    public TextSpan Span { get; }
+    public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
+    public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public IReturnSyntax? Return { [DebuggerStepThrough] get; }
+    public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
+
+    public SetterMethodDefinitionSyntax(IMethodSelfParameterSyntax selfParameter, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, IdentifierName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    {
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Return = @return;
+        Body = body;
+        Name = name;
+        AccessModifier = accessModifier;
+        File = file;
+        NameSpan = nameSpan;
+        Span = span;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file sealed class ConstructorDefinitionSyntax : IConstructorDefinitionSyntax
+{
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public IConstructorSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
+    public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public IBlockBodySyntax Body { [DebuggerStepThrough] get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public ConstructorDefinitionSyntax(IdentifierName? name, IConstructorSelfParameterSyntax selfParameter, IFixedList<IConstructorOrInitializerParameterSyntax> parameters, IBlockBodySyntax body, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
     {
@@ -1719,16 +1711,16 @@ file class ConstructorDefinitionSyntax : IConstructorDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
+file sealed class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
 {
-    public IdentifierName? Name { get; }
-    public IInitializerSelfParameterSyntax SelfParameter { get; }
-    public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
-    public IBlockBodySyntax Body { get; }
-    public IAccessModifierToken? AccessModifier { get; }
-    public CodeFile File { get; }
-    public TextSpan NameSpan { get; }
-    public TextSpan Span { get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public IInitializerSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
+    public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public IBlockBodySyntax Body { [DebuggerStepThrough] get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public InitializerDefinitionSyntax(IdentifierName? name, IInitializerSelfParameterSyntax selfParameter, IFixedList<IConstructorOrInitializerParameterSyntax> parameters, IBlockBodySyntax body, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
     {
@@ -1744,16 +1736,16 @@ file class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class FieldDefinitionSyntax : IFieldDefinitionSyntax
+file sealed class FieldDefinitionSyntax : IFieldDefinitionSyntax
 {
-    public IdentifierName Name { get; }
-    public ITypeSyntax Type { get; }
-    public IExpressionSyntax? Initializer { get; }
-    public IAccessModifierToken? AccessModifier { get; }
-    public CodeFile File { get; }
-    public TextSpan NameSpan { get; }
-    public TextSpan Span { get; }
-    public bool IsMutableBinding { get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public ITypeSyntax Type { [DebuggerStepThrough] get; }
+    public IExpressionSyntax? Initializer { [DebuggerStepThrough] get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
 
     public FieldDefinitionSyntax(IdentifierName name, ITypeSyntax type, IExpressionSyntax? initializer, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span, bool isMutableBinding)
     {
@@ -1769,16 +1761,16 @@ file class FieldDefinitionSyntax : IFieldDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefinitionSyntax
+file sealed class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefinitionSyntax
 {
-    public IdentifierName Name { get; }
-    public IFixedList<INamedParameterSyntax> Parameters { get; }
-    public IReturnSyntax? Return { get; }
-    public IBodySyntax Body { get; }
-    public IAccessModifierToken? AccessModifier { get; }
-    public CodeFile File { get; }
-    public TextSpan NameSpan { get; }
-    public TextSpan Span { get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
+    public IReturnSyntax? Return { [DebuggerStepThrough] get; }
+    public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public AssociatedFunctionDefinitionSyntax(IdentifierName name, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
     {
@@ -1794,10 +1786,10 @@ file class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefinitionSyn
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class AttributeSyntax : IAttributeSyntax
+file sealed class AttributeSyntax : IAttributeSyntax
 {
-    public IStandardTypeNameSyntax TypeName { get; }
-    public TextSpan Span { get; }
+    public IStandardTypeNameSyntax TypeName { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public AttributeSyntax(IStandardTypeNameSyntax typeName, TextSpan span)
     {
@@ -1807,10 +1799,10 @@ file class AttributeSyntax : IAttributeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class CapabilitySetSyntax : ICapabilitySetSyntax
+file sealed class CapabilitySetSyntax : ICapabilitySetSyntax
 {
-    public CapabilitySet Constraint { get; }
-    public TextSpan Span { get; }
+    public CapabilitySet Constraint { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public CapabilitySetSyntax(CapabilitySet constraint, TextSpan span)
     {
@@ -1820,13 +1812,13 @@ file class CapabilitySetSyntax : ICapabilitySetSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class CapabilitySyntax : ICapabilitySyntax
+file sealed class CapabilitySyntax : ICapabilitySyntax
 {
-    public IFixedList<ICapabilityToken> Tokens { get; }
-    public DeclaredCapability Declared { get; }
-    public Capability Capability { get; }
-    public ICapabilityConstraint Constraint { get; }
-    public TextSpan Span { get; }
+    public IFixedList<ICapabilityToken> Tokens { [DebuggerStepThrough] get; }
+    public DeclaredCapability Declared { [DebuggerStepThrough] get; }
+    public Capability Capability { [DebuggerStepThrough] get; }
+    public ICapabilityConstraint Constraint { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public CapabilitySyntax(IFixedList<ICapabilityToken> tokens, DeclaredCapability declared, Capability capability, ICapabilityConstraint constraint, TextSpan span)
     {
@@ -1839,15 +1831,15 @@ file class CapabilitySyntax : ICapabilitySyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class NamedParameterSyntax : INamedParameterSyntax
+file sealed class NamedParameterSyntax : INamedParameterSyntax
 {
-    public bool IsMutableBinding { get; }
-    public bool IsLentBinding { get; }
-    public IdentifierName Name { get; }
-    public ITypeSyntax Type { get; }
-    public IExpressionSyntax? DefaultValue { get; }
-    public TextSpan Span { get; }
-    public TextSpan NameSpan { get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
+    public bool IsLentBinding { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public ITypeSyntax Type { [DebuggerStepThrough] get; }
+    public IExpressionSyntax? DefaultValue { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
 
     public NamedParameterSyntax(bool isMutableBinding, bool isLentBinding, IdentifierName name, ITypeSyntax type, IExpressionSyntax? defaultValue, TextSpan span, TextSpan nameSpan)
     {
@@ -1862,12 +1854,12 @@ file class NamedParameterSyntax : INamedParameterSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ConstructorSelfParameterSyntax : IConstructorSelfParameterSyntax
+file sealed class ConstructorSelfParameterSyntax : IConstructorSelfParameterSyntax
 {
-    public ICapabilitySyntax Capability { get; }
-    public bool IsLentBinding { get; }
-    public IdentifierName? Name { get; }
-    public TextSpan Span { get; }
+    public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
+    public bool IsLentBinding { [DebuggerStepThrough] get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public ConstructorSelfParameterSyntax(ICapabilitySyntax capability, bool isLentBinding, IdentifierName? name, TextSpan span)
     {
@@ -1879,12 +1871,12 @@ file class ConstructorSelfParameterSyntax : IConstructorSelfParameterSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class InitializerSelfParameterSyntax : IInitializerSelfParameterSyntax
+file sealed class InitializerSelfParameterSyntax : IInitializerSelfParameterSyntax
 {
-    public ICapabilitySyntax Capability { get; }
-    public bool IsLentBinding { get; }
-    public IdentifierName? Name { get; }
-    public TextSpan Span { get; }
+    public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
+    public bool IsLentBinding { [DebuggerStepThrough] get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public InitializerSelfParameterSyntax(ICapabilitySyntax capability, bool isLentBinding, IdentifierName? name, TextSpan span)
     {
@@ -1896,12 +1888,12 @@ file class InitializerSelfParameterSyntax : IInitializerSelfParameterSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class MethodSelfParameterSyntax : IMethodSelfParameterSyntax
+file sealed class MethodSelfParameterSyntax : IMethodSelfParameterSyntax
 {
-    public ICapabilityConstraintSyntax Capability { get; }
-    public bool IsLentBinding { get; }
-    public IdentifierName? Name { get; }
-    public TextSpan Span { get; }
+    public ICapabilityConstraintSyntax Capability { [DebuggerStepThrough] get; }
+    public bool IsLentBinding { [DebuggerStepThrough] get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public MethodSelfParameterSyntax(ICapabilityConstraintSyntax capability, bool isLentBinding, IdentifierName? name, TextSpan span)
     {
@@ -1913,11 +1905,11 @@ file class MethodSelfParameterSyntax : IMethodSelfParameterSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class FieldParameterSyntax : IFieldParameterSyntax
+file sealed class FieldParameterSyntax : IFieldParameterSyntax
 {
-    public IdentifierName Name { get; }
-    public IExpressionSyntax? DefaultValue { get; }
-    public TextSpan Span { get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IExpressionSyntax? DefaultValue { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public FieldParameterSyntax(IdentifierName name, IExpressionSyntax? defaultValue, TextSpan span)
     {
@@ -1928,10 +1920,10 @@ file class FieldParameterSyntax : IFieldParameterSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ReturnSyntax : IReturnSyntax
+file sealed class ReturnSyntax : IReturnSyntax
 {
-    public ITypeSyntax Type { get; }
-    public TextSpan Span { get; }
+    public ITypeSyntax Type { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public ReturnSyntax(ITypeSyntax type, TextSpan span)
     {
@@ -1941,10 +1933,10 @@ file class ReturnSyntax : IReturnSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class BlockBodySyntax : IBlockBodySyntax
+file sealed class BlockBodySyntax : IBlockBodySyntax
 {
-    public IFixedList<IBodyStatementSyntax> Statements { get; }
-    public TextSpan Span { get; }
+    public IFixedList<IBodyStatementSyntax> Statements { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public BlockBodySyntax(IFixedList<IBodyStatementSyntax> statements, TextSpan span)
     {
@@ -1954,11 +1946,11 @@ file class BlockBodySyntax : IBlockBodySyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ExpressionBodySyntax : IExpressionBodySyntax
+file sealed class ExpressionBodySyntax : IExpressionBodySyntax
 {
-    public IResultStatementSyntax ResultStatement { get; }
-    public IFixedList<IStatementSyntax> Statements { get; }
-    public TextSpan Span { get; }
+    public IResultStatementSyntax ResultStatement { [DebuggerStepThrough] get; }
+    public IFixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public ExpressionBodySyntax(IResultStatementSyntax resultStatement, IFixedList<IStatementSyntax> statements, TextSpan span)
     {
@@ -1969,10 +1961,10 @@ file class ExpressionBodySyntax : IExpressionBodySyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class IdentifierTypeNameSyntax : IIdentifierTypeNameSyntax
+file sealed class IdentifierTypeNameSyntax : IIdentifierTypeNameSyntax
 {
-    public IdentifierName Name { get; }
-    public TextSpan Span { get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public IdentifierTypeNameSyntax(IdentifierName name, TextSpan span)
     {
@@ -1982,10 +1974,10 @@ file class IdentifierTypeNameSyntax : IIdentifierTypeNameSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class SpecialTypeNameSyntax : ISpecialTypeNameSyntax
+file sealed class SpecialTypeNameSyntax : ISpecialTypeNameSyntax
 {
-    public SpecialTypeName Name { get; }
-    public TextSpan Span { get; }
+    public SpecialTypeName Name { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public SpecialTypeNameSyntax(SpecialTypeName name, TextSpan span)
     {
@@ -1995,11 +1987,11 @@ file class SpecialTypeNameSyntax : ISpecialTypeNameSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class GenericTypeNameSyntax : IGenericTypeNameSyntax
+file sealed class GenericTypeNameSyntax : IGenericTypeNameSyntax
 {
-    public GenericName Name { get; }
-    public IFixedList<ITypeSyntax> TypeArguments { get; }
-    public TextSpan Span { get; }
+    public GenericName Name { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public GenericTypeNameSyntax(GenericName name, IFixedList<ITypeSyntax> typeArguments, TextSpan span)
     {
@@ -2010,12 +2002,12 @@ file class GenericTypeNameSyntax : IGenericTypeNameSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class QualifiedTypeNameSyntax : IQualifiedTypeNameSyntax
+file sealed class QualifiedTypeNameSyntax : IQualifiedTypeNameSyntax
 {
-    public ITypeNameSyntax Context { get; }
-    public IStandardTypeNameSyntax QualifiedName { get; }
-    public TypeName Name { get; }
-    public TextSpan Span { get; }
+    public ITypeNameSyntax Context { [DebuggerStepThrough] get; }
+    public IStandardTypeNameSyntax QualifiedName { [DebuggerStepThrough] get; }
+    public TypeName Name { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public QualifiedTypeNameSyntax(ITypeNameSyntax context, IStandardTypeNameSyntax qualifiedName, TypeName name, TextSpan span)
     {
@@ -2027,10 +2019,10 @@ file class QualifiedTypeNameSyntax : IQualifiedTypeNameSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class OptionalTypeSyntax : IOptionalTypeSyntax
+file sealed class OptionalTypeSyntax : IOptionalTypeSyntax
 {
-    public ITypeSyntax Referent { get; }
-    public TextSpan Span { get; }
+    public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public OptionalTypeSyntax(ITypeSyntax referent, TextSpan span)
     {
@@ -2040,11 +2032,11 @@ file class OptionalTypeSyntax : IOptionalTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class CapabilityTypeSyntax : ICapabilityTypeSyntax
+file sealed class CapabilityTypeSyntax : ICapabilityTypeSyntax
 {
-    public ICapabilitySyntax Capability { get; }
-    public ITypeSyntax Referent { get; }
-    public TextSpan Span { get; }
+    public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
+    public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public CapabilityTypeSyntax(ICapabilitySyntax capability, ITypeSyntax referent, TextSpan span)
     {
@@ -2055,11 +2047,11 @@ file class CapabilityTypeSyntax : ICapabilityTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class FunctionTypeSyntax : IFunctionTypeSyntax
+file sealed class FunctionTypeSyntax : IFunctionTypeSyntax
 {
-    public IFixedList<IParameterTypeSyntax> Parameters { get; }
-    public IReturnTypeSyntax Return { get; }
-    public TextSpan Span { get; }
+    public IFixedList<IParameterTypeSyntax> Parameters { [DebuggerStepThrough] get; }
+    public IReturnTypeSyntax Return { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public FunctionTypeSyntax(IFixedList<IParameterTypeSyntax> parameters, IReturnTypeSyntax @return, TextSpan span)
     {
@@ -2070,11 +2062,11 @@ file class FunctionTypeSyntax : IFunctionTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ParameterTypeSyntax : IParameterTypeSyntax
+file sealed class ParameterTypeSyntax : IParameterTypeSyntax
 {
-    public bool IsLent { get; }
-    public ITypeSyntax Referent { get; }
-    public TextSpan Span { get; }
+    public bool IsLent { [DebuggerStepThrough] get; }
+    public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public ParameterTypeSyntax(bool isLent, ITypeSyntax referent, TextSpan span)
     {
@@ -2085,10 +2077,10 @@ file class ParameterTypeSyntax : IParameterTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ReturnTypeSyntax : IReturnTypeSyntax
+file sealed class ReturnTypeSyntax : IReturnTypeSyntax
 {
-    public ITypeSyntax Referent { get; }
-    public TextSpan Span { get; }
+    public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public ReturnTypeSyntax(ITypeSyntax referent, TextSpan span)
     {
@@ -2098,11 +2090,11 @@ file class ReturnTypeSyntax : IReturnTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class CapabilityViewpointTypeSyntax : ICapabilityViewpointTypeSyntax
+file sealed class CapabilityViewpointTypeSyntax : ICapabilityViewpointTypeSyntax
 {
-    public ICapabilitySyntax Capability { get; }
-    public ITypeSyntax Referent { get; }
-    public TextSpan Span { get; }
+    public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
+    public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public CapabilityViewpointTypeSyntax(ICapabilitySyntax capability, ITypeSyntax referent, TextSpan span)
     {
@@ -2113,10 +2105,10 @@ file class CapabilityViewpointTypeSyntax : ICapabilityViewpointTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class SelfViewpointTypeSyntax : ISelfViewpointTypeSyntax
+file sealed class SelfViewpointTypeSyntax : ISelfViewpointTypeSyntax
 {
-    public ITypeSyntax Referent { get; }
-    public TextSpan Span { get; }
+    public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public SelfViewpointTypeSyntax(ITypeSyntax referent, TextSpan span)
     {
@@ -2126,10 +2118,10 @@ file class SelfViewpointTypeSyntax : ISelfViewpointTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ResultStatementSyntax : IResultStatementSyntax
+file sealed class ResultStatementSyntax : IResultStatementSyntax
 {
-    public IExpressionSyntax Expression { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public ResultStatementSyntax(IExpressionSyntax expression, TextSpan span)
     {
@@ -2139,15 +2131,15 @@ file class ResultStatementSyntax : IResultStatementSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class VariableDeclarationStatementSyntax : IVariableDeclarationStatementSyntax
+file sealed class VariableDeclarationStatementSyntax : IVariableDeclarationStatementSyntax
 {
-    public TextSpan NameSpan { get; }
-    public IdentifierName Name { get; }
-    public ICapabilitySyntax? Capability { get; }
-    public ITypeSyntax? Type { get; }
-    public IExpressionSyntax? Initializer { get; }
-    public TextSpan Span { get; }
-    public bool IsMutableBinding { get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public ICapabilitySyntax? Capability { [DebuggerStepThrough] get; }
+    public ITypeSyntax? Type { [DebuggerStepThrough] get; }
+    public IExpressionSyntax? Initializer { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
 
     public VariableDeclarationStatementSyntax(TextSpan nameSpan, IdentifierName name, ICapabilitySyntax? capability, ITypeSyntax? type, IExpressionSyntax? initializer, TextSpan span, bool isMutableBinding)
     {
@@ -2162,10 +2154,10 @@ file class VariableDeclarationStatementSyntax : IVariableDeclarationStatementSyn
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ExpressionStatementSyntax : IExpressionStatementSyntax
+file sealed class ExpressionStatementSyntax : IExpressionStatementSyntax
 {
-    public IExpressionSyntax Expression { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public ExpressionStatementSyntax(IExpressionSyntax expression, TextSpan span)
     {
@@ -2175,12 +2167,12 @@ file class ExpressionStatementSyntax : IExpressionStatementSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class BindingContextPatternSyntax : IBindingContextPatternSyntax
+file sealed class BindingContextPatternSyntax : IBindingContextPatternSyntax
 {
-    public bool IsMutableBinding { get; }
-    public IPatternSyntax Pattern { get; }
-    public ITypeSyntax? Type { get; }
-    public TextSpan Span { get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
+    public IPatternSyntax Pattern { [DebuggerStepThrough] get; }
+    public ITypeSyntax? Type { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public BindingContextPatternSyntax(bool isMutableBinding, IPatternSyntax pattern, ITypeSyntax? type, TextSpan span)
     {
@@ -2192,12 +2184,12 @@ file class BindingContextPatternSyntax : IBindingContextPatternSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class BindingPatternSyntax : IBindingPatternSyntax
+file sealed class BindingPatternSyntax : IBindingPatternSyntax
 {
-    public IdentifierName Name { get; }
-    public TextSpan Span { get; }
-    public TextSpan NameSpan { get; }
-    public bool IsMutableBinding { get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
 
     public BindingPatternSyntax(IdentifierName name, TextSpan span, TextSpan nameSpan, bool isMutableBinding)
     {
@@ -2209,10 +2201,10 @@ file class BindingPatternSyntax : IBindingPatternSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class OptionalPatternSyntax : IOptionalPatternSyntax
+file sealed class OptionalPatternSyntax : IOptionalPatternSyntax
 {
-    public IOptionalOrBindingPatternSyntax Pattern { get; }
-    public TextSpan Span { get; }
+    public IOptionalOrBindingPatternSyntax Pattern { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public OptionalPatternSyntax(IOptionalOrBindingPatternSyntax pattern, TextSpan span)
     {
@@ -2222,10 +2214,10 @@ file class OptionalPatternSyntax : IOptionalPatternSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class BlockExpressionSyntax : IBlockExpressionSyntax
+file sealed class BlockExpressionSyntax : IBlockExpressionSyntax
 {
-    public IFixedList<IStatementSyntax> Statements { get; }
-    public TextSpan Span { get; }
+    public IFixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public BlockExpressionSyntax(IFixedList<IStatementSyntax> statements, TextSpan span)
     {
@@ -2235,13 +2227,13 @@ file class BlockExpressionSyntax : IBlockExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class NewObjectExpressionSyntax : INewObjectExpressionSyntax
+file sealed class NewObjectExpressionSyntax : INewObjectExpressionSyntax
 {
-    public ITypeNameSyntax Type { get; }
-    public IdentifierName? ConstructorName { get; }
-    public TextSpan? ConstructorNameSpan { get; }
-    public IFixedList<IExpressionSyntax> Arguments { get; }
-    public TextSpan Span { get; }
+    public ITypeNameSyntax Type { [DebuggerStepThrough] get; }
+    public IdentifierName? ConstructorName { [DebuggerStepThrough] get; }
+    public TextSpan? ConstructorNameSpan { [DebuggerStepThrough] get; }
+    public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public NewObjectExpressionSyntax(ITypeNameSyntax type, IdentifierName? constructorName, TextSpan? constructorNameSpan, IFixedList<IExpressionSyntax> arguments, TextSpan span)
     {
@@ -2254,10 +2246,10 @@ file class NewObjectExpressionSyntax : INewObjectExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class UnsafeExpressionSyntax : IUnsafeExpressionSyntax
+file sealed class UnsafeExpressionSyntax : IUnsafeExpressionSyntax
 {
-    public IExpressionSyntax Expression { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public UnsafeExpressionSyntax(IExpressionSyntax expression, TextSpan span)
     {
@@ -2267,10 +2259,10 @@ file class UnsafeExpressionSyntax : IUnsafeExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class BoolLiteralExpressionSyntax : IBoolLiteralExpressionSyntax
+file sealed class BoolLiteralExpressionSyntax : IBoolLiteralExpressionSyntax
 {
-    public bool Value { get; }
-    public TextSpan Span { get; }
+    public bool Value { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public BoolLiteralExpressionSyntax(bool value, TextSpan span)
     {
@@ -2280,10 +2272,10 @@ file class BoolLiteralExpressionSyntax : IBoolLiteralExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class IntegerLiteralExpressionSyntax : IIntegerLiteralExpressionSyntax
+file sealed class IntegerLiteralExpressionSyntax : IIntegerLiteralExpressionSyntax
 {
-    public BigInteger Value { get; }
-    public TextSpan Span { get; }
+    public BigInteger Value { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public IntegerLiteralExpressionSyntax(BigInteger value, TextSpan span)
     {
@@ -2293,9 +2285,9 @@ file class IntegerLiteralExpressionSyntax : IIntegerLiteralExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class NoneLiteralExpressionSyntax : INoneLiteralExpressionSyntax
+file sealed class NoneLiteralExpressionSyntax : INoneLiteralExpressionSyntax
 {
-    public TextSpan Span { get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public NoneLiteralExpressionSyntax(TextSpan span)
     {
@@ -2304,10 +2296,10 @@ file class NoneLiteralExpressionSyntax : INoneLiteralExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class StringLiteralExpressionSyntax : IStringLiteralExpressionSyntax
+file sealed class StringLiteralExpressionSyntax : IStringLiteralExpressionSyntax
 {
-    public string Value { get; }
-    public TextSpan Span { get; }
+    public string Value { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public StringLiteralExpressionSyntax(string value, TextSpan span)
     {
@@ -2317,12 +2309,12 @@ file class StringLiteralExpressionSyntax : IStringLiteralExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class AssignmentExpressionSyntax : IAssignmentExpressionSyntax
+file sealed class AssignmentExpressionSyntax : IAssignmentExpressionSyntax
 {
-    public IAssignableExpressionSyntax LeftOperand { get; }
-    public AssignmentOperator Operator { get; }
-    public IExpressionSyntax RightOperand { get; }
-    public TextSpan Span { get; }
+    public IAssignableExpressionSyntax LeftOperand { [DebuggerStepThrough] get; }
+    public AssignmentOperator Operator { [DebuggerStepThrough] get; }
+    public IExpressionSyntax RightOperand { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public AssignmentExpressionSyntax(IAssignableExpressionSyntax leftOperand, AssignmentOperator @operator, IExpressionSyntax rightOperand, TextSpan span)
     {
@@ -2334,12 +2326,12 @@ file class AssignmentExpressionSyntax : IAssignmentExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class BinaryOperatorExpressionSyntax : IBinaryOperatorExpressionSyntax
+file sealed class BinaryOperatorExpressionSyntax : IBinaryOperatorExpressionSyntax
 {
-    public IExpressionSyntax LeftOperand { get; }
-    public BinaryOperator Operator { get; }
-    public IExpressionSyntax RightOperand { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax LeftOperand { [DebuggerStepThrough] get; }
+    public BinaryOperator Operator { [DebuggerStepThrough] get; }
+    public IExpressionSyntax RightOperand { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public BinaryOperatorExpressionSyntax(IExpressionSyntax leftOperand, BinaryOperator @operator, IExpressionSyntax rightOperand, TextSpan span)
     {
@@ -2351,12 +2343,12 @@ file class BinaryOperatorExpressionSyntax : IBinaryOperatorExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class UnaryOperatorExpressionSyntax : IUnaryOperatorExpressionSyntax
+file sealed class UnaryOperatorExpressionSyntax : IUnaryOperatorExpressionSyntax
 {
-    public UnaryOperatorFixity Fixity { get; }
-    public UnaryOperator Operator { get; }
-    public IExpressionSyntax Operand { get; }
-    public TextSpan Span { get; }
+    public UnaryOperatorFixity Fixity { [DebuggerStepThrough] get; }
+    public UnaryOperator Operator { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Operand { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public UnaryOperatorExpressionSyntax(UnaryOperatorFixity fixity, UnaryOperator @operator, IExpressionSyntax operand, TextSpan span)
     {
@@ -2368,10 +2360,10 @@ file class UnaryOperatorExpressionSyntax : IUnaryOperatorExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class IdExpressionSyntax : IIdExpressionSyntax
+file sealed class IdExpressionSyntax : IIdExpressionSyntax
 {
-    public IExpressionSyntax Referent { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public IdExpressionSyntax(IExpressionSyntax referent, TextSpan span)
     {
@@ -2381,12 +2373,12 @@ file class IdExpressionSyntax : IIdExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ConversionExpressionSyntax : IConversionExpressionSyntax
+file sealed class ConversionExpressionSyntax : IConversionExpressionSyntax
 {
-    public IExpressionSyntax Referent { get; }
-    public ConversionOperator Operator { get; }
-    public ITypeSyntax ConvertToType { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
+    public ConversionOperator Operator { [DebuggerStepThrough] get; }
+    public ITypeSyntax ConvertToType { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public ConversionExpressionSyntax(IExpressionSyntax referent, ConversionOperator @operator, ITypeSyntax convertToType, TextSpan span)
     {
@@ -2398,11 +2390,11 @@ file class ConversionExpressionSyntax : IConversionExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class PatternMatchExpressionSyntax : IPatternMatchExpressionSyntax
+file sealed class PatternMatchExpressionSyntax : IPatternMatchExpressionSyntax
 {
-    public IExpressionSyntax Referent { get; }
-    public IPatternSyntax Pattern { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
+    public IPatternSyntax Pattern { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public PatternMatchExpressionSyntax(IExpressionSyntax referent, IPatternSyntax pattern, TextSpan span)
     {
@@ -2413,12 +2405,12 @@ file class PatternMatchExpressionSyntax : IPatternMatchExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class IfExpressionSyntax : IIfExpressionSyntax
+file sealed class IfExpressionSyntax : IIfExpressionSyntax
 {
-    public IExpressionSyntax Condition { get; }
-    public IBlockOrResultSyntax ThenBlock { get; }
-    public IElseClauseSyntax? ElseClause { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax Condition { [DebuggerStepThrough] get; }
+    public IBlockOrResultSyntax ThenBlock { [DebuggerStepThrough] get; }
+    public IElseClauseSyntax? ElseClause { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public IfExpressionSyntax(IExpressionSyntax condition, IBlockOrResultSyntax thenBlock, IElseClauseSyntax? elseClause, TextSpan span)
     {
@@ -2430,10 +2422,10 @@ file class IfExpressionSyntax : IIfExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class LoopExpressionSyntax : ILoopExpressionSyntax
+file sealed class LoopExpressionSyntax : ILoopExpressionSyntax
 {
-    public IBlockExpressionSyntax Block { get; }
-    public TextSpan Span { get; }
+    public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public LoopExpressionSyntax(IBlockExpressionSyntax block, TextSpan span)
     {
@@ -2443,11 +2435,11 @@ file class LoopExpressionSyntax : ILoopExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class WhileExpressionSyntax : IWhileExpressionSyntax
+file sealed class WhileExpressionSyntax : IWhileExpressionSyntax
 {
-    public IExpressionSyntax Condition { get; }
-    public IBlockExpressionSyntax Block { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax Condition { [DebuggerStepThrough] get; }
+    public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public WhileExpressionSyntax(IExpressionSyntax condition, IBlockExpressionSyntax block, TextSpan span)
     {
@@ -2458,15 +2450,15 @@ file class WhileExpressionSyntax : IWhileExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ForeachExpressionSyntax : IForeachExpressionSyntax
+file sealed class ForeachExpressionSyntax : IForeachExpressionSyntax
 {
-    public IdentifierName VariableName { get; }
-    public IExpressionSyntax InExpression { get; }
-    public ITypeSyntax? Type { get; }
-    public IBlockExpressionSyntax Block { get; }
-    public TextSpan Span { get; }
-    public TextSpan NameSpan { get; }
-    public bool IsMutableBinding { get; }
+    public IdentifierName VariableName { [DebuggerStepThrough] get; }
+    public IExpressionSyntax InExpression { [DebuggerStepThrough] get; }
+    public ITypeSyntax? Type { [DebuggerStepThrough] get; }
+    public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
+    public TextSpan NameSpan { [DebuggerStepThrough] get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
 
     public ForeachExpressionSyntax(IdentifierName variableName, IExpressionSyntax inExpression, ITypeSyntax? type, IBlockExpressionSyntax block, TextSpan span, TextSpan nameSpan, bool isMutableBinding)
     {
@@ -2481,10 +2473,10 @@ file class ForeachExpressionSyntax : IForeachExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class BreakExpressionSyntax : IBreakExpressionSyntax
+file sealed class BreakExpressionSyntax : IBreakExpressionSyntax
 {
-    public IExpressionSyntax? Value { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public BreakExpressionSyntax(IExpressionSyntax? value, TextSpan span)
     {
@@ -2494,9 +2486,9 @@ file class BreakExpressionSyntax : IBreakExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class NextExpressionSyntax : INextExpressionSyntax
+file sealed class NextExpressionSyntax : INextExpressionSyntax
 {
-    public TextSpan Span { get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public NextExpressionSyntax(TextSpan span)
     {
@@ -2505,10 +2497,10 @@ file class NextExpressionSyntax : INextExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class ReturnExpressionSyntax : IReturnExpressionSyntax
+file sealed class ReturnExpressionSyntax : IReturnExpressionSyntax
 {
-    public IExpressionSyntax? Value { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public ReturnExpressionSyntax(IExpressionSyntax? value, TextSpan span)
     {
@@ -2518,11 +2510,11 @@ file class ReturnExpressionSyntax : IReturnExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class InvocationExpressionSyntax : IInvocationExpressionSyntax
+file sealed class InvocationExpressionSyntax : IInvocationExpressionSyntax
 {
-    public IExpressionSyntax Expression { get; }
-    public IFixedList<IExpressionSyntax> Arguments { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
+    public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public InvocationExpressionSyntax(IExpressionSyntax expression, IFixedList<IExpressionSyntax> arguments, TextSpan span)
     {
@@ -2533,10 +2525,10 @@ file class InvocationExpressionSyntax : IInvocationExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class IdentifierNameExpressionSyntax : IIdentifierNameExpressionSyntax
+file sealed class IdentifierNameExpressionSyntax : IIdentifierNameExpressionSyntax
 {
-    public IdentifierName Name { get; }
-    public TextSpan Span { get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public IdentifierNameExpressionSyntax(IdentifierName name, TextSpan span)
     {
@@ -2546,10 +2538,10 @@ file class IdentifierNameExpressionSyntax : IIdentifierNameExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class SpecialTypeNameExpressionSyntax : ISpecialTypeNameExpressionSyntax
+file sealed class SpecialTypeNameExpressionSyntax : ISpecialTypeNameExpressionSyntax
 {
-    public SpecialTypeName Name { get; }
-    public TextSpan Span { get; }
+    public SpecialTypeName Name { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public SpecialTypeNameExpressionSyntax(SpecialTypeName name, TextSpan span)
     {
@@ -2559,11 +2551,11 @@ file class SpecialTypeNameExpressionSyntax : ISpecialTypeNameExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class GenericNameExpressionSyntax : IGenericNameExpressionSyntax
+file sealed class GenericNameExpressionSyntax : IGenericNameExpressionSyntax
 {
-    public GenericName Name { get; }
-    public IFixedList<ITypeSyntax> TypeArguments { get; }
-    public TextSpan Span { get; }
+    public GenericName Name { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public GenericNameExpressionSyntax(GenericName name, IFixedList<ITypeSyntax> typeArguments, TextSpan span)
     {
@@ -2574,10 +2566,10 @@ file class GenericNameExpressionSyntax : IGenericNameExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class SelfExpressionSyntax : ISelfExpressionSyntax
+file sealed class SelfExpressionSyntax : ISelfExpressionSyntax
 {
-    public bool IsImplicit { get; }
-    public TextSpan Span { get; }
+    public bool IsImplicit { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public SelfExpressionSyntax(bool isImplicit, TextSpan span)
     {
@@ -2587,13 +2579,13 @@ file class SelfExpressionSyntax : ISelfExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
+file sealed class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
 {
-    public IExpressionSyntax Context { get; }
-    public StandardName MemberName { get; }
-    public IFixedList<ITypeSyntax> TypeArguments { get; }
-    public TextSpan MemberNameSpan { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax Context { [DebuggerStepThrough] get; }
+    public StandardName MemberName { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
+    public TextSpan MemberNameSpan { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public MemberAccessExpressionSyntax(IExpressionSyntax context, StandardName memberName, IFixedList<ITypeSyntax> typeArguments, TextSpan memberNameSpan, TextSpan span)
     {
@@ -2606,9 +2598,9 @@ file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class MissingNameSyntax : IMissingNameSyntax
+file sealed class MissingNameSyntax : IMissingNameSyntax
 {
-    public TextSpan Span { get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public MissingNameSyntax(TextSpan span)
     {
@@ -2617,10 +2609,10 @@ file class MissingNameSyntax : IMissingNameSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class MoveExpressionSyntax : IMoveExpressionSyntax
+file sealed class MoveExpressionSyntax : IMoveExpressionSyntax
 {
-    public ISimpleNameSyntax Referent { get; }
-    public TextSpan Span { get; }
+    public ISimpleNameSyntax Referent { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public MoveExpressionSyntax(ISimpleNameSyntax referent, TextSpan span)
     {
@@ -2630,10 +2622,10 @@ file class MoveExpressionSyntax : IMoveExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class FreezeExpressionSyntax : IFreezeExpressionSyntax
+file sealed class FreezeExpressionSyntax : IFreezeExpressionSyntax
 {
-    public ISimpleNameSyntax Referent { get; }
-    public TextSpan Span { get; }
+    public ISimpleNameSyntax Referent { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public FreezeExpressionSyntax(ISimpleNameSyntax referent, TextSpan span)
     {
@@ -2643,10 +2635,10 @@ file class FreezeExpressionSyntax : IFreezeExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class AsyncBlockExpressionSyntax : IAsyncBlockExpressionSyntax
+file sealed class AsyncBlockExpressionSyntax : IAsyncBlockExpressionSyntax
 {
-    public IBlockExpressionSyntax Block { get; }
-    public TextSpan Span { get; }
+    public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public AsyncBlockExpressionSyntax(IBlockExpressionSyntax block, TextSpan span)
     {
@@ -2656,11 +2648,11 @@ file class AsyncBlockExpressionSyntax : IAsyncBlockExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class AsyncStartExpressionSyntax : IAsyncStartExpressionSyntax
+file sealed class AsyncStartExpressionSyntax : IAsyncStartExpressionSyntax
 {
-    public bool Scheduled { get; }
-    public IExpressionSyntax Expression { get; }
-    public TextSpan Span { get; }
+    public bool Scheduled { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public AsyncStartExpressionSyntax(bool scheduled, IExpressionSyntax expression, TextSpan span)
     {
@@ -2671,10 +2663,10 @@ file class AsyncStartExpressionSyntax : IAsyncStartExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class AwaitExpressionSyntax : IAwaitExpressionSyntax
+file sealed class AwaitExpressionSyntax : IAwaitExpressionSyntax
 {
-    public IExpressionSyntax Expression { get; }
-    public TextSpan Span { get; }
+    public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
+    public TextSpan Span { [DebuggerStepThrough] get; }
 
     public AwaitExpressionSyntax(IExpressionSyntax expression, TextSpan span)
     {

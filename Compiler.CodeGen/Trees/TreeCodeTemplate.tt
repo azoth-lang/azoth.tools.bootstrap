@@ -6,7 +6,7 @@
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
-<#  foreach(var usingNamespace in Build.OrderedNamespaces(tree, "ExhaustiveMatching", "System.CodeDom.Compiler")) { #>
+<#  foreach(var usingNamespace in Build.OrderedNamespaces(tree, "ExhaustiveMatching", "System.CodeDom.Compiler", "System.Diagnostics")) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
@@ -51,10 +51,10 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#  if (tree.GenerateClasses) { #>
 <#  foreach(var node in tree.Nodes.Where(n => !n.IsAbstract)) {#>
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.TypeName(node.Defines) #>
+file sealed class <#= Emit.ClassName(node.Defines) #> : <#= Emit.TypeName(node.Defines) #>
 {
 <#      foreach (var property in node.ActualProperties) { #>
-    public <#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
+    public <#=Emit.Type(property.Type) #> <#=property.Name #> { [DebuggerStepThrough] get; }
 <#      } #>
 
     public <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", node.ActualProperties.Select(p => $"{Emit.Type(p.Type)} {Emit.ParameterName(p)}")) #>)

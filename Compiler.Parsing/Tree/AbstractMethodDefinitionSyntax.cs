@@ -1,5 +1,4 @@
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -10,7 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 
 internal sealed class AbstractMethodDefinitionSyntax : MethodDefinitionSyntax, IAbstractMethodDefinitionSyntax
 {
-    public override MethodKind Kind => MethodKind.Standard;
     public override IReturnSyntax? Return { get; }
 
     public AbstractMethodDefinitionSyntax(

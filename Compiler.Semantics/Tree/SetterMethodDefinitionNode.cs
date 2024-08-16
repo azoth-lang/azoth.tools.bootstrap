@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -11,6 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class SetterMethodDefinitionNode : MethodDefinitionNode, ISetterMethodDefinitionNode
 {
     public override ISetterMethodDefinitionSyntax Syntax { get; }
+    public override MethodKind Kind => MethodKind.Setter;
     public override IBodyNode Body { get; }
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;

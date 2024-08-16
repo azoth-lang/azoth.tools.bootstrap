@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -13,6 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class AbstractMethodDefinitionNode : MethodDefinitionNode, IAbstractMethodDefinitionNode
 {
     public override IAbstractMethodDefinitionSyntax Syntax { get; }
+    public override MethodKind Kind => MethodKind.Standard;
     public override IBodyNode? Body => null;
     public int Arity => Parameters.Count;
     public FunctionType MethodGroupType => Symbol.MethodGroupType;

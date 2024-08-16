@@ -33,7 +33,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
         {
             
             #line 9 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-  foreach(var usingNamespace in Build.OrderedNamespaces(tree, "ExhaustiveMatching", "System.CodeDom.Compiler")) { 
+  foreach(var usingNamespace in Build.OrderedNamespaces(tree, "ExhaustiveMatching", "System.CodeDom.Compiler", "System.Diagnostics")) { 
             
             #line default
             #line hidden
@@ -353,7 +353,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             
             #line default
             #line hidden
-            this.Write("[GeneratedCode(\"AzothCompilerCodeGen\", null)]\r\nfile class ");
+            this.Write("[GeneratedCode(\"AzothCompilerCodeGen\", null)]\r\nfile sealed class ");
             
             #line 54 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(node.Defines)));
@@ -388,7 +388,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             
             #line default
             #line hidden
-            this.Write(" { get; }\r\n");
+            this.Write(" { [DebuggerStepThrough] get; }\r\n");
             
             #line 58 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       } 
