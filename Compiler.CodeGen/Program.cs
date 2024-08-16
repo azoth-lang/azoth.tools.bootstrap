@@ -9,7 +9,6 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 using Azoth.Tools.Bootstrap.Framework;
 using McMaster.Extensions.CommandLineUtils;
-using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen;
 

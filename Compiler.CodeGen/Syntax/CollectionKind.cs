@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 public enum CollectionKind
 {

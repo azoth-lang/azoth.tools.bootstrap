@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
@@ -88,6 +89,9 @@ public class TreeNodeModel
     public IFixedList<AttributeModel> Attributes => attributes.Value;
     private readonly Lazy<IFixedList<AttributeModel>> attributes;
 
+    public IFixedList<EquationModel> Equations => equations.Value;
+    private readonly Lazy<IFixedList<EquationModel>> equations;
+
     public TreeNodeModel(TreeModel tree, TreeNodeSyntax syntax)
     {
         Tree = tree;
@@ -126,6 +130,7 @@ public class TreeNodeModel
         });
 
         attributes = new(() => Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.Node == Defines).ToFixedList());
+        equations = new(() => Tree.Aspects.SelectMany(a => a.Equations).Where(e => e.Node == Defines).ToFixedList());
     }
 
     /// <summary>

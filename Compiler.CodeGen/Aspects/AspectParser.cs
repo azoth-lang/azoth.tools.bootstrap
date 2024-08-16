@@ -66,12 +66,37 @@ public static class AspectParser
         var (definition, expression) = OptionalSplitTwo(statement, "=>", "Too many `=>` in: '{0}'");
         (definition, var typeOverride) = OptionalSplitTwo(definition, ":", "Too many `:` in: '{0}'");
         (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        var evaluationStrategy = ParseEvaluationStrategy(ref node);
         (string name, string? parameters) = SplitOffParameters(definition);
         var typeOverrideSyntax = ParseType(typeOverride);
         var nodeSymbol = new SymbolSyntax(node);
-        return new SynthesizedAttributeEquationSyntax(nodeSymbol, name, parameters, typeOverrideSyntax, expression);
+        return new SynthesizedAttributeEquationSyntax(evaluationStrategy, nodeSymbol, name, parameters, typeOverrideSyntax, expression);
     }
 
+    private static EvaluationStrategy? ParseEvaluationStrategy(ref string node)
+    {
+        var parts = node.Split(Array.Empty<char>(),
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        switch (parts.Length)
+        {
+            case 0:
+                throw new FormatException($"Empty node '{node}' for attribute.");
+            case 1:
+                return null;
+            case 2:
+                var strategy = parts[0];
+                node = parts[1];
+                return strategy switch
+                {
+                    "eager" => EvaluationStrategy.Eager,
+                    "lazy" => EvaluationStrategy.Lazy,
+                    "computed" => EvaluationStrategy.Computed,
+                    _ => throw new FormatException($"Unknown evaluation strategy '{strategy}'"),
+                };
+            default:
+                throw new FormatException($"Too many parts in node '{node}' for attribute.");
+        }
+    }
     private static (string name, string? parameters) SplitOffParameters(string definition)
     {
         var (name, parameters) = OptionalSplitTwo(definition, "(", "Too many `(` in: '{0}'");

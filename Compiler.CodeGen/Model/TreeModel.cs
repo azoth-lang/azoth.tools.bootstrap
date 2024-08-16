@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
@@ -27,7 +28,8 @@ public sealed class TreeModel : IHasUsingNamespaces
         Syntax = syntax;
         Root = Symbol.CreateFromSyntax(this, syntax.Root);
         UsingNamespaces = syntax.UsingNamespaces
-                                .Concat(aspects.SelectMany(a => a.UsingNamespaces)).ToFixedSet();
+                                .Concat(aspects.SelectMany(a => a.UsingNamespaces.Append(a.Namespace)))
+                                .Except(Namespace).ToFixedSet();
         Nodes = syntax.Nodes.Select(r => new TreeNodeModel(this, r)).ToFixedList();
         nodesLookup = Nodes.ToFixedDictionary(r => r.Defines.ShortName);
 
@@ -37,6 +39,15 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     public TreeNodeModel? NodeFor(string shortName)
         => nodesLookup.GetValueOrDefault(shortName);
+
+    public T? AttributeFor<T>(InternalSymbol nodeSymbol, string name)
+        where T : AttributeModel
+    {
+        var node = NodeFor(nodeSymbol.ShortName)!;
+        var attribute = node.Attributes.Concat(node.SupertypeNodes.SelectMany(s => s.Attributes))
+                            .OfType<T>().FirstOrDefault(a => a.Name == name);
+        return attribute;
+    }
 
     private readonly FixedDictionary<string, TreeNodeModel> nodesLookup;
 

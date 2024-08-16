@@ -5,6 +5,7 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(tree, "ExhaustiveMatching", "System.CodeDom.Compiler")) { #>
 using <#=usingNamespace #>;
 <#  } #>
@@ -29,6 +30,13 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#          switch (attribute) { #>
 <#              case SynthesizedAttributeModel attr: #>
     <#=Emit.Type(attr.Type) #> <#=attr.Name #><#=attr.Parameters #><#=Emit.Body(attr) #>
+<#                  break;#>
+<#          } #>
+<#      } #>
+<#      foreach (var equation in node.Equations) { #>
+<#          switch (equation) { #>
+<#              case SynthesizedAttributeEquationModel eq: #>
+    <#=Emit.Type(eq.Type) #> <#= Emit.TypeName(eq.Attribute.Node) #>.<#=eq.Name #><#=eq.Parameters #><#=Emit.Body(eq) #>
 <#                  break;#>
 <#          } #>
 <#      } #>

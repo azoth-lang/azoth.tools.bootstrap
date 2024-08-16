@@ -3,8 +3,10 @@ using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -76,5 +78,34 @@ internal static class Emit
             return ";";
 
         return " { get; }";
+    }
+
+    public static string Body(SynthesizedAttributeEquationModel equation)
+    {
+        switch (equation.EvaluationStrategy)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(equation.EvaluationStrategy);
+            case EvaluationStrategy.Eager:
+            case EvaluationStrategy.Lazy:
+                return ";";
+            case EvaluationStrategy.Computed:
+                var builder = new StringBuilder();
+                builder.AppendLine();
+                builder.Append("        => ");
+                if (equation.Expression is not null)
+                    builder.Append(equation.Expression);
+                else
+                {
+                    builder.Append(equation.Aspect.Name);
+                    builder.Append('.');
+                    builder.Append(equation.Node);
+                    builder.Append('_');
+                    builder.Append(equation.Name);
+                    builder.Append("()");
+                }
+                builder.Append(';');
+                return builder.ToString();
+        }
     }
 }

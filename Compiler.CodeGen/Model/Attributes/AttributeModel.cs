@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using ExhaustiveMatching;
 
@@ -17,10 +18,11 @@ public abstract class AttributeModel
     public AspectModel Aspect { get; }
     public abstract AttributeSyntax Syntax { get; }
     public InternalSymbol Node { get; }
+    public string Name => Syntax.Name;
 
-    protected AttributeModel(AspectModel aspect, InternalSymbol node)
+    protected AttributeModel(AspectModel aspect, SymbolSyntax node)
     {
         Aspect = aspect;
-        Node = node;
+        Node = Symbol.CreateInternalFromSyntax(Aspect.Tree, node);
     }
 }

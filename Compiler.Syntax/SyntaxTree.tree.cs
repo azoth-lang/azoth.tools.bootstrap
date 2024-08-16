@@ -842,6 +842,8 @@ public partial interface IAssignmentExpressionSyntax : IExpressionSyntax
     IAssignableExpressionSyntax LeftOperand { get; }
     AssignmentOperator Operator { get; }
     IExpressionSyntax RightOperand { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Assignment;
 }
 
 // [Closed(typeof(BinaryOperatorExpressionSyntax))]
