@@ -10,6 +10,5 @@ internal static class Build
         => tree.UsingNamespaces.Concat(additionalNamespaces).Distinct().OrderBy(v => v, NamespaceComparer.Instance);
 
     public static IEnumerable<PropertyModel> BaseProperties(TreeNodeModel node, PropertyModel property)
-        => node.InheritedPropertiesNamedSameAs(property)
-        .Where(p => p.IsDeclared);
+        => node.InheritedPropertiesNamedSameAs(property).Where(p => p.IsDeclarationRequired);
 }

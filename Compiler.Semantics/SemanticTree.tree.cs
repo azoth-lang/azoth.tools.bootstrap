@@ -269,6 +269,7 @@ public partial interface IConcreteFunctionInvocableDefinitionNode : IConcreteInv
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     new IFixedList<INamedParameterNode> Parameters { get; }
+    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
     new IBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
@@ -350,6 +351,7 @@ public partial interface ITypeDefinitionNode : IPackageMemberDefinitionNode, IAs
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     bool IsConst { get; }
     new StandardName Name { get; }
+    StandardName INamespaceMemberDeclarationNode.Name => Name;
     StandardName IAssociatedMemberDefinitionNode.Name => Name;
     IDeclaredUserType DeclaredType { get; }
     new IFixedList<IGenericParameterNode> GenericParameters { get; }
@@ -357,6 +359,7 @@ public partial interface ITypeDefinitionNode : IPackageMemberDefinitionNode, IAs
     LexicalScope SupertypesLexicalScope { get; }
     IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     new AccessModifier AccessModifier { get; }
     AccessModifier IPackageMemberDefinitionNode.AccessModifier => AccessModifier;
     AccessModifier ITypeMemberDefinitionNode.AccessModifier => AccessModifier;
@@ -418,6 +421,7 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     IUserTypeDeclarationNode ContainingDeclaration { get; }
     UserTypeSymbol ContainingSymbol { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }
 
 [Closed(
@@ -512,8 +516,6 @@ public partial interface IConcreteMethodDefinitionNode : IMethodDefinitionNode, 
 {
     new IConcreteMethodDefinitionSyntax Syntax { get; }
     IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
-    new IFixedList<INamedParameterNode> Parameters { get; }
-    IFixedList<INamedParameterNode> IMethodDefinitionNode.Parameters => Parameters;
     new IBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 }
@@ -531,6 +533,7 @@ public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinition
     new IGetterMethodDefinitionSyntax Syntax { get; }
     IConcreteMethodDefinitionSyntax IConcreteMethodDefinitionNode.Syntax => Syntax;
     new ITypeNode Return { get; }
+    ITypeNode? IMethodDefinitionNode.Return => Return;
 }
 
 // [Closed(typeof(SetterMethodDefinitionNode))]
@@ -1168,14 +1171,13 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlo
     typeof(IUnknownMemberAccessExpressionNode))]
 public partial interface IAssignableExpressionNode : IExpressionNode, IAmbiguousAssignableExpressionNode
 {
-    new IAssignableExpressionSyntax Syntax { get; }
-    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
 }
 
 // [Closed(typeof(BlockExpressionNode))]
 public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultNode, IBodyOrBlockNode
 {
     new IBlockExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax IElseClauseNode.Syntax => Syntax;
     new IFixedList<IStatementNode> Statements { get; }
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements => Statements;
@@ -1197,6 +1199,7 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
 public partial interface INewObjectExpressionNode : IInvocationExpressionNode
 {
     new INewObjectExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ITypeNameNode ConstructingType { get; }
     IdentifierName? ConstructorName { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
@@ -1212,6 +1215,7 @@ public partial interface INewObjectExpressionNode : IInvocationExpressionNode
 public partial interface IUnsafeExpressionNode : IExpressionNode
 {
     new IUnsafeExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
     IExpressionNode? IntermediateExpression { get; }
 }
@@ -1234,6 +1238,7 @@ public partial interface INeverTypedExpressionNode : IExpressionNode
 public partial interface ILiteralExpressionNode : IExpressionNode
 {
     new ILiteralExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
 }
 
 // [Closed(typeof(BoolLiteralExpressionNode))]
@@ -1278,6 +1283,7 @@ public partial interface IStringLiteralExpressionNode : ILiteralExpressionNode
 public partial interface IAssignmentExpressionNode : IExpressionNode, IDataFlowNode
 {
     new IAssignmentExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousAssignableExpressionNode LeftOperand { get; }
     IAmbiguousAssignableExpressionNode CurrentLeftOperand { get; }
     IAssignableExpressionNode? IntermediateLeftOperand { get; }
@@ -1291,6 +1297,7 @@ public partial interface IAssignmentExpressionNode : IExpressionNode, IDataFlowN
 public partial interface IBinaryOperatorExpressionNode : IExpressionNode
 {
     new IBinaryOperatorExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode LeftOperand { get; }
     IExpressionNode? IntermediateLeftOperand { get; }
     BinaryOperator Operator { get; }
@@ -1304,6 +1311,7 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
 public partial interface IUnaryOperatorExpressionNode : IExpressionNode
 {
     new IUnaryOperatorExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     UnaryOperatorFixity Fixity { get; }
     UnaryOperator Operator { get; }
     IAmbiguousExpressionNode Operand { get; }
@@ -1314,6 +1322,7 @@ public partial interface IUnaryOperatorExpressionNode : IExpressionNode
 public partial interface IIdExpressionNode : IExpressionNode
 {
     new IIdExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Referent { get; }
     IExpressionNode? IntermediateReferent { get; }
 }
@@ -1322,6 +1331,7 @@ public partial interface IIdExpressionNode : IExpressionNode
 public partial interface IConversionExpressionNode : IExpressionNode
 {
     new IConversionExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Referent { get; }
     IExpressionNode? IntermediateReferent { get; }
     ConversionOperator Operator { get; }
@@ -1341,6 +1351,7 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
 public partial interface IPatternMatchExpressionNode : IExpressionNode
 {
     new IPatternMatchExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Referent { get; }
     IExpressionNode? IntermediateReferent { get; }
     IPatternNode Pattern { get; }
@@ -1350,6 +1361,7 @@ public partial interface IPatternMatchExpressionNode : IExpressionNode
 public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
 {
     new IIfExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax IElseClauseNode.Syntax => Syntax;
     IAmbiguousExpressionNode Condition { get; }
     IExpressionNode? IntermediateCondition { get; }
@@ -1367,6 +1379,7 @@ public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
 public partial interface ILoopExpressionNode : IExpressionNode
 {
     new ILoopExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IBlockExpressionNode Block { get; }
 }
 
@@ -1374,6 +1387,7 @@ public partial interface ILoopExpressionNode : IExpressionNode
 public partial interface IWhileExpressionNode : IExpressionNode
 {
     new IWhileExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Condition { get; }
     IExpressionNode? IntermediateCondition { get; }
     IBlockExpressionNode Block { get; }
@@ -1383,6 +1397,7 @@ public partial interface IWhileExpressionNode : IExpressionNode
 public partial interface IForeachExpressionNode : IExpressionNode, IVariableBindingNode
 {
     new IForeachExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
     IdentifierName VariableName { get; }
     IAmbiguousExpressionNode InExpression { get; }
@@ -1405,6 +1420,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
 public partial interface IBreakExpressionNode : INeverTypedExpressionNode
 {
     new IBreakExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode? Value { get; }
     IExpressionNode? IntermediateValue { get; }
 }
@@ -1413,12 +1429,14 @@ public partial interface IBreakExpressionNode : INeverTypedExpressionNode
 public partial interface INextExpressionNode : INeverTypedExpressionNode
 {
     new INextExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
 }
 
 // [Closed(typeof(ReturnExpressionNode))]
 public partial interface IReturnExpressionNode : INeverTypedExpressionNode
 {
     new IReturnExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode? Value { get; }
     IAmbiguousExpressionNode? CurrentValue { get; }
     IExpressionNode? IntermediateValue { get; }
@@ -1453,6 +1471,7 @@ public partial interface IInvocationExpressionNode : IExpressionNode
 public partial interface IFunctionInvocationExpressionNode : IInvocationExpressionNode
 {
     new IInvocationExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IFunctionGroupNameNode FunctionGroup { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     IFixedList<IExpressionNode?> IntermediateArguments { get; }
@@ -1465,6 +1484,7 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
 public partial interface IMethodInvocationExpressionNode : IInvocationExpressionNode
 {
     new IInvocationExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IMethodGroupNameNode MethodGroup { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
@@ -1478,6 +1498,7 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
 public partial interface IGetterInvocationExpressionNode : IInvocationExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     StandardName PropertyName { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
@@ -1489,6 +1510,7 @@ public partial interface IGetterInvocationExpressionNode : IInvocationExpression
 public partial interface ISetterInvocationExpressionNode : IInvocationExpressionNode
 {
     new IAssignmentExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     StandardName PropertyName { get; }
     IAmbiguousExpressionNode Value { get; }
@@ -1502,6 +1524,7 @@ public partial interface ISetterInvocationExpressionNode : IInvocationExpression
 public partial interface IFunctionReferenceInvocationExpressionNode : IInvocationExpressionNode
 {
     new IInvocationExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IExpressionNode Expression { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     IFixedList<IExpressionNode?> IntermediateArguments { get; }
@@ -1513,6 +1536,7 @@ public partial interface IFunctionReferenceInvocationExpressionNode : IInvocatio
 public partial interface IInitializerInvocationExpressionNode : IInvocationExpressionNode
 {
     new IInvocationExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IInitializerGroupNameNode InitializerGroup { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     IFixedList<IExpressionNode?> IntermediateArguments { get; }
@@ -1525,6 +1549,7 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
 public partial interface IUnknownInvocationExpressionNode : IExpressionNode
 {
     new IInvocationExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
 }
@@ -1629,8 +1654,6 @@ public partial interface IPropertyNameNode : IAmbiguousNameNode, IAmbiguousAssig
     typeof(IUnknownNameExpressionNode))]
 public partial interface INameExpressionNode : IExpressionNode, IAmbiguousNameExpressionNode
 {
-    new INameExpressionSyntax Syntax { get; }
-    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
 }
 
 [Closed(
@@ -1655,7 +1678,7 @@ public partial interface INamespaceNameNode : INameExpressionNode
 public partial interface IUnqualifiedNamespaceNameNode : INamespaceNameNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IdentifierName Name { get; }
 }
 
@@ -1663,7 +1686,7 @@ public partial interface IUnqualifiedNamespaceNameNode : INamespaceNameNode
 public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     INamespaceNameNode Context { get; }
     IdentifierName Name { get; }
 }
@@ -1690,7 +1713,7 @@ public partial interface IFunctionNameNode : INameExpressionNode
 public partial interface IMethodGroupNameNode : INameExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
     StandardName MethodName { get; }
@@ -1702,8 +1725,8 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
 public partial interface IFieldAccessExpressionNode : INameExpressionNode, IAssignableExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
-    IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     IdentifierName FieldName { get; }
     IFieldDeclarationNode ReferencedDeclaration { get; }
@@ -1713,8 +1736,7 @@ public partial interface IFieldAccessExpressionNode : INameExpressionNode, IAssi
 public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressionNode, IAssignableExpressionNode, ISimpleNameNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
-    IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
+    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
     IdentifierName Name { get; }
     new ILocalBindingNode ReferencedDefinition { get; }
@@ -1738,12 +1760,14 @@ public partial interface ITypeNameExpressionNode : INameExpressionNode
 public partial interface IStandardTypeNameExpressionNode : ITypeNameExpressionNode
 {
     new IStandardNameExpressionSyntax Syntax { get; }
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
 }
 
 // [Closed(typeof(QualifiedTypeNameExpressionNode))]
 public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     INamespaceNameNode Context { get; }
 }
 
@@ -1760,7 +1784,7 @@ public partial interface IInitializerGroupNameNode : INameExpressionNode
 public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
 {
     new ISpecialTypeNameExpressionSyntax Syntax { get; }
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     SpecialTypeName Name { get; }
     TypeSymbol ReferencedSymbol { get; }
     new UnknownType Type { get; }
@@ -1772,7 +1796,6 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
 public partial interface IInstanceExpressionNode : INameExpressionNode, ISimpleNameNode
 {
     new IInstanceExpressionSyntax Syntax { get; }
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
 }
 
@@ -1792,9 +1815,8 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
 public partial interface IMissingNameExpressionNode : INameExpressionNode, ISimpleNameNode, IAssignableExpressionNode
 {
     new IMissingNameSyntax Syntax { get; }
-    INameExpressionSyntax INameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
-    IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
+    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     new UnknownType Type { get; }
     DataType IExpressionNode.Type => Type;
 }
@@ -1814,6 +1836,7 @@ public partial interface IUnknownNameExpressionNode : INameExpressionNode
 public partial interface IUnknownStandardNameExpressionNode : IUnknownNameExpressionNode
 {
     new IStandardNameExpressionSyntax Syntax { get; }
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     StandardName Name { get; }
     IFixedSet<IDeclarationNode> ReferencedDeclarations { get; }
 }
@@ -1824,7 +1847,7 @@ public partial interface IUnknownIdentifierNameExpressionNode : IUnknownStandard
     new IIdentifierNameExpressionSyntax Syntax { get; }
     IStandardNameExpressionSyntax IUnknownStandardNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax ISimpleNameNode.Syntax => Syntax;
-    IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
+    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     StandardName IUnknownStandardNameExpressionNode.Name => Name;
 }
@@ -1843,7 +1866,8 @@ public partial interface IUnknownGenericNameExpressionNode : IUnknownStandardNam
 public partial interface IUnknownMemberAccessExpressionNode : IUnknownNameExpressionNode, IAssignableExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
-    IAssignableExpressionSyntax IAssignableExpressionNode.Syntax => Syntax;
+    INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
@@ -1934,6 +1958,7 @@ public partial interface IPrepareToReturnExpressionNode : IExpressionNode
 public partial interface IAsyncBlockExpressionNode : IExpressionNode
 {
     new IAsyncBlockExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IBlockExpressionNode Block { get; }
 }
 
@@ -1941,6 +1966,7 @@ public partial interface IAsyncBlockExpressionNode : IExpressionNode
 public partial interface IAsyncStartExpressionNode : IExpressionNode
 {
     new IAsyncStartExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     bool Scheduled { get; }
     IAmbiguousExpressionNode Expression { get; }
     IExpressionNode? IntermediateExpression { get; }
@@ -1950,6 +1976,7 @@ public partial interface IAsyncStartExpressionNode : IExpressionNode
 public partial interface IAwaitExpressionNode : IExpressionNode
 {
     new IAwaitExpressionSyntax Syntax { get; }
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
     IExpressionNode? IntermediateExpression { get; }
 }
@@ -2133,7 +2160,9 @@ public partial interface IUserTypeDeclarationNode : IPackageMemberDeclarationNod
 public partial interface IClassDeclarationNode : IUserTypeDeclarationNode
 {
     new IFixedSet<IClassMemberDeclarationNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     new IFixedSet<IClassMemberDeclarationNode> InclusiveMembers { get; }
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers => InclusiveMembers;
 }
 
 [Closed(
@@ -2142,7 +2171,9 @@ public partial interface IClassDeclarationNode : IUserTypeDeclarationNode
 public partial interface IStructDeclarationNode : IUserTypeDeclarationNode
 {
     new IFixedSet<IStructMemberDeclarationNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     new IFixedSet<IStructMemberDeclarationNode> InclusiveMembers { get; }
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers => InclusiveMembers;
 }
 
 [Closed(
@@ -2151,7 +2182,9 @@ public partial interface IStructDeclarationNode : IUserTypeDeclarationNode
 public partial interface ITraitDeclarationNode : IUserTypeDeclarationNode
 {
     new IFixedSet<ITraitMemberDeclarationNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     new IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers { get; }
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers => InclusiveMembers;
 }
 
 [Closed(

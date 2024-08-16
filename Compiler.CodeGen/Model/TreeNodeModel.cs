@@ -60,6 +60,12 @@ public class TreeNodeModel
         => DeclaredProperties.Concat(ImplicitlyDeclaredProperties);
 
     /// <summary>
+    /// Properties that must be declared in the node interface.
+    /// </summary>
+    public IFixedList<PropertyModel> PropertiesRequiringDeclaration => propertiesRequiringDeclaration.Value;
+    private readonly Lazy<IFixedList<PropertyModel>> propertiesRequiringDeclaration;
+
+    /// <summary>
     /// Properties inherited from the supertypes of a rule. If the same property is defined on
     /// multiple supertypes, it will be listed multiple times. However, if a property is
     /// inherited from a common supertype through multiple paths it will be listed once.
@@ -69,9 +75,9 @@ public class TreeNodeModel
     private readonly Lazy<IFixedList<PropertyModel>> inheritedProperties;
 
     /// <summary>
-    /// Get all properties for a node. If the node defines the property itself
-    /// (explicitly or implicitly), that is the one definition. When the node doesn't define the
-    /// property, supertypes are recursively searched for definitions.
+    /// Get all properties for a node. This will use inherited properties if a property declared on
+    /// this node does not require a declaration. Properties will be ordered by declaration and then
+    /// by supertype order.
     /// </summary>
     /// <remarks>This will not return duplicate property names unless two supertypes declare
     /// conflicting properties.</remarks>
@@ -100,12 +106,20 @@ public class TreeNodeModel
         implicitlyDeclaredProperties = new(()
             => InheritedProperties.AllExcept(DeclaredProperties, PropertyModel.NameComparer)
                                   .GroupBy(p => p.Name)
-                                  .Select(ImplicitlyDeclaredProperty)
-                                  .WhereNotNull().ToFixedList());
-
-        allProperties = new(() => AllDeclaredProperties
-                                  .Concat(InheritedProperties.AllExcept(AllDeclaredProperties, PropertyModel.NameComparer))
+                                  .Select(ImplicitlyDeclaredProperty).WhereNotNull()
+                                  .Assert(p => p.IsDeclarationRequired, p => new($"Implicit property {p} no declared."))
                                   .ToFixedList());
+        propertiesRequiringDeclaration = new(()
+            => AllDeclaredProperties.Where(p => p.IsDeclarationRequired).ToFixedList());
+        allProperties = new(() =>
+        {
+            var propertyLookup = PropertiesRequiringDeclaration
+                                 .Concat(InheritedProperties.AllExcept(PropertiesRequiringDeclaration, PropertyModel.NameComparer))
+                                 .ToLookup(p => p.Name);
+            var propertyOrder = AllDeclaredProperties.Concat(SupertypeNodes.SelectMany(s => s.AllProperties))
+                                                     .DistinctBy(p => p.Name);
+            return propertyOrder.SelectMany(p => propertyLookup[p.Name]).ToFixedList();
+        });
     }
 
     /// <summary>
@@ -117,7 +131,7 @@ public class TreeNodeModel
         => InheritedProperties.Where(p => p.Name == propertyName).Distinct();
 
     public IEnumerable<PropertyModel> PropertiesNamed(string propertyName)
-        => InheritedProperties.Where(p => p.Name == propertyName);
+        => AllProperties.Where(p => p.Name == propertyName);
 
     private static IEnumerable<PropertyModel> MostSpecificProperties(IEnumerable<PropertyModel> propertyModels)
         => propertyModels.GroupBy(p => p.Name).SelectMany(MostSpecificProperties);

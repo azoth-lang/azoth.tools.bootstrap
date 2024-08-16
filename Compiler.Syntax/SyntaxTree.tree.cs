@@ -131,7 +131,6 @@ public partial interface IDefinitionSyntax : ICodeSyntax
 
 [Closed(
     typeof(IInvocableDefinitionSyntax),
-    typeof(ITypeDefinitionSyntax),
     typeof(ITypeMemberDefinitionSyntax))]
 public partial interface IEntityDefinitionSyntax : IDefinitionSyntax
 {
@@ -181,6 +180,7 @@ public partial interface IFunctionDefinitionSyntax : IConcreteInvocableDefinitio
     new IdentifierName Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
+    IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
 }
 
@@ -188,7 +188,7 @@ public partial interface IFunctionDefinitionSyntax : IConcreteInvocableDefinitio
     typeof(IClassDefinitionSyntax),
     typeof(IStructDefinitionSyntax),
     typeof(ITraitDefinitionSyntax))]
-public partial interface ITypeDefinitionSyntax : IEntityDefinitionSyntax, INonMemberDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax
+public partial interface ITypeDefinitionSyntax : INonMemberDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax
 {
     IConstKeywordToken? ConstModifier { get; }
     IMoveKeywordToken? MoveModifier { get; }
@@ -292,8 +292,6 @@ public partial interface IAbstractMethodDefinitionSyntax : IMethodDefinitionSynt
     typeof(ISetterMethodDefinitionSyntax))]
 public partial interface IConcreteMethodDefinitionSyntax : IMethodDefinitionSyntax, IStructMemberDefinitionSyntax, IConcreteInvocableDefinitionSyntax
 {
-    new IFixedList<INamedParameterSyntax> Parameters { get; }
-    IFixedList<INamedParameterSyntax> IMethodDefinitionSyntax.Parameters => Parameters;
 }
 
 // [Closed(typeof(StandardMethodDefinitionSyntax))]
@@ -305,6 +303,7 @@ public partial interface IStandardMethodDefinitionSyntax : IConcreteMethodDefini
 public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
     new IReturnSyntax Return { get; }
+    IReturnSyntax? IMethodDefinitionSyntax.Return => Return;
 }
 
 // [Closed(typeof(SetterMethodDefinitionSyntax))]
@@ -347,6 +346,7 @@ public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefin
     new IdentifierName Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
+    IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
 }
 
@@ -1067,12 +1067,12 @@ file class ClassDefinitionSyntax // : IClassDefinitionSyntax
     public IConstKeywordToken? ConstModifier { get; }
     public IMoveKeywordToken? MoveModifier { get; }
     public StandardName Name { get; }
-    public IAccessModifierToken? AccessModifier { get; }
     public CodeFile File { get; }
     public TextSpan NameSpan { get; }
     public TextSpan Span { get; }
+    public IAccessModifierToken? AccessModifier { get; }
 
-    public ClassDefinitionSyntax(IAbstractKeywordToken? abstractModifier, IFixedList<IGenericParameterSyntax> genericParameters, IStandardTypeNameSyntax? baseTypeName, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<IClassMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    public ClassDefinitionSyntax(IAbstractKeywordToken? abstractModifier, IFixedList<IGenericParameterSyntax> genericParameters, IStandardTypeNameSyntax? baseTypeName, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<IClassMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, CodeFile file, TextSpan nameSpan, TextSpan span, IAccessModifierToken? accessModifier)
     {
         AbstractModifier = abstractModifier;
         GenericParameters = genericParameters;
@@ -1082,10 +1082,10 @@ file class ClassDefinitionSyntax // : IClassDefinitionSyntax
         ConstModifier = constModifier;
         MoveModifier = moveModifier;
         Name = name;
-        AccessModifier = accessModifier;
         File = file;
         NameSpan = nameSpan;
         Span = span;
+        AccessModifier = accessModifier;
     }
 }
 
@@ -1097,12 +1097,12 @@ file class StructDefinitionSyntax // : IStructDefinitionSyntax
     public IConstKeywordToken? ConstModifier { get; }
     public IMoveKeywordToken? MoveModifier { get; }
     public StandardName Name { get; }
-    public IAccessModifierToken? AccessModifier { get; }
     public CodeFile File { get; }
     public TextSpan NameSpan { get; }
     public TextSpan Span { get; }
+    public IAccessModifierToken? AccessModifier { get; }
 
-    public StructDefinitionSyntax(IFixedList<IGenericParameterSyntax> genericParameters, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<IStructMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    public StructDefinitionSyntax(IFixedList<IGenericParameterSyntax> genericParameters, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<IStructMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, CodeFile file, TextSpan nameSpan, TextSpan span, IAccessModifierToken? accessModifier)
     {
         GenericParameters = genericParameters;
         SupertypeNames = supertypeNames;
@@ -1110,10 +1110,10 @@ file class StructDefinitionSyntax // : IStructDefinitionSyntax
         ConstModifier = constModifier;
         MoveModifier = moveModifier;
         Name = name;
-        AccessModifier = accessModifier;
         File = file;
         NameSpan = nameSpan;
         Span = span;
+        AccessModifier = accessModifier;
     }
 }
 
@@ -1125,12 +1125,12 @@ file class TraitDefinitionSyntax // : ITraitDefinitionSyntax
     public IConstKeywordToken? ConstModifier { get; }
     public IMoveKeywordToken? MoveModifier { get; }
     public StandardName Name { get; }
-    public IAccessModifierToken? AccessModifier { get; }
     public CodeFile File { get; }
     public TextSpan NameSpan { get; }
     public TextSpan Span { get; }
+    public IAccessModifierToken? AccessModifier { get; }
 
-    public TraitDefinitionSyntax(IFixedList<IGenericParameterSyntax> genericParameters, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<ITraitMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IAccessModifierToken? accessModifier, CodeFile file, TextSpan nameSpan, TextSpan span)
+    public TraitDefinitionSyntax(IFixedList<IGenericParameterSyntax> genericParameters, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<ITraitMemberDefinitionSyntax> members, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, CodeFile file, TextSpan nameSpan, TextSpan span, IAccessModifierToken? accessModifier)
     {
         GenericParameters = genericParameters;
         SupertypeNames = supertypeNames;
@@ -1138,10 +1138,10 @@ file class TraitDefinitionSyntax // : ITraitDefinitionSyntax
         ConstModifier = constModifier;
         MoveModifier = moveModifier;
         Name = name;
-        AccessModifier = accessModifier;
         File = file;
         NameSpan = nameSpan;
         Span = span;
+        AccessModifier = accessModifier;
     }
 }
 

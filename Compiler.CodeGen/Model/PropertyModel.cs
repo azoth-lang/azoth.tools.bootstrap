@@ -38,8 +38,8 @@ public sealed class PropertyModel
     /// 3. the property is defined in multiple parents, in that case it is
     ///    ambiguous unless it is redefined in the current interface.
     /// </remarks>
-    public bool IsDeclared => isDeclared.Value;
-    private readonly Lazy<bool> isDeclared;
+    public bool IsDeclarationRequired => isDeclarationRequired.Value;
+    private readonly Lazy<bool> isDeclarationRequired;
 
     /// <summary>
     /// Is the type of this property a reference to another node?
@@ -57,7 +57,7 @@ public sealed class PropertyModel
             throw new InvalidOperationException("Property type must be a non-void type.");
         Type = nonVoidType;
         isNewDefinition = new(() => node.InheritedPropertiesNamedSameAs(this).Any());
-        isDeclared = new(() =>
+        isDeclarationRequired = new(() =>
         {
             var baseProperties = node.InheritedPropertiesNamedSameAs(this).ToList();
             return baseProperties.Count != 1 || baseProperties[0].Type != Type;
@@ -71,7 +71,7 @@ public sealed class PropertyModel
         Type = type;
 
         isNewDefinition = new(() => node.InheritedPropertiesNamedSameAs(this).Any());
-        isDeclared = new(() =>
+        isDeclarationRequired = new(() =>
         {
             var baseProperties = node.InheritedPropertiesNamedSameAs(this).ToList();
             return baseProperties.Count != 1 || baseProperties[0].Type != Type;
