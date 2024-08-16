@@ -23,7 +23,7 @@
 
 ↑ Expression.ExpressionPrecedence:`OperatorPrecedence`;
 
-= AssignmentExpression.ExpressionPrecedence => OperatorPrecedence.Assignment;
+// = AssignmentExpression.ExpressionPrecedence => OperatorPrecedence.Assignment;
 
-↑ string Expression.ToGroupedString(OperatorPrecedence surroundingPrecedence)
-    => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
+// ↑ string Expression.ToGroupedString(OperatorPrecedence surroundingPrecedence)
+//    => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
