@@ -43,6 +43,7 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 }
 
 <#  } #>
+<#  if (tree.GenerateClasses) { #>
 <#  foreach(var node in tree.Nodes.Where(n => !n.IsAbstract)) {#>
 [GeneratedCode("AzothCompilerCodeGen", null)]
 file class <#= Emit.ClassName(node.Defines) #> // : <#= Emit.TypeName(node.Defines) #>
@@ -59,4 +60,5 @@ file class <#= Emit.ClassName(node.Defines) #> // : <#= Emit.TypeName(node.Defin
     }
 }
 
+<#  } #>
 <#  } #>

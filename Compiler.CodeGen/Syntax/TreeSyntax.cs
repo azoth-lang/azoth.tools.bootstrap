@@ -12,6 +12,7 @@ public sealed class TreeSyntax
     public SymbolSyntax? Root { get; }
     public string SymbolPrefix { get; }
     public string SymbolSuffix { get; }
+    public bool GenerateClasses { get; }
     public string ClassPrefix { get; }
     public string ClassSuffix { get; }
 
@@ -23,6 +24,7 @@ public sealed class TreeSyntax
         SymbolSyntax? root,
         string symbolPrefix,
         string symbolSuffix,
+        bool generateClasses,
         string classPrefix,
         string classSuffix,
         IEnumerable<string> usingNamespaces,
@@ -32,6 +34,7 @@ public sealed class TreeSyntax
         Root = root;
         SymbolPrefix = symbolPrefix;
         SymbolSuffix = symbolSuffix;
+        GenerateClasses = generateClasses;
         ClassPrefix = classPrefix;
         ClassSuffix = classSuffix;
         UsingNamespaces = usingNamespaces.ToFixedSet();

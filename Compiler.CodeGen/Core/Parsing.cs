@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -29,6 +28,13 @@ internal static class Parsing
         line = line?.TrimStatementTerminator();
         line = line?.Trim();
         return line;
+    }
+
+    public static bool GetBoolConfig(IEnumerable<string> lines, string config, bool defaultValue)
+    {
+        var value = GetConfig(lines, config);
+        if (value is null) return defaultValue;
+        return bool.Parse(value);
     }
 
     public static string GetRequiredConfig(IEnumerable<string> lines, string config)

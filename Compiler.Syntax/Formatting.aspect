@@ -21,9 +21,17 @@
 // Circular: ⟳ Node.Attribute:TypeSymbol;
 // Collection: [*] Node.Attribute:TypeSymbol; // TODO how to set builders?
 
-↑ Expression.ExpressionPrecedence:`OperatorPrecedence`;
-
-= AssignmentExpression.ExpressionPrecedence => OperatorPrecedence.Assignment;
-
+// ---------- Expressions
 ↑ Expression.ToGroupedString(OperatorPrecedence surroundingPrecedence): `string`
     => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
+↑ Expression.ExpressionPrecedence:`OperatorPrecedence`;
+= BlockExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
+= NewObjectExpression.ExpressionPrecedence => OperatorPrecedence.Min;
+= UnsafeExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
+
+// ---------- Literal Expressions
+
+// ---------- Operator Expressions
+= AssignmentExpression.ExpressionPrecedence => OperatorPrecedence.Assignment;
+
+

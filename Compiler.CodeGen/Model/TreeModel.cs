@@ -17,6 +17,7 @@ public sealed class TreeModel : IHasUsingNamespaces
     public Symbol? Root { get; }
     public string SymbolPrefix => Syntax.SymbolPrefix;
     public string SymbolSuffix => Syntax.SymbolSuffix;
+    public bool GenerateClasses => Syntax.GenerateClasses;
     public string ClassPrefix => Syntax.ClassPrefix;
     public string ClassSuffix => Syntax.ClassSuffix;
     public IFixedSet<string> UsingNamespaces { get; }

@@ -16,11 +16,12 @@ internal static class TreeParser
         var rootType = ParseSymbol(GetConfig(lines, "root"));
         var symbolPrefix = GetConfig(lines, "prefix") ?? "";
         var symbolSuffix = GetConfig(lines, "suffix") ?? "";
+        var generateClasses = GetBoolConfig(lines, "gen-classes", true);
         var classPrefix = GetConfig(lines, "class-prefix") ?? "";
         var classSuffix = GetConfig(lines, "class-suffix") ?? "";
         var usingNamespaces = ParseUsingNamespaces(lines);
         var rules = ParseRules(lines);
-        return new(ns, rootType, symbolPrefix, symbolSuffix, classPrefix, classSuffix,
+        return new(ns, rootType, symbolPrefix, symbolSuffix, generateClasses, classPrefix, classSuffix,
             usingNamespaces, rules);
     }
 

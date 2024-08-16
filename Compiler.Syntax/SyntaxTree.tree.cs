@@ -761,9 +761,9 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExpressionSyntax : ICodeSyntax
 {
-    OperatorPrecedence ExpressionPrecedence { get; }
     string ToGroupedString(OperatorPrecedence surroundingPrecedence)
         => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
+    OperatorPrecedence ExpressionPrecedence { get; }
 }
 
 [Closed(
@@ -779,6 +779,8 @@ public partial interface IAssignableExpressionSyntax : IExpressionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBlockExpressionSyntax : IExpressionSyntax, IBlockOrResultSyntax, IBodyOrBlockSyntax
 {
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 }
 
 // [Closed(typeof(NewObjectExpressionSyntax))]
@@ -789,6 +791,8 @@ public partial interface INewObjectExpressionSyntax : IExpressionSyntax
     IdentifierName? ConstructorName { get; }
     TextSpan? ConstructorNameSpan { get; }
     IFixedList<IExpressionSyntax> Arguments { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Min;
 }
 
 // [Closed(typeof(UnsafeExpressionSyntax))]
@@ -796,6 +800,8 @@ public partial interface INewObjectExpressionSyntax : IExpressionSyntax
 public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 }
 
 [Closed(
