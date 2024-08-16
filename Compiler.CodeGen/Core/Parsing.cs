@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -88,5 +89,66 @@ internal static class Parsing
 
         if (currentStatement.Length > 0)
             yield return currentStatement.ToString().Trim();
+    }
+
+    public static IEnumerable<string> SplitCommaSeparated(string supertypes)
+        => supertypes.Split(',').Select(p => p.Trim());
+
+    public static (string, string?) OptionalSplitTwo(string value, string separator, string errorMessage)
+    {
+        var index = value.IndexOf(separator, StringComparison.InvariantCulture);
+        if (index == -1) return (value, null);
+        return SplitTwo(value, separator, index, errorMessage);
+    }
+
+    public static (string, string) SplitTwo(string value, string separator, string errorMessage)
+    {
+        var index = value.IndexOf(separator, StringComparison.InvariantCulture);
+        if (index == -1)
+            throw new FormatException(string.Format(errorMessage, value));
+        return SplitTwo(value, separator, index, errorMessage);
+    }
+
+    private static (string, string) SplitTwo(string value, string separator, int atIndex, string errorMessage)
+    {
+        var secondIndex = value.IndexOf(separator, atIndex + separator.Length, StringComparison.InvariantCulture);
+        if (secondIndex != -1)
+            throw new FormatException(string.Format(errorMessage, value));
+        return (value[..atIndex].Trim(), value[(atIndex + separator.Length)..].Trim());
+    }
+
+    public static (string, string) SplitAtFirst(string value, string separator, string errorMessage)
+    {
+        var index = value.IndexOf(separator, StringComparison.InvariantCulture);
+        if (index == -1) throw new FormatException(string.Format(errorMessage, value));
+        return (value[..index].Trim(), value[(index + separator.Length)..].Trim());
+    }
+
+    public static TypeSyntax ParseType(string type)
+    {
+        bool isOptional = ParseOffEnd(ref type, '?');
+        var collectionKind = ParseCollectionKind(ref type);
+        return new(ParseSymbol(type), collectionKind, isOptional);
+    }
+
+    private static bool ParseOffEnd(ref string type, char value)
+    {
+        var endsWith = type.EndsWith(value);
+        if (endsWith)
+            type = type[..^1];
+        return endsWith;
+    }
+
+    private static CollectionKind ParseCollectionKind(ref string type)
+    {
+        var isList = ParseOffEnd(ref type, '*');
+
+        var isSet = type.StartsWith('{') && type.EndsWith('}');
+        type = isSet ? type[1..^1] : type;
+
+        if (isList && isSet) throw new FormatException("Property cannot be both a list and a set");
+        if (isList) return CollectionKind.List;
+        if (isSet) return CollectionKind.Set;
+        return CollectionKind.None;
     }
 }
