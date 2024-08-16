@@ -46,7 +46,7 @@ public sealed class TreeModel : IHasUsingNamespaces
         where T : AttributeModel
     {
         var node = NodeFor(nodeSymbol.ShortName)!;
-        var attribute = node.DeclaredAttributes.Concat(node.SupertypeNodes.SelectMany(s => s.DeclaredAttributes))
+        var attribute = node.AspectDeclaredAttributes.Concat(node.SupertypeNodes.SelectMany(s => s.AspectDeclaredAttributes))
                             .OfType<T>().FirstOrDefault(a => a.Name == name);
         return attribute;
     }

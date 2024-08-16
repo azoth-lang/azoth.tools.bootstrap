@@ -162,7 +162,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             #line hidden
             
             #line 29 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      foreach (var attribute in node.DeclaredAttributes) { 
+      foreach (var attribute in node.AspectDeclaredAttributes) { 
             
             #line default
             #line hidden

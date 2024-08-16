@@ -49,11 +49,19 @@ public class TreeNodeModel
     public IFixedList<PropertyModel> DeclaredProperties { get; }
 
     /// <summary>
+    /// Attributes (including properties) declared against this node in both the tree and aspect
+    /// definition files.
+    /// </summary>
+    public IEnumerable<AttributeModel> DeclaredAttributes => declaredAttributes.Value;
+    private readonly Lazy<IFixedList<AttributeModel>> declaredAttributes;
+
+    /// <summary>
     /// Properties that are implicitly declared on the node because multiple supertypes define the
     /// same property with the same type.
     /// </summary>
     public IFixedList<PropertyModel> ImplicitlyDeclaredProperties => implicitlyDeclaredProperties.Value;
     private readonly Lazy<IFixedList<PropertyModel>> implicitlyDeclaredProperties;
+
 
     /// <summary>
     /// The combination of declared and implicitly declared properties.
@@ -83,14 +91,15 @@ public class TreeNodeModel
     /// </summary>
     /// <remarks>This will not return duplicate property names unless two supertypes declare
     /// conflicting properties.</remarks>
-    public IFixedList<PropertyModel> ActualProperties => allProperties.Value;
-    private readonly Lazy<IFixedList<PropertyModel>> allProperties;
+    public IFixedList<PropertyModel> ActualProperties => actualProperties.Value;
+    private readonly Lazy<IFixedList<PropertyModel>> actualProperties;
 
     /// <summary>
     /// Attributes declared against this specific node in the definition files.
     /// </summary>
-    public IFixedList<AspectAttributeModel> DeclaredAttributes => declaredAttributes.Value;
-    private readonly Lazy<IFixedList<AspectAttributeModel>> declaredAttributes;
+    // TODO remove
+    public IFixedList<AspectAttributeModel> AspectDeclaredAttributes => aspectDeclaredAttributes.Value;
+    private readonly Lazy<IFixedList<AspectAttributeModel>> aspectDeclaredAttributes;
 
     /// <summary>
     /// Equations declared against this specific node in the definition files.
@@ -118,6 +127,7 @@ public class TreeNodeModel
 
         // Properties
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new PropertyModel(this, p)).ToFixedList();
+        declaredAttributes = new(() => DeclaredProperties.Concat<AttributeModel>(Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.NodeSymbol == Defines)).ToFixedList());
         inheritedProperties = new(()
             => MostSpecificProperties(SupertypeNodes.SelectMany(r => r.ActualProperties).Distinct()).ToFixedList());
         implicitlyDeclaredProperties = new(()
@@ -128,7 +138,7 @@ public class TreeNodeModel
                                   .ToFixedList());
         propertiesRequiringDeclaration = new(()
             => AllDeclaredProperties.Where(p => p.IsDeclarationRequired).ToFixedList());
-        allProperties = new(() =>
+        actualProperties = new(() =>
         {
             var propertyLookup = PropertiesRequiringDeclaration
                                  .Concat(InheritedProperties.AllExcept<PropertyModel>(PropertiesRequiringDeclaration, AttributeModel.NameComparer))
@@ -139,7 +149,7 @@ public class TreeNodeModel
         });
 
         // Attributes
-        declaredAttributes = new(() => Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.NodeSymbol == Defines).ToFixedList());
+        aspectDeclaredAttributes = new(() => Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.NodeSymbol == Defines).ToFixedList());
         declaredEquations = new(() => Tree.Aspects.SelectMany(a => a.Equations).Where(e => e.Node == Defines).ToFixedList());
     }
 

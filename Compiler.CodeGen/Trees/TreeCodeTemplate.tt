@@ -26,7 +26,7 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
     <#=Emit.Type(baseProperty.Type) #> <#= Emit.TypeName(baseProperty.Node.Defines) #>.<#=baseProperty.Name #> => <#=property.Name #>;
 <#          } #>
 <#      } #>
-<#      foreach (var attribute in node.DeclaredAttributes) { #>
+<#      foreach (var attribute in node.AspectDeclaredAttributes) { #>
 <#          switch (attribute) { #>
 <#              case SynthesizedAttributeModel attr: #>
     <#=Emit.Type(attr.Type) #> <#=attr.Name #><#=attr.Parameters #><#=Emit.Body(attr) #>
