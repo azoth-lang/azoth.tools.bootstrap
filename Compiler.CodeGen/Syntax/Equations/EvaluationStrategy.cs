@@ -17,3 +17,20 @@ public enum EvaluationStrategy
     /// </summary>
     Computed,
 }
+
+public static class EvaluationStrategyExtensions
+{
+    public static string ToSourceString(this EvaluationStrategy? strategy)
+        => strategy switch
+        {
+            null => "",
+            EvaluationStrategy.Eager => "eager",
+            EvaluationStrategy.Lazy => "lazy",
+            EvaluationStrategy.Computed => "computed",
+            _ => throw new($"Unknown evaluation strategy: {strategy}"),
+        };
+
+    public static EvaluationStrategy WithDefault(this EvaluationStrategy? strategy, string? expression)
+        => strategy
+           ?? (expression is not null ? EvaluationStrategy.Computed : EvaluationStrategy.Lazy);
+}

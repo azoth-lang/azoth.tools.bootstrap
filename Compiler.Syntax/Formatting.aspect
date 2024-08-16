@@ -5,7 +5,7 @@
 // Attribute Syntax
 // ----------------
 // Synthesized:
-//      ↑ (child)? Node.Attribute:TypeSymbol (=> <C# Expression>)?;
+//      ↑ (child)? (eager|lazy|computed)? Node.Attribute:TypeSymbol (=> <C# Expression>)?;
 //      ↑ (child)? Node.Method(<params>):TypeSymbol (=> <C# Expression>)?;
 //      = (eager|lazy|computed)? Node.Attribute(:TypeSymbol)? (=> <C# Expression>)?;
 //      = Node.Method(<params>)(:TypeSymbol)? (=> <C# Expression>)?;
@@ -68,7 +68,7 @@
 // ToString()
 // =============================================================================
 
-↑ MethodDefinition.ToString(): `string`;
+↑ computed MethodDefinition.ToString(): `string`;
 = computed AbstractMethodDefinition.ToString();
 = computed GetterMethodDefinition.ToString();
 = computed SetterMethodDefinition.ToString();

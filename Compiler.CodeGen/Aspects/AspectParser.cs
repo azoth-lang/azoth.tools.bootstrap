@@ -53,10 +53,11 @@ public static class AspectParser
         var (definition, defaultExpression) = OptionalSplitTwo(statement, "=>", "Too many `=>` in: '{0}'");
         (definition, var type) = SplitTwo(definition, ":", "Should be exactly one `:` in: '{0}'");
         (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        var evaluationStrategy = ParseEvaluationStrategy(ref node);
         (string name, string? parameters) = SplitOffParameters(definition);
         var typeSyntax = ParseType(type);
         var nodeSymbol = new SymbolSyntax(node);
-        return new(nodeSymbol, name, parameters, typeSyntax, defaultExpression);
+        return new(evaluationStrategy, nodeSymbol, name, parameters, typeSyntax, defaultExpression);
     }
 
     private static EquationSyntax ParseEquation(string statement)
