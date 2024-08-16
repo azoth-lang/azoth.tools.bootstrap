@@ -8,7 +8,7 @@ public sealed class SynthesizedAttributeModel : AttributeModel
 {
     public override SynthesizedAttributeSyntax Syntax { get; }
     public string Name => Syntax.Name;
-    public string? Parameters => Syntax.Parameters;
+    public string Parameters => Syntax.Parameters ?? "";
     public TypeModel Type { get; }
     public string? DefaultExpression => Syntax.DefaultExpression;
 

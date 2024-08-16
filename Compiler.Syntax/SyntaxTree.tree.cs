@@ -762,6 +762,8 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
 public partial interface IExpressionSyntax : ICodeSyntax
 {
     OperatorPrecedence ExpressionPrecedence { get; }
+    string ToGroupedString(OperatorPrecedence surroundingPrecedence)
+        => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
 }
 
 [Closed(

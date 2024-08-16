@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -66,4 +67,14 @@ internal static class Emit
 
     public static string ParameterName(PropertyModel property)
         => property.Name.ToCamelCase();
+
+    public static string Body(SynthesizedAttributeModel attribute)
+    {
+        if (attribute.DefaultExpression is not null)
+            return $"{Environment.NewLine}        => {attribute.DefaultExpression};";
+        if (!string.IsNullOrEmpty(attribute.Parameters))
+            return ";";
+
+        return " { get; }";
+    }
 }

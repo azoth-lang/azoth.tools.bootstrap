@@ -200,7 +200,7 @@ public class TreeParserTests
 
         var ex = Assert.Throws<FormatException>(() => TreeParser.Parse(grammar));
 
-        Assert.Equal("Too many equal signs on line: 'NonTerminal = Foo = Bar'", ex.Message);
+        Assert.Equal("Too many equal signs in: 'NonTerminal = Foo = Bar'", ex.Message);
     }
     #endregion
 
