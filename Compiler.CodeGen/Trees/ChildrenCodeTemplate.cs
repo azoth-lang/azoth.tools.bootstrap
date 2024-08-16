@@ -78,7 +78,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(" n:\r\n");
             
             #line 28 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-      foreach(var property in node.AllProperties.Where(p => p.ReferencesNode)) { 
+      foreach(var property in node.ActualProperties.Where(p => p.ReferencesNode)) { 
             
             #line default
             #line hidden

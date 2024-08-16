@@ -77,20 +77,26 @@ public class TreeNodeModel
     private readonly Lazy<IFixedList<PropertyModel>> inheritedProperties;
 
     /// <summary>
-    /// Get all properties for a node. This will use inherited properties if a property declared on
-    /// this node does not require a declaration. Properties will be ordered by declaration and then
-    /// by supertype order.
+    /// Get the actual properties for a node. This will use inherited properties if a property
+    /// declared on this node does not require a declaration. Properties will be ordered by
+    /// declaration and then by supertype order.
     /// </summary>
     /// <remarks>This will not return duplicate property names unless two supertypes declare
     /// conflicting properties.</remarks>
-    public IFixedList<PropertyModel> AllProperties => allProperties.Value;
+    public IFixedList<PropertyModel> ActualProperties => allProperties.Value;
     private readonly Lazy<IFixedList<PropertyModel>> allProperties;
 
-    public IFixedList<AttributeModel> Attributes => attributes.Value;
-    private readonly Lazy<IFixedList<AttributeModel>> attributes;
+    /// <summary>
+    /// Attributes declared against this specific node in the definition files.
+    /// </summary>
+    public IFixedList<AttributeModel> DeclaredAttributes => declaredAttributes.Value;
+    private readonly Lazy<IFixedList<AttributeModel>> declaredAttributes;
 
-    public IFixedList<EquationModel> Equations => equations.Value;
-    private readonly Lazy<IFixedList<EquationModel>> equations;
+    /// <summary>
+    /// Equations declared against this specific node in the definition files.
+    /// </summary>
+    public IFixedList<EquationModel> DeclaredEquations => declaredEquations.Value;
+    private readonly Lazy<IFixedList<EquationModel>> declaredEquations;
 
     public TreeNodeModel(TreeModel tree, TreeNodeSyntax syntax)
     {
@@ -99,18 +105,21 @@ public class TreeNodeModel
         Defines = Symbol.CreateInternalFromSyntax(tree, syntax.Defines);
         DefinesType = new SymbolType(Defines);
         Supertypes = syntax.Supertypes.Select(s => Symbol.CreateFromSyntax(tree, s)).ToFixedSet();
+        // Add root supertype if no supertypes are declared
         if (Tree.Root is { } root && root != Defines && !Supertypes.Any(s => s is InternalSymbol))
             Supertypes = Supertypes.Append(root).ToFixedSet();
 
+        // Inheritance relationships
         supertypeNodes = new(() => Supertypes.OfType<InternalSymbol>().Select(s => s.ReferencedNode)
                                              .EliminateRedundantRules().ToFixedSet());
         ancestorNodes = new(() => SupertypeNodes.Concat(SupertypeNodes.SelectMany(p => p.AncestorNodes)).ToFixedSet());
         childNodes = new(() => Tree.Nodes.Where(r => r.SupertypeNodes.Contains(this)).ToFixedSet());
         descendantNodes = new(() => ChildNodes.Concat(ChildNodes.SelectMany(r => r.DescendantNodes)).ToFixedSet());
 
+        // Properties
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new PropertyModel(this, p)).ToFixedList();
         inheritedProperties = new(()
-            => MostSpecificProperties(SupertypeNodes.SelectMany(r => r.AllProperties).Distinct()).ToFixedList());
+            => MostSpecificProperties(SupertypeNodes.SelectMany(r => r.ActualProperties).Distinct()).ToFixedList());
         implicitlyDeclaredProperties = new(()
             => InheritedProperties.AllExcept(DeclaredProperties, PropertyModel.NameComparer)
                                   .GroupBy(p => p.Name)
@@ -124,13 +133,14 @@ public class TreeNodeModel
             var propertyLookup = PropertiesRequiringDeclaration
                                  .Concat(InheritedProperties.AllExcept(PropertiesRequiringDeclaration, PropertyModel.NameComparer))
                                  .ToLookup(p => p.Name);
-            var propertyOrder = AllDeclaredProperties.Concat(SupertypeNodes.SelectMany(s => s.AllProperties))
+            var propertyOrder = AllDeclaredProperties.Concat(SupertypeNodes.SelectMany(s => s.ActualProperties))
                                                      .DistinctBy(p => p.Name);
             return propertyOrder.SelectMany(p => propertyLookup[p.Name]).ToFixedList();
         });
 
-        attributes = new(() => Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.Node == Defines).ToFixedList());
-        equations = new(() => Tree.Aspects.SelectMany(a => a.Equations).Where(e => e.Node == Defines).ToFixedList());
+        // Attributes
+        declaredAttributes = new(() => Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.Node == Defines).ToFixedList());
+        declaredEquations = new(() => Tree.Aspects.SelectMany(a => a.Equations).Where(e => e.Node == Defines).ToFixedList());
     }
 
     /// <summary>
@@ -142,7 +152,7 @@ public class TreeNodeModel
         => InheritedProperties.Where(p => p.Name == propertyName).Distinct();
 
     public IEnumerable<PropertyModel> PropertiesNamed(string propertyName)
-        => AllProperties.Where(p => p.Name == propertyName);
+        => ActualProperties.Where(p => p.Name == propertyName);
 
     private static IEnumerable<PropertyModel> MostSpecificProperties(IEnumerable<PropertyModel> propertyModels)
         => propertyModels.GroupBy(p => p.Name).SelectMany(MostSpecificProperties);

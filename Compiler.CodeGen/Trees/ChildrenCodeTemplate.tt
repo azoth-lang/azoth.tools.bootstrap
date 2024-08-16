@@ -25,7 +25,7 @@ public static class <#=Emit.TypeName(tree.Root)#>Extensions
                 throw ExhaustiveMatch.Failed(node);
 <#  foreach(var node in tree.Nodes.Where(r => !r.IsAbstract)) { #>
             case <#=Emit.TypeName(node.Defines) #> n:
-<#      foreach(var property in node.AllProperties.Where(p => p.ReferencesNode)) { #>
+<#      foreach(var property in node.ActualProperties.Where(p => p.ReferencesNode)) { #>
 <#          if (property.Type is CollectionType) { #>
                 foreach (var child in n.<#=property.Name #>)
                     yield return child;

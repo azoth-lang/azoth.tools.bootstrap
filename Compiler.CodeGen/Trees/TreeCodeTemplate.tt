@@ -26,14 +26,14 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
     <#=Emit.Type(baseProperty.Type) #> <#= Emit.TypeName(baseProperty.Node.Defines) #>.<#=baseProperty.Name #> => <#=property.Name #>;
 <#          } #>
 <#      } #>
-<#      foreach (var attribute in node.Attributes) { #>
+<#      foreach (var attribute in node.DeclaredAttributes) { #>
 <#          switch (attribute) { #>
 <#              case SynthesizedAttributeModel attr: #>
     <#=Emit.Type(attr.Type) #> <#=attr.Name #><#=attr.Parameters #><#=Emit.Body(attr) #>
 <#                  break;#>
 <#          } #>
 <#      } #>
-<#      foreach (var equation in node.Equations) { #>
+<#      foreach (var equation in node.DeclaredEquations) { #>
 <#          switch (equation) { #>
 <#              case SynthesizedAttributeEquationModel eq: #>
     <#=Emit.Type(eq.Type) #> <#= Emit.TypeName(eq.Attribute.Node) #>.<#=eq.Name #><#=eq.Parameters #><#=Emit.Body(eq) #>
@@ -48,13 +48,13 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 [GeneratedCode("AzothCompilerCodeGen", null)]
 file class <#= Emit.ClassName(node.Defines) #> // : <#= Emit.TypeName(node.Defines) #>
 {
-<#      foreach (var property in node.AllProperties) { #>
+<#      foreach (var property in node.ActualProperties) { #>
     public <#=Emit.Type(property.Type) #> <#=property.Name #> { get; }
 <#      } #>
 
-    public <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", node.AllProperties.Select(p => $"{Emit.Type(p.Type)} {Emit.ParameterName(p)}")) #>)
+    public <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", node.ActualProperties.Select(p => $"{Emit.Type(p.Type)} {Emit.ParameterName(p)}")) #>)
     {
-<#      foreach (var property in node.AllProperties) { #>
+<#      foreach (var property in node.ActualProperties) { #>
         <#=property.Name #> = <#=Emit.ParameterName(property) #>;
 <#      } #>
     }

@@ -45,7 +45,7 @@ public sealed class TreeModel : IHasUsingNamespaces
         where T : AttributeModel
     {
         var node = NodeFor(nodeSymbol.ShortName)!;
-        var attribute = node.Attributes.Concat(node.SupertypeNodes.SelectMany(s => s.Attributes))
+        var attribute = node.DeclaredAttributes.Concat(node.SupertypeNodes.SelectMany(s => s.DeclaredAttributes))
                             .OfType<T>().FirstOrDefault(a => a.Name == name);
         return attribute;
     }
@@ -54,12 +54,25 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     public void Validate()
     {
-        bool errors = false;
+        var errors = ValidateAmbiguousProperties();
+        errors |= ValidateUndefinedAttributes();
+        if (errors)
+            throw new Exception("Invalid definitions. See console output for errors.");
+    }
+
+
+    /// <summary>
+    /// This checks that there are no properties that have conflicting definitions due to the
+    /// inheritance of properties from supertypes.
+    /// </summary>
+    private bool ValidateAmbiguousProperties()
+    {
+        var errors = false;
         foreach (var node in Nodes)
-            if (node.AllProperties.Duplicates(PropertyModel.NameComparer).Any())
+            if (node.ActualProperties.Duplicates(PropertyModel.NameComparer).Any())
             {
                 errors = true;
-                var ambiguousNames = node.AllProperties.Duplicates(PropertyModel.NameComparer).Select(p => p.Name).ToList();
+                var ambiguousNames = node.ActualProperties.Duplicates(PropertyModel.NameComparer).Select(p => p.Name).ToList();
                 Console.Error.WriteLine($"ERROR: Node '{node.Defines}' has ambiguous properties.");
                 foreach (var ambiguousName in ambiguousNames)
                 {
@@ -71,7 +84,18 @@ public sealed class TreeModel : IHasUsingNamespaces
                 }
             }
 
-        if (errors)
-            throw new Exception("Invalid definitions. See console output for errors.");
+        return errors;
+    }
+
+    /// <summary>
+    /// This checks that each attribute has a definition for each concrete node.
+    /// </summary>
+    private bool ValidateUndefinedAttributes()
+    {
+        var errors = false;
+        foreach (var node in Nodes.Where(n => !n.IsAbstract))
+        {
+        }
+        return errors;
     }
 }
