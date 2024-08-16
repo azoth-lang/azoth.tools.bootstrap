@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using Azoth.Tools.Bootstrap.Framework;
 using static Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Parsing;
 
@@ -45,21 +46,38 @@ public static class AspectParser
 
     private static SynthesizedAttributeSyntax ParseSynthesizedAttribute(string statement)
     {
-        if (statement[0] != '↑')
+        if (!ParseOffStart(ref statement, '↑'))
             throw new ArgumentException("Not a synthesized attribute statement.", nameof(statement));
         statement = statement[1..].Trim();
 
         var (definition, defaultExpression) = OptionalSplitTwo(statement, "=>", "Too many `=>` in: '{0}'");
         (definition, var type) = SplitTwo(definition, ":", "Should be exactly one `:` in: '{0}'");
         (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        (string name, string? parameters) = SplitOffParameters(definition);
+        var typeSyntax = ParseType(type);
+        var nodeSymbol = new SymbolSyntax(node);
+        return new(nodeSymbol, name, parameters, typeSyntax, defaultExpression);
+    }
+
+    private static EquationSyntax ParseEquation(string statement)
+    {
+        if (!ParseOffStart(ref statement, '='))
+            throw new ArgumentException("Not an equation.", nameof(statement));
+        var (definition, expression) = OptionalSplitTwo(statement, "=>", "Too many `=>` in: '{0}'");
+        (definition, var typeOverride) = OptionalSplitTwo(definition, ":", "Too many `:` in: '{0}'");
+        (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        (string name, string? parameters) = SplitOffParameters(definition);
+        var typeOverrideSyntax = ParseType(typeOverride);
+        var nodeSymbol = new SymbolSyntax(node);
+        return new SynthesizedAttributeEquationSyntax(nodeSymbol, name, parameters, typeOverrideSyntax, expression);
+    }
+
+    private static (string name, string? parameters) SplitOffParameters(string definition)
+    {
         var (name, parameters) = OptionalSplitTwo(definition, "(", "Too many `(` in: '{0}'");
         if (parameters is not null)
             // Put left paren back on parameters
             parameters = "(" + parameters;
-        var typeSyntax = ParseType(type);
-        return new(new SymbolSyntax(node), name, parameters, typeSyntax, defaultExpression);
+        return (name, parameters);
     }
-
-    private static EquationSyntax ParseEquation(string statement)
-        => throw new NotImplementedException();
 }

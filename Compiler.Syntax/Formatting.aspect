@@ -8,7 +8,7 @@
 //      ↑ (child)? Node.Attribute:TypeSymbol (=> <C# Expression>)?;
 //      ↑ (child)? Node.Method(<params>):TypeSymbol (=> <C# Expression>)?;
 //      = (eager|lazy|computed)? Node.Attribute(:TypeSymbol)? (=> <C# Expression>)?;
-//      = Node.Method(<params/param-names>)(:TypeSymbol)? (=> <C# Expression>)?;
+//      = Node.Method(<params>)(:TypeSymbol)? (=> <C# Expression>)?;
 // Inherited:
 //      ↓ (computed)? (child)? Node.Attribute:TypeSymbol;
 //      ↓ (child)? Node.Method():TypeSymbol; // Always computed
@@ -23,7 +23,7 @@
 
 ↑ Expression.ExpressionPrecedence:`OperatorPrecedence`;
 
-// = AssignmentExpression.ExpressionPrecedence => OperatorPrecedence.Assignment;
+= AssignmentExpression.ExpressionPrecedence => OperatorPrecedence.Assignment;
 
 ↑ Expression.ToGroupedString(OperatorPrecedence surroundingPrecedence): `string`
     => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();

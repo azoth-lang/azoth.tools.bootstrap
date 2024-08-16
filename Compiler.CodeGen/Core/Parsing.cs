@@ -62,10 +62,10 @@ internal static class Parsing
     {
         if (symbol is null) return null;
         if (symbol == "<default>")
-            return new SymbolSyntax("");
+            return new("");
         if (symbol.StartsWith('`') && symbol.EndsWith('`'))
-            return new SymbolSyntax(symbol[1..^1], true);
-        return new SymbolSyntax(symbol);
+            return new(symbol[1..^1], true);
+        return new(symbol);
     }
 
     public static IEnumerable<string> ParseToStatements(IEnumerable<string> lines)
@@ -124,19 +124,13 @@ internal static class Parsing
         return (value[..index].Trim(), value[(index + separator.Length)..].Trim());
     }
 
-    public static TypeSyntax ParseType(string type)
+    [return: NotNullIfNotNull(nameof(type))]
+    public static TypeSyntax? ParseType(string? type)
     {
+        if (type is null) return null;
         bool isOptional = ParseOffEnd(ref type, '?');
         var collectionKind = ParseCollectionKind(ref type);
         return new(ParseSymbol(type), collectionKind, isOptional);
-    }
-
-    private static bool ParseOffEnd(ref string type, char value)
-    {
-        var endsWith = type.EndsWith(value);
-        if (endsWith)
-            type = type[..^1];
-        return endsWith;
     }
 
     private static CollectionKind ParseCollectionKind(ref string type)
@@ -150,5 +144,19 @@ internal static class Parsing
         if (isList) return CollectionKind.List;
         if (isSet) return CollectionKind.Set;
         return CollectionKind.None;
+    }
+
+    public static bool ParseOffEnd(ref string value, char c)
+    {
+        var endsWith = value.EndsWith(c);
+        if (endsWith) value = value[..^1];
+        return endsWith;
+    }
+
+    public static bool ParseOffStart(ref string value, char c)
+    {
+        var endsWith = value.StartsWith(c);
+        if (endsWith) value = value[1..];
+        return endsWith;
     }
 }
