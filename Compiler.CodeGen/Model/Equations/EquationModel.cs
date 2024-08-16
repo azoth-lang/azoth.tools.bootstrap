@@ -1,3 +1,4 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
@@ -18,12 +19,16 @@ public abstract class EquationModel
 
     public AspectModel Aspect { get; }
     public abstract EquationSyntax Syntax { get; }
-    public InternalSymbol Node { get; set; }
+    public InternalSymbol NodeSymbol { get; }
+    public TreeNodeModel Node => node.Value;
+    private readonly Lazy<TreeNodeModel> node;
     public abstract AttributeModel Attribute { get; }
 
     protected EquationModel(AspectModel aspect, SymbolSyntax node)
     {
         Aspect = aspect;
-        Node = Symbol.CreateInternalFromSyntax(Aspect.Tree, node);
+        NodeSymbol = Symbol.CreateInternalFromSyntax(Aspect.Tree, node);
+        this.node = new(() => Aspect.Tree.NodeFor(NodeSymbol)
+                              ?? throw new($"Attribute '{Syntax}' refers to node '{NodeSymbol}' that does not exist."));
     }
 }

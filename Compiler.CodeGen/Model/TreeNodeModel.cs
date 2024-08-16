@@ -101,6 +101,12 @@ public class TreeNodeModel
     public IFixedList<EquationModel> DeclaredEquations => declaredEquations.Value;
     private readonly Lazy<IFixedList<EquationModel>> declaredEquations;
 
+    public IFixedList<SynthesizedAttributeEquationModel> InheritedEquations => inheritedEquations.Value;
+    private readonly Lazy<IFixedList<SynthesizedAttributeEquationModel>> inheritedEquations;
+
+    public IFixedList<SynthesizedAttributeEquationModel> ActualEquations => actualEquations.Value;
+    private readonly Lazy<IFixedList<SynthesizedAttributeEquationModel>> actualEquations;
+
     public TreeNodeModel(TreeModel tree, TreeNodeSyntax syntax)
     {
         Tree = tree;
@@ -123,7 +129,7 @@ public class TreeNodeModel
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new PropertyModel(this, p)).ToFixedList();
         declaredAttributes = new(() => DeclaredProperties.Concat<AttributeModel>(Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.NodeSymbol == Defines)).ToFixedList());
         inheritedAttributes = new(()
-            => MostSpecificAttributes(SupertypeNodes.SelectMany(r => r.ActualAttributes).Distinct()).ToFixedList());
+            => MostSpecificMembers(SupertypeNodes.SelectMany(r => r.ActualAttributes).Distinct()).ToFixedList());
         implicitlyDeclaredProperties = new(()
             => InheritedAttributes.OfType<PropertyModel>()
                                   .AllExcept<PropertyModel>(DeclaredProperties, AttributeModel.NameComparer)
@@ -135,16 +141,25 @@ public class TreeNodeModel
             => AllDeclaredAttributes.Where(p => p.IsDeclarationRequired).ToFixedList());
         actualAttributes = new(() =>
         {
-            var propertyLookup = AttributesRequiringDeclaration
+            var attributeLookup = AttributesRequiringDeclaration
                                  .Concat(InheritedAttributes.AllExcept(AttributesRequiringDeclaration, AttributeModel.NameComparer))
                                  .ToLookup(p => p.Name);
-            var propertyOrder = AllDeclaredAttributes.Concat(SupertypeNodes.SelectMany(s => s.ActualAttributes))
+            var attributeOrder = AllDeclaredAttributes.Concat(SupertypeNodes.SelectMany(s => s.ActualAttributes))
                                                      .DistinctBy(p => p.Name);
-            return propertyOrder.SelectMany(p => propertyLookup[p.Name]).ToFixedList();
+            return attributeOrder.SelectMany(p => attributeLookup[p.Name]).ToFixedList();
         });
 
         // Equations
-        declaredEquations = new(() => Tree.Aspects.SelectMany(a => a.Equations).Where(e => e.Node == Defines).ToFixedList());
+        declaredEquations = new(() => Tree.Aspects.SelectMany(a => a.Equations).Where(e => e.NodeSymbol == Defines).ToFixedList());
+        inheritedEquations = new(()
+            => MostSpecificMembers(SupertypeNodes.SelectMany(r => r.ActualEquations).Distinct()).ToFixedList());
+        actualEquations = new(() =>
+        {
+            var declaredSynthesizedEquations = DeclaredEquations.OfType<SynthesizedAttributeEquationModel>().ToList();
+            return declaredSynthesizedEquations
+                   .Concat(InheritedEquations.AllExcept(declaredSynthesizedEquations, SynthesizedAttributeEquationModel.NameComparer))
+                   .ToFixedList();
+        });
     }
 
     /// <summary>
@@ -158,12 +173,14 @@ public class TreeNodeModel
     public IEnumerable<AttributeModel> AttributesNamed(string name)
         => ActualAttributes.Where(p => p.Name == name);
 
-    private static IEnumerable<AttributeModel> MostSpecificAttributes(IEnumerable<AttributeModel> attributes)
-        => attributes.GroupBy(p => p.Name).SelectMany(MostSpecificAttributes);
+    private static IEnumerable<T> MostSpecificMembers<T>(IEnumerable<T> attributes)
+        where T : IMemberModel
+        => attributes.GroupBy(p => p.Name).SelectMany(MostSpecificMembers);
 
-    private static IEnumerable<AttributeModel> MostSpecificAttributes(IGrouping<string, AttributeModel> attributes)
+    private static IEnumerable<T> MostSpecificMembers<T>(IGrouping<string, T> attributes)
+        where T : IMemberModel
     {
-        var mostSpecific = new List<AttributeModel>();
+        var mostSpecific = new List<T>();
         foreach (var attribute in attributes)
         {
             for (var i = mostSpecific.Count - 1; i >= 0; i--)
@@ -193,6 +210,7 @@ public class TreeNodeModel
         };
     }
 
-    private static bool IsMoreSpecific(AttributeModel property, AttributeModel other)
+    private static bool IsMoreSpecific<T>(T property, T other)
+        where T : IMemberModel
         => property.Node.AncestorNodes.Contains(other.Node);
 }

@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 /// The semantic model for an attribute.
 /// </summary>
 [Closed(typeof(AspectAttributeModel), typeof(PropertyModel))]
-public abstract class AttributeModel
+public abstract class AttributeModel : IMemberModel
 {
     public static IEqualityComparer<AttributeModel> NameAndTypeComparer { get; }
         = EqualityComparer<AttributeModel>.Create((p1, p2) => p1?.Name == p2?.Name && p1?.Type == p2?.Type,

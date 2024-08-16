@@ -812,6 +812,8 @@ public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ILiteralExpressionSyntax : IExpressionSyntax
 {
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 }
 
 // [Closed(typeof(BoolLiteralExpressionSyntax))]
@@ -859,6 +861,8 @@ public partial interface IBinaryOperatorExpressionSyntax : IExpressionSyntax
     IExpressionSyntax LeftOperand { get; }
     BinaryOperator Operator { get; }
     IExpressionSyntax RightOperand { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => Operator.Precedence();
 }
 
 // [Closed(typeof(UnaryOperatorExpressionSyntax))]
@@ -868,6 +872,8 @@ public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
     UnaryOperatorFixity Fixity { get; }
     UnaryOperator Operator { get; }
     IExpressionSyntax Operand { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Unary;
 }
 
 // [Closed(typeof(IdExpressionSyntax))]
@@ -875,6 +881,8 @@ public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
 public partial interface IIdExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Min;
 }
 
 // [Closed(typeof(ConversionExpressionSyntax))]
@@ -884,6 +892,8 @@ public partial interface IConversionExpressionSyntax : IExpressionSyntax
     IExpressionSyntax Referent { get; }
     ConversionOperator Operator { get; }
     ITypeSyntax ConvertToType { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Conversion;
 }
 
 // [Closed(typeof(PatternMatchExpressionSyntax))]
@@ -892,6 +902,8 @@ public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
     IPatternSyntax Pattern { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Conversion;
 }
 
 // [Closed(typeof(IfExpressionSyntax))]
@@ -901,6 +913,8 @@ public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyn
     IExpressionSyntax Condition { get; }
     IBlockOrResultSyntax ThenBlock { get; }
     IElseClauseSyntax? ElseClause { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Min;
 }
 
 // [Closed(typeof(LoopExpressionSyntax))]
@@ -908,6 +922,8 @@ public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyn
 public partial interface ILoopExpressionSyntax : IExpressionSyntax
 {
     IBlockExpressionSyntax Block { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 }
 
 // [Closed(typeof(WhileExpressionSyntax))]
@@ -916,6 +932,8 @@ public partial interface IWhileExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Condition { get; }
     IBlockExpressionSyntax Block { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Min;
 }
 
 // [Closed(typeof(ForeachExpressionSyntax))]
@@ -926,6 +944,8 @@ public partial interface IForeachExpressionSyntax : IExpressionSyntax, ILocalBin
     IExpressionSyntax InExpression { get; }
     ITypeSyntax? Type { get; }
     IBlockExpressionSyntax Block { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Min;
 }
 
 // [Closed(typeof(BreakExpressionSyntax))]
@@ -933,12 +953,16 @@ public partial interface IForeachExpressionSyntax : IExpressionSyntax, ILocalBin
 public partial interface IBreakExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => Value is not null ? OperatorPrecedence.Min : OperatorPrecedence.Primary;
 }
 
 // [Closed(typeof(NextExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INextExpressionSyntax : IExpressionSyntax
 {
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 }
 
 // [Closed(typeof(ReturnExpressionSyntax))]
@@ -946,6 +970,8 @@ public partial interface INextExpressionSyntax : IExpressionSyntax
 public partial interface IReturnExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Min;
 }
 
 // [Closed(typeof(InvocationExpressionSyntax))]
@@ -954,6 +980,8 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
     IFixedList<IExpressionSyntax> Arguments { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 }
 
 [Closed(
@@ -965,6 +993,8 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameExpressionSyntax : IExpressionSyntax
 {
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 }
 
 [Closed(
@@ -1044,6 +1074,8 @@ public partial interface IMissingNameSyntax : ISimpleNameSyntax, IAssignableExpr
 public partial interface IMoveExpressionSyntax : IExpressionSyntax
 {
     ISimpleNameSyntax Referent { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Min;
 }
 
 // [Closed(typeof(FreezeExpressionSyntax))]
@@ -1051,6 +1083,8 @@ public partial interface IMoveExpressionSyntax : IExpressionSyntax
 public partial interface IFreezeExpressionSyntax : IExpressionSyntax
 {
     ISimpleNameSyntax Referent { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Min;
 }
 
 // [Closed(typeof(AsyncBlockExpressionSyntax))]
@@ -1058,6 +1092,8 @@ public partial interface IFreezeExpressionSyntax : IExpressionSyntax
 public partial interface IAsyncBlockExpressionSyntax : IExpressionSyntax
 {
     IBlockExpressionSyntax Block { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Primary;
 }
 
 // [Closed(typeof(AsyncStartExpressionSyntax))]
@@ -1066,6 +1102,8 @@ public partial interface IAsyncStartExpressionSyntax : IExpressionSyntax
 {
     bool Scheduled { get; }
     IExpressionSyntax Expression { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Min;
 }
 
 // [Closed(typeof(AwaitExpressionSyntax))]
@@ -1073,6 +1111,8 @@ public partial interface IAsyncStartExpressionSyntax : IExpressionSyntax
 public partial interface IAwaitExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
+    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
+        => OperatorPrecedence.Unary;
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]

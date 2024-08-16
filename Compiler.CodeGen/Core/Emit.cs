@@ -99,7 +99,7 @@ internal static class Emit
                 {
                     builder.Append(equation.Aspect.Name);
                     builder.Append('.');
-                    builder.Append(equation.Node);
+                    builder.Append(equation.NodeSymbol);
                     builder.Append('_');
                     builder.Append(equation.Name);
                     builder.Append("()");

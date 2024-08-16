@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
@@ -57,7 +58,7 @@ public sealed class TreeModel : IHasUsingNamespaces
         var errors = ValidateAmbiguousAttributes();
         errors |= ValidateUndefinedAttributes();
         if (errors)
-            throw new("Invalid definitions. See console output for errors.");
+            throw new ValidationFailedException();
     }
 
 
@@ -73,15 +74,8 @@ public sealed class TreeModel : IHasUsingNamespaces
             {
                 errors = true;
                 var ambiguousNames = node.ActualAttributes.Duplicates(AttributeModel.NameComparer).Select(p => p.Name).ToList();
-                Console.Error.WriteLine($"ERROR: Node '{node.Defines}' has ambiguous attributes.");
-                foreach (var ambiguousName in ambiguousNames)
-                {
-                    Console.Error.WriteLine($"    '{ambiguousName}' defined as:");
-                    foreach (var attribute in ambiguousNames.SelectMany(node.AttributesNamed))
-                    {
-                        Console.Error.WriteLine($"        '{attribute}'");
-                    }
-                }
+                Console.Error.WriteLine($"ERROR: Node '{node.Defines}' has ambiguous attributes {string.Join(", ", ambiguousNames.Select(n => $"'{n}'"))}."
+                                        + $" Definitions: {string.Join(", ", ambiguousNames.SelectMany(node.AttributesNamed).Select(n => $"'{n}'"))}");
             }
 
         return errors;
@@ -95,7 +89,17 @@ public sealed class TreeModel : IHasUsingNamespaces
         var errors = false;
         foreach (var node in Nodes.Where(n => !n.IsAbstract))
         {
+            var actualEquations = node.ActualEquations.ToFixedDictionary(e => e.Name);
+            foreach (var synthesizedAttribute in AttributesRequiringEquations(node))
+                if (!actualEquations.ContainsKey(synthesizedAttribute.Name))
+                {
+                    errors = true;
+                    Console.Error.WriteLine($"ERROR: Node '{node.Defines}' is missing an equation for attribute '{synthesizedAttribute.Name}'.");
+                }
         }
         return errors;
     }
+
+    private static IEnumerable<SynthesizedAttributeModel> AttributesRequiringEquations(TreeNodeModel node)
+        => node.ActualAttributes.OfType<SynthesizedAttributeModel>().Where(a => a.DefaultExpression is null);
 }

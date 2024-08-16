@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Aspects;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
@@ -116,10 +117,15 @@ public static class Program
 
             return true;
         }
+        catch (ValidationFailedException)
+        {
+            Console.WriteLine("Validation failed");
+            return false;
+        }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
-            Console.WriteLine(ex.StackTrace);
+            Console.Error.WriteLine($"ERROR: {ex.Message}");
+            Console.WriteLine(ex);
             return false;
         }
     }

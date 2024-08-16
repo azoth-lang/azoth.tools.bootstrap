@@ -30,8 +30,36 @@
 = UnsafeExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
 
 // ---------- Literal Expressions
+= LiteralExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
 
 // ---------- Operator Expressions
 = AssignmentExpression.ExpressionPrecedence => OperatorPrecedence.Assignment;
+= BinaryOperatorExpression.ExpressionPrecedence => Operator.Precedence();
+= UnaryOperatorExpression.ExpressionPrecedence => OperatorPrecedence.Unary;
+= IdExpression.ExpressionPrecedence => OperatorPrecedence.Min;
+= ConversionExpression.ExpressionPrecedence => OperatorPrecedence.Conversion;
+= PatternMatchExpression.ExpressionPrecedence => OperatorPrecedence.Conversion;
 
+// ---------- Control Flow Expressions
+= IfExpression.ExpressionPrecedence => OperatorPrecedence.Min;
+= LoopExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
+= WhileExpression.ExpressionPrecedence => OperatorPrecedence.Min;
+= ForeachExpression.ExpressionPrecedence => OperatorPrecedence.Min;
+= BreakExpression.ExpressionPrecedence => Value is not null ? OperatorPrecedence.Min : OperatorPrecedence.Primary;
+= NextExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
+= ReturnExpression.ExpressionPrecedence => OperatorPrecedence.Min;
 
+// ---------- Invocation Expressions
+= InvocationExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
+
+// ---------- Name Expressions
+= NameExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
+
+// ---------- Capability Expressions
+= MoveExpression.ExpressionPrecedence => OperatorPrecedence.Min;
+= FreezeExpression.ExpressionPrecedence => OperatorPrecedence.Min;
+
+// ---------- Async Expressions
+= AsyncBlockExpression.ExpressionPrecedence => OperatorPrecedence.Primary;
+= AsyncStartExpression.ExpressionPrecedence => OperatorPrecedence.Min;
+= AwaitExpression.ExpressionPrecedence => OperatorPrecedence.Unary;
