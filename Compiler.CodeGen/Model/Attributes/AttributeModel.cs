@@ -5,7 +5,10 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 
-[Closed(typeof(SynthesizedAttributeModel))]
+/// <summary>
+/// The semantic model for an attribute.
+/// </summary>
+[Closed(typeof(AspectAttributeModel))]
 public abstract class AttributeModel
 {
     public static AttributeModel Create(AspectModel aspect, AttributeSyntax syntax)
@@ -15,14 +18,12 @@ public abstract class AttributeModel
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
-    public AspectModel Aspect { get; }
     public abstract AttributeSyntax Syntax { get; }
     public InternalSymbol Node { get; }
     public string Name => Syntax.Name;
 
-    protected AttributeModel(AspectModel aspect, SymbolSyntax node)
+    protected AttributeModel(TreeModel tree, SymbolSyntax node)
     {
-        Aspect = aspect;
-        Node = Symbol.CreateInternalFromSyntax(Aspect.Tree, node);
+        Node = Symbol.CreateInternalFromSyntax(tree, node);
     }
 }
