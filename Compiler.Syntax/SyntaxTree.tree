@@ -22,6 +22,7 @@
 
 <default>;
 
+// ---------- Top Level
 Code = Span:`TextSpan`;
 CompilationUnit <: Code = File:`CodeFile` ImplicitNamespaceName:`NamespaceName` Diagnostics:`DiagnosticCollection`
     UsingDirectives:UsingDirective* Definitions:NonMemberDefinition*;
@@ -101,7 +102,7 @@ Parameter <: Code = Name:`IdentifierName`?;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter;
 NamedParameter <: ConstructorOrInitializerParameter, LocalBinding = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` Type DefaultValue:Expression?;
-SelfParameter <: Parameter = IsLentBinding:`bool`;
+SelfParameter <: Parameter = IsLentBinding:`bool` Capability:CapabilityConstraint;
 ConstructorSelfParameter <: SelfParameter = Capability;
 InitializerSelfParameter <: SelfParameter = Capability;
 MethodSelfParameter <: SelfParameter = Capability:CapabilityConstraint;

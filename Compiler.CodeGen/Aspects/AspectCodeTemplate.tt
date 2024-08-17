@@ -5,7 +5,7 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
-<#  foreach(var usingNamespace in Build.OrderedNamespaces(aspect, "System.CodeDom.Compiler")) { #>
+<#  foreach(var usingNamespace in Build.OrderedNamespaces(aspect, "System.CodeDom.Compiler", "System.Runtime.CompilerServices")) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
@@ -19,6 +19,7 @@ internal static partial class <#= aspect.Name #>
 <#  foreach(var equation in aspect.AllDeclaredEquations) { #>
 <#          switch (equation) { #>
 <#              case SynthesizedAttributeEquationModel eq when ShouldEmit.EquationPartialImplementation(eq): #>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial <#= Emit.Type(eq.Type) #> <#=eq.NodeSymbol.ShortName #>_<#= eq.Name #>(<#= Emit.TypeName(eq.Node.Defines) #> node);
 <#                  break;#>
 <#          } #>

@@ -21,6 +21,12 @@
 // Circular: ⟳ Node.Attribute:TypeSymbol;
 // Collection: [*] Node.Attribute:TypeSymbol; // TODO how to set builders?
 
+/// <summary>
+/// A developer/debugging friendly string representation of the syntax.
+/// </summary>
+↑ computed Code.ToString(): `string`;
+= computed SelfParameter.ToString();
+
 // ---------- Expressions
 ↑ Expression.ToGroupedString(OperatorPrecedence surroundingPrecedence): `string`
     => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
@@ -64,8 +70,4 @@
 = AsyncStartExpression.ExpressionPrecedence => OperatorPrecedence.Min;
 = AwaitExpression.ExpressionPrecedence => OperatorPrecedence.Unary;
 
-// =============================================================================
-// ToString()
-// =============================================================================
 
-↑ computed MethodDefinition.ToString(): `string`;

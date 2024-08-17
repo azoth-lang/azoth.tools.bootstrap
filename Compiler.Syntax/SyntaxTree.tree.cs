@@ -50,6 +50,7 @@ public partial interface ISyntax
 public partial interface ICodeSyntax : ISyntax
 {
     TextSpan Span { get; }
+    string ToString();
 }
 
 // [Closed(typeof(CompilationUnitSyntax))]
@@ -341,7 +342,6 @@ public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax,
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
-    string ToString();
 }
 
 // [Closed(typeof(AbstractMethodDefinitionSyntax))]
@@ -527,13 +527,15 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
 public partial interface ISelfParameterSyntax : IParameterSyntax
 {
     bool IsLentBinding { get; }
+    ICapabilityConstraintSyntax Capability { get; }
 }
 
 // [Closed(typeof(ConstructorSelfParameterSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
 {
-    ICapabilitySyntax Capability { get; }
+    new ICapabilitySyntax Capability { get; }
+    ICapabilityConstraintSyntax ISelfParameterSyntax.Capability => Capability;
 
     public static IConstructorSelfParameterSyntax Create(TextSpan span, IdentifierName? name, bool isLentBinding, ICapabilitySyntax capability)
         => new ConstructorSelfParameterSyntax(span, name, isLentBinding, capability);
@@ -543,7 +545,8 @@ public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
 {
-    ICapabilitySyntax Capability { get; }
+    new ICapabilitySyntax Capability { get; }
+    ICapabilityConstraintSyntax ISelfParameterSyntax.Capability => Capability;
 
     public static IInitializerSelfParameterSyntax Create(TextSpan span, IdentifierName? name, bool isLentBinding, ICapabilitySyntax capability)
         => new InitializerSelfParameterSyntax(span, name, isLentBinding, capability);
@@ -553,7 +556,6 @@ public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
 {
-    ICapabilityConstraintSyntax Capability { get; }
 
     public static IMethodSelfParameterSyntax Create(TextSpan span, IdentifierName? name, bool isLentBinding, ICapabilityConstraintSyntax capability)
         => new MethodSelfParameterSyntax(span, name, isLentBinding, capability);
@@ -1360,6 +1362,8 @@ file sealed class CompilationUnitSyntax : ICompilationUnitSyntax
     public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INonMemberDefinitionSyntax> Definitions { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.CompilationUnit_ToString(this);
 
     public CompilationUnitSyntax(TextSpan span, CodeFile file, NamespaceName implicitNamespaceName, DiagnosticCollection diagnostics, IFixedList<IUsingDirectiveSyntax> usingDirectives, IFixedList<INonMemberDefinitionSyntax> definitions)
     {
@@ -1377,6 +1381,8 @@ file sealed class UsingDirectiveSyntax : IUsingDirectiveSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public NamespaceName Name { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.UsingDirective_ToString(this);
 
     public UsingDirectiveSyntax(TextSpan span, NamespaceName name)
     {
@@ -1430,6 +1436,8 @@ file sealed class NamespaceDefinitionSyntax : INamespaceDefinitionSyntax
     public NamespaceName DeclaredNames { [DebuggerStepThrough] get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INonMemberDefinitionSyntax> Definitions { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.NamespaceDefinition_ToString(this);
 
     public NamespaceDefinitionSyntax(TextSpan span, CodeFile file, TypeName? name, TextSpan nameSpan, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<IUsingDirectiveSyntax> usingDirectives, IFixedList<INonMemberDefinitionSyntax> definitions)
     {
@@ -1456,6 +1464,8 @@ file sealed class FunctionDefinitionSyntax : IFunctionDefinitionSyntax
     public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.FunctionDefinition_ToString(this);
 
     public FunctionDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IFixedList<IAttributeSyntax> attributes, IdentifierName name, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body)
     {
@@ -1486,6 +1496,8 @@ file sealed class ClassDefinitionSyntax : IClassDefinitionSyntax
     public IStandardTypeNameSyntax? BaseTypeName { [DebuggerStepThrough] get; }
     public IFixedList<IStandardTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<IClassMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.ClassDefinition_ToString(this);
 
     public ClassDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IAbstractKeywordToken? abstractModifier, IFixedList<IGenericParameterSyntax> genericParameters, IStandardTypeNameSyntax? baseTypeName, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<IClassMemberDefinitionSyntax> members)
     {
@@ -1517,6 +1529,8 @@ file sealed class StructDefinitionSyntax : IStructDefinitionSyntax
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<IStandardTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<IStructMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.StructDefinition_ToString(this);
 
     public StructDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IFixedList<IGenericParameterSyntax> genericParameters, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<IStructMemberDefinitionSyntax> members)
     {
@@ -1546,6 +1560,8 @@ file sealed class TraitDefinitionSyntax : ITraitDefinitionSyntax
     public IFixedList<IGenericParameterSyntax> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<IStandardTypeNameSyntax> SupertypeNames { [DebuggerStepThrough] get; }
     public IFixedList<ITraitMemberDefinitionSyntax> Members { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.TraitDefinition_ToString(this);
 
     public TraitDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IFixedList<IGenericParameterSyntax> genericParameters, IFixedList<IStandardTypeNameSyntax> supertypeNames, IFixedList<ITraitMemberDefinitionSyntax> members)
     {
@@ -1570,6 +1586,8 @@ file sealed class GenericParameterSyntax : IGenericParameterSyntax
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public TypeParameterIndependence Independence { [DebuggerStepThrough] get; }
     public TypeParameterVariance Variance { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.GenericParameter_ToString(this);
 
     public GenericParameterSyntax(TextSpan span, ICapabilityConstraintSyntax constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance)
     {
@@ -1706,6 +1724,8 @@ file sealed class ConstructorDefinitionSyntax : IConstructorDefinitionSyntax
     public IConstructorSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IBlockBodySyntax Body { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.ConstructorDefinition_ToString(this);
 
     public ConstructorDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName? name, IConstructorSelfParameterSyntax selfParameter, IFixedList<IConstructorOrInitializerParameterSyntax> parameters, IBlockBodySyntax body)
     {
@@ -1731,6 +1751,8 @@ file sealed class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
     public IInitializerSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IBlockBodySyntax Body { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.InitializerDefinition_ToString(this);
 
     public InitializerDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName? name, IInitializerSelfParameterSyntax selfParameter, IFixedList<IConstructorOrInitializerParameterSyntax> parameters, IBlockBodySyntax body)
     {
@@ -1756,6 +1778,8 @@ file sealed class FieldDefinitionSyntax : IFieldDefinitionSyntax
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public ITypeSyntax Type { [DebuggerStepThrough] get; }
     public IExpressionSyntax? Initializer { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.FieldDefinition_ToString(this);
 
     public FieldDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, bool isMutableBinding, IdentifierName name, ITypeSyntax type, IExpressionSyntax? initializer)
     {
@@ -1781,6 +1805,8 @@ file sealed class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefini
     public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.AssociatedFunctionDefinition_ToString(this);
 
     public AssociatedFunctionDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IFixedList<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body)
     {
@@ -1800,6 +1826,8 @@ file sealed class AttributeSyntax : IAttributeSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IStandardTypeNameSyntax TypeName { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.Attribute_ToString(this);
 
     public AttributeSyntax(TextSpan span, IStandardTypeNameSyntax typeName)
     {
@@ -1813,6 +1841,8 @@ file sealed class CapabilitySetSyntax : ICapabilitySetSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CapabilitySet Constraint { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.CapabilitySet_ToString(this);
 
     public CapabilitySetSyntax(TextSpan span, CapabilitySet constraint)
     {
@@ -1829,6 +1859,8 @@ file sealed class CapabilitySyntax : ICapabilitySyntax
     public IFixedList<ICapabilityToken> Tokens { [DebuggerStepThrough] get; }
     public DeclaredCapability Declared { [DebuggerStepThrough] get; }
     public Capability Capability { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.Capability_ToString(this);
 
     public CapabilitySyntax(TextSpan span, ICapabilityConstraint constraint, IFixedList<ICapabilityToken> tokens, DeclaredCapability declared, Capability capability)
     {
@@ -1850,6 +1882,8 @@ file sealed class NamedParameterSyntax : INamedParameterSyntax
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public ITypeSyntax Type { [DebuggerStepThrough] get; }
     public IExpressionSyntax? DefaultValue { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.NamedParameter_ToString(this);
 
     public NamedParameterSyntax(TextSpan span, TextSpan nameSpan, bool isMutableBinding, bool isLentBinding, IdentifierName name, ITypeSyntax type, IExpressionSyntax? defaultValue)
     {
@@ -1870,6 +1904,8 @@ file sealed class ConstructorSelfParameterSyntax : IConstructorSelfParameterSynt
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
     public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.SelfParameter_ToString(this);
 
     public ConstructorSelfParameterSyntax(TextSpan span, IdentifierName? name, bool isLentBinding, ICapabilitySyntax capability)
     {
@@ -1887,6 +1923,8 @@ file sealed class InitializerSelfParameterSyntax : IInitializerSelfParameterSynt
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
     public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.SelfParameter_ToString(this);
 
     public InitializerSelfParameterSyntax(TextSpan span, IdentifierName? name, bool isLentBinding, ICapabilitySyntax capability)
     {
@@ -1904,6 +1942,8 @@ file sealed class MethodSelfParameterSyntax : IMethodSelfParameterSyntax
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
     public ICapabilityConstraintSyntax Capability { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.SelfParameter_ToString(this);
 
     public MethodSelfParameterSyntax(TextSpan span, IdentifierName? name, bool isLentBinding, ICapabilityConstraintSyntax capability)
     {
@@ -1920,6 +1960,8 @@ file sealed class FieldParameterSyntax : IFieldParameterSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IExpressionSyntax? DefaultValue { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.FieldParameter_ToString(this);
 
     public FieldParameterSyntax(TextSpan span, IdentifierName name, IExpressionSyntax? defaultValue)
     {
@@ -1934,6 +1976,8 @@ file sealed class ReturnSyntax : IReturnSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ITypeSyntax Type { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.Return_ToString(this);
 
     public ReturnSyntax(TextSpan span, ITypeSyntax type)
     {
@@ -1947,6 +1991,8 @@ file sealed class BlockBodySyntax : IBlockBodySyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IFixedList<IBodyStatementSyntax> Statements { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.BlockBody_ToString(this);
 
     public BlockBodySyntax(TextSpan span, IFixedList<IBodyStatementSyntax> statements)
     {
@@ -1961,6 +2007,8 @@ file sealed class ExpressionBodySyntax : IExpressionBodySyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IResultStatementSyntax ResultStatement { [DebuggerStepThrough] get; }
     public IFixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.ExpressionBody_ToString(this);
 
     public ExpressionBodySyntax(TextSpan span, IResultStatementSyntax resultStatement, IFixedList<IStatementSyntax> statements)
     {
@@ -1975,6 +2023,8 @@ file sealed class IdentifierTypeNameSyntax : IIdentifierTypeNameSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.IdentifierTypeName_ToString(this);
 
     public IdentifierTypeNameSyntax(TextSpan span, IdentifierName name)
     {
@@ -1988,6 +2038,8 @@ file sealed class SpecialTypeNameSyntax : ISpecialTypeNameSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public SpecialTypeName Name { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.SpecialTypeName_ToString(this);
 
     public SpecialTypeNameSyntax(TextSpan span, SpecialTypeName name)
     {
@@ -2002,6 +2054,8 @@ file sealed class GenericTypeNameSyntax : IGenericTypeNameSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public GenericName Name { [DebuggerStepThrough] get; }
     public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.GenericTypeName_ToString(this);
 
     public GenericTypeNameSyntax(TextSpan span, GenericName name, IFixedList<ITypeSyntax> typeArguments)
     {
@@ -2018,6 +2072,8 @@ file sealed class QualifiedTypeNameSyntax : IQualifiedTypeNameSyntax
     public TypeName Name { [DebuggerStepThrough] get; }
     public ITypeNameSyntax Context { [DebuggerStepThrough] get; }
     public IStandardTypeNameSyntax QualifiedName { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.QualifiedTypeName_ToString(this);
 
     public QualifiedTypeNameSyntax(TextSpan span, TypeName name, ITypeNameSyntax context, IStandardTypeNameSyntax qualifiedName)
     {
@@ -2033,6 +2089,8 @@ file sealed class OptionalTypeSyntax : IOptionalTypeSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.OptionalType_ToString(this);
 
     public OptionalTypeSyntax(TextSpan span, ITypeSyntax referent)
     {
@@ -2047,6 +2105,8 @@ file sealed class CapabilityTypeSyntax : ICapabilityTypeSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
     public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.CapabilityType_ToString(this);
 
     public CapabilityTypeSyntax(TextSpan span, ICapabilitySyntax capability, ITypeSyntax referent)
     {
@@ -2062,6 +2122,8 @@ file sealed class FunctionTypeSyntax : IFunctionTypeSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IFixedList<IParameterTypeSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnTypeSyntax Return { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.FunctionType_ToString(this);
 
     public FunctionTypeSyntax(TextSpan span, IFixedList<IParameterTypeSyntax> parameters, IReturnTypeSyntax @return)
     {
@@ -2077,6 +2139,8 @@ file sealed class ParameterTypeSyntax : IParameterTypeSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsLent { [DebuggerStepThrough] get; }
     public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.ParameterType_ToString(this);
 
     public ParameterTypeSyntax(TextSpan span, bool isLent, ITypeSyntax referent)
     {
@@ -2091,6 +2155,8 @@ file sealed class ReturnTypeSyntax : IReturnTypeSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.ReturnType_ToString(this);
 
     public ReturnTypeSyntax(TextSpan span, ITypeSyntax referent)
     {
@@ -2105,6 +2171,8 @@ file sealed class CapabilityViewpointTypeSyntax : ICapabilityViewpointTypeSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
     public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.CapabilityViewpointType_ToString(this);
 
     public CapabilityViewpointTypeSyntax(TextSpan span, ICapabilitySyntax capability, ITypeSyntax referent)
     {
@@ -2119,6 +2187,8 @@ file sealed class SelfViewpointTypeSyntax : ISelfViewpointTypeSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ITypeSyntax Referent { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.SelfViewpointType_ToString(this);
 
     public SelfViewpointTypeSyntax(TextSpan span, ITypeSyntax referent)
     {
@@ -2132,6 +2202,8 @@ file sealed class ResultStatementSyntax : IResultStatementSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.ResultStatement_ToString(this);
 
     public ResultStatementSyntax(TextSpan span, IExpressionSyntax expression)
     {
@@ -2150,6 +2222,8 @@ file sealed class VariableDeclarationStatementSyntax : IVariableDeclarationState
     public ICapabilitySyntax? Capability { [DebuggerStepThrough] get; }
     public ITypeSyntax? Type { [DebuggerStepThrough] get; }
     public IExpressionSyntax? Initializer { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.VariableDeclarationStatement_ToString(this);
 
     public VariableDeclarationStatementSyntax(TextSpan span, bool isMutableBinding, TextSpan nameSpan, IdentifierName name, ICapabilitySyntax? capability, ITypeSyntax? type, IExpressionSyntax? initializer)
     {
@@ -2168,6 +2242,8 @@ file sealed class ExpressionStatementSyntax : IExpressionStatementSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.ExpressionStatement_ToString(this);
 
     public ExpressionStatementSyntax(TextSpan span, IExpressionSyntax expression)
     {
@@ -2183,6 +2259,8 @@ file sealed class BindingContextPatternSyntax : IBindingContextPatternSyntax
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IPatternSyntax Pattern { [DebuggerStepThrough] get; }
     public ITypeSyntax? Type { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.BindingContextPattern_ToString(this);
 
     public BindingContextPatternSyntax(TextSpan span, bool isMutableBinding, IPatternSyntax pattern, ITypeSyntax? type)
     {
@@ -2200,6 +2278,8 @@ file sealed class BindingPatternSyntax : IBindingPatternSyntax
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.BindingPattern_ToString(this);
 
     public BindingPatternSyntax(TextSpan span, bool isMutableBinding, TextSpan nameSpan, IdentifierName name)
     {
@@ -2215,6 +2295,8 @@ file sealed class OptionalPatternSyntax : IOptionalPatternSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IOptionalOrBindingPatternSyntax Pattern { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.OptionalPattern_ToString(this);
 
     public OptionalPatternSyntax(TextSpan span, IOptionalOrBindingPatternSyntax pattern)
     {
@@ -2230,6 +2312,8 @@ file sealed class BlockExpressionSyntax : IBlockExpressionSyntax
     public IFixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
+    public override string ToString()
+        => FormattingAspect.BlockExpression_ToString(this);
 
     public BlockExpressionSyntax(TextSpan span, IFixedList<IStatementSyntax> statements)
     {
@@ -2248,6 +2332,8 @@ file sealed class NewObjectExpressionSyntax : INewObjectExpressionSyntax
     public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Min;
+    public override string ToString()
+        => FormattingAspect.NewObjectExpression_ToString(this);
 
     public NewObjectExpressionSyntax(TextSpan span, ITypeNameSyntax type, IdentifierName? constructorName, TextSpan? constructorNameSpan, IFixedList<IExpressionSyntax> arguments)
     {
@@ -2266,6 +2352,8 @@ file sealed class UnsafeExpressionSyntax : IUnsafeExpressionSyntax
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
+    public override string ToString()
+        => FormattingAspect.UnsafeExpression_ToString(this);
 
     public UnsafeExpressionSyntax(TextSpan span, IExpressionSyntax expression)
     {
@@ -2279,6 +2367,8 @@ file sealed class BoolLiteralExpressionSyntax : IBoolLiteralExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool Value { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.BoolLiteralExpression_ToString(this);
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
@@ -2294,6 +2384,8 @@ file sealed class IntegerLiteralExpressionSyntax : IIntegerLiteralExpressionSynt
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public BigInteger Value { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.IntegerLiteralExpression_ToString(this);
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
@@ -2308,6 +2400,8 @@ file sealed class IntegerLiteralExpressionSyntax : IIntegerLiteralExpressionSynt
 file sealed class NoneLiteralExpressionSyntax : INoneLiteralExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.NoneLiteralExpression_ToString(this);
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
@@ -2322,6 +2416,8 @@ file sealed class StringLiteralExpressionSyntax : IStringLiteralExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public string Value { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.StringLiteralExpression_ToString(this);
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
@@ -2341,6 +2437,8 @@ file sealed class AssignmentExpressionSyntax : IAssignmentExpressionSyntax
     public IExpressionSyntax RightOperand { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Assignment;
+    public override string ToString()
+        => FormattingAspect.AssignmentExpression_ToString(this);
 
     public AssignmentExpressionSyntax(TextSpan span, IAssignableExpressionSyntax leftOperand, AssignmentOperator @operator, IExpressionSyntax rightOperand)
     {
@@ -2360,6 +2458,8 @@ file sealed class BinaryOperatorExpressionSyntax : IBinaryOperatorExpressionSynt
     public IExpressionSyntax RightOperand { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => Operator.Precedence();
+    public override string ToString()
+        => FormattingAspect.BinaryOperatorExpression_ToString(this);
 
     public BinaryOperatorExpressionSyntax(TextSpan span, IExpressionSyntax leftOperand, BinaryOperator @operator, IExpressionSyntax rightOperand)
     {
@@ -2379,6 +2479,8 @@ file sealed class UnaryOperatorExpressionSyntax : IUnaryOperatorExpressionSyntax
     public IExpressionSyntax Operand { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Unary;
+    public override string ToString()
+        => FormattingAspect.UnaryOperatorExpression_ToString(this);
 
     public UnaryOperatorExpressionSyntax(TextSpan span, UnaryOperatorFixity fixity, UnaryOperator @operator, IExpressionSyntax operand)
     {
@@ -2396,6 +2498,8 @@ file sealed class IdExpressionSyntax : IIdExpressionSyntax
     public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Min;
+    public override string ToString()
+        => FormattingAspect.IdExpression_ToString(this);
 
     public IdExpressionSyntax(TextSpan span, IExpressionSyntax referent)
     {
@@ -2413,6 +2517,8 @@ file sealed class ConversionExpressionSyntax : IConversionExpressionSyntax
     public ITypeSyntax ConvertToType { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Conversion;
+    public override string ToString()
+        => FormattingAspect.ConversionExpression_ToString(this);
 
     public ConversionExpressionSyntax(TextSpan span, IExpressionSyntax referent, ConversionOperator @operator, ITypeSyntax convertToType)
     {
@@ -2431,6 +2537,8 @@ file sealed class PatternMatchExpressionSyntax : IPatternMatchExpressionSyntax
     public IPatternSyntax Pattern { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Conversion;
+    public override string ToString()
+        => FormattingAspect.PatternMatchExpression_ToString(this);
 
     public PatternMatchExpressionSyntax(TextSpan span, IExpressionSyntax referent, IPatternSyntax pattern)
     {
@@ -2449,6 +2557,8 @@ file sealed class IfExpressionSyntax : IIfExpressionSyntax
     public IElseClauseSyntax? ElseClause { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Min;
+    public override string ToString()
+        => FormattingAspect.IfExpression_ToString(this);
 
     public IfExpressionSyntax(TextSpan span, IExpressionSyntax condition, IBlockOrResultSyntax thenBlock, IElseClauseSyntax? elseClause)
     {
@@ -2466,6 +2576,8 @@ file sealed class LoopExpressionSyntax : ILoopExpressionSyntax
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
+    public override string ToString()
+        => FormattingAspect.LoopExpression_ToString(this);
 
     public LoopExpressionSyntax(TextSpan span, IBlockExpressionSyntax block)
     {
@@ -2482,6 +2594,8 @@ file sealed class WhileExpressionSyntax : IWhileExpressionSyntax
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Min;
+    public override string ToString()
+        => FormattingAspect.WhileExpression_ToString(this);
 
     public WhileExpressionSyntax(TextSpan span, IExpressionSyntax condition, IBlockExpressionSyntax block)
     {
@@ -2503,6 +2617,8 @@ file sealed class ForeachExpressionSyntax : IForeachExpressionSyntax
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Min;
+    public override string ToString()
+        => FormattingAspect.ForeachExpression_ToString(this);
 
     public ForeachExpressionSyntax(TextSpan span, bool isMutableBinding, TextSpan nameSpan, IdentifierName variableName, IExpressionSyntax inExpression, ITypeSyntax? type, IBlockExpressionSyntax block)
     {
@@ -2523,6 +2639,8 @@ file sealed class BreakExpressionSyntax : IBreakExpressionSyntax
     public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => Value is not null ? OperatorPrecedence.Min : OperatorPrecedence.Primary;
+    public override string ToString()
+        => FormattingAspect.BreakExpression_ToString(this);
 
     public BreakExpressionSyntax(TextSpan span, IExpressionSyntax? value)
     {
@@ -2537,6 +2655,8 @@ file sealed class NextExpressionSyntax : INextExpressionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
+    public override string ToString()
+        => FormattingAspect.NextExpression_ToString(this);
 
     public NextExpressionSyntax(TextSpan span)
     {
@@ -2551,6 +2671,8 @@ file sealed class ReturnExpressionSyntax : IReturnExpressionSyntax
     public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Min;
+    public override string ToString()
+        => FormattingAspect.ReturnExpression_ToString(this);
 
     public ReturnExpressionSyntax(TextSpan span, IExpressionSyntax? value)
     {
@@ -2567,6 +2689,8 @@ file sealed class InvocationExpressionSyntax : IInvocationExpressionSyntax
     public IFixedList<IExpressionSyntax> Arguments { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
+    public override string ToString()
+        => FormattingAspect.InvocationExpression_ToString(this);
 
     public InvocationExpressionSyntax(TextSpan span, IExpressionSyntax expression, IFixedList<IExpressionSyntax> arguments)
     {
@@ -2581,6 +2705,8 @@ file sealed class IdentifierNameExpressionSyntax : IIdentifierNameExpressionSynt
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.IdentifierNameExpression_ToString(this);
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
@@ -2596,6 +2722,8 @@ file sealed class SpecialTypeNameExpressionSyntax : ISpecialTypeNameExpressionSy
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public SpecialTypeName Name { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.SpecialTypeNameExpression_ToString(this);
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
@@ -2612,6 +2740,8 @@ file sealed class GenericNameExpressionSyntax : IGenericNameExpressionSyntax
     public TextSpan Span { [DebuggerStepThrough] get; }
     public GenericName Name { [DebuggerStepThrough] get; }
     public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.GenericNameExpression_ToString(this);
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
@@ -2628,6 +2758,8 @@ file sealed class SelfExpressionSyntax : ISelfExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.SelfExpression_ToString(this);
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
@@ -2646,6 +2778,8 @@ file sealed class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
     public StandardName MemberName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeSyntax> TypeArguments { [DebuggerStepThrough] get; }
     public TextSpan MemberNameSpan { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.MemberAccessExpression_ToString(this);
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
@@ -2663,6 +2797,8 @@ file sealed class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
 file sealed class MissingNameSyntax : IMissingNameSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.MissingName_ToString(this);
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
@@ -2679,6 +2815,8 @@ file sealed class MoveExpressionSyntax : IMoveExpressionSyntax
     public ISimpleNameSyntax Referent { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Min;
+    public override string ToString()
+        => FormattingAspect.MoveExpression_ToString(this);
 
     public MoveExpressionSyntax(TextSpan span, ISimpleNameSyntax referent)
     {
@@ -2694,6 +2832,8 @@ file sealed class FreezeExpressionSyntax : IFreezeExpressionSyntax
     public ISimpleNameSyntax Referent { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Min;
+    public override string ToString()
+        => FormattingAspect.FreezeExpression_ToString(this);
 
     public FreezeExpressionSyntax(TextSpan span, ISimpleNameSyntax referent)
     {
@@ -2709,6 +2849,8 @@ file sealed class AsyncBlockExpressionSyntax : IAsyncBlockExpressionSyntax
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Primary;
+    public override string ToString()
+        => FormattingAspect.AsyncBlockExpression_ToString(this);
 
     public AsyncBlockExpressionSyntax(TextSpan span, IBlockExpressionSyntax block)
     {
@@ -2725,6 +2867,8 @@ file sealed class AsyncStartExpressionSyntax : IAsyncStartExpressionSyntax
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Min;
+    public override string ToString()
+        => FormattingAspect.AsyncStartExpression_ToString(this);
 
     public AsyncStartExpressionSyntax(TextSpan span, bool scheduled, IExpressionSyntax expression)
     {
@@ -2741,6 +2885,8 @@ file sealed class AwaitExpressionSyntax : IAwaitExpressionSyntax
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
         => OperatorPrecedence.Unary;
+    public override string ToString()
+        => FormattingAspect.AwaitExpression_ToString(this);
 
     public AwaitExpressionSyntax(TextSpan span, IExpressionSyntax expression)
     {

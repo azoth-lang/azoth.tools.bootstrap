@@ -91,7 +91,7 @@ internal static class SymbolNodeAspect
     public static bool TypeDeclaration_InheritedIsAttributeType(ITypeDefinitionNode _)
         => false;
 
-    public static bool FunctionDeclaration_InheritedIsAttributeType(IFunctionDefinitionNode node)
+    public static bool FunctionDeclaration_InheritedIsAttributeType(IFunctionDefinitionNode _)
         => false;
 
     public static ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)
