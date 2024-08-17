@@ -35,13 +35,6 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
     <#=Emit.Type(baseAttribute.Type) #> <#= Emit.TypeName(baseAttribute.Node.Defines) #>.<#=baseAttribute.Name #> => <#=attribute.Name #>;
 <#          } #>
 <#      } #>
-<#      foreach (var equation in node.DeclaredEquations) { #>
-<#          switch (equation) { #>
-<#              case SynthesizedAttributeEquationModel eq when eq.Expression is not null: #>
-    <#=Emit.Type(eq.Type) #> <#= Emit.TypeName(eq.Attribute.NodeSymbol) #>.<#=eq.Name #><#=eq.Parameters #><#=Emit.Body(eq) #>
-<#                  break;#>
-<#          } #>
-<#      } #>
 <#      if (tree.GenerateClasses && !node.IsAbstract) { #>
 
     public static <#= Emit.TypeName(node.Defines) #> Create(<#=string.Join(", ", node.ActualProperties.Select(p => $"{Emit.Type(p.Type)} {Emit.ParameterName(p)}")) #>)

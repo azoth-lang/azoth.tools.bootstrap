@@ -921,8 +921,6 @@ public partial interface IAssignableExpressionSyntax : IExpressionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBlockExpressionSyntax : IExpressionSyntax, IBlockOrResultSyntax, IBodyOrBlockSyntax
 {
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Primary;
 
     public static IBlockExpressionSyntax Create(TextSpan span, IFixedList<IStatementSyntax> statements)
         => new BlockExpressionSyntax(span, statements);
@@ -936,8 +934,6 @@ public partial interface INewObjectExpressionSyntax : IExpressionSyntax
     IdentifierName? ConstructorName { get; }
     TextSpan? ConstructorNameSpan { get; }
     IFixedList<IExpressionSyntax> Arguments { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Min;
 
     public static INewObjectExpressionSyntax Create(TextSpan span, ITypeNameSyntax type, IdentifierName? constructorName, TextSpan? constructorNameSpan, IFixedList<IExpressionSyntax> arguments)
         => new NewObjectExpressionSyntax(span, type, constructorName, constructorNameSpan, arguments);
@@ -948,8 +944,6 @@ public partial interface INewObjectExpressionSyntax : IExpressionSyntax
 public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Primary;
 
     public static IUnsafeExpressionSyntax Create(TextSpan span, IExpressionSyntax expression)
         => new UnsafeExpressionSyntax(span, expression);
@@ -963,8 +957,6 @@ public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ILiteralExpressionSyntax : IExpressionSyntax
 {
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Primary;
 }
 
 // [Closed(typeof(BoolLiteralExpressionSyntax))]
@@ -1013,8 +1005,6 @@ public partial interface IAssignmentExpressionSyntax : IExpressionSyntax
     IAssignableExpressionSyntax LeftOperand { get; }
     AssignmentOperator Operator { get; }
     IExpressionSyntax RightOperand { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Assignment;
 
     public static IAssignmentExpressionSyntax Create(TextSpan span, IAssignableExpressionSyntax leftOperand, AssignmentOperator @operator, IExpressionSyntax rightOperand)
         => new AssignmentExpressionSyntax(span, leftOperand, @operator, rightOperand);
@@ -1027,8 +1017,6 @@ public partial interface IBinaryOperatorExpressionSyntax : IExpressionSyntax
     IExpressionSyntax LeftOperand { get; }
     BinaryOperator Operator { get; }
     IExpressionSyntax RightOperand { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => Operator.Precedence();
 
     public static IBinaryOperatorExpressionSyntax Create(TextSpan span, IExpressionSyntax leftOperand, BinaryOperator @operator, IExpressionSyntax rightOperand)
         => new BinaryOperatorExpressionSyntax(span, leftOperand, @operator, rightOperand);
@@ -1041,8 +1029,6 @@ public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
     UnaryOperatorFixity Fixity { get; }
     UnaryOperator Operator { get; }
     IExpressionSyntax Operand { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Unary;
 
     public static IUnaryOperatorExpressionSyntax Create(TextSpan span, UnaryOperatorFixity fixity, UnaryOperator @operator, IExpressionSyntax operand)
         => new UnaryOperatorExpressionSyntax(span, fixity, @operator, operand);
@@ -1053,8 +1039,6 @@ public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
 public partial interface IIdExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Min;
 
     public static IIdExpressionSyntax Create(TextSpan span, IExpressionSyntax referent)
         => new IdExpressionSyntax(span, referent);
@@ -1067,8 +1051,6 @@ public partial interface IConversionExpressionSyntax : IExpressionSyntax
     IExpressionSyntax Referent { get; }
     ConversionOperator Operator { get; }
     ITypeSyntax ConvertToType { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Conversion;
 
     public static IConversionExpressionSyntax Create(TextSpan span, IExpressionSyntax referent, ConversionOperator @operator, ITypeSyntax convertToType)
         => new ConversionExpressionSyntax(span, referent, @operator, convertToType);
@@ -1080,8 +1062,6 @@ public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Referent { get; }
     IPatternSyntax Pattern { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Conversion;
 
     public static IPatternMatchExpressionSyntax Create(TextSpan span, IExpressionSyntax referent, IPatternSyntax pattern)
         => new PatternMatchExpressionSyntax(span, referent, pattern);
@@ -1094,8 +1074,6 @@ public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyn
     IExpressionSyntax Condition { get; }
     IBlockOrResultSyntax ThenBlock { get; }
     IElseClauseSyntax? ElseClause { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Min;
 
     public static IIfExpressionSyntax Create(TextSpan span, IExpressionSyntax condition, IBlockOrResultSyntax thenBlock, IElseClauseSyntax? elseClause)
         => new IfExpressionSyntax(span, condition, thenBlock, elseClause);
@@ -1106,8 +1084,6 @@ public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyn
 public partial interface ILoopExpressionSyntax : IExpressionSyntax
 {
     IBlockExpressionSyntax Block { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Primary;
 
     public static ILoopExpressionSyntax Create(TextSpan span, IBlockExpressionSyntax block)
         => new LoopExpressionSyntax(span, block);
@@ -1119,8 +1095,6 @@ public partial interface IWhileExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Condition { get; }
     IBlockExpressionSyntax Block { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Min;
 
     public static IWhileExpressionSyntax Create(TextSpan span, IExpressionSyntax condition, IBlockExpressionSyntax block)
         => new WhileExpressionSyntax(span, condition, block);
@@ -1134,8 +1108,6 @@ public partial interface IForeachExpressionSyntax : IExpressionSyntax, ILocalBin
     IExpressionSyntax InExpression { get; }
     ITypeSyntax? Type { get; }
     IBlockExpressionSyntax Block { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Min;
 
     public static IForeachExpressionSyntax Create(TextSpan span, bool isMutableBinding, TextSpan nameSpan, IdentifierName variableName, IExpressionSyntax inExpression, ITypeSyntax? type, IBlockExpressionSyntax block)
         => new ForeachExpressionSyntax(span, isMutableBinding, nameSpan, variableName, inExpression, type, block);
@@ -1146,8 +1118,6 @@ public partial interface IForeachExpressionSyntax : IExpressionSyntax, ILocalBin
 public partial interface IBreakExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => Value is not null ? OperatorPrecedence.Min : OperatorPrecedence.Primary;
 
     public static IBreakExpressionSyntax Create(TextSpan span, IExpressionSyntax? value)
         => new BreakExpressionSyntax(span, value);
@@ -1157,8 +1127,6 @@ public partial interface IBreakExpressionSyntax : IExpressionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INextExpressionSyntax : IExpressionSyntax
 {
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Primary;
 
     public static INextExpressionSyntax Create(TextSpan span)
         => new NextExpressionSyntax(span);
@@ -1169,8 +1137,6 @@ public partial interface INextExpressionSyntax : IExpressionSyntax
 public partial interface IReturnExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax? Value { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Min;
 
     public static IReturnExpressionSyntax Create(TextSpan span, IExpressionSyntax? value)
         => new ReturnExpressionSyntax(span, value);
@@ -1182,8 +1148,6 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
     IFixedList<IExpressionSyntax> Arguments { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Primary;
 
     public static IInvocationExpressionSyntax Create(TextSpan span, IExpressionSyntax expression, IFixedList<IExpressionSyntax> arguments)
         => new InvocationExpressionSyntax(span, expression, arguments);
@@ -1198,8 +1162,6 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameExpressionSyntax : IExpressionSyntax
 {
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Primary;
 }
 
 [Closed(
@@ -1297,8 +1259,6 @@ public partial interface IMissingNameSyntax : ISimpleNameSyntax, IAssignableExpr
 public partial interface IMoveExpressionSyntax : IExpressionSyntax
 {
     ISimpleNameSyntax Referent { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Min;
 
     public static IMoveExpressionSyntax Create(TextSpan span, ISimpleNameSyntax referent)
         => new MoveExpressionSyntax(span, referent);
@@ -1309,8 +1269,6 @@ public partial interface IMoveExpressionSyntax : IExpressionSyntax
 public partial interface IFreezeExpressionSyntax : IExpressionSyntax
 {
     ISimpleNameSyntax Referent { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Min;
 
     public static IFreezeExpressionSyntax Create(TextSpan span, ISimpleNameSyntax referent)
         => new FreezeExpressionSyntax(span, referent);
@@ -1321,8 +1279,6 @@ public partial interface IFreezeExpressionSyntax : IExpressionSyntax
 public partial interface IAsyncBlockExpressionSyntax : IExpressionSyntax
 {
     IBlockExpressionSyntax Block { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Primary;
 
     public static IAsyncBlockExpressionSyntax Create(TextSpan span, IBlockExpressionSyntax block)
         => new AsyncBlockExpressionSyntax(span, block);
@@ -1334,8 +1290,6 @@ public partial interface IAsyncStartExpressionSyntax : IExpressionSyntax
 {
     bool Scheduled { get; }
     IExpressionSyntax Expression { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Min;
 
     public static IAsyncStartExpressionSyntax Create(TextSpan span, bool scheduled, IExpressionSyntax expression)
         => new AsyncStartExpressionSyntax(span, scheduled, expression);
@@ -1346,8 +1300,6 @@ public partial interface IAsyncStartExpressionSyntax : IExpressionSyntax
 public partial interface IAwaitExpressionSyntax : IExpressionSyntax
 {
     IExpressionSyntax Expression { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Unary;
 
     public static IAwaitExpressionSyntax Create(TextSpan span, IExpressionSyntax expression)
         => new AwaitExpressionSyntax(span, expression);
