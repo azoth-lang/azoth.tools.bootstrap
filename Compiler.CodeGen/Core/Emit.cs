@@ -120,4 +120,10 @@ internal static class Emit
                 return builder.ToString();
         }
     }
+
+    public static string EagerBody(SynthesizedAttributeEquationModel equation)
+    {
+        Requires.That(equation.Strategy == EvaluationStrategy.Eager, nameof(equation), "Must be an eager equation.");
+        return equation.Expression ?? $"{equation.Aspect.Name}.{equation.NodeSymbol}_{equation.Name}(this)";
+    }
 }

@@ -165,9 +165,9 @@ public class TreeNodeModel
         {
             if (IsAbstract) return FixedList.Empty<SynthesizedAttributeEquationModel>();
             var actualEquationsNames = ComputeActualSynthesizedEquations(DeclaredEquations).Select(eq => eq.Name).ToFixedSet();
-            return InheritedAttributes.OfType<SynthesizedAttributeModel>()
-                                      .Where(a => a.DefaultExpression is null && !actualEquationsNames.Contains(a.Name))
-                                      .Select(ImplicitlyDeclaredEquation).ToFixedList();
+            return ActualAttributes.OfType<SynthesizedAttributeModel>()
+                                   .Where(a => a.DefaultExpression is null && !actualEquationsNames.Contains(a.Name))
+                                   .Select(ImplicitlyDeclaredEquation).ToFixedList();
         });
         actualEquations = new(() => ComputeActualSynthesizedEquations(AllDeclaredEquations).ToFixedList());
     }

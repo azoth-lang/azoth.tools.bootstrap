@@ -1,6 +1,5 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 ◊name FormattingAspect;
-◊using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 
 // Attribute Syntax
 // ----------------
@@ -24,7 +23,7 @@
 /// <summary>
 /// A developer/debugging friendly string representation of the syntax.
 /// </summary>
-↑ computed Code.ToString(): `string`;
+↑ computed <default>.ToString(): `string`;
 = computed SelfParameter.ToString();
 
 // ---------- Expressions

@@ -1,6 +1,5 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
-using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
@@ -15,6 +14,10 @@ internal static partial class FormattingAspect
     public static partial string CompilationUnit_ToString(ICompilationUnitSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string UsingDirective_ToString(IUsingDirectiveSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string Package_ToString(IPackageSyntax node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial string PackageReference_ToString(IPackageReferenceSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string NamespaceDefinition_ToString(INamespaceDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -1,0 +1,9 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
+◊name ComputedAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+
+// This aspect is a catch all for various computed attributes on the syntax tree. For the most part
+// the syntax tree shouldn't have these. They should be on the semantic tree. However, there are a
+// few cases where it makes sense and so these have been lumped together in this aspect.
+
+↑ eager Package.Diagnostics: `DiagnosticCollection`;

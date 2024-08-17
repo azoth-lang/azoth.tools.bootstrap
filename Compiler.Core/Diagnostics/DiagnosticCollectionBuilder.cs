@@ -28,6 +28,15 @@ public class DiagnosticCollectionBuilder : IReadOnlyCollection<Diagnostic>
         FatalErrorCount += diagnostics.FatalErrorCount;
     }
 
+    public void Add(IEnumerable<DiagnosticCollection> diagnostics)
+    {
+        foreach (var diagnostic in diagnostics)
+        {
+            items.AddRange(diagnostic);
+            FatalErrorCount += diagnostic.FatalErrorCount;
+        }
+    }
+
     public void Add(IEnumerable<Diagnostic> diagnostics)
         => items.AddRange(diagnostics.Pipe(UpdateFatalErrorCount));
 

@@ -39,7 +39,7 @@ LocalBinding <: Binding = NameSpan:`TextSpan`;
 
 // ---------- Packages
 Package = Name:`IdentifierName` CompilationUnits:{CompilationUnit} TestingCompilationUnits:{CompilationUnit}
-    References:{PackageReference} Diagnostics:`DiagnosticCollection`;
+    References:{PackageReference};
 PackageReference = AliasOrName:`IdentifierName` Package:`IPackageSymbols` IsTrusted:`bool`;
 
 // ---------- Definitions

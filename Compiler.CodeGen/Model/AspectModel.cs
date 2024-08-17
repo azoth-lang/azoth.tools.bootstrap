@@ -31,5 +31,5 @@ public sealed class AspectModel : IHasUsingNamespaces
     }
 
     private IEnumerable<SynthesizedAttributeEquationModel> ComputeImplicitlyDeclaredEquations()
-        => Tree.Nodes.SelectMany(n => n.ImplicitlyDeclaredEquations);
+        => Tree.Nodes.SelectMany(n => n.ImplicitlyDeclaredEquations.Where(e => e.Aspect == this));
 }

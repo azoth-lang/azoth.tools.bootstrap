@@ -18,6 +18,14 @@ internal static partial class FormattingAspect
         => $"using {node.Name};";
     #endregion
 
+    #region Packages
+    public static partial string Package_ToString(IPackageSyntax node)
+        => $"package {node.Name.Text}: {node.CompilationUnits.Count} Compilation Units";
+
+    public static partial string PackageReference_ToString(IPackageReferenceSyntax node)
+        => $"reference {node.AliasOrName}: {{ \"package\": \"{node.Package.PackageSymbol}\" \"trusted\": {node.IsTrusted} }}";
+    #endregion
+
     #region Namespace Definitions
     public static partial string NamespaceDefinition_ToString(INamespaceDefinitionSyntax node)
         => node.IsGlobalQualified ? $"namespace ::{node.DeclaredNames} {{ … }}" : $"namespace {node.DeclaredNames} {{ … }}";

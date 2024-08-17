@@ -49,12 +49,15 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 file sealed class <#= Emit.ClassName(node.Defines) #> : <#= Emit.TypeName(node.Defines) #>
 {
 <#      foreach (var property in node.ActualProperties) { #>
-    public <#=Emit.Type(property.Type) #> <#=property.Name #> { [DebuggerStepThrough] get; }
+    public <#= Emit.Type(property.Type) #> <#= property.Name #> { [DebuggerStepThrough] get; }
 <#      } #>
 <#      foreach (var equation in node.ActualEquations) { #>
 <#          switch (equation) { #>
-<#              case SynthesizedAttributeEquationModel eq: #>
-    public <#= Emit.Override(eq) #><#=Emit.Type(eq.Type) #> <#=eq.Name #><#=eq.Parameters #><#=Emit.Body(eq) #>
+<#              case SynthesizedAttributeEquationModel eq when eq.Strategy == EvaluationStrategy.Eager: #>
+    public <#= Emit.Type(eq.Type) #> <#= eq.Name #> { [DebuggerStepThrough] get; }
+<#                  break;#>
+<#              case SynthesizedAttributeEquationModel eq when eq.Strategy != EvaluationStrategy.Eager: #>
+    public <#= Emit.Override(eq) #><#= Emit.Type(eq.Type) #> <#= eq.Name #><#= eq.Parameters #><#= Emit.Body(eq) #>
 <#                  break;#>
 <#          } #>
 <#      } #>
@@ -63,6 +66,9 @@ file sealed class <#= Emit.ClassName(node.Defines) #> : <#= Emit.TypeName(node.D
     {
 <#      foreach (var property in node.ActualProperties) { #>
         <#=property.Name #> = <#=Emit.ParameterName(property) #>;
+<#      } #>
+<#      foreach (var equation in node.ActualEquations.OfType<SynthesizedAttributeEquationModel>().Where(eq => eq.Strategy == EvaluationStrategy.Eager)) { #>
+        <#= equation.Name #> = <#= Emit.EagerBody(equation) #>;
 <#      } #>
     }
 }

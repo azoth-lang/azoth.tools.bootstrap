@@ -42,8 +42,11 @@
     <Compile Update="FormattingAspect.g.cs">
       <DependentUpon>Formatting.aspect</DependentUpon>
     </Compile>
+    <Compile Update="ComputedAspect.g.cs">
+      <DependentUpon>Computed.aspect</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SyntaxTree.tree&quot; &quot;$(ProjectDir)Formatting.aspect&quot;" />
+    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SyntaxTree.tree&quot; &quot;$(ProjectDir)Formatting.aspect&quot; &quot;$(ProjectDir)Computed.aspect&quot;" />
   </Target>
 </Project>

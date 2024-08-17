@@ -45,7 +45,7 @@ public class AzothCompiler
             references.Select(r => r.ToSyntaxAsync())).ConfigureAwait(false)).ToFixedSet();
 
         // TODO add the references to the package syntax
-        var packageSyntax = new PackageSyntax(name, compilationUnits, testingCompilationUnits, referenceSyntax);
+        var packageSyntax = IPackageSyntax.Create(name, compilationUnits, testingCompilationUnits, referenceSyntax);
 
         var analyzer = new SemanticAnalyzer()
         {
@@ -62,7 +62,7 @@ public class AzothCompiler
                 var context = new ParseContext(file, new DiagnosticCollectionBuilder());
                 var tokens = lexer.Lex(context).WhereNotTrivia();
                 return parser.Parse(tokens);
-            }, new ExecutionDataflowBlockOptions() { TaskScheduler = taskScheduler, EnsureOrdered = false, });
+            }, new() { TaskScheduler = taskScheduler, EnsureOrdered = false, });
 
             foreach (var fileSource in codeFileSources) parseBlock.Post(fileSource);
 
@@ -95,7 +95,7 @@ public class AzothCompiler
         var compilationUnits = ParseFiles(files);
         var testingCompilationUnits = ParseFiles(testingFiles);
         var referenceSyntax = references.Select(r => r.ToSyntax()).ToFixedSet();
-        var packageSyntax = new PackageSyntax(name, compilationUnits, testingCompilationUnits, referenceSyntax);
+        var packageSyntax = IPackageSyntax.Create(name, compilationUnits, testingCompilationUnits, referenceSyntax);
 
         var analyzer = new SemanticAnalyzer()
         {

@@ -56,7 +56,7 @@ public static class AspectParser
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
         (string name, string? parameters) = SplitOffParameters(definition);
         var typeSyntax = ParseType(type);
-        var nodeSymbol = new SymbolSyntax(node);
+        var nodeSymbol = ParseSymbol(node);
         return new(evaluationStrategy, nodeSymbol, name, parameters, typeSyntax, defaultExpression);
     }
 
@@ -70,7 +70,7 @@ public static class AspectParser
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
         (string name, string? parameters) = SplitOffParameters(definition);
         var typeOverrideSyntax = ParseType(typeOverride);
-        var nodeSymbol = new SymbolSyntax(node);
+        var nodeSymbol = ParseSymbol(node);
         return new SynthesizedAttributeEquationSyntax(evaluationStrategy, nodeSymbol, name, parameters, typeOverrideSyntax, expression);
     }
 

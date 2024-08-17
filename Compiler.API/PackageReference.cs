@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.API.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -12,5 +11,5 @@ public sealed class PackageReference(IdentifierName nameOrAlias, IPackageSymbols
     public bool IsTrusted { get; } = isTrusted;
 
     internal IPackageReferenceSyntax ToSyntax()
-        => new PackageReferenceSyntax(NameOrAlias, PackageSymbols, IsTrusted);
+        => IPackageReferenceSyntax.Create(NameOrAlias, PackageSymbols, IsTrusted);
 }

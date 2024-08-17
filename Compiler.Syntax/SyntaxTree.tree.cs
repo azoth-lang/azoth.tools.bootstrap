@@ -26,6 +26,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISyntax
 {
+    string ToString();
 }
 
 [Closed(
@@ -50,7 +51,6 @@ public partial interface ISyntax
 public partial interface ICodeSyntax : ISyntax
 {
     TextSpan Span { get; }
-    string ToString();
 }
 
 // [Closed(typeof(CompilationUnitSyntax))]
@@ -132,8 +132,8 @@ public partial interface IPackageSyntax : ISyntax
     IFixedSet<IPackageReferenceSyntax> References { get; }
     DiagnosticCollection Diagnostics { get; }
 
-    public static IPackageSyntax Create(IdentifierName name, IFixedSet<ICompilationUnitSyntax> compilationUnits, IFixedSet<ICompilationUnitSyntax> testingCompilationUnits, IFixedSet<IPackageReferenceSyntax> references, DiagnosticCollection diagnostics)
-        => new PackageSyntax(name, compilationUnits, testingCompilationUnits, references, diagnostics);
+    public static IPackageSyntax Create(IdentifierName name, IFixedSet<ICompilationUnitSyntax> compilationUnits, IFixedSet<ICompilationUnitSyntax> testingCompilationUnits, IFixedSet<IPackageReferenceSyntax> references)
+        => new PackageSyntax(name, compilationUnits, testingCompilationUnits, references);
 }
 
 // [Closed(typeof(PackageReferenceSyntax))]
@@ -1350,15 +1350,17 @@ file sealed class PackageSyntax : IPackageSyntax
     public IFixedSet<ICompilationUnitSyntax> CompilationUnits { [DebuggerStepThrough] get; }
     public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { [DebuggerStepThrough] get; }
     public IFixedSet<IPackageReferenceSyntax> References { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.Package_ToString(this);
     public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
 
-    public PackageSyntax(IdentifierName name, IFixedSet<ICompilationUnitSyntax> compilationUnits, IFixedSet<ICompilationUnitSyntax> testingCompilationUnits, IFixedSet<IPackageReferenceSyntax> references, DiagnosticCollection diagnostics)
+    public PackageSyntax(IdentifierName name, IFixedSet<ICompilationUnitSyntax> compilationUnits, IFixedSet<ICompilationUnitSyntax> testingCompilationUnits, IFixedSet<IPackageReferenceSyntax> references)
     {
         Name = name;
         CompilationUnits = compilationUnits;
         TestingCompilationUnits = testingCompilationUnits;
         References = references;
-        Diagnostics = diagnostics;
+        Diagnostics = ComputedAspect.Package_Diagnostics(this);
     }
 }
 
@@ -1368,6 +1370,8 @@ file sealed class PackageReferenceSyntax : IPackageReferenceSyntax
     public IdentifierName AliasOrName { [DebuggerStepThrough] get; }
     public IPackageSymbols Package { [DebuggerStepThrough] get; }
     public bool IsTrusted { [DebuggerStepThrough] get; }
+    public override string ToString()
+        => FormattingAspect.PackageReference_ToString(this);
 
     public PackageReferenceSyntax(IdentifierName aliasOrName, IPackageSymbols package, bool isTrusted)
     {
