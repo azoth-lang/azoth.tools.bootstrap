@@ -30,7 +30,10 @@ public static class EvaluationStrategyExtensions
             _ => throw new($"Unknown evaluation strategy: {strategy}"),
         };
 
-    public static EvaluationStrategy WithDefault(this EvaluationStrategy? strategy, string? expression)
+    public static EvaluationStrategy WithDefault(
+        this EvaluationStrategy? strategy,
+        string? expression,
+        EvaluationStrategy defaultStrategy = EvaluationStrategy.Lazy)
         => strategy
-           ?? (expression is not null ? EvaluationStrategy.Computed : EvaluationStrategy.Lazy);
+           ?? (expression is not null ? EvaluationStrategy.Computed : defaultStrategy);
 }
