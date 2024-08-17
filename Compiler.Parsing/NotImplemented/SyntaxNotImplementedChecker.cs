@@ -1,6 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Syntax.Walkers;
 
@@ -12,11 +11,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.NotImplemented;
 /// </summary>
 internal class SyntaxNotImplementedChecker : SyntaxWalker
 {
-    private readonly CompilationUnitSyntax compilationUnit;
+    private readonly ICompilationUnitSyntax compilationUnit;
     private readonly DiagnosticCollectionBuilder diagnostics;
     private readonly CodeFile file;
 
-    public SyntaxNotImplementedChecker(CompilationUnitSyntax compilationUnit, DiagnosticCollectionBuilder diagnostics)
+    public SyntaxNotImplementedChecker(ICompilationUnitSyntax compilationUnit, DiagnosticCollectionBuilder diagnostics)
     {
         this.compilationUnit = compilationUnit;
         this.diagnostics = diagnostics;

@@ -1,6 +1,4 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
-using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
@@ -37,14 +35,14 @@ public partial class Parser
             type = ParseType();
         }
         var span = TextSpan.Covering(binding, pattern.Span, type?.Span);
-        return new BindingContextPatternSyntax(span, isMutableBinding, pattern, type);
+        return IBindingContextPatternSyntax.Create(span, isMutableBinding, pattern, type);
     }
 
     private IOptionalOrBindingPatternSyntax ParseBindingPattern(bool isMutableBinding)
     {
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
-        IOptionalOrBindingPatternSyntax pattern = new BindingPatternSyntax(identifier.Span, isMutableBinding, name);
+        IOptionalOrBindingPatternSyntax pattern = IBindingPatternSyntax.Create(identifier.Span, isMutableBinding, name);
         while (TryParseOptionalPattern(ref pattern))
         {
             // Work is done by TryParseOptionalPattern
@@ -60,16 +58,16 @@ public partial class Parser
             {
                 var question = Tokens.Consume<IQuestionToken>();
                 var span = TextSpan.Covering(pattern.Span, question);
-                pattern = new OptionalPatternSyntax(span, pattern);
+                pattern = IOptionalPatternSyntax.Create(span, pattern);
                 return true;
             }
             case IQuestionQuestionToken:
             {
                 var questionQuestion = Tokens.ConsumeToken<IQuestionQuestionToken>();
                 var span = TextSpan.Covering(pattern.Span, questionQuestion.FirstQuestionSpan);
-                pattern = new OptionalPatternSyntax(span, pattern);
+                pattern = IOptionalPatternSyntax.Create(span, pattern);
                 span = TextSpan.Covering(pattern.Span, questionQuestion.SecondQuestionSpan);
-                pattern = new OptionalPatternSyntax(span, pattern);
+                pattern = IOptionalPatternSyntax.Create(span, pattern);
                 return true;
             }
             default:

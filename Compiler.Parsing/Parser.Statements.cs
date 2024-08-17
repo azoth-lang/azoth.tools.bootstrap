@@ -1,6 +1,4 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
-using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
@@ -14,7 +12,7 @@ public partial class Parser
         {
             case IOpenBraceToken _:
                 var block = ParseBlock();
-                return new ExpressionStatementSyntax(block.Span, block);
+                return IExpressionStatementSyntax.Create(block.Span, block);
             case ILetKeywordToken _:
                 var let = Tokens.Consume<IBindingToken>();
                 return ParseRestOfVariableDeclaration(let, false);
@@ -23,19 +21,19 @@ public partial class Parser
                 return ParseRestOfVariableDeclaration(var, true);
             case IForeachKeywordToken _:
                 var @foreach = ParseForeach();
-                return new ExpressionStatementSyntax(@foreach.Span, @foreach);
+                return IExpressionStatementSyntax.Create(@foreach.Span, @foreach);
             case IWhileKeywordToken _:
                 var @while = ParseWhile();
-                return new ExpressionStatementSyntax(@while.Span, @while);
+                return IExpressionStatementSyntax.Create(@while.Span, @while);
             case ILoopKeywordToken _:
                 var loop = ParseLoop();
-                return new ExpressionStatementSyntax(loop.Span, loop);
+                return IExpressionStatementSyntax.Create(loop.Span, loop);
             case IIfKeywordToken _:
                 var @if = ParseIf(ParseAs.Statement);
-                return new ExpressionStatementSyntax(@if.Span, @if);
+                return IExpressionStatementSyntax.Create(@if.Span, @if);
             case IAsyncKeywordToken _:
                 var async = ParseAsyncBlock();
-                return new ExpressionStatementSyntax(async.Span, async);
+                return IExpressionStatementSyntax.Create(async.Span, async);
             case IUnsafeKeywordToken _:
                 return ParseUnsafeStatement();
             case IRightDoubleArrowToken _:
@@ -45,7 +43,7 @@ public partial class Parser
                 {
                     var expression = ParseExpression();
                     var semicolon = Tokens.Expect<ISemicolonToken>();
-                    return new ExpressionStatementSyntax(
+                    return IExpressionStatementSyntax.Create(
                         TextSpan.Covering(expression.Span, semicolon), expression);
                 }
                 catch (ParseFailedException)
@@ -74,8 +72,8 @@ public partial class Parser
 
         var semicolon = Tokens.Expect<ISemicolonToken>();
         var span = TextSpan.Covering(binding, semicolon);
-        return new VariableDeclarationStatementSyntax(span,
-            isMutableBinding, name, identifier.Span, type, capability, initializer);
+        return IVariableDeclarationStatementSyntax.Create(span,
+            isMutableBinding, identifier.Span, name, capability, type, initializer);
     }
 
     // TODO return is really an either type
@@ -102,13 +100,13 @@ public partial class Parser
         var isBlock = Tokens.Current is IOpenBraceToken;
         var expression = isBlock ? ParseBlock() : ParseParenthesizedExpression();
         var span = TextSpan.Covering(unsafeKeyword, expression.Span);
-        var unsafeExpression = new UnsafeExpressionSyntax(span, expression);
+        var unsafeExpression = IUnsafeExpressionSyntax.Create(span, expression);
         if (!isBlock)
         {
             var semicolon = Tokens.Expect<ISemicolonToken>();
             span = TextSpan.Covering(span, semicolon);
         }
-        return new ExpressionStatementSyntax(span, unsafeExpression);
+        return IExpressionStatementSyntax.Create(span, unsafeExpression);
     }
 
     public IBlockExpressionSyntax ParseBlock()
@@ -117,7 +115,7 @@ public partial class Parser
         var statements = ParseMany<IStatementSyntax, ICloseBraceToken>(ParseStatement);
         var closeBrace = Tokens.Expect<ICloseBraceToken>();
         var span = TextSpan.Covering(openBrace, closeBrace);
-        return new BlockExpressionSyntax(span, statements);
+        return IBlockExpressionSyntax.Create(span, statements);
     }
 
     private IResultStatementSyntax ParseResultStatement()
@@ -128,7 +126,7 @@ public partial class Parser
             var expression = ParseExpression();
             var semicolon = Tokens.Expect<ISemicolonToken>();
             var span = TextSpan.Covering(rightDoubleArrow, expression.Span, semicolon);
-            return new ResultStatementSyntax(span, expression);
+            return IResultStatementSyntax.Create(span, expression);
         }
         catch (ParseFailedException)
         {

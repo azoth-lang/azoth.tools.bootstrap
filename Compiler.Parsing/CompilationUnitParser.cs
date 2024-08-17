@@ -4,7 +4,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Lexing;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Parsing.NotImplemented;
-using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
@@ -22,13 +21,11 @@ public class CompilationUnitParser
         var eof = tokens.Required<IEndOfFileToken>();
         var span = TextSpan.FromStartEnd(0, eof.End);
         var diagnostics = tokens.Context.Diagnostics;
-        var compilationUnit = new CompilationUnitSyntax(implicitNamespaceName, span,
-            tokens.Context.File, usingDirectives,
-            declarations);
+        var compilationUnit = ICompilationUnitSyntax.Create(span, tokens.Context.File,
+            implicitNamespaceName, DiagnosticCollection.Empty, usingDirectives, declarations);
 
         CheckSyntax(compilationUnit, diagnostics);
-        compilationUnit.Attach(diagnostics.Build());
-        return compilationUnit;
+        return compilationUnit.With(diagnostics.Build());
     }
 
     private static NamespaceName ParseImplicitNamespaceName(ITokenIterator<IEssentialToken> tokens)
@@ -40,7 +37,7 @@ public class CompilationUnitParser
         return name;
     }
 
-    private static void CheckSyntax(CompilationUnitSyntax compilationUnit, DiagnosticCollectionBuilder diagnostics)
+    private static void CheckSyntax(ICompilationUnitSyntax compilationUnit, DiagnosticCollectionBuilder diagnostics)
     {
         var notImplementedChecker = new SyntaxNotImplementedChecker(compilationUnit, diagnostics);
         notImplementedChecker.Check();

@@ -1,6 +1,4 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
-using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
@@ -18,6 +16,6 @@ public partial class Parser
         if (accept is null) return null;
         var typeName = ParseStandardTypeName();
         var span = TextSpan.Covering(accept.Span, typeName.Span);
-        return new AttributeSyntax(span, typeName);
+        return IAttributeSyntax.Create(span, typeName);
     }
 }

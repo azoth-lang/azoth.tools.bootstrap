@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
@@ -10,6 +9,6 @@ public partial class Parser
     {
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
-        return new IdentifierNameExpressionSyntax(identifier.Span, name);
+        return IIdentifierNameExpressionSyntax.Create(identifier.Span, name);
     }
 }

@@ -1,8 +1,6 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
-using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
@@ -59,7 +57,11 @@ public partial class Parser
                         var assignmentOperator = BuildAssignmentOperator(Tokens.ConsumeToken<IAssignmentOperatorToken>());
                         var rightOperand = ParseExpression();
                         if (expression is IAssignableExpressionSyntax assignableExpression)
-                            expression = new AssignmentExpressionSyntax(assignableExpression, assignmentOperator, rightOperand);
+                        {
+                            var span = TextSpan.Covering(assignableExpression.Span, rightOperand.Span);
+                            expression = IAssignmentExpressionSyntax.Create(span, assignableExpression,
+                                assignmentOperator, rightOperand);
+                        }
                         else
                             // Can't assign expression, so it is just the right hand side of the assignment
                             Add(ParseError.CantAssignIntoExpression(File, expression.Span));
@@ -122,8 +124,9 @@ public partial class Parser
                     if (minPrecedence <= OperatorPrecedence.Conversion)
                     {
                         var conversionOperator = BuildConversionOperator(Tokens.ConsumeToken<IConversionOperatorToken>());
-                        var typeSyntax = ParseType();
-                        expression = new ConversionExpressionSyntax(expression, conversionOperator, typeSyntax);
+                        var type = ParseType();
+                        var span = TextSpan.Covering(expression.Span, type.Span);
+                        expression = IConversionExpressionSyntax.Create(span, expression, conversionOperator, type);
                         continue;
                     }
                     break;
@@ -131,8 +134,9 @@ public partial class Parser
                     if (minPrecedence <= OperatorPrecedence.Relational)
                     {
                         _ = Tokens.Consume<IIsKeywordToken>();
-                        var patternSyntax = ParsePattern();
-                        expression = new PatternMatchExpressionSyntax(expression, patternSyntax);
+                        var pattern = ParsePattern();
+                        var span = TextSpan.Covering(expression.Span, pattern.Span);
+                        expression = IPatternMatchExpressionSyntax.Create(span, expression, pattern);
                         continue;
                     }
                     break;
@@ -160,7 +164,8 @@ public partial class Parser
                         // TODO support generic names
                         var nameSyntax = ParseIdentifierName();
                         var memberAccessSpan = TextSpan.Covering(expression.Span, nameSyntax.Span);
-                        expression = new MemberAccessExpressionSyntax(memberAccessSpan, expression, nameSyntax);
+                        expression = IMemberAccessExpressionSyntax.Create(memberAccessSpan,
+                            expression, nameSyntax.Name, FixedList.Empty<ITypeSyntax>(), nameSyntax.Span);
                         continue;
                     }
                     break;
@@ -171,7 +176,7 @@ public partial class Parser
                         var arguments = ParseArguments();
                         var closeParenSpan = Tokens.Expect<ICloseParenToken>();
                         var invocationSpan = TextSpan.Covering(expression.Span, closeParenSpan);
-                        expression = new InvocationExpressionSyntax(invocationSpan, expression, arguments);
+                        expression = IInvocationExpressionSyntax.Create(invocationSpan, expression, arguments);
                         continue;
                     }
                     break;
@@ -256,7 +261,8 @@ public partial class Parser
             IQuestionQuestionToken _ => BinaryOperator.QuestionQuestion,
             _ => throw ExhaustiveMatch.Failed(operatorToken)
         };
-        return new BinaryOperatorExpressionSyntax(left, binaryOperator, right);
+        var span = TextSpan.Covering(left.Span, right.Span);
+        return IBinaryOperatorExpressionSyntax.Create(span, left, binaryOperator, right);
     }
 
     // An atom is the unit of an expression that occurs between infix operators, i.e. an identifier, literal, group, or new
@@ -269,23 +275,23 @@ public partial class Parser
             case ISelfKeywordToken _:
                 return ParseSelfExpression();
             case INewKeywordToken _:
-                {
-                    var newKeyword = Tokens.Consume<INewKeywordToken>();
-                    var type = ParseStandardTypeName();
-                    Tokens.Expect<IOpenParenToken>();
-                    var arguments = ParseArguments();
-                    var closeParen = Tokens.Expect<ICloseParenToken>();
-                    var span = TextSpan.Covering(newKeyword, closeParen);
-                    // TODO if we can never parse a constructor name, then change the syntax tree to reflect that
-                    return new NewObjectExpressionSyntax(span, type, null, null, arguments);
-                }
+            {
+                var newKeyword = Tokens.Consume<INewKeywordToken>();
+                var type = ParseStandardTypeName();
+                Tokens.Expect<IOpenParenToken>();
+                var arguments = ParseArguments();
+                var closeParen = Tokens.Expect<ICloseParenToken>();
+                var span = TextSpan.Covering(newKeyword, closeParen);
+                // TODO if we can never parse a constructor name, then change the syntax tree to reflect that
+                return INewObjectExpressionSyntax.Create(span, type, null, null, arguments);
+            }
             case IReturnKeywordToken _:
-                {
-                    var returnKeyword = Tokens.Consume<IReturnKeywordToken>();
-                    var expression = Tokens.AtEnd<ISemicolonToken>() ? null : ParseExpression();
-                    var span = TextSpan.Covering(returnKeyword, expression?.Span);
-                    return new ReturnExpressionSyntax(span, expression);
-                }
+            {
+                var returnKeyword = Tokens.Consume<IReturnKeywordToken>();
+                var expression = Tokens.AtEnd<ISemicolonToken>() ? null : ParseExpression();
+                var span = TextSpan.Covering(returnKeyword, expression?.Span);
+                return IReturnExpressionSyntax.Create(span, expression);
+            }
             case IOpenParenToken _:
                 return ParseParenthesizedExpression();
             case IPlusToken _:
@@ -295,25 +301,25 @@ public partial class Parser
             case INotKeywordToken _:
                 return ParsePrefixUnaryOperator(UnaryOperator.Not);
             case IBooleanLiteralToken _:
-                {
-                    var literal = Tokens.ConsumeToken<IBooleanLiteralToken>();
-                    return new BoolLiteralExpressionSyntax(literal.Span, literal.Value);
-                }
+            {
+                var literal = Tokens.ConsumeToken<IBooleanLiteralToken>();
+                return IBoolLiteralExpressionSyntax.Create(literal.Span, literal.Value);
+            }
             case IIntegerLiteralToken _:
-                {
-                    var literal = Tokens.ConsumeToken<IIntegerLiteralToken>();
-                    return new IntegerLiteralExpressionSyntax(literal.Span, literal.Value);
-                }
+            {
+                var literal = Tokens.ConsumeToken<IIntegerLiteralToken>();
+                return IIntegerLiteralExpressionSyntax.Create(literal.Span, literal.Value);
+            }
             case IStringLiteralToken _:
-                {
-                    var literal = Tokens.ConsumeToken<IStringLiteralToken>();
-                    return new StringLiteralExpressionSyntax(literal.Span, literal.Value);
-                }
+            {
+                var literal = Tokens.ConsumeToken<IStringLiteralToken>();
+                return IStringLiteralExpressionSyntax.Create(literal.Span, literal.Value);
+            }
             case INoneKeywordToken _:
-                {
-                    var literal = Tokens.Consume<INoneKeywordToken>();
-                    return new NoneLiteralExpressionSyntax(literal);
-                }
+            {
+                var literal = Tokens.Consume<INoneKeywordToken>();
+                return INoneLiteralExpressionSyntax.Create(literal);
+            }
             case IIdentifierToken _:
                 return ParseIdentifierName();
             case IForeachKeywordToken _:
@@ -323,57 +329,57 @@ public partial class Parser
             case ILoopKeywordToken _:
                 return ParseLoop();
             case IBreakKeywordToken _:
-                {
-                    var breakKeyword = Tokens.Consume<IBreakKeywordToken>();
-                    // TODO parse label
-                    var expression = AcceptExpression();
-                    var span = TextSpan.Covering(breakKeyword, expression?.Span);
-                    return new BreakExpressionSyntax(span, expression);
-                }
+            {
+                var breakKeyword = Tokens.Consume<IBreakKeywordToken>();
+                // TODO parse label
+                var expression = AcceptExpression();
+                var span = TextSpan.Covering(breakKeyword, expression?.Span);
+                return IBreakExpressionSyntax.Create(span, expression);
+            }
             case INextKeywordToken _:
-                {
-                    var span = Tokens.Consume<INextKeywordToken>();
-                    return new NextExpressionSyntax(span);
-                }
+            {
+                var span = Tokens.Consume<INextKeywordToken>();
+                return INextExpressionSyntax.Create(span);
+            }
             case IUnsafeKeywordToken _:
                 return ParseUnsafeExpression();
             case IIfKeywordToken _:
                 return ParseIf();
             case IDotToken dot:
-                {
-                    // implicit self, don't consume the '.' it will be parsed next
-                    return new SelfExpressionSyntax(dot.Span.AtStart(), true);
-                }
+            {
+                // implicit self, don't consume the '.' it will be parsed next
+                return ISelfExpressionSyntax.Create(dot.Span.AtStart(), true);
+            }
             case IIdKeywordToken _:
-                {
-                    var id = Tokens.Consume<IIdKeywordToken>();
-                    // `id` is like a unary operator
-                    var expression = ParseExpression(OperatorPrecedence.Unary);
-                    var span = TextSpan.Covering(id, expression.Span);
-                    return new IdExpressionSyntax(span, expression);
-                }
+            {
+                var id = Tokens.Consume<IIdKeywordToken>();
+                // `id` is like a unary operator
+                var expression = ParseExpression(OperatorPrecedence.Unary);
+                var span = TextSpan.Covering(id, expression.Span);
+                return IIdExpressionSyntax.Create(span, expression);
+            }
             case IMoveKeywordToken _:
-                {
-                    var move = Tokens.Consume<IMoveKeywordToken>();
-                    // `move` is like a unary operator
-                    var expression = ParseExpression(OperatorPrecedence.Unary);
-                    var span = TextSpan.Covering(move, expression.Span);
-                    if (expression is ISimpleNameSyntax simpleName)
-                        return new MoveExpressionSyntax(span, simpleName);
-                    Add(ParseError.CantMoveOutOfExpression(File, span));
-                    return expression;
-                }
+            {
+                var move = Tokens.Consume<IMoveKeywordToken>();
+                // `move` is like a unary operator
+                var expression = ParseExpression(OperatorPrecedence.Unary);
+                var span = TextSpan.Covering(move, expression.Span);
+                if (expression is ISimpleNameSyntax simpleName)
+                    return IMoveExpressionSyntax.Create(span, simpleName);
+                Add(ParseError.CantMoveOutOfExpression(File, span));
+                return expression;
+            }
             case IFreezeKeywordToken _:
-                {
-                    var freeze = Tokens.Consume<IFreezeKeywordToken>();
-                    // `freeze` is like a unary operator
-                    var expression = ParseExpression(OperatorPrecedence.Unary);
-                    var span = TextSpan.Covering(freeze, expression.Span);
-                    if (expression is ISimpleNameSyntax simpleName)
-                        return new FreezeExpressionSyntax(span, simpleName);
-                    Add(ParseError.CantFreezeExpression(File, span));
-                    return expression;
-                }
+            {
+                var freeze = Tokens.Consume<IFreezeKeywordToken>();
+                // `freeze` is like a unary operator
+                var expression = ParseExpression(OperatorPrecedence.Unary);
+                var span = TextSpan.Covering(freeze, expression.Span);
+                if (expression is ISimpleNameSyntax simpleName)
+                    return IFreezeExpressionSyntax.Create(span, simpleName);
+                Add(ParseError.CantFreezeExpression(File, span));
+                return expression;
+            }
             case IAsyncKeywordToken _:
                 return ParseAsyncBlock();
             case IDoKeywordToken _:
@@ -415,13 +421,13 @@ public partial class Parser
     private ISelfExpressionSyntax ParseSelfExpression()
     {
         var selfKeyword = Tokens.Consume<ISelfKeywordToken>();
-        return new SelfExpressionSyntax(selfKeyword, false);
+        return ISelfExpressionSyntax.Create(selfKeyword, false);
     }
 
     private IMissingNameSyntax ParseMissingName()
     {
         var identifierSpan = Tokens.Expect<IIdentifierToken>();
-        return new MissingNameSyntax(identifierSpan);
+        return IMissingNameSyntax.Create(identifierSpan);
     }
 
     private IUnsafeExpressionSyntax ParseUnsafeExpression()
@@ -432,7 +438,7 @@ public partial class Parser
             ? ParseBlock()
             : ParseParenthesizedExpression();
         var span = TextSpan.Covering(unsafeKeyword, expression.Span);
-        return new UnsafeExpressionSyntax(span, expression);
+        return IUnsafeExpressionSyntax.Create(span, expression);
     }
 
     private IUnaryOperatorExpressionSyntax ParsePrefixUnaryOperator(UnaryOperator @operator)
@@ -440,7 +446,7 @@ public partial class Parser
         var operatorSpan = Tokens.Consume<IOperatorToken>();
         var operand = ParseExpression(OperatorPrecedence.Unary);
         var span = TextSpan.Covering(operatorSpan, operand.Span);
-        return new UnaryOperatorExpressionSyntax(span, UnaryOperatorFixity.Prefix, @operator, operand);
+        return IUnaryOperatorExpressionSyntax.Create(span, UnaryOperatorFixity.Prefix, @operator, operand);
     }
 
     private IAsyncStartExpressionSyntax ParseAsyncStartExpression(bool scheduled)
@@ -448,15 +454,15 @@ public partial class Parser
         var operatorSpan = Tokens.Consume<IAsyncStartOperatorToken>();
         var expression = ParseExpression(OperatorPrecedence.Min);
         var span = TextSpan.Covering(operatorSpan, expression.Span);
-        return new AsyncStartExpressionSyntax(span, scheduled, expression);
+        return IAsyncStartExpressionSyntax.Create(span, scheduled, expression);
     }
 
-    private IExpressionSyntax ParseAwaitExpression()
+    private IAwaitExpressionSyntax ParseAwaitExpression()
     {
         var awaitKeyword = Tokens.Expect<IAwaitKeywordToken>();
         var expression = ParseExpression(OperatorPrecedence.Unary);
         var span = TextSpan.Covering(awaitKeyword, expression.Span);
-        return new AwaitExpressionSyntax(span, expression);
+        return IAwaitExpressionSyntax.Create(span, expression);
     }
 
     private IForeachExpressionSyntax ParseForeach()
@@ -473,7 +479,7 @@ public partial class Parser
         var expression = ParseExpression();
         var block = ParseBlock();
         var span = TextSpan.Covering(foreachKeyword, block.Span);
-        return new ForeachExpressionSyntax(span, mutableBinding, nameSpan, variableName, type, expression, block);
+        return IForeachExpressionSyntax.Create(span, mutableBinding, nameSpan, variableName, expression, type, block);
     }
 
     private IWhileExpressionSyntax ParseWhile()
@@ -482,7 +488,7 @@ public partial class Parser
         var condition = ParseExpression();
         var block = ParseBlock();
         var span = TextSpan.Covering(whileKeyword, block.Span);
-        return new WhileExpressionSyntax(span, condition, block);
+        return IWhileExpressionSyntax.Create(span, condition, block);
     }
 
     private ILoopExpressionSyntax ParseLoop()
@@ -490,7 +496,7 @@ public partial class Parser
         var loopKeyword = Tokens.Consume<ILoopKeywordToken>();
         var block = ParseBlock();
         var span = TextSpan.Covering(loopKeyword, block.Span);
-        return new LoopExpressionSyntax(span, block);
+        return ILoopExpressionSyntax.Create(span, block);
     }
 
     private IIfExpressionSyntax ParseIf(ParseAs parseAs = ParseAs.Expression)
@@ -507,7 +513,7 @@ public partial class Parser
             var semicolon = Tokens.Expect<ISemicolonToken>();
             span = TextSpan.Covering(span, semicolon);
         }
-        return new IfExpressionSyntax(span, condition, thenBlock, elseClause);
+        return IIfExpressionSyntax.Create(span, condition, thenBlock, elseClause);
     }
 
     private IElseClauseSyntax? AcceptElse(ParseAs parseAs)
@@ -528,7 +534,7 @@ public partial class Parser
         var async = Tokens.Consume<IAsyncKeywordToken>();
         var block = ParseBlock();
         var span = TextSpan.Covering(async, block.Span);
-        return new AsyncBlockExpressionSyntax(span, block);
+        return IAsyncBlockExpressionSyntax.Create(span, block);
     }
 
     /// <summary>
@@ -559,6 +565,6 @@ public partial class Parser
         var rightDoubleArrow = Tokens.Expect<IRightDoubleArrowToken>();
         var expression = ParseExpression();
         var span = TextSpan.Covering(rightDoubleArrow, expression.Span);
-        return new ResultStatementSyntax(span, expression);
+        return IResultStatementSyntax.Create(span, expression);
     }
 }

@@ -1,7 +1,5 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
@@ -26,6 +24,6 @@ public partial class Parser
                 name = name.Qualify(identifier.Value);
         var semicolon = Tokens.Expect<ISemicolonToken>();
         var span = TextSpan.Covering(accept.Span, semicolon);
-        return new UsingDirectiveSyntax(span, name);
+        return IUsingDirectiveSyntax.Create(span, name);
     }
 }

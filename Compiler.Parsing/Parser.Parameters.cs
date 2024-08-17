@@ -1,7 +1,5 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 
@@ -30,7 +28,7 @@ public partial class Parser
         IExpressionSyntax? defaultValue = null;
         if (Tokens.Accept<IEqualsToken>()) defaultValue = ParseExpression();
         var span = TextSpan.Covering(lentBinding?.Span, mutableBinding?.Span, type.Span, defaultValue?.Span);
-        return new NamedParameterSyntax(span, isMutableBinding, isLentBinding, nameSpan, name, type, defaultValue);
+        return INamedParameterSyntax.Create(span, nameSpan, isMutableBinding, isLentBinding, name, type, defaultValue);
     }
 
     public IParameterSyntax ParseMethodParameter()
@@ -65,7 +63,7 @@ public partial class Parser
                 if (equals is not null) defaultValue = ParseExpression();
                 var span = TextSpan.Covering(dot, identifier.Span, defaultValue?.Span);
                 IdentifierName name = identifier.Value;
-                return new FieldParameterSyntax(span, name, defaultValue);
+                return IFieldParameterSyntax.Create(span, name, defaultValue);
             }
             default:
                 return ParseFunctionParameter(lentBinding);
@@ -92,7 +90,7 @@ public partial class Parser
                 if (equals is not null) defaultValue = ParseExpression();
                 var span = TextSpan.Covering(dot, identifier.Span, defaultValue?.Span);
                 IdentifierName name = identifier.Value;
-                return new FieldParameterSyntax(span, name, defaultValue);
+                return IFieldParameterSyntax.Create(span, name, defaultValue);
             }
             default:
                 return ParseFunctionParameter(lentBinding);
@@ -106,7 +104,7 @@ public partial class Parser
         var referenceCapability = ParseStandardCapability();
         var selfSpan = Tokens.Expect<ISelfKeywordToken>();
         var span = TextSpan.Covering(lentBinding?.Span, referenceCapability.Span, selfSpan);
-        return new ConstructorSelfParameterSyntax(span, isLentBinding, referenceCapability);
+        return IConstructorSelfParameterSyntax.Create(span, isLentBinding, referenceCapability);
     }
 
     private IInitializerSelfParameterSyntax ParseInitializerSelfParameter(ILentKeywordToken? lentBinding)
@@ -115,7 +113,7 @@ public partial class Parser
         var referenceCapability = ParseStandardCapability();
         var selfSpan = Tokens.Expect<ISelfKeywordToken>();
         var span = TextSpan.Covering(lentBinding?.Span, referenceCapability.Span, selfSpan);
-        return new InitializerSelfParameterSyntax(span, isLentBinding, referenceCapability);
+        return IInitializerSelfParameterSyntax.Create(span, isLentBinding, referenceCapability);
     }
 
     private IMethodSelfParameterSyntax ParseMethodSelfParameter(ILentKeywordToken? lentBinding)
@@ -124,6 +122,6 @@ public partial class Parser
         var referenceCapability = ParseStandardCapabilityConstraint();
         var selfSpan = Tokens.Expect<ISelfKeywordToken>();
         var span = TextSpan.Covering(lentBinding?.Span, referenceCapability.Span, selfSpan);
-        return new MethodSelfParameterSyntax(span, isLentBinding, referenceCapability);
+        return IMethodSelfParameterSyntax.Create(span, isLentBinding, referenceCapability);
     }
 }

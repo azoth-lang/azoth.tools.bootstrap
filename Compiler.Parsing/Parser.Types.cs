@@ -1,7 +1,5 @@
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Parsing.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
 using Azoth.Tools.Bootstrap.Framework;
@@ -44,7 +42,7 @@ public partial class Parser
         _ = Tokens.Required<IRightTriangleToken>();
         var type = ParseBareType();
         var span = TextSpan.Covering(self, type.Span);
-        type = new SelfViewpointTypeSyntax(span, type);
+        type = ISelfViewpointTypeSyntax.Create(span, type);
         return ParseOptionalType(type);
     }
 
@@ -52,7 +50,10 @@ public partial class Parser
     {
         var type = ParseBareType();
         if (capability is not null)
-            type = new CapabilityTypeSyntax(capability, type);
+        {
+            var span = TextSpan.Covering(capability.Span, type.Span);
+            type = ICapabilityTypeSyntax.Create(span, capability, type);
+        }
 
         return ParseOptionalType(type);
     }
@@ -61,7 +62,8 @@ public partial class Parser
     {
         _ = Tokens.Consume<IRightTriangleToken>();
         var type = ParseBareType();
-        type = new CapabilityViewpointTypeSyntax(capability, type);
+        var span = TextSpan.Covering(capability.Span, type.Span);
+        type = ICapabilityViewpointTypeSyntax.Create(span, capability, type);
 
         return ParseOptionalType(type);
     }
@@ -71,7 +73,8 @@ public partial class Parser
         var capability = ParseExplicitCapability();
         _ = Tokens.Required<IRightTriangleToken>();
         var type = ParseBareType();
-        type = new CapabilityViewpointTypeSyntax(capability, type);
+        var span = TextSpan.Covering(capability.Span, type.Span);
+        type = ICapabilityViewpointTypeSyntax.Create(span, capability, type);
 
         return ParseOptionalType(type);
     }
@@ -94,16 +97,16 @@ public partial class Parser
             {
                 var question = Tokens.Consume<IQuestionToken>();
                 var span = TextSpan.Covering(type.Span, question);
-                type = new OptionalTypeSyntax(span, type);
+                type = IOptionalTypeSyntax.Create(span, type);
                 return true;
             }
             case IQuestionQuestionToken:
             {
                 var questionQuestion = Tokens.ConsumeToken<IQuestionQuestionToken>();
                 var span = TextSpan.Covering(type.Span, questionQuestion.FirstQuestionSpan);
-                type = new OptionalTypeSyntax(span, type);
+                type = IOptionalTypeSyntax.Create(span, type);
                 span = TextSpan.Covering(type.Span, questionQuestion.SecondQuestionSpan);
-                type = new OptionalTypeSyntax(span, type);
+                type = IOptionalTypeSyntax.Create(span, type);
                 return true;
             }
             default:
@@ -134,10 +137,10 @@ public partial class Parser
         var name = identifier.Value;
         var optionalGenerics = AcceptGenericTypeArguments();
         if (optionalGenerics is { } generics)
-            return new GenericTypeNameSyntax(TextSpan.Covering(identifier.Span, generics.Span),
+            return IGenericTypeNameSyntax.Create(TextSpan.Covering(identifier.Span, generics.Span),
                 name, generics.Arguments);
 
-        return new IdentifierTypeNameSyntax(identifier.Span, name);
+        return IIdentifierTypeNameSyntax.Create(identifier.Span, name);
     }
 
     private (IFixedList<ITypeSyntax> Arguments, TextSpan Span)? AcceptGenericTypeArguments()
@@ -179,7 +182,7 @@ public partial class Parser
             _ => throw ExhaustiveMatch.Failed(keyword)
         };
 
-        return new SpecialTypeNameSyntax(keyword.Span, name);
+        return ISpecialTypeNameSyntax.Create(keyword.Span, name);
     }
 
     private IFunctionTypeSyntax ParseFunctionType()
@@ -190,7 +193,7 @@ public partial class Parser
         Tokens.Required<IRightArrowToken>();
         var returnType = ParseReturnType();
         var span = TextSpan.Covering(openParen.Span, returnType.Span);
-        return new FunctionTypeSyntax(span, parameterTypes, returnType);
+        return IFunctionTypeSyntax.Create(span, parameterTypes, returnType);
     }
 
     private IParameterTypeSyntax? AcceptParameterType()
@@ -200,12 +203,12 @@ public partial class Parser
         if (referent is null)
             return null;
         var span = TextSpan.Covering(lent?.Span, referent.Span);
-        return new ParameterTypeSyntax(span, lent is not null, referent);
+        return IParameterTypeSyntax.Create(span, lent is not null, referent);
     }
 
     private IReturnTypeSyntax ParseReturnType()
     {
         var referent = ParseType();
-        return new ReturnTypeSyntax(referent.Span, referent);
+        return IReturnTypeSyntax.Create(referent.Span, referent);
     }
 }
