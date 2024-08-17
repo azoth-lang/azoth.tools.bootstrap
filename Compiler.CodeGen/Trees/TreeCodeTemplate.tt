@@ -46,7 +46,8 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#  if (tree.GenerateClasses) { #>
 <#  foreach(var node in tree.Nodes.Where(ShouldEmit.Class)) {#>
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file sealed class <#= Emit.ClassName(node.Defines) #> : <#= Emit.TypeName(node.Defines) #>
+// TODO switch back to `file` and not `partial` once fully transitioned
+internal sealed partial class <#= Emit.ClassName(node.Defines) #> : <#= Emit.TypeName(node.Defines) #>
 {
 <#      foreach (var property in node.ActualProperties) { #>
     public <#= Emit.Type(property.Type) #> <#= property.Name #> { [DebuggerStepThrough] get; }
