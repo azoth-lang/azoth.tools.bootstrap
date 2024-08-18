@@ -1,25 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 ◊name FormattingAspect;
 
-// Attribute Syntax
-// ----------------
-// Synthesized:
-//      ↑ (child)? (eager|lazy|computed)? Node.Attribute:TypeSymbol (=> <C# Expression>)?;
-//      ↑ (child)? Node.Method(<params>):TypeSymbol (=> <C# Expression>)?; // Always computed
-//      = (eager|lazy|computed)? Node.Attribute(:TypeSymbol)? (=> <C# Expression>)?;
-//      = Node.Method(<params>)(:TypeSymbol)? (=> <C# Expression>)?;
-// Inherited:
-//      ↓ (computed)? (child)? Node.Attribute:TypeSymbol;
-//      ↓ (child)? Node.Method():TypeSymbol; // Always computed
-//      = Node.*.(Attribute|Method()) (=> <C# Expression>)?;
-//      = Node.**.(Attribute|Method()) (=> <C# Expression>)?; // Broadcast
-//      = Node.Child.(Attribute|Method()) (=> <C# Expression>)?;
-//      = Node.ChildList[i].(Attribute|Method()) (=> <C# Expression>)?;
-//      = Node.Child.**.(Attribute|Method()) (=> <C# Expression>)?; // Broadcast
-// Inherited from Previous: ⮡  (child)? Node.Attribute:TypeSymbol;
-// Circular: ⟳ Node.Attribute:TypeSymbol;
-// Collection: [*] Node.Attribute:TypeSymbol; // TODO how to set builders?
-
 /// <summary>
 /// A developer/debugging friendly string representation of the syntax.
 /// </summary>
