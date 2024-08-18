@@ -27,8 +27,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     public override LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
-                LexicalScopingAspect.FunctionDefinition_LexicalScope,
-                ReferenceEqualityComparer.Instance);
+                LexicalScopingAspect.FunctionDefinition_LexicalScope);
     private FunctionSymbol? symbol;
     private bool symbolCached;
     public override FunctionSymbol Symbol

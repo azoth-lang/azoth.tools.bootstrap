@@ -109,8 +109,23 @@ internal static class Emit
             case EvaluationStrategy.Eager:
                 throw new NotSupportedException("Eager equations must be inside constructor.");
             case EvaluationStrategy.Lazy:
-                throw new NotImplementedException("Lazy equations.");
+            {
+                var builder = new StringBuilder();
+                builder.AppendLine();
+                var value = equation.Name.ToCamelCase();
+                var cached = equation.Name.ToCamelCase() + "Cached";
+                var notNull = equation.Type is OptionalType ? "" : "!";
+                builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
+                builder.AppendLine($"            : this.Synthetic(ref {cached}, ref {value},");
+                builder.Append("                ");
+                AppendEquationMethod(equation, builder);
+                builder.AppendLine(");");
+                builder.AppendLine($"    private {Type(equation.Type.ToNonOptional())}? {value};");
+                builder.Append($"    private bool {cached};");
+                return builder.ToString();
+            }
             case EvaluationStrategy.Computed:
+            {
                 var builder = new StringBuilder();
                 builder.AppendLine();
                 builder.Append("        => ");
@@ -118,16 +133,23 @@ internal static class Emit
                     builder.Append(equation.Expression);
                 else
                 {
-                    builder.Append(equation.Aspect.Name);
-                    builder.Append('.');
-                    builder.Append(equation.NodeSymbol);
-                    builder.Append('_');
-                    builder.Append(equation.Name);
+                    AppendEquationMethod(equation, builder);
                     builder.Append("(this)");
                 }
+
                 builder.Append(';');
                 return builder.ToString();
+            }
         }
+    }
+
+    private static void AppendEquationMethod(SynthesizedAttributeEquationModel equation, StringBuilder builder)
+    {
+        builder.Append(equation.Aspect.Name);
+        builder.Append('.');
+        builder.Append(equation.NodeSymbol);
+        builder.Append('_');
+        builder.Append(equation.Name);
     }
 
     public static string EagerBody(SynthesizedAttributeEquationModel equation)
