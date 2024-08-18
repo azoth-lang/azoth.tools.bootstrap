@@ -20,7 +20,7 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
     public override LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
-                LexicalScopingAspect.ConcreteMethod_LexicalScope, ReferenceEqualityComparer.Instance);
+                LexicalScopingAspect.MethodDefinition_LexicalScope, ReferenceEqualityComparer.Instance);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap

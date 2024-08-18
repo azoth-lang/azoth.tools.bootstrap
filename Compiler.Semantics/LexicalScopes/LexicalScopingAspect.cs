@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
-internal static class LexicalScopingAspect
+internal static partial class LexicalScopingAspect
 {
     public static PackageNameScope Package_InheritedPackageNameScope_MainFacet(IPackageNode node)
         => new PackageNameScope(new[] { node.MainFacet },
@@ -19,7 +19,7 @@ internal static class LexicalScopingAspect
                 .Concat(node.References.Select(r => r.SymbolNode.TestingFacet)),
             node.PrimitivesDeclarations);
 
-    public static LexicalScope CompilationUnit_LexicalScope(ICompilationUnitNode node)
+    public static partial LexicalScope CompilationUnit_LexicalScope(ICompilationUnitNode node)
         => BuildNamespaceScope(node.ContainingLexicalScope, node.ImplicitNamespaceName, node.UsingDirectives);
 
     private static NamespaceSearchScope BuildNamespaceScope(
@@ -58,7 +58,7 @@ internal static class LexicalScopingAspect
         return new UsingDirectivesScope(containingScope, namespaceScopes);
     }
 
-    public static NamespaceSearchScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node)
+    public static partial LexicalScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node)
     {
         var containingLexicalScope = node.ContainingLexicalScope;
         if (node.IsGlobalQualified)
@@ -66,7 +66,7 @@ internal static class LexicalScopingAspect
         return BuildNamespaceScope(containingLexicalScope, node.DeclaredNames, node.UsingDirectives);
     }
 
-    public static LexicalScope TypeDefinition_SupertypesLexicalScope(ITypeDefinitionNode node)
+    public static partial LexicalScope TypeDefinition_SupertypesLexicalScope(ITypeDefinitionNode node)
     {
         if (node.GenericParameters.Any())
             return new DeclarationScope(node.ContainingLexicalScope, node.GenericParameters);
@@ -74,7 +74,7 @@ internal static class LexicalScopingAspect
         return node.ContainingLexicalScope;
     }
 
-    public static LexicalScope TypeDefinition_LexicalScope(ITypeDefinitionNode node)
+    public static partial LexicalScope TypeDefinition_LexicalScope(ITypeDefinitionNode node)
         // Only associated (i.e. "static") names are in scope. Other names must use `self.`
         => new DeclarationScope(node.SupertypesLexicalScope, node.Members.OfType<IAssociatedMemberDefinitionNode>());
 
@@ -84,23 +84,26 @@ internal static class LexicalScopingAspect
     public static LexicalScope TypeDefinition_InheritedLexicalScope_Members(ITypeDefinitionNode node)
         => node.LexicalScope;
 
-    public static LexicalScope FunctionDefinition_LexicalScope(IFunctionDefinitionNode node)
+    public static partial LexicalScope FunctionDefinition_LexicalScope(IFunctionDefinitionNode node)
         // TODO create a type parameter scope when type parameters are supported
         => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
 
-    public static LexicalScope ConcreteMethod_LexicalScope(IConcreteMethodDefinitionNode node)
+    public static partial LexicalScope MethodDefinition_LexicalScope(IMethodDefinitionNode node)
         // TODO create a type parameter scope when type parameters are supported
         => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
 
-    public static LexicalScope AssociatedFunctionDefinition_LexicalScope(IAssociatedFunctionDefinitionNode node)
+    public static partial LexicalScope AssociatedFunctionDefinition_LexicalScope(IAssociatedFunctionDefinitionNode node)
         // TODO create a type parameter scope when type parameters are supported
         => new DeclarationScope(node.ContainingLexicalScope, node.Parameters);
 
-    public static LexicalScope ConstructorDefinition_LexicalScope(IConstructorDefinitionNode node)
+    public static partial LexicalScope ConstructorDefinition_LexicalScope(IConstructorDefinitionNode node)
         => new DeclarationScope(node.ContainingLexicalScope, node.Parameters.OfType<INamedDeclarationNode>());
 
-    public static LexicalScope InitializerDefinition_LexicalScope(IInitializerDefinitionNode node)
+    public static partial LexicalScope InitializerDefinition_LexicalScope(IInitializerDefinitionNode node)
         => new DeclarationScope(node.ContainingLexicalScope, node.Parameters.OfType<INamedDeclarationNode>());
+
+    public static partial LexicalScope FieldDefinition_LexicalScope(IFieldDefinitionNode node)
+        => new DeclarationScope(node.ContainingLexicalScope);
 
     public static LexicalScope BodyOrBlock_InheritedLexicalScope(IBodyOrBlockNode node, int statementIndex)
     {
@@ -109,7 +112,7 @@ internal static class LexicalScopingAspect
         return node.Statements[statementIndex - 1].GetLexicalScope();
     }
 
-    public static LexicalScope VariableDeclarationStatement_LexicalScope(IVariableDeclarationStatementNode node)
+    public static partial LexicalScope VariableDeclarationStatement_LexicalScope(IVariableDeclarationStatementNode node)
         => new DeclarationScope(node.ContainingLexicalScope, node);
 
     /// <summary>
@@ -147,7 +150,7 @@ internal static class LexicalScopingAspect
         return node.Operator == UnaryOperator.Not ? flow.Swapped() : flow;
     }
 
-    public static LexicalScope ForeachExpression_LexicalScope(IForeachExpressionNode node)
+    public static partial LexicalScope ForeachExpression_LexicalScope(IForeachExpressionNode node)
     {
         var flowScope = node.InExpression.GetFlowLexicalScope().True;
         return new DeclarationScope(flowScope, node);

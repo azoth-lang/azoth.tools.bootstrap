@@ -1,0 +1,25 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+◊name LexicalScopingAspect;
+
+// ---------- Code Files
+↑ CompilationUnit.LexicalScope:`LexicalScope`;
+
+
+// ---------- Definitions
+↑ Definition.LexicalScope:`LexicalScope`;
+
+// ---------- Type Definitions
+= TypeDefinition.LexicalScope:`LexicalScope`;
+↑ TypeDefinition.SupertypesLexicalScope:`LexicalScope`;
+= TypeDefinition.SupertypesLexicalScope:`LexicalScope`;
+
+// ---------- Member Definitions
+= MethodDefinition.LexicalScope:`LexicalScope`;
+= ConstructorDefinition.LexicalScope:`LexicalScope`;
+= InitializerDefinition.LexicalScope:`LexicalScope`;
+
+// ---------- Statements
+↑ VariableDeclarationStatement.LexicalScope:`LexicalScope`;
+
+// ---------- Control Flow Expressions
+↑ ForeachExpression.LexicalScope:`LexicalScope`;

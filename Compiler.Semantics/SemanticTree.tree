@@ -76,7 +76,7 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
     ContainingDeclaration:`IPackageFacetNode` ContainingSymbol:`PackageSymbol`
     ImplicitNamespaceName:`NamespaceName` ImplicitNamespace:`INamespaceDefinitionNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*
-    ContainingLexicalScope:`NamespaceScope` LexicalScope:`LexicalScope`
+    ContainingLexicalScope:`NamespaceScope`
     Diagnostics:`DiagnosticCollection`;
 
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
@@ -84,7 +84,7 @@ UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 // ---------- Definitions
 Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? Facet:`IPackageFacetNode`
     ContainingDeclaration:`ISymbolDeclarationNode` ContainingSymbol:`Symbol`
-    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
+    ContainingLexicalScope:`LexicalScope`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol` ValueIdScope:`ValueIdScope`;
 ExecutableDefinition <: Definition = ValueIdScope:`ValueIdScope` Entry Exit
     VariableBindingsMap:`FixedDictionary<IVariableBindingNode,int>`;
@@ -119,7 +119,7 @@ FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration, ConcreteFunc
 TypeDefinition <: PackageMemberDefinition, AssociatedMemberDefinition, UserTypeDeclaration
     = Syntax:`ITypeDefinitionSyntax` IsConst:`bool` Name:`StandardName`
     DeclaredType:`IDeclaredUserType` Symbol:`UserTypeSymbol`
-    GenericParameters:GenericParameter* SupertypesLexicalScope:`LexicalScope`
+    GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName* Supertypes:{`BareReferenceType`}
     Members:{TypeMemberDefinition};
 ClassDefinition <: TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
@@ -276,7 +276,7 @@ VariableDeclarationStatement <: BodyStatement, VariableBinding = Syntax:`IVariab
     IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type?
     Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
     IntermediateInitializer:`IExpressionNode`?
-    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`;
+    ContainingLexicalScope:`LexicalScope`;
 ExpressionStatement <: BodyStatement = Syntax:`IExpressionStatementSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
     IntermediateExpression:`IExpressionNode`?;
@@ -347,7 +347,7 @@ WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax`
 ForeachExpression <: Expression, VariableBinding = Syntax:`IForeachExpressionSyntax`
     IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:AmbiguousExpression
     IntermediateInExpression:`IExpressionNode`? DeclaredType:Type? Block:BlockExpression
-    ContainingLexicalScope:`LexicalScope` LexicalScope:`LexicalScope`
+    ContainingLexicalScope:`LexicalScope`
     ReferencedIterableDeclaration:`ITypeDeclarationNode`? ReferencedIterateMethod:`IStandardMethodDeclarationNode`?
     IteratorAntetype:`IMaybeExpressionAntetype` IteratorType:`DataType`
     ReferencedIteratorDeclaration:`ITypeDeclarationNode`? ReferencedNextMethod:`IStandardMethodDeclarationNode`?

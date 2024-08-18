@@ -32,8 +32,8 @@ internal class NamespaceBlockDefinitionNode : DefinitionNode, INamespaceBlockDef
 
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Members { get; }
-    private ValueAttribute<NamespaceSearchScope> lexicalScope;
-    public override NamespaceSearchScope LexicalScope
+    private ValueAttribute<LexicalScope> lexicalScope;
+    public override LexicalScope LexicalScope
         => lexicalScope.TryGetValue(out var value) ? value
             : lexicalScope.GetValue(this, LexicalScopingAspect.NamespaceBlockDefinition_LexicalScope);
 

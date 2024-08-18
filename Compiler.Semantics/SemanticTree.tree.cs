@@ -221,8 +221,8 @@ public partial interface ICompilationUnitNode : ICodeNode
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
     NamespaceScope ContainingLexicalScope { get; }
-    LexicalScope LexicalScope { get; }
     DiagnosticCollection Diagnostics { get; }
+    LexicalScope LexicalScope { get; }
 }
 
 // [Closed(typeof(UsingDirectiveNode))]
@@ -391,10 +391,10 @@ public partial interface ITypeDefinitionNode : IPackageMemberDefinitionNode, IAs
     IDeclaredUserType DeclaredType { get; }
     new IFixedList<IGenericParameterNode> GenericParameters { get; }
     IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
-    LexicalScope SupertypesLexicalScope { get; }
     IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    LexicalScope SupertypesLexicalScope { get; }
     new AccessModifier AccessModifier { get; }
     AccessModifier IPackageMemberDefinitionNode.AccessModifier => AccessModifier;
     AccessModifier ITypeMemberDefinitionNode.AccessModifier => AccessModifier;
@@ -1531,7 +1531,6 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     IExpressionNode? IntermediateInExpression { get; }
     ITypeNode? DeclaredType { get; }
     IBlockExpressionNode Block { get; }
-    LexicalScope LexicalScope { get; }
     ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
     IStandardMethodDeclarationNode? ReferencedIterateMethod { get; }
     IMaybeExpressionAntetype IteratorAntetype { get; }
@@ -1541,6 +1540,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     IMaybeAntetype IteratedAntetype { get; }
     DataType IteratedType { get; }
     IFlowState FlowStateBeforeBlock { get; }
+    LexicalScope LexicalScope { get; }
 }
 
 // [Closed(typeof(BreakExpressionNode))]
