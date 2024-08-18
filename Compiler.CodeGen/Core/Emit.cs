@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
@@ -156,5 +157,35 @@ internal static class Emit
     {
         Requires.That(equation.Strategy == EvaluationStrategy.Eager, nameof(equation), "Must be an eager equation.");
         return equation.Expression ?? $"{equation.Aspect.Name}.{equation.NodeSymbol}_{equation.Name}(this)";
+    }
+
+    public static string Parameters(InheritedAttributeModel attribute)
+        => attribute.IsMethod ? "()" : "";
+
+    public static string Body(InheritedAttributeModel attribute)
+    {
+        switch (attribute.Strategy)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(attribute.Strategy);
+            case EvaluationStrategy.Eager:
+                throw new UnreachableException("Inherited equations cannot be eager.");
+            case EvaluationStrategy.Lazy:
+            {
+                var builder = new StringBuilder();
+                builder.AppendLine();
+                var value = attribute.Name.ToCamelCase();
+                var cached = attribute.Name.ToCamelCase() + "Cached";
+                var notNull = attribute.Type is OptionalType ? "" : "!";
+                builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
+                builder.AppendLine($"            : this.Inherited(ref {cached}, ref {value},");
+                builder.AppendLine($"                Inherited{attribute.Name});");
+                builder.AppendLine($"    private {Type(attribute.Type.ToNonOptional())}? {value};");
+                builder.Append($"    private bool {cached};");
+                return builder.ToString();
+            }
+            case EvaluationStrategy.Computed:
+                return $"        => Inherited{attribute.Name}(GrammarAttribute.CurrentInheritanceContext());";
+        }
     }
 }

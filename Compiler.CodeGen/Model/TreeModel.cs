@@ -25,6 +25,8 @@ public sealed class TreeModel : IHasUsingNamespaces
     public IFixedSet<string> UsingNamespaces { get; }
     public IFixedList<TreeNodeModel> Nodes { get; }
     public IFixedList<AspectModel> Aspects { get; }
+    public IFixedSet<InheritedAttributeInstancesModel> InheritedAttributes => inheritedAttributes.Value;
+    private readonly Lazy<IFixedSet<InheritedAttributeInstancesModel>> inheritedAttributes;
 
     public TreeModel(TreeSyntax syntax, List<AspectSyntax> aspects)
     {
@@ -35,8 +37,12 @@ public sealed class TreeModel : IHasUsingNamespaces
                                 .Except(Namespace).ToFixedSet();
         Nodes = syntax.Nodes.Select(r => new TreeNodeModel(this, r)).ToFixedList();
         nodesLookup = Nodes.ToFixedDictionary(r => r.Defines.ShortName);
+        inheritedAttributes = new(()
+            => Nodes.SelectMany(n => n.DeclaredAttributes.OfType<InheritedAttributeModel>())
+                    .GroupBy(a => a.Name, Functions.Identity, (_, attrs) => new InheritedAttributeInstancesModel(attrs))
+                    .ToFixedSet());
 
-        // Now that the three is fully created, it is safe to create the aspects
+        // Now that the tree is fully created, it is safe to create the aspects
         Aspects = aspects.Select(a => new AspectModel(this, a)).ToFixedList();
     }
 
@@ -59,6 +65,7 @@ public sealed class TreeModel : IHasUsingNamespaces
         var errors = ValidateRootSupertype();
         errors |= ValidateAmbiguousAttributes();
         errors |= ValidateUndefinedAttributes();
+        errors |= ValidateInheritedAttributeInstances();
         if (errors)
             throw new ValidationFailedException();
     }
@@ -121,4 +128,19 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     private static IEnumerable<SynthesizedAttributeModel> AttributesRequiringEquations(TreeNodeModel node)
         => node.ActualAttributes.OfType<SynthesizedAttributeModel>().Where(a => a.DefaultExpression is null);
+
+    private bool ValidateInheritedAttributeInstances()
+    {
+        var errors = false;
+        foreach (var attribute in InheritedAttributes)
+        {
+            var type = attribute.Type;
+            if (attribute.Instances.Any(a => a.Type != type))
+            {
+                errors = true;
+                Console.Error.WriteLine($"ERROR: Inherited attribute '{attribute.Name}' has instances with different types.");
+            }
+        }
+        return errors;
+    }
 }

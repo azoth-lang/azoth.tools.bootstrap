@@ -99,6 +99,14 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
     // TODO can this be more efficent?
     internal <#= Emit.BaseClassName(tree) #> LastDescendant()
         => ((<#= Emit.BaseClassName(tree) #>?)Children().LastOrDefault())?.LastDescendant() ?? this;
+<#      foreach (var attr in tree.InheritedAttributes) { #>
+
+    internal virtual <#= Emit.Type(attr.Type) #> Inherited<#= attr.Name #>(<#= Emit.BaseClassName(tree) #> child, <#= Emit.BaseClassName(tree) #> descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited<#= attr.Name #>(this, descendant, ctx);
+    protected <#= Emit.Type(attr.Type) #> Inherited<#= attr.Name #>(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited<#= attr.Name #>(this, this, ctx);
+<#      } #>
 }
 
 <#  } #>
@@ -108,6 +116,9 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 {
 <#      foreach (var property in node.ActualProperties) { #>
     public <#= Emit.Type(property.Type) #> <#= property.Name #> { [DebuggerStepThrough] get; }
+<#      } #>
+<#      foreach (var attr in node.ActualAttributes.OfType<InheritedAttributeModel>()) { #>
+    public <#= Emit.Type(attr.Type) #> <#= attr.Name #><#= Emit.Parameters(attr) #><#= Emit.Body(attr) #>
 <#      } #>
 <#      foreach (var equation in node.ActualEquations) { #>
 <#          switch (equation) { #>

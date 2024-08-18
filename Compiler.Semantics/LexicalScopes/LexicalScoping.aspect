@@ -2,8 +2,8 @@
 ◊name LexicalScopingAspect;
 
 // ---------- Packages
-// = Package.MainFacet.PackageNameScope;
-// = Package.TestingFacet.PackageNameScope;
+= Package.MainFacet.PackageNameScope;
+= Package.TestingFacet.PackageNameScope;
 
 // ---------- Facets
 ↓ PackageFacet.PackageNameScope:`PackageNameScope`;
