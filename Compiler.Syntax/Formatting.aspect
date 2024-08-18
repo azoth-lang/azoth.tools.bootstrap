@@ -5,7 +5,7 @@
 // ----------------
 // Synthesized:
 //      ↑ (child)? (eager|lazy|computed)? Node.Attribute:TypeSymbol (=> <C# Expression>)?;
-//      ↑ (child)? Node.Method(<params>):TypeSymbol (=> <C# Expression>)?;
+//      ↑ (child)? Node.Method(<params>):TypeSymbol (=> <C# Expression>)?; // Always computed
 //      = (eager|lazy|computed)? Node.Attribute(:TypeSymbol)? (=> <C# Expression>)?;
 //      = Node.Method(<params>)(:TypeSymbol)? (=> <C# Expression>)?;
 // Inherited:
@@ -23,8 +23,8 @@
 /// <summary>
 /// A developer/debugging friendly string representation of the syntax.
 /// </summary>
-↑ computed <default>.ToString(): `string`;
-= computed SelfParameter.ToString();
+↑ <default>.ToString(): `string`;
+= SelfParameter.ToString();
 
 // ---------- Expressions
 ↑ Expression.ToGroupedString(OperatorPrecedence surroundingPrecedence): `string`

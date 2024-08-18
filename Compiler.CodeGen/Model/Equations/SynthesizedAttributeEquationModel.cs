@@ -29,6 +29,8 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel, IMemberMo
     {
         if (syntax.EvaluationStrategy == EvaluationStrategy.Lazy && Expression is not null)
             throw new FormatException($"{syntax.Node}.{syntax.Name} has an expression but is marked as lazy.");
+        if (syntax.EvaluationStrategy is not null && syntax.Parameters is not null)
+            throw new FormatException($"{syntax.Node}.{syntax.Name} cannot specify evaluation strategy for method.");
 
         Syntax = syntax;
         strategy = new(ComputeStrategy); syntax.EvaluationStrategy.WithDefault(syntax.Expression);
@@ -60,7 +62,11 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel, IMemberMo
     /// 3. Otherwise, use the strategy defined in the attribute.
     /// </remarks>
     private EvaluationStrategy ComputeStrategy()
-        => Syntax!.EvaluationStrategy.WithDefault(Expression, Attribute.Strategy);
+    {
+        if (!string.IsNullOrEmpty(Parameters))
+            return EvaluationStrategy.Computed;
+        return Syntax!.EvaluationStrategy.WithDefault(Expression, Attribute.Strategy);
+    }
 
     public override string ToString() => $"= {NodeSymbol}.{Name}";
 }

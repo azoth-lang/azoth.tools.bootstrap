@@ -1,3 +1,4 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
@@ -13,7 +14,11 @@ public sealed class SynthesizedAttributeModel : AspectAttributeModel
     public SynthesizedAttributeModel(AspectModel aspect, SynthesizedAttributeSyntax syntax)
         : base(aspect, syntax.Node, syntax.Type)
     {
+        if (syntax.Strategy is not null && syntax.Parameters is not null)
+            throw new FormatException($"{syntax.Node}.{syntax.Name} cannot specify evaluation strategy for method.");
+
         Syntax = syntax;
-        Strategy = syntax.Strategy.WithDefault(syntax.DefaultExpression);
+        Strategy = syntax.Parameters is not null ? EvaluationStrategy.Computed
+            : syntax.Strategy.WithDefault(syntax.DefaultExpression);
     }
 }
