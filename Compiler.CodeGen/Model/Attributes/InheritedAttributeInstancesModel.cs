@@ -23,5 +23,7 @@ public sealed class InheritedAttributeInstancesModel
         var representativeAttribute = Instances.First();
         Name = representativeAttribute.Name;
         Type = representativeAttribute.Type;
+        if (Instances.Any(a => a.Name != Name))
+            throw new ArgumentException("All instances must have the same name.", nameof(instances));
     }
 }

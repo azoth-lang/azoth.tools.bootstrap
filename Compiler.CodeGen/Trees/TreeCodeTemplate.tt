@@ -140,6 +140,18 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
         <#= equation.Name #> = <#= Emit.EagerBody(equation) #>;
 <#      } #>
     }
+<#      foreach (var equation in node.DeclaredInheritedAttributeEquations) { #>
+
+    internal override <#= Emit.Type(equation.Type) #> Inherited<#= equation.Name #>(<#= Emit.BaseClassName(tree) #> child, <#= Emit.BaseClassName(tree) #> descendant, IInheritanceContext ctx)
+    {
+<#          foreach (var instance in equation.Instances) { #>
+        <#= Emit.Selector(instance) #>return <#= Emit.Body(instance) #>;
+<#          } #>
+<#          if (equation.Instances.All(i => !i.IsAllDescendants)) { #>
+        return base.Inherited<#= equation.Name #>(child, descendant, ctx);
+<#          } #>
+    }
+<#      } #>
 }
 
 <#  } #>

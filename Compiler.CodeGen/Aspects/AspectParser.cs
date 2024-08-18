@@ -115,8 +115,10 @@ public static class AspectParser
         string? typeOverride,
         string? expression)
     {
-        if (expression is not null)
-            throw new FormatException("Inherited equations cannot have expressions.");
+        if (evaluationStrategy is not null)
+            throw new FormatException("Inherited equations cannot have evaluation strategies.");
+        if (typeOverride is not null)
+            throw new FormatException("Inherited equations cannot have type overrides.");
         bool isMethod = false;
         if (parameters is not null)
         {
@@ -125,7 +127,7 @@ public static class AspectParser
             isMethod = true;
         }
         var selectorSyntax = ParseSelector(selector);
-        return new(evaluationStrategy, node, selectorSyntax, name, isMethod, ParseType(typeOverride));
+        return new(node, selectorSyntax, name, isMethod, expression);
     }
 
     private static SelectorSyntax ParseSelector(string[] selector)

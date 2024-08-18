@@ -14,7 +14,7 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel, IMemberMo
             a => HashCode.Combine(a.Name));
 
     public override SynthesizedAttributeEquationSyntax? Syntax { get; }
-    public override SynthesizedAttributeModel Attribute => attribute.Value;
+    public SynthesizedAttributeModel Attribute => attribute.Value;
     private readonly Lazy<SynthesizedAttributeModel> attribute;
     public EvaluationStrategy Strategy => strategy.Value;
     private readonly Lazy<EvaluationStrategy> strategy;

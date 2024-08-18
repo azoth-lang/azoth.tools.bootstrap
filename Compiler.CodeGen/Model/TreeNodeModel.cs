@@ -116,6 +116,9 @@ public class TreeNodeModel
     public IFixedList<SynthesizedAttributeEquationModel> ActualEquations => actualEquations.Value;
     private readonly Lazy<IFixedList<SynthesizedAttributeEquationModel>> actualEquations;
 
+    public IFixedSet<InheritedAttributeEquationInstancesModel> DeclaredInheritedAttributeEquations => declaredInheritedAttributeEquations.Value;
+    private readonly Lazy<IFixedSet<InheritedAttributeEquationInstancesModel>> declaredInheritedAttributeEquations;
+
     public TreeNodeModel(TreeModel tree, TreeNodeSyntax syntax)
     {
         Tree = tree;
@@ -175,6 +178,10 @@ public class TreeNodeModel
                                    .Select(ImplicitlyDeclaredEquation).ToFixedList();
         });
         actualEquations = new(() => ComputeActualSynthesizedEquations(AllDeclaredEquations).ToFixedList());
+        declaredInheritedAttributeEquations = new(()
+            => DeclaredEquations.OfType<InheritedAttributeEquationModel>()
+                                .GroupBy(e => e.Name, (_, eqs) => new InheritedAttributeEquationInstancesModel(eqs))
+                                .ToFixedSet());
     }
 
     /// <summary>

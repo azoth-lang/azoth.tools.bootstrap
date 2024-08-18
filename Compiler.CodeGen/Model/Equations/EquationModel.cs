@@ -25,7 +25,6 @@ public abstract class EquationModel
     public TreeNodeModel Node => node.Value;
     private readonly Lazy<TreeNodeModel> node;
     public string Name { get; }
-    public abstract AttributeModel Attribute { get; }
 
     protected EquationModel(AspectModel aspect, InternalSymbol nodeSymbol, string name)
     {

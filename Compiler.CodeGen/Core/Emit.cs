@@ -188,4 +188,42 @@ internal static class Emit
                 return $"        => Inherited{attribute.Name}(GrammarAttribute.CurrentInheritanceContext());";
         }
     }
+
+    public static string Selector(InheritedAttributeEquationModel equation)
+        => Selector(equation.Selector);
+
+    private static string Selector(SelectorModel selector)
+        => selector switch
+        {
+            AllChildrenSelectorModel _ => SelectorIf("ReferenceEquals(child, descendant)"),
+            DescendantsSelectorModel _ => "", // always
+            // TODO use Current child for all of these
+            ChildSelectorModel s => SelectorIf($"ReferenceEquals(descendant, {s.Child})"),
+            ChildAtIndexSelectorModel s => SelectorIf($"ReferenceEquals(descendant, {s.Child}[{s.Index}])"),
+            ChildAtVariableSelectorModel s => SelectorIf($"{s.Child}.IndexOf(descendant) is {{}} {s.Variable}"),
+            _ => throw ExhaustiveMatch.Failed(selector)
+        };
+
+    private static string SelectorIf(string condition)
+        => "if(" + condition + $"){Environment.NewLine}            ";
+
+    public static string Body(InheritedAttributeEquationModel equation)
+    {
+        if (equation.Expression is not null)
+            return equation.Expression;
+
+        var parameters = equation.Selector is ChildAtVariableSelectorModel s ? $"(this, {s.Variable})" : "(this)";
+        return EquationMethod(equation) + parameters;
+    }
+
+    private static string EquationMethod(InheritedAttributeEquationModel equation)
+        => $"{equation.Aspect.Name}.{equation.NodeSymbol}_" + equation.Selector switch
+        {
+            AllChildrenSelectorModel _ => "Children",
+            DescendantsSelectorModel _ => "Descendants", // always
+            ChildSelectorModel s => s.Child,
+            ChildAtIndexSelectorModel s => $"{s.Child}_{s.Index}",
+            ChildAtVariableSelectorModel s => s.Child,
+            _ => throw ExhaustiveMatch.Failed(equation.Selector)
+        } + $"_{equation.Name}";
 }

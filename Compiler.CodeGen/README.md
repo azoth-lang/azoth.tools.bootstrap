@@ -61,14 +61,14 @@
 
 ### Inherited Attributes
 
-| Declaration                                                                      | Meaning                                                           |
-| -------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `↓` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;`               | Inherited attribute, defaults to lazy                             |
-| `=` (`lazy`\|`computed`)? *Node*`.`*Selector*`.`*Attribute*`;`                   | Inherited equation, defaults to attribute strategy                |
-| `=` (`lazy`\|`computed`)? *Node*`.`*Selector*`.`*Attribute* `=>` *Expression*`;` | Inherited equation with inline expression, defaults to computed   |
-| `↓` `child`? *Node*.*Attribute*`():` *Type*`;`                                   | Inherited attribute method, always computed                       |
-| `=` *Node*`.`*Selector*`.`*Attribute*`();`                                       | Inherited method equation, always computed                        |
-| `=` *Node*`.`*Selector*`.`*Attribute*`()` `=>` *Expression*`;`                   | Inherited method equation with inline expression, always computed |
+| Declaration                                                        | Meaning                                          |
+| ------------------------------------------------------------------ | ------------------------------------------------ |
+| `↓` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Inherited attribute, defaults to lazy            |
+| `=` *Node*`.`*Selector*`.`*Attribute*`;`                           | Inherited equation                               |
+| `=` *Node*`.`*Selector*`.`*Attribute* `=>` *Expression*`;`         | Inherited equation with inline expression        |
+| `↓` `child`? *Node*.*Attribute*`():` *Type*`;`                     | Inherited attribute method, always computed      |
+| `=` *Node*`.`*Selector*`.`*Attribute*`();`                         | Inherited method equation                        |
+| `=` *Node*`.`*Selector*`.`*Attribute*`()` `=>` *Expression*`;`     | Inherited method equation with inline expression |
 
 | Selector                                   | Meaning                                                                    |
 | ------------------------------------------ | -------------------------------------------------------------------------- |
