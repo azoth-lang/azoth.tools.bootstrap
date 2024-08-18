@@ -12,6 +12,18 @@ internal static class Build
         => model.UsingNamespaces.Concat(additionalNamespaces).WhereNotNull().Distinct()
                 .OrderBy(v => v, NamespaceComparer.Instance);
 
+    public static IEnumerable<string> OrderedNamespaces(
+        IHasUsingNamespaces model,
+        bool condition,
+        IEnumerable<string> conditionalNamespaces,
+        params string[] additionalNamespaces)
+    {
+        var namespaces = model.UsingNamespaces.Concat(additionalNamespaces);
+        if (condition)
+            namespaces = namespaces.Concat(conditionalNamespaces);
+        return namespaces.Distinct().OrderBy(v => v, NamespaceComparer.Instance);
+    }
+
     public static IEnumerable<AttributeModel> BaseAttributes(TreeNodeModel node, AttributeModel attribute)
         => node.InheritedAttributesNamedSameAs(attribute).Where(p => p.IsDeclarationRequired);
 }

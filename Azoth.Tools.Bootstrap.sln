@@ -28,6 +28,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{8D74A93C-C
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.Semantics", "Compiler.Semantics\Compiler.Semantics.csproj", "{A8ACDE04-DE4D-4BD5-A839-476B7D2CFE24}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4D709360-03ED-4A76-8EBB-18B89462A9DB} = {4D709360-03ED-4A76-8EBB-18B89462A9DB}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Unit", "Tests.Unit\Tests.Unit.csproj", "{F93B7E34-0B72-4AC7-84DA-E722936DF90B}"
 EndProject

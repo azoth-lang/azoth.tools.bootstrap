@@ -8,8 +8,8 @@
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(tree,
-    "ExhaustiveMatching", "System.CodeDom.Compiler", "System.Diagnostics",
-    (tree.SimplifiedTree ? null : "Azoth.Tools.Bootstrap.Compiler.Core.Attributes"))) { #>
+    !tree.SimplifiedTree, new [] { "System", "System.Linq", "System.Threading", "Azoth.Tools.Bootstrap.Compiler.Core.Attributes" },
+    "ExhaustiveMatching", "System.CodeDom.Compiler", "System.Diagnostics")) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
@@ -50,8 +50,54 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 // TODO switch back to `file` and not `partial` once fully transitioned
 internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChildTreeNode<<#= Emit.TypeName(tree.RootSupertype) #>>
 {
-    protected TreeNode() { }
-    protected TreeNode(bool inFinalTree) : base(inFinalTree) { }
+    private <#= Emit.BaseClassName(tree) #>? parent;
+
+    protected <#= Emit.BaseClassName(tree) #>() { }
+    protected <#= Emit.BaseClassName(tree) #>(bool inFinalTree) : base(inFinalTree) { }
+
+    [DebuggerStepThrough]
+    protected sealed override ITreeNode PeekParent()
+        // Use volatile read to ensure order of operations as seen by other threads
+        => Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
+
+    protected <#= Emit.BaseClassName(tree) #> GetParent(IInheritanceContext ctx)
+    {
+        // Use volatile read to ensure order of operations as seen by other threads
+        var node = Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
+        ctx.AccessParentOf(this);
+        return node;
+    }
+
+    void IChildTreeNode<<#= Emit.TypeName(tree.RootSupertype) #>>.SetParent(<#= Emit.TypeName(tree.RootSupertype) #> newParent)
+    {
+        if (newParent is not <#= Emit.BaseClassName(tree) #> newParentNode)
+            throw new ArgumentException($"Parent must be a {nameof(<#= Emit.BaseClassName(tree) #>)}.", nameof(newParent));
+
+        // Use volatile write to ensure order of operations as seen by other threads
+        Volatile.Write(ref parent, newParentNode);
+    }
+
+    /// <summary>
+    /// The previous node to this one in a preorder traversal of the tree.
+    /// </summary>
+    protected virtual <#= Emit.BaseClassName(tree) #> Previous(IInheritanceContext ctx)
+    {
+        <#= Emit.BaseClassName(tree) #>? previous = null;
+        var parent = GetParent(ctx);
+        foreach (var child in parent.Children().Cast<<#= Emit.BaseClassName(tree) #>>())
+        {
+            if (child == this)
+                // If this is the first child, return the parent without descending
+                return previous?.LastDescendant() ?? parent;
+            previous = child;
+        }
+
+        throw new UnreachableException("Node is not a child of its parent.");
+    }
+
+    // TODO can this be more efficent?
+    internal <#= Emit.BaseClassName(tree) #> LastDescendant()
+        => ((<#= Emit.BaseClassName(tree) #>?)Children().LastOrDefault())?.LastDescendant() ?? this;
 }
 
 <#  } #>
