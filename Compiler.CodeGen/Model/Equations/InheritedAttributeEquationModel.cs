@@ -16,10 +16,9 @@ public sealed class InheritedAttributeEquationModel : EquationModel
     public bool IsAllDescendants => Selector.IsAllDescendants;
     public bool IsMethod => Syntax.IsMethod;
     public TypeModel Type => Attribute.Type;
-    public string? Expression => Syntax.Expression;
 
     public InheritedAttributeEquationModel(AspectModel aspect, InheritedAttributeEquationSyntax syntax)
-        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name)
+        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.Expression)
     {
         Syntax = syntax;
         Selector = SelectorModel.Create(syntax.Selector);

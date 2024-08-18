@@ -119,7 +119,7 @@ internal static class Emit
                 builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
                 builder.AppendLine($"            : this.Synthetic(ref {cached}, ref {value},");
                 builder.Append("                ");
-                AppendEquationMethod(equation, builder);
+                AppendQualifiedEquationMethod(equation, builder);
                 builder.AppendLine(");");
                 builder.AppendLine($"    private {Type(equation.Type.ToNonOptional())}? {value};");
                 builder.Append($"    private bool {cached};");
@@ -134,7 +134,7 @@ internal static class Emit
                     builder.Append(equation.Expression);
                 else
                 {
-                    AppendEquationMethod(equation, builder);
+                    AppendQualifiedEquationMethod(equation, builder);
                     builder.Append("(this)");
                 }
 
@@ -144,10 +144,22 @@ internal static class Emit
         }
     }
 
-    private static void AppendEquationMethod(SynthesizedAttributeEquationModel equation, StringBuilder builder)
+    private static void AppendQualifiedEquationMethod(SynthesizedAttributeEquationModel equation, StringBuilder builder)
     {
         builder.Append(equation.Aspect.Name);
         builder.Append('.');
+        AppendEquationMethod(equation, builder);
+    }
+
+    public static string EquationMethod(SynthesizedAttributeEquationModel equation)
+    {
+        var builder = new StringBuilder();
+        AppendEquationMethod(equation, builder);
+        return builder.ToString();
+    }
+
+    private static void AppendEquationMethod(SynthesizedAttributeEquationModel equation, StringBuilder builder)
+    {
         builder.Append(equation.NodeSymbol);
         builder.Append('_');
         builder.Append(equation.Name);
@@ -213,11 +225,11 @@ internal static class Emit
             return equation.Expression;
 
         var parameters = equation.Selector is ChildAtVariableSelectorModel s ? $"(this, {s.Variable})" : "(this)";
-        return EquationMethod(equation) + parameters;
+        return $"{equation.Aspect.Name}." + EquationMethod(equation) + parameters;
     }
 
-    private static string EquationMethod(InheritedAttributeEquationModel equation)
-        => $"{equation.Aspect.Name}.{equation.NodeSymbol}_" + equation.Selector switch
+    public static string EquationMethod(InheritedAttributeEquationModel equation)
+        => $"{equation.NodeSymbol}_" + equation.Selector switch
         {
             AllChildrenSelectorModel _ => "Children",
             DescendantsSelectorModel _ => "Descendants", // always
@@ -226,4 +238,11 @@ internal static class Emit
             ChildAtVariableSelectorModel s => s.Child,
             _ => throw ExhaustiveMatch.Failed(equation.Selector)
         } + $"_{equation.Name}";
+
+    public static string EquationMethodExtraParams(InheritedAttributeEquationModel equation)
+    {
+        if (equation.Selector is ChildAtVariableSelectorModel s)
+            return $", int {s.Variable}";
+        return "";
+    }
 }

@@ -21,10 +21,9 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel, IMemberMo
     public string Parameters { get; }
     public TypeModel? TypeOverride { get; }
     public TypeModel Type => TypeOverride ?? Attribute.Type;
-    public string? Expression { get; }
 
     public SynthesizedAttributeEquationModel(AspectModel aspect, SynthesizedAttributeEquationSyntax syntax)
-        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name)
+        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.Expression)
     {
         if (syntax.Strategy == EvaluationStrategy.Lazy && Expression is not null)
             throw new FormatException($"{syntax.Node}.{syntax.Name} has an expression but is marked as lazy.");
@@ -35,12 +34,11 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel, IMemberMo
         strategy = new(ComputeStrategy);
         Parameters = syntax.Parameters ?? "";
         TypeOverride = TypeModel.CreateFromSyntax(Aspect.Tree, syntax.TypeOverride);
-        Expression = syntax.Expression;
         attribute = new(GetAttribute<SynthesizedAttributeModel>);
     }
 
     public SynthesizedAttributeEquationModel(TreeNodeModel node, SynthesizedAttributeModel attribute)
-        : base(attribute.Aspect, node.Defines, attribute.Name)
+        : base(attribute.Aspect, node.Defines, attribute.Name, attribute.DefaultExpression)
     {
         strategy = new(attribute.Strategy);
         Parameters = attribute.Parameters;

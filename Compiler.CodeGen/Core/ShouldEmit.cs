@@ -8,6 +8,6 @@ public static class ShouldEmit
     public static bool Class(TreeNodeModel node)
         => !node.IsAbstract;
 
-    public static bool EquationPartialImplementation(SynthesizedAttributeEquationModel equation)
+    public static bool EquationPartialImplementation(EquationModel equation)
         => equation.Expression is null;
 }

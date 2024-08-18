@@ -9,6 +9,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 internal static partial class LexicalScopingAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial PackageNameScope Package_MainFacet_PackageNameScope(IPackageNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial PackageNameScope Package_TestingFacet_PackageNameScope(IPackageNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope TypeDefinition_LexicalScope(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope TypeDefinition_SupertypesLexicalScope(ITypeDefinitionNode node);

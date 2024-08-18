@@ -16,11 +16,14 @@ namespace <#=aspect.Namespace #>;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class <#= aspect.Name #>
 {
-<#  foreach(var equation in aspect.AllDeclaredEquations) { #>
-<#          switch (equation) { #>
-<#              case SynthesizedAttributeEquationModel eq when ShouldEmit.EquationPartialImplementation(eq): #>
+<#  foreach(var equation in aspect.AllDeclaredEquations.Where(eq => ShouldEmit.EquationPartialImplementation(eq))) { #>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial <#= Emit.Type(eq.Type) #> <#=eq.NodeSymbol.ShortName #>_<#= eq.Name #>(<#= Emit.TypeName(eq.Node.Defines) #> node);
+<#          switch (equation) { #>
+<#              case SynthesizedAttributeEquationModel eq: #>
+    public static partial <#= Emit.Type(eq.Type) #> <#= Emit.EquationMethod(eq) #>(<#= Emit.TypeName(eq.Node.Defines) #> node);
+<#                  break;#>
+<#              case InheritedAttributeEquationModel eq: #>
+    public static partial <#= Emit.Type(eq.Type) #> <#= Emit.EquationMethod(eq) #>(<#= Emit.TypeName(eq.Node.Defines) #> node<#= Emit.EquationMethodExtraParams(eq) #>);
 <#                  break;#>
 <#          } #>
 <#  } #>

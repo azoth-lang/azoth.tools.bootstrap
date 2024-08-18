@@ -68,24 +68,24 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Aspects
             this.Write("\r\n{\r\n");
             
             #line 19 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
-  foreach(var equation in aspect.AllDeclaredEquations) { 
+  foreach(var equation in aspect.AllDeclaredEquations.Where(eq => ShouldEmit.EquationPartialImplementation(eq))) { 
             
             #line default
             #line hidden
+            this.Write("    [MethodImpl(MethodImplOptions.AggressiveInlining)]\r\n");
             
-            #line 20 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+            #line 21 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
           switch (equation) { 
             
             #line default
             #line hidden
             
-            #line 21 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
-              case SynthesizedAttributeEquationModel eq when ShouldEmit.EquationPartialImplementation(eq): 
+            #line 22 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+              case SynthesizedAttributeEquationModel eq: 
             
             #line default
             #line hidden
-            this.Write("    [MethodImpl(MethodImplOptions.AggressiveInlining)]\r\n    public static partial" +
-                    " ");
+            this.Write("    public static partial ");
             
             #line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(eq.Type)));
@@ -95,14 +95,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Aspects
             this.Write(" ");
             
             #line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(eq.NodeSymbol.ShortName));
-            
-            #line default
-            #line hidden
-            this.Write("_");
-            
-            #line 23 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(eq.Name));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.EquationMethod(eq)));
             
             #line default
             #line hidden
@@ -122,12 +115,53 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Aspects
             #line hidden
             
             #line 25 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+              case InheritedAttributeEquationModel eq: 
+            
+            #line default
+            #line hidden
+            this.Write("    public static partial ");
+            
+            #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(eq.Type)));
+            
+            #line default
+            #line hidden
+            this.Write(" ");
+            
+            #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.EquationMethod(eq)));
+            
+            #line default
+            #line hidden
+            this.Write("(");
+            
+            #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(eq.Node.Defines)));
+            
+            #line default
+            #line hidden
+            this.Write(" node");
+            
+            #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.EquationMethodExtraParams(eq)));
+            
+            #line default
+            #line hidden
+            this.Write(");\r\n");
+            
+            #line 27 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+                  break;
+            
+            #line default
+            #line hidden
+            
+            #line 28 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
           } 
             
             #line default
             #line hidden
             
-            #line 26 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+            #line 29 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
   } 
             
             #line default
