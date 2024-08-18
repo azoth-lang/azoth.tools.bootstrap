@@ -134,14 +134,14 @@ internal static class Parsing
     public static TypeSyntax? ParseType(string? type)
     {
         if (type is null) return null;
-        bool isOptional = ParseOffEnd(ref type, '?');
+        bool isOptional = ParseOffEnd(ref type, "?");
         var collectionKind = ParseCollectionKind(ref type);
         return new(ParseSymbol(type), collectionKind, isOptional);
     }
 
     private static CollectionKind ParseCollectionKind(ref string type)
     {
-        var isList = ParseOffEnd(ref type, '*');
+        var isList = ParseOffEnd(ref type, "*");
 
         var isSet = type.StartsWith('{') && type.EndsWith('}');
         type = isSet ? type[1..^1] : type;
@@ -152,17 +152,17 @@ internal static class Parsing
         return CollectionKind.None;
     }
 
-    public static bool ParseOffEnd(ref string value, char c)
+    public static bool ParseOffEnd(ref string value, string c)
     {
         var endsWith = value.EndsWith(c);
-        if (endsWith) value = value[..^1];
+        if (endsWith) value = value[..^1].Trim();
         return endsWith;
     }
 
     public static bool ParseOffStart(ref string value, char c)
     {
         var endsWith = value.StartsWith(c);
-        if (endsWith) value = value[1..];
+        if (endsWith) value = value[1..].Trim();
         return endsWith;
     }
 }

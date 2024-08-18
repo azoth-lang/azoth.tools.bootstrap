@@ -61,7 +61,6 @@ PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPacka
 // ---------- Facets
 PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageSyntax`
     PackageName:`IdentifierName` PackageSymbol:`PackageSymbol`
-    PackageNameScope:`PackageNameScope`
     CompilationUnits:{CompilationUnit} Definitions:`IFixedSet<IPackageMemberDefinitionNode>`
     GlobalNamespace:NamespaceDefinition;
 

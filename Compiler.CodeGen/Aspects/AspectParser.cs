@@ -41,6 +41,7 @@ public static class AspectParser
         => statement[0] switch
         {
             '↑' => ParseSynthesizedAttribute(statement),
+            '↓' => ParseInheritedAttribute(statement),
             _ => throw new($"Unknown attribute kind: {statement}"),
         };
 
@@ -48,7 +49,6 @@ public static class AspectParser
     {
         if (!ParseOffStart(ref statement, '↑'))
             throw new ArgumentException("Not a synthesized attribute statement.", nameof(statement));
-        statement = statement[1..].Trim();
 
         var (definition, defaultExpression) = OptionalSplitTwo(statement, "=>", "Too many `=>` in: '{0}'");
         (definition, var type) = SplitTwo(definition, ":", "Should be exactly one `:` in: '{0}'");
@@ -58,6 +58,21 @@ public static class AspectParser
         var typeSyntax = ParseType(type);
         var nodeSymbol = ParseSymbol(node);
         return new(evaluationStrategy, nodeSymbol, name, parameters, typeSyntax, defaultExpression);
+    }
+
+    private static InheritedAttributeSyntax ParseInheritedAttribute(string statement)
+    {
+        if (!ParseOffStart(ref statement, '↓'))
+            throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
+
+        var (definition, type) = SplitTwo(statement, ":", "Should be exactly one `:` in: '{0}'");
+        (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        var evaluationStrategy = ParseEvaluationStrategy(ref node);
+        var isMethod = ParseOffEnd(ref definition, "()");
+        var name = definition;
+        var typeSyntax = ParseType(type);
+        var nodeSymbol = ParseSymbol(node);
+        return new(evaluationStrategy, nodeSymbol, name, isMethod, typeSyntax);
     }
 
     private static EquationSyntax ParseEquation(string statement)

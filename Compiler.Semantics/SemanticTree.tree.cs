@@ -168,11 +168,11 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     new IPackageSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     PackageSymbol PackageSymbol { get; }
-    PackageNameScope PackageNameScope { get; }
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     IFixedSet<IPackageMemberDefinitionNode> Definitions { get; }
     new INamespaceDefinitionNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
+    PackageNameScope PackageNameScope { get; }
 }
 
 [Closed(

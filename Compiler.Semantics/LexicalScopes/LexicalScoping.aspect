@@ -1,6 +1,13 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 ◊name LexicalScopingAspect;
 
+// ---------- Packages
+// = Package.MainFacet.PackageNameScope;
+// = Package.TestingFacet.PackageNameScope;
+
+// ---------- Facets
+↓ PackageFacet.PackageNameScope:`PackageNameScope`;
+
 // ---------- Code Files
 ↑ CompilationUnit.LexicalScope:`LexicalScope`;
 

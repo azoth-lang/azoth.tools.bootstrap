@@ -26,11 +26,12 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 {
 <#      foreach (var attribute in node.AttributesRequiringDeclaration) { #>
 <#          switch (attribute) { #>
-<#              case PropertyModel attr: #>
-    <#=Emit.IsNew(attr) #><#=Emit.Type(attr.Type) #> <#=attr.Name #> { get; }
+<#              case PropertyModel: #>
+<#              case InheritedAttributeModel: #>
+    <#= Emit.IsNew(attribute) #><#= Emit.Type(attribute.Type) #> <#= attribute.Name #> { get; }
 <#                  break;#>
 <#              case SynthesizedAttributeModel attr: #>
-    <#=Emit.Type(attr.Type) #> <#=attr.Name #><#=attr.Parameters #><#=Emit.Body(attr) #>
+    <#=Emit.IsNew(attr) #><#=Emit.Type(attr.Type) #> <#=attr.Name #><#=attr.Parameters #><#=Emit.Body(attr) #>
 <#                  break;#>
 <#          } #>
 <#          foreach (var baseAttribute in Build.BaseAttributes(node, attribute)) { #>
