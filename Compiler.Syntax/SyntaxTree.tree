@@ -1,5 +1,5 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
-◊root <default>;
+◊root-supertype <default>;
 ◊prefix I;
 ◊suffix Syntax;
 ◊class-suffix Syntax;

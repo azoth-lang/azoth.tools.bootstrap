@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
+using ExhaustiveMatching;
 using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
@@ -15,7 +16,7 @@ public sealed class TreeModel : IHasUsingNamespaces
     public TreeSyntax Syntax { get; }
 
     public string Namespace => Syntax.Namespace;
-    public Symbol? Root { get; }
+    public InternalSymbol? RootSupertype { get; }
     public string SymbolPrefix => Syntax.SymbolPrefix;
     public string SymbolSuffix => Syntax.SymbolSuffix;
     public bool GenerateClasses => Syntax.GenerateClasses;
@@ -28,7 +29,14 @@ public sealed class TreeModel : IHasUsingNamespaces
     public TreeModel(TreeSyntax syntax, List<AspectSyntax> aspects)
     {
         Syntax = syntax;
-        Root = Symbol.CreateFromSyntax(this, syntax.Root);
+        var rootSupertypeSymbol = Symbol.CreateFromSyntax(this, syntax.Root);
+        RootSupertype = rootSupertypeSymbol switch
+        {
+            null => null,
+            InternalSymbol rootSupertype => rootSupertype,
+            ExternalSymbol _ => throw new FormatException("Root supertype must be an internal symbol."),
+            _ => throw ExhaustiveMatch.Failed(rootSupertypeSymbol)
+        };
         UsingNamespaces = syntax.UsingNamespaces
                                 .Concat(aspects.SelectMany(a => a.UsingNamespaces.Append(a.Namespace)))
                                 .Except(Namespace).ToFixedSet();
@@ -55,12 +63,30 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     public void Validate()
     {
-        var errors = ValidateAmbiguousAttributes();
+        var errors = ValidateRootSupertype();
+        errors |= ValidateAmbiguousAttributes();
         errors |= ValidateUndefinedAttributes();
         if (errors)
             throw new ValidationFailedException();
     }
 
+    /// <summary>
+    /// Check that all nodes inherit from the root supertype.
+    /// </summary>
+    private bool ValidateRootSupertype()
+    {
+        if (RootSupertype is null)
+            // No root supertype, nothing to validate
+            return true;
+        var errors = false;
+        foreach (var node in Nodes)
+            if (!node.InheritsFromRootSupertype)
+            {
+                errors = true;
+                Console.Error.WriteLine($"ERROR: Node '{node.Defines}' does not inherit from the root supertype '{RootSupertype}'.");
+            }
+        return errors;
+    }
 
     /// <summary>
     /// This checks that there are no attributes that have conflicting definitions due to the
@@ -77,7 +103,6 @@ public sealed class TreeModel : IHasUsingNamespaces
                 Console.Error.WriteLine($"ERROR: Node '{node.Defines}' has ambiguous attributes {string.Join(", ", ambiguousNames.Select(n => $"'{n}'"))}."
                                         + $" Definitions: {string.Join(", ", ambiguousNames.SelectMany(node.AttributesNamed).Select(n => $"'{n}'"))}");
             }
-
         return errors;
     }
 

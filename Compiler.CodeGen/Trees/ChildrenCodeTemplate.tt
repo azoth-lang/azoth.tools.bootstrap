@@ -15,10 +15,10 @@ using ExhaustiveMatching;
 namespace <#=tree.Namespace #>;
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public static class <#=Emit.TypeName(tree.Root)#>Extensions
+public static class <#=Emit.TypeName(tree.RootSupertype)#>Extensions
 {
     [DebuggerStepThrough]
-    public static IEnumerable<<#=Emit.TypeName(tree.Root)#>> Children(this <#=Emit.TypeName(tree.Root)#> node)
+    public static IEnumerable<<#=Emit.TypeName(tree.RootSupertype)#>> Children(this <#=Emit.TypeName(tree.RootSupertype)#> node)
     {
         switch (node)
         {

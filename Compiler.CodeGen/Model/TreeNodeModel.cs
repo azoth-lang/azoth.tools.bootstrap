@@ -43,6 +43,9 @@ public class TreeNodeModel
     public IFixedSet<TreeNodeModel> DescendantNodes => descendantNodes.Value;
     private readonly Lazy<IFixedSet<TreeNodeModel>> descendantNodes;
 
+    public bool InheritsFromRootSupertype => inheritsFromRootSupertype.Value;
+    private readonly Lazy<bool> inheritsFromRootSupertype;
+
     /// <summary>
     /// The properties declared for the node in the definition file.
     /// </summary>
@@ -121,7 +124,7 @@ public class TreeNodeModel
         DefinesType = new SymbolType(Defines);
         Supertypes = syntax.Supertypes.Select(s => Symbol.CreateFromSyntax(tree, s)).ToFixedSet();
         // Add root supertype if no supertypes are declared
-        if (Tree.Root is { } root && root != Defines && !Supertypes.Any(s => s is InternalSymbol))
+        if (Tree.RootSupertype is { } root && root != Defines && !Supertypes.Any(s => s is InternalSymbol))
             Supertypes = Supertypes.Append(root).ToFixedSet();
 
         // Inheritance relationships
@@ -130,6 +133,8 @@ public class TreeNodeModel
         ancestorNodes = new(() => SupertypeNodes.Concat(SupertypeNodes.SelectMany(p => p.AncestorNodes)).ToFixedSet());
         childNodes = new(() => Tree.Nodes.Where(r => r.SupertypeNodes.Contains(this)).ToFixedSet());
         descendantNodes = new(() => ChildNodes.Concat(ChildNodes.SelectMany(r => r.DescendantNodes)).ToFixedSet());
+        inheritsFromRootSupertype = new(() => Tree.RootSupertype is not null
+            && (Defines == Tree.RootSupertype || SupertypeNodes.Any(s => s.InheritsFromRootSupertype)));
 
         // Attributes
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new PropertyModel(this, p)).ToFixedList();

@@ -65,6 +65,12 @@ internal static class Emit
 
     public static string ClassName(InternalSymbol symbol) => symbol.ClassName;
 
+    public static string BaseClassName(TreeModel tree)
+    {
+        if (tree.RootSupertype is null) return $"{tree.ClassPrefix}{tree.ClassSuffix}";
+        return tree.RootSupertype.ClassName;
+    }
+
     public static string IsNew(AttributeModel attribute)
         => attribute.IsNewDefinition ? "new " : "";
 
