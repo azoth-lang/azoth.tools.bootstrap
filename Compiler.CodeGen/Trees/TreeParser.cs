@@ -18,12 +18,13 @@ internal static class TreeParser
         var symbolPrefix = GetConfig(lines, "prefix") ?? "";
         var symbolSuffix = GetConfig(lines, "suffix") ?? "";
         var generateClasses = GetBoolConfig(lines, "gen-classes", true);
+        var simplifiedTree = GetBoolConfig(lines, "simplified-tree", false);
         var classPrefix = GetConfig(lines, "class-prefix") ?? "";
         var classSuffix = GetConfig(lines, "class-suffix") ?? "";
         var usingNamespaces = ParseUsingNamespaces(lines);
         var rules = ParseNodes(lines);
-        return new(ns, rootType, symbolPrefix, symbolSuffix, generateClasses, classPrefix, classSuffix,
-            usingNamespaces, rules);
+        return new(ns, rootType, symbolPrefix, symbolSuffix, generateClasses, simplifiedTree,
+            classPrefix, classSuffix, usingNamespaces, rules);
     }
 
     private static IEnumerable<TreeNodeSyntax> ParseNodes(IEnumerable<string> lines)

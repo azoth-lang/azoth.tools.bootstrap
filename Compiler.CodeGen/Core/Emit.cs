@@ -71,6 +71,9 @@ internal static class Emit
         return tree.RootSupertype.ClassName;
     }
 
+    public static string BaseClass(TreeModel tree)
+        => tree.SimplifiedTree ? "" : $"{BaseClassName(tree)}, ";
+
     public static string IsNew(AttributeModel attribute)
         => attribute.IsNewDefinition ? "new " : "";
 

@@ -7,7 +7,9 @@
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations" #>
-<#  foreach(var usingNamespace in Build.OrderedNamespaces(tree, "ExhaustiveMatching", "System.CodeDom.Compiler", "System.Diagnostics")) { #>
+<#  foreach(var usingNamespace in Build.OrderedNamespaces(tree,
+    "ExhaustiveMatching", "System.CodeDom.Compiler", "System.Diagnostics",
+    (tree.SimplifiedTree ? null : "Azoth.Tools.Bootstrap.Compiler.Core.Attributes"))) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
@@ -44,15 +46,19 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 
 <#  } #>
 <#  if (tree.GenerateClasses) { #>
+<#  if (!tree.SimplifiedTree) { #>
 // TODO switch back to `file` and not `partial` once fully transitioned
-internal abstract partial class <#= Emit.BaseClassName(tree) #>
+internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChildTreeNode<<#= Emit.TypeName(tree.RootSupertype) #>>
 {
+    protected TreeNode() { }
+    protected TreeNode(bool inFinalTree) : base(inFinalTree) { }
 }
 
+<#  } #>
 <#  foreach(var node in tree.Nodes.Where(ShouldEmit.Class)) {#>
 [GeneratedCode("AzothCompilerCodeGen", null)]
 // TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClassName(tree) #>, <#= Emit.TypeName(node.Defines) #>
+internal sealed partial class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= Emit.TypeName(node.Defines) #>
 {
 <#      foreach (var property in node.ActualProperties) { #>
     public <#= Emit.Type(property.Type) #> <#= property.Name #> { [DebuggerStepThrough] get; }

@@ -20,6 +20,7 @@ public sealed class TreeModel : IHasUsingNamespaces
     public string SymbolPrefix => Syntax.SymbolPrefix;
     public string SymbolSuffix => Syntax.SymbolSuffix;
     public bool GenerateClasses => Syntax.GenerateClasses;
+    public bool SimplifiedTree => Syntax.SimplifiedTree;
     public string ClassPrefix => Syntax.ClassPrefix;
     public string ClassSuffix => Syntax.ClassSuffix;
     public IFixedSet<string> UsingNamespaces { get; }

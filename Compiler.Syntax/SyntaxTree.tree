@@ -3,6 +3,7 @@
 ◊prefix I;
 ◊suffix Syntax;
 ◊class-suffix Syntax;
+◊simplified-tree true;
 ◊using System.Numerics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Code;
