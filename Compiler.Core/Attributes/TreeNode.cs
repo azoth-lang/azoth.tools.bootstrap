@@ -18,13 +18,9 @@ public abstract class TreeNode : IChildTreeNode
     protected virtual ITreeNode? PeekParent() => null;
     ITreeNode? ITreeNode.PeekParent() => PeekParent();
 
-    protected virtual IChildTreeNode? Rewrite() => MayHaveRewrite ? this : throw Child.RewriteNotSupported(this);
-
-    // TODO remove call to AttachRewritten once it is all handled by GrammarAttribute
-    IChildTreeNode? IChildTreeNode.Rewrite()
-    // TODO fix that this should call AttachRewritten
-        => Rewrite();
-    //=> Child.AttachRewritten(Parent, Rewrite());
+    protected virtual IChildTreeNode? Rewrite()
+        => MayHaveRewrite ? this : throw Child.RewriteNotSupported(this);
+    IChildTreeNode? IChildTreeNode.Rewrite() => Rewrite();
 
     protected TreeNode() { }
 

@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
@@ -69,8 +68,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     }
 
     protected virtual IChildNode? Rewrite() => MayHaveRewrite ? this : throw Child.RewriteNotSupported(this);
-    // TODO remove call to AttachRewritten once it is all handled by GrammarAttribute
-    IChildTreeNode? IChildTreeNode.Rewrite() => Child.AttachRewritten(Parent, Rewrite());
+    IChildTreeNode? IChildTreeNode.Rewrite() => Rewrite();
 
     /// <remarks>Volatile write not necessary because an out-of-order read is not an issue since it
     /// will just re-figure out the fact that the node is final. Does not check the invariant that
