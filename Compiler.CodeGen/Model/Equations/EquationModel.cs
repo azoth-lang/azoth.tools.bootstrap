@@ -7,7 +7,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
-[Closed(typeof(SynthesizedAttributeEquationModel))]
+[Closed(typeof(SynthesizedAttributeEquationModel), typeof(InheritedAttributeEquationModel))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class EquationModel
 {
@@ -15,6 +15,7 @@ public abstract class EquationModel
         => syntax switch
         {
             SynthesizedAttributeEquationSyntax syn => new SynthesizedAttributeEquationModel(aspect, syn),
+            InheritedAttributeEquationSyntax syn => new InheritedAttributeEquationModel(aspect, syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
@@ -23,15 +24,22 @@ public abstract class EquationModel
     public InternalSymbol NodeSymbol { get; }
     public TreeNodeModel Node => node.Value;
     private readonly Lazy<TreeNodeModel> node;
+    public string Name { get; }
     public abstract AttributeModel Attribute { get; }
 
-    protected EquationModel(AspectModel aspect, InternalSymbol nodeSymbol)
+    protected EquationModel(AspectModel aspect, InternalSymbol nodeSymbol, string name)
     {
         Aspect = aspect;
         NodeSymbol = nodeSymbol;
+        Name = name;
         node = new(() => Aspect.Tree.NodeFor(NodeSymbol)
-                              ?? throw new($"Attribute '{this}' refers to node '{NodeSymbol}' that does not exist."));
+                         ?? throw new($"Attribute '{this}' refers to node '{NodeSymbol}' that does not exist."));
     }
+
+    protected T GetAttribute<T>()
+        where T : AttributeModel
+        => Aspect.Tree.AttributeFor<T>(NodeSymbol, Name)
+           ?? throw new($"{NodeSymbol}.{Name} doesn't have a corresponding attribute.");
 
     public abstract override string ToString();
 }

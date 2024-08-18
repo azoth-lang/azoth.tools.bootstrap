@@ -1,26 +1,26 @@
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
-public sealed class SynthesizedAttributeEquationSyntax : EquationSyntax
+public sealed class InheritedAttributeEquationSyntax : EquationSyntax
 {
     public EvaluationStrategy? Strategy { get; }
+    public SelectorSyntax Selector { get; }
     public string Name { get; }
-    public string? Parameters { get; }
+    public bool IsMethod { get; }
     public TypeSyntax? TypeOverride { get; }
-    public string? Expression { get; }
 
-    public SynthesizedAttributeEquationSyntax(
+    public InheritedAttributeEquationSyntax(
         EvaluationStrategy? strategy,
         SymbolSyntax node,
+        SelectorSyntax selector,
         string name,
-        string? parameters,
-        TypeSyntax? typeOverride,
-        string? expression)
+        bool isMethod,
+        TypeSyntax? typeOverride)
         : base(node)
     {
         Strategy = strategy;
+        Selector = selector;
         Name = name;
-        Parameters = parameters;
+        IsMethod = isMethod;
         TypeOverride = typeOverride;
-        Expression = expression;
     }
 }

@@ -18,23 +18,21 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel, IMemberMo
     private readonly Lazy<SynthesizedAttributeModel> attribute;
     public EvaluationStrategy Strategy => strategy.Value;
     private readonly Lazy<EvaluationStrategy> strategy;
-    public string Name { get; }
     public string Parameters { get; }
     public TypeModel? TypeOverride { get; }
     public TypeModel Type => TypeOverride ?? Attribute.Type;
     public string? Expression { get; }
 
     public SynthesizedAttributeEquationModel(AspectModel aspect, SynthesizedAttributeEquationSyntax syntax)
-        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node))
+        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name)
     {
-        if (syntax.EvaluationStrategy == EvaluationStrategy.Lazy && Expression is not null)
+        if (syntax.Strategy == EvaluationStrategy.Lazy && Expression is not null)
             throw new FormatException($"{syntax.Node}.{syntax.Name} has an expression but is marked as lazy.");
-        if (syntax.EvaluationStrategy is not null && syntax.Parameters is not null)
+        if (syntax.Strategy is not null && syntax.Parameters is not null)
             throw new FormatException($"{syntax.Node}.{syntax.Name} cannot specify evaluation strategy for method.");
 
         Syntax = syntax;
-        strategy = new(ComputeStrategy); syntax.EvaluationStrategy.WithDefault(syntax.Expression);
-        Name = syntax.Name;
+        strategy = new(ComputeStrategy);
         Parameters = syntax.Parameters ?? "";
         TypeOverride = TypeModel.CreateFromSyntax(Aspect.Tree, syntax.TypeOverride);
         Expression = syntax.Expression;
@@ -42,19 +40,13 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel, IMemberMo
     }
 
     public SynthesizedAttributeEquationModel(TreeNodeModel node, SynthesizedAttributeModel attribute)
-        : base(attribute.Aspect, node.Defines)
+        : base(attribute.Aspect, node.Defines, attribute.Name)
     {
         strategy = new(attribute.Strategy);
-        Name = attribute.Name;
         Parameters = attribute.Parameters;
 
         this.attribute = new(GetAttribute<SynthesizedAttributeModel>);
     }
-
-    private T GetAttribute<T>()
-        where T : AttributeModel
-        => Aspect.Tree.AttributeFor<T>(NodeSymbol, Name)
-           ?? throw new($"{NodeSymbol}.{Name} doesn't have a corresponding attribute.");
 
     /// <remarks>
     /// 1. If the strategy is specified in the syntax, use it.
@@ -65,8 +57,8 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel, IMemberMo
     {
         if (!string.IsNullOrEmpty(Parameters))
             return EvaluationStrategy.Computed;
-        return Syntax!.EvaluationStrategy.WithDefault(Expression, Attribute.Strategy);
+        return Syntax!.Strategy.WithDefault(Expression, Attribute.Strategy);
     }
 
-    public override string ToString() => $"= {NodeSymbol}.{Name}";
+    public override string ToString() => $"= {NodeSymbol}.{Name}{Parameters}";
 }

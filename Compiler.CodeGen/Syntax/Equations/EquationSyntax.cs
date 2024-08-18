@@ -2,7 +2,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
-[Closed(typeof(SynthesizedAttributeEquationSyntax))]
+[Closed(typeof(SynthesizedAttributeEquationSyntax), typeof(InheritedAttributeEquationSyntax))]
 public abstract class EquationSyntax
 {
     public SymbolSyntax Node { get; }

@@ -6,7 +6,6 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
-using ExhaustiveMatching;
 using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
@@ -30,14 +29,7 @@ public sealed class TreeModel : IHasUsingNamespaces
     public TreeModel(TreeSyntax syntax, List<AspectSyntax> aspects)
     {
         Syntax = syntax;
-        var rootSupertypeSymbol = Symbol.CreateFromSyntax(this, syntax.Root);
-        RootSupertype = rootSupertypeSymbol switch
-        {
-            null => null,
-            InternalSymbol rootSupertype => rootSupertype,
-            ExternalSymbol _ => throw new FormatException("Root supertype must be an internal symbol."),
-            _ => throw ExhaustiveMatch.Failed(rootSupertypeSymbol)
-        };
+        RootSupertype = Symbol.CreateInternalFromSyntax(this, syntax.Root);
         UsingNamespaces = syntax.UsingNamespaces
                                 .Concat(aspects.SelectMany(a => a.UsingNamespaces.Append(a.Namespace)))
                                 .Except(Namespace).ToFixedSet();

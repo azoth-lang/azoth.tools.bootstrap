@@ -84,9 +84,72 @@ public static class AspectParser
         (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
         (string name, string? parameters) = SplitOffParameters(definition);
-        var typeOverrideSyntax = ParseType(typeOverride);
+        var segments = name.Split('.', StringSplitOptions.TrimEntries);
         var nodeSymbol = ParseSymbol(node);
-        return new SynthesizedAttributeEquationSyntax(evaluationStrategy, nodeSymbol, name, parameters, typeOverrideSyntax, expression);
+        if (segments.Length == 1)
+            return ParseSynthesizedEquation(evaluationStrategy, nodeSymbol, name, parameters, typeOverride, expression);
+
+        name = segments[^1];
+        segments = segments[..^1];
+        return ParseInheritedEquation(evaluationStrategy, nodeSymbol, segments, name, parameters, typeOverride, expression);
+    }
+
+    private static SynthesizedAttributeEquationSyntax ParseSynthesizedEquation(
+        EvaluationStrategy? evaluationStrategy,
+        SymbolSyntax node,
+        string name,
+        string? parameters,
+        string? typeOverride,
+        string? expression)
+    {
+        var typeOverrideSyntax = ParseType(typeOverride);
+        return new(evaluationStrategy, node, name, parameters, typeOverrideSyntax, expression);
+    }
+
+    private static InheritedAttributeEquationSyntax ParseInheritedEquation(
+        EvaluationStrategy? evaluationStrategy,
+        SymbolSyntax node,
+        string[] selector,
+        string name,
+        string? parameters,
+        string? typeOverride,
+        string? expression)
+    {
+        if (expression is not null)
+            throw new FormatException("Inherited equations cannot have expressions.");
+        bool isMethod = false;
+        if (parameters is not null)
+        {
+            if (parameters != "()")
+                throw new FormatException("Inherited equations cannot have parameters.");
+            isMethod = true;
+        }
+        var selectorSyntax = ParseSelector(selector);
+        return new(evaluationStrategy, node, selectorSyntax, name, isMethod, ParseType(typeOverride));
+    }
+
+    private static SelectorSyntax ParseSelector(string[] selector)
+    {
+        switch (selector.Length)
+        {
+            case 1 when selector[0] == "*":
+                return AllChildrenSelectorSyntax.Instance;
+            case 1 when selector[0] == "**":
+                return DescendantsSelectorSyntax.Instance;
+            case 1:
+                var (child, indexer) = OptionalSplitTwo(selector[0], "[", "Too many `[` in selector '{0}'");
+                if (indexer is null)
+                    return new ChildSelectorSyntax(child);
+                if (!ParseOffEnd(ref indexer, "]"))
+                    throw new FormatException($"Missing `]` in selector '{selector[0]}'.");
+                if (int.TryParse(indexer, out var index))
+                    return new ChildAtIndexSelectorSyntax(child, index);
+                return new ChildAtVariableSelectorSyntax(child, indexer);
+            case 2:
+                throw new NotImplementedException("Broadcast from child selectors not implemented");
+            default:
+                throw new FormatException($"Too many parts in selector '{string.Join('.', selector)}'.");
+        }
     }
 
     private static EvaluationStrategy? ParseEvaluationStrategy(ref string node)
