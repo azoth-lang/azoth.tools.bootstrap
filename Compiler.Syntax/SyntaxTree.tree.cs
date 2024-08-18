@@ -1306,8 +1306,7 @@ public partial interface IAwaitExpressionSyntax : IExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class CompilationUnitSyntax : ICompilationUnitSyntax
+file class CompilationUnitSyntax : ICompilationUnitSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1330,8 +1329,7 @@ internal sealed partial class CompilationUnitSyntax : ICompilationUnitSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class UsingDirectiveSyntax : IUsingDirectiveSyntax
+file class UsingDirectiveSyntax : IUsingDirectiveSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public NamespaceName Name { [DebuggerStepThrough] get; }
@@ -1346,8 +1344,7 @@ internal sealed partial class UsingDirectiveSyntax : IUsingDirectiveSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class PackageSyntax : IPackageSyntax
+file class PackageSyntax : IPackageSyntax
 {
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IFixedSet<ICompilationUnitSyntax> CompilationUnits { [DebuggerStepThrough] get; }
@@ -1368,8 +1365,7 @@ internal sealed partial class PackageSyntax : IPackageSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class PackageReferenceSyntax : IPackageReferenceSyntax
+file class PackageReferenceSyntax : IPackageReferenceSyntax
 {
     public IdentifierName AliasOrName { [DebuggerStepThrough] get; }
     public IPackageSymbols Package { [DebuggerStepThrough] get; }
@@ -1386,8 +1382,7 @@ internal sealed partial class PackageReferenceSyntax : IPackageReferenceSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class NamespaceDefinitionSyntax : INamespaceDefinitionSyntax
+file class NamespaceDefinitionSyntax : INamespaceDefinitionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1414,8 +1409,7 @@ internal sealed partial class NamespaceDefinitionSyntax : INamespaceDefinitionSy
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class FunctionDefinitionSyntax : IFunctionDefinitionSyntax
+file class FunctionDefinitionSyntax : IFunctionDefinitionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1444,8 +1438,7 @@ internal sealed partial class FunctionDefinitionSyntax : IFunctionDefinitionSynt
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class ClassDefinitionSyntax : IClassDefinitionSyntax
+file class ClassDefinitionSyntax : IClassDefinitionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1480,8 +1473,7 @@ internal sealed partial class ClassDefinitionSyntax : IClassDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class StructDefinitionSyntax : IStructDefinitionSyntax
+file class StructDefinitionSyntax : IStructDefinitionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1512,8 +1504,7 @@ internal sealed partial class StructDefinitionSyntax : IStructDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class TraitDefinitionSyntax : ITraitDefinitionSyntax
+file class TraitDefinitionSyntax : ITraitDefinitionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1544,8 +1535,7 @@ internal sealed partial class TraitDefinitionSyntax : ITraitDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class GenericParameterSyntax : IGenericParameterSyntax
+file class GenericParameterSyntax : IGenericParameterSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ICapabilityConstraintSyntax Constraint { [DebuggerStepThrough] get; }
@@ -1566,8 +1556,7 @@ internal sealed partial class GenericParameterSyntax : IGenericParameterSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class AbstractMethodDefinitionSyntax : IAbstractMethodDefinitionSyntax
+file class AbstractMethodDefinitionSyntax : IAbstractMethodDefinitionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1594,8 +1583,7 @@ internal sealed partial class AbstractMethodDefinitionSyntax : IAbstractMethodDe
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class StandardMethodDefinitionSyntax : IStandardMethodDefinitionSyntax
+file class StandardMethodDefinitionSyntax : IStandardMethodDefinitionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1624,8 +1612,7 @@ internal sealed partial class StandardMethodDefinitionSyntax : IStandardMethodDe
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
+file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1654,8 +1641,7 @@ internal sealed partial class GetterMethodDefinitionSyntax : IGetterMethodDefini
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
+file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1684,8 +1670,7 @@ internal sealed partial class SetterMethodDefinitionSyntax : ISetterMethodDefini
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class ConstructorDefinitionSyntax : IConstructorDefinitionSyntax
+file class ConstructorDefinitionSyntax : IConstructorDefinitionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1712,8 +1697,7 @@ internal sealed partial class ConstructorDefinitionSyntax : IConstructorDefiniti
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
+file class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1740,8 +1724,7 @@ internal sealed partial class InitializerDefinitionSyntax : IInitializerDefiniti
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class FieldDefinitionSyntax : IFieldDefinitionSyntax
+file class FieldDefinitionSyntax : IFieldDefinitionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1768,8 +1751,7 @@ internal sealed partial class FieldDefinitionSyntax : IFieldDefinitionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefinitionSyntax
+file class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefinitionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1796,8 +1778,7 @@ internal sealed partial class AssociatedFunctionDefinitionSyntax : IAssociatedFu
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class AttributeSyntax : IAttributeSyntax
+file class AttributeSyntax : IAttributeSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IStandardTypeNameSyntax TypeName { [DebuggerStepThrough] get; }
@@ -1812,8 +1793,7 @@ internal sealed partial class AttributeSyntax : IAttributeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class CapabilitySetSyntax : ICapabilitySetSyntax
+file class CapabilitySetSyntax : ICapabilitySetSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CapabilitySet Constraint { [DebuggerStepThrough] get; }
@@ -1828,8 +1808,7 @@ internal sealed partial class CapabilitySetSyntax : ICapabilitySetSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class CapabilitySyntax : ICapabilitySyntax
+file class CapabilitySyntax : ICapabilitySyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ICapabilityConstraint Constraint { [DebuggerStepThrough] get; }
@@ -1850,8 +1829,7 @@ internal sealed partial class CapabilitySyntax : ICapabilitySyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class NamedParameterSyntax : INamedParameterSyntax
+file class NamedParameterSyntax : INamedParameterSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
@@ -1876,8 +1854,7 @@ internal sealed partial class NamedParameterSyntax : INamedParameterSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class ConstructorSelfParameterSyntax : IConstructorSelfParameterSyntax
+file class ConstructorSelfParameterSyntax : IConstructorSelfParameterSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
@@ -1896,8 +1873,7 @@ internal sealed partial class ConstructorSelfParameterSyntax : IConstructorSelfP
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class InitializerSelfParameterSyntax : IInitializerSelfParameterSyntax
+file class InitializerSelfParameterSyntax : IInitializerSelfParameterSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
@@ -1916,8 +1892,7 @@ internal sealed partial class InitializerSelfParameterSyntax : IInitializerSelfP
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class MethodSelfParameterSyntax : IMethodSelfParameterSyntax
+file class MethodSelfParameterSyntax : IMethodSelfParameterSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
@@ -1936,8 +1911,7 @@ internal sealed partial class MethodSelfParameterSyntax : IMethodSelfParameterSy
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class FieldParameterSyntax : IFieldParameterSyntax
+file class FieldParameterSyntax : IFieldParameterSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -1954,8 +1928,7 @@ internal sealed partial class FieldParameterSyntax : IFieldParameterSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class ReturnSyntax : IReturnSyntax
+file class ReturnSyntax : IReturnSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ITypeSyntax Type { [DebuggerStepThrough] get; }
@@ -1970,8 +1943,7 @@ internal sealed partial class ReturnSyntax : IReturnSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class BlockBodySyntax : IBlockBodySyntax
+file class BlockBodySyntax : IBlockBodySyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IFixedList<IBodyStatementSyntax> Statements { [DebuggerStepThrough] get; }
@@ -1986,8 +1958,7 @@ internal sealed partial class BlockBodySyntax : IBlockBodySyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class ExpressionBodySyntax : IExpressionBodySyntax
+file class ExpressionBodySyntax : IExpressionBodySyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IResultStatementSyntax ResultStatement { [DebuggerStepThrough] get; }
@@ -2004,8 +1975,7 @@ internal sealed partial class ExpressionBodySyntax : IExpressionBodySyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class IdentifierTypeNameSyntax : IIdentifierTypeNameSyntax
+file class IdentifierTypeNameSyntax : IIdentifierTypeNameSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -2020,8 +1990,7 @@ internal sealed partial class IdentifierTypeNameSyntax : IIdentifierTypeNameSynt
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class SpecialTypeNameSyntax : ISpecialTypeNameSyntax
+file class SpecialTypeNameSyntax : ISpecialTypeNameSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public SpecialTypeName Name { [DebuggerStepThrough] get; }
@@ -2036,8 +2005,7 @@ internal sealed partial class SpecialTypeNameSyntax : ISpecialTypeNameSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class GenericTypeNameSyntax : IGenericTypeNameSyntax
+file class GenericTypeNameSyntax : IGenericTypeNameSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public GenericName Name { [DebuggerStepThrough] get; }
@@ -2054,8 +2022,7 @@ internal sealed partial class GenericTypeNameSyntax : IGenericTypeNameSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class QualifiedTypeNameSyntax : IQualifiedTypeNameSyntax
+file class QualifiedTypeNameSyntax : IQualifiedTypeNameSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public TypeName Name { [DebuggerStepThrough] get; }
@@ -2074,8 +2041,7 @@ internal sealed partial class QualifiedTypeNameSyntax : IQualifiedTypeNameSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class OptionalTypeSyntax : IOptionalTypeSyntax
+file class OptionalTypeSyntax : IOptionalTypeSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ITypeSyntax Referent { [DebuggerStepThrough] get; }
@@ -2090,8 +2056,7 @@ internal sealed partial class OptionalTypeSyntax : IOptionalTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class CapabilityTypeSyntax : ICapabilityTypeSyntax
+file class CapabilityTypeSyntax : ICapabilityTypeSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
@@ -2108,8 +2073,7 @@ internal sealed partial class CapabilityTypeSyntax : ICapabilityTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class FunctionTypeSyntax : IFunctionTypeSyntax
+file class FunctionTypeSyntax : IFunctionTypeSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IFixedList<IParameterTypeSyntax> Parameters { [DebuggerStepThrough] get; }
@@ -2126,8 +2090,7 @@ internal sealed partial class FunctionTypeSyntax : IFunctionTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class ParameterTypeSyntax : IParameterTypeSyntax
+file class ParameterTypeSyntax : IParameterTypeSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsLent { [DebuggerStepThrough] get; }
@@ -2144,8 +2107,7 @@ internal sealed partial class ParameterTypeSyntax : IParameterTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class ReturnTypeSyntax : IReturnTypeSyntax
+file class ReturnTypeSyntax : IReturnTypeSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ITypeSyntax Referent { [DebuggerStepThrough] get; }
@@ -2160,8 +2122,7 @@ internal sealed partial class ReturnTypeSyntax : IReturnTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class CapabilityViewpointTypeSyntax : ICapabilityViewpointTypeSyntax
+file class CapabilityViewpointTypeSyntax : ICapabilityViewpointTypeSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
@@ -2178,8 +2139,7 @@ internal sealed partial class CapabilityViewpointTypeSyntax : ICapabilityViewpoi
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class SelfViewpointTypeSyntax : ISelfViewpointTypeSyntax
+file class SelfViewpointTypeSyntax : ISelfViewpointTypeSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ITypeSyntax Referent { [DebuggerStepThrough] get; }
@@ -2194,8 +2154,7 @@ internal sealed partial class SelfViewpointTypeSyntax : ISelfViewpointTypeSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class ResultStatementSyntax : IResultStatementSyntax
+file class ResultStatementSyntax : IResultStatementSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
@@ -2210,8 +2169,7 @@ internal sealed partial class ResultStatementSyntax : IResultStatementSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class VariableDeclarationStatementSyntax : IVariableDeclarationStatementSyntax
+file class VariableDeclarationStatementSyntax : IVariableDeclarationStatementSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
@@ -2236,8 +2194,7 @@ internal sealed partial class VariableDeclarationStatementSyntax : IVariableDecl
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class ExpressionStatementSyntax : IExpressionStatementSyntax
+file class ExpressionStatementSyntax : IExpressionStatementSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
@@ -2252,8 +2209,7 @@ internal sealed partial class ExpressionStatementSyntax : IExpressionStatementSy
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class BindingContextPatternSyntax : IBindingContextPatternSyntax
+file class BindingContextPatternSyntax : IBindingContextPatternSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
@@ -2272,8 +2228,7 @@ internal sealed partial class BindingContextPatternSyntax : IBindingContextPatte
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class BindingPatternSyntax : IBindingPatternSyntax
+file class BindingPatternSyntax : IBindingPatternSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
@@ -2292,8 +2247,7 @@ internal sealed partial class BindingPatternSyntax : IBindingPatternSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class OptionalPatternSyntax : IOptionalPatternSyntax
+file class OptionalPatternSyntax : IOptionalPatternSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IOptionalOrBindingPatternSyntax Pattern { [DebuggerStepThrough] get; }
@@ -2308,8 +2262,7 @@ internal sealed partial class OptionalPatternSyntax : IOptionalPatternSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class BlockExpressionSyntax : IBlockExpressionSyntax
+file class BlockExpressionSyntax : IBlockExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IFixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
@@ -2326,8 +2279,7 @@ internal sealed partial class BlockExpressionSyntax : IBlockExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class NewObjectExpressionSyntax : INewObjectExpressionSyntax
+file class NewObjectExpressionSyntax : INewObjectExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ITypeNameSyntax Type { [DebuggerStepThrough] get; }
@@ -2350,8 +2302,7 @@ internal sealed partial class NewObjectExpressionSyntax : INewObjectExpressionSy
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class UnsafeExpressionSyntax : IUnsafeExpressionSyntax
+file class UnsafeExpressionSyntax : IUnsafeExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
@@ -2368,8 +2319,7 @@ internal sealed partial class UnsafeExpressionSyntax : IUnsafeExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class BoolLiteralExpressionSyntax : IBoolLiteralExpressionSyntax
+file class BoolLiteralExpressionSyntax : IBoolLiteralExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool Value { [DebuggerStepThrough] get; }
@@ -2386,8 +2336,7 @@ internal sealed partial class BoolLiteralExpressionSyntax : IBoolLiteralExpressi
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class IntegerLiteralExpressionSyntax : IIntegerLiteralExpressionSyntax
+file class IntegerLiteralExpressionSyntax : IIntegerLiteralExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public BigInteger Value { [DebuggerStepThrough] get; }
@@ -2404,8 +2353,7 @@ internal sealed partial class IntegerLiteralExpressionSyntax : IIntegerLiteralEx
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class NoneLiteralExpressionSyntax : INoneLiteralExpressionSyntax
+file class NoneLiteralExpressionSyntax : INoneLiteralExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public override string ToString()
@@ -2420,8 +2368,7 @@ internal sealed partial class NoneLiteralExpressionSyntax : INoneLiteralExpressi
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class StringLiteralExpressionSyntax : IStringLiteralExpressionSyntax
+file class StringLiteralExpressionSyntax : IStringLiteralExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public string Value { [DebuggerStepThrough] get; }
@@ -2438,8 +2385,7 @@ internal sealed partial class StringLiteralExpressionSyntax : IStringLiteralExpr
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class AssignmentExpressionSyntax : IAssignmentExpressionSyntax
+file class AssignmentExpressionSyntax : IAssignmentExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IAssignableExpressionSyntax LeftOperand { [DebuggerStepThrough] get; }
@@ -2460,8 +2406,7 @@ internal sealed partial class AssignmentExpressionSyntax : IAssignmentExpression
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class BinaryOperatorExpressionSyntax : IBinaryOperatorExpressionSyntax
+file class BinaryOperatorExpressionSyntax : IBinaryOperatorExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax LeftOperand { [DebuggerStepThrough] get; }
@@ -2482,8 +2427,7 @@ internal sealed partial class BinaryOperatorExpressionSyntax : IBinaryOperatorEx
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class UnaryOperatorExpressionSyntax : IUnaryOperatorExpressionSyntax
+file class UnaryOperatorExpressionSyntax : IUnaryOperatorExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public UnaryOperatorFixity Fixity { [DebuggerStepThrough] get; }
@@ -2504,8 +2448,7 @@ internal sealed partial class UnaryOperatorExpressionSyntax : IUnaryOperatorExpr
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class IdExpressionSyntax : IIdExpressionSyntax
+file class IdExpressionSyntax : IIdExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
@@ -2522,8 +2465,7 @@ internal sealed partial class IdExpressionSyntax : IIdExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class ConversionExpressionSyntax : IConversionExpressionSyntax
+file class ConversionExpressionSyntax : IConversionExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
@@ -2544,8 +2486,7 @@ internal sealed partial class ConversionExpressionSyntax : IConversionExpression
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class PatternMatchExpressionSyntax : IPatternMatchExpressionSyntax
+file class PatternMatchExpressionSyntax : IPatternMatchExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
@@ -2564,8 +2505,7 @@ internal sealed partial class PatternMatchExpressionSyntax : IPatternMatchExpres
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class IfExpressionSyntax : IIfExpressionSyntax
+file class IfExpressionSyntax : IIfExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Condition { [DebuggerStepThrough] get; }
@@ -2586,8 +2526,7 @@ internal sealed partial class IfExpressionSyntax : IIfExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class LoopExpressionSyntax : ILoopExpressionSyntax
+file class LoopExpressionSyntax : ILoopExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
@@ -2604,8 +2543,7 @@ internal sealed partial class LoopExpressionSyntax : ILoopExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class WhileExpressionSyntax : IWhileExpressionSyntax
+file class WhileExpressionSyntax : IWhileExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Condition { [DebuggerStepThrough] get; }
@@ -2624,8 +2562,7 @@ internal sealed partial class WhileExpressionSyntax : IWhileExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class ForeachExpressionSyntax : IForeachExpressionSyntax
+file class ForeachExpressionSyntax : IForeachExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
@@ -2652,8 +2589,7 @@ internal sealed partial class ForeachExpressionSyntax : IForeachExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class BreakExpressionSyntax : IBreakExpressionSyntax
+file class BreakExpressionSyntax : IBreakExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
@@ -2670,8 +2606,7 @@ internal sealed partial class BreakExpressionSyntax : IBreakExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class NextExpressionSyntax : INextExpressionSyntax
+file class NextExpressionSyntax : INextExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public OperatorPrecedence ExpressionPrecedence
@@ -2686,8 +2621,7 @@ internal sealed partial class NextExpressionSyntax : INextExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class ReturnExpressionSyntax : IReturnExpressionSyntax
+file class ReturnExpressionSyntax : IReturnExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax? Value { [DebuggerStepThrough] get; }
@@ -2704,8 +2638,7 @@ internal sealed partial class ReturnExpressionSyntax : IReturnExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class InvocationExpressionSyntax : IInvocationExpressionSyntax
+file class InvocationExpressionSyntax : IInvocationExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
@@ -2724,8 +2657,7 @@ internal sealed partial class InvocationExpressionSyntax : IInvocationExpression
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class IdentifierNameExpressionSyntax : IIdentifierNameExpressionSyntax
+file class IdentifierNameExpressionSyntax : IIdentifierNameExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -2742,8 +2674,7 @@ internal sealed partial class IdentifierNameExpressionSyntax : IIdentifierNameEx
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class SpecialTypeNameExpressionSyntax : ISpecialTypeNameExpressionSyntax
+file class SpecialTypeNameExpressionSyntax : ISpecialTypeNameExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public SpecialTypeName Name { [DebuggerStepThrough] get; }
@@ -2760,8 +2691,7 @@ internal sealed partial class SpecialTypeNameExpressionSyntax : ISpecialTypeName
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class GenericNameExpressionSyntax : IGenericNameExpressionSyntax
+file class GenericNameExpressionSyntax : IGenericNameExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public GenericName Name { [DebuggerStepThrough] get; }
@@ -2780,8 +2710,7 @@ internal sealed partial class GenericNameExpressionSyntax : IGenericNameExpressi
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class SelfExpressionSyntax : ISelfExpressionSyntax
+file class SelfExpressionSyntax : ISelfExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
@@ -2798,8 +2727,7 @@ internal sealed partial class SelfExpressionSyntax : ISelfExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
+file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Context { [DebuggerStepThrough] get; }
@@ -2822,8 +2750,7 @@ internal sealed partial class MemberAccessExpressionSyntax : IMemberAccessExpres
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class MissingNameSyntax : IMissingNameSyntax
+file class MissingNameSyntax : IMissingNameSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public override string ToString()
@@ -2838,8 +2765,7 @@ internal sealed partial class MissingNameSyntax : IMissingNameSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class MoveExpressionSyntax : IMoveExpressionSyntax
+file class MoveExpressionSyntax : IMoveExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ISimpleNameSyntax Referent { [DebuggerStepThrough] get; }
@@ -2856,8 +2782,7 @@ internal sealed partial class MoveExpressionSyntax : IMoveExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class FreezeExpressionSyntax : IFreezeExpressionSyntax
+file class FreezeExpressionSyntax : IFreezeExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public ISimpleNameSyntax Referent { [DebuggerStepThrough] get; }
@@ -2874,8 +2799,7 @@ internal sealed partial class FreezeExpressionSyntax : IFreezeExpressionSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class AsyncBlockExpressionSyntax : IAsyncBlockExpressionSyntax
+file class AsyncBlockExpressionSyntax : IAsyncBlockExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IBlockExpressionSyntax Block { [DebuggerStepThrough] get; }
@@ -2892,8 +2816,7 @@ internal sealed partial class AsyncBlockExpressionSyntax : IAsyncBlockExpression
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class AsyncStartExpressionSyntax : IAsyncStartExpressionSyntax
+file class AsyncStartExpressionSyntax : IAsyncStartExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public bool Scheduled { [DebuggerStepThrough] get; }
@@ -2912,8 +2835,7 @@ internal sealed partial class AsyncStartExpressionSyntax : IAsyncStartExpression
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-// TODO switch back to `file` and not `partial` once fully transitioned
-internal sealed partial class AwaitExpressionSyntax : IAwaitExpressionSyntax
+file class AwaitExpressionSyntax : IAwaitExpressionSyntax
 {
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IExpressionSyntax Expression { [DebuggerStepThrough] get; }
