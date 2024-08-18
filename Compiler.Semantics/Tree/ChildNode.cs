@@ -33,18 +33,18 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     {
         [DebuggerStepThrough]
         // Use volatile read to ensure order of operations as seen by other threads
-        get => Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
+        get => Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
     }
 
     [DebuggerStepThrough]
     protected sealed override ITreeNode PeekParent()
         // Use volatile read to ensure order of operations as seen by other threads
-        => Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
+        => Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
 
     protected SemanticNode GetParent(IInheritanceContext ctx)
     {
         // Use volatile read to ensure order of operations as seen by other threads
-        var node = Volatile.Read(in parent) ?? throw new InvalidOperationException(Child.ParentMissingMessage(this));
+        var node = Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
         ctx.AccessParentOf(this);
         return node;
     }

@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
@@ -38,100 +36,76 @@ internal abstract class SemanticNode : ISemanticNode
         => ((SemanticNode?)this.Children().LastOrDefault())?.LastDescendant() ?? this;
 
     internal virtual ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedContainingDeclaration), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedContainingDeclaration), child, descendant);
 
     internal virtual IPackageDeclarationNode InheritedPackage(IChildNode child, IChildNode descendant)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedPackage), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedPackage), child, descendant);
 
     internal virtual CodeFile InheritedFile(IChildNode child, IChildNode descendant)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedFile), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedFile), child, descendant);
 
     internal virtual PackageNameScope InheritedPackageNameScope(IChildNode child, IChildNode descendant)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedPackageNameScope), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedPackageNameScope), child, descendant);
 
     internal virtual LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedContainingLexicalScope), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedContainingLexicalScope), child, descendant);
 
     internal virtual IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedContainingDeclaredType), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedContainingDeclaredType), child, descendant);
 
     internal virtual Pseudotype? InheritedSelfType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedSelfType), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedSelfType), child, descendant);
 
     internal virtual ITypeDefinitionNode InheritedContainingTypeDefinition(IChildNode child, IChildNode descendant)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedContainingTypeDefinition), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedContainingTypeDefinition), child, descendant);
 
     internal virtual bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedIsAttributeType), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedIsAttributeType), child, descendant);
 
     internal virtual ISymbolTree InheritedSymbolTree(IChildNode child, IChildNode descendant)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedSymbolTree), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedSymbolTree), child, descendant);
 
     internal virtual IPackageFacetDeclarationNode InheritedFacet(IChildNode child, IChildNode descendant)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedFacet), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedFacet), child, descendant);
 
     internal virtual IFlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedFlowStateBefore), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedFlowStateBefore), child, descendant);
 
     internal virtual IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedBindingAntetype), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedBindingAntetype), child, descendant);
 
     internal virtual DataType InheritedBindingType(IChildNode child, IChildNode descendant)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedBindingType), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedBindingType), child, descendant);
 
     internal virtual ValueId? InheritedMatchReferentValueId(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedBindingType), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedBindingType), child, descendant);
 
     internal virtual IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedExpectedAntetype), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedExpectedAntetype), child, descendant);
 
     internal virtual DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedExpectedType), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedExpectedType), child, descendant);
 
     internal virtual DataType? InheritedExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedExpectedReturnType), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedExpectedReturnType), child, descendant);
 
     internal virtual ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedControlFlowFollowing), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedControlFlowFollowing), child, descendant);
 
     internal virtual FixedDictionary<IVariableBindingNode, int> InheritedVariableBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedVariableBindingsMap), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedVariableBindingsMap), child, descendant);
 
     internal virtual IEntryNode InheritedControlFlowEntry(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedControlFlowEntry), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedControlFlowEntry), child, descendant);
 
     internal virtual IExitNode InheritedControlFlowExit(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedControlFlowExit), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedControlFlowExit), child, descendant);
 
     internal virtual bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedImplicitRecoveryAllowed), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedImplicitRecoveryAllowed), child, descendant);
 
     internal virtual bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw new NotImplementedException(
-            Child.InheritFailedMessage(nameof(InheritedShouldPrepareToReturn), child, descendant));
+        => throw Child.InheritFailed(nameof(InheritedShouldPrepareToReturn), child, descendant);
 
     internal virtual IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => throw Child.PreviousFailed(nameof(PreviousValueId), before);

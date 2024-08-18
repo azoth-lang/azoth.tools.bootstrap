@@ -32,29 +32,13 @@ public static class Child
         return new(initialValue);
     }
 
-    /// <summary>
-    /// Attach a child that is the result of rewriting and hence may support rewriting.
-    /// </summary>
-    public static TChild AttachRewritten<TParent, TChild>(TParent parent, TChild child)
-        where TParent : ITreeNode
-        where TChild : class?, IChildTreeNode<TParent>?
-    {
-        if (child is null)
-            return child;
-
-        child.SetParent(parent);
-        return child;
-    }
-
-    // TODO replace with factory for exception
-    public static string InheritFailedMessage<TChild>(string attribute, TChild child, TChild descendant)
+    public static NotImplementedException InheritFailed<TChild>(string attribute, TChild child, TChild descendant)
         where TChild : IChildTreeNode
-        => $"{attribute} not implemented for descendant node type {descendant.GetType().GetFriendlyName()} "
-           + $"when accessed through child of type {child.GetType().GetFriendlyName()}.";
+        => new($"{attribute} not implemented for descendant node type {descendant.GetType().GetFriendlyName()} "
+               + $"when accessed through child of type {child.GetType().GetFriendlyName()}.");
 
-    // TODO replace with factory for exception
-    public static string ParentMissingMessage(IChildTreeNode child)
-        => $"Parent of {child.GetType().GetFriendlyName()} is not set.";
+    public static InvalidOperationException ParentMissing(IChildTreeNode child)
+        => new($"Parent of {child.GetType().GetFriendlyName()} is not set.");
 
     public static NotSupportedException RewriteNotSupported(IChildTreeNode child)
         => new($"Rewrite of {child.GetType().GetFriendlyName()} is not supported.");
