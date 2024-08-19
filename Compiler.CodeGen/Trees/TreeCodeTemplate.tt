@@ -96,10 +96,10 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
         throw new UnreachableException("Node is not a child of its parent.");
     }
 
-    // TODO can this be more efficent?
+    // TODO can this be more efficient?
     internal <#= Emit.BaseClassName(tree) #> LastDescendant()
         => ((<#= Emit.BaseClassName(tree) #>?)Children().LastOrDefault())?.LastDescendant() ?? this;
-<#      foreach (var attr in tree.InheritedAttributes) { #>
+<#      foreach (var attr in tree.AllAttributeSupertypes) { #>
 
     internal virtual <#= Emit.Type(attr.Type) #> Inherited<#= attr.Name #>(<#= Emit.BaseClassName(tree) #> child, <#= Emit.BaseClassName(tree) #> descendant, IInheritanceContext ctx)
         // TODO does this need to throw an exception for the root of the tree?
@@ -140,15 +140,15 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
         <#= equation.Name #> = <#= Emit.EagerBody(equation) #>;
 <#      } #>
     }
-<#      foreach (var equation in node.DeclaredInheritedAttributeEquations) { #>
+<#      foreach (var group in node.DeclaredInheritedAttributeEquationGroups) { #>
 
-    internal override <#= Emit.Type(equation.Type) #> Inherited<#= equation.Name #>(<#= Emit.BaseClassName(tree) #> child, <#= Emit.BaseClassName(tree) #> descendant, IInheritanceContext ctx)
+    internal override <#= Emit.Type(group.Type) #> Inherited<#= group.Name #>(<#= Emit.BaseClassName(tree) #> child, <#= Emit.BaseClassName(tree) #> descendant, IInheritanceContext ctx)
     {
-<#          foreach (var instance in equation.Instances) { #>
-        <#= Emit.Selector(instance) #>return <#= Emit.Body(instance) #>;
+<#          foreach (var eq in group.Equations) { #>
+        <#= Emit.Selector(eq) #>return <#= Emit.Body(eq) #>;
 <#          } #>
-<#          if (equation.Instances.All(i => !i.IsAllDescendants)) { #>
-        return base.Inherited<#= equation.Name #>(child, descendant, ctx);
+<#          if (group.Equations.All(i => !i.IsAllDescendants)) { #>
+        return base.Inherited<#= group.Name #>(child, descendant, ctx);
 <#          } #>
     }
 <#      } #>

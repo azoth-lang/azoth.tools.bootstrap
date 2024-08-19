@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
@@ -12,6 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 /// The semantic model for an attribute.
 /// </summary>
 [Closed(typeof(AspectAttributeModel), typeof(PropertyModel))]
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class AttributeModel : IMemberModel
 {
     public static IEqualityComparer<AttributeModel> NameAndTypeComparer { get; }
@@ -59,4 +61,6 @@ public abstract class AttributeModel : IMemberModel
             return baseProperties.Count != 1 || baseProperties[0].Type != Type;
         });
     }
+
+    public abstract override string ToString();
 }

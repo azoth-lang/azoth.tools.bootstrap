@@ -21,9 +21,11 @@ public enum EvaluationStrategy
 public static class EvaluationStrategyExtensions
 {
     public static string ToSourceString(this EvaluationStrategy? strategy)
+        => strategy is { } s ? s.ToSourceString() : "";
+
+    public static string ToSourceString(this EvaluationStrategy strategy)
         => strategy switch
         {
-            null => "",
             EvaluationStrategy.Eager => "eager",
             EvaluationStrategy.Lazy => "lazy",
             EvaluationStrategy.Computed => "computed",

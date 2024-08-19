@@ -17,24 +17,40 @@ public static class AspectParser
         var ns = GetRequiredConfig(lines, "namespace");
         var name = GetRequiredConfig(lines, "name");
         var usingNamespaces = ParseUsingNamespaces(lines);
-        var (attributes, equations) = ParseAttributesAndEquations(lines);
-        return new(ns, name, usingNamespaces, attributes, equations);
+        var (attributeSupertypes, attributes, equations) = ParseStatements(lines);
+        return new(ns, name, usingNamespaces, attributeSupertypes, attributes, equations);
     }
 
-    private static (IEnumerable<AspectAttributeSyntax> Attributes, IEnumerable<EquationSyntax> Equations) ParseAttributesAndEquations(
+    private static AspectStatementsSyntax ParseStatements(
         IFixedList<string> lines)
     {
         var statements = ParseToStatements(lines).ToFixedList();
+        var attributeSupertypes = new List<InheritedAttributeSupertypeSyntax>();
         var attributes = new List<AspectAttributeSyntax>();
         var equations = new List<EquationSyntax>();
         foreach (var statement in statements)
         {
             if (statement.StartsWith('='))
                 equations.Add(ParseEquation(statement));
+            else if (statement.StartsWith('↓') && statement.Contains("<:"))
+                attributeSupertypes.Add(ParseInheritedAttributeSupertype(statement));
             else
                 attributes.Add(ParseAttribute(statement));
         }
-        return (attributes, equations);
+        return new(attributeSupertypes, attributes, equations);
+    }
+
+    private static InheritedAttributeSupertypeSyntax ParseInheritedAttributeSupertype(string statement)
+    {
+        if (!ParseOffStart(ref statement, '↓'))
+            throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
+
+        var (definition, type) = SplitTwo(statement, "<:", "Should be exactly one `<:` in: '{0}'");
+        var (node, name) = SplitAtFirst(definition, ".", "Missing `.` between '*' and attribute in: '{0}'");
+        if (node != "*")
+            throw new FormatException("Supertype must be for all nodes (i.e. node must be '*').");
+        var typeSyntax = ParseType(type);
+        return new(name, typeSyntax);
     }
 
     private static AspectAttributeSyntax ParseAttribute(string statement)
@@ -185,5 +201,17 @@ public static class AspectParser
             // Put left paren back on parameters
             parameters = "(" + parameters;
         return (name, parameters);
+    }
+
+    private record AspectStatementsSyntax(
+        IFixedList<InheritedAttributeSupertypeSyntax> AttributeSupertypes,
+        IFixedList<AspectAttributeSyntax> Attributes,
+        IFixedList<EquationSyntax> Equations)
+    {
+        public AspectStatementsSyntax(
+            IEnumerable<InheritedAttributeSupertypeSyntax> attributeSupertypes,
+            IEnumerable<AspectAttributeSyntax> attributes,
+            IEnumerable<EquationSyntax> equations)
+            : this(attributeSupertypes.ToFixedList(), attributes.ToFixedList(), equations.ToFixedList()) { }
     }
 }

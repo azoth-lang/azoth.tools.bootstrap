@@ -7,6 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 public sealed class SynthesizedAttributeModel : AspectAttributeModel
 {
     public override SynthesizedAttributeSyntax Syntax { get; }
+
     public EvaluationStrategy Strategy { get; }
     public string Parameters => Syntax.Parameters ?? "";
     public string? DefaultExpression => Syntax.DefaultExpression;
@@ -20,5 +21,12 @@ public sealed class SynthesizedAttributeModel : AspectAttributeModel
         Syntax = syntax;
         Strategy = syntax.Parameters is not null ? EvaluationStrategy.Computed
             : syntax.Strategy.WithDefault(syntax.DefaultExpression);
+    }
+
+    public override string ToString()
+    {
+        var strategy = Strategy.ToSourceString();
+        var expression = DefaultExpression is not null ? $" => {DefaultExpression}" : "";
+        return $"↑ {strategy}{Node.Defines}.{Name}{Parameters}: {Type}{expression};";
     }
 }

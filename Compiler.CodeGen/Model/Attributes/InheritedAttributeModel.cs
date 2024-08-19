@@ -7,6 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 public sealed class InheritedAttributeModel : AspectAttributeModel
 {
     public override InheritedAttributeSyntax Syntax { get; }
+
     public EvaluationStrategy Strategy { get; }
     public bool IsMethod => Syntax.IsMethod;
 
@@ -21,5 +22,11 @@ public sealed class InheritedAttributeModel : AspectAttributeModel
         Syntax = syntax;
         Strategy = syntax.IsMethod ? EvaluationStrategy.Computed
             : syntax.Strategy ?? EvaluationStrategy.Lazy;
+    }
+
+    public override string ToString()
+    {
+        var strategy = Strategy.ToSourceString();
+        return $"↓ {strategy} {Node.Defines}.{Name}: {Type};";
     }
 }

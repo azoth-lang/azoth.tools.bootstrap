@@ -1,32 +1,60 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 ◊name LexicalScopingAspect;
 
+// Attribute supertype needed because of the conflict between CompilationUnit and others
+↓ *.ContainingLexicalScope <: `LexicalScope`;
+
+// ---------- Bindings
+↓ NamedBinding.ContainingLexicalScope: `LexicalScope`;
+
 // ---------- Packages
 = Package.MainFacet.PackageNameScope;
 = Package.TestingFacet.PackageNameScope;
 
 // ---------- Facets
-↓ PackageFacet.PackageNameScope:`PackageNameScope`;
+↓ PackageFacet.PackageNameScope: `PackageNameScope`;
 
 // ---------- Code Files
-↑ CompilationUnit.LexicalScope:`LexicalScope`;
-
+↓ CompilationUnit.ContainingLexicalScope: `NamespaceScope`;
+↑ CompilationUnit.LexicalScope: `LexicalScope`;
 
 // ---------- Definitions
+↓ Definition.ContainingLexicalScope: `LexicalScope`;
 ↑ Definition.LexicalScope:`LexicalScope`;
 
+// ---------- Namespace Definitions
+↓ NamespaceBlockDefinition.ContainingLexicalScope: `NamespaceSearchScope`;
+
 // ---------- Type Definitions
-= TypeDefinition.LexicalScope:`LexicalScope`;
-↑ TypeDefinition.SupertypesLexicalScope:`LexicalScope`;
-= TypeDefinition.SupertypesLexicalScope:`LexicalScope`;
+= TypeDefinition.LexicalScope;
+↑ TypeDefinition.SupertypesLexicalScope: `LexicalScope`;
+= TypeDefinition.SupertypesLexicalScope;
 
 // ---------- Member Definitions
-= MethodDefinition.LexicalScope:`LexicalScope`;
-= ConstructorDefinition.LexicalScope:`LexicalScope`;
-= InitializerDefinition.LexicalScope:`LexicalScope`;
+= MethodDefinition.LexicalScope;
+= ConstructorDefinition.LexicalScope;
+= InitializerDefinition.LexicalScope;
+↓ FieldDefinition.ContainingLexicalScope: `LexicalScope`; // needed due to conflict between NamedBinding and Definition
+
+// ---------- Types
+↓ TypeName.ContainingLexicalScope: `LexicalScope`;
 
 // ---------- Statements
-↑ VariableDeclarationStatement.LexicalScope:`LexicalScope`;
+↓ VariableDeclarationStatement.ContainingLexicalScope: `LexicalScope`;
+↑ VariableDeclarationStatement.LexicalScope: `LexicalScope`;
+
+// ---------- Patterns
+↓ BindingPattern.ContainingLexicalScope: `LexicalScope`;
+
+// ---------- Literal Expressions
+↓ StringLiteralExpression.ContainingLexicalScope: `LexicalScope`;
+
+// ---------- Operator Expressions
+↓ BinaryOperatorExpression.ContainingLexicalScope: `LexicalScope`;
 
 // ---------- Control Flow Expressions
-↑ ForeachExpression.LexicalScope:`LexicalScope`;
+↓ ForeachExpression.ContainingLexicalScope: `LexicalScope`;
+↑ ForeachExpression.LexicalScope: `LexicalScope`;
+
+// ---------- Ambiguous Name Expressions
+↓ StandardNameExpression.ContainingLexicalScope: `LexicalScope`;

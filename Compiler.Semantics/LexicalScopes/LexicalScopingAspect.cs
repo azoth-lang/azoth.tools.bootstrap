@@ -9,12 +9,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 internal static partial class LexicalScopingAspect
 {
     public static partial PackageNameScope Package_MainFacet_PackageNameScope(IPackageNode node)
-        => new PackageNameScope(new[] { node.MainFacet },
+        => new([node.MainFacet],
             node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet),
             node.PrimitivesDeclarations);
 
     public static partial PackageNameScope Package_TestingFacet_PackageNameScope(IPackageNode node)
-        => new PackageNameScope(new[] { node.MainFacet, node.TestingFacet },
+        => new([node.MainFacet, node.TestingFacet],
             node.References.Append(node.IntrinsicsReference).Select(r => r.SymbolNode.MainFacet)
                 .Concat(node.References.Select(r => r.SymbolNode.TestingFacet)),
             node.PrimitivesDeclarations);

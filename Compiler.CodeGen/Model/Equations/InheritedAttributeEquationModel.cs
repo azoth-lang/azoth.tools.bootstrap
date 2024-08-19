@@ -10,23 +10,23 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 public sealed class InheritedAttributeEquationModel : EquationModel
 {
     public override InheritedAttributeEquationSyntax Syntax { get; }
-    public InheritedAttributeInstancesModel Attribute => attribute.Value;
-    private readonly Lazy<InheritedAttributeInstancesModel> attribute;
+    public InheritedAttributeSupertypeModel AttributeSupertype => attributeSupertype.Value;
+    private readonly Lazy<InheritedAttributeSupertypeModel> attributeSupertype;
     public SelectorModel Selector { get; }
     public bool IsAllDescendants => Selector.IsAllDescendants;
     public bool IsMethod => Syntax.IsMethod;
-    public TypeModel Type => Attribute.Type;
+    public TypeModel Type => AttributeSupertype.Type;
 
     public InheritedAttributeEquationModel(AspectModel aspect, InheritedAttributeEquationSyntax syntax)
         : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.Expression)
     {
         Syntax = syntax;
         Selector = SelectorModel.Create(syntax.Selector);
-        attribute = new(GetAttribute);
+        attributeSupertype = new(GetAttributeSupertype);
     }
 
-    private InheritedAttributeInstancesModel GetAttribute()
-        => Aspect.Tree.InheritedAttributes.Single(a => a.Name == Name);
+    private InheritedAttributeSupertypeModel GetAttributeSupertype()
+        => Aspect.Tree.AllAttributeSupertypes.Single(a => a.Name == Name);
 
     public override string ToString()
     {

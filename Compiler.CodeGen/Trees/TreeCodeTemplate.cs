@@ -428,7 +428,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
         throw new UnreachableException(""Node is not a child of its parent."");
     }
 
-    // TODO can this be more efficent?
+    // TODO can this be more efficient?
     internal ");
             
             #line 100 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
@@ -446,7 +446,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write("?)Children().LastOrDefault())?.LastDescendant() ?? this;\r\n");
             
             #line 102 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      foreach (var attr in tree.InheritedAttributes) { 
+      foreach (var attr in tree.AllAttributeSupertypes) { 
             
             #line default
             #line hidden
@@ -782,21 +782,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write("    }\r\n");
             
             #line 143 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      foreach (var equation in node.DeclaredInheritedAttributeEquations) { 
+      foreach (var group in node.DeclaredInheritedAttributeEquationGroups) { 
             
             #line default
             #line hidden
             this.Write("\r\n    internal override ");
             
             #line 145 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(equation.Type)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(group.Type)));
             
             #line default
             #line hidden
             this.Write(" Inherited");
             
             #line 145 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(equation.Name));
+            this.Write(this.ToStringHelper.ToStringWithCulture(group.Name));
             
             #line default
             #line hidden
@@ -817,21 +817,21 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(" descendant, IInheritanceContext ctx)\r\n    {\r\n");
             
             #line 147 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-          foreach (var instance in equation.Instances) { 
+          foreach (var eq in group.Equations) { 
             
             #line default
             #line hidden
             this.Write("        ");
             
             #line 148 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Selector(instance)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Selector(eq)));
             
             #line default
             #line hidden
             this.Write("return ");
             
             #line 148 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Body(instance)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Body(eq)));
             
             #line default
             #line hidden
@@ -844,14 +844,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             #line hidden
             
             #line 150 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-          if (equation.Instances.All(i => !i.IsAllDescendants)) { 
+          if (group.Equations.All(i => !i.IsAllDescendants)) { 
             
             #line default
             #line hidden
             this.Write("        return base.Inherited");
             
             #line 151 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(equation.Name));
+            this.Write(this.ToStringHelper.ToStringWithCulture(group.Name));
             
             #line default
             #line hidden

@@ -220,8 +220,8 @@ public partial interface ICompilationUnitNode : ICodeNode
     NamespaceSymbol ImplicitNamespaceSymbol { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
-    NamespaceScope ContainingLexicalScope { get; }
     DiagnosticCollection Diagnostics { get; }
+    NamespaceScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
 }
 
@@ -909,9 +909,9 @@ public partial interface ITypeNameNode : ITypeNode
     new ITypeNameSyntax Syntax { get; }
     ITypeSyntax ITypeNode.Syntax => Syntax;
     TypeName Name { get; }
-    LexicalScope ContainingLexicalScope { get; }
     TypeSymbol? ReferencedSymbol { get; }
     BareType? NamedBareType { get; }
+    LexicalScope ContainingLexicalScope { get; }
 }
 
 [Closed(
@@ -1735,8 +1735,8 @@ public partial interface IStandardNameExpressionNode : IAmbiguousNameNode
     new IStandardNameExpressionSyntax Syntax { get; }
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     StandardName Name { get; }
-    LexicalScope ContainingLexicalScope { get; }
     IFixedList<IDeclarationNode> ReferencedDeclarations { get; }
+    LexicalScope ContainingLexicalScope { get; }
 }
 
 // [Closed(typeof(IdentifierNameExpressionNode))]

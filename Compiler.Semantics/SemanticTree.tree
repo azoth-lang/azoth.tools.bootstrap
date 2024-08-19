@@ -15,7 +15,6 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
-◊using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -42,8 +41,7 @@ BlockOrResult <: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 Binding <: Code, BindingDeclaration = IsLentBinding:`bool` BindingValueId:`ValueId`
     BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
 NamedBinding <: Binding, NamedBindingDeclaration =
-    IsMutableBinding:`bool` BindingType:`DataType`
-    ContainingLexicalScope:`LexicalScope`;
+    IsMutableBinding:`bool` BindingType:`DataType`;
 LocalBinding <: NamedBinding = Syntax:`ILocalBindingSyntax`;
 VariableBinding <: LocalBinding, DataFlow;
 
@@ -75,15 +73,13 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
     ContainingDeclaration:`IPackageFacetNode` ContainingSymbol:`PackageSymbol`
     ImplicitNamespaceName:`NamespaceName` ImplicitNamespace:`INamespaceDefinitionNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*
-    ContainingLexicalScope:`NamespaceScope`
     Diagnostics:`DiagnosticCollection`;
 
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 // ---------- Definitions
 Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? Facet:`IPackageFacetNode`
-    ContainingDeclaration:`ISymbolDeclarationNode` ContainingSymbol:`Symbol`
-    ContainingLexicalScope:`LexicalScope`;
+    ContainingDeclaration:`ISymbolDeclarationNode` ContainingSymbol:`Symbol`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol` ValueIdScope:`ValueIdScope`;
 ExecutableDefinition <: Definition = ValueIdScope:`ValueIdScope` Entry Exit
     VariableBindingsMap:`FixedDictionary<IVariableBindingNode,int>`;
@@ -99,7 +95,7 @@ NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceD
     UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*
     Definition:`INamespaceDefinitionNode` ContainingDeclaration:`INamespaceDefinitionNode`
     ContainingNamespace:`INamespaceDefinitionNode` ContainingSymbol:`NamespaceSymbol`
-    Symbol:`NamespaceSymbol` ContainingLexicalScope:`NamespaceSearchScope`;
+    Symbol:`NamespaceSymbol`;
 NamespaceBlockMemberDefinition <: Definition;
 NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
     = MemberNamespaces:NamespaceDefinition* PackageMembers:`IPackageMemberDefinitionNode`*
@@ -238,7 +234,7 @@ ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax` NamedAntetype:`IMaybeAntetype` NamedType:`DataType`;
 // TODO start from generalized names in syntax and rewrite to type names
-TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName` ContainingLexicalScope:`LexicalScope`
+TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName`
     ReferencedSymbol:`TypeSymbol`? NamedBareType:`BareType`?;
 StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` IsAttributeType:`bool` Name:`StandardName` ReferencedDeclaration:`ITypeDeclarationNode`?;
 SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
@@ -274,8 +270,7 @@ BodyStatement <: Statement = Syntax:`IBodyStatementSyntax`;
 VariableDeclarationStatement <: BodyStatement, VariableBinding = Syntax:`IVariableDeclarationStatementSyntax`
     IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type?
     Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
-    IntermediateInitializer:`IExpressionNode`?
-    ContainingLexicalScope:`LexicalScope`;
+    IntermediateInitializer:`IExpressionNode`?;
 ExpressionStatement <: BodyStatement = Syntax:`IExpressionStatementSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
     IntermediateExpression:`IExpressionNode`?;
@@ -285,7 +280,7 @@ Pattern <: ControlFlow = Syntax:`IPatternSyntax` FlowStateAfter:`IFlowState`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
 BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPatternSyntax`
-    IsMutableBinding:`bool` Name:`IdentifierName` ContainingLexicalScope:`LexicalScope` BindingValueId:`ValueId`;
+    IsMutableBinding:`bool` Name:`IdentifierName` BindingValueId:`ValueId`;
 OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
@@ -313,7 +308,7 @@ BoolLiteralExpression <: LiteralExpression = Syntax:`IBoolLiteralExpressionSynta
 IntegerLiteralExpression <: LiteralExpression = Syntax:`IIntegerLiteralExpressionSyntax` Value:`BigInteger` Type:`IntegerConstValueType`;
 NoneLiteralExpression <: LiteralExpression = Syntax:`INoneLiteralExpressionSyntax` Type:`OptionalType`;
 StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionSyntax`
-    Value:`string` Type:`DataType` ContainingLexicalScope:`LexicalScope`;
+    Value:`string` Type:`DataType`;
 
 // ---------- Operator Expressions
 AssignmentExpression <: Expression, DataFlow = Syntax:`IAssignmentExpressionSyntax`
@@ -324,8 +319,7 @@ BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax
     LeftOperand:AmbiguousExpression IntermediateLeftOperand:`IExpressionNode`?
     Operator:`BinaryOperator`
     RightOperand:AmbiguousExpression IntermediateRightOperand:`IExpressionNode`?
-    NumericOperatorCommonAntetype:`IAntetype`?
-    ContainingLexicalScope:`LexicalScope`;
+    NumericOperatorCommonAntetype:`IAntetype`?;
 UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` Fixity:`UnaryOperatorFixity`
     Operator:`UnaryOperator` Operand:AmbiguousExpression IntermediateOperand:`IExpressionNode`?;
 IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression IntermediateReferent:`IExpressionNode`?;
@@ -346,7 +340,6 @@ WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax`
 ForeachExpression <: Expression, VariableBinding = Syntax:`IForeachExpressionSyntax`
     IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:AmbiguousExpression
     IntermediateInExpression:`IExpressionNode`? DeclaredType:Type? Block:BlockExpression
-    ContainingLexicalScope:`LexicalScope`
     ReferencedIterableDeclaration:`ITypeDeclarationNode`? ReferencedIterateMethod:`IStandardMethodDeclarationNode`?
     IteratorAntetype:`IMaybeExpressionAntetype` IteratorType:`DataType`
     ReferencedIteratorDeclaration:`ITypeDeclarationNode`? ReferencedNextMethod:`IStandardMethodDeclarationNode`?
@@ -398,7 +391,7 @@ AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
 AmbiguousName <: AmbiguousNameExpression;
 SimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
 StandardNameExpression <: AmbiguousName = Syntax:`IStandardNameExpressionSyntax`
-    Name:`StandardName` ContainingLexicalScope:`LexicalScope` ReferencedDeclarations:`IDeclarationNode`*;
+    Name:`StandardName` ReferencedDeclarations:`IDeclarationNode`*;
 IdentifierNameExpression <: AmbiguousName, StandardNameExpression, SimpleName, AmbiguousAssignableExpression
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 GenericNameExpression <: AmbiguousName, StandardNameExpression
