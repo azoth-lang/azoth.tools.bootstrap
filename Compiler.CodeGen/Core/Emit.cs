@@ -239,8 +239,8 @@ internal static class Emit
             // TODO use Current child for all of these
             ChildSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, Self.{s.Child})"),
             ChildAtIndexSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, Self.{s.Child}[{s.Index}])"),
-            ChildAtVariableSelectorModel s => SelectorIf($"Self.{s.Child}.IndexOf({ChildOrDescendant(s)}) is {{}} {s.Variable}"),
-            ChildListSelectorModel s => SelectorIf($"Self.{s.Child}.Contains({ChildOrDescendant(s)})"),
+            ChildAtVariableSelectorModel s => SelectorIf($"IndexOfNode(Self.{s.Child}, {ChildOrDescendant(s)}) is {{}} {s.Variable}"),
+            ChildListSelectorModel s => SelectorIf($"ContainsNode(Self.{s.Child}, {ChildOrDescendant(s)})"),
             _ => throw ExhaustiveMatch.Failed(selector)
         };
 

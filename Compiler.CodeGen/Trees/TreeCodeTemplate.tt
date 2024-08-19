@@ -96,6 +96,36 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
     // TODO can this be more efficient?
     internal <#= Emit.BaseClassName(tree) #> LastDescendant()
         => ((<#= Emit.BaseClassName(tree) #>?)Children().LastOrDefault())?.LastDescendant() ?? this;
+<#      if (tree.AllAttributeSupertypes.Any()) { #>
+
+    protected int? IndexOfNode<T>(IEnumerable<T> nodes, <#= Emit.BaseClassName(tree) #> node)
+        where T : <#= Emit.TypeName(tree.RootSupertype) #>
+    {
+        if (node is not T value)
+            return null;
+        var index = 0;
+        foreach (var item in nodes)
+        {
+            if (ReferenceEquals(item, value))
+                return index;
+            index++;
+        }
+
+        return null;
+    }
+
+    protected bool ContainsNode<T>(IEnumerable<T> nodes, <#= Emit.BaseClassName(tree) #> node)
+        where T : <#= Emit.TypeName(tree.RootSupertype) #>
+        => node is T value ? nodes.Contains(value) : false;
+
+    protected bool ContainsNode<T>(IFixedSet<T> nodes, <#= Emit.BaseClassName(tree) #> node)
+        where T : <#= Emit.TypeName(tree.RootSupertype) #>
+        => node is T value ? nodes.Contains(value) : false;
+
+    protected bool ContainsNode<T>(IReadOnlySet<T> nodes, <#= Emit.BaseClassName(tree) #> node)
+        where T : <#= Emit.TypeName(tree.RootSupertype) #>
+        => node is T value ? nodes.Contains(value) : false;
+<#      } #>
 <#      foreach (var attr in tree.AllAttributeSupertypes) { #>
 
     internal virtual <#= Emit.Type(attr.Type) #> Inherited<#= attr.Name #>(<#= Emit.BaseClassName(tree) #> child, <#= Emit.BaseClassName(tree) #> descendant, IInheritanceContext ctx)
