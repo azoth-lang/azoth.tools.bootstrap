@@ -1,3 +1,6 @@
+using InlineMethod;
+using Xunit;
+
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Framework;
 
 /// <summary>
@@ -7,6 +10,15 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Framework;
 /// anywhere. <see href="https://github.com/dotnet/csharplang/issues/2337">Champion: base(T) phase two #2337</see></remarks>
 public class ProtectedInterfaceMethodTests
 {
+    [Fact]
+    public void CallProtectedInterfaceMethod()
+    {
+        var test = new Test();
+
+        var result = test.Something();
+
+        Assert.Equal(42, result);
+    }
 
     public interface ITest
     {
@@ -16,13 +28,14 @@ public class ProtectedInterfaceMethodTests
     public class Test : ITest
     {
         public int Something()
-            => Helper(this);
+           //=> TestMethod(); // doesn't work
+           //=> ((ITest)this).TestMethod(); // doesn't work
+           => Helper(this);
         // Proposed syntax: base(ITest).TestMethod();
 
+        [Inline] // Inline does work though
         private static int Helper<T>(T self)
             where T : Test, ITest
-        {
-            return self.TestMethod(); // this works
-        }
+            => self.TestMethod(); // this works
     }
 }
