@@ -18,7 +18,7 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel
     private readonly Lazy<SynthesizedAttributeModel> attribute;
     public EvaluationStrategy Strategy => strategy.Value;
     private readonly Lazy<EvaluationStrategy> strategy;
-    public string Parameters { get; }
+    public string? Parameters { get; }
     public TypeModel? TypeOverride { get; }
     public TypeModel Type => TypeOverride ?? Attribute.Type;
 

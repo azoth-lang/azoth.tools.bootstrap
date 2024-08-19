@@ -4,6 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations" #>
@@ -25,18 +26,13 @@ namespace <#=tree.Namespace #>;
 public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(node) #>
 {
 <#      foreach (var attribute in node.AttributesRequiringDeclaration) { #>
-<#          switch (attribute) { #>
-<#              case PropertyModel: #>
-<#              case InheritedAttributeModel: #>
-    <#= Emit.IsNew(attribute) #><#= Emit.Type(attribute.Type) #> <#= attribute.Name #> { get; }
-<#                  break;#>
-<#              case SynthesizedAttributeModel attr: #>
-    <#=Emit.IsNew(attr) #><#=Emit.Type(attr.Type) #> <#=attr.Name #><#=attr.Parameters #><#=Emit.Body(attr) #>
-<#                  break;#>
-<#          } #>
+    <#= Emit.IsNew(attribute) #><#= Emit.Type(attribute.Type) #> <#= attribute.Name #><#= Emit.ParametersAndBody(attribute) #>
 <#          foreach (var baseAttribute in Build.BaseAttributes(node, attribute)) { #>
-    <#=Emit.Type(baseAttribute.Type) #> <#= Emit.TypeName(baseAttribute.Node.Defines) #>.<#=baseAttribute.Name #> => <#=attribute.Name #>;
+    <#= Emit.Type(baseAttribute.Type) #> <#= Emit.TypeName(baseAttribute.Node.Defines) #>.<#=baseAttribute.Name #> => <#=attribute.Name #>;
 <#          } #>
+<#      } #>
+<#      foreach (var eq in node.EquationsRequiringEmit) { #>
+    <#= Emit.Type(eq.Type) #> <#= Emit.TypeName(eq.Attribute.Node.Defines) #>.<#= eq.Name #><#= Emit.ParametersAndBody(eq) #>
 <#      } #>
 <#      if (tree.GenerateClasses && !node.IsAbstract) { #>
 
@@ -125,8 +121,9 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#              case SynthesizedAttributeEquationModel eq when eq.Strategy == EvaluationStrategy.Eager: #>
     public <#= Emit.Type(eq.Type) #> <#= eq.Name #> { [DebuggerStepThrough] get; }
 <#                  break;#>
-<#              case SynthesizedAttributeEquationModel eq when eq.Strategy != EvaluationStrategy.Eager: #>
-    public <#= Emit.Override(eq) #><#= Emit.Type(eq.Type) #> <#= eq.Name #><#= eq.Parameters #><#= Emit.Body(eq) #>
+<#              case SynthesizedAttributeEquationModel eq
+                    when eq.Strategy == EvaluationStrategy.Lazy || eq.Strategy == EvaluationStrategy.Computed && eq.IsObjectMember(): #>
+    public <#= Emit.Override(eq) #><#= Emit.Type(eq.Type) #> <#= eq.Name #><#= Emit.ParametersAndBody(eq) #>
 <#                  break;#>
 <#          } #>
 <#      } #>
@@ -147,7 +144,7 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#          foreach (var eq in group.Equations) { #>
         <#= Emit.Selector(eq) #>return <#= Emit.Body(eq) #>;
 <#          } #>
-<#          if (group.Equations.All(i => !i.IsAllDescendants)) { #>
+<#          if (!group.IsAllDescendants) { #>
         return base.Inherited<#= group.Name #>(child, descendant, ctx);
 <#          } #>
     }

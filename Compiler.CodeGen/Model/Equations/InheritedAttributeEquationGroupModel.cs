@@ -15,6 +15,7 @@ public sealed class InheritedAttributeEquationGroupModel
     public string Name { get; }
     public TypeModel Type => Equations[0].Type;
     public IFixedList<InheritedAttributeEquationModel> Equations { get; }
+    public bool IsAllDescendants => Equations.Any(a => a.IsAllDescendants);
 
     public InheritedAttributeEquationGroupModel(
         TreeNodeModel node,

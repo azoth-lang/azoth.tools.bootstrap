@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -82,26 +81,41 @@ internal static class Emit
         => attribute.Name.ToCamelCase();
 
     public static string Override(SynthesizedAttributeEquationModel equation)
-        => ObjectMembers.Contains(equation.Name) ? "override " : "";
+        => equation.IsObjectMember() ? "override " : "";
 
-    private static readonly IFixedSet<string> ObjectMembers = new HashSet<string>()
+    public static string ParametersAndBody(AttributeModel attribute)
+        => attribute switch
+        {
+            PropertyModel _ => " { get; }",
+            SynthesizedAttributeModel a => ParametersAndBody(a),
+            InheritedAttributeModel a => a.IsMethod ? "();" : " { get; }",
+            _ => throw ExhaustiveMatch.Failed(attribute)
+        };
+
+    private static string ParametersAndBody(SynthesizedAttributeModel attribute)
     {
-        "ToString",
-        "GetHashCode",
-        "Equals",
-    }.ToFixedSet();
-
-    public static string Body(SynthesizedAttributeModel attribute)
-    {
-        if (attribute.DefaultExpression is not null)
-            return $"{Environment.NewLine}        => {attribute.DefaultExpression};";
-        if (!string.IsNullOrEmpty(attribute.Parameters))
-            return ";";
-
-        return " { get; }";
+        if (attribute.Strategy == EvaluationStrategy.Computed && !attribute.IsObjectMember())
+        {
+            var expression = attribute.DefaultExpression ?? ExpressionFor(attribute);
+            if (expression is not null)
+                return $"{attribute.Parameters}{Environment.NewLine}        => {expression};";
+        }
+        return attribute.Parameters is not null ? $"{attribute.Parameters};" : " { get; }";
     }
 
-    public static string Body(SynthesizedAttributeEquationModel equation)
+    private static string? ExpressionFor(SynthesizedAttributeModel attribute)
+    {
+        if (attribute.Node.EquationFor(attribute) is not { } equation)
+            return null;
+        if (equation.Expression is not null)
+            return equation.Expression;
+        var builder = new StringBuilder();
+        AppendQualifiedEquationMethod(equation, builder);
+        builder.Append("(this)");
+        return builder.ToString();
+    }
+
+    public static string ParametersAndBody(SynthesizedAttributeEquationModel equation)
     {
         switch (equation.Strategy)
         {
@@ -112,6 +126,7 @@ internal static class Emit
             case EvaluationStrategy.Lazy:
             {
                 var builder = new StringBuilder();
+                builder.Append(equation.Parameters);
                 builder.AppendLine();
                 var value = equation.Name.ToCamelCase();
                 var cached = equation.Name.ToCamelCase() + "Cached";
@@ -127,7 +142,9 @@ internal static class Emit
             }
             case EvaluationStrategy.Computed:
             {
+                // Case needed for object members like ToString()
                 var builder = new StringBuilder();
+                builder.Append(equation.Parameters);
                 builder.AppendLine();
                 builder.Append("        => ");
                 if (equation.Expression is not null)

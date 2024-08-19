@@ -9,7 +9,7 @@ public sealed class SynthesizedAttributeModel : AspectAttributeModel
     public override SynthesizedAttributeSyntax Syntax { get; }
 
     public EvaluationStrategy Strategy { get; }
-    public string Parameters => Syntax.Parameters ?? "";
+    public string? Parameters => Syntax.Parameters;
     public string? DefaultExpression => Syntax.DefaultExpression;
 
     public SynthesizedAttributeModel(AspectModel aspect, SynthesizedAttributeSyntax syntax)
