@@ -218,6 +218,7 @@ internal static class Emit
             ChildSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, {s.Child})"),
             ChildAtIndexSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, {s.Child}[{s.Index}])"),
             ChildAtVariableSelectorModel s => SelectorIf($"{s.Child}.IndexOf({ChildOrDescendant(s)}) is {{}} {s.Variable}"),
+            ChildListSelectorModel s => SelectorIf($"{s.Child}.Contains({ChildOrDescendant(s)})"),
             _ => throw ExhaustiveMatch.Failed(selector)
         };
 
@@ -245,6 +246,7 @@ internal static class Emit
             ChildSelectorModel s => s.Child,
             ChildAtIndexSelectorModel s => $"{s.Child}_{s.Index}",
             ChildAtVariableSelectorModel s => s.Child,
+            ChildListSelectorModel s => s.Child,
             _ => throw ExhaustiveMatch.Failed(equation.Selector)
         } + (equation.Selector.Broadcast ? "_Broadcast" : "") + $"_{equation.Name}";
 

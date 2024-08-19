@@ -78,7 +78,7 @@ internal static partial class LexicalScopingAspect
         // Only associated (i.e. "static") names are in scope. Other names must use `self.`
         => new DeclarationScope(node.SupertypesLexicalScope, node.Members.OfType<IAssociatedMemberDefinitionNode>());
 
-    public static LexicalScope TypeDefinition_InheritedLexicalScope_AllSupertypeNames(ITypeDefinitionNode node)
+    public static partial LexicalScope TypeDefinition_AllSupertypeNames_Broadcast_ContainingLexicalScope(ITypeDefinitionNode node)
         => node.SupertypesLexicalScope;
 
     public static LexicalScope TypeDefinition_InheritedLexicalScope_Members(ITypeDefinitionNode node)

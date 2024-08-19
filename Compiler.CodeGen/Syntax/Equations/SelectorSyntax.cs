@@ -6,7 +6,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
     typeof(AllChildrenSelectorSyntax),
     typeof(ChildSelectorSyntax),
     typeof(ChildAtIndexSelectorSyntax),
-    typeof(ChildAtVariableSelectorSyntax))]
+    typeof(ChildAtVariableSelectorSyntax),
+    typeof(ChildListSelectorSyntax))]
 public abstract class SelectorSyntax
 {
     /// <summary>

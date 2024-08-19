@@ -7,7 +7,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
     typeof(AllChildrenSelectorModel),
     typeof(ChildSelectorModel),
     typeof(ChildAtIndexSelectorModel),
-    typeof(ChildAtVariableSelectorModel))]
+    typeof(ChildAtVariableSelectorModel),
+    typeof(ChildListSelectorModel))]
 public abstract class SelectorModel
 {
     public static SelectorModel Create(SelectorSyntax syntax)
@@ -17,6 +18,7 @@ public abstract class SelectorModel
             ChildSelectorSyntax syn => new ChildSelectorModel(syn),
             ChildAtIndexSelectorSyntax syn => new ChildAtIndexSelectorModel(syn),
             ChildAtVariableSelectorSyntax syn => new ChildAtVariableSelectorModel(syn),
+            ChildListSelectorSyntax syn => new ChildListSelectorModel(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 

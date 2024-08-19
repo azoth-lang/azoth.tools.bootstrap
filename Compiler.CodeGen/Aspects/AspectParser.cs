@@ -167,6 +167,8 @@ public static class AspectParser
                     return new ChildSelectorSyntax(child, broadcast);
                 if (!ParseOffEnd(ref indexer, "]"))
                     throw new FormatException($"Missing `]` in selector '{selector[0]}'.");
+                if (indexer == "*")
+                    return new ChildListSelectorSyntax(child, broadcast);
                 if (int.TryParse(indexer, out var index))
                     return new ChildAtIndexSelectorSyntax(child, index, broadcast);
                 return new ChildAtVariableSelectorSyntax(child, indexer, broadcast);

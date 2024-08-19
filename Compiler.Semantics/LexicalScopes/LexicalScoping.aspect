@@ -29,6 +29,7 @@
 ↓ NamespaceBlockDefinition.ContainingLexicalScope: `NamespaceSearchScope`;
 
 // ---------- Type Definitions
+= TypeDefinition.AllSupertypeNames[*].**.ContainingLexicalScope;
 = TypeDefinition.LexicalScope;
 ↑ TypeDefinition.SupertypesLexicalScope: `LexicalScope`;
 = TypeDefinition.SupertypesLexicalScope;
