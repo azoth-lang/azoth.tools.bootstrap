@@ -9,6 +9,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 internal static partial class LexicalScopingAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial LexicalScope BodyOrBlock_Statements_ContainingLexicalScope(IBodyOrBlockNode node, int statementIndex);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial PackageNameScope Package_MainFacet_PackageNameScope(IPackageNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial PackageNameScope Package_TestingFacet_PackageNameScope(IPackageNode node);

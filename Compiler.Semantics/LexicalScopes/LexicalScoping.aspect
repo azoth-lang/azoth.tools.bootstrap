@@ -4,6 +4,9 @@
 // Attribute supertype needed because of the conflict between CompilationUnit and others
 ↓ *.ContainingLexicalScope <: `LexicalScope`;
 
+// ---------- Special Parts
+= BodyOrBlock.Statements[statementIndex].ContainingLexicalScope;
+
 // ---------- Bindings
 ↓ NamedBinding.ContainingLexicalScope: `LexicalScope`;
 

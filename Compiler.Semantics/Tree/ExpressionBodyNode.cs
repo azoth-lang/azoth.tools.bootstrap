@@ -40,7 +40,7 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         var statementIndex = child == ResultStatement ? 0 : throw new InvalidOperationException("Caller is not a child");
-        return LexicalScopingAspect.BodyOrBlock_InheritedLexicalScope(this, statementIndex);
+        return LexicalScopingAspect.BodyOrBlock_Statements_ContainingLexicalScope(this, statementIndex);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

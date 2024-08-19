@@ -105,7 +105,7 @@ internal static partial class LexicalScopingAspect
     public static partial LexicalScope FieldDefinition_LexicalScope(IFieldDefinitionNode node)
         => new DeclarationScope(node.ContainingLexicalScope);
 
-    public static LexicalScope BodyOrBlock_InheritedLexicalScope(IBodyOrBlockNode node, int statementIndex)
+    public static partial LexicalScope BodyOrBlock_Statements_ContainingLexicalScope(IBodyOrBlockNode node, int statementIndex)
     {
         if (statementIndex == 0)
             return node.GetContainingLexicalScope();
