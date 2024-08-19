@@ -185,7 +185,12 @@ internal static class Emit
     public static string EagerBody(SynthesizedAttributeEquationModel equation)
     {
         Requires.That(equation.Strategy == EvaluationStrategy.Eager, nameof(equation), "Must be an eager equation.");
-        return equation.Expression ?? $"{equation.Aspect.Name}.{equation.NodeSymbol}_{equation.Name}(this)";
+        if (equation.Expression is not null)
+            throw new NotImplementedException("Eager equations with expressions are not yet"
+                + " implemented. They should emit a protected method to the interface and call that"
+                + " from the constructor.");
+
+        return $"{equation.Aspect.Name}.{equation.NodeSymbol}_{equation.Name}(this)";
     }
 
     public static string Parameters(InheritedAttributeModel attribute)
