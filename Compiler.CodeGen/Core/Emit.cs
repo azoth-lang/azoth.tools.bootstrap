@@ -189,9 +189,13 @@ internal static class Emit
                 var value = attribute.Name.ToCamelCase();
                 var cached = attribute.Name.ToCamelCase() + "Cached";
                 var notNull = attribute.Type is OptionalType ? "" : "!";
+                var supertype = attribute.AttributeSupertype.Type;
+                var castRequired = attribute.Type != supertype;
+                var castStart = castRequired ? $"(ctx) => ({Type(attribute.Type)})" : "";
+                var castEnd = castRequired ? "(ctx)" : "";
                 builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
                 builder.AppendLine($"            : this.Inherited(ref {cached}, ref {value},");
-                builder.AppendLine($"                Inherited{attribute.Name});");
+                builder.AppendLine($"                {castStart}Inherited{attribute.Name}{castEnd});");
                 builder.AppendLine($"    private {Type(attribute.Type.ToNonOptional())}? {value};");
                 builder.Append($"    private bool {cached};");
                 return builder.ToString();

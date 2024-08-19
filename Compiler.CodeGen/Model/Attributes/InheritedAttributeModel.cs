@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
@@ -6,6 +7,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 
 public sealed class InheritedAttributeModel : AspectAttributeModel
 {
+    public InheritedAttributeSupertypeModel AttributeSupertype => attributeSupertype.Value;
+    private readonly Lazy<InheritedAttributeSupertypeModel> attributeSupertype;
+
     public override InheritedAttributeSyntax Syntax { get; }
 
     public EvaluationStrategy Strategy { get; }
@@ -22,6 +26,7 @@ public sealed class InheritedAttributeModel : AspectAttributeModel
         Syntax = syntax;
         Strategy = syntax.IsMethod ? EvaluationStrategy.Computed
             : syntax.Strategy ?? EvaluationStrategy.Lazy;
+        attributeSupertype = new(() => Aspect.Tree.AllAttributeSupertypes.Single(s => s.Name == Name));
     }
 
     public override string ToString()
