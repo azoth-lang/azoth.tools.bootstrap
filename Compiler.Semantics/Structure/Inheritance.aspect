@@ -1,2 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 ◊name InheritanceAspect;
+
+// ---------- Type Definitions
+// ↑ TypeDefinition.AllSupertypeNames: `IEnumerable<IStandardTypeNameNode>` => SupertypeNames;
+// = ClassDefinition.AllSupertypeNames
+//     => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
