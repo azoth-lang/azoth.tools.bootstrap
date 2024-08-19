@@ -9,8 +9,9 @@
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(tree,
-    !tree.SimplifiedTree, new [] { "System", "System.Linq", "System.Threading", "Azoth.Tools.Bootstrap.Compiler.Core.Attributes" },
-    "ExhaustiveMatching", "System.CodeDom.Compiler", "System.Diagnostics")) { #>
+    Build.Conditional(!tree.SimplifiedTree, "System", "System.Linq", "System.Threading", "Azoth.Tools.Bootstrap.Compiler.Core.Attributes"),
+    Build.Conditional(tree.GenerateClasses, "InlineMethod"),
+    ["ExhaustiveMatching", "System.CodeDom.Compiler", "System.Diagnostics"])) { #>
 using <#=usingNamespace #>;
 <#  } #>
 
@@ -110,6 +111,7 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
 [GeneratedCode("AzothCompilerCodeGen", null)]
 file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= Emit.TypeName(node.Defines) #>
 {
+    private <#= Emit.TypeName(node.Defines) #> Self { [Inline] get => this; }
 <#      foreach (var property in node.ActualProperties) { #>
     public <#= Emit.Type(property.Type) #> <#= property.Name #> { [DebuggerStepThrough] get; }
 <#      } #>

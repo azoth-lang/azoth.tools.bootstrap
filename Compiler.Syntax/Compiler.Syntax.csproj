@@ -17,6 +17,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ExhaustiveMatching.Analyzer" Version="0.5.0" />
+    <PackageReference Include="InlineMethod.Fody" Version="0.7.4" />
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

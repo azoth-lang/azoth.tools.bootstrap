@@ -237,10 +237,10 @@ internal static class Emit
                 => s.Broadcast ? "" // If broadcast, always matches, no condition needed
                     : SelectorIf("ReferenceEquals(child, descendant)"),
             // TODO use Current child for all of these
-            ChildSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, {s.Child})"),
-            ChildAtIndexSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, {s.Child}[{s.Index}])"),
-            ChildAtVariableSelectorModel s => SelectorIf($"{s.Child}.IndexOf({ChildOrDescendant(s)}) is {{}} {s.Variable}"),
-            ChildListSelectorModel s => SelectorIf($"{s.Child}.Contains({ChildOrDescendant(s)})"),
+            ChildSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, Self.{s.Child})"),
+            ChildAtIndexSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, Self.{s.Child}[{s.Index}])"),
+            ChildAtVariableSelectorModel s => SelectorIf($"Self.{s.Child}.IndexOf({ChildOrDescendant(s)}) is {{}} {s.Variable}"),
+            ChildListSelectorModel s => SelectorIf($"Self.{s.Child}.Contains({ChildOrDescendant(s)})"),
             _ => throw ExhaustiveMatch.Failed(selector)
         };
 

@@ -8,21 +8,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
 internal static class Build
 {
-    public static IEnumerable<string> OrderedNamespaces(IHasUsingNamespaces model, params string?[] additionalNamespaces)
-        => model.UsingNamespaces.Concat(additionalNamespaces).WhereNotNull().Distinct()
+    public static IEnumerable<string> Conditional(bool condition, params string[] namespaces)
+        => condition ? namespaces : [];
+
+    public static IEnumerable<string> OrderedNamespaces(IHasUsingNamespaces model, params string[] additionalNamespaces)
+        => model.UsingNamespaces.Concat(additionalNamespaces).Distinct()
                 .OrderBy(v => v, NamespaceComparer.Instance);
 
     public static IEnumerable<string> OrderedNamespaces(
         IHasUsingNamespaces model,
-        bool condition,
-        IEnumerable<string> conditionalNamespaces,
-        params string[] additionalNamespaces)
-    {
-        var namespaces = model.UsingNamespaces.Concat(additionalNamespaces);
-        if (condition)
-            namespaces = namespaces.Concat(conditionalNamespaces);
-        return namespaces.Distinct().OrderBy(v => v, NamespaceComparer.Instance);
-    }
+        params IEnumerable<string>[] additionalNamespaces)
+        => model.UsingNamespaces.Concat(additionalNamespaces.SelectMany())
+                .Distinct().OrderBy(v => v, NamespaceComparer.Instance);
 
     public static IEnumerable<AttributeModel> BaseAttributes(TreeNodeModel node, AttributeModel attribute)
         => node.InheritedAttributesNamedSameAs(attribute).Where(p => p.IsDeclarationRequired);
