@@ -4,10 +4,11 @@ public sealed class ChildSelectorSyntax : SelectorSyntax
 {
     public string Child { get; }
 
-    public ChildSelectorSyntax(string child)
+    public ChildSelectorSyntax(string child, bool broadcast)
+        : base(broadcast)
     {
         Child = child;
     }
 
-    public override string ToString() => Child;
+    public override string ToString() => Broadcast ? $"{Child}.**" : Child;
 }

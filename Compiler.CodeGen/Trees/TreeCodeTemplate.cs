@@ -782,7 +782,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write("    }\r\n");
             
             #line 143 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      foreach (var group in node.DeclaredInheritedAttributeEquationGroups) { 
+      foreach (var group in node.InheritedAttributeEquationGroups) { 
             
             #line default
             #line hidden

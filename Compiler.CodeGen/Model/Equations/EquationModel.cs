@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
 [Closed(typeof(SynthesizedAttributeEquationModel), typeof(InheritedAttributeEquationModel))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract class EquationModel
+public abstract class EquationModel : IMemberModel
 {
     public static EquationModel Create(AspectModel aspect, EquationSyntax syntax)
         => syntax switch

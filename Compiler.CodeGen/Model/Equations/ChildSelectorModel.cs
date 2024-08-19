@@ -8,6 +8,7 @@ public sealed class ChildSelectorModel : SelectorModel
     public string Child => Syntax.Child;
 
     public ChildSelectorModel(ChildSelectorSyntax syntax)
+        : base(syntax.Broadcast)
     {
         Syntax = syntax;
     }

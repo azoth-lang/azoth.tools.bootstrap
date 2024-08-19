@@ -5,7 +5,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
 [Closed(
     typeof(AllChildrenSelectorModel),
-    typeof(DescendantsSelectorModel),
     typeof(ChildSelectorModel),
     typeof(ChildAtIndexSelectorModel),
     typeof(ChildAtVariableSelectorModel))]
@@ -14,8 +13,7 @@ public abstract class SelectorModel
     public static SelectorModel Create(SelectorSyntax syntax)
         => syntax switch
         {
-            AllChildrenSelectorSyntax _ => AllChildrenSelectorModel.Instance,
-            DescendantsSelectorSyntax _ => DescendantsSelectorModel.Instance,
+            AllChildrenSelectorSyntax syn => AllChildrenSelectorModel.Create(syn),
             ChildSelectorSyntax syn => new ChildSelectorModel(syn),
             ChildAtIndexSelectorSyntax syn => new ChildAtIndexSelectorModel(syn),
             ChildAtVariableSelectorSyntax syn => new ChildAtVariableSelectorModel(syn),
@@ -23,5 +21,14 @@ public abstract class SelectorModel
         };
 
     public abstract SelectorSyntax Syntax { get; }
+    /// <summary>
+    /// Whether the selector should broadcast to all descendants of the selected node.
+    /// </summary>
+    public bool Broadcast { get; }
     public virtual bool IsAllDescendants => false;
+
+    protected SelectorModel(bool broadcast)
+    {
+        Broadcast = broadcast;
+    }
 }

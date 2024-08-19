@@ -5,11 +5,16 @@ public sealed class ChildAtIndexSelectorSyntax : SelectorSyntax
     public string Child { get; }
     public int Index { get; }
 
-    public ChildAtIndexSelectorSyntax(string child, int index)
+    public ChildAtIndexSelectorSyntax(string child, int index, bool broadcast)
+        : base(broadcast)
     {
         Child = child;
         Index = index;
     }
 
-    public override string ToString() => $"{Child}[{Index}]";
+    public override string ToString()
+    {
+        var broadcast = Broadcast ? ".**" : "";
+        return $"{Child}[{Index}]{broadcast}";
+    }
 }

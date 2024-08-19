@@ -107,18 +107,18 @@ public class TreeNodeModel
     public IFixedList<SynthesizedAttributeEquationModel> ImplicitlyDeclaredEquations => implicitlyDeclaredEquations.Value;
     private readonly Lazy<IFixedList<SynthesizedAttributeEquationModel>> implicitlyDeclaredEquations;
 
-    public IEnumerable<EquationModel> AllDeclaredEquations
-        => DeclaredEquations.Concat(ImplicitlyDeclaredEquations);
+    public IFixedList<EquationModel> AllDeclaredEquations => allDeclaredEquations.Value;
+    private readonly Lazy<IFixedList<EquationModel>> allDeclaredEquations;
 
-    public IFixedList<SynthesizedAttributeEquationModel> InheritedEquations => inheritedEquations.Value;
-    private readonly Lazy<IFixedList<SynthesizedAttributeEquationModel>> inheritedEquations;
+    public IFixedList<EquationModel> InheritedEquations => inheritedEquations.Value;
+    private readonly Lazy<IFixedList<EquationModel>> inheritedEquations;
 
-    public IFixedList<SynthesizedAttributeEquationModel> ActualEquations => actualEquations.Value;
-    private readonly Lazy<IFixedList<SynthesizedAttributeEquationModel>> actualEquations;
+    public IFixedList<EquationModel> ActualEquations => actualEquations.Value;
+    private readonly Lazy<IFixedList<EquationModel>> actualEquations;
 
-    public IFixedSet<InheritedAttributeEquationGroupModel> DeclaredInheritedAttributeEquationGroups
-        => declaredInheritedAttributeEquationGroups.Value;
-    private readonly Lazy<IFixedSet<InheritedAttributeEquationGroupModel>> declaredInheritedAttributeEquationGroups;
+    public IFixedSet<InheritedAttributeEquationGroupModel> InheritedAttributeEquationGroups
+        => inheritedAttributeEquationGroups.Value;
+    private readonly Lazy<IFixedSet<InheritedAttributeEquationGroupModel>> inheritedAttributeEquationGroups;
 
     public TreeNodeModel(TreeModel tree, TreeNodeSyntax syntax)
     {
@@ -167,22 +167,24 @@ public class TreeNodeModel
 
         // Equations
         declaredEquations = new(() => Tree.Aspects.SelectMany(a => a.DeclaredEquations).Where(e => e.NodeSymbol == Defines).ToFixedList());
+        implicitlyDeclaredEquations = new(() =>
+            {
+                if (IsAbstract) return FixedList.Empty<SynthesizedAttributeEquationModel>();
+                var actualEquationsNames = ComputeActualEquations(DeclaredEquations)
+                                           .OfType<SynthesizedAttributeEquationModel>()
+                                           .Select(eq => eq.Name).ToFixedSet();
+                return ActualAttributes.OfType<SynthesizedAttributeModel>()
+                                       .Where(a => a.DefaultExpression is null && !actualEquationsNames.Contains(a.Name))
+                                       .Select(ImplicitlyDeclaredEquation).ToFixedList();
+            });
+        allDeclaredEquations = new(() => DeclaredEquations.Concat(ImplicitlyDeclaredEquations).ToFixedList());
+        actualEquations = new(() => ComputeActualEquations(AllDeclaredEquations).ToFixedList());
         inheritedEquations = new(()
             => MostSpecificMembers(SupertypeNodes.SelectMany(r => r.ActualEquations).Distinct()).ToFixedList());
-        implicitlyDeclaredEquations = new(()
-            =>
-        {
-            if (IsAbstract) return FixedList.Empty<SynthesizedAttributeEquationModel>();
-            var actualEquationsNames = ComputeActualSynthesizedEquations(DeclaredEquations).Select(eq => eq.Name).ToFixedSet();
-            return ActualAttributes.OfType<SynthesizedAttributeModel>()
-                                   .Where(a => a.DefaultExpression is null && !actualEquationsNames.Contains(a.Name))
-                                   .Select(ImplicitlyDeclaredEquation).ToFixedList();
-        });
-        actualEquations = new(() => ComputeActualSynthesizedEquations(AllDeclaredEquations).ToFixedList());
-        declaredInheritedAttributeEquationGroups = new(()
-            => DeclaredEquations.OfType<InheritedAttributeEquationModel>()
-                                .GroupBy(e => e.Name, (_, eqs) => new InheritedAttributeEquationGroupModel(this, eqs))
-                                .ToFixedSet());
+        inheritedAttributeEquationGroups = new(()
+            => ActualEquations.OfType<InheritedAttributeEquationModel>()
+                              .GroupBy(e => e.Name, (_, eqs) => new InheritedAttributeEquationGroupModel(this, eqs))
+                              .ToFixedSet());
     }
 
     /// <summary>
@@ -237,13 +239,17 @@ public class TreeNodeModel
         where T : IMemberModel
         => property.Node.AncestorNodes.Contains(other.Node);
 
-    private IEnumerable<SynthesizedAttributeEquationModel> ComputeActualSynthesizedEquations(
-        IEnumerable<EquationModel> declaredEquations)
+    private IEnumerable<EquationModel> ComputeActualEquations(
+        IFixedList<EquationModel> declaredEquations)
     {
         var declaredSynthesizedEquations = declaredEquations.OfType<SynthesizedAttributeEquationModel>().ToList();
         var actualSynthesizedEquations = declaredSynthesizedEquations.Concat(
-            InheritedEquations.AllExcept(declaredSynthesizedEquations, SynthesizedAttributeEquationModel.NameComparer));
-        return actualSynthesizedEquations;
+            InheritedEquations.OfType<SynthesizedAttributeEquationModel>()
+                              .AllExcept(declaredSynthesizedEquations, SynthesizedAttributeEquationModel.NameComparer));
+        // Inherited equations first because order within the node is important
+        var actualInheritedEquations = InheritedEquations.OfType<InheritedAttributeEquationModel>().Concat(
+             declaredEquations.OfType<InheritedAttributeEquationModel>());
+        return actualSynthesizedEquations.Concat<EquationModel>(actualInheritedEquations);
     }
 
     private SynthesizedAttributeEquationModel ImplicitlyDeclaredEquation(SynthesizedAttributeModel attribute)

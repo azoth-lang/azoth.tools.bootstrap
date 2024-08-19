@@ -211,17 +211,23 @@ internal static class Emit
     private static string Selector(SelectorModel selector)
         => selector switch
         {
-            AllChildrenSelectorModel _ => SelectorIf("ReferenceEquals(child, descendant)"),
-            DescendantsSelectorModel _ => "", // always
+            AllChildrenSelectorModel s
+                => s.Broadcast ? "" // If broadcast, always matches, no condition needed
+                    : SelectorIf("ReferenceEquals(child, descendant)"),
             // TODO use Current child for all of these
-            ChildSelectorModel s => SelectorIf($"ReferenceEquals(descendant, {s.Child})"),
-            ChildAtIndexSelectorModel s => SelectorIf($"ReferenceEquals(descendant, {s.Child}[{s.Index}])"),
-            ChildAtVariableSelectorModel s => SelectorIf($"{s.Child}.IndexOf(descendant) is {{}} {s.Variable}"),
+            ChildSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, {s.Child})"),
+            ChildAtIndexSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, {s.Child}[{s.Index}])"),
+            ChildAtVariableSelectorModel s => SelectorIf($"{s.Child}.IndexOf({ChildOrDescendant(s)}) is {{}} {s.Variable}"),
             _ => throw ExhaustiveMatch.Failed(selector)
         };
 
     private static string SelectorIf(string condition)
         => "if(" + condition + $"){Environment.NewLine}            ";
+
+    private static string ChildOrDescendant(SelectorModel selector)
+        // Broadcast matches the child because it applies to all descendants under that child.
+        // Whereas non-broadcast matches the descendant because the descendant must be a child.
+        => selector.Broadcast ? "child" : "descendant";
 
     public static string Body(InheritedAttributeEquationModel equation)
     {
@@ -236,12 +242,11 @@ internal static class Emit
         => $"{equation.NodeSymbol}_" + equation.Selector switch
         {
             AllChildrenSelectorModel _ => "Children",
-            DescendantsSelectorModel _ => "Descendants", // always
             ChildSelectorModel s => s.Child,
             ChildAtIndexSelectorModel s => $"{s.Child}_{s.Index}",
             ChildAtVariableSelectorModel s => s.Child,
             _ => throw ExhaustiveMatch.Failed(equation.Selector)
-        } + $"_{equation.Name}";
+        } + (equation.Selector.Broadcast ? "_Broadcast" : "") + $"_{equation.Name}";
 
     public static string EquationMethodExtraParams(InheritedAttributeEquationModel equation)
     {

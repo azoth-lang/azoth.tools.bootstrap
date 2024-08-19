@@ -61,31 +61,30 @@
 
 ### Inherited Attributes
 
-| Declaration                                                        | Meaning                                                        |
-| ------------------------------------------------------------------ | -------------------------------------------------------------- |
-| `↓` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Inherited attribute, defaults to lazy                          |
-| `=` *Node*`.`*Selector*`.`*Attribute*`;`                           | Inherited equation                                             |
-| `=` *Node*`.`*Selector*`.`*Attribute* `=>` *Expression*`;`         | Inherited equation with inline expression                      |
-| `↓` `child`? *Node*.*Attribute*`():` *Type*`;`                     | Inherited attribute method, always computed                    |
-| `=` *Node*`.`*Selector*`.`*Attribute*`();`                         | Inherited method equation                                      |
-| `=` *Node*`.`*Selector*`.`*Attribute*`()` `=>` *Expression*`;`     | Inherited method equation with inline expression               |
+| Declaration                                                        | Meaning                                                 |
+| ------------------------------------------------------------------ | ------------------------------------------------------- |
+| `↓` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Inherited attribute, defaults to lazy                   |
+| `=` *Node*`.`*Selector*`.`*Attribute*`;`                           | Inherited equation                                      |
+| `=` *Node*`.`*Selector*`.`*Attribute* `=>` *Expression*`;`         | Inherited equation with inline expression               |
+| `↓` `child`? *Node*.*Attribute*`():` *Type*`;`                     | Inherited attribute method, always computed             |
+| `=` *Node*`.`*Selector*`.`*Attribute*`();`                         | Inherited method equation                               |
+| `=` *Node*`.`*Selector*`.`*Attribute*`()` `=>` *Expression*`;`     | Inherited method equation with inline expression        |
 | `↓` `*.`*Attribute* `<:` *Type*`;`                                 | Specify a common supertype of the attribute<sup>1</sup> |
 
 1. Only necessary when code generation is not able to determine the type and gives an error.
 
-| Selector                                   | Meaning                                                                    |
-| ------------------------------------------ | -------------------------------------------------------------------------- |
-| *Child*                                    | The named child                                                            |
-| *ChildList*`[`*Variable*`]`                | A child in the child list, variable passed to equation                     |
-| *ChildList*`[`*Number*`]`                  | The child in the child list at the given index                             |
-| *ChildList*`[*]`<sup>1</sup>               | All children in the child list                                             |
-| `*`                                        | All immediate children                                                     |
-| `**`                                       | All descendants                                                            |
-| *Child*`.**`<sup>1</sup>                   | The named child and its descendants                                        |
-| *ChildList*`[`*Variable*`].**`<sup>1</sup> | A child in the child list and its descendants, variable passed to equation |
-| *ChildList*`[`*Number*`].**`<sup>1</sup>   | The child in the child list at the given index and its descendants         |
-
-1. May not be supported
+| Selector                       | Meaning                                                                    |
+| ------------------------------ | -------------------------------------------------------------------------- |
+| *Child*                        | The named child                                                            |
+| `*`                            | All immediate children                                                     |
+| *ChildList*`[`*Number*`]`      | The child in the child list at the given index                             |
+| *ChildList*`[`*Variable*`]`    | A child in the child list, variable passed to equation                     |
+| *ChildList*`[*]`               | All children in the child list                                             |
+| *Child*`.**`                   | The named child and its descendants                                        |
+| `*.**`                         | All descendants                                                            |
+| *ChildList*`[`*Number*`].**`   | The child in the child list at the given index and its descendants         |
+| *ChildList*`[`*Variable*`].**` | A child in the child list and its descendants, variable passed to equation |
+| *ChildList*`[*].**`            | All children in the child list and their descendants                       |
 
 ### Previous Attributes
 

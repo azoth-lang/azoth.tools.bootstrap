@@ -2,11 +2,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
 public sealed class AllChildrenSelectorSyntax : SelectorSyntax
 {
-    #region Singleton
-    public static AllChildrenSelectorSyntax Instance { get; } = new();
+    public static AllChildrenSelectorSyntax Create(bool broadcast) => broadcast ? BroadcastInstance : Instance;
 
-    private AllChildrenSelectorSyntax() { }
-    #endregion
+    public static AllChildrenSelectorSyntax Instance { get; } = new(false);
+    public static AllChildrenSelectorSyntax BroadcastInstance { get; } = new(true);
 
-    public override string ToString() => "*";
+    private AllChildrenSelectorSyntax(bool broadcast) : base(broadcast) { }
+
+    public override string ToString() => Broadcast ? "*.**" : "*";
 }

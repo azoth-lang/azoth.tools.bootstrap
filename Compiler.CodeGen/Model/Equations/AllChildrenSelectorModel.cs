@@ -4,11 +4,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
 public sealed class AllChildrenSelectorModel : SelectorModel
 {
-    #region Singleton
-    public static AllChildrenSelectorModel Instance { get; } = new();
+    public static AllChildrenSelectorModel Create(AllChildrenSelectorSyntax syntax)
+        => syntax == AllChildrenSelectorSyntax.Instance ? Instance : BroadcastInstance;
 
-    private AllChildrenSelectorModel() { }
-    #endregion
+    public static AllChildrenSelectorModel Instance { get; } = new(AllChildrenSelectorSyntax.Instance);
+    public static AllChildrenSelectorModel BroadcastInstance { get; } = new(AllChildrenSelectorSyntax.BroadcastInstance);
 
-    public override AllChildrenSelectorSyntax Syntax => AllChildrenSelectorSyntax.Instance;
+
+    private AllChildrenSelectorModel(AllChildrenSelectorSyntax syntax)
+        : base(syntax.Broadcast)
+    {
+        Syntax = syntax;
+    }
+
+    public override AllChildrenSelectorSyntax Syntax { get; }
+    public override bool IsAllDescendants => Broadcast;
 }

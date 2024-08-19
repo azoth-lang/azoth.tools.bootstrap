@@ -99,13 +99,13 @@ public static class AspectParser
         (definition, var typeOverride) = OptionalSplitTwo(definition, ":", "Too many `:` in: '{0}'");
         (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
-        (string name, string? parameters) = SplitOffParameters(definition);
-        var segments = name.Split('.', StringSplitOptions.TrimEntries);
+        (definition, string? parameters) = SplitOffParameters(definition);
+        var segments = definition.Split('.', StringSplitOptions.TrimEntries);
         var nodeSymbol = ParseSymbol(node);
         if (segments.Length == 1)
-            return ParseSynthesizedEquation(evaluationStrategy, nodeSymbol, name, parameters, typeOverride, expression);
+            return ParseSynthesizedEquation(evaluationStrategy, nodeSymbol, definition, parameters, typeOverride, expression);
 
-        name = segments[^1];
+        var name = segments[^1];
         segments = segments[..^1];
         return ParseInheritedEquation(evaluationStrategy, nodeSymbol, segments, name, parameters, typeOverride, expression);
     }
@@ -148,23 +148,28 @@ public static class AspectParser
 
     private static SelectorSyntax ParseSelector(string[] selector)
     {
+        if (selector.Length == 0)
+            throw new ArgumentException("Must be at least one segment in selector", nameof(selector));
+
+        var broadcast = selector[^1] == "**";
+        if (broadcast)
+            selector = selector[..^1];
+
         switch (selector.Length)
         {
+            case 0:
+                throw new FormatException("Broadcast selector must be applied after another selector.");
             case 1 when selector[0] == "*":
-                return AllChildrenSelectorSyntax.Instance;
-            case 1 when selector[0] == "**":
-                return DescendantsSelectorSyntax.Instance;
+                return AllChildrenSelectorSyntax.Create(broadcast);
             case 1:
                 var (child, indexer) = OptionalSplitTwo(selector[0], "[", "Too many `[` in selector '{0}'");
                 if (indexer is null)
-                    return new ChildSelectorSyntax(child);
+                    return new ChildSelectorSyntax(child, broadcast);
                 if (!ParseOffEnd(ref indexer, "]"))
                     throw new FormatException($"Missing `]` in selector '{selector[0]}'.");
                 if (int.TryParse(indexer, out var index))
-                    return new ChildAtIndexSelectorSyntax(child, index);
-                return new ChildAtVariableSelectorSyntax(child, indexer);
-            case 2:
-                throw new NotImplementedException("Broadcast from child selectors not implemented");
+                    return new ChildAtIndexSelectorSyntax(child, index, broadcast);
+                return new ChildAtVariableSelectorSyntax(child, indexer, broadcast);
             default:
                 throw new FormatException($"Too many parts in selector '{string.Join('.', selector)}'.");
         }

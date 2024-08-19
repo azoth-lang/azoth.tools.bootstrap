@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
-public sealed class SynthesizedAttributeEquationModel : EquationModel, IMemberModel
+public sealed class SynthesizedAttributeEquationModel : EquationModel
 {
     public static IEqualityComparer<SynthesizedAttributeEquationModel> NameComparer { get; }
         = EqualityComparer<SynthesizedAttributeEquationModel>.Create((a1, a2) => a1?.Name == a2?.Name,

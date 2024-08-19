@@ -9,6 +9,7 @@ public sealed class ChildAtVariableSelectorModel : SelectorModel
     public string Variable => Syntax.Variable;
 
     public ChildAtVariableSelectorModel(ChildAtVariableSelectorSyntax syntax)
+        : base(syntax.Broadcast)
     {
         Syntax = syntax;
     }

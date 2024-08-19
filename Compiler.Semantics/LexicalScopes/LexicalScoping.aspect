@@ -5,7 +5,7 @@
 ↓ *.ContainingLexicalScope <: `LexicalScope`;
 
 // ---------- Special Parts
-= BodyOrBlock.Statements[statementIndex].ContainingLexicalScope;
+= BodyOrBlock.Statements[statementIndex].**.ContainingLexicalScope;
 
 // ---------- Bindings
 ↓ NamedBinding.ContainingLexicalScope: `LexicalScope`;

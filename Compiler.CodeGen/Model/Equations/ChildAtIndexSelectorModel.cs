@@ -9,6 +9,7 @@ public sealed class ChildAtIndexSelectorModel : SelectorModel
     public int Index => Syntax.Index;
 
     public ChildAtIndexSelectorModel(ChildAtIndexSelectorSyntax syntax)
+        : base(syntax.Broadcast)
     {
         Syntax = syntax;
     }
