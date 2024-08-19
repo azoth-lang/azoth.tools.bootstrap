@@ -6,7 +6,7 @@ using DotNet.Collections.Generic;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
-internal static class InheritanceAspect
+internal static partial class InheritanceAspect
 {
     public static IFixedSet<IClassMemberDeclarationNode> ClassDefinition_InclusiveMembers(IClassDefinitionNode node)
         // Explicit type argument requires because it is used as a filter and would otherwise be too specific
