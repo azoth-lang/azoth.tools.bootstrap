@@ -245,7 +245,7 @@ internal static class Emit
         };
 
     private static string SelectorIf(string condition)
-        => "if(" + condition + $"){Environment.NewLine}            ";
+        => "if (" + condition + $"){Environment.NewLine}            ";
 
     private static string ChildOrDescendant(SelectorModel selector)
         // Broadcast matches the child because it applies to all descendants under that child.

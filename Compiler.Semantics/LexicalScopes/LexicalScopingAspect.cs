@@ -81,7 +81,7 @@ internal static partial class LexicalScopingAspect
     public static partial LexicalScope TypeDefinition_AllSupertypeNames_Broadcast_ContainingLexicalScope(ITypeDefinitionNode node)
         => node.SupertypesLexicalScope;
 
-    public static LexicalScope TypeDefinition_InheritedLexicalScope_Members(ITypeDefinitionNode node)
+    public static partial LexicalScope TypeDefinition_Members_Broadcast_ContainingLexicalScope(ITypeDefinitionNode node)
         => node.LexicalScope;
 
     public static partial LexicalScope FunctionDefinition_LexicalScope(IFunctionDefinitionNode node)
@@ -129,7 +129,7 @@ internal static partial class LexicalScopingAspect
         return node.RightOperand.GetFlowLexicalScope();
     }
 
-    public static LexicalScope BinaryOperatorExpression_InheritedContainingLexicalScope_RightOperand(IBinaryOperatorExpressionNode node)
+    public static partial LexicalScope BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(IBinaryOperatorExpressionNode node)
     {
         var flowScope = node.LeftOperand.GetFlowLexicalScope();
         // Logical-or is short-circuiting, so the right operand is only evaluated if the left

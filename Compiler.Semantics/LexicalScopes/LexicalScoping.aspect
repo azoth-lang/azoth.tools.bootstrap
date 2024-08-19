@@ -30,6 +30,7 @@
 
 // ---------- Type Definitions
 = TypeDefinition.AllSupertypeNames[*].**.ContainingLexicalScope;
+= TypeDefinition.Members[*].**.ContainingLexicalScope;
 = TypeDefinition.LexicalScope;
 ↑ TypeDefinition.SupertypesLexicalScope: `LexicalScope`;
 = TypeDefinition.SupertypesLexicalScope;
@@ -55,6 +56,7 @@
 
 // ---------- Operator Expressions
 ↓ BinaryOperatorExpression.ContainingLexicalScope: `LexicalScope`;
+= BinaryOperatorExpression.RightOperand.**.ContainingLexicalScope;
 
 // ---------- Control Flow Expressions
 ↓ ForeachExpression.ContainingLexicalScope: `LexicalScope`;
