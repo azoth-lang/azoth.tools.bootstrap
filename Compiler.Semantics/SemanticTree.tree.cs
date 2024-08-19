@@ -396,6 +396,8 @@ public partial interface ITypeDefinitionNode : IPackageMemberDefinitionNode, IAs
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     LexicalScope SupertypesLexicalScope { get; }
+    IEnumerable<IStandardTypeNameNode> AllSupertypeNames
+        => SupertypeNames;
     new AccessModifier AccessModifier { get; }
     AccessModifier IPackageMemberDefinitionNode.AccessModifier => AccessModifier;
     AccessModifier ITypeMemberDefinitionNode.AccessModifier => AccessModifier;
@@ -416,6 +418,8 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
     IFixedSet<IClassMemberDeclarationNode> IClassDeclarationNode.Members => Members;
     IDefaultConstructorDefinitionNode? DefaultConstructor { get; }
+    IEnumerable<IStandardTypeNameNode> ITypeDefinitionNode.AllSupertypeNames
+        => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
 }
 
 // [Closed(typeof(StructDefinitionNode))]
