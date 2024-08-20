@@ -23,7 +23,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-public static class ExpressionTypesAspect
+internal static partial class ExpressionTypesAspect
 {
     public static void Expression_ContributeDiagnostics(IExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
