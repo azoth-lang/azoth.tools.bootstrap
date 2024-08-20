@@ -160,17 +160,17 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected IFlowState InheritedFlowStateBefore(IInheritanceContext ctx)
         => GetParent(ctx).InheritedFlowStateBefore(this, this, ctx);
 
-    internal override IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
-        => Parent.InheritedBindingAntetype(this, descendant);
+    internal override IMaybeAntetype InheritedContextBindingAntetype(IChildNode child, IChildNode descendant)
+        => Parent.InheritedContextBindingAntetype(this, descendant);
 
-    protected IMaybeAntetype InheritedBindingAntetype()
-        => Parent.InheritedBindingAntetype(this, this);
+    protected IMaybeAntetype InheritedContextBindingAntetype()
+        => Parent.InheritedContextBindingAntetype(this, this);
 
-    internal override DataType InheritedBindingType(IChildNode child, IChildNode descendant)
-        => Parent.InheritedBindingType(this, descendant);
+    internal override DataType InheritedContextBindingType(IChildNode child, IChildNode descendant)
+        => Parent.InheritedContextBindingType(this, descendant);
 
-    protected DataType InheritedBindingType()
-        => Parent.InheritedBindingType(this, this);
+    protected DataType InheritedContextBindingType()
+        => Parent.InheritedContextBindingType(this, this);
 
     internal override ValueId? InheritedMatchReferentValueId(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => GetParent(ctx).InheritedMatchReferentValueId(this, descendant, ctx);

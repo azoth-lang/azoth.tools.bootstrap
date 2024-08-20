@@ -50,18 +50,18 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
 
     public override ConditionalLexicalScope FlowLexicalScope() => Pattern.FlowLexicalScope();
 
-    internal override IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
+    internal override IMaybeAntetype InheritedContextBindingAntetype(IChildNode child, IChildNode descendant)
     {
         if (descendant == Pattern)
-            return NameBindingAntetypesAspect.PatternMatchExpression_InheritedBindingAntetype_Pattern(this);
-        return base.InheritedBindingAntetype(child, descendant);
+            return NameBindingAntetypesAspect.PatternMatchExpression_Pattern_ContextBindingAntetype_(this);
+        return base.InheritedContextBindingAntetype(child, descendant);
     }
 
-    internal override DataType InheritedBindingType(IChildNode child, IChildNode descendant)
+    internal override DataType InheritedContextBindingType(IChildNode child, IChildNode descendant)
     {
         if (descendant == Pattern)
-            return NameBindingTypesAspect.PatternMatchExpression_InheritedBindingType_Pattern(this);
-        return base.InheritedBindingType(child, descendant);
+            return NameBindingTypesAspect.PatternMatchExpression_Pattern_ContextBindingType(this);
+        return base.InheritedContextBindingType(child, descendant);
     }
 
     internal override IFlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

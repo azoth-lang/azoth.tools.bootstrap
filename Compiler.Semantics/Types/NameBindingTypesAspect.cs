@@ -42,23 +42,23 @@ internal static class NameBindingTypesAspect
         => node.DeclaredType?.NamedType ?? node.IteratedType;
 
     public static DataType BindingPattern_BindingType(IBindingPatternNode node)
-        => node.InheritedBindingType();
+        => node.ContextBindingType();
 
     public static IFlowState BindingPattern_FlowStateAfter(IBindingPatternNode node)
         // TODO the match referent value id could be used multiple times and perhaps shouldn't be removed here
         => node.FlowStateBefore().Declare(node, node.MatchReferentValueId);
 
-    public static DataType PatternMatchExpression_InheritedBindingType_Pattern(IPatternMatchExpressionNode node)
+    public static DataType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node)
         => node.IntermediateReferent?.Type.ToNonConstValueType() ?? DataType.Unknown;
 
-    public static DataType OptionalPattern_InheritedBindingType_Pattern(IOptionalPatternNode node)
+    public static DataType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node)
     {
-        var inheritedBindingType = node.InheritedBindingType();
+        var inheritedBindingType = node.ContextBindingType();
         if (inheritedBindingType is OptionalType optionalType)
             return optionalType.Referent;
         return inheritedBindingType;
     }
 
-    public static DataType BindingContextPattern_InheritedBindingType_Pattern(IBindingContextPatternNode node)
-        => node.Type?.NamedType ?? node.InheritedBindingType();
+    public static DataType BindingContextPattern_Pattern_ContextBindingType(IBindingContextPatternNode node)
+        => node.Type?.NamedType ?? node.ContextBindingType();
 }

@@ -108,7 +108,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         return Arguments[argumentIndex - 1].FlowLexicalScope().True;
     }
 
-    public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();
+    public PackageNameScope PackageNameScope() => InheritedPackageNameScope();
 
     public IFlowState FlowStateBefore()
         => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());

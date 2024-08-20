@@ -15,23 +15,23 @@ internal static class NameBindingAntetypesAspect
         return containingDeclaredAntetype.With(containingDeclaredAntetype.GenericParameterAntetypes);
     }
 
-    public static IMaybeAntetype PatternMatchExpression_InheritedBindingAntetype_Pattern(IPatternMatchExpressionNode node)
+    public static IMaybeAntetype PatternMatchExpression_Pattern_ContextBindingAntetype_(IPatternMatchExpressionNode node)
         => node.IntermediateReferent?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
-    public static IMaybeAntetype BindingContextPattern_InheritedBindingAntetype_Pattern(IBindingContextPatternNode node)
-        => node.Type?.NamedAntetype ?? node.InheritedBindingAntetype();
+    public static IMaybeAntetype BindingContextPattern_Pattern_ContextBindingAntetype(IBindingContextPatternNode node)
+        => node.Type?.NamedAntetype ?? node.ContextBindingAntetype();
 
-    public static IMaybeAntetype OptionalPattern_InheritedBindingAntetype_Pattern(
+    public static IMaybeAntetype OptionalPattern_Pattern_ContextBindingAntetype(
         IOptionalPatternNode node)
     {
-        var inheritedBindingAntetype = node.InheritedBindingAntetype();
+        var inheritedBindingAntetype = node.ContextBindingAntetype();
         if (inheritedBindingAntetype is OptionalAntetype optionalAntetype)
             return optionalAntetype.Referent;
         return inheritedBindingAntetype;
     }
 
     public static IMaybeAntetype BindingPattern_BindingAntetype(IBindingPatternNode node)
-        => node.InheritedBindingAntetype();
+        => node.ContextBindingAntetype();
 
     public static IMaybeAntetype VariableDeclarationStatement_BindingAntetype(IVariableDeclarationStatementNode node)
         => node.Type?.NamedAntetype ?? node.IntermediateInitializer?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;

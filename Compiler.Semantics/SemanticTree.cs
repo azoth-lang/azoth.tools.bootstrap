@@ -28,8 +28,8 @@ public partial interface ICapabilityNode
 #region Patterns
 public partial interface IPatternNode
 {
-    IMaybeAntetype InheritedBindingAntetype();
-    DataType InheritedBindingType();
+    IMaybeAntetype ContextBindingAntetype();
+    DataType ContextBindingType();
     ValueId? MatchReferentValueId { get; }
 }
 #endregion
@@ -49,7 +49,7 @@ public partial interface IExpressionNode
 
 public partial interface INewObjectExpressionNode
 {
-    PackageNameScope InheritedPackageNameScope();
+    PackageNameScope PackageNameScope();
 }
 #endregion
 
@@ -58,7 +58,7 @@ public partial interface IForeachExpressionNode
 {
     // TODO some way to code gen this hiding
     IdentifierName INamedBindingDeclarationNode.Name => VariableName;
-    PackageNameScope InheritedPackageNameScope();
+    PackageNameScope PackageNameScope();
 }
 
 public partial interface IReturnExpressionNode
@@ -71,7 +71,7 @@ public partial interface IReturnExpressionNode
 #region Ambiguous Name Expressions
 public partial interface IMemberAccessExpressionNode
 {
-    PackageNameScope InheritedPackageNameScope();
+    PackageNameScope PackageNameScope();
 }
 #endregion
 

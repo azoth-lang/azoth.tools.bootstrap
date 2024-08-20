@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 internal static class ForeachExpressionAntetypeAspect
 {
     public static ITypeDeclarationNode? ForeachExpression_ReferencedIterableDeclaration(IForeachExpressionNode node)
-        => node.InheritedPackageNameScope().Lookup(node.IntermediateInExpression?.Antetype ?? IAntetype.Unknown);
+        => node.PackageNameScope().Lookup(node.IntermediateInExpression?.Antetype ?? IAntetype.Unknown);
 
     public static IStandardMethodDeclarationNode? ForeachExpression_ReferencedIterateMethod(IForeachExpressionNode node)
         => node.ReferencedIterableDeclaration?.InclusiveInstanceMembersNamed("iterate").OfType<IStandardMethodDeclarationNode>()
@@ -25,7 +25,7 @@ internal static class ForeachExpressionAntetypeAspect
     }
 
     public static ITypeDeclarationNode? ForeachExpression_ReferencedIteratorDeclaration(IForeachExpressionNode node)
-        => node.InheritedPackageNameScope().Lookup(node.IteratorAntetype);
+        => node.PackageNameScope().Lookup(node.IteratorAntetype);
 
     public static IStandardMethodDeclarationNode? ForeachExpression_ReferencedNextMethod(IForeachExpressionNode node)
         => node.ReferencedIteratorDeclaration?.InclusiveInstanceMembersNamed("next").OfType<IStandardMethodDeclarationNode>()

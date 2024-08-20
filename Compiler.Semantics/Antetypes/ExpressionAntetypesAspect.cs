@@ -374,20 +374,20 @@ internal static class ExpressionAntetypesAspect
                     return to;
                 return null;
             case (FixedSizeIntegerAntetype to, IntegerConstValueAntetype from):
-                {
-                    // TODO make a method on antetypes for this check
-                    var requireSigned = from.Value < 0;
-                    var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
-                    return to.Bits >= bits && (!requireSigned || to.IsSigned) ? to : null;
-                }
+            {
+                // TODO make a method on antetypes for this check
+                var requireSigned = from.Value < 0;
+                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
+                return to.Bits >= bits && (!requireSigned || to.IsSigned) ? to : null;
+            }
             case (PointerSizedIntegerAntetype to, IntegerConstValueAntetype from):
-                {
-                    // TODO make a method on antetypes for this check
-                    var requireSigned = from.Value < 0;
-                    var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
-                    // Must fit in 32 bits so that it will fit on all platforms
-                    return bits <= 32 && (!requireSigned || to.IsSigned) ? to : null;
-                }
+            {
+                // TODO make a method on antetypes for this check
+                var requireSigned = from.Value < 0;
+                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
+                // Must fit in 32 bits so that it will fit on all platforms
+                return bits <= 32 && (!requireSigned || to.IsSigned) ? to : null;
+            }
             case (BigIntegerAntetype { IsSigned: true }, IntegerAntetype):
             case (BigIntegerAntetype { IsSigned: true }, IntegerConstValueAntetype):
                 return IAntetype.Int;
@@ -408,7 +408,7 @@ internal static class ExpressionAntetypesAspect
 
     public static void OptionalPattern_ContributeDiagnostics(IOptionalPatternNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.InheritedBindingAntetype() is not OptionalAntetype)
-            diagnostics.Add(TypeError.OptionalPatternOnNonOptionalType(node.File, node.Syntax, node.InheritedBindingType()));
+        if (node.ContextBindingAntetype() is not OptionalAntetype)
+            diagnostics.Add(TypeError.OptionalPatternOnNonOptionalType(node.File, node.Syntax, node.ContextBindingType()));
     }
 }

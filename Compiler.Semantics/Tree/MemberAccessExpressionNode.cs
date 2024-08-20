@@ -42,7 +42,7 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
 
     public override ConditionalLexicalScope FlowLexicalScope() => Context.FlowLexicalScope();
 
-    public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();
+    public PackageNameScope PackageNameScope() => InheritedPackageNameScope();
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => null;

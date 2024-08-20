@@ -30,18 +30,18 @@ internal sealed class BindingContextPatternNode : PatternNode, IBindingContextPa
 
     public override ConditionalLexicalScope FlowLexicalScope() => Pattern.FlowLexicalScope();
 
-    internal override IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
+    internal override IMaybeAntetype InheritedContextBindingAntetype(IChildNode child, IChildNode descendant)
     {
         if (descendant == Pattern)
-            return NameBindingAntetypesAspect.BindingContextPattern_InheritedBindingAntetype_Pattern(this);
-        return base.InheritedBindingAntetype(child, descendant);
+            return NameBindingAntetypesAspect.BindingContextPattern_Pattern_ContextBindingAntetype(this);
+        return base.InheritedContextBindingAntetype(child, descendant);
     }
 
-    internal override DataType InheritedBindingType(IChildNode child, IChildNode descendant)
+    internal override DataType InheritedContextBindingType(IChildNode child, IChildNode descendant)
     {
         if (descendant == Pattern)
-            return NameBindingTypesAspect.BindingContextPattern_InheritedBindingType_Pattern(this);
-        return base.InheritedBindingType(child, descendant);
+            return NameBindingTypesAspect.BindingContextPattern_Pattern_ContextBindingType(this);
+        return base.InheritedContextBindingType(child, descendant);
     }
 
     protected override ControlFlowSet ComputeControlFlow()

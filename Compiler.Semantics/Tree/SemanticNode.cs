@@ -71,14 +71,14 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual IFlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(InheritedFlowStateBefore), child, descendant);
 
-    internal virtual IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
-        => throw Child.InheritFailed(nameof(InheritedBindingAntetype), child, descendant);
+    internal virtual IMaybeAntetype InheritedContextBindingAntetype(IChildNode child, IChildNode descendant)
+        => throw Child.InheritFailed(nameof(InheritedContextBindingAntetype), child, descendant);
 
-    internal virtual DataType InheritedBindingType(IChildNode child, IChildNode descendant)
-        => throw Child.InheritFailed(nameof(InheritedBindingType), child, descendant);
+    internal virtual DataType InheritedContextBindingType(IChildNode child, IChildNode descendant)
+        => throw Child.InheritFailed(nameof(InheritedContextBindingType), child, descendant);
 
     internal virtual ValueId? InheritedMatchReferentValueId(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedBindingType), child, descendant);
+        => throw Child.InheritFailed(nameof(InheritedContextBindingType), child, descendant);
 
     internal virtual IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(InheritedExpectedAntetype), child, descendant);

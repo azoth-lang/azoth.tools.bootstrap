@@ -35,7 +35,7 @@ internal static class BindingNamesAspect
 
     public static IFixedSet<IConstructorDeclarationNode> NewObjectExpression_ReferencedConstructors(INewObjectExpressionNode node)
     {
-        var typeDeclarationNode = node.InheritedPackageNameScope().Lookup(node.ConstructingAntetype);
+        var typeDeclarationNode = node.PackageNameScope().Lookup(node.ConstructingAntetype);
         if (typeDeclarationNode is null)
             return FixedSet.Empty<IConstructorDeclarationNode>();
 

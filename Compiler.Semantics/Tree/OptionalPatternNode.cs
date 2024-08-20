@@ -25,18 +25,18 @@ internal sealed class OptionalPatternNode : PatternNode, IOptionalPatternNode
 
     public override ConditionalLexicalScope FlowLexicalScope() => Pattern.FlowLexicalScope();
 
-    internal override IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
+    internal override IMaybeAntetype InheritedContextBindingAntetype(IChildNode child, IChildNode descendant)
     {
         if (descendant == Pattern)
-            return NameBindingAntetypesAspect.OptionalPattern_InheritedBindingAntetype_Pattern(this);
-        return base.InheritedBindingAntetype(child, descendant);
+            return NameBindingAntetypesAspect.OptionalPattern_Pattern_ContextBindingAntetype(this);
+        return base.InheritedContextBindingAntetype(child, descendant);
     }
 
-    internal override DataType InheritedBindingType(IChildNode child, IChildNode descendant)
+    internal override DataType InheritedContextBindingType(IChildNode child, IChildNode descendant)
     {
         if (descendant == Pattern)
-            return NameBindingTypesAspect.OptionalPattern_InheritedBindingType_Pattern(this);
-        return base.InheritedBindingType(child, descendant);
+            return NameBindingTypesAspect.OptionalPattern_Pattern_ContextBindingType(this);
+        return base.InheritedContextBindingType(child, descendant);
     }
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)

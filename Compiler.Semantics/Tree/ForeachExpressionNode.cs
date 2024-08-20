@@ -160,7 +160,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => child == Block ? LexicalScope : ContainingLexicalScope;
 
-    public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();
+    public PackageNameScope PackageNameScope() => InheritedPackageNameScope();
 
     internal override IFlowState InheritedFlowStateBefore(
         IChildNode child,

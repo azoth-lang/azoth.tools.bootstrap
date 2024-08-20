@@ -130,7 +130,7 @@ internal static class BindingAmbiguousNamesAspect
             or IInitializerGroupNameNode)
             return null;
 
-        var contextTypeDeclaration = node.InheritedPackageNameScope().Lookup(context.Antetype);
+        var contextTypeDeclaration = node.PackageNameScope().Lookup(context.Antetype);
         var members = contextTypeDeclaration?.InclusiveInstanceMembersNamed(node.MemberName).ToFixedSet()
                       ?? FixedSet.Empty<IInstanceMemberDeclarationNode>();
         if (members.Count == 0)
