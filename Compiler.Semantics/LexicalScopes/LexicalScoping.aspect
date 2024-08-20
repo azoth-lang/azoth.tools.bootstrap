@@ -41,6 +41,7 @@
 = ConstructorDefinition.LexicalScope;
 = InitializerDefinition.LexicalScope;
 ↓ FieldDefinition.ContainingLexicalScope: `LexicalScope`; // needed due to conflict between NamedBinding and Definition
+= FieldDefinition.LexicalScope => ContainingLexicalScope;
 
 // ---------- Types
 ↓ TypeName.ContainingLexicalScope: `LexicalScope`;

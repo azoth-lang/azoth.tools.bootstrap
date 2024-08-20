@@ -22,8 +22,8 @@ internal class DeclarationScope : LexicalScope
                                         .ToFixedDictionary(g => g.Key, g => g.ToFixedSet());
     }
 
-    internal DeclarationScope(LexicalScope parent, params INamedDeclarationNode[] declarations)
-        : this(parent, declarations.AsEnumerable())
+    internal DeclarationScope(LexicalScope parent, INamedDeclarationNode declaration, params INamedDeclarationNode[] declarations)
+        : this(parent, declarations.Prepend(declaration))
     {
     }
 

@@ -679,6 +679,8 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IDefinitionNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
+    LexicalScope IDefinitionNode.LexicalScope
+        => ContainingLexicalScope;
 }
 
 // [Closed(typeof(AssociatedFunctionDefinitionNode))]

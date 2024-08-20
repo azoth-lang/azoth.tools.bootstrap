@@ -37,8 +37,6 @@ internal static partial class LexicalScopingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope FunctionDefinition_LexicalScope(IFunctionDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial LexicalScope FieldDefinition_LexicalScope(IFieldDefinitionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope AssociatedFunctionDefinition_LexicalScope(IAssociatedFunctionDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope VariableDeclarationStatement_LexicalScope(IVariableDeclarationStatementNode node);
