@@ -21,7 +21,7 @@ internal sealed class AmbiguousMoveExpressionNode : ExpressionNode, IAmbiguousMo
         this.referent = Child.Create(this, referent);
     }
 
-    public override ConditionalLexicalScope GetFlowLexicalScope() => Referent.GetFlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => Referent.FlowLexicalScope();
 
     protected override IChildNode? Rewrite()
         => CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Variable(this)

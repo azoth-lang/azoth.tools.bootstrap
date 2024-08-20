@@ -36,7 +36,7 @@ internal class ImplicitConversionExpressionNode : ExpressionNode, IImplicitConve
         Type = convertToAntetype.ToType();
     }
 
-    public override ConditionalLexicalScope GetFlowLexicalScope() => Referent.GetFlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => Referent.FlowLexicalScope();
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {

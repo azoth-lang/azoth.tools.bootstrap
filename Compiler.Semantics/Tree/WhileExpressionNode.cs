@@ -57,7 +57,7 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Block)
-            return Condition.GetFlowLexicalScope().True;
+            return Condition.FlowLexicalScope().True;
         return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }
 

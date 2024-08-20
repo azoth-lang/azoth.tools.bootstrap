@@ -43,7 +43,7 @@ internal sealed class UnsafeExpressionNode : ExpressionNode, IUnsafeExpressionNo
         this.expression = Child.Create(this, expression);
     }
 
-    public override ConditionalLexicalScope GetFlowLexicalScope() => Expression.GetFlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => Expression.FlowLexicalScope();
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.UnsafeExpression_ControlFlowNext(this);

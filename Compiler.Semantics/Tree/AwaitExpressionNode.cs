@@ -43,7 +43,7 @@ internal sealed class AwaitExpressionNode : ExpressionNode, IAwaitExpressionNode
         this.expression = Child.Create(this, expression);
     }
 
-    public override ConditionalLexicalScope GetFlowLexicalScope() => Expression.GetFlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => Expression.FlowLexicalScope();
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {

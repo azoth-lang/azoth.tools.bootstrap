@@ -52,7 +52,7 @@ internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpr
         ConvertToType = Child.Attach(this, convertToType);
     }
 
-    public override ConditionalLexicalScope GetFlowLexicalScope() => Referent.GetFlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => Referent.FlowLexicalScope();
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.ConversionExpression_ControlFlowNext(this);

@@ -82,7 +82,7 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
         this.rightOperand = Child.Create(this, rightOperand);
     }
 
-    public override ConditionalLexicalScope GetFlowLexicalScope()
+    public override ConditionalLexicalScope FlowLexicalScope()
         => LexicalScopingAspect.AssignmentExpression_GetFlowLexicalScope(this);
 
     internal override IFlowState InheritedFlowStateBefore(

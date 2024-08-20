@@ -66,9 +66,9 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == ThenBlock)
-            return Condition.GetFlowLexicalScope().True;
+            return Condition.FlowLexicalScope().True;
         if (child == ElseClause)
-            return Condition.GetFlowLexicalScope().False;
+            return Condition.FlowLexicalScope().False;
         return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }
 

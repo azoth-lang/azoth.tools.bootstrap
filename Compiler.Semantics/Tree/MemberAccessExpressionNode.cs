@@ -40,7 +40,7 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
         ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_UnknownNameExpressionContext(this)
         ?? base.Rewrite();
 
-    public override ConditionalLexicalScope GetFlowLexicalScope() => Context.GetFlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => Context.FlowLexicalScope();
 
     public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();
 

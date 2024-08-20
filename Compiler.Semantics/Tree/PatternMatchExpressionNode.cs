@@ -44,11 +44,11 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Pattern)
-            return Referent.GetFlowLexicalScope().True;
+            return Referent.FlowLexicalScope().True;
         return ContainingLexicalScope;
     }
 
-    public override ConditionalLexicalScope GetFlowLexicalScope() => Pattern.GetFlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => Pattern.GetFlowLexicalScope();
 
     internal override IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
     {

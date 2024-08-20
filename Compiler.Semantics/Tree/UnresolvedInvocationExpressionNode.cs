@@ -41,9 +41,9 @@ internal sealed class UnresolvedInvocationExpressionNode : AmbiguousExpressionNo
         if (Arguments.IndexOf(child) is int argumentIndex)
         {
             if (argumentIndex == 0)
-                return Expression.GetFlowLexicalScope().True;
+                return Expression.FlowLexicalScope().True;
 
-            return Arguments[argumentIndex - 1].GetFlowLexicalScope().True;
+            return Arguments[argumentIndex - 1].FlowLexicalScope().True;
         }
         return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }

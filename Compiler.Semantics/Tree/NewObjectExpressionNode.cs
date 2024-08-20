@@ -105,7 +105,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         if (argumentIndex == 0)
             return ContainingLexicalScope;
 
-        return Arguments[argumentIndex - 1].GetFlowLexicalScope().True;
+        return Arguments[argumentIndex - 1].FlowLexicalScope().True;
     }
 
     public new PackageNameScope InheritedPackageNameScope() => base.InheritedPackageNameScope();

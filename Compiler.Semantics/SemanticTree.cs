@@ -85,7 +85,7 @@ public partial interface IAmbiguousExpressionNode
 {
     IPreviousValueId PreviousValueId();
     // TODO it is strange that this is always a conditional scope. Instead, use conditional only where it makes sense?
-    ConditionalLexicalScope GetFlowLexicalScope();
+    ConditionalLexicalScope FlowLexicalScope();
 }
 
 public partial interface IExpressionNode

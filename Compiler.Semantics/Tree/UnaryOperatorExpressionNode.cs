@@ -47,7 +47,7 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
         this.operand = Child.Create(this, operand);
     }
 
-    public override ConditionalLexicalScope GetFlowLexicalScope()
+    public override ConditionalLexicalScope FlowLexicalScope()
         => LexicalScopingAspect.UnaryOperatorExpression_GetFlowLexicalScope(this);
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
