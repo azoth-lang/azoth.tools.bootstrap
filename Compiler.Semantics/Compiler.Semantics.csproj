@@ -41,7 +41,7 @@
     <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SemanticTree.tree&quot; &quot;$(ProjectDir)LexicalScopes\LexicalScoping.aspect&quot; &quot;$(ProjectDir)Structure\Inheritance.aspect&quot;" />
+    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SemanticTree.tree&quot; &quot;$(ProjectDir)LexicalScopes\LexicalScoping.aspect&quot; &quot;$(ProjectDir)Structure\Inheritance.aspect&quot; &quot;$(ProjectDir)Types\ValueIds.aspect&quot;" />
   </Target>
   <ItemGroup>
     <Compile Update="SemanticTree.tree.cs">
@@ -55,6 +55,9 @@
     </Compile>
     <Compile Update="Structure\InheritanceAspect.g.cs">
       <DependentUpon>Inheritance.aspect</DependentUpon>
+    </Compile>
+    <Compile Update="Types\ValueIdsAspect.g.cs">
+      <DependentUpon>ValueIds.aspect</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>
