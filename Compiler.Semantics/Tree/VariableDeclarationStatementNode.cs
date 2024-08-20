@@ -40,7 +40,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
                 InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public LexicalScope LexicalScope
+    public override LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.VariableDeclarationStatement_LexicalScope,
@@ -110,8 +110,6 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         Type = Child.Attach(this, type);
         this.initializer = Child.Create(this, initializer);
     }
-
-    public override LexicalScope GetLexicalScope() => LexicalScope;
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => BindingValueId;

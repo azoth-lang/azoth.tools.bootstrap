@@ -17,11 +17,12 @@ internal abstract class AmbiguousExpressionNode : CodeNode, IAmbiguousExpression
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref SyncLock,
                 ExpressionTypesAspect.AmbiguousExpression_ValueId);
+    public virtual LexicalScope ContainingLexicalScope
+        => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
     private protected AmbiguousExpressionNode() { }
 
-    public LexicalScope GetContainingLexicalScope()
-        => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
 
     public virtual ConditionalLexicalScope GetFlowLexicalScope()
         => LexicalScopingAspect.UntypedExpression_GetFlowLexicalScope(this);

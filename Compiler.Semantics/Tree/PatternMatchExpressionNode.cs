@@ -45,7 +45,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     {
         if (child == Pattern)
             return Referent.GetFlowLexicalScope().True;
-        return GetContainingLexicalScope();
+        return ContainingLexicalScope;
     }
 
     public override ConditionalLexicalScope GetFlowLexicalScope() => Pattern.GetFlowLexicalScope();

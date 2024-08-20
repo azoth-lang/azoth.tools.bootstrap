@@ -152,16 +152,16 @@ internal static class Parsing
         return CollectionKind.None;
     }
 
-    public static bool ParseOffEnd(ref string value, string c)
+    public static bool ParseOffEnd(ref string value, string suffix)
     {
-        var endsWith = value.EndsWith(c);
-        if (endsWith) value = value[..^1].Trim();
+        var endsWith = value.EndsWith(suffix);
+        if (endsWith) value = value[..^suffix.Length].Trim();
         return endsWith;
     }
 
-    public static bool ParseOffStart(ref string value, char c)
+    public static bool ParseOffStart(ref string value, char suffix)
     {
-        var endsWith = value.StartsWith(c);
+        var endsWith = value.StartsWith(suffix);
         if (endsWith) value = value[1..].Trim();
         return endsWith;
     }

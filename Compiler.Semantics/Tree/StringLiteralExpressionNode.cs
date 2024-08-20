@@ -16,7 +16,7 @@ internal sealed class StringLiteralExpressionNode : LiteralExpressionNode, IStri
     public string Value => Syntax.Value;
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public LexicalScope ContainingLexicalScope
+    public override LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
                 InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);

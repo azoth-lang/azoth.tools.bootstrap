@@ -3,24 +3,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 public sealed class SynthesizedAttributeEquationSyntax : EquationSyntax
 {
     public EvaluationStrategy? Strategy { get; }
-    public string Name { get; }
-    public string? Parameters { get; }
     public TypeSyntax? TypeOverride { get; }
-    public string? Expression { get; }
 
     public SynthesizedAttributeEquationSyntax(
         EvaluationStrategy? strategy,
         SymbolSyntax node,
         string name,
-        string? parameters,
+        bool isMethod,
         TypeSyntax? typeOverride,
         string? expression)
-        : base(node)
+        : base(node, name, isMethod, expression)
     {
         Strategy = strategy;
-        Name = name;
-        Parameters = parameters;
         TypeOverride = typeOverride;
-        Expression = expression;
     }
 }

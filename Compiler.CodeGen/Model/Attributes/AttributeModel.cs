@@ -26,6 +26,7 @@ public abstract class AttributeModel : IMemberModel
     public abstract AttributeSyntax? Syntax { get; }
     public abstract TreeNodeModel Node { get; }
     public abstract string Name { get; }
+    public abstract bool IsMethod { get; }
     public abstract TypeModel Type { get; }
 
     /// <summary>
@@ -40,7 +41,7 @@ public abstract class AttributeModel : IMemberModel
     /// <remarks>
     /// A property needs declared under three conditions:
     /// 1. there is no definition of the property in the parent
-    /// 2. the single parent definition has a different type
+    /// 2. the single parent definition has a different type or parameters
     /// 3. the property is defined in multiple parents, in that case it is
     ///    ambiguous unless it is redefined in the current interface.
     /// </remarks>
@@ -58,7 +59,9 @@ public abstract class AttributeModel : IMemberModel
         isDeclarationRequired = new(() =>
         {
             var baseProperties = Node.InheritedAttributesNamedSameAs(this).ToList();
-            return baseProperties.Count != 1 || baseProperties[0].Type != Type;
+            return baseProperties.Count != 1
+                   || baseProperties[0].Type != Type
+                   || baseProperties[0].IsMethod != IsMethod;
         });
     }
 

@@ -74,14 +74,15 @@ internal static class Emit
     public static string BaseClass(TreeModel tree)
         => tree.SimplifiedTree ? "" : $"{BaseClassName(tree)}, ";
 
+    #region Attributes
     public static string IsNew(AttributeModel attribute)
         => attribute.IsNewDefinition ? "new " : "";
 
     public static string ParameterName(AttributeModel attribute)
         => attribute.Name.ToCamelCase();
 
-    public static string Override(SynthesizedAttributeEquationModel equation)
-        => equation.IsObjectMember() ? "override " : "";
+    public static string Parameters(AttributeModel attribute)
+        => attribute.IsMethod ? "()" : "";
 
     public static string ParametersAndBody(AttributeModel attribute)
         => attribute switch
@@ -98,9 +99,9 @@ internal static class Emit
         {
             var expression = attribute.DefaultExpression ?? ExpressionFor(attribute);
             if (expression is not null)
-                return $"{attribute.Parameters}{Environment.NewLine}        => {expression};";
+                return $"{Parameters(attribute)}{Environment.NewLine}        => {expression};";
         }
-        return attribute.Parameters is not null ? $"{attribute.Parameters};" : " { get; }";
+        return attribute.IsMethod ? "();" : " { get; }";
     }
 
     private static string? ExpressionFor(SynthesizedAttributeModel attribute)
@@ -115,6 +116,46 @@ internal static class Emit
         return builder.ToString();
     }
 
+    public static string Body(InheritedAttributeModel attribute)
+    {
+        switch (attribute.Strategy)
+        {
+            default:
+                throw ExhaustiveMatch.Failed(attribute.Strategy);
+            case EvaluationStrategy.Eager:
+                throw new UnreachableException("Inherited equations cannot be eager.");
+            case EvaluationStrategy.Lazy:
+            {
+                var builder = new StringBuilder();
+                builder.AppendLine();
+                var value = attribute.Name.ToCamelCase();
+                var cached = attribute.Name.ToCamelCase() + "Cached";
+                var notNull = attribute.Type is OptionalType ? "" : "!";
+                var supertype = attribute.AttributeSupertype.Type;
+                var castRequired = attribute.Type != supertype;
+                var castStart = castRequired ? $"(ctx) => ({Type(attribute.Type)})" : "";
+                var castEnd = castRequired ? "(ctx)" : "";
+                builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
+                builder.AppendLine($"            : this.Inherited(ref {cached}, ref {value},");
+                builder.AppendLine($"                {castStart}Inherited{attribute.Name}{castEnd});");
+                builder.AppendLine($"    private {Type(attribute.Type.ToNonOptional())}? {value};");
+                builder.Append($"    private bool {cached};");
+                return builder.ToString();
+            }
+            case EvaluationStrategy.Computed:
+                return $"        => Inherited{attribute.Name}(GrammarAttribute.CurrentInheritanceContext());";
+        }
+    }
+    #endregion
+
+    #region Equations
+
+    public static string Parameters(EquationModel equation)
+        => equation.IsMethod ? "()" : "";
+
+    public static string Override(SynthesizedAttributeEquationModel equation)
+        => equation.IsObjectMember() ? "override " : "";
+
     public static string ParametersAndBody(SynthesizedAttributeEquationModel equation)
     {
         switch (equation.Strategy)
@@ -126,7 +167,7 @@ internal static class Emit
             case EvaluationStrategy.Lazy:
             {
                 var builder = new StringBuilder();
-                builder.Append(equation.Parameters);
+                builder.Append(Parameters(equation));
                 builder.AppendLine();
                 var value = equation.Name.ToCamelCase();
                 var cached = equation.Name.ToCamelCase() + "Cached";
@@ -144,7 +185,7 @@ internal static class Emit
             {
                 // Case needed for object members like ToString()
                 var builder = new StringBuilder();
-                builder.Append(equation.Parameters);
+                builder.Append(Parameters(equation));
                 builder.AppendLine();
                 builder.Append("        => ");
                 if (equation.Expression is not null)
@@ -187,44 +228,10 @@ internal static class Emit
         Requires.That(equation.Strategy == EvaluationStrategy.Eager, nameof(equation), "Must be an eager equation.");
         if (equation.Expression is not null)
             throw new NotImplementedException("Eager equations with expressions are not yet"
-                + " implemented. They should emit a protected method to the interface and call that"
-                + " from the constructor.");
+                                              + " implemented. They should emit a protected method to the interface and call that"
+                                              + " from the constructor.");
 
         return $"{equation.Aspect.Name}.{equation.NodeSymbol}_{equation.Name}(this)";
-    }
-
-    public static string Parameters(InheritedAttributeModel attribute)
-        => attribute.IsMethod ? "()" : "";
-
-    public static string Body(InheritedAttributeModel attribute)
-    {
-        switch (attribute.Strategy)
-        {
-            default:
-                throw ExhaustiveMatch.Failed(attribute.Strategy);
-            case EvaluationStrategy.Eager:
-                throw new UnreachableException("Inherited equations cannot be eager.");
-            case EvaluationStrategy.Lazy:
-            {
-                var builder = new StringBuilder();
-                builder.AppendLine();
-                var value = attribute.Name.ToCamelCase();
-                var cached = attribute.Name.ToCamelCase() + "Cached";
-                var notNull = attribute.Type is OptionalType ? "" : "!";
-                var supertype = attribute.AttributeSupertype.Type;
-                var castRequired = attribute.Type != supertype;
-                var castStart = castRequired ? $"(ctx) => ({Type(attribute.Type)})" : "";
-                var castEnd = castRequired ? "(ctx)" : "";
-                builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
-                builder.AppendLine($"            : this.Inherited(ref {cached}, ref {value},");
-                builder.AppendLine($"                {castStart}Inherited{attribute.Name}{castEnd});");
-                builder.AppendLine($"    private {Type(attribute.Type.ToNonOptional())}? {value};");
-                builder.Append($"    private bool {cached};");
-                return builder.ToString();
-            }
-            case EvaluationStrategy.Computed:
-                return $"        => Inherited{attribute.Name}(GrammarAttribute.CurrentInheritanceContext());";
-        }
     }
 
     public static string Selector(InheritedAttributeEquationModel equation)
@@ -278,4 +285,5 @@ internal static class Emit
             return $", int {s.Variable}";
         return "";
     }
+    #endregion
 }

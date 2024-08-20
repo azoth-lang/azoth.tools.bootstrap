@@ -60,17 +60,17 @@ public class TreeNodeModel
     private readonly Lazy<IFixedList<AttributeModel>> declaredAttributes;
 
     /// <summary>
-    /// Properties that are implicitly declared on the node because multiple supertypes define the
-    /// same property with the same type.
+    /// Attributes that are implicitly declared on the node because multiple supertypes define the
+    /// same attribute with the same type.
     /// </summary>
-    public IFixedList<PropertyModel> ImplicitlyDeclaredProperties => implicitlyDeclaredProperties.Value;
-    private readonly Lazy<IFixedList<PropertyModel>> implicitlyDeclaredProperties;
+    public IFixedList<AttributeModel> ImplicitlyDeclaredAttributes => implicitlyDeclaredAttributes.Value;
+    private readonly Lazy<IFixedList<AttributeModel>> implicitlyDeclaredAttributes;
 
     /// <summary>
     /// The combination of declared and implicitly declared attributes.
     /// </summary>
     public IEnumerable<AttributeModel> AllDeclaredAttributes
-        => DeclaredAttributes.Concat(ImplicitlyDeclaredProperties);
+        => DeclaredAttributes.Concat(ImplicitlyDeclaredAttributes);
 
     /// <summary>
     /// Attributes that must be declared in the node interface.
@@ -149,12 +149,11 @@ public class TreeNodeModel
         declaredAttributes = new(() => DeclaredProperties.Concat<AttributeModel>(Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.NodeSymbol == Defines)).ToFixedList());
         inheritedAttributes = new(()
             => MostSpecificMembers(SupertypeNodes.SelectMany(r => r.ActualAttributes).Distinct()).ToFixedList());
-        implicitlyDeclaredProperties = new(()
-            => InheritedAttributes.OfType<PropertyModel>()
-                                  .AllExcept<PropertyModel>(DeclaredProperties, AttributeModel.NameComparer)
+        implicitlyDeclaredAttributes = new(()
+            => InheritedAttributes.AllExcept(DeclaredAttributes, AttributeModel.NameComparer)
                                   .GroupBy(p => p.Name)
-                                  .Select(ImplicitlyDeclaredProperty).WhereNotNull()
-                                  .Assert(p => p.IsDeclarationRequired, p => new($"Implicit property {p} no declared."))
+                                  .Select(ImplicitlyDeclaredAttribute).WhereNotNull()
+                                  .Assert(p => p.IsDeclarationRequired, p => new($"Implicit attribute {p} no declared."))
                                   .ToFixedList());
         attributesRequiringDeclaration = new(()
             => AllDeclaredAttributes.Where(p => p.IsDeclarationRequired).ToFixedList());
@@ -212,7 +211,7 @@ public class TreeNodeModel
 
     private static IEnumerable<T> MostSpecificMembers<T>(IEnumerable<T> attributes)
         where T : IMemberModel
-        => attributes.GroupBy(p => p.Name).SelectMany(MostSpecificMembers);
+        => attributes.GroupBy(a => a.Name).SelectMany(MostSpecificMembers);
 
     private static IEnumerable<T> MostSpecificMembers<T>(IGrouping<string, T> attributes)
         where T : IMemberModel
@@ -235,16 +234,43 @@ public class TreeNodeModel
         return mostSpecific;
     }
 
-    private PropertyModel? ImplicitlyDeclaredProperty(IGrouping<string, PropertyModel> properties)
+    private AttributeModel? ImplicitlyDeclaredAttribute(IGrouping<string, AttributeModel> attributes)
     {
-        var name = properties.Key;
-        var (type, count) = properties.CountBy(p => p.Type).TrySingle();
+        var name = attributes.Key;
+        var (type, count) = attributes.CountBy(p => p.Type).TrySingle();
         return count switch
         {
             0 => null, // Multiple types
             1 => null, // Single property that doesn't need to be redeclared
-            _ => new PropertyModel(this, name, type),
+            _ => ImplicitlyDeclaredAttribute(name, type, attributes.ToFixedList()),
         };
+    }
+
+    private AttributeModel? ImplicitlyDeclaredAttribute(string name, TypeModel type, IReadOnlyCollection<AttributeModel> attributes)
+    {
+        if (TryAllOfType<PropertyModel>(attributes, out _))
+            return new PropertyModel(this, name, type);
+        if (TryAllOfType<SynthesizedAttributeModel>(attributes, out var synthesized))
+            return SynthesizedAttributeModel.TryMerge(this, synthesized);
+        if (TryAllOfType<InheritedAttributeModel>(attributes, out var inherited))
+            return InheritedAttributeModel.TryMerge(this, inherited);
+        return null;
+    }
+
+    private static bool TryAllOfType<T>(
+        IReadOnlyCollection<AttributeModel> declarations,
+        out IFixedList<T> referencedNamespaces)
+        where T : AttributeModel
+    {
+        if (declarations.Count == 0)
+        {
+            referencedNamespaces = FixedList.Empty<T>();
+            return false;
+        }
+
+        referencedNamespaces = declarations.OfType<T>().ToFixedList();
+        // All of type T when counts match
+        return referencedNamespaces.Count == declarations.Count;
     }
 
     private static bool IsMoreSpecific<T>(T property, T other)

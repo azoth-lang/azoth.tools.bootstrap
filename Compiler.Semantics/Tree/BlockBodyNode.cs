@@ -21,7 +21,7 @@ internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
         Statements = ChildList.Attach(this, statements);
     }
 
-    public LexicalScope GetContainingLexicalScope()
+    public LexicalScope ContainingLexicalScope()
         => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

@@ -64,6 +64,7 @@ public partial interface IChildNode : IChildTreeNode<ISemanticNode>, ISemanticNo
 public partial interface IBodyOrBlockNode : ICodeNode
 {
     IFixedList<IStatementNode> Statements { get; }
+    LexicalScope ContainingLexicalScope();
 }
 
 [Closed(
@@ -1106,6 +1107,9 @@ public partial interface IStatementNode : IControlFlowNode
     DataType? ResultType { get; }
     ValueId? ResultValueId { get; }
     IFlowState FlowStateAfter { get; }
+    LexicalScope ContainingLexicalScope();
+    LexicalScope LexicalScope()
+        => ContainingLexicalScope();
 }
 
 // [Closed(typeof(ResultStatementNode))]
@@ -1147,7 +1151,11 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     IAmbiguousExpressionNode? Initializer { get; }
     IAmbiguousExpressionNode? CurrentInitializer { get; }
     IExpressionNode? IntermediateInitializer { get; }
-    LexicalScope LexicalScope { get; }
+    new LexicalScope ContainingLexicalScope { get; }
+    LexicalScope IStatementNode.ContainingLexicalScope() => ContainingLexicalScope;
+    LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
+    new LexicalScope LexicalScope { get; }
+    LexicalScope IStatementNode.LexicalScope() => LexicalScope;
 }
 
 // [Closed(typeof(ExpressionStatementNode))]
@@ -1224,6 +1232,7 @@ public partial interface IAmbiguousExpressionNode : ICodeNode
     new IExpressionSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ValueId ValueId { get; }
+    LexicalScope ContainingLexicalScope();
 }
 
 [Closed(
@@ -1300,6 +1309,9 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
     new ValueId ValueId { get; }
     ValueId IAmbiguousExpressionNode.ValueId => ValueId;
     ValueId IElseClauseNode.ValueId => ValueId;
+    new LexicalScope ContainingLexicalScope();
+    LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope();
+    LexicalScope IBodyOrBlockNode.ContainingLexicalScope() => ContainingLexicalScope();
     new DataType Type { get; }
     DataType IExpressionNode.Type => Type;
     DataType IBlockOrResultNode.Type => Type;
@@ -1397,7 +1409,8 @@ public partial interface IStringLiteralExpressionNode : ILiteralExpressionNode
     new IStringLiteralExpressionSyntax Syntax { get; }
     ILiteralExpressionSyntax ILiteralExpressionNode.Syntax => Syntax;
     string Value { get; }
-    LexicalScope ContainingLexicalScope { get; }
+    new LexicalScope ContainingLexicalScope { get; }
+    LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
 }
 
 // [Closed(typeof(AssignmentExpressionNode))]
@@ -1427,7 +1440,8 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
     IAmbiguousExpressionNode RightOperand { get; }
     IExpressionNode? IntermediateRightOperand { get; }
     IAntetype? NumericOperatorCommonAntetype { get; }
-    LexicalScope ContainingLexicalScope { get; }
+    new LexicalScope ContainingLexicalScope { get; }
+    LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
 }
 
 // [Closed(typeof(UnaryOperatorExpressionNode))]
@@ -1545,6 +1559,9 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     IMaybeAntetype IteratedAntetype { get; }
     DataType IteratedType { get; }
     IFlowState FlowStateBeforeBlock { get; }
+    new LexicalScope ContainingLexicalScope { get; }
+    LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
+    LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope LexicalScope { get; }
 }
 
@@ -1741,7 +1758,8 @@ public partial interface IStandardNameExpressionNode : IAmbiguousNameNode
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     StandardName Name { get; }
     IFixedList<IDeclarationNode> ReferencedDeclarations { get; }
-    LexicalScope ContainingLexicalScope { get; }
+    new LexicalScope ContainingLexicalScope { get; }
+    LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
 }
 
 // [Closed(typeof(IdentifierNameExpressionNode))]

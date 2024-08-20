@@ -165,4 +165,23 @@ public static class EnumerableExtensions
             if (!set.Contains(item))
                 yield return item;
     }
+
+    public static void Deconstruct<T>(this IEnumerable<T> source, out T? first, out IEnumerable<T> tail)
+    {
+        var e = source.GetEnumerator();
+        if (e.MoveNext())
+            (first, tail) = (e.Current, e.AsEnumerable());
+        else
+        {
+            e.Dispose();
+            (first, tail) = (default, []);
+        }
+    }
+
+    public static IEnumerable<T> AsEnumerable<T>(this IEnumerator<T> enumerator)
+    {
+        using var _ = enumerator;
+        while (enumerator.MoveNext())
+            yield return enumerator.Current;
+    }
 }

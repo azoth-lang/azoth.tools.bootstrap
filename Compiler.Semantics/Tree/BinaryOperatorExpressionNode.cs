@@ -34,7 +34,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     public IExpressionNode? IntermediateRightOperand => RightOperand as IExpressionNode;
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public LexicalScope ContainingLexicalScope
+    public override LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
                 InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
@@ -78,7 +78,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == CurrentLeftOperand)
-            return GetContainingLexicalScope();
+            return ContainingLexicalScope;
         if (child == CurrentRightOperand)
             return LexicalScopingAspect.BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(this);
         throw new ArgumentException("Not a child of this node.", nameof(child));

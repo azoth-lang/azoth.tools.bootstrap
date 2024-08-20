@@ -25,13 +25,20 @@ public abstract class EquationModel : IMemberModel
     public TreeNodeModel Node => node.Value;
     private readonly Lazy<TreeNodeModel> node;
     public string Name { get; }
+    public bool IsMethod { get; }
     public string? Expression { get; }
 
-    protected EquationModel(AspectModel aspect, InternalSymbol nodeSymbol, string name, string? expression)
+    protected EquationModel(
+        AspectModel aspect,
+        InternalSymbol nodeSymbol,
+        string name,
+        bool isMethod,
+        string? expression)
     {
         Aspect = aspect;
         NodeSymbol = nodeSymbol;
         Name = name;
+        IsMethod = isMethod;
         Expression = expression;
         node = new(() => Aspect.Tree.NodeFor(NodeSymbol)
                          ?? throw new($"Attribute '{this}' refers to node '{NodeSymbol}' that does not exist."));

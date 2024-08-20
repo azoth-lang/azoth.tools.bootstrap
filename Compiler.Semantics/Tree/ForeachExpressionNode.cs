@@ -38,7 +38,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public LexicalScope ContainingLexicalScope
+    public override LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
                 InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);

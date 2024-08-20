@@ -70,10 +70,11 @@ public static class AspectParser
         (definition, var type) = SplitTwo(definition, ":", "Should be exactly one `:` in: '{0}'");
         (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
-        (string name, string? parameters) = SplitOffParameters(definition);
+        var isMethod = ParseOffEnd(ref definition, "()");
+        var name = definition;
         var typeSyntax = ParseType(type);
         var nodeSymbol = ParseSymbol(node);
-        return new(evaluationStrategy, nodeSymbol, name, parameters, typeSyntax, defaultExpression);
+        return new(evaluationStrategy, nodeSymbol, name, isMethod, typeSyntax, defaultExpression);
     }
 
     private static InheritedAttributeSyntax ParseInheritedAttribute(string statement)
@@ -99,27 +100,27 @@ public static class AspectParser
         (definition, var typeOverride) = OptionalSplitTwo(definition, ":", "Too many `:` in: '{0}'");
         (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
-        (definition, string? parameters) = SplitOffParameters(definition);
+        var isMethod = ParseOffEnd(ref definition, "()");
         var segments = definition.Split('.', StringSplitOptions.TrimEntries);
         var nodeSymbol = ParseSymbol(node);
         if (segments.Length == 1)
-            return ParseSynthesizedEquation(evaluationStrategy, nodeSymbol, definition, parameters, typeOverride, expression);
+            return ParseSynthesizedEquation(evaluationStrategy, nodeSymbol, definition, isMethod, typeOverride, expression);
 
         var name = segments[^1];
         segments = segments[..^1];
-        return ParseInheritedEquation(evaluationStrategy, nodeSymbol, segments, name, parameters, typeOverride, expression);
+        return ParseInheritedEquation(evaluationStrategy, nodeSymbol, segments, name, isMethod, typeOverride, expression);
     }
 
     private static SynthesizedAttributeEquationSyntax ParseSynthesizedEquation(
         EvaluationStrategy? evaluationStrategy,
         SymbolSyntax node,
         string name,
-        string? parameters,
+        bool isMethod,
         string? typeOverride,
         string? expression)
     {
         var typeOverrideSyntax = ParseType(typeOverride);
-        return new(evaluationStrategy, node, name, parameters, typeOverrideSyntax, expression);
+        return new(evaluationStrategy, node, name, isMethod, typeOverrideSyntax, expression);
     }
 
     private static InheritedAttributeEquationSyntax ParseInheritedEquation(
@@ -127,7 +128,7 @@ public static class AspectParser
         SymbolSyntax node,
         string[] selector,
         string name,
-        string? parameters,
+        bool isMethod,
         string? typeOverride,
         string? expression)
     {
@@ -135,13 +136,6 @@ public static class AspectParser
             throw new FormatException("Inherited equations cannot have evaluation strategies.");
         if (typeOverride is not null)
             throw new FormatException("Inherited equations cannot have type overrides.");
-        bool isMethod = false;
-        if (parameters is not null)
-        {
-            if (parameters != "()")
-                throw new FormatException("Inherited equations cannot have parameters.");
-            isMethod = true;
-        }
         var selectorSyntax = ParseSelector(selector);
         return new(node, selectorSyntax, name, isMethod, expression);
     }

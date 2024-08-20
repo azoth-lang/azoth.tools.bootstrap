@@ -34,7 +34,7 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
         statements = FixedList.Create(ResultStatement);
     }
 
-    public LexicalScope GetContainingLexicalScope()
+    public LexicalScope ContainingLexicalScope()
         => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

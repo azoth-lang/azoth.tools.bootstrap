@@ -11,17 +11,6 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
-#region Special Parts
-public partial interface IBodyOrBlockNode
-{
-    LexicalScope GetContainingLexicalScope();
-}
-#endregion
-
-#region Packages
-public partial interface IPackageNode;
-#endregion
-
 #region Facets
 public partial interface IPackageFacetNode
 {
@@ -66,7 +55,6 @@ public partial interface IEntryNode
 #region Statements
 public partial interface IStatementNode
 {
-    LexicalScope GetLexicalScope();
     IPreviousValueId PreviousValueId();
 }
 
@@ -96,7 +84,6 @@ public partial interface IBindingPatternNode
 public partial interface IAmbiguousExpressionNode
 {
     IPreviousValueId PreviousValueId();
-    LexicalScope GetContainingLexicalScope();
     // TODO it is strange that this is always a conditional scope. Instead, use conditional only where it makes sense?
     ConditionalLexicalScope GetFlowLexicalScope();
 }
@@ -214,4 +201,3 @@ public partial interface INamespaceDeclarationNode
     IEnumerable<INamespaceMemberDeclarationNode> NestedMembersNamed(StandardName named);
 }
 #endregion
-

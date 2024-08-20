@@ -4,23 +4,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
 public sealed class SynthesizedAttributeSyntax : AspectAttributeSyntax
 {
-    public EvaluationStrategy? Strategy { get; }
-    public string? Parameters { get; }
-    public TypeSyntax Type { get; }
     public string? DefaultExpression { get; }
 
     public SynthesizedAttributeSyntax(
         EvaluationStrategy? strategy,
         SymbolSyntax node,
         string name,
-        string? parameters,
+        bool isMethod,
         TypeSyntax type,
         string? defaultExpression)
-        : base(node, name)
+        : base(strategy, node, name, isMethod, type)
     {
-        Strategy = strategy;
-        Parameters = parameters;
-        Type = type;
         DefaultExpression = defaultExpression;
     }
 
@@ -29,7 +23,8 @@ public sealed class SynthesizedAttributeSyntax : AspectAttributeSyntax
         var strategy = Strategy.ToSourceString();
         if (strategy.Length > 0)
             strategy += " ";
+        var parameters = IsMethod ? "()" : "";
         var expression = DefaultExpression is not null ? $" => {DefaultExpression}" : "";
-        return $"↑ {strategy}{Node}.{Name}{Parameters}: {Type}{expression};";
+        return $"↑ {strategy}{Node}.{Name}{parameters}: {Type}{expression};";
     }
 }

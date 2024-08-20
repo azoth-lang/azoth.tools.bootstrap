@@ -13,6 +13,7 @@ public sealed class PropertyModel : AttributeModel
 
     public override TreeNodeModel Node { get; }
     public override string Name { get; }
+    public override bool IsMethod => false;
     public override TypeModel Type { get; }
 
     public PropertyModel(TreeNodeModel node, PropertySyntax syntax)

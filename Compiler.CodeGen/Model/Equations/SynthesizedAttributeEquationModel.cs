@@ -18,30 +18,27 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel
     private readonly Lazy<SynthesizedAttributeModel> attribute;
     public EvaluationStrategy Strategy => strategy.Value;
     private readonly Lazy<EvaluationStrategy> strategy;
-    public string? Parameters { get; }
     public TypeModel? TypeOverride { get; }
     public TypeModel Type => TypeOverride ?? Attribute.Type;
 
     public SynthesizedAttributeEquationModel(AspectModel aspect, SynthesizedAttributeEquationSyntax syntax)
-        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.Expression)
+        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.IsMethod, syntax.Expression)
     {
         if (syntax.Strategy == EvaluationStrategy.Lazy && Expression is not null)
             throw new FormatException($"{syntax.Node}.{syntax.Name} has an expression but is marked as lazy.");
-        if (syntax.Strategy is not null && syntax.Parameters is not null)
+        if (syntax.Strategy is not null && syntax.IsMethod)
             throw new FormatException($"{syntax.Node}.{syntax.Name} cannot specify evaluation strategy for method.");
 
         Syntax = syntax;
         strategy = new(ComputeStrategy);
-        Parameters = syntax.Parameters ?? "";
         TypeOverride = TypeModel.CreateFromSyntax(Aspect.Tree, syntax.TypeOverride);
         attribute = new(GetAttribute<SynthesizedAttributeModel>);
     }
 
     public SynthesizedAttributeEquationModel(TreeNodeModel node, SynthesizedAttributeModel attribute)
-        : base(attribute.Aspect, node.Defines, attribute.Name, attribute.DefaultExpression)
+        : base(attribute.Aspect, node.Defines, attribute.Name, attribute.IsMethod, attribute.DefaultExpression)
     {
         strategy = new(attribute.Strategy);
-        Parameters = attribute.Parameters;
 
         this.attribute = new(GetAttribute<SynthesizedAttributeModel>);
     }
@@ -53,10 +50,14 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel
     /// </remarks>
     private EvaluationStrategy ComputeStrategy()
     {
-        if (!string.IsNullOrEmpty(Parameters))
+        if (IsMethod)
             return EvaluationStrategy.Computed;
         return Syntax!.Strategy.WithDefault(Expression, Attribute.Strategy);
     }
 
-    public override string ToString() => $"= {NodeSymbol}.{Name}{Parameters}";
+    public override string ToString()
+    {
+        var parameters = IsMethod ? "()" : "";
+        return $"= {NodeSymbol}.{Name}{parameters}";
+    }
 }

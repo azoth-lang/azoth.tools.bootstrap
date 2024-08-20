@@ -29,7 +29,7 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#      foreach (var attribute in node.AttributesRequiringDeclaration) { #>
     <#= Emit.IsNew(attribute) #><#= Emit.Type(attribute.Type) #> <#= attribute.Name #><#= Emit.ParametersAndBody(attribute) #>
 <#          foreach (var baseAttribute in Build.BaseAttributes(node, attribute)) { #>
-    <#= Emit.Type(baseAttribute.Type) #> <#= Emit.TypeName(baseAttribute.Node.Defines) #>.<#=baseAttribute.Name #> => <#=attribute.Name #>;
+    <#= Emit.Type(baseAttribute.Type) #> <#= Emit.TypeName(baseAttribute.Node.Defines) #>.<#= baseAttribute.Name #><#= Emit.Parameters(baseAttribute) #> => <#= attribute.Name #><#= Emit.Parameters(attribute) #>;
 <#          } #>
 <#      } #>
 <#      foreach (var eq in node.EquationsRequiringEmit) { #>

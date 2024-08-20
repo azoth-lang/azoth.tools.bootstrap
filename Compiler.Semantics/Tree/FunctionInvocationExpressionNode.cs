@@ -79,7 +79,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     {
         if (Arguments.IndexOf(child) is int argumentIndex)
         {
-            if (argumentIndex == 0) return GetContainingLexicalScope();
+            if (argumentIndex == 0) return ContainingLexicalScope;
 
             return Arguments[argumentIndex - 1].GetFlowLexicalScope().True;
         }

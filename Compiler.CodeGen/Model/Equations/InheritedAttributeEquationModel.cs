@@ -14,11 +14,10 @@ public sealed class InheritedAttributeEquationModel : EquationModel
     private readonly Lazy<InheritedAttributeSupertypeModel> attributeSupertype;
     public SelectorModel Selector { get; }
     public bool IsAllDescendants => Selector.IsAllDescendants;
-    public bool IsMethod => Syntax.IsMethod;
     public TypeModel Type => AttributeSupertype.Type;
 
     public InheritedAttributeEquationModel(AspectModel aspect, InheritedAttributeEquationSyntax syntax)
-        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.Expression)
+        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.IsMethod, syntax.Expression)
     {
         Syntax = syntax;
         Selector = SelectorModel.Create(syntax.Selector);

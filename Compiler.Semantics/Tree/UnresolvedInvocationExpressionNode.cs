@@ -37,7 +37,7 @@ internal sealed class UnresolvedInvocationExpressionNode : AmbiguousExpressionNo
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Expression)
-            return GetContainingLexicalScope();
+            return ContainingLexicalScope;
         if (Arguments.IndexOf(child) is int argumentIndex)
         {
             if (argumentIndex == 0)

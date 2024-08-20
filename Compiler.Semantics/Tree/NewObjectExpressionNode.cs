@@ -99,11 +99,11 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == ConstructingType)
-            return GetContainingLexicalScope();
+            return ContainingLexicalScope;
         var argumentIndex = Arguments.IndexOf(child)
                             ?? throw new ArgumentException("Is not a child of this node.", nameof(child));
         if (argumentIndex == 0)
-            return GetContainingLexicalScope();
+            return ContainingLexicalScope;
 
         return Arguments[argumentIndex - 1].GetFlowLexicalScope().True;
     }

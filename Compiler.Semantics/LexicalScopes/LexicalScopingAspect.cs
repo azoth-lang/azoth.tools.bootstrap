@@ -108,8 +108,8 @@ internal static partial class LexicalScopingAspect
     public static partial LexicalScope BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(IBodyOrBlockNode node, int statementIndex)
     {
         if (statementIndex == 0)
-            return node.GetContainingLexicalScope();
-        return node.Statements[statementIndex - 1].GetLexicalScope();
+            return node.ContainingLexicalScope();
+        return node.Statements[statementIndex - 1].LexicalScope();
     }
 
     public static partial LexicalScope VariableDeclarationStatement_LexicalScope(IVariableDeclarationStatementNode node)
@@ -119,13 +119,13 @@ internal static partial class LexicalScopingAspect
     /// Default implementation for expressions that can't introduce a new scope.
     /// </summary>
     public static ConditionalLexicalScope UntypedExpression_GetFlowLexicalScope(IAmbiguousExpressionNode node)
-        => ConditionalLexicalScope.Unconditional(node.GetContainingLexicalScope());
+        => ConditionalLexicalScope.Unconditional(node.ContainingLexicalScope());
 
     public static ConditionalLexicalScope BinaryOperatorExpression_GetFlowLexicalScope(IBinaryOperatorExpressionNode node)
     {
         if (node.Operator == BinaryOperator.Or)
             // Cannot statically be sure which part of the expression was evaluated
-            return ConditionalLexicalScope.Unconditional(node.GetContainingLexicalScope());
+            return ConditionalLexicalScope.Unconditional(node.ContainingLexicalScope());
         return node.RightOperand.GetFlowLexicalScope();
     }
 

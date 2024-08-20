@@ -15,7 +15,7 @@ internal sealed class GenericNameExpressionNode : AmbiguousNameExpressionNode, I
     public IFixedList<ITypeNode> TypeArguments { get; }
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public LexicalScope ContainingLexicalScope
+    public override LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
                 InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);

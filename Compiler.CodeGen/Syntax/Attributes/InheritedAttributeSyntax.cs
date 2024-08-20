@@ -4,21 +4,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
 public sealed class InheritedAttributeSyntax : AspectAttributeSyntax
 {
-    public EvaluationStrategy? Strategy { get; }
-    public bool IsMethod { get; }
-    public TypeSyntax Type { get; }
-
     public InheritedAttributeSyntax(
         EvaluationStrategy? strategy,
         SymbolSyntax node,
         string name,
         bool isMethod,
         TypeSyntax type)
-        : base(node, name)
+        : base(strategy, node, name, isMethod, type)
     {
-        Strategy = strategy;
-        IsMethod = isMethod;
-        Type = type;
     }
 
     public override string ToString()
@@ -26,6 +19,7 @@ public sealed class InheritedAttributeSyntax : AspectAttributeSyntax
         var strategy = Strategy.ToSourceString();
         if (strategy.Length > 0)
             strategy += " ";
-        return $"↓ {strategy}{Node}.{Name}: {Type};";
+        var parameters = IsMethod ? "()" : "";
+        return $"↓ {strategy}{Node}.{Name}{parameters}: {Type};";
     }
 }

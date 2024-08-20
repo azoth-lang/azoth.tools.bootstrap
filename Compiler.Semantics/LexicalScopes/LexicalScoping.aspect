@@ -5,6 +5,7 @@
 ↓ *.ContainingLexicalScope <: `LexicalScope`;
 
 // ---------- Special Parts
+↓ BodyOrBlock.ContainingLexicalScope(): `LexicalScope`;
 = BodyOrBlock.Statements[statementIndex].**.ContainingLexicalScope;
 
 // ---------- Bindings
@@ -45,11 +46,16 @@
 ↓ TypeName.ContainingLexicalScope: `LexicalScope`;
 
 // ---------- Statements
+↓ Statement.ContainingLexicalScope(): `LexicalScope`;
+↑ Statement.LexicalScope(): `LexicalScope` => ContainingLexicalScope();
 ↓ VariableDeclarationStatement.ContainingLexicalScope: `LexicalScope`;
 ↑ VariableDeclarationStatement.LexicalScope: `LexicalScope`;
 
 // ---------- Patterns
 ↓ BindingPattern.ContainingLexicalScope: `LexicalScope`;
+
+// ---------- Expressions
+↓ AmbiguousExpression.ContainingLexicalScope(): `LexicalScope`;
 
 // ---------- Literal Expressions
 ↓ StringLiteralExpression.ContainingLexicalScope: `LexicalScope`;

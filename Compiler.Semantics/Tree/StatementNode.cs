@@ -23,13 +23,16 @@ internal abstract class StatementNode : CodeNode, IStatementNode
         => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
             : this.Inherited(ref controlFlowPreviousCached, ref controlFlowPrevious,
                 ctx => CollectControlFlowPrevious(this, ctx));
+    public virtual LexicalScope LexicalScope
+        => ((IStatementNode)this).ContainingLexicalScope();
 
     private protected StatementNode() { }
 
-    public abstract LexicalScope GetLexicalScope();
+    LexicalScope IStatementNode.ContainingLexicalScope()
+        => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => GetLexicalScope();
+        => LexicalScope;
 
     public IPreviousValueId PreviousValueId()
         => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());

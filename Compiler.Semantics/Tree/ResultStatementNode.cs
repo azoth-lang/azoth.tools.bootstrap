@@ -2,7 +2,6 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -59,9 +58,6 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
     }
-
-    public override LexicalScope GetLexicalScope()
-        => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
