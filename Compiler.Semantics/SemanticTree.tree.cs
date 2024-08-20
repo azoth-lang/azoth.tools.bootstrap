@@ -860,6 +860,7 @@ public partial interface IParameterNode : ICodeNode
     IFlowState FlowStateAfter { get; }
     IPreviousValueId PreviousValueId();
     ValueId BindingValueId { get; }
+    IFlowState FlowStateBefore();
 }
 
 [Closed(
@@ -1348,6 +1349,7 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
     new LexicalScope LexicalScope { get; }
     LexicalScope IStatementNode.LexicalScope() => LexicalScope;
+    IFlowState FlowStateBefore();
     ValueId? IStatementNode.ResultValueId
         => null;
 }
@@ -1419,6 +1421,7 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
+    IFlowState FlowStateBefore();
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => LexicalScopingAspect.BindingPattern_FlowLexicalScope(this);
 }
@@ -1534,6 +1537,7 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
     new IMaybeAntetype Antetype { get; }
     IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
     IMaybeAntetype IBlockOrResultNode.Antetype => Antetype;
+    IFlowState FlowStateBefore();
     new LexicalScope ContainingLexicalScope();
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope();
     LexicalScope IBodyOrBlockNode.ContainingLexicalScope() => ContainingLexicalScope();
@@ -1565,6 +1569,7 @@ public partial interface INewObjectExpressionNode : IInvocationExpressionNode
     IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
     IConstructorDeclarationNode? ReferencedConstructor { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
+    IFlowState FlowStateBefore();
 }
 
 // [Closed(typeof(UnsafeExpressionNode))]
@@ -1602,6 +1607,7 @@ public partial interface ILiteralExpressionNode : IExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    IFlowState FlowStateBefore();
 }
 
 // [Closed(typeof(BoolLiteralExpressionNode))]
@@ -1915,6 +1921,7 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
     IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { get; }
     IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
+    IFlowState FlowStateBefore();
 }
 
 // [Closed(typeof(MethodInvocationExpressionNode))]
@@ -1995,6 +2002,7 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
     IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
     IInitializerDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
+    IFlowState FlowStateBefore();
 }
 
 // [Closed(typeof(UnknownInvocationExpressionNode))]
@@ -2206,6 +2214,7 @@ public partial interface IFunctionNameNode : INameExpressionNode
     StandardName FunctionName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
+    IFlowState FlowStateBefore();
 }
 
 // [Closed(typeof(MethodGroupNameNode))]
@@ -2254,6 +2263,7 @@ public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressi
     new ILocalBindingNode ReferencedDefinition { get; }
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
     IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
+    IFlowState FlowStateBefore();
 }
 
 [Closed(
@@ -2346,6 +2356,7 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
     IExecutableDefinitionNode ContainingDeclaration { get; }
     new ISelfParameterNode? ReferencedDefinition { get; }
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
+    IFlowState FlowStateBefore();
 }
 
 // [Closed(typeof(MissingNameExpressionNode))]

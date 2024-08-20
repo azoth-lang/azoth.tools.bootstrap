@@ -25,20 +25,6 @@ public partial interface ICapabilityNode
 }
 #endregion
 
-#region Parameters
-public partial interface IParameterNode
-{
-    IFlowState FlowStateBefore();
-}
-#endregion
-
-#region Statements
-public partial interface IVariableDeclarationStatementNode
-{
-    IFlowState FlowStateBefore();
-}
-#endregion
-
 #region Patterns
 public partial interface IPatternNode
 {
@@ -46,27 +32,11 @@ public partial interface IPatternNode
     DataType InheritedBindingType();
     ValueId? MatchReferentValueId { get; }
 }
-
-public partial interface IBindingPatternNode
-{
-    IFlowState FlowStateBefore();
-}
 #endregion
 
 #region Expressions
 public partial interface IExpressionNode
 {
-    /// <summary>
-    /// Whether an implicit recovery (i.e. move or freeze) is allowed to covert this expression to
-    /// the expected type.
-    /// </summary>
-    //bool ImplicitRecoveryAllowed();
-
-    /// <summary>
-    /// Whether this expression should be prepared for return.
-    /// </summary>
-    //bool ShouldPrepareToReturn();
-
     /// <summary>
     /// Indicates that this node type should not actually be counted as an expression. (i.e. it
     /// should implement <see cref="IExpressionNode"/>.
@@ -77,22 +47,9 @@ public partial interface IExpressionNode
             or IInitializerGroupNameNode or ITypeNameExpressionNode;
 }
 
-public partial interface IBlockExpressionNode
-{
-    IFlowState FlowStateBefore();
-}
-
 public partial interface INewObjectExpressionNode
 {
     PackageNameScope InheritedPackageNameScope();
-    IFlowState FlowStateBefore();
-}
-#endregion
-
-#region Literal Expressions
-public partial interface ILiteralExpressionNode
-{
-    IFlowState FlowStateBefore();
 }
 #endregion
 
@@ -111,39 +68,10 @@ public partial interface IReturnExpressionNode
 }
 #endregion
 
-#region Invocation Expressions
-public partial interface IFunctionInvocationExpressionNode
-{
-    IFlowState FlowStateBefore();
-}
-
-public partial interface IInitializerInvocationExpressionNode
-{
-    IFlowState FlowStateBefore();
-}
-#endregion
-
 #region Ambiguous Name Expressions
 public partial interface IMemberAccessExpressionNode
 {
     PackageNameScope InheritedPackageNameScope();
-}
-#endregion
-
-#region Name Expressions
-public partial interface IFunctionNameNode
-{
-    IFlowState FlowStateBefore();
-}
-
-public partial interface IVariableNameExpressionNode
-{
-    IFlowState FlowStateBefore();
-}
-
-public partial interface ISelfExpressionNode
-{
-    IFlowState FlowStateBefore();
 }
 #endregion
 

@@ -2,6 +2,15 @@
 ◊name ExpressionTypesAspect;
 
 
+// ---------- Parameters
+↓ Parameter.FlowStateBefore(): `IFlowState`;
+
+// ---------- Statements
+↓ VariableDeclarationStatement.FlowStateBefore(): `IFlowState`;
+
+// ---------- Patterns
+↓ BindingPattern.FlowStateBefore(): `IFlowState`;
+
 // ---------- Expressions
 /// <summary>
 /// Whether an implicit recovery (i.e. move or freeze) is allowed to covert this expression to
@@ -13,3 +22,18 @@
 /// Whether this expression should be prepared for return.
 /// </summary>
 ↓ Expression.ShouldPrepareToReturn(): `bool`;
+
+↓ BlockExpression.FlowStateBefore(): `IFlowState`;
+↓ NewObjectExpression.FlowStateBefore(): `IFlowState`;
+
+// ---------- Literal Expressions
+↓ LiteralExpression.FlowStateBefore(): `IFlowState`;
+
+// ---------- Invocation Expressions
+↓ FunctionInvocationExpression.FlowStateBefore(): `IFlowState`;
+↓ InitializerInvocationExpression.FlowStateBefore(): `IFlowState`;
+
+// ---------- Name Expressions
+↓ FunctionName.FlowStateBefore(): `IFlowState`;
+↓ VariableNameExpression.FlowStateBefore(): `IFlowState`;
+↓ SelfExpression.FlowStateBefore(): `IFlowState`;
