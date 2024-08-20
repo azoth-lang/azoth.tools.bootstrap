@@ -16,7 +16,7 @@ internal abstract class AmbiguousExpressionNode : CodeNode, IAmbiguousExpression
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref SyncLock,
-                ExpressionTypesAspect.AmbiguousExpression_ValueId);
+                ValueIdsAspect.AmbiguousExpression_ValueId);
     public virtual LexicalScope ContainingLexicalScope
         => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 

@@ -1,2 +1,29 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name ValueIdsAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+
+// ---------- Special Parts
+↑ ElseClause.ValueId: `ValueId`;
+
+// ---------- Bindings
+↑ Binding.BindingValueId: `ValueId`;
+
+// ---------- Definitions
+↑ InvocableDefinition.ValueIdScope: `ValueIdScope`;
+= InvocableDefinition.ValueIdScope;
+↑ ExecutableDefinition.ValueIdScope: `ValueIdScope`;
+
+// ---------- Parameters
+↑ Parameter.BindingValueId: `ValueId`;
+= Parameter.BindingValueId;
+
+// ---------- Statements
+↑ Statement.ResultValueId: `ValueId`?;
+= ResultStatement.ResultValueId => ValueId;
+= ResultStatement.ValueId => IntermediateExpression?.ValueId ?? default;
+= VariableDeclarationStatement.ResultValueId => null;
+= ExpressionStatement.ResultValueId => null;
+
+// ---------- Expressions
+↑ AmbiguousExpression.ValueId: `ValueId`;
+= AmbiguousExpression.ValueId;

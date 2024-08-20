@@ -50,7 +50,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
-                ExpressionTypesAspect.VariableDeclarationStatement_BindingValueId);
+                ValueIdsAspect.VariableDeclarationStatement_BindingValueId);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
     public IMaybeAntetype BindingAntetype

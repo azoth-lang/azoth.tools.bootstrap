@@ -47,7 +47,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                TypeMemberDeclarationsAspect.Invocable_ValueIdScope);
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
     public IEntryNode Entry { get; }
     public IExitNode Exit { get; }
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
@@ -87,7 +87,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
         => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore(this);
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
-        => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
+        => ValueIdsAspect.InvocableDefinition_PreviousValueId(this);
 
     internal override IFlowState InheritedFlowStateBefore(
         IChildNode child,

@@ -55,9 +55,6 @@ internal static class TypeMemberDeclarationsAspect
             diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(node.File, node.Return!.Syntax, returnType));
     }
 
-    public static ValueId Parameter_BindingValueId(IParameterNode node)
-        => node.PreviousValueId().CreateNext();
-
     public static IMaybeAntetype NamedParameter_BindingAntetype(INamedParameterNode node)
         => node.TypeNode.NamedAntetype;
 
@@ -233,13 +230,4 @@ internal static class TypeMemberDeclarationsAspect
     // TODO maybe this should be initial flow state?
     public static IFlowState ConcreteInvocable_FlowStateBefore(IConcreteInvocableDefinitionNode _)
         => IFlowState.Empty;
-
-    public static ValueIdScope Invocable_ValueIdScope(IInvocableDefinitionNode _)
-        => new ValueIdScope();
-
-    public static IPreviousValueId Invocable_PreviousValueId(IInvocableDefinitionNode node)
-        => new BeforeFirstValueId(node.ValueIdScope);
-
-    public static ValueIdScope FieldDefinition_ValueIdScope(IFieldDefinitionNode _)
-        => new ValueIdScope();
 }

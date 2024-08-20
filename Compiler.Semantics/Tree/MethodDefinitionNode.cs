@@ -35,7 +35,7 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                TypeMemberDeclarationsAspect.Invocable_ValueIdScope);
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
     public IEntryNode Entry { get; }
     public IExitNode Exit { get; }
 
@@ -61,7 +61,7 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
         => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore((IConcreteInvocableDefinitionNode)this);
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
-        => TypeMemberDeclarationsAspect.Invocable_PreviousValueId(this);
+        => ValueIdsAspect.InvocableDefinition_PreviousValueId(this);
 
     internal override IFlowState InheritedFlowStateBefore(
         IChildNode child,

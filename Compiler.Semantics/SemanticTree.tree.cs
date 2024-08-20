@@ -97,9 +97,9 @@ public partial interface IBlockOrResultNode : IElseClauseNode
 public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 {
     bool IsLentBinding { get; }
-    ValueId BindingValueId { get; }
     IMaybeAntetype BindingAntetype { get; }
     Pseudotype BindingType { get; }
+    ValueId BindingValueId { get; }
 }
 
 [Closed(
@@ -276,10 +276,10 @@ public partial interface IInvocableDefinitionNode : IDefinitionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExecutableDefinitionNode : IDefinitionNode
 {
-    ValueIdScope ValueIdScope { get; }
     IEntryNode Entry { get; }
     IExitNode Exit { get; }
     FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; }
+    ValueIdScope ValueIdScope { get; }
 }
 
 [Closed(
@@ -857,8 +857,8 @@ public partial interface IParameterNode : ICodeNode
     bool Unused { get; }
     IMaybeAntetype BindingAntetype { get; }
     Pseudotype BindingType { get; }
-    ValueId BindingValueId { get; }
     IFlowState FlowStateAfter { get; }
+    ValueId BindingValueId { get; }
 }
 
 [Closed(
@@ -1281,11 +1281,11 @@ public partial interface IStatementNode : IControlFlowNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IMaybeAntetype? ResultAntetype { get; }
     DataType? ResultType { get; }
-    ValueId? ResultValueId { get; }
     IFlowState FlowStateAfter { get; }
     LexicalScope ContainingLexicalScope();
     LexicalScope LexicalScope()
         => ContainingLexicalScope();
+    ValueId? ResultValueId { get; }
 }
 
 // [Closed(typeof(ResultStatementNode))]
@@ -1305,6 +1305,10 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
     new IFlowState FlowStateAfter { get; }
     IFlowState IStatementNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
+    ValueId? IStatementNode.ResultValueId
+        => ValueId;
+    ValueId IElseClauseNode.ValueId
+        => IntermediateExpression?.ValueId ?? default;
 }
 
 [Closed(
@@ -1339,6 +1343,8 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
     new LexicalScope LexicalScope { get; }
     LexicalScope IStatementNode.LexicalScope() => LexicalScope;
+    ValueId? IStatementNode.ResultValueId
+        => null;
 }
 
 // [Closed(typeof(ExpressionStatementNode))]
@@ -1353,6 +1359,8 @@ public partial interface IExpressionStatementNode : IBodyStatementNode
     IAmbiguousExpressionNode Expression { get; }
     IAmbiguousExpressionNode CurrentExpression { get; }
     IExpressionNode? IntermediateExpression { get; }
+    ValueId? IStatementNode.ResultValueId
+        => null;
 }
 
 [Closed(
@@ -1436,10 +1444,10 @@ public partial interface IAmbiguousExpressionNode : ICodeNode
     new IExpressionSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ValueId ValueId { get; }
     ConditionalLexicalScope FlowLexicalScope()
         => LexicalScopingAspect.AmbiguousExpression_FlowLexicalScope(this);
     LexicalScope ContainingLexicalScope();
+    ValueId ValueId { get; }
 }
 
 [Closed(
@@ -1517,12 +1525,12 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
     new IMaybeAntetype Antetype { get; }
     IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
     IMaybeAntetype IBlockOrResultNode.Antetype => Antetype;
-    new ValueId ValueId { get; }
-    ValueId IAmbiguousExpressionNode.ValueId => ValueId;
-    ValueId IElseClauseNode.ValueId => ValueId;
     new LexicalScope ContainingLexicalScope();
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope();
     LexicalScope IBodyOrBlockNode.ContainingLexicalScope() => ContainingLexicalScope();
+    new ValueId ValueId { get; }
+    ValueId IAmbiguousExpressionNode.ValueId => ValueId;
+    ValueId IElseClauseNode.ValueId => ValueId;
     new DataType Type { get; }
     DataType IExpressionNode.Type => Type;
     DataType IBlockOrResultNode.Type => Type;

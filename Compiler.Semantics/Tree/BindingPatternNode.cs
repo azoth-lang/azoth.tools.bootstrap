@@ -34,7 +34,7 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
-                ExpressionTypesAspect.BindingPattern_BindingValueId);
+                ValueIdsAspect.BindingPattern_BindingValueId);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
     public IMaybeAntetype BindingAntetype

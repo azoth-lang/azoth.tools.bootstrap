@@ -21,7 +21,7 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref SyncLock,
-                TypeMemberDeclarationsAspect.Parameter_BindingValueId);
+                ValueIdsAspect.Parameter_BindingValueId);
     public abstract IFlowState FlowStateAfter { get; }
 
     private protected ParameterNode() { }

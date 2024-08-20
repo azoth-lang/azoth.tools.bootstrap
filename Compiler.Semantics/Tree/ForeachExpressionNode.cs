@@ -88,7 +88,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref SyncLock,
-                ExpressionTypesAspect.ForeachExpression_BindingValueId);
+                ValueIdsAspect.ForeachExpression_BindingValueId);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
     public IMaybeAntetype BindingAntetype

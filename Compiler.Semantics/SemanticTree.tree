@@ -34,11 +34,11 @@ Child <: `IChildTreeNode<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPack
 
 // ---------- Special Parts
 BodyOrBlock <: Code = Statements:`IStatementNode`*;
-ElseClause <: ControlFlow = Syntax:`ICodeSyntax` FlowStateAfter:`IFlowState` ValueId:`ValueId`;
+ElseClause <: ControlFlow = Syntax:`ICodeSyntax` FlowStateAfter:`IFlowState`;
 BlockOrResult <: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings
-Binding <: Code, BindingDeclaration = IsLentBinding:`bool` BindingValueId:`ValueId`
+Binding <: Code, BindingDeclaration = IsLentBinding:`bool`
     BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
 NamedBinding <: Binding, NamedBindingDeclaration =
     IsMutableBinding:`bool` BindingType:`DataType`;
@@ -80,8 +80,8 @@ UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 // ---------- Definitions
 Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? Facet:`IPackageFacetNode`
     ContainingDeclaration:`ISymbolDeclarationNode` ContainingSymbol:`Symbol`;
-InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol` ValueIdScope:`ValueIdScope`;
-ExecutableDefinition <: Definition = ValueIdScope:`ValueIdScope` Entry Exit
+InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol`;
+ExecutableDefinition <: Definition = Entry Exit
     VariableBindingsMap:`FixedDictionary<IVariableBindingNode,int>`;
 ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition
     = Parameters:ConstructorOrInitializerParameter* Body?;
@@ -205,7 +205,7 @@ Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capa
 
 // ---------- Parameters
 Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
-    BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype` BindingValueId:`ValueId` FlowStateAfter:`IFlowState`;
+    BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype` FlowStateAfter:`IFlowState`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`
     BindingType:`DataType` ParameterType:`ParameterType`;
@@ -262,7 +262,7 @@ DataFlow <: ControlFlow = DataFlowPrevious:`IFixedSet<IDataFlowNode>`
 
 // ---------- Statements
 Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?
-    ResultType:`DataType`? ResultValueId:`ValueId`? FlowStateAfter:`IFlowState`;
+    ResultType:`DataType`? FlowStateAfter:`IFlowState`;
 ResultStatement <: Statement, BlockOrResult = Syntax:`IResultStatementSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode` IntermediateExpression:`IExpressionNode`?
     ExpectedAntetype:`IMaybeExpressionAntetype`? ExpectedType:`DataType`?;
@@ -280,12 +280,12 @@ Pattern <: ControlFlow = Syntax:`IPatternSyntax` FlowStateAfter:`IFlowState`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
 BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPatternSyntax`
-    IsMutableBinding:`bool` Name:`IdentifierName` BindingValueId:`ValueId`;
+    IsMutableBinding:`bool` Name:`IdentifierName`;
 OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
 // TODO rename Ambiguous to `Unresolved` or `Unbound` because it is not ambiguous, it is just not bound
-AmbiguousExpression <: Code = Syntax:`IExpressionSyntax` ValueId:`ValueId`;
+AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
 AmbiguousAssignableExpression <: AmbiguousExpression = Syntax:`IAssignableExpressionSyntax`;
 Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`
     ExpectedAntetype:`IMaybeExpressionAntetype`? Antetype:`IMaybeExpressionAntetype`

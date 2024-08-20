@@ -56,7 +56,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                TypeMemberDeclarationsAspect.FieldDefinition_ValueIdScope);
+                ValueIdsAspect.FieldDefinition_ValueIdScope);
     public ValueId BindingValueId => throw new NotImplementedException();
     public IEntryNode Entry { get; }
     public IExitNode Exit { get; }
