@@ -1502,6 +1502,8 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlo
     DataType? ExpectedType { get; }
     DataType Type { get; }
     IFlowState FlowStateAfter { get; }
+    bool ImplicitRecoveryAllowed();
+    bool ShouldPrepareToReturn();
 }
 
 [Closed(

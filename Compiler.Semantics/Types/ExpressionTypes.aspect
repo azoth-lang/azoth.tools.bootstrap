@@ -1,2 +1,15 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name ExpressionTypesAspect;
+
+
+// ---------- Expressions
+/// <summary>
+/// Whether an implicit recovery (i.e. move or freeze) is allowed to covert this expression to
+/// the expected type.
+/// </summary>
+↓ Expression.ImplicitRecoveryAllowed(): `bool`;
+
+/// <summary>
+/// Whether this expression should be prepared for return.
+/// </summary>
+↓ Expression.ShouldPrepareToReturn(): `bool`;

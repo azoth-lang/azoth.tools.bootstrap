@@ -79,12 +79,12 @@ public partial interface IExpressionNode
     /// Whether an implicit recovery (i.e. move or freeze) is allowed to covert this expression to
     /// the expected type.
     /// </summary>
-    bool ImplicitRecoveryAllowed();
+    //bool ImplicitRecoveryAllowed();
 
     /// <summary>
     /// Whether this expression should be prepared for return.
     /// </summary>
-    bool ShouldPrepareToReturn();
+    //bool ShouldPrepareToReturn();
 
     /// <summary>
     /// Indicates that this node type should not actually be counted as an expression. (i.e. it
