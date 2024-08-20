@@ -17,7 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 /// flow graph, that indicates that whole expression is next.</para></remarks>
 internal static partial class ControlFlowAspect
 {
-    public static ControlFlowSet ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(IConcreteInvocableDefinitionNode node)
+    public static ControlFlowSet ConcreteInvocableDefinition_Entry_ControlFlowFollowing(IConcreteInvocableDefinitionNode node)
         => ControlFlowSet.CreateNormal(node.Body?.Statements.FirstOrDefault() ?? (IControlFlowNode)node.Exit);
 
     public static ControlFlowSet Entry_ControlFlowNext(IEntryNode node)
@@ -111,7 +111,7 @@ internal static partial class ControlFlowAspect
     public static ControlFlowSet ForeachExpression_ControlFlowNext(IForeachExpressionNode node)
         => ControlFlowSet.CreateNormal(node.IntermediateInExpression);
 
-    public static ControlFlowSet UnaryOperatorExpression_ComputeControlFlowNext(IUnaryOperatorExpressionNode node)
+    public static ControlFlowSet UnaryOperatorExpression_ControlFlowNext(IUnaryOperatorExpressionNode node)
         => ControlFlowSet.CreateNormal(node.IntermediateOperand);
 
     public static ControlFlowSet BlockExpression_ControlFlowNext(IBlockExpressionNode node)

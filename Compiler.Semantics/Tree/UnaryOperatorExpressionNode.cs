@@ -57,5 +57,5 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()
-        => ControlFlowAspect.UnaryOperatorExpression_ComputeControlFlowNext(this);
+        => ControlFlowAspect.UnaryOperatorExpression_ControlFlowNext(this);
 }

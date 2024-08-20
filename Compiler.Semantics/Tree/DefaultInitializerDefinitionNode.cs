@@ -28,7 +28,7 @@ internal class DefaultInitializerDefinitionNode : InitializerDefinitionNode, IDe
         IInheritanceContext ctx)
     {
         if (descendant == Entry)
-            return ControlFlowAspect.ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(this);
+            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 
