@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
@@ -31,23 +29,6 @@ public partial interface ICapabilityNode
 public partial interface IParameterNode
 {
     IFlowState FlowStateBefore();
-}
-#endregion
-
-#region Control Flow
-public partial interface IControlFlowNode
-{
-    IEntryNode ControlFlowEntry();
-    /// <summary>
-    /// The control flow nodes that follow this node based on the context.
-    /// </summary>
-    /// <remarks>This is an inherited property.</remarks>
-    ControlFlowSet ControlFlowFollowing();
-}
-
-public partial interface IEntryNode
-{
-    FixedDictionary<IVariableBindingNode, int> VariableBindingsMap();
 }
 #endregion
 

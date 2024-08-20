@@ -4,3 +4,15 @@
 // Examples:
 //↓ *.ContainingLexicalScope <: `LexicalScope`;
 //↑ TypeDefinition.SupertypesLexicalScope: `LexicalScope`;
+
+// ---------- Control Flow
+↓ ControlFlow.ControlFlowEntry(): Entry;
+
+/// <summary>
+/// The control flow nodes that follow this node based on the context.
+/// </summary>
+/// <remarks>This is an inherited property.</remarks>
+↓ ControlFlow.ControlFlowFollowing(): `ControlFlowSet`;
+
+// TODO move to variables aspect
+↓ Entry.VariableBindingsMap(): `FixedDictionary<IVariableBindingNode, int>`;

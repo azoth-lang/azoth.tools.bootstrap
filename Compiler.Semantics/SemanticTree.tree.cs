@@ -1244,12 +1244,15 @@ public partial interface IControlFlowNode : ICodeNode
 {
     ControlFlowSet ControlFlowNext { get; }
     ControlFlowSet ControlFlowPrevious { get; }
+    IEntryNode ControlFlowEntry();
+    ControlFlowSet ControlFlowFollowing();
 }
 
 // [Closed(typeof(EntryNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IEntryNode : IDataFlowNode
 {
+    FixedDictionary<IVariableBindingNode, int> VariableBindingsMap();
 }
 
 // [Closed(typeof(ExitNode))]
