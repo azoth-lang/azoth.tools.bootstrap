@@ -55,6 +55,15 @@
 
 1. Not yet implemented.
 
+### Type Declarations
+
+For inherited and previous attributes, the framework must treat value types differently. To do that
+it is necessary to declare which types are values types.
+
+| Declaration          | Meaning                                  |
+| -------------------- | ---------------------------------------- |
+| `struct` `` ` ``*Name*`` `; `` | Declares that the symbol is a value type |
+
 ### Synthesized Attributes
 
 | Declaration                                                                             | Meaning                                                                      |
