@@ -658,6 +658,7 @@ public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax, IS
 {
     new IdentifierName Name { get; }
     StandardName IStandardTypeNameSyntax.Name => Name;
+    TypeName ITypeNameSyntax.Name => Name;
 
     public static IIdentifierTypeNameSyntax Create(TextSpan span, IdentifierName name)
         => new IdentifierTypeNameSyntax(span, name);
@@ -680,6 +681,7 @@ public partial interface IGenericTypeNameSyntax : IStandardTypeNameSyntax
 {
     new GenericName Name { get; }
     StandardName IStandardTypeNameSyntax.Name => Name;
+    TypeName ITypeNameSyntax.Name => Name;
     IFixedList<ITypeSyntax> TypeArguments { get; }
 
     public static IGenericTypeNameSyntax Create(TextSpan span, GenericName name, IFixedList<ITypeSyntax> typeArguments)

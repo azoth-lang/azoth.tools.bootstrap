@@ -87,6 +87,12 @@ public class TreeNodeModel
     public IFixedList<AttributeModel> InheritedAttributes => inheritedAttributes.Value;
     private readonly Lazy<IFixedList<AttributeModel>> inheritedAttributes;
 
+    public IFixedList<AttributeModel> AllInheritedAttributes => allInheritedAttributes.Value;
+    private readonly Lazy<IFixedList<AttributeModel>> allInheritedAttributes;
+
+    public IFixedList<AttributeModel> AllAttributes => allAttributes.Value;
+    private readonly Lazy<IFixedList<AttributeModel>> allAttributes;
+
     /// <summary>
     /// Get the actual attributes for a node. This will use inherited attributes if an attribute
     /// declared on this node does not require a declaration. Attributes will be ordered by
@@ -147,6 +153,9 @@ public class TreeNodeModel
         // Attributes
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new PropertyModel(this, p)).ToFixedList();
         declaredAttributes = new(() => DeclaredProperties.Concat<AttributeModel>(Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.NodeSymbol == Defines)).ToFixedList());
+        allInheritedAttributes = new(()
+            => SupertypeNodes.SelectMany(r => r.AllAttributes).Distinct().ToFixedList());
+        allAttributes = new(() => AllDeclaredAttributes.Concat(AllInheritedAttributes).ToFixedList());
         inheritedAttributes = new(()
             => MostSpecificMembers(SupertypeNodes.SelectMany(r => r.ActualAttributes).Distinct()).ToFixedList());
         implicitlyDeclaredAttributes = new(()
@@ -201,7 +210,16 @@ public class TreeNodeModel
     public IEnumerable<AttributeModel> InheritedAttributesNamedSameAs(AttributeModel attribute)
         => InheritedAttributesNamed(attribute.Name);
     private IEnumerable<AttributeModel> InheritedAttributesNamed(string name)
-        => InheritedAttributes.Where(p => p.Name == name).Distinct();
+        => InheritedAttributes.Where(p => p.Name == name);
+
+    /// <summary>
+    /// All the distinct attributes with the same name that are inherited from supertypes at all levels.
+    /// </summary>
+    public IEnumerable<AttributeModel> AllInheritedAttributesNamedSameAs(AttributeModel attribute)
+        => AllInheritedAttributesNamed(attribute.Name);
+
+    private IEnumerable<AttributeModel> AllInheritedAttributesNamed(string name)
+        => AllInheritedAttributes.Where(p => p.Name == name).Distinct();
 
     public IEnumerable<AttributeModel> AttributesNamed(string name)
         => ActualAttributes.Where(p => p.Name == name);
