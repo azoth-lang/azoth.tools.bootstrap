@@ -858,6 +858,7 @@ public partial interface IParameterNode : ICodeNode
     IMaybeAntetype BindingAntetype { get; }
     Pseudotype BindingType { get; }
     IFlowState FlowStateAfter { get; }
+    IPreviousValueId PreviousValueId();
     ValueId BindingValueId { get; }
 }
 
@@ -1285,6 +1286,7 @@ public partial interface IStatementNode : IControlFlowNode
     LexicalScope ContainingLexicalScope();
     LexicalScope LexicalScope()
         => ContainingLexicalScope();
+    IPreviousValueId PreviousValueId();
     ValueId? ResultValueId { get; }
 }
 
@@ -1374,6 +1376,7 @@ public partial interface IPatternNode : IControlFlowNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFlowState FlowStateAfter { get; }
     ConditionalLexicalScope FlowLexicalScope();
+    IPreviousValueId PreviousValueId();
 }
 
 // [Closed(typeof(BindingContextPatternNode))]

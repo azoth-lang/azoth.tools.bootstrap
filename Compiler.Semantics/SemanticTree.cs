@@ -30,7 +30,6 @@ public partial interface ICapabilityNode
 #region Parameters
 public partial interface IParameterNode
 {
-    IPreviousValueId PreviousValueId();
     IFlowState FlowStateBefore();
 }
 #endregion
@@ -53,11 +52,6 @@ public partial interface IEntryNode
 #endregion
 
 #region Statements
-public partial interface IStatementNode
-{
-    IPreviousValueId PreviousValueId();
-}
-
 public partial interface IVariableDeclarationStatementNode
 {
     IFlowState FlowStateBefore();
@@ -67,7 +61,6 @@ public partial interface IVariableDeclarationStatementNode
 #region Patterns
 public partial interface IPatternNode
 {
-    IPreviousValueId PreviousValueId();
     IMaybeAntetype InheritedBindingAntetype();
     DataType InheritedBindingType();
     ValueId? MatchReferentValueId { get; }

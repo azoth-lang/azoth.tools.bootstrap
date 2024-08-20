@@ -14,15 +14,20 @@
 ↑ ExecutableDefinition.ValueIdScope: `ValueIdScope`;
 
 // ---------- Parameters
+⮡ Parameter.PreviousValueId(): `IPreviousValueId`;
 ↑ Parameter.BindingValueId: `ValueId`;
 = Parameter.BindingValueId;
 
 // ---------- Statements
+⮡ Statement.PreviousValueId(): `IPreviousValueId`;
 ↑ Statement.ResultValueId: `ValueId`?;
 = ResultStatement.ResultValueId => ValueId;
 = ResultStatement.ValueId => IntermediateExpression?.ValueId ?? default;
 = VariableDeclarationStatement.ResultValueId => null;
 = ExpressionStatement.ResultValueId => null;
+
+// ---------- Patterns
+⮡ Pattern.PreviousValueId(): `IPreviousValueId`;
 
 // ---------- Expressions
 ⮡ AmbiguousExpression.PreviousValueId(): `IPreviousValueId`;

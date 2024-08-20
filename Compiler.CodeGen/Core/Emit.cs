@@ -144,7 +144,7 @@ internal static class Emit
                 return builder.ToString();
             }
             case EvaluationStrategy.Computed:
-                return $"        => {attribute.MethodPrefix}_{attribute.Name}(GrammarAttribute.CurrentInheritanceContext());";
+                return $"{Environment.NewLine}        => {attribute.MethodPrefix}_{attribute.Name}(GrammarAttribute.CurrentInheritanceContext());";
         }
     }
     #endregion

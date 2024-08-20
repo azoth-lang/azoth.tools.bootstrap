@@ -48,10 +48,12 @@
 
 ### Intertype Declared Members
 
-| Declaration                                                                    | Meaning                                                                    |
-| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| `???` `private`? *Node*.*Attribute*`(`*Params*`):` *Type*`;`                   | Intertype method attribute, always computed                                |
-| `???` `private`? *Node*.*Attribute*`(`*Params*`):` *Type* `=>` *Expression*`;` | Intertype method attribute with default inline expression, always computed |
+| Declaration                                                                              | Meaning                                                                    |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `+` `private`? *Node*.*Attribute*`(`*Params*`):` *Type*`;`<sup>1</sup>                   | Intertype method attribute, always computed                                |
+| `+` `private`? *Node*.*Attribute*`(`*Params*`):` *Type* `=>` *Expression*`;`<sup>1</sup> | Intertype method attribute with default inline expression, always computed |
+
+1. Not yet implemented.
 
 ### Synthesized Attributes
 
@@ -68,15 +70,15 @@
 
 ### Inherited Attributes
 
-| Declaration                                                        | Meaning                                                 |
-| ------------------------------------------------------------------ | ------------------------------------------------------- |
-| `↓` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Inherited attribute, defaults to lazy                   |
-| `=` *Node*`.`*Selector*`.`*Attribute*`;`                           | Inherited equation                                      |
-| `=` *Node*`.`*Selector*`.`*Attribute* `=>` *Expression*`;`         | Inherited equation with inline expression               |
-| `↓` *Node*.*Attribute*`():` *Type*`;`                              | Inherited attribute method, always computed             |
-| `=` *Node*`.`*Selector*`.`*Attribute*`();`                         | Inherited method equation                               |
-| `=` *Node*`.`*Selector*`.`*Attribute*`()` `=>` *Expression*`;`     | Inherited method equation with inline expression        |
-| `↓` `*.`*Attribute* `<:` *Type*`;`                                 | Specify a common supertype of the attribute<sup>1</sup> |
+| Declaration                                                        | Meaning                                          |
+| ------------------------------------------------------------------ | ------------------------------------------------ |
+| `↓` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Inherited attribute, defaults to lazy            |
+| `=` *Node*`.`*Selector*`.`*Attribute*`;`                           | Inherited equation                               |
+| `=` *Node*`.`*Selector*`.`*Attribute* `=>` *Expression*`;`         | Inherited equation with inline expression        |
+| `↓` *Node*.*Attribute*`():` *Type*`;`                              | Inherited attribute method, always computed      |
+| `=` *Node*`.`*Selector*`.`*Attribute*`();`                         | Inherited method equation                        |
+| `=` *Node*`.`*Selector*`.`*Attribute*`()` `=>` *Expression*`;`     | Inherited method equation with inline expression |
+| `↓` `*.`*Attribute* `<:` *Type*`;`<sup>1</sup>                     | Specify a common supertype of the attribute      |
 
 1. Only necessary when code generation is not able to determine the type and gives an error.
 
@@ -86,21 +88,29 @@
 | `*`                            | All immediate children                                                     |
 | *ChildList*`[`*Number*`]`      | The child in the child list at the given index                             |
 | *ChildList*`[`*Variable*`]`    | A child in the child list, variable passed to equation                     |
-| *ChildList*`[*]`               | All children in the child list                                             |
+| *ChildCollection*`[*]`         | All children in the child collection                                       |
 | *Child*`.**`                   | The named child and its descendants                                        |
 | `*.**`                         | All descendants                                                            |
 | *ChildList*`[`*Number*`].**`   | The child in the child list at the given index and its descendants         |
 | *ChildList*`[`*Variable*`].**` | A child in the child list and its descendants, variable passed to equation |
-| *ChildList*`[*].**`            | All children in the child list and their descendants                       |
+| *ChildCollection*`[*].**`      | All children in the child collection and their descendants                 |
 
 ### Previous Attributes
 
 Previous attributes are similar to inherited attributes except that instead of searching up the tree for a node to provide the attribute value, nodes are searched in the reverse of a pre-order traversal. That is, for inherited attributes, values flow down the tree. For previous attributes, values flow down from the parent to the first child and then across to the next child.
 
-| Declaration                                                        | Meaning                                    |
-| ------------------------------------------------------------------ | ------------------------------------------ |
-| `⮡` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Previous attribute, defaults to lazy       |
-| `⮡` *Node*.*Attribute*`():` *Type*`;`                              | Previous attribute method, always computed |
+| Declaration                                                        | Meaning                                                 |
+| ------------------------------------------------------------------ | ------------------------------------------------------- |
+| `⮡` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Previous attribute, defaults to lazy                    |
+| `=` *Node*`.⮡.`*Attribute*`;`                                      | Previous equation                                       |
+| `=` *Node*`.⮡.`*Attribute* `=>` *Expression*`;`                    | Previous equation with inline expression                |
+| `⮡` *Node*.*Attribute*`():` *Type*`;`                              | Previous attribute method, always computed              |
+| `=` *Node*`.⮡.`*Attribute*`();`                                    | Previous method equation                                |
+| `=` *Node*`.⮡.`*Attribute*`()` `=>` *Expression*`;`                | Previous method equation with inline expression         |
+| `⮡` `*.`*Attribute* `<:` *Type*`;`                                 | Specify a common supertype of the attribute<sup>1</sup> |
+
+1. Not yet implemented. Only necessary when code generation is not able to determine the type and
+   gives an error.
 
 ### Circular Attributes
 
@@ -116,3 +126,5 @@ May want to support both JastAdd style collection attributes and aggregating att
 *Node* `contributes` *exp* `when` *cond* *to* *Node*`.`*Attribute*`;`
 
 ### Rewrites
+
+`✎` ?
