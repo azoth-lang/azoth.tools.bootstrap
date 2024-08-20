@@ -80,12 +80,8 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
         Syntax = syntax;
     }
 
-    public override ConditionalLexicalScope GetFlowLexicalScope()
-    {
-        var containingLexicalScope = ContainingLexicalScope;
-        var variableScope = new DeclarationScope(containingLexicalScope, this);
-        return new(variableScope, containingLexicalScope);
-    }
+    public override ConditionalLexicalScope FlowLexicalScope()
+        => LexicalScopingAspect.BindingPattern_FlowLexicalScope(this);
 
     internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => BindingValueId;

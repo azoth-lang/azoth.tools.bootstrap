@@ -25,7 +25,7 @@ internal abstract class AmbiguousExpressionNode : CodeNode, IAmbiguousExpression
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
 
     public virtual ConditionalLexicalScope FlowLexicalScope()
-        => LexicalScopingAspect.UntypedExpression_GetFlowLexicalScope(this);
+        => LexicalScopingAspect.AmbiguousExpression_FlowLexicalScope(this);
 
     public IPreviousValueId PreviousValueId()
         => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());

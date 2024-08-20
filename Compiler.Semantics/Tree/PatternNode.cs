@@ -37,7 +37,7 @@ internal abstract class PatternNode : CodeNode, IPatternNode
 
     private protected PatternNode() { }
 
-    public abstract ConditionalLexicalScope GetFlowLexicalScope();
+    public abstract ConditionalLexicalScope FlowLexicalScope();
 
     public IPreviousValueId PreviousValueId()
         => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());

@@ -23,7 +23,7 @@ internal sealed class OptionalPatternNode : PatternNode, IOptionalPatternNode
         Pattern = Child.Attach(this, pattern);
     }
 
-    public override ConditionalLexicalScope GetFlowLexicalScope() => Pattern.GetFlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => Pattern.FlowLexicalScope();
 
     internal override IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
     {

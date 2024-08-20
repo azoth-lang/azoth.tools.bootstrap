@@ -115,10 +115,10 @@ internal static partial class LexicalScopingAspect
     /// <summary>
     /// Default implementation for expressions that can't introduce a new scope.
     /// </summary>
-    public static ConditionalLexicalScope UntypedExpression_GetFlowLexicalScope(IAmbiguousExpressionNode node)
+    public static partial ConditionalLexicalScope AmbiguousExpression_FlowLexicalScope(IAmbiguousExpressionNode node)
         => ConditionalLexicalScope.Unconditional(node.ContainingLexicalScope());
 
-    public static ConditionalLexicalScope BinaryOperatorExpression_GetFlowLexicalScope(IBinaryOperatorExpressionNode node)
+    public static partial ConditionalLexicalScope BinaryOperatorExpression_FlowLexicalScope(IBinaryOperatorExpressionNode node)
     {
         if (node.Operator == BinaryOperator.Or)
             // Cannot statically be sure which part of the expression was evaluated
@@ -138,10 +138,10 @@ internal static partial class LexicalScopingAspect
     /// <remarks>In an assignment, the left hand side cannot use variables declared in the right-hand
     /// side because parts of it will be evaluated first. For simplicity, both sides are evaluated
     /// in the containing lexical scope and only the right hand scope is used.</remarks>
-    public static ConditionalLexicalScope AssignmentExpression_GetFlowLexicalScope(IAssignmentExpressionNode node)
+    public static partial ConditionalLexicalScope AssignmentExpression_FlowLexicalScope(IAssignmentExpressionNode node)
         => node.RightOperand.FlowLexicalScope();
 
-    public static ConditionalLexicalScope UnaryOperatorExpression_GetFlowLexicalScope(IUnaryOperatorExpressionNode node)
+    public static partial ConditionalLexicalScope UnaryOperatorExpression_FlowLexicalScope(IUnaryOperatorExpressionNode node)
     {
         var flow = node.Operand.FlowLexicalScope();
         return node.Operator == UnaryOperator.Not ? flow.Swapped() : flow;
@@ -151,5 +151,12 @@ internal static partial class LexicalScopingAspect
     {
         var flowScope = node.InExpression.FlowLexicalScope().True;
         return new DeclarationScope(flowScope, node);
+    }
+
+    public static partial ConditionalLexicalScope BindingPattern_FlowLexicalScope(IBindingPatternNode node)
+    {
+        var containingLexicalScope = node.ContainingLexicalScope;
+        var variableScope = new DeclarationScope(containingLexicalScope, node);
+        return new(variableScope, containingLexicalScope);
     }
 }

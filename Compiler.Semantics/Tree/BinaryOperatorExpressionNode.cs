@@ -73,7 +73,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     }
 
     public override ConditionalLexicalScope FlowLexicalScope()
-        => LexicalScopingAspect.BinaryOperatorExpression_GetFlowLexicalScope(this);
+        => LexicalScopingAspect.BinaryOperatorExpression_FlowLexicalScope(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {

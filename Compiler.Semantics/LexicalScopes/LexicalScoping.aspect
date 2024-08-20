@@ -52,8 +52,17 @@
 ↓ VariableDeclarationStatement.ContainingLexicalScope: `LexicalScope`;
 ↑ VariableDeclarationStatement.LexicalScope: `LexicalScope`;
 
+// ---------- Expressions
+// TODO it is strange that this is always a conditional scope. Instead, use conditional only where it makes sense?
+↑ AmbiguousExpression.FlowLexicalScope(): `ConditionalLexicalScope`;
+= AmbiguousExpression.FlowLexicalScope();
+
 // ---------- Patterns
 ↓ BindingPattern.ContainingLexicalScope: `LexicalScope`;
+↑ Pattern.FlowLexicalScope(): `ConditionalLexicalScope`;
+= BindingContextPattern.FlowLexicalScope() => Pattern.FlowLexicalScope();
+= BindingPattern.FlowLexicalScope();
+= OptionalPattern.FlowLexicalScope() => Pattern.FlowLexicalScope();
 
 // ---------- Expressions
 ↓ AmbiguousExpression.ContainingLexicalScope(): `LexicalScope`;
@@ -62,8 +71,11 @@
 ↓ StringLiteralExpression.ContainingLexicalScope: `LexicalScope`;
 
 // ---------- Operator Expressions
+= AssignmentExpression.FlowLexicalScope();
 ↓ BinaryOperatorExpression.ContainingLexicalScope: `LexicalScope`;
 = BinaryOperatorExpression.RightOperand.**.ContainingLexicalScope;
+= BinaryOperatorExpression.FlowLexicalScope();
+= UnaryOperatorExpression.FlowLexicalScope();
 
 // ---------- Control Flow Expressions
 ↓ ForeachExpression.ContainingLexicalScope: `LexicalScope`;

@@ -1180,6 +1180,7 @@ public partial interface IPatternNode : IControlFlowNode
     new IPatternSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     IFlowState FlowStateAfter { get; }
+    ConditionalLexicalScope FlowLexicalScope();
 }
 
 // [Closed(typeof(BindingContextPatternNode))]
@@ -1191,6 +1192,8 @@ public partial interface IBindingContextPatternNode : IPatternNode
     bool IsMutableBinding { get; }
     IPatternNode Pattern { get; }
     ITypeNode? Type { get; }
+    ConditionalLexicalScope IPatternNode.FlowLexicalScope()
+        => Pattern.FlowLexicalScope();
 }
 
 [Closed(
@@ -1210,6 +1213,8 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
     new IBindingPatternSyntax Syntax { get; }
     IOptionalOrBindingPatternSyntax IOptionalOrBindingPatternNode.Syntax => Syntax;
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
+    ConditionalLexicalScope IPatternNode.FlowLexicalScope()
+        => LexicalScopingAspect.BindingPattern_FlowLexicalScope(this);
 }
 
 // [Closed(typeof(OptionalPatternNode))]
@@ -1219,6 +1224,8 @@ public partial interface IOptionalPatternNode : IOptionalOrBindingPatternNode
     new IOptionalPatternSyntax Syntax { get; }
     IOptionalOrBindingPatternSyntax IOptionalOrBindingPatternNode.Syntax => Syntax;
     IOptionalOrBindingPatternNode Pattern { get; }
+    ConditionalLexicalScope IPatternNode.FlowLexicalScope()
+        => Pattern.FlowLexicalScope();
 }
 
 [Closed(
@@ -1234,6 +1241,8 @@ public partial interface IAmbiguousExpressionNode : ICodeNode
     new IExpressionSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ValueId ValueId { get; }
+    ConditionalLexicalScope FlowLexicalScope()
+        => LexicalScopingAspect.AmbiguousExpression_FlowLexicalScope(this);
     LexicalScope ContainingLexicalScope();
 }
 
@@ -1428,6 +1437,8 @@ public partial interface IAssignmentExpressionNode : IExpressionNode, IDataFlowN
     IAmbiguousExpressionNode RightOperand { get; }
     IAmbiguousExpressionNode CurrentRightOperand { get; }
     IExpressionNode? IntermediateRightOperand { get; }
+    ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
+        => LexicalScopingAspect.AssignmentExpression_FlowLexicalScope(this);
 }
 
 // [Closed(typeof(BinaryOperatorExpressionNode))]
@@ -1444,6 +1455,8 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
     IAntetype? NumericOperatorCommonAntetype { get; }
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
+    ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
+        => LexicalScopingAspect.BinaryOperatorExpression_FlowLexicalScope(this);
 }
 
 // [Closed(typeof(UnaryOperatorExpressionNode))]
@@ -1456,6 +1469,8 @@ public partial interface IUnaryOperatorExpressionNode : IExpressionNode
     UnaryOperator Operator { get; }
     IAmbiguousExpressionNode Operand { get; }
     IExpressionNode? IntermediateOperand { get; }
+    ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
+        => LexicalScopingAspect.UnaryOperatorExpression_FlowLexicalScope(this);
 }
 
 // [Closed(typeof(IdExpressionNode))]

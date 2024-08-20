@@ -28,7 +28,7 @@ internal sealed class BindingContextPatternNode : PatternNode, IBindingContextPa
         Type = Child.Attach(this, type);
     }
 
-    public override ConditionalLexicalScope GetFlowLexicalScope() => Pattern.GetFlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => Pattern.FlowLexicalScope();
 
     internal override IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
     {

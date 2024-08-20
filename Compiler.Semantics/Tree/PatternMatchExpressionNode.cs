@@ -48,7 +48,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
         return ContainingLexicalScope;
     }
 
-    public override ConditionalLexicalScope FlowLexicalScope() => Pattern.GetFlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => Pattern.FlowLexicalScope();
 
     internal override IMaybeAntetype InheritedBindingAntetype(IChildNode child, IChildNode descendant)
     {
