@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 /// the argument expressions in this control flow graph. Another way of thinking of it is that an
 /// expression node represents the expression as a whole. So if an expression is next in the control
 /// flow graph, that indicates that whole expression is next.</para></remarks>
-internal sealed class ControlFlowAspect
+internal static partial class ControlFlowAspect
 {
     public static ControlFlowSet ConcreteInvocableDefinition_InheritedControlFlowFollowing_Entry(IConcreteInvocableDefinitionNode node)
         => ControlFlowSet.CreateNormal(node.Body?.Statements.FirstOrDefault() ?? (IControlFlowNode)node.Exit);
