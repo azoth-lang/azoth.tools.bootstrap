@@ -1,27 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeSupertypes;
 
 /// <summary>
 /// The supertype for an inherited attribute. Also acts as a collection of all instances of the attribute.
 /// </summary>
-public sealed class InheritedAttributeSupertypeModel
+public sealed class InheritedAttributeSupertypeModel : AttributeSupertypeModel
 {
-    public TreeModel Tree { get; }
-    public string Name { get; }
-    public TypeModel Type => type.Value;
+    public override string Name { get; }
+    public override TypeModel Type => type.Value;
     private readonly Lazy<TypeModel> type;
     public IFixedSet<InheritedAttributeModel> Instances => instances.Value;
     private readonly Lazy<IFixedSet<InheritedAttributeModel>> instances;
 
     public InheritedAttributeSupertypeModel(TreeModel tree, IEnumerable<InheritedAttributeModel> instances)
+        : base(tree)
     {
-        Tree = tree;
         this.instances = new(instances.ToFixedSet());
         if (Instances.IsEmpty)
             throw new ArgumentException("At least one instance is required.", nameof(instances));
@@ -33,8 +33,8 @@ public sealed class InheritedAttributeSupertypeModel
     }
 
     public InheritedAttributeSupertypeModel(TreeModel tree, InheritedAttributeSupertypeSyntax syntax)
+        : base(tree)
     {
-        Tree = tree;
         Name = syntax.Name;
         type = new(TypeModel.CreateFromSyntax(tree, syntax.Type));
         instances = new(ComputeInstances);

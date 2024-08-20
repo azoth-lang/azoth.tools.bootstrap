@@ -48,9 +48,9 @@
 
 ### Intertype Declared Members
 
-| Declaration                                                                | Meaning                                                                      |
-| -------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `???` `private`? *Node*.*Attribute*`(`*Params*`):` *Type*`;`                            | Intertype method attribute, always computed                                |
+| Declaration                                                                    | Meaning                                                                    |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| `???` `private`? *Node*.*Attribute*`(`*Params*`):` *Type*`;`                   | Intertype method attribute, always computed                                |
 | `???` `private`? *Node*.*Attribute*`(`*Params*`):` *Type* `=>` *Expression*`;` | Intertype method attribute with default inline expression, always computed |
 
 ### Synthesized Attributes
@@ -61,10 +61,10 @@
 | `↑` `child`? (`eager`\|`computed`)? *Node*`.`*Attribute*`:` *Type* `=>` *Expression*`;` | Synthesized attribute with default inline expression, defaults to computed   |
 | `=` (`eager`\|`lazy`\|`computed`)? *Node*.*Attribute*(`:` *Type*)?`;`                   | Synthesized equation, defaults to attribute strategy                         |
 | `=` (`eager`\|`computed`)? *Node*.*Attribute*(`:` *Type*)? `=>` *Expression*`;`         | Synthesized equation with inline expression, defaults to computed            |
-| `↑` *Node*.*Attribute*`():` *Type*`;`                                | Synthesized method attribute, always computed                                |
-| `↑` *Node*.*Attribute*`():` *Type* `=>` *Expression*`;`              | Synthesized method attribute with default inline expression, always computed |
-| `=` *Node*.*Method*`()`(`:` *Type*)?`;`                                       | Synthesized method equation, always computed                                 |
-| `=` *Node*.*Method*`()`(`:` *Type*)? `=>` *Expression*`;`                     | Synthesized method equation with inline expression, always computed          |
+| `↑` *Node*.*Attribute*`():` *Type*`;`                                                   | Synthesized method attribute, always computed                                |
+| `↑` *Node*.*Attribute*`():` *Type* `=>` *Expression*`;`                                 | Synthesized method attribute with default inline expression, always computed |
+| `=` *Node*.*Method*`()`(`:` *Type*)?`;`                                                 | Synthesized method equation, always computed                                 |
+| `=` *Node*.*Method*`()`(`:` *Type*)? `=>` *Expression*`;`                               | Synthesized method equation with inline expression, always computed          |
 
 ### Inherited Attributes
 
@@ -73,7 +73,7 @@
 | `↓` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Inherited attribute, defaults to lazy                   |
 | `=` *Node*`.`*Selector*`.`*Attribute*`;`                           | Inherited equation                                      |
 | `=` *Node*`.`*Selector*`.`*Attribute* `=>` *Expression*`;`         | Inherited equation with inline expression               |
-| `↓` *Node*.*Attribute*`():` *Type*`;`                     | Inherited attribute method, always computed             |
+| `↓` *Node*.*Attribute*`():` *Type*`;`                              | Inherited attribute method, always computed             |
 | `=` *Node*`.`*Selector*`.`*Attribute*`();`                         | Inherited method equation                               |
 | `=` *Node*`.`*Selector*`.`*Attribute*`()` `=>` *Expression*`;`     | Inherited method equation with inline expression        |
 | `↓` `*.`*Attribute* `<:` *Type*`;`                                 | Specify a common supertype of the attribute<sup>1</sup> |
@@ -97,7 +97,10 @@
 
 Previous attributes are similar to inherited attributes except that instead of searching up the tree for a node to provide the attribute value, nodes are searched in the reverse of a pre-order traversal. That is, for inherited attributes, values flow down the tree. For previous attributes, values flow down from the parent to the first child and then across to the next child.
 
-`⮡` `child`? *Node*.*Attribute*`:` *Type*`;`
+| Declaration                                                        | Meaning                                    |
+| ------------------------------------------------------------------ | ------------------------------------------ |
+| `⮡` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Previous attribute, defaults to lazy       |
+| `⮡` *Node*.*Attribute*`():` *Type*`;`                              | Previous attribute method, always computed |
 
 ### Circular Attributes
 

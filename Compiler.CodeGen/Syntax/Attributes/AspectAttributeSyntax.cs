@@ -3,7 +3,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
-[Closed(typeof(SynthesizedAttributeSyntax), typeof(InheritedAttributeSyntax))]
+[Closed(typeof(SynthesizedAttributeSyntax), typeof(InheritedAttributeSyntax), typeof(PreviousAttributeSyntax))]
 public abstract class AspectAttributeSyntax : AttributeSyntax
 {
     public EvaluationStrategy? Strategy { get; }

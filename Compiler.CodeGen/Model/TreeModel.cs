@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeSupertypes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
@@ -28,11 +29,11 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     public IFixedSet<InheritedAttributeSupertypeModel> DeclaredAttributeSupertypes { get; }
 
-    public IFixedSet<InheritedAttributeSupertypeModel> ImplicitAttributeSupertypes => implicitAttributeSupertypes.Value;
-    private readonly Lazy<IFixedSet<InheritedAttributeSupertypeModel>> implicitAttributeSupertypes;
+    public IFixedSet<AttributeSupertypeModel> ImplicitAttributeSupertypes => implicitAttributeSupertypes.Value;
+    private readonly Lazy<IFixedSet<AttributeSupertypeModel>> implicitAttributeSupertypes;
 
-    public IFixedSet<InheritedAttributeSupertypeModel> AllAttributeSupertypes => allAttributeSupertypes.Value;
-    private readonly Lazy<IFixedSet<InheritedAttributeSupertypeModel>> allAttributeSupertypes;
+    public IFixedSet<AttributeSupertypeModel> AllAttributeSupertypes => allAttributeSupertypes.Value;
+    private readonly Lazy<IFixedSet<AttributeSupertypeModel>> allAttributeSupertypes;
 
     public TreeModel(TreeSyntax syntax, List<AspectSyntax> aspects)
     {
@@ -66,14 +67,21 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     private readonly FixedDictionary<string, TreeNodeModel> nodesLookup;
 
-    private IFixedSet<InheritedAttributeSupertypeModel> ComputeImplicitAttributeSupertypes()
+    private IFixedSet<AttributeSupertypeModel> ComputeImplicitAttributeSupertypes()
     {
         var declaredAttributeSupertypes = DeclaredAttributeSupertypes.Select(s => s.Name).ToFixedSet();
-        return Nodes.SelectMany(n => n.DeclaredAttributes.OfType<InheritedAttributeModel>())
-                    .GroupBy(a => a.Name)
-                    .Where(g => !declaredAttributeSupertypes.Contains(g.Key))
-                    .Select(attrs => new InheritedAttributeSupertypeModel(this, attrs)).ToFixedSet();
+        var implicitInheritedAttributeSupertypes = ComputeGroupedDeclaredAttributes<InheritedAttributeModel>()
+                                                        .Where(g => !declaredAttributeSupertypes.Contains(g.Key))
+                                                        .Select(attrs => new InheritedAttributeSupertypeModel(this, attrs));
+        var implicitPreviousAttributeSupertypes = ComputeGroupedDeclaredAttributes<PreviousAttributeModel>()
+                                                        .Select(attrs => new PreviousAttributeSupertypeModel(this, attrs));
+        return implicitInheritedAttributeSupertypes
+               .Concat<AttributeSupertypeModel>(implicitPreviousAttributeSupertypes).ToFixedSet();
     }
+
+    private IEnumerable<IGrouping<string, T>> ComputeGroupedDeclaredAttributes<T>()
+        where T : AttributeModel
+        => Nodes.SelectMany(n => n.DeclaredAttributes.OfType<T>()).GroupBy(a => a.Name);
 
     public void Validate()
     {

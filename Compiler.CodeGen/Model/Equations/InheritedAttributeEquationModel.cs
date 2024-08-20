@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeSupertypes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
@@ -25,7 +25,8 @@ public sealed class InheritedAttributeEquationModel : EquationModel
     }
 
     private InheritedAttributeSupertypeModel GetAttributeSupertype()
-        => Aspect.Tree.AllAttributeSupertypes.Single(a => a.Name == Name);
+        => Aspect.Tree.AllAttributeSupertypes.OfType<InheritedAttributeSupertypeModel>()
+                 .Single(a => a.Name == Name);
 
     public override string ToString()
     {

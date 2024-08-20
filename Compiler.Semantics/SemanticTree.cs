@@ -80,11 +80,6 @@ public partial interface IBindingPatternNode
 #endregion
 
 #region Expressions
-public partial interface IAmbiguousExpressionNode
-{
-    IPreviousValueId PreviousValueId();
-}
-
 public partial interface IExpressionNode
 {
     /// <summary>

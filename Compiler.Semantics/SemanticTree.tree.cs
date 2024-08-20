@@ -1447,6 +1447,7 @@ public partial interface IAmbiguousExpressionNode : ICodeNode
     ConditionalLexicalScope FlowLexicalScope()
         => LexicalScopingAspect.AmbiguousExpression_FlowLexicalScope(this);
     LexicalScope ContainingLexicalScope();
+    IPreviousValueId PreviousValueId();
     ValueId ValueId { get; }
 }
 

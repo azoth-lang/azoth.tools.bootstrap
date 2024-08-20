@@ -90,6 +90,7 @@ internal static class Emit
             PropertyModel _ => " { get; }",
             SynthesizedAttributeModel a => ParametersAndBody(a),
             InheritedAttributeModel a => a.IsMethod ? "();" : " { get; }",
+            PreviousAttributeModel a => a.IsMethod ? "();" : " { get; }",
             _ => throw ExhaustiveMatch.Failed(attribute)
         };
 

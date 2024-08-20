@@ -25,5 +25,6 @@
 = ExpressionStatement.ResultValueId => null;
 
 // ---------- Expressions
+⮡ AmbiguousExpression.PreviousValueId(): `IPreviousValueId`;
 ↑ AmbiguousExpression.ValueId: `ValueId`;
 = AmbiguousExpression.ValueId;

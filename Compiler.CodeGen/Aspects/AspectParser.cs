@@ -58,6 +58,7 @@ public static class AspectParser
         {
             '↑' => ParseSynthesizedAttribute(statement),
             '↓' => ParseInheritedAttribute(statement),
+            '⮡' => ParsePreviousAttribute(statement),
             _ => throw new($"Unknown attribute kind: {statement}"),
         };
 
@@ -80,6 +81,21 @@ public static class AspectParser
     private static InheritedAttributeSyntax ParseInheritedAttribute(string statement)
     {
         if (!ParseOffStart(ref statement, '↓'))
+            throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
+
+        var (definition, type) = SplitTwo(statement, ":", "Should be exactly one `:` in: '{0}'");
+        (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        var evaluationStrategy = ParseEvaluationStrategy(ref node);
+        var isMethod = ParseOffEnd(ref definition, "()");
+        var name = definition;
+        var typeSyntax = ParseType(type);
+        var nodeSymbol = ParseSymbol(node);
+        return new(evaluationStrategy, nodeSymbol, name, isMethod, typeSyntax);
+    }
+
+    private static PreviousAttributeSyntax ParsePreviousAttribute(string statement)
+    {
+        if (!ParseOffStart(ref statement, '⮡'))
             throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
 
         var (definition, type) = SplitTwo(statement, ":", "Should be exactly one `:` in: '{0}'");
