@@ -117,14 +117,14 @@ internal static class Emit
         return builder.ToString();
     }
 
-    public static string Body(InheritedAttributeModel attribute)
+    public static string Body(ContextAttributeModel attribute)
     {
         switch (attribute.Strategy)
         {
             default:
                 throw ExhaustiveMatch.Failed(attribute.Strategy);
             case EvaluationStrategy.Eager:
-                throw new UnreachableException("Inherited equations cannot be eager.");
+                throw new UnreachableException($"{attribute.MethodPrefix} equations cannot be eager.");
             case EvaluationStrategy.Lazy:
             {
                 var builder = new StringBuilder();
@@ -138,13 +138,13 @@ internal static class Emit
                 var castEnd = castRequired ? "(ctx)" : "";
                 builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
                 builder.AppendLine($"            : this.Inherited(ref {cached}, ref {value},");
-                builder.AppendLine($"                {castStart}Inherited{attribute.Name}{castEnd});");
+                builder.AppendLine($"                {castStart}{attribute.MethodPrefix}_{attribute.Name}{castEnd});");
                 builder.AppendLine($"    private {Type(attribute.Type.ToNonOptional())}? {value};");
                 builder.Append($"    private bool {cached};");
                 return builder.ToString();
             }
             case EvaluationStrategy.Computed:
-                return $"        => Inherited{attribute.Name}(GrammarAttribute.CurrentInheritanceContext());";
+                return $"        => {attribute.MethodPrefix}_{attribute.Name}(GrammarAttribute.CurrentInheritanceContext());";
         }
     }
     #endregion
