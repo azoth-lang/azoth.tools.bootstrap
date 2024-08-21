@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-internal static class NameBindingTypesAspect
+internal static partial class NameBindingTypesAspect
 {
     public static DataType VariableDeclarationStatement_BindingType(IVariableDeclarationStatementNode node)
         => node.Type?.NamedType ?? InferDeclarationType(node, node.Capability) ?? DataType.Unknown;
