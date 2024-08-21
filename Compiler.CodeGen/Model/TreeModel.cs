@@ -27,6 +27,8 @@ public sealed class TreeModel : IHasUsingNamespaces
     public IFixedList<TreeNodeModel> Nodes { get; }
     public IFixedList<AspectModel> Aspects { get; }
 
+    public FixedDictionary<ExternalSymbol, TypeDeclarationModel> TypeDeclarations { get; }
+
     public IFixedSet<InheritedAttributeSupertypeModel> DeclaredAttributeSupertypes { get; }
 
     public IFixedSet<AttributeSupertypeModel> ImplicitAttributeSupertypes => implicitAttributeSupertypes.Value;
@@ -47,6 +49,7 @@ public sealed class TreeModel : IHasUsingNamespaces
 
         // Now that the tree is fully created, it is safe to create the aspects
         Aspects = aspects.Select(a => new AspectModel(this, a)).ToFixedList();
+        TypeDeclarations = Aspects.SelectMany(a => a.TypeDeclarations).ToFixedDictionary(d => d.Name);
         DeclaredAttributeSupertypes = Aspects.SelectMany(a => a.DeclaredAttributeSupertypes).ToFixedSet();
         implicitAttributeSupertypes = new(ComputeImplicitAttributeSupertypes);
         allAttributeSupertypes = new(()

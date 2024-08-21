@@ -41,6 +41,9 @@ public class TreeNodeModel
     /// to allow overriding this.</remarks>
     public bool IsAbstract => !ChildNodes.IsEmpty;
 
+    public bool IsSyncLockRequired => isSyncLockRequired.Value;
+    private readonly Lazy<bool> isSyncLockRequired;
+
     public IFixedSet<TreeNodeModel> DescendantNodes => descendantNodes.Value;
     private readonly Lazy<IFixedSet<TreeNodeModel>> descendantNodes;
 
@@ -140,6 +143,9 @@ public class TreeNodeModel
         // Add root supertype if no supertypes are declared
         if (Tree.RootSupertype is { } root && root != Defines && !Supertypes.Any(s => s is InternalSymbol))
             Supertypes = Supertypes.Append(root).ToFixedSet();
+
+        isSyncLockRequired = new(() => ActualAttributes.Any(a => a.IsSyncLockRequired)
+                                       || ActualEquations.Any(eq => eq.IsSyncLockRequired));
 
         // Inheritance relationships
         supertypeNodes = new(() => Supertypes.OfType<InternalSymbol>().Select(s => s.ReferencedNode)

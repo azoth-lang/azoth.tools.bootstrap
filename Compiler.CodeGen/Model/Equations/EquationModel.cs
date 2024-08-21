@@ -27,6 +27,7 @@ public abstract class EquationModel : IMemberModel
     public string Name { get; }
     public bool IsMethod { get; }
     public string? Expression { get; }
+    public virtual bool IsSyncLockRequired => false;
 
     protected EquationModel(
         AspectModel aspect,

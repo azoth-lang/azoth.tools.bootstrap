@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;

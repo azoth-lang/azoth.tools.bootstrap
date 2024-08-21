@@ -10,8 +10,9 @@ public struct AttributeLock
     private static readonly UIntPtr LockedState = nuint.MaxValue;
     private static readonly UIntPtr MaxVersion = LockedState - 1;
 
-    /// <remarks>State is <see langword="null"/> for unlocked. <see cref="LockedState"/> for locked.
-    /// and the attribute name when comparing.</remarks>
+    /// <remarks>When locked, equals <see cref="LockedState"/>. Otherwise, is used as a version that
+    /// is incremented each time a value is written. This is used to safely do a compare and
+    /// exchange without holding the lock during the comparison.</remarks>
     private nuint version;
 
     public T Read<T>(in T location)

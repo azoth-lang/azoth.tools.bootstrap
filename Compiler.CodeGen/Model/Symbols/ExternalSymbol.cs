@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
@@ -6,11 +7,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 public sealed class ExternalSymbol : Symbol
 {
     public override string FullName { get; }
+    public TypeDeclarationModel? TypeDeclaration => typeDeclaration.Value;
+    private readonly Lazy<TypeDeclarationModel?> typeDeclaration;
+    public override bool IsValueType => TypeDeclaration?.IsValueType ?? false;
 
-    public ExternalSymbol(string fullName)
+    public ExternalSymbol(TreeModel tree, string fullName)
     {
         Requires.NotNullOrEmpty(fullName, nameof(fullName));
         FullName = fullName;
+        typeDeclaration = new(ComputeTypeDeclaration);
+        return;
+
+        TypeDeclarationModel? ComputeTypeDeclaration()
+            => tree.TypeDeclarations.GetValueOrDefault(this);
     }
 
     #region Equality

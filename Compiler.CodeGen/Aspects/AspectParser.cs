@@ -17,27 +17,42 @@ public static class AspectParser
         var ns = GetRequiredConfig(lines, "namespace");
         var name = GetRequiredConfig(lines, "name");
         var usingNamespaces = ParseUsingNamespaces(lines);
-        var (attributeSupertypes, attributes, equations) = ParseStatements(lines);
-        return new(ns, name, usingNamespaces, attributeSupertypes, attributes, equations);
+        var (typeDeclarations, attributeSupertypes, attributes, equations) = ParseStatements(lines);
+        return new(ns, name, usingNamespaces, typeDeclarations, attributeSupertypes, attributes, equations);
     }
 
     private static AspectStatementsSyntax ParseStatements(
         IFixedList<string> lines)
     {
         var statements = ParseToStatements(lines).ToFixedList();
+        var typeDeclarations = new List<TypeDeclarationSyntax>();
         var attributeSupertypes = new List<InheritedAttributeSupertypeSyntax>();
         var attributes = new List<AspectAttributeSyntax>();
         var equations = new List<EquationSyntax>();
         foreach (var statement in statements)
         {
-            if (statement.StartsWith('='))
+            if (statement.StartsWith("struct"))
+                typeDeclarations.Add(ParseStructDeclaration(statement));
+            else if (statement.StartsWith('='))
                 equations.Add(ParseEquation(statement));
             else if (statement.StartsWith('↓') && statement.Contains("<:"))
                 attributeSupertypes.Add(ParseInheritedAttributeSupertype(statement));
             else
                 attributes.Add(ParseAttribute(statement));
         }
-        return new(attributeSupertypes, attributes, equations);
+        return new(typeDeclarations, attributeSupertypes, attributes, equations);
+    }
+
+    private static TypeDeclarationSyntax ParseStructDeclaration(string statement)
+    {
+        var segments = statement.Split(Array.Empty<char>(),
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (segments.Length != 2)
+            throw new FormatException($"Invalid struct declaration: '{statement}'");
+        if (segments[0] != "struct")
+            throw new FormatException($"Struct declarations does not start with 'struct': '{statement}'");
+        var name = ParseSymbol(segments[1]);
+        return new(true, name);
     }
 
     private static InheritedAttributeSupertypeSyntax ParseInheritedAttributeSupertype(string statement)
@@ -211,24 +226,18 @@ public static class AspectParser
                 throw new FormatException($"Too many parts in node '{node}' for attribute.");
         }
     }
-    private static (string name, string? parameters) SplitOffParameters(string definition)
-    {
-        var (name, parameters) = OptionalSplitTwo(definition, "(", "Too many `(` in: '{0}'");
-        if (parameters is not null)
-            // Put left paren back on parameters
-            parameters = "(" + parameters;
-        return (name, parameters);
-    }
 
     private record AspectStatementsSyntax(
-        IFixedList<InheritedAttributeSupertypeSyntax> AttributeSupertypes,
+        IFixedSet<TypeDeclarationSyntax> TypeDeclarations,
+        IFixedSet<InheritedAttributeSupertypeSyntax> AttributeSupertypes,
         IFixedList<AspectAttributeSyntax> Attributes,
         IFixedList<EquationSyntax> Equations)
     {
         public AspectStatementsSyntax(
+            IEnumerable<TypeDeclarationSyntax> typeDeclarations,
             IEnumerable<InheritedAttributeSupertypeSyntax> attributeSupertypes,
             IEnumerable<AspectAttributeSyntax> attributes,
             IEnumerable<EquationSyntax> equations)
-            : this(attributeSupertypes.ToFixedList(), attributes.ToFixedList(), equations.ToFixedList()) { }
+            : this(typeDeclarations.ToFixedSet(), attributeSupertypes.ToFixedSet(), attributes.ToFixedList(), equations.ToFixedList()) { }
     }
 }

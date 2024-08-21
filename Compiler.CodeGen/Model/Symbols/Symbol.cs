@@ -13,12 +13,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 public abstract class Symbol : IEquatable<Symbol>
 {
     [return: NotNullIfNotNull(nameof(syntax))]
-    public static Symbol? CreateFromSyntax(TreeModel? tree, SymbolSyntax? syntax)
+    public static Symbol? CreateFromSyntax(TreeModel tree, SymbolSyntax? syntax)
     {
         if (syntax is null)
             return null;
-        return tree is null || syntax.IsQuoted
-            ? CreateExternalFromSyntax(syntax)
+        return syntax.IsQuoted
+            ? new ExternalSymbol(tree, syntax.Text)
             : new InternalSymbol(tree, syntax.Text);
     }
 
@@ -27,19 +27,20 @@ public abstract class Symbol : IEquatable<Symbol>
     {
         if (syntax is null) return null;
         if (syntax.IsQuoted) throw new ArgumentException("Internal symbol cannot be quoted.", nameof(syntax));
-        return new InternalSymbol(tree, syntax.Text);
+        return new(tree, syntax.Text);
     }
 
     [return: NotNullIfNotNull(nameof(syntax))]
-    public static ExternalSymbol? CreateExternalFromSyntax(SymbolSyntax? syntax)
+    public static ExternalSymbol? CreateExternalFromSyntax(TreeModel tree, SymbolSyntax? syntax)
     {
         if (syntax is null) return null;
         if (!syntax.IsQuoted)
             throw new ArgumentException("External symbol must be quoted.", nameof(syntax));
-        return new ExternalSymbol(syntax.Text);
+        return new(tree, syntax.Text);
     }
 
     public abstract string FullName { get; }
+    public abstract bool IsValueType { get; }
 
     private protected Symbol() { }
 

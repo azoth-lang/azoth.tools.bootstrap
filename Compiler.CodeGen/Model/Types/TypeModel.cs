@@ -33,6 +33,7 @@ public abstract class TypeModel : IEquatable<TypeModel>
     }
 
     public Symbol UnderlyingSymbol { get; }
+    public abstract bool IsValueType { get; }
 
     private protected TypeModel(Symbol underlyingSymbol)
     {

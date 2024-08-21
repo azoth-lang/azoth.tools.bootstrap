@@ -5,6 +5,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 public sealed class ListType : CollectionType
 {
+    public override bool IsValueType => false;
+
     internal ListType(TypeModel elementType)
         : base(elementType) { }
 

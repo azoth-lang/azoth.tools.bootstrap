@@ -20,6 +20,8 @@ public sealed class SynthesizedAttributeEquationModel : EquationModel
     private readonly Lazy<EvaluationStrategy> strategy;
     public TypeModel? TypeOverride { get; }
     public TypeModel Type => TypeOverride ?? Attribute.Type;
+    public override bool IsSyncLockRequired
+        => Strategy == EvaluationStrategy.Lazy && Type.IsValueType;
 
     public SynthesizedAttributeEquationModel(AspectModel aspect, SynthesizedAttributeEquationSyntax syntax)
         : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.IsMethod, syntax.Expression)

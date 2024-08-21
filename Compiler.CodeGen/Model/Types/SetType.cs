@@ -5,6 +5,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 public sealed class SetType : CollectionType
 {
+    public override bool IsValueType => false;
+
     internal SetType(TypeModel underlyingType)
         : base(underlyingType) { }
 

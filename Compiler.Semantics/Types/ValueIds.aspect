@@ -4,6 +4,9 @@
 
 // ↓ ↑ ⮡
 
+// Type Declarations
+struct `ValueId`;
+
 // ---------- Special Parts
 ↑ ElseClause.ValueId: `ValueId`;
 

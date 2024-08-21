@@ -131,15 +131,19 @@ internal static class Emit
                 builder.AppendLine();
                 var value = attribute.Name.ToCamelCase();
                 var cached = attribute.Name.ToCamelCase() + "Cached";
-                var notNull = attribute.Type is OptionalType ? "" : "!";
+                var isValueType = attribute.Type.IsValueType;
+                var notNull = attribute.Type is OptionalType || isValueType ? "" : "!";
+                // Remove any optional type that might be on it and then ensure there is one optional type
+                var fieldType = !isValueType ? new OptionalType(attribute.Type.ToNonOptional()) : attribute.Type;
+                var syncLock = isValueType ? " ref syncLock," : "";
                 var supertype = attribute.AttributeSupertype.Type;
                 var castRequired = attribute.Type != supertype;
                 var castStart = castRequired ? $"(ctx) => ({Type(attribute.Type)})" : "";
                 var castEnd = castRequired ? "(ctx)" : "";
                 builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
-                builder.AppendLine($"            : this.Inherited(ref {cached}, ref {value},");
+                builder.AppendLine($"            : this.Inherited(ref {cached}, ref {value},{syncLock}");
                 builder.AppendLine($"                {castStart}{attribute.MethodPrefix}_{attribute.Name}{castEnd});");
-                builder.AppendLine($"    private {Type(attribute.Type.ToNonOptional())}? {value};");
+                builder.AppendLine($"    private {Type(fieldType)} {value};");
                 builder.Append($"    private bool {cached};");
                 return builder.ToString();
             }
@@ -172,13 +176,17 @@ internal static class Emit
                 builder.AppendLine();
                 var value = equation.Name.ToCamelCase();
                 var cached = equation.Name.ToCamelCase() + "Cached";
-                var notNull = equation.Type is OptionalType ? "" : "!";
+                var isValueType = equation.Type.IsValueType;
+                var notNull = equation.Type is OptionalType || isValueType ? "" : "!";
+                // Remove any optional type that might be on it and then ensure there is one optional type
+                var fieldType = !isValueType ? new OptionalType(equation.Type.ToNonOptional()) : equation.Type;
+                var syncLock = isValueType ? " ref syncLock," : "";
                 builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
-                builder.AppendLine($"            : this.Synthetic(ref {cached}, ref {value},");
+                builder.AppendLine($"            : this.Synthetic(ref {cached}, ref {value},{syncLock}");
                 builder.Append("                ");
                 AppendQualifiedEquationMethod(equation, builder);
                 builder.AppendLine(");");
-                builder.AppendLine($"    private {Type(equation.Type.ToNonOptional())}? {value};");
+                builder.AppendLine($"    private {Type(fieldType)} {value};");
                 builder.Append($"    private bool {cached};");
                 return builder.ToString();
             }

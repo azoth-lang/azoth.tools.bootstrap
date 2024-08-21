@@ -14,6 +14,7 @@ public sealed class SymbolType : NonOptionalType
         => new(Symbol.CreateFromSyntax(tree, syntax));
 
     public Symbol Symbol { get; }
+    public override bool IsValueType => Symbol.IsValueType;
 
     public SymbolType(Symbol symbol)
         : base(symbol)

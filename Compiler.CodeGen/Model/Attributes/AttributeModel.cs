@@ -28,6 +28,7 @@ public abstract class AttributeModel : IMemberModel
     public abstract string Name { get; }
     public abstract bool IsMethod { get; }
     public abstract TypeModel Type { get; }
+    public virtual bool IsSyncLockRequired => false;
 
     /// <summary>
     /// Something is a new definition if it replaces some parent definition.

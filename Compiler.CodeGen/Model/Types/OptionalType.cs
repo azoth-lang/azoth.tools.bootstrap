@@ -6,6 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 public sealed class OptionalType : TypeModel
 {
     public TypeModel UnderlyingType { get; }
+    public override bool IsValueType => UnderlyingType.IsValueType;
 
     public OptionalType(TypeModel underlyingType)
         : base(underlyingType.UnderlyingSymbol)

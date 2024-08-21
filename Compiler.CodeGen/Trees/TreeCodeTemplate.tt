@@ -154,6 +154,10 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
 file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= Emit.TypeName(node.Defines) #>
 {
     private <#= Emit.TypeName(node.Defines) #> Self { [Inline] get => this; }
+<#      if (node.IsSyncLockRequired) { #>
+    private AttributeLock syncLock;
+<#      } #>
+
 <#      foreach (var property in node.ActualProperties) { #>
     public <#= Emit.Type(property.Type) #> <#= property.Name #> { [DebuggerStepThrough] get; }
 <#      } #>

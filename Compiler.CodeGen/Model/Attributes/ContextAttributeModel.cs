@@ -37,6 +37,9 @@ public abstract class ContextAttributeModel : AspectAttributeModel
 
     public abstract EvaluationStrategy Strategy { get; }
 
+    public sealed override bool IsSyncLockRequired
+        => Strategy == EvaluationStrategy.Lazy && Type.IsValueType;
+
     protected ContextAttributeModel(AspectModel aspect, InternalSymbol nodeSymbol, string name, bool isMethod, TypeModel type)
         : base(aspect, nodeSymbol, name, isMethod, type) { }
 
