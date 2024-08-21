@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -28,7 +27,6 @@ public partial interface ICapabilityNode
 #region Patterns
 public partial interface IPatternNode
 {
-    IMaybeAntetype ContextBindingAntetype();
     DataType ContextBindingType();
     ValueId? MatchReferentValueId { get; }
 }

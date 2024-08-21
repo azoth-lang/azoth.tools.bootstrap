@@ -1383,6 +1383,7 @@ public partial interface IPatternNode : IControlFlowNode
     IFlowState FlowStateAfter { get; }
     ConditionalLexicalScope FlowLexicalScope();
     IPreviousValueId PreviousValueId();
+    IMaybeAntetype ContextBindingAntetype();
 }
 
 // [Closed(typeof(BindingContextPatternNode))]

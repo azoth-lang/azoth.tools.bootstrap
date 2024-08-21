@@ -2,3 +2,7 @@
 ◊name NameBindingAntetypesAspect;
 
 // ↓ ↑ ⮡
+
+
+// ---------- Patterns
+↓ Pattern.ContextBindingAntetype(): `IMaybeAntetype`;
