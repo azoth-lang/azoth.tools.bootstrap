@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
@@ -27,7 +28,7 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
         => GrammarAttribute.IsCached(in bindingAntetypeCached)
             ? bindingAntetype!
             : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
-                TypeMemberDeclarationsAspect.NamedParameter_BindingAntetype);
+                NameBindingAntetypesAspect.NamedParameter_BindingAntetype);
     private DataType? bindingType;
     private bool bindingTypeCached;
     public override DataType BindingType

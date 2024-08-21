@@ -1383,6 +1383,7 @@ public partial interface IPatternNode : IControlFlowNode
     IFlowState FlowStateAfter { get; }
     ConditionalLexicalScope FlowLexicalScope();
     IPreviousValueId PreviousValueId();
+    ValueId? MatchReferentValueId { get; }
     IMaybeAntetype ContextBindingAntetype();
     DataType ContextBindingType();
 }
@@ -1572,6 +1573,7 @@ public partial interface INewObjectExpressionNode : IInvocationExpressionNode
     IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
     IConstructorDeclarationNode? ReferencedConstructor { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
+    PackageNameScope PackageNameScope();
     IFlowState FlowStateBefore();
 }
 
@@ -1840,6 +1842,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     IMaybeAntetype IteratedAntetype { get; }
     DataType IteratedType { get; }
     IFlowState FlowStateBeforeBlock { get; }
+    PackageNameScope PackageNameScope();
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
@@ -1879,6 +1882,8 @@ public partial interface IReturnExpressionNode : INeverTypedExpressionNode
     IAmbiguousExpressionNode? Value { get; }
     IAmbiguousExpressionNode? CurrentValue { get; }
     IExpressionNode? IntermediateValue { get; }
+    IExitNode ControlFlowExit();
+    DataType? ExpectedReturnType { get; }
 }
 
 // [Closed(typeof(UnresolvedInvocationExpressionNode))]
@@ -2119,6 +2124,7 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameNode, IAmbi
     IAmbiguousExpressionNode Context { get; }
     StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
+    PackageNameScope PackageNameScope();
 }
 
 // [Closed(typeof(PropertyNameNode))]

@@ -1,9 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 ◊name ControlFlowAspect;
 
-// Examples:
-//↓ *.ContainingLexicalScope <: `LexicalScope`;
-//↑ TypeDefinition.SupertypesLexicalScope: `LexicalScope`;
+// ↓ ↑ ⮡
 
 // ---------- Control Flow
 ↓ ControlFlow.ControlFlowEntry(): Entry;
@@ -16,3 +14,6 @@
 
 // TODO move to variables aspect
 ↓ Entry.VariableBindingsMap(): `FixedDictionary<IVariableBindingNode, int>`;
+
+// ---------- Control Flow Expressions
+↓ ReturnExpression.ControlFlowExit(): Exit;

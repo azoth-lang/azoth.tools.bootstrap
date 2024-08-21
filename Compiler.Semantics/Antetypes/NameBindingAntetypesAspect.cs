@@ -50,4 +50,7 @@ internal static partial class NameBindingAntetypesAspect
 
     public static IMaybeAntetype NewObjectExpression_ConstructingAntetype(INewObjectExpressionNode node)
         => node.ConstructingType.NamedAntetype;
+
+    public static IMaybeAntetype NamedParameter_BindingAntetype(INamedParameterNode node)
+        => node.TypeNode.NamedAntetype;
 }

@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
@@ -24,13 +21,6 @@ public partial interface ICapabilityNode
 }
 #endregion
 
-#region Patterns
-public partial interface IPatternNode
-{
-    ValueId? MatchReferentValueId { get; }
-}
-#endregion
-
 #region Expressions
 public partial interface IExpressionNode
 {
@@ -43,11 +33,6 @@ public partial interface IExpressionNode
         => this is INamespaceNameNode or IFunctionGroupNameNode or IMethodGroupNameNode
             or IInitializerGroupNameNode or ITypeNameExpressionNode;
 }
-
-public partial interface INewObjectExpressionNode
-{
-    PackageNameScope PackageNameScope();
-}
 #endregion
 
 #region Control Flow Expressions
@@ -55,20 +40,6 @@ public partial interface IForeachExpressionNode
 {
     // TODO some way to code gen this hiding
     IdentifierName INamedBindingDeclarationNode.Name => VariableName;
-    PackageNameScope PackageNameScope();
-}
-
-public partial interface IReturnExpressionNode
-{
-    DataType? ExpectedReturnType { get; }
-    IExitNode ControlFlowExit();
-}
-#endregion
-
-#region Ambiguous Name Expressions
-public partial interface IMemberAccessExpressionNode
-{
-    PackageNameScope PackageNameScope();
 }
 #endregion
 

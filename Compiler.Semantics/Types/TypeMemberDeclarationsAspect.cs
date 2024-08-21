@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
@@ -16,7 +15,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-internal static class TypeMemberDeclarationsAspect
+internal static partial class TypeMemberDeclarationsAspect
 {
     public static FunctionType FunctionDefinition_Type(IFunctionDefinitionNode node)
         => FunctionType(node.Parameters, node.Return);
@@ -54,9 +53,6 @@ internal static class TypeMemberDeclarationsAspect
         if (!returnType.IsOutputSafe(nonwritableSelf))
             diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(node.File, node.Return!.Syntax, returnType));
     }
-
-    public static IMaybeAntetype NamedParameter_BindingAntetype(INamedParameterNode node)
-        => node.TypeNode.NamedAntetype;
 
     public static DataType NamedParameter_BindingType(INamedParameterNode node)
         => node.TypeNode.NamedType;

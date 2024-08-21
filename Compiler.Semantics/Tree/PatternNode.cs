@@ -21,7 +21,8 @@ internal abstract class PatternNode : CodeNode, IPatternNode
     private bool matchReferentValueIdCached;
     public ValueId? MatchReferentValueId
         => GrammarAttribute.IsCached(in matchReferentValueIdCached) ? matchReferentValueId
-            : this.Inherited(ref matchReferentValueIdCached, ref matchReferentValueId, ref SyncLock, InheritedMatchReferentValueId);
+            : this.Inherited(ref matchReferentValueIdCached, ref matchReferentValueId, ref SyncLock,
+                InheritedMatchReferentValueId);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public ControlFlowSet ControlFlowNext

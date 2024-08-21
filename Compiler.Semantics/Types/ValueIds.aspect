@@ -2,6 +2,8 @@
 ◊name ValueIdsAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
+// ↓ ↑ ⮡
+
 // ---------- Special Parts
 ↑ ElseClause.ValueId: `ValueId`;
 
@@ -28,6 +30,7 @@
 
 // ---------- Patterns
 ⮡ Pattern.PreviousValueId(): `IPreviousValueId`;
+↓ Pattern.MatchReferentValueId: `ValueId?`;
 
 // ---------- Expressions
 ⮡ AmbiguousExpression.PreviousValueId(): `IPreviousValueId`;
