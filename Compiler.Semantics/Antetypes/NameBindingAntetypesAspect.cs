@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
-internal static class NameBindingAntetypesAspect
+internal static partial class NameBindingAntetypesAspect
 {
     public static IMaybeAntetype FieldParameter_BindingAntetype(IFieldParameterNode node)
         => node.ReferencedField?.BindingAntetype ?? IAntetype.Unknown;

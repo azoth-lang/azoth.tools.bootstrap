@@ -1,0 +1,4 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+◊name NameBindingAntetypesAspect;
+
+// ↓ ↑ ⮡
