@@ -30,7 +30,7 @@
 
 // ---------- Patterns
 ⮡ Pattern.PreviousValueId(): `IPreviousValueId`;
-↓ Pattern.MatchReferentValueId: `ValueId?`;
+↓ Pattern.MatchReferentValueId: `ValueId`?;
 
 // ---------- Expressions
 ⮡ AmbiguousExpression.PreviousValueId(): `IPreviousValueId`;
