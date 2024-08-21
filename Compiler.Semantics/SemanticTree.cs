@@ -27,7 +27,6 @@ public partial interface ICapabilityNode
 #region Patterns
 public partial interface IPatternNode
 {
-    DataType ContextBindingType();
     ValueId? MatchReferentValueId { get; }
 }
 #endregion
