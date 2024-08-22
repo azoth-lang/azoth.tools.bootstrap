@@ -54,11 +54,3 @@ public partial interface ITypeDeclarationNode
     IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
 }
 #endregion
-
-#region Namespace Declarations
-public partial interface INamespaceDeclarationNode
-{
-    IEnumerable<INamespaceMemberDeclarationNode> MembersNamed(StandardName named);
-    IEnumerable<INamespaceMemberDeclarationNode> NestedMembersNamed(StandardName named);
-}
-#endregion

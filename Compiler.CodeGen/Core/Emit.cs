@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -91,6 +92,7 @@ internal static class Emit
             SynthesizedAttributeModel a => ParametersAndBody(a),
             InheritedAttributeModel a => a.IsMethod ? "();" : " { get; }",
             PreviousAttributeModel a => a.IsMethod ? "();" : " { get; }",
+            IntertypeMethodAttributeModel a => $"({a.Parameters}){Environment.NewLine}        => {a.Expression};",
             _ => throw ExhaustiveMatch.Failed(attribute)
         };
 

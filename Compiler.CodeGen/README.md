@@ -50,8 +50,8 @@
 
 | Declaration                                                                              | Meaning                                                                    |
 | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `+` `private`? *Node*.*Attribute*`(`*Params*`):` *Type*`;`<sup>1</sup>                   | Intertype method attribute, always computed                                |
-| `+` `private`? *Node*.*Attribute*`(`*Params*`):` *Type* `=>` *Expression*`;`<sup>1</sup> | Intertype method attribute with default inline expression, always computed |
+| `+` *Node*.*Attribute*`(`*Params*`):` *Type*`;`<sup>1</sup>                   | Intertype method attribute, always computed                                |
+| `+` *Node*.*Attribute*`(`*Params*`):` *Type* `=>` *Expression*`;`<sup>1</sup> | Intertype method attribute with default inline expression, always computed |
 
 1. Not yet implemented.
 

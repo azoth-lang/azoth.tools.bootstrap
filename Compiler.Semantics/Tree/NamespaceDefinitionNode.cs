@@ -45,13 +45,7 @@ internal sealed class NamespaceDefinitionNode : ChildNode, INamespaceDefinitionN
         Members = MemberNamespaces.Concat<INamespaceMemberDefinitionNode>(PackageMembers).ToFixedList();
     }
 
-    public IEnumerable<INamespaceMemberDeclarationNode> MembersNamed(StandardName named)
-        => MembersByName.GetValueOrDefault(named) ?? [];
-
     private IFixedList<INamespaceMemberDeclarationNode> GetNestedMembers()
         => Members.OfType<INamespaceDeclarationNode>()
                   .SelectMany(ns => ns.Members.Concat(ns.NestedMembers)).ToFixedList();
-
-    public IEnumerable<INamespaceMemberDeclarationNode> NestedMembersNamed(StandardName named)
-        => NestedMembersByName.GetValueOrDefault(named) ?? [];
 }

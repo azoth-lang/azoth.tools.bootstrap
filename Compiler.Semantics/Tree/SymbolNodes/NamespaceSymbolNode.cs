@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -43,13 +42,7 @@ internal class NamespaceSymbolNode : PackageFacetChildSymbolNode, INamespaceSymb
     private new IFixedList<INamespaceMemberDeclarationNode> GetMembers()
         => ChildList.Attach(this, base.GetMembers().Cast<INamespaceMemberDeclarationNode>());
 
-    public IEnumerable<INamespaceMemberDeclarationNode> MembersNamed(StandardName named)
-        => MembersByName.GetValueOrDefault(named) ?? [];
-
     private IFixedList<INamespaceMemberDeclarationNode> GetNestedMembers()
         => Members.OfType<INamespaceDeclarationNode>()
                   .SelectMany(ns => ns.Members.Concat(ns.NestedMembers)).ToFixedList();
-
-    public IEnumerable<INamespaceMemberDeclarationNode> NestedMembersNamed(StandardName named)
-        => NestedMembersByName.GetValueOrDefault(named) ?? [];
 }

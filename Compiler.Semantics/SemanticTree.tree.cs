@@ -2725,6 +2725,10 @@ public partial interface INamespaceDeclarationNode : INamespaceMemberDeclaration
     IFixedList<INamespaceMemberDeclarationNode> NestedMembers { get; }
     FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> MembersByName { get; }
     FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> NestedMembersByName { get; }
+    IEnumerable<INamespaceMemberDeclarationNode> MembersNamed(StandardName named)
+        => MembersByName.GetValueOrDefault(named) ?? [];
+    IEnumerable<INamespaceMemberDeclarationNode> NestedMembersNamed(StandardName named)
+        => NestedMembersByName.GetValueOrDefault(named) ?? [];
 }
 
 [Closed(

@@ -74,6 +74,7 @@ public static class AspectParser
             '↑' => ParseSynthesizedAttribute(statement),
             '↓' => ParseInheritedAttribute(statement),
             '⮡' => ParsePreviousAttribute(statement),
+            '+' => ParseIntertypeMethodAttribute(statement),
             _ => throw new($"Unknown attribute kind: {statement}"),
         };
 
@@ -121,6 +122,29 @@ public static class AspectParser
         var typeSyntax = ParseType(type);
         var nodeSymbol = ParseSymbol(node);
         return new(evaluationStrategy, nodeSymbol, name, isMethod, typeSyntax);
+    }
+
+    private static IntertypeMethodAttributeSyntax ParseIntertypeMethodAttribute(string statement)
+    {
+        if (!ParseOffStart(ref statement, '+'))
+            throw new ArgumentException("Not an intertype method attribute statement.", nameof(statement));
+
+        var (definition, expression) = SplitTwo(statement, "=>", "Should be exactly one `=>` in: '{0}'");
+        (definition, var type) = SplitTwo(definition, ":", "Should be exactly one `:` in: '{0}'");
+        (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        var parameters = ParseOffParameters(ref definition);
+        var name = definition;
+        var typeSyntax = ParseType(type);
+        var nodeSymbol = ParseSymbol(node);
+        return new(nodeSymbol, name, parameters, typeSyntax, expression);
+    }
+
+    private static string ParseOffParameters(ref string definition)
+    {
+        (definition, var parameters) = SplitAtFirst(definition, "(", "Missing `(` the start parameters in: '{0}'");
+        if (!ParseOffEnd(ref parameters, ")"))
+            throw new FormatException("Missing `)` at the end of parameters.");
+        return parameters;
     }
 
     private static EquationSyntax ParseEquation(string statement)
