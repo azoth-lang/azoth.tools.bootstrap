@@ -97,10 +97,4 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         TypeDeclarationsAspect.TypeDeclaration_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
-
-    public IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named)
-        => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
-
-    public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)
-        => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
 }

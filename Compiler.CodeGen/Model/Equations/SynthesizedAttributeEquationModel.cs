@@ -7,24 +7,27 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
-public sealed class SynthesizedAttributeEquationModel : EquationModel
+public sealed class SynthesizedAttributeEquationModel : SubtreeEquationModel
 {
     public static IEqualityComparer<SynthesizedAttributeEquationModel> NameComparer { get; }
         = EqualityComparer<SynthesizedAttributeEquationModel>.Create((a1, a2) => a1?.Name == a2?.Name,
             a => HashCode.Combine(a.Name));
 
     public override SynthesizedAttributeEquationSyntax? Syntax { get; }
-    public SynthesizedAttributeModel Attribute => attribute.Value;
+    public override SynthesizedAttributeModel Attribute => attribute.Value;
     private readonly Lazy<SynthesizedAttributeModel> attribute;
-    public EvaluationStrategy Strategy => strategy.Value;
+    public override EvaluationStrategy Strategy => strategy.Value;
     private readonly Lazy<EvaluationStrategy> strategy;
     public TypeModel? TypeOverride { get; }
-    public TypeModel Type => TypeOverride ?? Attribute.Type;
+    public override TypeModel Type => TypeOverride ?? Attribute.Type;
     public override bool IsSyncLockRequired
         => Strategy == EvaluationStrategy.Lazy && Type.IsValueType;
+    public override bool RequiresEmitOnNode
+        => Strategy == EvaluationStrategy.Computed && !this.IsObjectMember();
 
     public SynthesizedAttributeEquationModel(AspectModel aspect, SynthesizedAttributeEquationSyntax syntax)
-        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.IsMethod, syntax.Expression)
+        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name,
+            syntax.IsMethod, syntax.Expression)
     {
         if (syntax.Strategy == EvaluationStrategy.Lazy && Expression is not null)
             throw new FormatException($"{syntax.Node}.{syntax.Name} has an expression but is marked as lazy.");

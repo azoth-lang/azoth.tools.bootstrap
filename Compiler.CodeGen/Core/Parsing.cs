@@ -123,6 +123,13 @@ internal static class Parsing
         return (value[..atIndex].Trim(), value[(atIndex + separator.Length)..].Trim());
     }
 
+    public static (string, string?) OptionalSplitAtFirst(string value, string separator)
+    {
+        var index = value.IndexOf(separator, StringComparison.InvariantCulture);
+        if (index == -1) return (value, null);
+        return (value[..index].Trim(), value[(index + separator.Length)..].Trim());
+    }
+
     public static (string, string) SplitAtFirst(string value, string separator, string errorMessage)
     {
         var index = value.IndexOf(separator, StringComparison.InvariantCulture);

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -47,23 +46,13 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     public GenericParameterTypeSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
             : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.GenericParameter_Symbol);
-    public IFixedSet<ITypeMemberDefinitionNode> Members
-        => FixedSet.Empty<ITypeMemberDefinitionNode>();
+    public IFixedSet<ITypeMemberDefinitionNode> Members => [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
-    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers
-        => FixedSet.Empty<ITypeMemberDefinitionNode>();
+    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers => [];
 
     public GenericParameterNode(IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint)
     {
         Syntax = syntax;
         Constraint = constraint;
     }
-
-    public IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named)
-        // TODO should look up members based on generic constraints
-        => [];
-
-    public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)
-        // TODO should look up members based on generic constraints
-        => [];
 }

@@ -2,21 +2,23 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
-internal sealed class IntertypeMethodAttributeSyntax : AspectAttributeSyntax
+public sealed class IntertypeMethodAttributeSyntax : AspectAttributeSyntax
 {
-    /// <remarks>For the moment, parameters are a single string rather than parsed. This is possible
-    /// since the expression is required and therefore refer to the parameters by name.</remarks>
+    /// <remarks>For the moment, parameters are a single string rather than parsed. This prevents
+    /// code gen from calling aspect methods though.</remarks>
     public string Parameters { get; }
-    /// <remarks>For the moment, the expression is required because that avoids the complexity of
-    /// passing arguments to computed methods.</remarks>
-    public string Expression { get; }
+    public string? DefaultExpression { get; }
 
-    public IntertypeMethodAttributeSyntax(SymbolSyntax node, string name, string parameters, TypeSyntax type, string expression)
+    public IntertypeMethodAttributeSyntax(SymbolSyntax node, string name, string parameters, TypeSyntax type, string? defaultExpression)
         : base(EvaluationStrategy.Computed, node, name, true, type)
     {
         Parameters = parameters;
-        Expression = expression;
+        DefaultExpression = defaultExpression;
     }
 
-    public override string ToString() => $"+ {Node}.{Name}({Parameters}): {Type} => {Expression}";
+    public override string ToString()
+    {
+        var defaultExpression = DefaultExpression is not null ? $" => {DefaultExpression}" : "";
+        return $"+ {Node}.{Name}({Parameters}): {Type}{defaultExpression};";
+    }
 }

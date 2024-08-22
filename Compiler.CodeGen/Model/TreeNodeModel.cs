@@ -6,7 +6,6 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using Azoth.Tools.Bootstrap.Framework;
 using MoreLinq;
 
@@ -120,8 +119,8 @@ public class TreeNodeModel
     public IFixedList<EquationModel> AllDeclaredEquations => allDeclaredEquations.Value;
     private readonly Lazy<IFixedList<EquationModel>> allDeclaredEquations;
 
-    public IFixedList<SynthesizedAttributeEquationModel> EquationsRequiringEmit => equationsRequiringEmit.Value;
-    private readonly Lazy<IFixedList<SynthesizedAttributeEquationModel>> equationsRequiringEmit;
+    public IFixedList<SubtreeEquationModel> EquationsRequiringEmit => equationsRequiringEmit.Value;
+    private readonly Lazy<IFixedList<SubtreeEquationModel>> equationsRequiringEmit;
 
     public IFixedList<EquationModel> InheritedEquations => inheritedEquations.Value;
     private readonly Lazy<IFixedList<EquationModel>> inheritedEquations;
@@ -197,8 +196,8 @@ public class TreeNodeModel
             });
         allDeclaredEquations = new(() => DeclaredEquations.Concat(ImplicitlyDeclaredEquations).ToFixedList());
         equationsRequiringEmit = new(()
-            => AllDeclaredEquations.OfType<SynthesizedAttributeEquationModel>()
-                                   .Where(eq => eq.Strategy == EvaluationStrategy.Computed && !eq.IsObjectMember())
+            => AllDeclaredEquations.OfType<SubtreeEquationModel>()
+                                   .Where(eq => eq.RequiresEmitOnNode)
                                    .ExceptBy(AttributesRequiringDeclaration.Select(a => a.Name), eq => eq.Name)
                                    .ToFixedList());
         actualEquations = new(() => ComputeActualEquations(AllDeclaredEquations).ToFixedList());
@@ -230,8 +229,8 @@ public class TreeNodeModel
     public IEnumerable<AttributeModel> AttributesNamed(string name)
         => ActualAttributes.Where(p => p.Name == name);
 
-    public SynthesizedAttributeEquationModel? EquationFor(SynthesizedAttributeModel attribute)
-        => ActualEquations.OfType<SynthesizedAttributeEquationModel>().SingleOrDefault(e => e.Name == attribute.Name);
+    public EquationModel? EquationFor(AttributeModel attribute)
+        => ActualEquations.SingleOrDefault(e => e.Name == attribute.Name);
 
     private static IEnumerable<T> MostSpecificMembers<T>(IEnumerable<T> attributes)
         where T : IMemberModel

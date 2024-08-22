@@ -2772,6 +2772,10 @@ public partial interface IPrimitiveTypeDeclarationNode : ITypeDeclarationNode
     TypeName INamedDeclarationNode.Name => Name;
     FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName { get; }
     FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName { get; }
+    IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(StandardName named)
+        => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
+    IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(StandardName named)
+        => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
 }
 
 [Closed(
@@ -2789,6 +2793,10 @@ public partial interface IUserTypeDeclarationNode : IPackageMemberDeclarationNod
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName { get; }
     FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName { get; }
+    IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(StandardName named)
+        => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
+    IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(StandardName named)
+        => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
 }
 
 [Closed(
@@ -2839,6 +2847,10 @@ public partial interface IGenericParameterDeclarationNode : ITypeDeclarationNode
     new GenericParameterTypeSymbol Symbol { get; }
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(StandardName named)
+        => [];
+    IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(StandardName named)
+        => [];
 }
 
 [Closed(
@@ -3016,6 +3028,8 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
     IFixedSet<BareReferenceType> Supertypes { get; }
     IFixedSet<ITypeMemberDeclarationNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
+    IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named);
+    IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
 }
 
 // [Closed(typeof(PackageSymbolNode))]

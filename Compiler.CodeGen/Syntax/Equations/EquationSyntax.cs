@@ -1,8 +1,13 @@
+using System.Diagnostics;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
-[Closed(typeof(SynthesizedAttributeEquationSyntax), typeof(InheritedAttributeEquationSyntax))]
+[Closed(
+    typeof(SynthesizedAttributeEquationSyntax),
+    typeof(InheritedAttributeEquationSyntax),
+    typeof(IntertypeMethodEquationSyntax))]
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class EquationSyntax
 {
     public SymbolSyntax Node { get; }
@@ -17,4 +22,6 @@ public abstract class EquationSyntax
         IsMethod = isMethod;
         Expression = expression;
     }
+
+    public abstract override string ToString();
 }

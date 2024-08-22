@@ -129,14 +129,14 @@ public static class AspectParser
         if (!ParseOffStart(ref statement, '+'))
             throw new ArgumentException("Not an intertype method attribute statement.", nameof(statement));
 
-        var (definition, expression) = SplitTwo(statement, "=>", "Should be exactly one `=>` in: '{0}'");
+        var (definition, defaultExpression) = OptionalSplitTwo(statement, "=>", "Should be exactly one `=>` in: '{0}'");
         (definition, var type) = SplitTwo(definition, ":", "Should be exactly one `:` in: '{0}'");
         (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var parameters = ParseOffParameters(ref definition);
         var name = definition;
         var typeSyntax = ParseType(type);
         var nodeSymbol = ParseSymbol(node);
-        return new(nodeSymbol, name, parameters, typeSyntax, expression);
+        return new(nodeSymbol, name, parameters, typeSyntax, defaultExpression);
     }
 
     private static string ParseOffParameters(ref string definition)
@@ -155,15 +155,27 @@ public static class AspectParser
         (definition, var typeOverride) = OptionalSplitTwo(definition, ":", "Too many `:` in: '{0}'");
         (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
-        var isMethod = ParseOffEnd(ref definition, "()");
+        var parameters = TryParseOffParameters(ref definition);
+        var isMethod = parameters is not null;
         var segments = definition.Split('.', StringSplitOptions.TrimEntries);
         var nodeSymbol = ParseSymbol(node);
         if (segments.Length == 1)
+        {
+            if (isMethod && parameters!.Length > 0)
+                return ParseIntertypeMethodEquation(evaluationStrategy, nodeSymbol, definition, parameters, typeOverride, expression);
             return ParseSynthesizedEquation(evaluationStrategy, nodeSymbol, definition, isMethod, typeOverride, expression);
-
+        }
         var name = segments[^1];
         segments = segments[..^1];
         return ParseInheritedEquation(evaluationStrategy, nodeSymbol, segments, name, isMethod, typeOverride, expression);
+    }
+
+    private static string? TryParseOffParameters(ref string definition)
+    {
+        (definition, var parameters) = OptionalSplitAtFirst(definition, "(");
+        if (parameters is null) return null;
+        if (!ParseOffEnd(ref parameters, ")")) throw new FormatException("Missing `)` at the end of parameters.");
+        return parameters;
     }
 
     private static SynthesizedAttributeEquationSyntax ParseSynthesizedEquation(
@@ -179,7 +191,7 @@ public static class AspectParser
     }
 
     private static InheritedAttributeEquationSyntax ParseInheritedEquation(
-        EvaluationStrategy? evaluationStrategy,
+        EvaluationStrategy? strategy,
         SymbolSyntax node,
         string[] selector,
         string name,
@@ -187,12 +199,27 @@ public static class AspectParser
         string? typeOverride,
         string? expression)
     {
-        if (evaluationStrategy is not null)
+        if (strategy is not null)
             throw new FormatException("Inherited equations cannot have evaluation strategies.");
         if (typeOverride is not null)
             throw new FormatException("Inherited equations cannot have type overrides.");
         var selectorSyntax = ParseSelector(selector);
         return new(node, selectorSyntax, name, isMethod, expression);
+    }
+
+    private static IntertypeMethodEquationSyntax ParseIntertypeMethodEquation(
+        EvaluationStrategy? strategy,
+        SymbolSyntax node,
+        string name,
+        string parameters,
+        string? typeOverride,
+        string? expression)
+    {
+        if (strategy is not null)
+            throw new FormatException("Intertype method equations cannot have evaluation strategies.");
+        if (expression is null)
+            throw new FormatException("Intertype method equations must have an expression.");
+        return new(node, name, parameters, ParseType(typeOverride), expression);
     }
 
     private static SelectorSyntax ParseSelector(string[] selector)

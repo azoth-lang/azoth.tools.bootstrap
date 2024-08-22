@@ -17,4 +17,10 @@ public sealed class SynthesizedAttributeEquationSyntax : EquationSyntax
         Strategy = strategy;
         TypeOverride = typeOverride;
     }
+
+    public override string ToString()
+    {
+        var parameters = IsMethod ? "()" : "";
+        return $"= {Node}.{Name}{parameters}";
+    }
 }

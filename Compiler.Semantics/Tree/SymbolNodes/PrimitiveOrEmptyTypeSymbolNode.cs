@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -43,10 +42,4 @@ internal abstract class PrimitiveOrEmptyTypeSymbolNode : ChildSymbolNode, IPrimi
 
     private new IFixedSet<ITypeMemberDeclarationNode> GetMembers()
         => ChildSet.Attach(this, GetMembers(Primitive.SymbolTree).OfType<ITypeMemberDeclarationNode>());
-
-    public IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named)
-        => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
-
-    public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)
-        => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
 }

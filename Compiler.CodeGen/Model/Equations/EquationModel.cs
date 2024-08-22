@@ -2,12 +2,15 @@ using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
-[Closed(typeof(SynthesizedAttributeEquationModel), typeof(InheritedAttributeEquationModel))]
+[Closed(
+    typeof(SubtreeEquationModel),
+    typeof(InheritedAttributeEquationModel))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class EquationModel : IMemberModel
 {
@@ -16,6 +19,7 @@ public abstract class EquationModel : IMemberModel
         {
             SynthesizedAttributeEquationSyntax syn => new SynthesizedAttributeEquationModel(aspect, syn),
             InheritedAttributeEquationSyntax syn => new InheritedAttributeEquationModel(aspect, syn),
+            IntertypeMethodEquationSyntax syn => new IntertypeMethodEquationModel(aspect, syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
@@ -26,6 +30,7 @@ public abstract class EquationModel : IMemberModel
     private readonly Lazy<TreeNodeModel> node;
     public string Name { get; }
     public bool IsMethod { get; }
+    public abstract TypeModel Type { get; }
     public string? Expression { get; }
     public virtual bool IsSyncLockRequired => false;
 

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
@@ -8,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
     typeof(ChildAtIndexSelectorSyntax),
     typeof(ChildAtVariableSelectorSyntax),
     typeof(ChildListSelectorSyntax))]
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class SelectorSyntax
 {
     /// <summary>

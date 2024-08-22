@@ -14,4 +14,10 @@ public sealed class InheritedAttributeEquationSyntax : EquationSyntax
     {
         Selector = selector;
     }
+
+    public override string ToString()
+    {
+        var parameters = IsMethod ? "()" : "";
+        return $"= {Node}.{Selector}.{Name}{parameters}";
+    }
 }

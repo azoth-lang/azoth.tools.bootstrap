@@ -71,7 +71,7 @@ public sealed class SynthesizedAttributeModel : AspectAttributeModel
     {
         var strategy = Strategy.ToSourceString();
         var parameters = IsMethod ? "()" : "";
-        var expression = DefaultExpression is not null ? $" => {DefaultExpression}" : "";
-        return $"↑ {strategy}{Node.Defines}.{Name}{parameters}: {Type}{expression};";
+        var defaultExpression = DefaultExpression is not null ? $" => {DefaultExpression}" : "";
+        return $"↑ {strategy}{Node.Defines}.{Name}{parameters}: {Type}{defaultExpression};";
     }
 }

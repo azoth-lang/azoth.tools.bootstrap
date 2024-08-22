@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -48,10 +47,4 @@ internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserT
             .Cast<IGenericParameterDeclarationNode>();
         return ChildList.Attach(this, declarationNodes);
     }
-
-    public IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named)
-        => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
-
-    public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)
-        => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
 }

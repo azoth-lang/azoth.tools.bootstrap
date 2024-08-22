@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -20,12 +19,4 @@ internal sealed class GenericParameterSymbolNode : PackageFacetChildSymbolNode, 
     {
         Symbol = symbol;
     }
-
-    public IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named)
-        // TODO should look up members based on generic constraints
-        => [];
-
-    public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)
-        // TODO should look up members based on generic constraints
-        => [];
 }

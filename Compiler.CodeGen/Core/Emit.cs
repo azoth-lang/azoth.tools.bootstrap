@@ -7,7 +7,6 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -83,7 +82,11 @@ internal static class Emit
         => attribute.Name.ToCamelCase();
 
     public static string Parameters(AttributeModel attribute)
-        => attribute.IsMethod ? "()" : "";
+    {
+        if (attribute is IntertypeMethodAttributeModel method)
+            return $"({method.Parameters})";
+        return attribute.IsMethod ? "()" : "";
+    }
 
     public static string ParametersAndBody(AttributeModel attribute)
         => attribute switch
@@ -92,7 +95,7 @@ internal static class Emit
             SynthesizedAttributeModel a => ParametersAndBody(a),
             InheritedAttributeModel a => a.IsMethod ? "();" : " { get; }",
             PreviousAttributeModel a => a.IsMethod ? "();" : " { get; }",
-            IntertypeMethodAttributeModel a => $"({a.Parameters}){Environment.NewLine}        => {a.Expression};",
+            IntertypeMethodAttributeModel a => ParametersAndBody(a),
             _ => throw ExhaustiveMatch.Failed(attribute)
         };
 
@@ -107,7 +110,18 @@ internal static class Emit
         return attribute.IsMethod ? "();" : " { get; }";
     }
 
-    private static string? ExpressionFor(SynthesizedAttributeModel attribute)
+    private static string ParametersAndBody(IntertypeMethodAttributeModel attribute)
+    {
+        if (!attribute.IsObjectMember())
+        {
+            var expression = attribute.DefaultExpression ?? ExpressionFor(attribute);
+            if (expression is not null)
+                return $"{Parameters(attribute)}{Environment.NewLine}        => {expression};";
+        }
+        return $"{Parameters(attribute)};";
+    }
+
+    private static string? ExpressionFor(AttributeModel attribute)
     {
         if (attribute.Node.EquationFor(attribute) is not { } equation)
             return null;
@@ -156,14 +170,17 @@ internal static class Emit
     #endregion
 
     #region Equations
-
     public static string Parameters(EquationModel equation)
-        => equation.IsMethod ? "()" : "";
+    {
+        if (equation is IntertypeMethodEquationModel method)
+            return $"({method.Parameters})";
+        return equation.IsMethod ? "()" : "";
+    }
 
     public static string Override(SynthesizedAttributeEquationModel equation)
         => equation.IsObjectMember() ? "override " : "";
 
-    public static string ParametersAndBody(SynthesizedAttributeEquationModel equation)
+    public static string ParametersAndBody(SubtreeEquationModel equation)
     {
         switch (equation.Strategy)
         {
@@ -213,7 +230,7 @@ internal static class Emit
         }
     }
 
-    private static void AppendQualifiedEquationMethod(SynthesizedAttributeEquationModel equation, StringBuilder builder)
+    private static void AppendQualifiedEquationMethod(EquationModel equation, StringBuilder builder)
     {
         builder.Append(equation.Aspect.Name);
         builder.Append('.');
@@ -227,7 +244,7 @@ internal static class Emit
         return builder.ToString();
     }
 
-    private static void AppendEquationMethod(SynthesizedAttributeEquationModel equation, StringBuilder builder)
+    private static void AppendEquationMethod(EquationModel equation, StringBuilder builder)
     {
         builder.Append(equation.NodeSymbol);
         builder.Append('_');

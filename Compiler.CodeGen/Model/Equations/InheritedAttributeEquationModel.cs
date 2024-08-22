@@ -14,7 +14,7 @@ public sealed class InheritedAttributeEquationModel : EquationModel
     private readonly Lazy<InheritedAttributeSupertypeModel> attributeSupertype;
     public SelectorModel Selector { get; }
     public bool IsAllDescendants => Selector.IsAllDescendants;
-    public TypeModel Type => AttributeSupertype.Type;
+    public override TypeModel Type => AttributeSupertype.Type;
 
     public InheritedAttributeEquationModel(AspectModel aspect, InheritedAttributeEquationSyntax syntax)
         : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.IsMethod, syntax.Expression)

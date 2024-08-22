@@ -20,14 +20,29 @@
 = PrimitiveTypeDeclaration.InclusiveInstanceMembersByName;
 ↑ PrimitiveTypeDeclaration.AssociatedMembersByName: `FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
 = PrimitiveTypeDeclaration.AssociatedMembersByName;
+= PrimitiveTypeDeclaration.InclusiveInstanceMembersNamed(StandardName named)
+    => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
+= PrimitiveTypeDeclaration.AssociatedMembersNamed(StandardName named)
+    => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
 ↑ UserTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>`;
 = UserTypeDeclaration.InclusiveInstanceMembersByName;
 ↑ UserTypeDeclaration.AssociatedMembersByName: `FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
 = UserTypeDeclaration.AssociatedMembersByName;
+= UserTypeDeclaration.InclusiveInstanceMembersNamed(StandardName named)
+    => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
+= UserTypeDeclaration.AssociatedMembersNamed(StandardName named)
+    => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
 
+// ---------- Type Declaration Parts
+// TODO should look up members based on generic constraints
+= GenericParameterDeclaration.InclusiveInstanceMembersNamed(StandardName named) => [];
+// TODO should look up members based on generic constraints
+= GenericParameterDeclaration.AssociatedMembersNamed(StandardName named) => [];
+
+// ---------- Can be Referenced by Type Name
 /// <summary>
 /// All members of the type with the given name along with inherited members with the given name
 /// if they are not hidden by a member in the type itself.
 /// </summary>
-// + TypeDeclaration.InclusiveInstanceMembersNamed(StandardName named): `IEnumerable<IInstanceMemberDeclarationNode>`;
-// + TypeDeclaration.AssociatedMembersNamed(StandardName named) `IEnumerable<IAssociatedMemberDeclarationNode>`;
++ TypeDeclaration.InclusiveInstanceMembersNamed(StandardName named): `IEnumerable<IInstanceMemberDeclarationNode>`;
++ TypeDeclaration.AssociatedMembersNamed(StandardName named): `IEnumerable<IAssociatedMemberDeclarationNode>`;

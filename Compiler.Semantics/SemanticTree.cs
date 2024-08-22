@@ -42,15 +42,3 @@ public partial interface IForeachExpressionNode
     IdentifierName INamedBindingDeclarationNode.Name => VariableName;
 }
 #endregion
-
-#region Type Declarations
-public partial interface ITypeDeclarationNode
-{
-    /// <summary>
-    /// All members of the type with the given name along with inherited members with the given name
-    /// if they are not hidden by a member in the type itself.
-    /// </summary>
-    IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named);
-    IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
-}
-#endregion
