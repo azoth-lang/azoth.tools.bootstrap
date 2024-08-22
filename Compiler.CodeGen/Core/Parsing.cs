@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
@@ -142,21 +143,27 @@ internal static class Parsing
     {
         if (type is null) return null;
         bool isOptional = ParseOffEnd(ref type, "?");
-        var collectionKind = ParseCollectionKind(ref type);
-        return new(ParseSymbol(type), collectionKind, isOptional);
-    }
+        if (isOptional)
+            return new OptionalTypeSyntax(ParseType(type));
 
-    private static CollectionKind ParseCollectionKind(ref string type)
-    {
         var isList = ParseOffEnd(ref type, "*");
+        if (isList)
+            return new CollectionTypeSyntax(CollectionKind.List, ParseType(type));
 
         var isSet = type.StartsWith('{') && type.EndsWith('}');
         type = isSet ? type[1..^1] : type;
+        if (isSet)
+            return new CollectionTypeSyntax(CollectionKind.Set, ParseType(type));
 
-        if (isList && isSet) throw new FormatException("Property cannot be both a list and a set");
-        if (isList) return CollectionKind.List;
-        if (isSet) return CollectionKind.Set;
-        return CollectionKind.None;
+        var startsEnumerable = ParseOffStart(ref type, "IEnumerable<");
+        if (startsEnumerable)
+        {
+            if (!ParseOffEnd(ref type, ">"))
+                throw new FormatException("Expected closing '>' for IEnumerable");
+            return new CollectionTypeSyntax(CollectionKind.Enumerable, ParseType(type));
+        }
+
+        return new SymbolTypeSyntax(ParseSymbol(type));
     }
 
     public static bool ParseOffEnd(ref string value, string suffix)
@@ -166,10 +173,10 @@ internal static class Parsing
         return endsWith;
     }
 
-    public static bool ParseOffStart(ref string value, char suffix)
+    public static bool ParseOffStart(ref string value, string prefix)
     {
-        var endsWith = value.StartsWith(suffix);
-        if (endsWith) value = value[1..].Trim();
+        var endsWith = value.StartsWith(prefix);
+        if (endsWith) value = value[prefix.Length..].Trim();
         return endsWith;
     }
 }

@@ -57,9 +57,10 @@ internal static class Emit
         => type switch
         {
             SymbolType t => emitSymbol(t.Symbol),
-            ListType t => $"IFixedList<{Type(t.ElementType, emitSymbol)}>",
-            SetType t => $"IFixedSet<{Type(t.ElementType, emitSymbol)}>",
+            ListTypeModel t => $"IFixedList<{Type(t.ElementType, emitSymbol)}>",
+            SetTypeModel t => $"IFixedSet<{Type(t.ElementType, emitSymbol)}>",
             OptionalType t => $"{Type(t.UnderlyingType, emitSymbol)}?",
+            EnumerableTypeModel t => $"IEnumerable<{Type(t.ElementType, emitSymbol)}>",
             _ => throw ExhaustiveMatch.Failed(type)
         };
 

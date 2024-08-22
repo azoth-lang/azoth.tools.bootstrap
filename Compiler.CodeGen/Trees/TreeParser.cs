@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using static Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Parsing;
 
@@ -61,7 +62,7 @@ internal static class TreeParser
         if (type is null)
         {
             typeSyntax = ParseType(name);
-            name = typeSyntax.Symbol.Text;
+            name = typeSyntax.UnderlyingSymbol.Text;
         }
         else
             typeSyntax = ParseType(type);

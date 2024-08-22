@@ -57,7 +57,7 @@ public static class AspectParser
 
     private static InheritedAttributeSupertypeSyntax ParseInheritedAttributeSupertype(string statement)
     {
-        if (!ParseOffStart(ref statement, '↓'))
+        if (!ParseOffStart(ref statement, "↓"))
             throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
 
         var (definition, type) = SplitTwo(statement, "<:", "Should be exactly one `<:` in: '{0}'");
@@ -80,7 +80,7 @@ public static class AspectParser
 
     private static SynthesizedAttributeSyntax ParseSynthesizedAttribute(string statement)
     {
-        if (!ParseOffStart(ref statement, '↑'))
+        if (!ParseOffStart(ref statement, "↑"))
             throw new ArgumentException("Not a synthesized attribute statement.", nameof(statement));
 
         var (definition, defaultExpression) = OptionalSplitTwo(statement, "=>", "Too many `=>` in: '{0}'");
@@ -96,7 +96,7 @@ public static class AspectParser
 
     private static InheritedAttributeSyntax ParseInheritedAttribute(string statement)
     {
-        if (!ParseOffStart(ref statement, '↓'))
+        if (!ParseOffStart(ref statement, "↓"))
             throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
 
         var (definition, type) = SplitTwo(statement, ":", "Should be exactly one `:` in: '{0}'");
@@ -111,7 +111,7 @@ public static class AspectParser
 
     private static PreviousAttributeSyntax ParsePreviousAttribute(string statement)
     {
-        if (!ParseOffStart(ref statement, '⮡'))
+        if (!ParseOffStart(ref statement, "⮡"))
             throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
 
         var (definition, type) = SplitTwo(statement, ":", "Should be exactly one `:` in: '{0}'");
@@ -126,7 +126,7 @@ public static class AspectParser
 
     private static IntertypeMethodAttributeSyntax ParseIntertypeMethodAttribute(string statement)
     {
-        if (!ParseOffStart(ref statement, '+'))
+        if (!ParseOffStart(ref statement, "+"))
             throw new ArgumentException("Not an intertype method attribute statement.", nameof(statement));
 
         var (definition, defaultExpression) = OptionalSplitTwo(statement, "=>", "Should be exactly one `=>` in: '{0}'");
@@ -149,7 +149,7 @@ public static class AspectParser
 
     private static EquationSyntax ParseEquation(string statement)
     {
-        if (!ParseOffStart(ref statement, '='))
+        if (!ParseOffStart(ref statement, "="))
             throw new ArgumentException("Not an equation.", nameof(statement));
         var (definition, expression) = OptionalSplitTwo(statement, "=>", "Too many `=>` in: '{0}'");
         (definition, var typeOverride) = OptionalSplitTwo(definition, ":", "Too many `:` in: '{0}'");

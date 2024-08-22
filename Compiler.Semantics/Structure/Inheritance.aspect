@@ -4,6 +4,6 @@
 // ↓ ↑ ⮡
 
 // ---------- Type Definitions
-↑ TypeDefinition.AllSupertypeNames: `IEnumerable<IStandardTypeNameNode>` => SupertypeNames;
+↑ TypeDefinition.AllSupertypeNames: IEnumerable<StandardTypeName> => SupertypeNames;
 = ClassDefinition.AllSupertypeNames
     => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);

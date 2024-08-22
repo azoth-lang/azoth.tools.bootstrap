@@ -27,7 +27,7 @@ public static class <#=Emit.TypeName(tree.RootSupertype)#>Extensions
 <#  foreach(var node in tree.Nodes.Where(r => !r.IsAbstract)) { #>
             case <#=Emit.TypeName(node.Defines) #> n:
 <#      foreach(var property in node.ActualAttributes.OfType<PropertyModel>().Where(p => p.ReferencesNode)) { #>
-<#          if (property.Type is CollectionType) { #>
+<#          if (property.Type is CollectionTypeModel) { #>
                 foreach (var child in n.<#=property.Name #>)
                     yield return child;
 <#          } else if (property.Type is OptionalType) { #>

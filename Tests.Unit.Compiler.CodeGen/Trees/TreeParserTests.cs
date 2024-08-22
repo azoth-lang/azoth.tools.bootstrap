@@ -1,6 +1,6 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 using Azoth.Tools.Bootstrap.Framework;
 using Xunit;
@@ -52,9 +52,9 @@ public class TreeParserTests
     }
 
     [Fact]
-    public void ParsesRootType()
+    public void ParsesRootSupertype()
     {
-        const string grammar = "◊namespace Foo.Bar.Baz;\r◊root MyBase;";
+        const string grammar = "◊namespace Foo.Bar.Baz;\r◊root-supertype MyBase;";
 
         var config = TreeParser.Parse(grammar);
 
@@ -62,9 +62,9 @@ public class TreeParserTests
     }
 
     [Fact]
-    public void ParsesQuotedRootType()
+    public void ParsesQuotedRootSupertype()
     {
-        const string grammar = "◊namespace Foo.Bar.Baz;\r◊root `MyBase`;";
+        const string grammar = "◊namespace Foo.Bar.Baz;\r◊root-supertype `MyBase`;";
 
         var config = TreeParser.Parse(grammar);
 
@@ -225,7 +225,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Nodes);
         var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
-        Assert.Equal(Type(Symbol("MyProperty")), property.Type);
+        Assert.Equal(SymbolType(Symbol("MyProperty")), property.Type);
     }
 
     [Fact]
@@ -237,7 +237,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Nodes);
         var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
-        Assert.Equal(OptionalType(Symbol("MyProperty")), property.Type);
+        Assert.Equal(OptionalType(SymbolType("MyProperty")), property.Type);
     }
 
     [Fact]
@@ -249,7 +249,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Nodes);
         var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
-        Assert.Equal(Type(Symbol("MyType")), property.Type);
+        Assert.Equal(SymbolType(Symbol("MyType")), property.Type);
     }
 
     [Fact]
@@ -261,7 +261,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Nodes);
         var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
-        Assert.Equal(Type(QuotedSymbol("MyType")), property.Type);
+        Assert.Equal(SymbolType(QuotedSymbol("MyType")), property.Type);
     }
 
     [Fact]
@@ -273,7 +273,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Nodes);
         var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
-        Assert.Equal(ListType(Symbol("MyType")), property.Type);
+        Assert.Equal(ListType(SymbolType("MyType")), property.Type);
     }
 
     [Fact]
@@ -285,11 +285,23 @@ public class TreeParserTests
         var rule = Assert.Single(config.Nodes);
         var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
-        Assert.Equal(OptionalType(Symbol("MyType")), property.Type);
+        Assert.Equal(OptionalType(SymbolType("MyType")), property.Type);
     }
 
     [Fact]
     public void ParsesListOfOptionalTypedProperty()
+    {
+        const string grammar = "◊namespace Foo.Bar.Baz;\rMyNonterminal = MyProperty:MyType?*;";
+        var config = TreeParser.Parse(grammar);
+
+        var rule = Assert.Single(config.Nodes);
+        var property = Assert.Single(rule.DeclaredProperties);
+        Assert.Equal("MyProperty", property.Name);
+        Assert.Equal(ListType(OptionalType(SymbolType("MyType"))), property.Type);
+    }
+
+    [Fact]
+    public void ParsesOptionalListTypedProperty()
     {
         const string grammar = "◊namespace Foo.Bar.Baz;\rMyNonterminal = MyProperty:MyType*?;";
         var config = TreeParser.Parse(grammar);
@@ -297,7 +309,7 @@ public class TreeParserTests
         var rule = Assert.Single(config.Nodes);
         var property = Assert.Single(rule.DeclaredProperties);
         Assert.Equal("MyProperty", property.Name);
-        Assert.Equal(new TypeSyntax(Symbol("MyType"), CollectionKind.List, true), property.Type);
+        Assert.Equal(OptionalType(ListType(SymbolType("MyType"))), property.Type);
     }
 
     [Fact]
@@ -320,11 +332,11 @@ public class TreeParserTests
         Assert.Collection(rule.DeclaredProperties, p1 =>
         {
             Assert.Equal("MyProperty1", p1.Name);
-            Assert.Equal(Type(Symbol("MyType1")), p1.Type);
+            Assert.Equal(SymbolType(Symbol("MyType1")), p1.Type);
         }, p2 =>
         {
             Assert.Equal("MyProperty2", p2.Name);
-            Assert.Equal(ListType(Symbol("MyType2")), p2.Type);
+            Assert.Equal(ListType(SymbolType("MyType2")), p2.Type);
         });
     }
 
@@ -343,14 +355,16 @@ public class TreeParserTests
 
     private static SymbolSyntax QuotedSymbol(string text) => new(text, true);
 
-    private static TypeSyntax Type(SymbolSyntax symbol)
-        => new(symbol, CollectionKind.None, false);
+    private static SymbolTypeSyntax SymbolType(string text) => new(Symbol(text));
 
-    private static TypeSyntax OptionalType(SymbolSyntax symbol)
-        => new(symbol, CollectionKind.None, true);
+    private static TypeSyntax SymbolType(SymbolSyntax symbol)
+        => new SymbolTypeSyntax(symbol);
 
-    private static TypeSyntax ListType(SymbolSyntax symbol)
-        => new(symbol, CollectionKind.List, false);
+    private static TypeSyntax OptionalType(TypeSyntax type)
+        => new OptionalTypeSyntax(type);
+
+    private static TypeSyntax ListType(TypeSyntax type)
+        => new CollectionTypeSyntax(CollectionKind.List, type);
 
     private static IFixedList<T> FixedList<T>(params T[] values) => values.ToFixedList();
 

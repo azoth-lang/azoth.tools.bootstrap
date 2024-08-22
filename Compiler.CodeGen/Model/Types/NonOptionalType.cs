@@ -3,7 +3,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
-[Closed(typeof(SymbolType), typeof(CollectionType))]
+[Closed(typeof(SymbolType), typeof(CollectionTypeModel))]
 public abstract class NonOptionalType : TypeModel
 {
     protected NonOptionalType(Symbol underlyingSymbol)

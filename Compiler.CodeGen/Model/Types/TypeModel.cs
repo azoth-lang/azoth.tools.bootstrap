@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
@@ -16,21 +16,23 @@ public abstract class TypeModel : IEquatable<TypeModel>
     {
         if (syntax is null)
             return null;
-        return CreateDerivedType(SymbolType.CreateFromSyntax(tree, syntax.Symbol), syntax);
+        return syntax switch
+        {
+            SymbolTypeSyntax syn => SymbolType.CreateFromSyntax(tree, syn.Symbol),
+            CollectionTypeSyntax syn => CreateFromSyntax(tree, syn),
+            OptionalTypeSyntax syn => new OptionalType(CreateFromSyntax(tree, syn.Referent)),
+            _ => throw ExhaustiveMatch.Failed(syntax)
+        };
     }
 
-    private static TypeModel CreateDerivedType(SymbolType underlyingType, TypeSyntax syntax)
-    {
-        var type = syntax.CollectionKind switch
+    public static TypeModel CreateFromSyntax(TreeModel tree, CollectionTypeSyntax syntax)
+        => syntax.Kind switch
         {
-            CollectionKind.List => new ListType(underlyingType),
-            CollectionKind.Set => new SetType(underlyingType),
-            CollectionKind.None => (TypeModel)underlyingType,
-            _ => throw ExhaustiveMatch.Failed(syntax.CollectionKind)
+            CollectionKind.List => new ListTypeModel(CreateFromSyntax(tree, syntax.Referent)),
+            CollectionKind.Set => new SetTypeModel(CreateFromSyntax(tree, syntax.Referent)),
+            CollectionKind.Enumerable => new EnumerableTypeModel(CreateFromSyntax(tree, syntax.Referent)),
+            _ => throw ExhaustiveMatch.Failed(syntax)
         };
-        if (syntax.IsOptional) type = new OptionalType(type);
-        return type;
-    }
 
     public Symbol UnderlyingSymbol { get; }
     public abstract bool IsValueType { get; }

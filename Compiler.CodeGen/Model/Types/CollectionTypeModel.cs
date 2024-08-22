@@ -4,17 +4,18 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 [Closed(
-    typeof(ListType),
-    typeof(SetType))]
-public abstract class CollectionType : NonOptionalType
+    typeof(ListTypeModel),
+    typeof(SetTypeModel),
+    typeof(EnumerableTypeModel))]
+public abstract class CollectionTypeModel : NonOptionalType
 {
     public TypeModel ElementType { get; }
 
-    private protected CollectionType(TypeModel elementType)
+    private protected CollectionTypeModel(TypeModel elementType)
         : base(elementType.UnderlyingSymbol)
     {
         ElementType = elementType;
     }
 
-    public abstract override CollectionType WithSymbol(Symbol symbol);
+    public abstract override CollectionTypeModel WithSymbol(Symbol symbol);
 }

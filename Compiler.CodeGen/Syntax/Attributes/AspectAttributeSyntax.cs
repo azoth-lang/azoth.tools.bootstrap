@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;

@@ -1,3 +1,5 @@
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
+
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
 public sealed class PropertySyntax : AttributeSyntax

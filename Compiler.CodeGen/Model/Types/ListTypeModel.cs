@@ -3,11 +3,11 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
-public sealed class ListType : CollectionType
+public sealed class ListTypeModel : CollectionTypeModel
 {
     public override bool IsValueType => false;
 
-    internal ListType(TypeModel elementType)
+    internal ListTypeModel(TypeModel elementType)
         : base(elementType) { }
 
     #region Equality
@@ -15,20 +15,20 @@ public sealed class ListType : CollectionType
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is ListType type
+        return other is ListTypeModel type
                && ElementType.Equals(type.ElementType);
     }
 
-    public override int GetHashCode() => HashCode.Combine(ElementType, typeof(ListType));
+    public override int GetHashCode() => HashCode.Combine(ElementType, typeof(ListTypeModel));
     #endregion
 
-    public override ListType WithSymbol(Symbol symbol)
-        => new ListType(ElementType.WithSymbol(symbol));
+    public override ListTypeModel WithSymbol(Symbol symbol)
+        => new ListTypeModel(ElementType.WithSymbol(symbol));
 
     public override bool IsSubtypeOf(TypeModel other)
     {
         if (other is OptionalType optionalType) return IsSubtypeOf(optionalType.UnderlyingType);
-        return other is ListType listType && ElementType.IsSubtypeOf(listType.ElementType);
+        return other is ListTypeModel listType && ElementType.IsSubtypeOf(listType.ElementType);
     }
 
     public override string ToString() => ElementType + "*";

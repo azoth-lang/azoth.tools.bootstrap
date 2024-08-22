@@ -85,7 +85,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             #line hidden
             
             #line 30 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-          if (property.Type is CollectionType) { 
+          if (property.Type is CollectionTypeModel) { 
             
             #line default
             #line hidden
