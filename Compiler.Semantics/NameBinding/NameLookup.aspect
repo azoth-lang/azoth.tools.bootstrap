@@ -1,0 +1,22 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
+◊name NameLookupAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Framework;
+
+// ↓ ↑ ⮡
+
+// ---------- Namespace Declarations
+↑ NamespaceDeclaration.MembersByName: `FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>`;
+= NamespaceDeclaration.MembersByName;
+↑ NamespaceDeclaration.NestedMembersByName: `FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>`;
+= NamespaceDeclaration.NestedMembersByName;
+
+// ---------- Type Declarations
+↑ PrimitiveTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>`;
+= PrimitiveTypeDeclaration.InclusiveInstanceMembersByName;
+↑ PrimitiveTypeDeclaration.AssociatedMembersByName: `FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
+= PrimitiveTypeDeclaration.AssociatedMembersByName;
+↑ UserTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>`;
+= UserTypeDeclaration.InclusiveInstanceMembersByName;
+↑ UserTypeDeclaration.AssociatedMembersByName: `FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
+= UserTypeDeclaration.AssociatedMembersByName;

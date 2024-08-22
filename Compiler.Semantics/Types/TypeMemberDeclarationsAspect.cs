@@ -226,4 +226,11 @@ internal static partial class TypeMemberDeclarationsAspect
     // TODO maybe this should be initial flow state?
     public static IFlowState ConcreteInvocable_FlowStateBefore(IConcreteInvocableDefinitionNode _)
         => IFlowState.Empty;
+
+    public static void NamedParameter_ContributeDiagnostics(INamedParameterNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        var type = node.BindingType;
+        if (node.IsLentBinding && !type.CanBeLent())
+            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, type));
+    }
 }

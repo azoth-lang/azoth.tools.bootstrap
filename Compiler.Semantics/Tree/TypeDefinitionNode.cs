@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
@@ -11,7 +12,6 @@ using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
-using DotNet.Collections.Generic;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -32,7 +32,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         => supertypesLexicalScope.TryGetValue(out var value) ? value
             : supertypesLexicalScope.GetValue(this, LexicalScopingAspect.TypeDefinition_SupertypesLexicalScope);
     public IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
-    private Circular<IFixedSet<BareReferenceType>> supertypes = new(FixedSet.Empty<BareReferenceType>());
+    private Circular<IFixedSet<BareReferenceType>> supertypes = new([]);
     private bool supertypesCached;
     public IFixedSet<BareReferenceType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
@@ -40,9 +40,20 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
                 TypeDeclarationsAspect.TypeDefinition_Supertypes, FixedSet.EqualityComparer<BareType>());
     public abstract IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
-    private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;
+    //private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;
     public abstract IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
-    private MultiMapHashSet<StandardName, IInstanceMemberDeclarationNode>? inclusiveInstanceMembersByName;
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
     public override LexicalScope LexicalScope
@@ -88,8 +99,8 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     }
 
     public IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named)
-        => InclusiveMembers.OfType<IInstanceMemberDeclarationNode>().MembersNamed(ref inclusiveInstanceMembersByName, named);
+        => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
 
     public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)
-        => Members.OfType<IAssociatedMemberDeclarationNode>().MembersNamed(ref associatedMembersByName, named);
+        => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
 }

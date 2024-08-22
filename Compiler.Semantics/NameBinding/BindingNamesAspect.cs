@@ -46,4 +46,10 @@ internal static class BindingNamesAspect
         return typeDeclarationNode.AssociatedMembersNamed(node.ConstructorName)
                                   .OfType<IConstructorDeclarationNode>().ToFixedSet();
     }
+
+    public static void Attribute_ContributeDiagnostics(IAttributeNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.ReferencedSymbol is null)
+            diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.TypeName.Syntax.Span));
+    }
 }

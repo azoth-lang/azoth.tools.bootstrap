@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -30,7 +31,7 @@ internal sealed class AttributeNode : CodeNode, IAttributeNode
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        SymbolAspect.Attribute_ContributeDiagnostics(this, diagnostics);
+        BindingNamesAspect.Attribute_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 }

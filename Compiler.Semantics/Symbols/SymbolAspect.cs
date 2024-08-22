@@ -77,17 +77,4 @@ internal static class SymbolAspect
         return userTypeSymbolNode.Members.OfType<IConstructorDeclarationNode>().Select(c => c.Symbol)
                                  .SingleOrDefault(s => s.Arity == 0);
     }
-
-    public static void Attribute_ContributeDiagnostics(IAttributeNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.ReferencedSymbol is null)
-            diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.TypeName.Syntax.Span));
-    }
-
-    public static void NamedParameter_ContributeDiagnostics(INamedParameterNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        var type = node.BindingType;
-        if (node.IsLentBinding && !type.CanBeLent())
-            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, type));
-    }
 }

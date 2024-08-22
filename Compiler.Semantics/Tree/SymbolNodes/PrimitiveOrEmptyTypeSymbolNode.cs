@@ -2,52 +2,47 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
-internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserTypeDeclarationNode
+internal abstract class PrimitiveOrEmptyTypeSymbolNode : ChildSymbolNode, IPrimitiveTypeSymbolNode
 {
-    public override StandardName Name => base.Name!;
-    private ValueAttribute<IFixedList<IGenericParameterDeclarationNode>> genericParameters;
-    public IFixedList<IGenericParameterDeclarationNode> GenericParameters
-        => genericParameters.TryGetValue(out var value) ? value
-            : genericParameters.GetValue(GetGenericParameters);
-
-    public override UserTypeSymbol Symbol { get; }
+    public abstract SpecialTypeName Name { get; }
+    TypeName INamedDeclarationNode.Name => Name;
+    public abstract override TypeSymbol Symbol { get; }
     public IFixedSet<BareReferenceType> Supertypes
-        => Symbol.GetDeclaredType().Supertypes;
-    public abstract IFixedSet<ITypeMemberDeclarationNode> Members { get; }
-    public abstract IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
+        => Symbol.GetDeclaredType()?.Supertypes ?? [];
+    private ValueAttribute<IFixedSet<ITypeMemberDeclarationNode>> members;
+    public IFixedSet<ITypeMemberDeclarationNode> Members
+        => members.TryGetValue(out var value) ? value : members.GetValue(GetMembers);
+    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers
+        // For now, the symbol tree already includes all inherited members.
+        => Members;
     private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
     private bool inclusiveInstanceMembersByNameCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
-        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached)
+            ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
-                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+                NameLookupAspect.PrimitiveTypeDeclaration_InclusiveInstanceMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
     public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
         => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
             : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
-                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
+                NameLookupAspect.PrimitiveTypeDeclaration_AssociatedMembersByName);
 
-    private protected UserTypeSymbolNode(UserTypeSymbol symbol)
+    private protected PrimitiveOrEmptyTypeSymbolNode()
     {
-        Symbol = symbol;
     }
 
-    private IFixedList<IGenericParameterDeclarationNode> GetGenericParameters()
-    {
-        var declarationNodes = InheritedSymbolTree().GetChildrenOf(Symbol)
-            .OfType<GenericParameterTypeSymbol>().Select(SymbolNodeAspect.Symbol).WhereNotNull()
-            .Cast<IGenericParameterDeclarationNode>();
-        return ChildList.Attach(this, declarationNodes);
-    }
+    private new IFixedSet<ITypeMemberDeclarationNode> GetMembers()
+        => ChildSet.Attach(this, GetMembers(Primitive.SymbolTree).OfType<ITypeMemberDeclarationNode>());
 
     public IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named)
         => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];

@@ -6,7 +6,6 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -59,7 +58,7 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        SymbolAspect.NamedParameter_ContributeDiagnostics(this, diagnostics);
+        TypeMemberDeclarationsAspect.NamedParameter_ContributeDiagnostics(this, diagnostics);
         base.CollectDiagnostics(diagnostics);
     }
 

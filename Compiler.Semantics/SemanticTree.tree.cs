@@ -16,6 +16,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
@@ -2722,6 +2723,8 @@ public partial interface INamespaceDeclarationNode : INamespaceMemberDeclaration
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     IFixedList<INamespaceMemberDeclarationNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> NestedMembers { get; }
+    FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> MembersByName { get; }
+    FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> NestedMembersByName { get; }
 }
 
 [Closed(
@@ -2763,6 +2766,8 @@ public partial interface IPrimitiveTypeDeclarationNode : ITypeDeclarationNode
 {
     new SpecialTypeName Name { get; }
     TypeName INamedDeclarationNode.Name => Name;
+    FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName { get; }
+    FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName { get; }
 }
 
 [Closed(
@@ -2778,6 +2783,8 @@ public partial interface IUserTypeDeclarationNode : IPackageMemberDeclarationNod
     new UserTypeSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName { get; }
+    FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName { get; }
 }
 
 [Closed(

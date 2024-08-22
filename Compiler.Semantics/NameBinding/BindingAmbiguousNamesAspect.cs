@@ -131,8 +131,7 @@ internal static class BindingAmbiguousNamesAspect
             return null;
 
         var contextTypeDeclaration = node.PackageNameScope().Lookup(context.Antetype);
-        var members = contextTypeDeclaration?.InclusiveInstanceMembersNamed(node.MemberName).ToFixedSet()
-                      ?? FixedSet.Empty<IInstanceMemberDeclarationNode>();
+        var members = contextTypeDeclaration?.InclusiveInstanceMembersNamed(node.MemberName).ToFixedSet() ?? [];
         if (members.Count == 0)
             return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<DefinitionNode>());
 

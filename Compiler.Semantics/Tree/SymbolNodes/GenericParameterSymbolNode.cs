@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -13,11 +12,9 @@ internal sealed class GenericParameterSymbolNode : PackageFacetChildSymbolNode, 
     public override IdentifierName Name => Symbol.Name;
     TypeName INamedDeclarationNode.Name => Name;
     public IFixedSet<BareReferenceType> Supertypes
-        => Symbol.GetDeclaredType()?.Supertypes ?? FixedSet.Empty<BareReferenceType>();
-    public IFixedSet<ITypeMemberDeclarationNode> Members
-        => FixedSet.Empty<ITypeMemberDeclarationNode>();
-    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers
-        => FixedSet.Empty<ITypeMemberDefinitionNode>();
+        => Symbol.GetDeclaredType()?.Supertypes ?? [];
+    public IFixedSet<ITypeMemberDeclarationNode> Members => [];
+    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers => [];
 
     public GenericParameterSymbolNode(GenericParameterTypeSymbol symbol)
     {
@@ -25,8 +22,10 @@ internal sealed class GenericParameterSymbolNode : PackageFacetChildSymbolNode, 
     }
 
     public IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named)
-        => Enumerable.Empty<IInstanceMemberDeclarationNode>();
+        // TODO should look up members based on generic constraints
+        => [];
 
     public IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named)
-        => Enumerable.Empty<IAssociatedMemberDeclarationNode>();
+        // TODO should look up members based on generic constraints
+        => [];
 }
