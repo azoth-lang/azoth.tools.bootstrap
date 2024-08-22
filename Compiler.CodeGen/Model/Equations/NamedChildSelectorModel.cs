@@ -25,7 +25,7 @@ public abstract class NamedChildSelectorModel : SelectorModel
     {
         var attribute = node.ActualAttributes.Where(a => a.Name == Child).TrySingle();
         if (attribute is null)
-            throw new FormatException($"Selector for child {Child} does not refer to a child attribute.");
+            throw new FormatException($"Selector for child {Child} does not refer to a child or child alias attribute.");
         var referencedNode = attribute.Type.ReferencedNode();
         if (referencedNode is null)
             throw new FormatException($"Selector for child {Child} refers to a non-node attribute.");

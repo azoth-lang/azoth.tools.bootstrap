@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
@@ -11,6 +12,7 @@ using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 
+[DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public class TreeNodeModel
 {
     public TreeModel Tree { get; }
@@ -296,9 +298,9 @@ public class TreeNodeModel
         return referencedNamespaces.Count == declarations.Count;
     }
 
-    private static bool IsMoreSpecific<T>(T property, T other)
+    private static bool IsMoreSpecific<T>(T self, T other)
         where T : IMemberModel
-        => property.Node.AncestorNodes.Contains(other.Node);
+        => self.Node.AncestorNodes.Contains(other.Node);
 
     private IEnumerable<EquationModel> ComputeActualEquations(
         IFixedList<EquationModel> declaredEquations)
@@ -315,4 +317,6 @@ public class TreeNodeModel
 
     private SynthesizedAttributeEquationModel ImplicitlyDeclaredEquation(SynthesizedAttributeModel attribute)
         => new(this, attribute);
+
+    public override string ToString() => Defines.ToString();
 }

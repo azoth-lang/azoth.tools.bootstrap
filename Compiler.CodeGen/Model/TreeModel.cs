@@ -6,7 +6,6 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeSupertypes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 using MoreLinq;
@@ -93,7 +92,7 @@ public sealed class TreeModel : IHasUsingNamespaces
         var errors = ValidateRootSupertype();
         errors |= ValidateAmbiguousAttributes();
         errors |= ValidateUndefinedAttributes();
-        //errors |= ValidateInheritedEquationsProduceSingleType();
+        errors |= ValidateInheritedEquationsProduceSingleType();
         if (errors)
             throw new ValidationFailedException();
     }
@@ -164,15 +163,11 @@ public sealed class TreeModel : IHasUsingNamespaces
     {
         var errors = false;
         foreach (var equation in Aspects.SelectMany(a => a.DeclaredEquations).OfType<InheritedAttributeEquationModel>())
-            if (InheritedToTypes(equation).Count() > 1)
+            if (equation.InheritedToTypes.Count > 1)
             {
                 errors = true;
-
-                Console.Error.WriteLine($"ERROR: Equation '{equation}' matches attributes with multiple types {string.Join(", ", InheritedToTypes(equation))}.");
+                Console.Error.WriteLine($"ERROR: Equation '{equation}' matches attributes without a most specific type. Types {string.Join(", ", equation.InheritedToTypes)}.");
             }
         return errors;
     }
-
-    private static IEnumerable<TypeModel> InheritedToTypes(InheritedAttributeEquationModel equation)
-        => equation.InheritedToAttributes.Select(a => a.Type).Distinct();
 }

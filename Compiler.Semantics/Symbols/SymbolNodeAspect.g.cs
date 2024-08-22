@@ -9,5 +9,5 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 internal static partial class SymbolNodeAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ISymbolDeclarationNode CompilationUnit_Children_ContainingDeclaration(ICompilationUnitNode node);
+    public static partial INamespaceDefinitionNode CompilationUnit_Children_ContainingDeclaration(ICompilationUnitNode node);
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeSupertypes;
@@ -16,9 +17,17 @@ public sealed class InheritedAttributeEquationModel : EquationModel
     private readonly Lazy<InheritedAttributeSupertypeModel> attributeSupertype;
     public SelectorModel Selector { get; }
     public bool IsAllDescendants => Selector.IsAllDescendants;
-    public override TypeModel Type => AttributeSupertype.Type;
+    public override TypeModel Type => InheritedToTypes.TrySingle() ?? AttributeSupertype.Type;
     public IFixedSet<InheritedAttributeModel> InheritedToAttributes => inheritedToAttributes.Value;
     private readonly Lazy<IFixedSet<InheritedAttributeModel>> inheritedToAttributes;
+    /// <summary>
+    /// The most specific types that this attribute will need to satisfy.
+    /// </summary>
+    /// <remarks>This is derived from <see cref="InheritedToAttributes"/>. If two attributes have
+    /// types <c>T1</c> and <c>T2</c> where <c>T1 &lt;: T2</c> then only <c>T1</c> will be in the
+    /// types that must be inherited to.</remarks>
+    public IFixedSet<TypeModel> InheritedToTypes => inheritedToTypes.Value;
+    private readonly Lazy<IFixedSet<TypeModel>> inheritedToTypes;
 
     public InheritedAttributeEquationModel(AspectModel aspect, InheritedAttributeEquationSyntax syntax)
         : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.IsMethod, syntax.Expression)
@@ -27,6 +36,7 @@ public sealed class InheritedAttributeEquationModel : EquationModel
         Selector = SelectorModel.Create(syntax.Selector);
         attributeSupertype = new(ComputeAttributeSupertype);
         inheritedToAttributes = new(ComputeInheritedToAttributes);
+        inheritedToTypes = new(ComputeInheritedToTypes);
     }
 
     private InheritedAttributeSupertypeModel ComputeAttributeSupertype()
@@ -38,6 +48,28 @@ public sealed class InheritedAttributeEquationModel : EquationModel
         var selectedAttributes = Selector.SelectNodes(Node).SelectMany(n => n.ActualAttributes).ToFixedSet();
         return AttributeSupertype.Instances.Where(a => selectedAttributes.Contains(a)).ToFixedSet();
     }
+
+    private IFixedSet<TypeModel> ComputeInheritedToTypes()
+    {
+        var mostSpecific = new List<TypeModel>();
+        foreach (var type in InheritedToAttributes.Select(a => a.Type).Distinct())
+        {
+            for (var i = mostSpecific.Count - 1; i >= 0; i--)
+            {
+                var mostSpecificType = mostSpecific[i];
+                if (IsMoreSpecific(mostSpecificType, type)) goto nextType;
+                if (IsMoreSpecific(type, mostSpecificType)) mostSpecific.RemoveAt(i);
+            }
+
+            mostSpecific.Add(type);
+
+        nextType:;
+        }
+
+        return mostSpecific.ToFixedSet();
+    }
+
+    private bool IsMoreSpecific(TypeModel self, TypeModel other) => self.IsSubtypeOf(other);
 
     public override string ToString()
     {

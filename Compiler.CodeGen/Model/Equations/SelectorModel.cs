@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -59,13 +60,9 @@ public abstract class SelectorModel
         var descendants = ConcreteSubtypes(nodes).ToHashSet();
         var toProcess = new Queue<TreeNodeModel>(descendants);
         while (toProcess.TryDequeue(out var node))
-        {
             foreach (var child in ConcreteSubtypes(AllTreeChildNodes(node)))
-            {
                 if (descendants.Add(child))
                     toProcess.Enqueue(child);
-            }
-        }
         return descendants;
     }
 
@@ -86,7 +83,8 @@ public abstract class SelectorModel
     /// </summary>
     /// <remarks>Works only on the given node and does not seek concrete subtypes.</remarks>
     protected static IEnumerable<TreeNodeModel> AllTreeChildNodes(TreeNodeModel node)
-        => node.ActualAttributes.Select(a => a.Type.ReferencedNode()).WhereNotNull();
+        // Only PropertyModel attributes are actual children
+        => node.ActualAttributes.OfType<PropertyModel>().Select(a => a.Type.ReferencedNode()).WhereNotNull();
 
     public sealed override string ToString()
         => Broadcast ? $"{ToChildSelectorString()}.**" : ToChildSelectorString();

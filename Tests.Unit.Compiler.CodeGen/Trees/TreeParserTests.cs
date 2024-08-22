@@ -357,14 +357,11 @@ public class TreeParserTests
 
     private static SymbolTypeSyntax SymbolType(string text) => new(Symbol(text));
 
-    private static TypeSyntax SymbolType(SymbolSyntax symbol)
-        => new SymbolTypeSyntax(symbol);
+    private static SymbolTypeSyntax SymbolType(SymbolSyntax symbol) => new(symbol);
 
-    private static TypeSyntax OptionalType(TypeSyntax type)
-        => new OptionalTypeSyntax(type);
+    private static OptionalTypeSyntax OptionalType(TypeSyntax type) => new(type);
 
-    private static TypeSyntax ListType(TypeSyntax type)
-        => new CollectionTypeSyntax(CollectionKind.List, type);
+    private static CollectionTypeSyntax ListType(TypeSyntax type) => new(CollectionKind.List, type);
 
     private static IFixedList<T> FixedList<T>(params T[] values) => values.ToFixedList();
 
