@@ -33,7 +33,7 @@ Semantic <: `ITreeNode` = Syntax:`ISyntax`?;
 Child <: `IChildTreeNode<ISemanticNode>` = Parent:`ISemanticNode`;
 
 // ---------- Special Parts
-BodyOrBlock <: Code = Statements:`IStatementNode`*;
+BodyOrBlock <: Code;
 ElseClause <: ControlFlow = Syntax:`ICodeSyntax` FlowStateAfter:`IFlowState`;
 BlockOrResult <: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 

@@ -5,6 +5,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
@@ -37,7 +38,7 @@ public abstract class AttributeModel : IMemberModel
     private readonly Lazy<bool> isNewDefinition;
 
     /// <summary>
-    /// Whether this property is declared in the node interface.
+    /// Whether this attribute needs to be declared in the node interface.
     /// </summary>
     /// <remarks>
     /// A property needs declared under three conditions:
@@ -45,6 +46,7 @@ public abstract class AttributeModel : IMemberModel
     /// 2. the single parent definition has a different type or parameters
     /// 3. the property is defined in multiple parents, in that case it is
     ///    ambiguous unless it is redefined in the current interface.
+    /// 4. The parent attribute is a different kind of attribute
     /// </remarks>
     public bool IsDeclarationRequired => isDeclarationRequired.Value;
     private readonly Lazy<bool> isDeclarationRequired;
@@ -59,10 +61,11 @@ public abstract class AttributeModel : IMemberModel
         isNewDefinition = new(() => Node.InheritedAttributesNamedSameAs(this).Any());
         isDeclarationRequired = new(() =>
         {
-            var baseProperties = Node.InheritedAttributesNamedSameAs(this).ToList();
-            return baseProperties.Count != 1
-                   || baseProperties[0].Type != Type
-                   || baseProperties[0].IsMethod != IsMethod;
+            var baseProperty = Node.InheritedAttributesNamedSameAs(this).TrySingle();
+            return baseProperty is null // There were none or multiple, so it needs to be declared
+                   || baseProperty.Type != Type
+                   || baseProperty.IsMethod != IsMethod
+                   || baseProperty.GetType() != GetType();
         });
     }
 

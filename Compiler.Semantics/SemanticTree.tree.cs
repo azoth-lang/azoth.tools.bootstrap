@@ -67,8 +67,8 @@ public partial interface IChildNode : IChildTreeNode<ISemanticNode>, ISemanticNo
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBodyOrBlockNode : ICodeNode
 {
-    IFixedList<IStatementNode> Statements { get; }
     LexicalScope ContainingLexicalScope();
+    IFixedList<IStatementNode> Statements { get; }
 }
 
 [Closed(
@@ -1121,9 +1121,11 @@ public partial interface IExpressionBodyNode : IBodyNode
     IResultStatementNode ResultStatement { get; }
     IMaybeExpressionAntetype? ExpectedAntetype { get; }
     DataType? ExpectedType { get; }
+    IFixedList<IStatementNode> IBodyOrBlockNode.Statements
+        => FixedList.Create(ResultStatement);
 
-    public static IExpressionBodyNode Create(ISemanticNode parent, IFixedList<IStatementNode> statements, IFlowState flowStateAfter, IExpressionBodySyntax syntax, IResultStatementNode resultStatement, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType)
-        => new ExpressionBodyNode(parent, statements, flowStateAfter, syntax, resultStatement, expectedAntetype, expectedType);
+    public static IExpressionBodyNode Create(ISemanticNode parent, IFlowState flowStateAfter, IExpressionBodySyntax syntax, IResultStatementNode resultStatement, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType)
+        => new ExpressionBodyNode(parent, flowStateAfter, syntax, resultStatement, expectedAntetype, expectedType);
 }
 
 [Closed(
@@ -5445,7 +5447,6 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
     private IExpressionBodyNode Self { [Inline] get => this; }
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
-    public IFixedList<IStatementNode> Statements { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IExpressionBodySyntax Syntax { [DebuggerStepThrough] get; }
     public IResultStatementNode ResultStatement { [DebuggerStepThrough] get; }
@@ -5458,10 +5459,9 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
-    public ExpressionBodyNode(ISemanticNode parent, IFixedList<IStatementNode> statements, IFlowState flowStateAfter, IExpressionBodySyntax syntax, IResultStatementNode resultStatement, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType)
+    public ExpressionBodyNode(ISemanticNode parent, IFlowState flowStateAfter, IExpressionBodySyntax syntax, IResultStatementNode resultStatement, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType)
     {
         Parent = parent;
-        Statements = statements;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
         ResultStatement = resultStatement;

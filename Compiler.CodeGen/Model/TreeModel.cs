@@ -4,7 +4,9 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeSupertypes;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 using MoreLinq;
@@ -91,6 +93,7 @@ public sealed class TreeModel : IHasUsingNamespaces
         var errors = ValidateRootSupertype();
         errors |= ValidateAmbiguousAttributes();
         errors |= ValidateUndefinedAttributes();
+        //errors |= ValidateInheritedEquationsProduceSingleType();
         if (errors)
             throw new ValidationFailedException();
     }
@@ -121,15 +124,18 @@ public sealed class TreeModel : IHasUsingNamespaces
     {
         var errors = false;
         foreach (var node in Nodes)
-            if (node.ActualAttributes.Duplicates(AttributeModel.NameComparer).Any())
+            if (DuplicateAttributes(node).Any())
             {
                 errors = true;
-                var ambiguousNames = node.ActualAttributes.Duplicates(AttributeModel.NameComparer).Select(p => p.Name).ToList();
+                var ambiguousNames = DuplicateAttributes(node).Select(p => p.Name).ToList();
                 Console.Error.WriteLine($"ERROR: Node '{node.Defines}' has ambiguous attributes {string.Join(", ", ambiguousNames.Select(n => $"'{n}'"))}."
                                         + $" Definitions: {string.Join(", ", ambiguousNames.SelectMany(node.AttributesNamed).Select(n => $"'{n}'"))}");
             }
         return errors;
     }
+
+    private static IEnumerable<AttributeModel> DuplicateAttributes(TreeNodeModel node)
+        => node.ActualAttributes.Duplicates(AttributeModel.NameComparer);
 
     /// <summary>
     /// This checks that each attribute has a definition for each concrete node.
@@ -153,4 +159,20 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     private static IEnumerable<SynthesizedAttributeModel> AttributesRequiringEquations(TreeNodeModel node)
         => node.ActualAttributes.OfType<SynthesizedAttributeModel>().Where(a => a.DefaultExpression is null);
+
+    private bool ValidateInheritedEquationsProduceSingleType()
+    {
+        var errors = false;
+        foreach (var equation in Aspects.SelectMany(a => a.DeclaredEquations).OfType<InheritedAttributeEquationModel>())
+            if (InheritedToTypes(equation).Count() > 1)
+            {
+                errors = true;
+
+                Console.Error.WriteLine($"ERROR: Equation '{equation}' matches attributes with multiple types {string.Join(", ", InheritedToTypes(equation))}.");
+            }
+        return errors;
+    }
+
+    private static IEnumerable<TypeModel> InheritedToTypes(InheritedAttributeEquationModel equation)
+        => equation.InheritedToAttributes.Select(a => a.Type).Distinct();
 }

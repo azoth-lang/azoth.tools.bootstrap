@@ -64,7 +64,7 @@ internal static partial class SymbolNodeAspect
         return current;
     }
 
-    public static INamespaceDeclarationNode CompilationUnit_Children_ContainingDeclaration(ICompilationUnitNode node)
+    public static partial ISymbolDeclarationNode CompilationUnit_Children_ContainingDeclaration(ICompilationUnitNode node)
         => node.ImplicitNamespace;
 
     public static IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node)

@@ -42,6 +42,6 @@ public sealed class InheritedAttributeEquationModel : EquationModel
     public override string ToString()
     {
         var parameters = IsMethod ? "()" : "";
-        return $"= {NodeSymbol}.{Name}{parameters}";
+        return $"= {NodeSymbol}.{Selector}.{Name}{parameters}";
     }
 }
