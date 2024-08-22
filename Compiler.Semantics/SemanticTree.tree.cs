@@ -31,6 +31,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
@@ -153,6 +154,9 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
     IFunctionDefinitionNode? EntryPoint { get; }
     IPackageSymbols PackageSymbols { get; }
+
+    public static IPackageNode Create(IdentifierName? aliasOrName, IPackageSyntax syntax, IdentifierName name, PackageSymbol symbol, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, FixedDictionary<IdentifierName,IPackageDeclarationNode> packageDeclarations, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint, IPackageSymbols packageSymbols)
+        => new PackageNode(aliasOrName, syntax, name, symbol, references, intrinsicsReference, packageDeclarations, mainFacet, testingFacet, diagnostics, primitivesDeclarations, entryPoint, packageSymbols);
 }
 
 // [Closed(typeof(PackageReferenceNode))]
@@ -165,6 +169,9 @@ public partial interface IPackageReferenceNode : IChildNode
     IdentifierName AliasOrName { get; }
     IPackageSymbols PackageSymbols { get; }
     bool IsTrusted { get; }
+
+    public static IPackageReferenceNode Create(ISemanticNode parent, IPackageDeclarationNode package, IPackageReferenceSyntax? syntax, IPackageSymbolNode symbolNode, IdentifierName aliasOrName, IPackageSymbols packageSymbols, bool isTrusted)
+        => new PackageReferenceNode(parent, package, syntax, symbolNode, aliasOrName, packageSymbols, isTrusted);
 }
 
 // [Closed(typeof(PackageFacetNode))]
@@ -179,6 +186,9 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     new INamespaceDefinitionNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
     PackageNameScope PackageNameScope { get; }
+
+    public static IPackageFacetNode Create(ISemanticNode parent, IPackageDeclarationNode package, IdentifierName? packageAliasOrName, PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IFixedSet<ICompilationUnitNode> compilationUnits, IFixedSet<IPackageMemberDefinitionNode> definitions, INamespaceDefinitionNode globalNamespace)
+        => new PackageFacetNode(parent, package, packageAliasOrName, symbol, syntax, packageName, packageSymbol, compilationUnits, definitions, globalNamespace);
 }
 
 [Closed(
@@ -230,6 +240,9 @@ public partial interface ICompilationUnitNode : ICodeNode
     DiagnosticCollection Diagnostics { get; }
     NamespaceScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
+
+    public static ICompilationUnitNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ICompilationUnitSyntax syntax, IPackageFacetNode containingDeclaration, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, INamespaceDefinitionNode implicitNamespace, NamespaceSymbol implicitNamespaceSymbol, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> definitions, DiagnosticCollection diagnostics)
+        => new CompilationUnitNode(parent, package, file, syntax, containingDeclaration, containingSymbol, implicitNamespaceName, implicitNamespace, implicitNamespaceSymbol, usingDirectives, definitions, diagnostics);
 }
 
 // [Closed(typeof(UsingDirectiveNode))]
@@ -240,6 +253,9 @@ public partial interface IUsingDirectiveNode : ICodeNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     NamespaceName Name { get; }
+
+    public static IUsingDirectiveNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IUsingDirectiveSyntax syntax, NamespaceName name)
+        => new UsingDirectiveNode(parent, package, file, syntax, name);
 }
 
 [Closed(
@@ -337,6 +353,9 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
     NamespaceSymbol Symbol { get; }
     new NamespaceSearchScope ContainingLexicalScope { get; }
     LexicalScope IDefinitionNode.ContainingLexicalScope => ContainingLexicalScope;
+
+    public static INamespaceBlockDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, StandardName? name, IPackageFacetNode facet, INamespaceDefinitionSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> members, INamespaceDefinitionNode definition, INamespaceDefinitionNode containingDeclaration, INamespaceDefinitionNode containingNamespace, NamespaceSymbol containingSymbol, NamespaceSymbol symbol)
+        => new NamespaceBlockDefinitionNode(parent, package, file, name, facet, syntax, isGlobalQualified, declaredNames, usingDirectives, members, definition, containingDeclaration, containingNamespace, containingSymbol, symbol);
 }
 
 [Closed(
@@ -355,6 +374,9 @@ public partial interface INamespaceDefinitionNode : INamespaceMemberDefinitionNo
     IFixedList<IPackageMemberDefinitionNode> PackageMembers { get; }
     new IFixedList<INamespaceMemberDefinitionNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> INamespaceDeclarationNode.Members => Members;
+
+    public static INamespaceDefinitionNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, NamespaceSymbol symbol, IdentifierName name, IFixedList<INamespaceMemberDeclarationNode> nestedMembers, IFixedList<INamespaceDefinitionNode> memberNamespaces, IFixedList<IPackageMemberDefinitionNode> packageMembers, IFixedList<INamespaceMemberDefinitionNode> members)
+        => new NamespaceDefinitionNode(syntax, parent, package, facet, symbol, name, nestedMembers, memberNamespaces, packageMembers, members);
 }
 
 [Closed(
@@ -391,6 +413,9 @@ public partial interface IFunctionDefinitionNode : IPackageMemberDefinitionNode,
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
     FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
+
+    public static IFunctionDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, AccessModifier accessModifier, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFunctionDefinitionSyntax syntax, INamespaceDeclarationNode containingDeclaration, NamespaceSymbol containingSymbol, IFixedList<IAttributeNode> attributes, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type, FunctionSymbol symbol)
+        => new FunctionDefinitionNode(parent, package, file, facet, accessModifier, variableBindingsMap, syntax, containingDeclaration, containingSymbol, attributes, name, parameters, @return, entry, body, exit, type, symbol);
 }
 
 [Closed(
@@ -447,6 +472,9 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     IDefaultConstructorDefinitionNode? DefaultConstructor { get; }
     IEnumerable<IStandardTypeNameNode> ITypeDefinitionNode.AllSupertypeNames
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
+
+    public static IClassDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, Symbol containingSymbol, IFixedSet<IClassMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, UserTypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IClassDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, bool isAbstract, IFixedList<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedList<IClassMemberDefinitionNode> sourceMembers, IFixedSet<IClassMemberDefinitionNode> members, IDefaultConstructorDefinitionNode? defaultConstructor)
+        => new ClassDefinitionNode(parent, package, file, facet, containingDeclaration, containingSymbol, inclusiveMembers, isConst, name, symbol, supertypes, accessModifier, syntax, attributes, isAbstract, genericParameters, baseTypeName, supertypeNames, declaredType, sourceMembers, members, defaultConstructor);
 }
 
 // [Closed(typeof(StructDefinitionNode))]
@@ -467,6 +495,9 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<IStructMemberDeclarationNode> IStructDeclarationNode.Members => Members;
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
+
+    public static IStructDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, Symbol containingSymbol, IFixedSet<IStructMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, UserTypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IStructDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, StructType declaredType, IFixedList<IStructMemberDefinitionNode> sourceMembers, IFixedSet<IStructMemberDefinitionNode> members, IDefaultInitializerDefinitionNode? defaultInitializer)
+        => new StructDefinitionNode(parent, package, file, facet, containingDeclaration, containingSymbol, inclusiveMembers, isConst, name, symbol, supertypes, accessModifier, syntax, attributes, genericParameters, supertypeNames, declaredType, sourceMembers, members, defaultInitializer);
 }
 
 // [Closed(typeof(TraitDefinitionNode))]
@@ -485,6 +516,9 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITraitMemberDeclarationNode> ITraitDeclarationNode.Members => Members;
+
+    public static ITraitDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, Symbol containingSymbol, IFixedSet<ITraitMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, UserTypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, ITraitDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedSet<ITraitMemberDefinitionNode> members)
+        => new TraitDefinitionNode(parent, package, file, facet, containingDeclaration, containingSymbol, inclusiveMembers, isConst, name, symbol, supertypes, accessModifier, syntax, attributes, genericParameters, supertypeNames, declaredType, members);
 }
 
 // [Closed(typeof(GenericParameterNode))]
@@ -504,6 +538,9 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     UserTypeSymbol ContainingSymbol { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+
+    public static IGenericParameterNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IPackageFacetDeclarationNode facet, IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, IDeclaredUserType containingDeclaredType, GenericParameterType declaredType, IUserTypeDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, GenericParameterTypeSymbol symbol, IFixedSet<ITypeMemberDefinitionNode> members)
+        => new GenericParameterNode(parent, package, file, supertypes, inclusiveMembers, facet, syntax, constraint, name, independence, variance, parameter, containingDeclaredType, declaredType, containingDeclaration, containingSymbol, symbol, members);
 }
 
 [Closed(
@@ -607,6 +644,9 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ObjectType ContainingDeclaredType { get; }
+
+    public static IAbstractMethodDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, ObjectType containingDeclaredType)
+        => new AbstractMethodDefinitionNode(parent, package, file, facet, containingDeclaration, accessModifier, containingSymbol, kind, name, symbol, arity, methodGroupType, syntax, selfParameter, parameters, @return, containingDeclaredType);
 }
 
 [Closed(
@@ -637,6 +677,9 @@ public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefiniti
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+
+    public static IStandardMethodDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new StandardMethodDefinitionNode(parent, package, file, facet, containingDeclaration, accessModifier, containingSymbol, kind, name, symbol, variableBindingsMap, arity, methodGroupType, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
 // [Closed(typeof(GetterMethodDefinitionNode))]
@@ -652,6 +695,9 @@ public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinition
     ISyntax? ISemanticNode.Syntax => Syntax;
     new ITypeNode Return { get; }
     ITypeNode? IMethodDefinitionNode.Return => Return;
+
+    public static IGetterMethodDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new GetterMethodDefinitionNode(parent, package, file, facet, containingDeclaration, accessModifier, containingSymbol, kind, name, symbol, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
 // [Closed(typeof(SetterMethodDefinitionNode))]
@@ -665,6 +711,9 @@ public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinition
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+
+    public static ISetterMethodDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new SetterMethodDefinitionNode(parent, package, file, facet, containingDeclaration, accessModifier, containingSymbol, kind, name, symbol, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
 [Closed(
@@ -689,6 +738,9 @@ public partial interface IConstructorDefinitionNode : IConcreteInvocableDefiniti
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinitionNode
 {
+
+    public static IDefaultConstructorDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IConstructorDefinitionSyntax? syntax, IdentifierName? name, ConstructorSymbol symbol, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+        => new DefaultConstructorDefinitionNode(parent, package, file, facet, containingDeclaration, containingSymbol, variableBindingsMap, accessModifier, syntax, name, symbol, parameters, entry, body, exit);
 }
 
 // [Closed(typeof(SourceConstructorDefinitionNode))]
@@ -704,6 +756,9 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     IConstructorSelfParameterNode SelfParameter { get; }
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
+
+    public static ISourceConstructorDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, ConstructorSymbol symbol, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+        => new SourceConstructorDefinitionNode(parent, package, file, facet, containingDeclaration, containingSymbol, variableBindingsMap, accessModifier, name, symbol, syntax, selfParameter, parameters, entry, body, exit);
 }
 
 [Closed(
@@ -728,6 +783,9 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinitionNode
 {
+
+    public static IDefaultInitializerDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IInitializerDefinitionSyntax? syntax, IdentifierName? name, InitializerSymbol symbol, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+        => new DefaultInitializerDefinitionNode(parent, package, file, facet, containingDeclaration, containingSymbol, variableBindingsMap, accessModifier, syntax, name, symbol, parameters, entry, body, exit);
 }
 
 // [Closed(typeof(SourceInitializerDefinitionNode))]
@@ -743,6 +801,9 @@ public partial interface ISourceInitializerDefinitionNode : IInitializerDefiniti
     IInitializerSelfParameterNode SelfParameter { get; }
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
+
+    public static ISourceInitializerDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, InitializerSymbol symbol, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+        => new SourceInitializerDefinitionNode(parent, package, file, facet, containingDeclaration, containingSymbol, variableBindingsMap, accessModifier, name, symbol, syntax, selfParameter, parameters, entry, body, exit);
 }
 
 // [Closed(typeof(FieldDefinitionNode))]
@@ -772,6 +833,9 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
+
+    public static IFieldDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, FieldSymbol symbol, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer, IExitNode exit)
+        => new FieldDefinitionNode(parent, package, file, facet, containingDeclaration, accessModifier, containingSymbol, isLentBinding, variableBindingsMap, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, symbol, entry, initializer, currentInitializer, intermediateInitializer, exit);
 }
 
 // [Closed(typeof(AssociatedFunctionDefinitionNode))]
@@ -798,6 +862,9 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionIn
     new FunctionType Type { get; }
     FunctionType IConcreteFunctionInvocableDefinitionNode.Type => Type;
     FunctionType IFunctionLikeDeclarationNode.Type => Type;
+
+    public static IAssociatedFunctionDefinitionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, FunctionSymbol symbol, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new AssociatedFunctionDefinitionNode(parent, package, file, facet, containingDeclaration, containingSymbol, variableBindingsMap, accessModifier, syntax, name, parameters, @return, symbol, type, entry, body, exit);
 }
 
 // [Closed(typeof(AttributeNode))]
@@ -809,6 +876,9 @@ public partial interface IAttributeNode : ICodeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IStandardTypeNameNode TypeName { get; }
     ConstructorSymbol? ReferencedSymbol { get; }
+
+    public static IAttributeNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IAttributeSyntax syntax, IStandardTypeNameNode typeName, ConstructorSymbol? referencedSymbol)
+        => new AttributeNode(parent, package, file, syntax, typeName, referencedSymbol);
 }
 
 [Closed(
@@ -833,6 +903,9 @@ public partial interface ICapabilitySetNode : ICapabilityConstraintNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     new CapabilitySet Constraint { get; }
     ICapabilityConstraint ICapabilityConstraintNode.Constraint => Constraint;
+
+    public static ICapabilitySetNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ICapabilitySetSyntax syntax, CapabilitySet constraint)
+        => new CapabilitySetNode(parent, package, file, syntax, constraint);
 }
 
 // [Closed(typeof(CapabilityNode))]
@@ -844,6 +917,9 @@ public partial interface ICapabilityNode : ICapabilityConstraintNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     Capability Capability { get; }
+
+    public static ICapabilityNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ICapabilityConstraint constraint, ICapabilitySyntax syntax, Capability capability)
+        => new CapabilityNode(parent, package, file, constraint, syntax, capability);
 }
 
 [Closed(
@@ -906,6 +982,9 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     Pseudotype IParameterNode.BindingType => BindingType;
     DataType INamedBindingNode.BindingType => BindingType;
     Pseudotype IBindingNode.BindingType => BindingType;
+
+    public static INamedParameterNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, bool unused, IFlowState flowStateAfter, ParameterType parameterType, INamedParameterSyntax syntax, bool isMutableBinding, bool isLentBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType)
+        => new NamedParameterNode(parent, package, file, unused, flowStateAfter, parameterType, syntax, isMutableBinding, isLentBinding, name, typeNode, bindingAntetype, bindingType);
 }
 
 [Closed(
@@ -949,6 +1028,9 @@ public partial interface IConstructorSelfParameterNode : ISelfParameterNode
     Pseudotype IBindingNode.BindingType => BindingType;
     new ObjectType ContainingDeclaredType { get; }
     IDeclaredUserType ISelfParameterNode.ContainingDeclaredType => ContainingDeclaredType;
+
+    public static IConstructorSelfParameterNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType, ObjectType containingDeclaredType)
+        => new ConstructorSelfParameterNode(parent, package, file, name, unused, flowStateAfter, containingTypeDefinition, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType, containingDeclaredType);
 }
 
 // [Closed(typeof(InitializerSelfParameterNode))]
@@ -967,6 +1049,9 @@ public partial interface IInitializerSelfParameterNode : ISelfParameterNode
     Pseudotype IBindingNode.BindingType => BindingType;
     new StructType ContainingDeclaredType { get; }
     IDeclaredUserType ISelfParameterNode.ContainingDeclaredType => ContainingDeclaredType;
+
+    public static IInitializerSelfParameterNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType, StructType containingDeclaredType)
+        => new InitializerSelfParameterNode(parent, package, file, name, unused, flowStateAfter, containingTypeDefinition, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType, containingDeclaredType);
 }
 
 // [Closed(typeof(MethodSelfParameterNode))]
@@ -979,6 +1064,9 @@ public partial interface IMethodSelfParameterNode : ISelfParameterNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityConstraintNode Capability { get; }
+
+    public static IMethodSelfParameterNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, IDeclaredUserType containingDeclaredType, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability)
+        => new MethodSelfParameterNode(parent, package, file, name, unused, flowStateAfter, containingTypeDefinition, containingDeclaredType, parameterType, bindingAntetype, bindingType, syntax, isLentBinding, capability);
 }
 
 // [Closed(typeof(FieldParameterNode))]
@@ -994,6 +1082,9 @@ public partial interface IFieldParameterNode : IConstructorOrInitializerParamete
     IdentifierName? IParameterNode.Name => Name;
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IFieldDefinitionNode? ReferencedField { get; }
+
+    public static IFieldParameterNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, bool unused, IMaybeAntetype bindingAntetype, IFlowState flowStateAfter, DataType bindingType, ParameterType parameterType, IFieldParameterSyntax syntax, IdentifierName name, ITypeDefinitionNode containingTypeDefinition, IFieldDefinitionNode? referencedField)
+        => new FieldParameterNode(parent, package, file, unused, bindingAntetype, flowStateAfter, bindingType, parameterType, syntax, name, containingTypeDefinition, referencedField);
 }
 
 [Closed(
@@ -1014,6 +1105,9 @@ public partial interface IBlockBodyNode : IBodyNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     new IFixedList<IBodyStatementNode> Statements { get; }
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements => Statements;
+
+    public static IBlockBodyNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IFlowState flowStateAfter, IBlockBodySyntax syntax, IFixedList<IBodyStatementNode> statements)
+        => new BlockBodyNode(parent, package, file, flowStateAfter, syntax, statements);
 }
 
 // [Closed(typeof(ExpressionBodyNode))]
@@ -1026,6 +1120,9 @@ public partial interface IExpressionBodyNode : IBodyNode
     IResultStatementNode ResultStatement { get; }
     IMaybeExpressionAntetype? ExpectedAntetype { get; }
     DataType? ExpectedType { get; }
+
+    public static IExpressionBodyNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IFixedList<IStatementNode> statements, IFlowState flowStateAfter, IExpressionBodySyntax syntax, IResultStatementNode resultStatement, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType)
+        => new ExpressionBodyNode(parent, package, file, statements, flowStateAfter, syntax, resultStatement, expectedAntetype, expectedType);
 }
 
 [Closed(
@@ -1105,6 +1202,9 @@ public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpl
     new IdentifierName Name { get; }
     StandardName IStandardTypeNameNode.Name => Name;
     TypeName ITypeNameNode.Name => Name;
+
+    public static IIdentifierTypeNameNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, TypeSymbol? referencedSymbol, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IIdentifierTypeNameSyntax syntax, IdentifierName name)
+        => new IdentifierTypeNameNode(parent, package, file, namedAntetype, namedType, referencedSymbol, namedBareType, isAttributeType, referencedDeclaration, syntax, name);
 }
 
 // [Closed(typeof(SpecialTypeNameNode))]
@@ -1121,6 +1221,9 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
     TypeName ITypeNameNode.Name => Name;
     new TypeSymbol ReferencedSymbol { get; }
     TypeSymbol? ITypeNameNode.ReferencedSymbol => ReferencedSymbol;
+
+    public static ISpecialTypeNameNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, ISpecialTypeNameSyntax syntax, SpecialTypeName name, TypeSymbol referencedSymbol)
+        => new SpecialTypeNameNode(parent, package, file, namedAntetype, namedType, namedBareType, syntax, name, referencedSymbol);
 }
 
 // [Closed(typeof(GenericTypeNameNode))]
@@ -1137,6 +1240,9 @@ public partial interface IGenericTypeNameNode : IStandardTypeNameNode
     StandardName IStandardTypeNameNode.Name => Name;
     TypeName ITypeNameNode.Name => Name;
     IFixedList<ITypeNode> TypeArguments { get; }
+
+    public static IGenericTypeNameNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, TypeSymbol? referencedSymbol, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
+        => new GenericTypeNameNode(parent, package, file, namedAntetype, namedType, referencedSymbol, namedBareType, isAttributeType, referencedDeclaration, syntax, name, typeArguments);
 }
 
 // [Closed(typeof(QualifiedTypeNameNode))]
@@ -1150,6 +1256,9 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeNameNode Context { get; }
     IStandardTypeNameNode QualifiedName { get; }
+
+    public static IQualifiedTypeNameNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, TypeName name, TypeSymbol? referencedSymbol, BareType? namedBareType, IQualifiedTypeNameSyntax syntax, ITypeNameNode context, IStandardTypeNameNode qualifiedName)
+        => new QualifiedTypeNameNode(parent, package, file, namedAntetype, namedType, name, referencedSymbol, namedBareType, syntax, context, qualifiedName);
 }
 
 // [Closed(typeof(OptionalTypeNode))]
@@ -1161,6 +1270,9 @@ public partial interface IOptionalTypeNode : ITypeNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeNode Referent { get; }
+
+    public static IOptionalTypeNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, IOptionalTypeSyntax syntax, ITypeNode referent)
+        => new OptionalTypeNode(parent, package, file, namedAntetype, namedType, syntax, referent);
 }
 
 // [Closed(typeof(CapabilityTypeNode))]
@@ -1173,6 +1285,9 @@ public partial interface ICapabilityTypeNode : ITypeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityNode Capability { get; }
     ITypeNode Referent { get; }
+
+    public static ICapabilityTypeNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, ICapabilityTypeSyntax syntax, ICapabilityNode capability, ITypeNode referent)
+        => new CapabilityTypeNode(parent, package, file, namedAntetype, namedType, syntax, capability, referent);
 }
 
 // [Closed(typeof(FunctionTypeNode))]
@@ -1185,6 +1300,9 @@ public partial interface IFunctionTypeNode : ITypeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFixedList<IParameterTypeNode> Parameters { get; }
     ITypeNode Return { get; }
+
+    public static IFunctionTypeNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, IFunctionTypeSyntax syntax, IFixedList<IParameterTypeNode> parameters, ITypeNode @return)
+        => new FunctionTypeNode(parent, package, file, namedAntetype, namedType, syntax, parameters, @return);
 }
 
 // [Closed(typeof(ParameterTypeNode))]
@@ -1197,6 +1315,9 @@ public partial interface IParameterTypeNode : ICodeNode
     bool IsLent { get; }
     ITypeNode Referent { get; }
     ParameterType Parameter { get; }
+
+    public static IParameterTypeNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IParameterTypeSyntax syntax, bool isLent, ITypeNode referent, ParameterType parameter)
+        => new ParameterTypeNode(parent, package, file, syntax, isLent, referent, parameter);
 }
 
 [Closed(
@@ -1222,6 +1343,9 @@ public partial interface ICapabilityViewpointTypeNode : IViewpointTypeNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityNode Capability { get; }
+
+    public static ICapabilityViewpointTypeNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, ICapabilityViewpointTypeSyntax syntax, ICapabilityNode capability, ITypeNode referent)
+        => new CapabilityViewpointTypeNode(parent, package, file, namedAntetype, namedType, syntax, capability, referent);
 }
 
 // [Closed(typeof(SelfViewpointTypeNode))]
@@ -1234,6 +1358,9 @@ public partial interface ISelfViewpointTypeNode : IViewpointTypeNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     Pseudotype? NamedSelfType { get; }
+
+    public static ISelfViewpointTypeNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, ISelfViewpointTypeSyntax syntax, ITypeNode referent, Pseudotype? namedSelfType)
+        => new SelfViewpointTypeNode(parent, package, file, namedAntetype, namedType, syntax, referent, namedSelfType);
 }
 
 [Closed(
@@ -1256,12 +1383,18 @@ public partial interface IControlFlowNode : ICodeNode
 public partial interface IEntryNode : IDataFlowNode
 {
     FixedDictionary<IVariableBindingNode, int> VariableBindingsMap();
+
+    public static IEntryNode Create(ISemanticNode parent, IPackageDeclarationNode package, ICodeSyntax? syntax, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
+        => new EntryNode(parent, package, syntax, file, controlFlowNext, controlFlowPrevious, dataFlowPrevious, definitelyAssigned, definitelyUnassigned);
 }
 
 // [Closed(typeof(ExitNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExitNode : IDataFlowNode
 {
+
+    public static IExitNode Create(ISemanticNode parent, IPackageDeclarationNode package, ICodeSyntax? syntax, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
+        => new ExitNode(parent, package, syntax, file, controlFlowNext, controlFlowPrevious, dataFlowPrevious, definitelyAssigned, definitelyUnassigned);
 }
 
 [Closed(
@@ -1317,6 +1450,9 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
         => ValueId;
     ValueId IElseClauseNode.ValueId
         => IntermediateExpression?.ValueId ?? default;
+
+    public static IResultStatementNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IMaybeAntetype antetype, DataType type, IResultStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, IFlowState flowStateAfter)
+        => new ResultStatementNode(parent, package, file, controlFlowNext, controlFlowPrevious, resultAntetype, resultType, antetype, type, syntax, expression, currentExpression, intermediateExpression, expectedAntetype, expectedType, flowStateAfter);
 }
 
 [Closed(
@@ -1354,6 +1490,9 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     IFlowState FlowStateBefore();
     ValueId? IStatementNode.ResultValueId
         => null;
+
+    public static IVariableDeclarationStatementNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IVariableDeclarationStatementSyntax syntax, bool isMutableBinding, IdentifierName name, ICapabilityNode? capability, ITypeNode? type, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer)
+        => new VariableDeclarationStatementNode(parent, package, file, controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, isLentBinding, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, name, capability, type, initializer, currentInitializer, intermediateInitializer);
 }
 
 // [Closed(typeof(ExpressionStatementNode))]
@@ -1370,6 +1509,9 @@ public partial interface IExpressionStatementNode : IBodyStatementNode
     IExpressionNode? IntermediateExpression { get; }
     ValueId? IStatementNode.ResultValueId
         => null;
+
+    public static IExpressionStatementNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, IExpressionStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression)
+        => new ExpressionStatementNode(parent, package, file, controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, syntax, expression, currentExpression, intermediateExpression);
 }
 
 [Closed(
@@ -1402,6 +1544,9 @@ public partial interface IBindingContextPatternNode : IPatternNode
     ITypeNode? Type { get; }
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => Pattern.FlowLexicalScope();
+
+    public static IBindingContextPatternNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFlowState flowStateAfter, IBindingContextPatternSyntax syntax, bool isMutableBinding, IPatternNode pattern, ITypeNode? type)
+        => new BindingContextPatternNode(parent, package, file, controlFlowNext, controlFlowPrevious, flowStateAfter, syntax, isMutableBinding, pattern, type);
 }
 
 [Closed(
@@ -1429,6 +1574,9 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
     IFlowState FlowStateBefore();
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => LexicalScopingAspect.BindingPattern_FlowLexicalScope(this);
+
+    public static IBindingPatternNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IBindingPatternSyntax syntax, bool isMutableBinding, IdentifierName name)
+        => new BindingPatternNode(parent, package, file, controlFlowNext, controlFlowPrevious, flowStateAfter, isLentBinding, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, name);
 }
 
 // [Closed(typeof(OptionalPatternNode))]
@@ -1443,6 +1591,9 @@ public partial interface IOptionalPatternNode : IOptionalOrBindingPatternNode
     IOptionalOrBindingPatternNode Pattern { get; }
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => Pattern.FlowLexicalScope();
+
+    public static IOptionalPatternNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFlowState flowStateAfter, IOptionalPatternSyntax syntax, IOptionalOrBindingPatternNode pattern)
+        => new OptionalPatternNode(parent, package, file, controlFlowNext, controlFlowPrevious, flowStateAfter, syntax, pattern);
 }
 
 [Closed(
@@ -1555,6 +1706,9 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
     new IFlowState FlowStateAfter { get; }
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
+
+    public static IBlockExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, IBlockExpressionSyntax syntax, IFixedList<IStatementNode> statements, IMaybeAntetype antetype, DataType type, IFlowState flowStateAfter)
+        => new BlockExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, expectedType, syntax, statements, antetype, type, flowStateAfter);
 }
 
 // [Closed(typeof(NewObjectExpressionNode))]
@@ -1576,6 +1730,9 @@ public partial interface INewObjectExpressionNode : IInvocationExpressionNode
     ContextualizedOverload? ContextualizedOverload { get; }
     PackageNameScope PackageNameScope();
     IFlowState FlowStateBefore();
+
+    public static INewObjectExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, INewObjectExpressionSyntax syntax, ITypeNameNode constructingType, IdentifierName? constructorName, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IMaybeAntetype constructingAntetype, IFixedSet<IConstructorDeclarationNode> referencedConstructors, IFixedSet<IConstructorDeclarationNode> compatibleConstructors, IConstructorDeclarationNode? referencedConstructor, ContextualizedOverload? contextualizedOverload)
+        => new NewObjectExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, constructingType, constructorName, arguments, intermediateArguments, constructingAntetype, referencedConstructors, compatibleConstructors, referencedConstructor, contextualizedOverload);
 }
 
 // [Closed(typeof(UnsafeExpressionNode))]
@@ -1588,6 +1745,9 @@ public partial interface IUnsafeExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
     IExpressionNode? IntermediateExpression { get; }
+
+    public static IUnsafeExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IUnsafeExpressionSyntax syntax, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression)
+        => new UnsafeExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, expression, intermediateExpression);
 }
 
 [Closed(
@@ -1628,6 +1788,9 @@ public partial interface IBoolLiteralExpressionNode : ILiteralExpressionNode
     bool Value { get; }
     new BoolConstValueType Type { get; }
     DataType IExpressionNode.Type => Type;
+
+    public static IBoolLiteralExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, IBoolLiteralExpressionSyntax syntax, bool value, BoolConstValueType type)
+        => new BoolLiteralExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, syntax, value, type);
 }
 
 // [Closed(typeof(IntegerLiteralExpressionNode))]
@@ -1642,6 +1805,9 @@ public partial interface IIntegerLiteralExpressionNode : ILiteralExpressionNode
     BigInteger Value { get; }
     new IntegerConstValueType Type { get; }
     DataType IExpressionNode.Type => Type;
+
+    public static IIntegerLiteralExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, IIntegerLiteralExpressionSyntax syntax, BigInteger value, IntegerConstValueType type)
+        => new IntegerLiteralExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, syntax, value, type);
 }
 
 // [Closed(typeof(NoneLiteralExpressionNode))]
@@ -1655,6 +1821,9 @@ public partial interface INoneLiteralExpressionNode : ILiteralExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     new OptionalType Type { get; }
     DataType IExpressionNode.Type => Type;
+
+    public static INoneLiteralExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, INoneLiteralExpressionSyntax syntax, OptionalType type)
+        => new NoneLiteralExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, syntax, type);
 }
 
 // [Closed(typeof(StringLiteralExpressionNode))]
@@ -1669,6 +1838,9 @@ public partial interface IStringLiteralExpressionNode : ILiteralExpressionNode
     string Value { get; }
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
+
+    public static IStringLiteralExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, IStringLiteralExpressionSyntax syntax, string value, DataType type)
+        => new StringLiteralExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, syntax, value, type);
 }
 
 // [Closed(typeof(AssignmentExpressionNode))]
@@ -1688,6 +1860,9 @@ public partial interface IAssignmentExpressionNode : IExpressionNode, IDataFlowN
     IExpressionNode? IntermediateRightOperand { get; }
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.AssignmentExpression_FlowLexicalScope(this);
+
+    public static IAssignmentExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IAssignmentExpressionSyntax syntax, IAmbiguousAssignableExpressionNode leftOperand, IAmbiguousAssignableExpressionNode currentLeftOperand, IAssignableExpressionNode? intermediateLeftOperand, AssignmentOperator @operator, IAmbiguousExpressionNode rightOperand, IAmbiguousExpressionNode currentRightOperand, IExpressionNode? intermediateRightOperand)
+        => new AssignmentExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, leftOperand, currentLeftOperand, intermediateLeftOperand, @operator, rightOperand, currentRightOperand, intermediateRightOperand);
 }
 
 // [Closed(typeof(BinaryOperatorExpressionNode))]
@@ -1708,6 +1883,9 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.BinaryOperatorExpression_FlowLexicalScope(this);
+
+    public static IBinaryOperatorExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IBinaryOperatorExpressionSyntax syntax, IAmbiguousExpressionNode leftOperand, IExpressionNode? intermediateLeftOperand, BinaryOperator @operator, IAmbiguousExpressionNode rightOperand, IExpressionNode? intermediateRightOperand, IAntetype? numericOperatorCommonAntetype)
+        => new BinaryOperatorExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, leftOperand, intermediateLeftOperand, @operator, rightOperand, intermediateRightOperand, numericOperatorCommonAntetype);
 }
 
 // [Closed(typeof(UnaryOperatorExpressionNode))]
@@ -1724,6 +1902,9 @@ public partial interface IUnaryOperatorExpressionNode : IExpressionNode
     IExpressionNode? IntermediateOperand { get; }
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.UnaryOperatorExpression_FlowLexicalScope(this);
+
+    public static IUnaryOperatorExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IUnaryOperatorExpressionSyntax syntax, UnaryOperatorFixity fixity, UnaryOperator @operator, IAmbiguousExpressionNode operand, IExpressionNode? intermediateOperand)
+        => new UnaryOperatorExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, fixity, @operator, operand, intermediateOperand);
 }
 
 // [Closed(typeof(IdExpressionNode))]
@@ -1736,6 +1917,9 @@ public partial interface IIdExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode Referent { get; }
     IExpressionNode? IntermediateReferent { get; }
+
+    public static IIdExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IIdExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent)
+        => new IdExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, referent, intermediateReferent);
 }
 
 // [Closed(typeof(ConversionExpressionNode))]
@@ -1750,6 +1934,9 @@ public partial interface IConversionExpressionNode : IExpressionNode
     IExpressionNode? IntermediateReferent { get; }
     ConversionOperator Operator { get; }
     ITypeNode ConvertToType { get; }
+
+    public static IConversionExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IConversionExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent, ConversionOperator @operator, ITypeNode convertToType)
+        => new ConversionExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, referent, intermediateReferent, @operator, convertToType);
 }
 
 // [Closed(typeof(ImplicitConversionExpressionNode))]
@@ -1760,6 +1947,9 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
     IExpressionNode CurrentReferent { get; }
     new SimpleAntetype Antetype { get; }
     IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
+
+    public static IImplicitConversionExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IExpressionNode referent, IExpressionNode currentReferent, SimpleAntetype antetype)
+        => new ImplicitConversionExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, syntax, expectedAntetype, expectedType, type, flowStateAfter, referent, currentReferent, antetype);
 }
 
 // [Closed(typeof(PatternMatchExpressionNode))]
@@ -1773,6 +1963,9 @@ public partial interface IPatternMatchExpressionNode : IExpressionNode
     IAmbiguousExpressionNode Referent { get; }
     IExpressionNode? IntermediateReferent { get; }
     IPatternNode Pattern { get; }
+
+    public static IPatternMatchExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IPatternMatchExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent, IPatternNode pattern)
+        => new PatternMatchExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, referent, intermediateReferent, pattern);
 }
 
 // [Closed(typeof(IfExpressionNode))]
@@ -1794,6 +1987,9 @@ public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
     new IFlowState FlowStateAfter { get; }
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
+
+    public static IIfExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IIfExpressionSyntax syntax, IAmbiguousExpressionNode condition, IExpressionNode? intermediateCondition, IBlockOrResultNode thenBlock, IElseClauseNode? elseClause, IFlowState flowStateAfter)
+        => new IfExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, syntax, condition, intermediateCondition, thenBlock, elseClause, flowStateAfter);
 }
 
 // [Closed(typeof(LoopExpressionNode))]
@@ -1805,6 +2001,9 @@ public partial interface ILoopExpressionNode : IExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IBlockExpressionNode Block { get; }
+
+    public static ILoopExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ILoopExpressionSyntax syntax, IBlockExpressionNode block)
+        => new LoopExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, block);
 }
 
 // [Closed(typeof(WhileExpressionNode))]
@@ -1818,6 +2017,9 @@ public partial interface IWhileExpressionNode : IExpressionNode
     IAmbiguousExpressionNode Condition { get; }
     IExpressionNode? IntermediateCondition { get; }
     IBlockExpressionNode Block { get; }
+
+    public static IWhileExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IWhileExpressionSyntax syntax, IAmbiguousExpressionNode condition, IExpressionNode? intermediateCondition, IBlockExpressionNode block)
+        => new WhileExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, condition, intermediateCondition, block);
 }
 
 // [Closed(typeof(ForeachExpressionNode))]
@@ -1848,6 +2050,9 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope LexicalScope { get; }
+
+    public static IForeachExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, IdentifierName name, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IForeachExpressionSyntax syntax, bool isMutableBinding, IdentifierName variableName, IAmbiguousExpressionNode inExpression, IExpressionNode? intermediateInExpression, ITypeNode? declaredType, IBlockExpressionNode block, ITypeDeclarationNode? referencedIterableDeclaration, IStandardMethodDeclarationNode? referencedIterateMethod, IMaybeExpressionAntetype iteratorAntetype, DataType iteratorType, ITypeDeclarationNode? referencedIteratorDeclaration, IStandardMethodDeclarationNode? referencedNextMethod, IMaybeAntetype iteratedAntetype, DataType iteratedType, IFlowState flowStateBeforeBlock)
+        => new ForeachExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, isLentBinding, bindingAntetype, name, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, variableName, inExpression, intermediateInExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, iteratorType, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype, iteratedType, flowStateBeforeBlock);
 }
 
 // [Closed(typeof(BreakExpressionNode))]
@@ -1860,6 +2065,9 @@ public partial interface IBreakExpressionNode : INeverTypedExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode? Value { get; }
     IExpressionNode? IntermediateValue { get; }
+
+    public static IBreakExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? value, IExpressionNode? intermediateValue)
+        => new BreakExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, type, syntax, value, intermediateValue);
 }
 
 // [Closed(typeof(NextExpressionNode))]
@@ -1870,6 +2078,9 @@ public partial interface INextExpressionNode : INeverTypedExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+
+    public static INextExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, INextExpressionSyntax syntax)
+        => new NextExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, type, syntax);
 }
 
 // [Closed(typeof(ReturnExpressionNode))]
@@ -1885,6 +2096,9 @@ public partial interface IReturnExpressionNode : INeverTypedExpressionNode
     IExpressionNode? IntermediateValue { get; }
     IExitNode ControlFlowExit();
     DataType? ExpectedReturnType { get; }
+
+    public static IReturnExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, IReturnExpressionSyntax syntax, IAmbiguousExpressionNode? value, IAmbiguousExpressionNode? currentValue, IExpressionNode? intermediateValue)
+        => new ReturnExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, type, syntax, value, currentValue, intermediateValue);
 }
 
 // [Closed(typeof(UnresolvedInvocationExpressionNode))]
@@ -1899,6 +2113,9 @@ public partial interface IUnresolvedInvocationExpressionNode : IAmbiguousExpress
     IAmbiguousExpressionNode CurrentExpression { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
+
+    public static IUnresolvedInvocationExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IInvocationExpressionSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IAmbiguousExpressionNode> currentArguments)
+        => new UnresolvedInvocationExpressionNode(parent, package, file, syntax, expression, currentExpression, arguments, currentArguments);
 }
 
 [Closed(
@@ -1931,6 +2148,9 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
     IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState FlowStateBefore();
+
+    public static IFunctionInvocationExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IFunctionGroupNameNode functionGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IFunctionLikeDeclarationNode> compatibleDeclarations, IFunctionLikeDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+        => new FunctionInvocationExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, functionGroup, arguments, intermediateArguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
 }
 
 // [Closed(typeof(MethodInvocationExpressionNode))]
@@ -1948,6 +2168,9 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
     IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
+
+    public static IMethodInvocationExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IMethodGroupNameNode methodGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IAmbiguousExpressionNode> currentArguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IStandardMethodDeclarationNode> compatibleDeclarations, IStandardMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+        => new MethodInvocationExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, methodGroup, arguments, currentArguments, intermediateArguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
 }
 
 // [Closed(typeof(GetterInvocationExpressionNode))]
@@ -1963,6 +2186,9 @@ public partial interface IGetterInvocationExpressionNode : IInvocationExpression
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
+
+    public static IGetterInvocationExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, IGetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+        => new GetterInvocationExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, context, propertyName, referencedPropertyAccessors, referencedDeclaration, contextualizedOverload);
 }
 
 // [Closed(typeof(SetterInvocationExpressionNode))]
@@ -1980,6 +2206,9 @@ public partial interface ISetterInvocationExpressionNode : IInvocationExpression
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
+
+    public static ISetterInvocationExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IAssignmentExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IAmbiguousExpressionNode value, IExpressionNode? intermediateValue, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, ISetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+        => new SetterInvocationExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, context, propertyName, value, intermediateValue, referencedPropertyAccessors, referencedDeclaration, contextualizedOverload);
 }
 
 // [Closed(typeof(FunctionReferenceInvocationExpressionNode))]
@@ -1995,6 +2224,9 @@ public partial interface IFunctionReferenceInvocationExpressionNode : IInvocatio
     IFixedList<IExpressionNode?> IntermediateArguments { get; }
     FunctionAntetype FunctionAntetype { get; }
     FunctionType FunctionType { get; }
+
+    public static IFunctionReferenceInvocationExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IExpressionNode expression, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, FunctionAntetype functionAntetype, FunctionType functionType)
+        => new FunctionReferenceInvocationExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, expression, arguments, intermediateArguments, functionAntetype, functionType);
 }
 
 // [Closed(typeof(InitializerInvocationExpressionNode))]
@@ -2012,6 +2244,9 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
     IInitializerDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState FlowStateBefore();
+
+    public static IInitializerInvocationExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IInitializerGroupNameNode initializerGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IInitializerDeclarationNode> compatibleDeclarations, IInitializerDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+        => new InitializerInvocationExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, initializerGroup, arguments, intermediateArguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
 }
 
 // [Closed(typeof(UnknownInvocationExpressionNode))]
@@ -2024,6 +2259,9 @@ public partial interface IUnknownInvocationExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
     IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+
+    public static IUnknownInvocationExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IInvocationExpressionSyntax syntax, IAmbiguousExpressionNode expression, IFixedList<IAmbiguousExpressionNode> arguments)
+        => new UnknownInvocationExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, expression, arguments);
 }
 
 [Closed(
@@ -2095,6 +2333,9 @@ public partial interface IIdentifierNameExpressionNode : IStandardNameExpression
     IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     StandardName IStandardNameExpressionNode.Name => Name;
+
+    public static IIdentifierNameExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IFixedList<IDeclarationNode> referencedDeclarations, IIdentifierNameExpressionSyntax syntax, IdentifierName name)
+        => new IdentifierNameExpressionNode(parent, package, file, referencedDeclarations, syntax, name);
 }
 
 // [Closed(typeof(GenericNameExpressionNode))]
@@ -2110,6 +2351,9 @@ public partial interface IGenericNameExpressionNode : IStandardNameExpressionNod
     new GenericName Name { get; }
     StandardName IStandardNameExpressionNode.Name => Name;
     IFixedList<ITypeNode> TypeArguments { get; }
+
+    public static IGenericNameExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IFixedList<IDeclarationNode> referencedDeclarations, IGenericNameExpressionSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
+        => new GenericNameExpressionNode(parent, package, file, referencedDeclarations, syntax, name, typeArguments);
 }
 
 // [Closed(typeof(MemberAccessExpressionNode))]
@@ -2126,6 +2370,9 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameNode, IAmbi
     StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     PackageNameScope PackageNameScope();
+
+    public static IMemberAccessExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMemberAccessExpressionSyntax syntax, IAmbiguousExpressionNode context, StandardName memberName, IFixedList<ITypeNode> typeArguments)
+        => new MemberAccessExpressionNode(parent, package, file, syntax, context, memberName, typeArguments);
 }
 
 // [Closed(typeof(PropertyNameNode))]
@@ -2141,6 +2388,9 @@ public partial interface IPropertyNameNode : IAmbiguousNameNode, IAmbiguousAssig
     IExpressionNode Context { get; }
     StandardName PropertyName { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
+
+    public static IPropertyNameNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors)
+        => new PropertyNameNode(parent, package, file, syntax, context, propertyName, referencedPropertyAccessors);
 }
 
 [Closed(
@@ -2191,6 +2441,9 @@ public partial interface IUnqualifiedNamespaceNameNode : INamespaceNameNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IdentifierName Name { get; }
+
+    public static IUnqualifiedNamespaceNameNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, UnknownType type, IFixedList<INamespaceDeclarationNode> referencedDeclarations, IIdentifierNameExpressionSyntax syntax, IdentifierName name)
+        => new UnqualifiedNamespaceNameNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, type, referencedDeclarations, syntax, name);
 }
 
 // [Closed(typeof(QualifiedNamespaceNameNode))]
@@ -2204,6 +2457,9 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     INamespaceNameNode Context { get; }
     IdentifierName Name { get; }
+
+    public static IQualifiedNamespaceNameNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, UnknownType type, IFixedList<INamespaceDeclarationNode> referencedDeclarations, IMemberAccessExpressionSyntax syntax, INamespaceNameNode context, IdentifierName name)
+        => new QualifiedNamespaceNameNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, type, referencedDeclarations, syntax, context, name);
 }
 
 // [Closed(typeof(FunctionGroupNameNode))]
@@ -2214,6 +2470,9 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
     StandardName FunctionName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }
+
+    public static IFunctionGroupNameNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, INameExpressionSyntax syntax, INameExpressionNode? context, StandardName functionName, IFixedList<ITypeNode> typeArguments, IFixedSet<IFunctionLikeDeclarationNode> referencedDeclarations)
+        => new FunctionGroupNameNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, context, functionName, typeArguments, referencedDeclarations);
 }
 
 // [Closed(typeof(FunctionNameNode))]
@@ -2225,6 +2484,9 @@ public partial interface IFunctionNameNode : INameExpressionNode
     IFixedList<ITypeNode> TypeArguments { get; }
     IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
     IFlowState FlowStateBefore();
+
+    public static IFunctionNameNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, INameExpressionSyntax syntax, IFunctionGroupNameNode functionGroup, StandardName functionName, IFixedList<ITypeNode> typeArguments, IFunctionLikeDeclarationNode? referencedDeclaration)
+        => new FunctionNameNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, functionGroup, functionName, typeArguments, referencedDeclaration);
 }
 
 // [Closed(typeof(MethodGroupNameNode))]
@@ -2241,6 +2503,9 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     StandardName MethodName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
+
+    public static IMethodGroupNameNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IMemberAccessExpressionSyntax syntax, IExpressionNode context, IExpressionNode currentContext, StandardName methodName, IFixedList<ITypeNode> typeArguments, IFixedSet<IStandardMethodDeclarationNode> referencedDeclarations)
+        => new MethodGroupNameNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, context, currentContext, methodName, typeArguments, referencedDeclarations);
 }
 
 // [Closed(typeof(FieldAccessExpressionNode))]
@@ -2256,6 +2521,9 @@ public partial interface IFieldAccessExpressionNode : INameExpressionNode, IAssi
     IExpressionNode Context { get; }
     IdentifierName FieldName { get; }
     IFieldDeclarationNode ReferencedDeclaration { get; }
+
+    public static IFieldAccessExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IMemberAccessExpressionSyntax syntax, IExpressionNode context, IdentifierName fieldName, IFieldDeclarationNode referencedDeclaration)
+        => new FieldAccessExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, context, fieldName, referencedDeclaration);
 }
 
 // [Closed(typeof(VariableNameExpressionNode))]
@@ -2274,6 +2542,9 @@ public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressi
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
     IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
     IFlowState FlowStateBefore();
+
+    public static IVariableNameExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IIdentifierNameExpressionSyntax syntax, IdentifierName name, ILocalBindingNode referencedDefinition, IFixedSet<IDataFlowNode> dataFlowPrevious)
+        => new VariableNameExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, name, referencedDefinition, dataFlowPrevious);
 }
 
 [Closed(
@@ -2298,6 +2569,9 @@ public partial interface IStandardTypeNameExpressionNode : ITypeNameExpressionNo
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+
+    public static IStandardTypeNameExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, StandardName name, ITypeDeclarationNode referencedDeclaration, IMaybeAntetype namedAntetype, BareType? namedBareType, IStandardNameExpressionSyntax syntax, IFixedList<ITypeNode> typeArguments)
+        => new StandardTypeNameExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, name, referencedDeclaration, namedAntetype, namedBareType, syntax, typeArguments);
 }
 
 // [Closed(typeof(QualifiedTypeNameExpressionNode))]
@@ -2310,6 +2584,9 @@ public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionN
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     INamespaceNameNode Context { get; }
+
+    public static IQualifiedTypeNameExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, StandardName name, ITypeDeclarationNode referencedDeclaration, IMaybeAntetype namedAntetype, BareType? namedBareType, IMemberAccessExpressionSyntax syntax, INamespaceNameNode context, IFixedList<ITypeNode> typeArguments)
+        => new QualifiedTypeNameExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, name, referencedDeclaration, namedAntetype, namedBareType, syntax, context, typeArguments);
 }
 
 // [Closed(typeof(InitializerGroupNameNode))]
@@ -2320,6 +2597,9 @@ public partial interface IInitializerGroupNameNode : INameExpressionNode
     StandardName? InitializerName { get; }
     IMaybeAntetype InitializingAntetype { get; }
     IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { get; }
+
+    public static IInitializerGroupNameNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, INameExpressionSyntax syntax, ITypeNameExpressionNode context, StandardName? initializerName, IMaybeAntetype initializingAntetype, IFixedSet<IInitializerDeclarationNode> referencedDeclarations)
+        => new InitializerGroupNameNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, context, initializerName, initializingAntetype, referencedDeclarations);
 }
 
 // [Closed(typeof(SpecialTypeNameExpressionNode))]
@@ -2335,6 +2615,9 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     TypeSymbol ReferencedSymbol { get; }
     new UnknownType Type { get; }
     DataType IExpressionNode.Type => Type;
+
+    public static ISpecialTypeNameExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ISpecialTypeNameExpressionSyntax syntax, SpecialTypeName name, TypeSymbol referencedSymbol, UnknownType type)
+        => new SpecialTypeNameExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, syntax, name, referencedSymbol, type);
 }
 
 [Closed(
@@ -2367,6 +2650,9 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
     new ISelfParameterNode? ReferencedDefinition { get; }
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
     IFlowState FlowStateBefore();
+
+    public static ISelfExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ISelfExpressionSyntax syntax, bool isImplicit, Pseudotype pseudotype, IExecutableDefinitionNode containingDeclaration, ISelfParameterNode? referencedDefinition)
+        => new SelfExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, isImplicit, pseudotype, containingDeclaration, referencedDefinition);
 }
 
 // [Closed(typeof(MissingNameExpressionNode))]
@@ -2382,6 +2668,9 @@ public partial interface IMissingNameExpressionNode : INameExpressionNode, ISimp
     IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     new UnknownType Type { get; }
     DataType IExpressionNode.Type => Type;
+
+    public static IMissingNameExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, IMissingNameSyntax syntax, UnknownType type)
+        => new MissingNameExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, syntax, type);
 }
 
 [Closed(
@@ -2423,6 +2712,9 @@ public partial interface IUnknownIdentifierNameExpressionNode : IUnknownStandard
     IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     StandardName IUnknownStandardNameExpressionNode.Name => Name;
+
+    public static IUnknownIdentifierNameExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, UnknownType type, IFixedSet<IDeclarationNode> referencedDeclarations, IIdentifierNameExpressionSyntax syntax, IdentifierName name)
+        => new UnknownIdentifierNameExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, type, referencedDeclarations, syntax, name);
 }
 
 // [Closed(typeof(UnknownGenericNameExpressionNode))]
@@ -2438,6 +2730,9 @@ public partial interface IUnknownGenericNameExpressionNode : IUnknownStandardNam
     new GenericName Name { get; }
     StandardName IUnknownStandardNameExpressionNode.Name => Name;
     IFixedList<ITypeNode> TypeArguments { get; }
+
+    public static IUnknownGenericNameExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, UnknownType type, IFixedSet<IDeclarationNode> referencedDeclarations, IGenericNameExpressionSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
+        => new UnknownGenericNameExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, type, referencedDeclarations, syntax, name, typeArguments);
 }
 
 // [Closed(typeof(UnknownMemberAccessExpressionNode))]
@@ -2454,6 +2749,9 @@ public partial interface IUnknownMemberAccessExpressionNode : IUnknownNameExpres
     StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IDeclarationNode> ReferencedMembers { get; }
+
+    public static IUnknownMemberAccessExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, UnknownType type, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName memberName, IFixedList<ITypeNode> typeArguments, IFixedSet<IDeclarationNode> referencedMembers)
+        => new UnknownMemberAccessExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, type, syntax, context, memberName, typeArguments, referencedMembers);
 }
 
 // [Closed(typeof(AmbiguousMoveExpressionNode))]
@@ -2466,6 +2764,9 @@ public partial interface IAmbiguousMoveExpressionNode : IAmbiguousExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ISimpleNameNode Referent { get; }
     INameExpressionNode? IntermediateReferent { get; }
+
+    public static IAmbiguousMoveExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMoveExpressionSyntax syntax, ISimpleNameNode referent, INameExpressionNode? intermediateReferent)
+        => new AmbiguousMoveExpressionNode(parent, package, file, syntax, referent, intermediateReferent);
 }
 
 [Closed(
@@ -2492,12 +2793,18 @@ public partial interface IMoveVariableExpressionNode : IMoveExpressionNode
 {
     new ILocalBindingNameExpressionNode Referent { get; }
     IExpressionNode IMoveExpressionNode.Referent => Referent;
+
+    public static IMoveVariableExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isImplicit, ILocalBindingNameExpressionNode referent)
+        => new MoveVariableExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, syntax, expectedAntetype, antetype, expectedType, type, flowStateAfter, isImplicit, referent);
 }
 
 // [Closed(typeof(MoveValueExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMoveValueExpressionNode : IMoveExpressionNode
 {
+
+    public static IMoveValueExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isImplicit, IExpressionNode referent)
+        => new MoveValueExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, syntax, expectedAntetype, antetype, expectedType, type, flowStateAfter, isImplicit, referent);
 }
 
 // [Closed(typeof(ImplicitTempMoveExpressionNode))]
@@ -2505,6 +2812,9 @@ public partial interface IMoveValueExpressionNode : IMoveExpressionNode
 public partial interface IImplicitTempMoveExpressionNode : IExpressionNode
 {
     IExpressionNode Referent { get; }
+
+    public static IImplicitTempMoveExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IExpressionNode referent)
+        => new ImplicitTempMoveExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, syntax, expectedAntetype, antetype, expectedType, type, flowStateAfter, referent);
 }
 
 // [Closed(typeof(AmbiguousFreezeExpressionNode))]
@@ -2517,6 +2827,9 @@ public partial interface IAmbiguousFreezeExpressionNode : IAmbiguousExpressionNo
     ISyntax? ISemanticNode.Syntax => Syntax;
     ISimpleNameNode Referent { get; }
     INameExpressionNode? IntermediateReferent { get; }
+
+    public static IAmbiguousFreezeExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IFreezeExpressionSyntax syntax, ISimpleNameNode referent, INameExpressionNode? intermediateReferent)
+        => new AmbiguousFreezeExpressionNode(parent, package, file, syntax, referent, intermediateReferent);
 }
 
 [Closed(
@@ -2535,12 +2848,18 @@ public partial interface IFreezeVariableExpressionNode : IFreezeExpressionNode
 {
     new ILocalBindingNameExpressionNode Referent { get; }
     IExpressionNode IFreezeExpressionNode.Referent => Referent;
+
+    public static IFreezeVariableExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isImplicit, bool isTemporary, ILocalBindingNameExpressionNode referent)
+        => new FreezeVariableExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, syntax, expectedAntetype, antetype, expectedType, type, flowStateAfter, isImplicit, isTemporary, referent);
 }
 
 // [Closed(typeof(FreezeValueExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFreezeValueExpressionNode : IFreezeExpressionNode
 {
+
+    public static IFreezeValueExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isImplicit, bool isTemporary, IExpressionNode referent)
+        => new FreezeValueExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, syntax, expectedAntetype, antetype, expectedType, type, flowStateAfter, isImplicit, isTemporary, referent);
 }
 
 // [Closed(typeof(PrepareToReturnExpressionNode))]
@@ -2549,6 +2868,9 @@ public partial interface IPrepareToReturnExpressionNode : IExpressionNode
 {
     IExpressionNode Value { get; }
     IExpressionNode CurrentValue { get; }
+
+    public static IPrepareToReturnExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IExpressionNode value, IExpressionNode currentValue)
+        => new PrepareToReturnExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, syntax, expectedAntetype, antetype, expectedType, type, flowStateAfter, value, currentValue);
 }
 
 // [Closed(typeof(AsyncBlockExpressionNode))]
@@ -2560,6 +2882,9 @@ public partial interface IAsyncBlockExpressionNode : IExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IBlockExpressionNode Block { get; }
+
+    public static IAsyncBlockExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAsyncBlockExpressionSyntax syntax, IBlockExpressionNode block)
+        => new AsyncBlockExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, block);
 }
 
 // [Closed(typeof(AsyncStartExpressionNode))]
@@ -2573,6 +2898,9 @@ public partial interface IAsyncStartExpressionNode : IExpressionNode
     bool Scheduled { get; }
     IAmbiguousExpressionNode Expression { get; }
     IExpressionNode? IntermediateExpression { get; }
+
+    public static IAsyncStartExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAsyncStartExpressionSyntax syntax, bool scheduled, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression)
+        => new AsyncStartExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, scheduled, expression, intermediateExpression);
 }
 
 // [Closed(typeof(AwaitExpressionNode))]
@@ -2585,6 +2913,9 @@ public partial interface IAwaitExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode Expression { get; }
     IExpressionNode? IntermediateExpression { get; }
+
+    public static IAwaitExpressionNode Create(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAwaitExpressionSyntax syntax, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression)
+        => new AwaitExpressionNode(parent, package, file, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, expression, intermediateExpression);
 }
 
 [Closed(
@@ -3036,12 +3367,18 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageSymbolNode : IPackageDeclarationNode
 {
+
+    public static IPackageSymbolNode Create(ISyntax? syntax, IdentifierName? aliasOrName, IdentifierName name, PackageSymbol symbol, IPackageFacetDeclarationNode mainFacet, IPackageFacetDeclarationNode testingFacet)
+        => new PackageSymbolNode(syntax, aliasOrName, name, symbol, mainFacet, testingFacet);
 }
 
 // [Closed(typeof(PackageFacetSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageFacetSymbolNode : IPackageFacetDeclarationNode
 {
+
+    public static IPackageFacetSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IdentifierName? packageAliasOrName, IdentifierName packageName, PackageSymbol symbol, INamespaceDeclarationNode globalNamespace)
+        => new PackageFacetSymbolNode(syntax, parent, package, packageAliasOrName, packageName, symbol, globalNamespace);
 }
 
 // [Closed(typeof(NamespaceSymbolNode))]
@@ -3050,48 +3387,72 @@ public partial interface INamespaceSymbolNode : INamespaceDeclarationNode
 {
     new IFixedList<INamespaceMemberDeclarationNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> INamespaceDeclarationNode.Members => Members;
+
+    public static INamespaceSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName name, NamespaceSymbol symbol, IFixedList<INamespaceMemberDeclarationNode> nestedMembers, IFixedList<INamespaceMemberDeclarationNode> members)
+        => new NamespaceSymbolNode(syntax, parent, package, facet, name, symbol, nestedMembers, members);
 }
 
 // [Closed(typeof(FunctionSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFunctionSymbolNode : IFunctionDeclarationNode
 {
+
+    public static IFunctionSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, FunctionSymbol symbol, StandardName name, FunctionType type)
+        => new FunctionSymbolNode(syntax, parent, package, facet, symbol, name, type);
 }
 
 // [Closed(typeof(PrimitiveTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPrimitiveTypeSymbolNode : IPrimitiveTypeDeclarationNode
 {
+
+    public static IPrimitiveTypeSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, TypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, SpecialTypeName name, IFixedSet<ITypeMemberDeclarationNode> members)
+        => new PrimitiveTypeSymbolNode(syntax, parent, package, symbol, supertypes, inclusiveMembers, name, members);
 }
 
 // [Closed(typeof(UserTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUserTypeSymbolNode : IUserTypeDeclarationNode
 {
+
+    public static IUserTypeSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IFixedSet<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IFixedList<IGenericParameterDeclarationNode> genericParameters, IFixedSet<ITypeMemberDeclarationNode> members)
+        => new UserTypeSymbolNode(syntax, parent, package, facet, supertypes, name, symbol, inclusiveMembers, genericParameters, members);
 }
 
 // [Closed(typeof(ClassSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IClassSymbolNode : IClassDeclarationNode
 {
+
+    public static IClassSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IFixedSet<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IFixedSet<IClassMemberDeclarationNode> inclusiveMembers, IFixedList<IGenericParameterDeclarationNode> genericParameters, IFixedSet<IClassMemberDeclarationNode> members)
+        => new ClassSymbolNode(syntax, parent, package, facet, supertypes, name, symbol, inclusiveMembers, genericParameters, members);
 }
 
 // [Closed(typeof(StructSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStructSymbolNode : IStructDeclarationNode
 {
+
+    public static IStructSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IFixedSet<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IFixedSet<IStructMemberDeclarationNode> inclusiveMembers, IFixedList<IGenericParameterDeclarationNode> genericParameters, IFixedSet<IStructMemberDeclarationNode> members)
+        => new StructSymbolNode(syntax, parent, package, facet, supertypes, name, symbol, inclusiveMembers, genericParameters, members);
 }
 
 // [Closed(typeof(TraitSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITraitSymbolNode : ITraitDeclarationNode
 {
+
+    public static ITraitSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IFixedSet<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IFixedSet<ITraitMemberDeclarationNode> inclusiveMembers, IFixedList<IGenericParameterDeclarationNode> genericParameters, IFixedSet<ITraitMemberDeclarationNode> members)
+        => new TraitSymbolNode(syntax, parent, package, facet, supertypes, name, symbol, inclusiveMembers, genericParameters, members);
 }
 
 // [Closed(typeof(GenericParameterSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IGenericParameterSymbolNode : IGenericParameterDeclarationNode
 {
+
+    public static IGenericParameterSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IPackageFacetDeclarationNode facet, IdentifierName name, GenericParameterTypeSymbol symbol, IFixedSet<ITypeMemberDeclarationNode> members)
+        => new GenericParameterSymbolNode(syntax, parent, package, supertypes, inclusiveMembers, facet, name, symbol, members);
 }
 
 [Closed(
@@ -3107,41 +3468,6644 @@ public partial interface IMethodSymbolNode : IMethodDeclarationNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStandardMethodSymbolNode : IMethodSymbolNode, IStandardMethodDeclarationNode
 {
+
+    public static IStandardMethodSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName name, MethodSymbol symbol, int arity, FunctionType methodGroupType)
+        => new StandardMethodSymbolNode(syntax, parent, package, facet, name, symbol, arity, methodGroupType);
 }
 
 // [Closed(typeof(GetterMethodSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IGetterMethodSymbolNode : IMethodSymbolNode, IGetterMethodDeclarationNode
 {
+
+    public static IGetterMethodSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName name, MethodSymbol symbol)
+        => new GetterMethodSymbolNode(syntax, parent, package, facet, name, symbol);
 }
 
 // [Closed(typeof(SetterMethodSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISetterMethodSymbolNode : IMethodSymbolNode, ISetterMethodDeclarationNode
 {
+
+    public static ISetterMethodSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName name, MethodSymbol symbol)
+        => new SetterMethodSymbolNode(syntax, parent, package, facet, name, symbol);
 }
 
 // [Closed(typeof(ConstructorSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IConstructorSymbolNode : IConstructorDeclarationNode
 {
+
+    public static IConstructorSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName? name, ConstructorSymbol symbol)
+        => new ConstructorSymbolNode(syntax, parent, package, facet, name, symbol);
 }
 
 // [Closed(typeof(InitializerSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInitializerSymbolNode : IInitializerDeclarationNode
 {
+
+    public static IInitializerSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName? name, InitializerSymbol symbol)
+        => new InitializerSymbolNode(syntax, parent, package, facet, name, symbol);
 }
 
 // [Closed(typeof(FieldSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFieldSymbolNode : IFieldDeclarationNode
 {
+
+    public static IFieldSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName name, DataType bindingType, FieldSymbol symbol)
+        => new FieldSymbolNode(syntax, parent, package, facet, name, bindingType, symbol);
 }
 
 // [Closed(typeof(AssociatedFunctionSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDeclarationNode
 {
+
+    public static IAssociatedFunctionSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, FunctionSymbol symbol, FunctionType type, StandardName name)
+        => new AssociatedFunctionSymbolNode(syntax, parent, package, facet, symbol, type, name);
+}
+
+// TODO switch back to `file` and not `partial` once fully transitioned
+internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanticNode>
+{
+    private SemanticNode? parent;
+
+    protected SemanticNode() { }
+    protected SemanticNode(bool inFinalTree) : base(inFinalTree) { }
+
+    [DebuggerStepThrough]
+    protected sealed override ITreeNode PeekParent()
+        // Use volatile read to ensure order of operations as seen by other threads
+        => Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
+
+    protected SemanticNode GetParent(IInheritanceContext ctx)
+    {
+        // Use volatile read to ensure order of operations as seen by other threads
+        var node = Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
+        ctx.AccessParentOf(this);
+        return node;
+    }
+
+    void IChildTreeNode<ISemanticNode>.SetParent(ISemanticNode newParent)
+    {
+        if (newParent is not SemanticNode newParentNode)
+            throw new ArgumentException($"Parent must be a {nameof(SemanticNode)}.", nameof(newParent));
+
+        // Use volatile write to ensure order of operations as seen by other threads
+        Volatile.Write(ref parent, newParentNode);
+    }
+
+    /// <summary>
+    /// The previous node to this one in a preorder traversal of the tree.
+    /// </summary>
+    protected virtual SemanticNode Previous(IInheritanceContext ctx)
+    {
+        SemanticNode? previous = null;
+        var parent = GetParent(ctx);
+        foreach (var child in parent.Children().Cast<SemanticNode>())
+        {
+            if (child == this)
+                // If this is the first child, return the parent without descending
+                return previous?.LastDescendant() ?? parent;
+            previous = child;
+        }
+
+        throw new UnreachableException("Node is not a child of its parent.");
+    }
+
+    // TODO can this be more efficient?
+    internal SemanticNode LastDescendant()
+        => ((SemanticNode?)Children().LastOrDefault())?.LastDescendant() ?? this;
+
+    protected int? IndexOfNode<T>(IEnumerable<T> nodes, SemanticNode node)
+        where T : ISemanticNode
+    {
+        if (node is not T value)
+            return null;
+        var index = 0;
+        foreach (var item in nodes)
+        {
+            if (ReferenceEquals(item, value))
+                return index;
+            index++;
+        }
+
+        return null;
+    }
+
+    protected bool ContainsNode<T>(IEnumerable<T> nodes, SemanticNode node)
+        where T : ISemanticNode
+        => node is T value ? nodes.Contains(value) : false;
+
+    protected bool ContainsNode<T>(IFixedSet<T> nodes, SemanticNode node)
+        where T : ISemanticNode
+        => node is T value ? nodes.Contains(value) : false;
+
+    protected bool ContainsNode<T>(IReadOnlySet<T> nodes, SemanticNode node)
+        where T : ISemanticNode
+        => node is T value ? nodes.Contains(value) : false;
+
+    internal virtual LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_ContainingLexicalScope(this, descendant, ctx);
+    protected LexicalScope Inherited_ContainingLexicalScope(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ContainingLexicalScope(this, this, ctx);
+
+    internal virtual PackageNameScope Inherited_PackageNameScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_PackageNameScope(this, descendant, ctx);
+    protected PackageNameScope Inherited_PackageNameScope(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_PackageNameScope(this, this, ctx);
+
+    internal virtual IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_FlowStateBefore(this, descendant, ctx);
+    protected IFlowState Inherited_FlowStateBefore(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_FlowStateBefore(this, this, ctx);
+
+    internal virtual IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_ControlFlowEntry(this, descendant, ctx);
+    protected IEntryNode Inherited_ControlFlowEntry(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ControlFlowEntry(this, this, ctx);
+
+    internal virtual ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_ControlFlowFollowing(this, descendant, ctx);
+    protected ControlFlowSet Inherited_ControlFlowFollowing(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ControlFlowFollowing(this, this, ctx);
+
+    internal virtual FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_VariableBindingsMap(this, descendant, ctx);
+    protected FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_VariableBindingsMap(this, this, ctx);
+
+    internal virtual ValueId? Inherited_MatchReferentValueId(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_MatchReferentValueId(this, descendant, ctx);
+    protected ValueId? Inherited_MatchReferentValueId(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_MatchReferentValueId(this, this, ctx);
+
+    internal virtual IMaybeAntetype Inherited_ContextBindingAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_ContextBindingAntetype(this, descendant, ctx);
+    protected IMaybeAntetype Inherited_ContextBindingAntetype(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ContextBindingAntetype(this, this, ctx);
+
+    internal virtual DataType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_ContextBindingType(this, descendant, ctx);
+    protected DataType Inherited_ContextBindingType(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ContextBindingType(this, this, ctx);
+
+    internal virtual bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_ImplicitRecoveryAllowed(this, descendant, ctx);
+    protected bool Inherited_ImplicitRecoveryAllowed(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ImplicitRecoveryAllowed(this, this, ctx);
+
+    internal virtual bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_ShouldPrepareToReturn(this, descendant, ctx);
+    protected bool Inherited_ShouldPrepareToReturn(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ShouldPrepareToReturn(this, this, ctx);
+
+    internal virtual IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_ControlFlowExit(this, descendant, ctx);
+    protected IExitNode Inherited_ControlFlowExit(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ControlFlowExit(this, this, ctx);
+
+    internal virtual DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_ExpectedReturnType(this, descendant, ctx);
+    protected DataType? Inherited_ExpectedReturnType(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ExpectedReturnType(this, this, ctx);
+
+    internal virtual IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => Previous(ctx).Previous_PreviousValueId(this, ctx);
+    protected IPreviousValueId Previous_PreviousValueId(IInheritanceContext ctx)
+        => Previous(ctx).Previous_PreviousValueId(this, ctx);
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class PackageNode : SemanticNode, IPackageNode
+{
+    private IPackageNode Self { [Inline] get => this; }
+
+    public IdentifierName? AliasOrName { [DebuggerStepThrough] get; }
+    public IPackageSyntax Syntax { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public PackageSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedSet<IPackageReferenceNode> References { [DebuggerStepThrough] get; }
+    public IPackageReferenceNode IntrinsicsReference { [DebuggerStepThrough] get; }
+    public FixedDictionary<IdentifierName,IPackageDeclarationNode> PackageDeclarations { [DebuggerStepThrough] get; }
+    public IPackageFacetNode MainFacet { [DebuggerStepThrough] get; }
+    public IPackageFacetNode TestingFacet { [DebuggerStepThrough] get; }
+    public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
+    public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { [DebuggerStepThrough] get; }
+    public IFunctionDefinitionNode? EntryPoint { [DebuggerStepThrough] get; }
+    public IPackageSymbols PackageSymbols { [DebuggerStepThrough] get; }
+
+    public PackageNode(IdentifierName? aliasOrName, IPackageSyntax syntax, IdentifierName name, PackageSymbol symbol, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, FixedDictionary<IdentifierName,IPackageDeclarationNode> packageDeclarations, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint, IPackageSymbols packageSymbols)
+    {
+        AliasOrName = aliasOrName;
+        Syntax = syntax;
+        Name = name;
+        Symbol = symbol;
+        References = references;
+        IntrinsicsReference = intrinsicsReference;
+        PackageDeclarations = packageDeclarations;
+        MainFacet = mainFacet;
+        TestingFacet = testingFacet;
+        Diagnostics = diagnostics;
+        PrimitivesDeclarations = primitivesDeclarations;
+        EntryPoint = entryPoint;
+        PackageSymbols = packageSymbols;
+    }
+
+    internal override PackageNameScope Inherited_PackageNameScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.MainFacet))
+            return LexicalScopingAspect.Package_MainFacet_PackageNameScope(this);
+        if (ReferenceEquals(descendant, Self.TestingFacet))
+            return LexicalScopingAspect.Package_TestingFacet_PackageNameScope(this);
+        return base.Inherited_PackageNameScope(child, descendant, ctx);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class PackageReferenceNode : SemanticNode, IPackageReferenceNode
+{
+    private IPackageReferenceNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageReferenceSyntax? Syntax { [DebuggerStepThrough] get; }
+    public IPackageSymbolNode SymbolNode { [DebuggerStepThrough] get; }
+    public IdentifierName AliasOrName { [DebuggerStepThrough] get; }
+    public IPackageSymbols PackageSymbols { [DebuggerStepThrough] get; }
+    public bool IsTrusted { [DebuggerStepThrough] get; }
+
+    public PackageReferenceNode(ISemanticNode parent, IPackageDeclarationNode package, IPackageReferenceSyntax? syntax, IPackageSymbolNode symbolNode, IdentifierName aliasOrName, IPackageSymbols packageSymbols, bool isTrusted)
+    {
+        Parent = parent;
+        Package = package;
+        Syntax = syntax;
+        SymbolNode = symbolNode;
+        AliasOrName = aliasOrName;
+        PackageSymbols = packageSymbols;
+        IsTrusted = isTrusted;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class PackageFacetNode : SemanticNode, IPackageFacetNode
+{
+    private IPackageFacetNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IdentifierName? PackageAliasOrName { [DebuggerStepThrough] get; }
+    public PackageSymbol Symbol { [DebuggerStepThrough] get; }
+    public IPackageSyntax Syntax { [DebuggerStepThrough] get; }
+    public IdentifierName PackageName { [DebuggerStepThrough] get; }
+    public PackageSymbol PackageSymbol { [DebuggerStepThrough] get; }
+    public IFixedSet<ICompilationUnitNode> CompilationUnits { [DebuggerStepThrough] get; }
+    public IFixedSet<IPackageMemberDefinitionNode> Definitions { [DebuggerStepThrough] get; }
+    public INamespaceDefinitionNode GlobalNamespace { [DebuggerStepThrough] get; }
+    public PackageNameScope PackageNameScope
+        => GrammarAttribute.IsCached(in packageNameScopeCached) ? packageNameScope!
+            : this.Inherited(ref packageNameScopeCached, ref packageNameScope,
+                Inherited_PackageNameScope);
+    private PackageNameScope? packageNameScope;
+    private bool packageNameScopeCached;
+
+    public PackageFacetNode(ISemanticNode parent, IPackageDeclarationNode package, IdentifierName? packageAliasOrName, PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IFixedSet<ICompilationUnitNode> compilationUnits, IFixedSet<IPackageMemberDefinitionNode> definitions, INamespaceDefinitionNode globalNamespace)
+    {
+        Parent = parent;
+        Package = package;
+        PackageAliasOrName = packageAliasOrName;
+        Symbol = symbol;
+        Syntax = syntax;
+        PackageName = packageName;
+        PackageSymbol = packageSymbol;
+        CompilationUnits = compilationUnits;
+        Definitions = definitions;
+        GlobalNamespace = globalNamespace;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
+{
+    private ICompilationUnitNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ICompilationUnitSyntax Syntax { [DebuggerStepThrough] get; }
+    public IPackageFacetNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public PackageSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public NamespaceName ImplicitNamespaceName { [DebuggerStepThrough] get; }
+    public INamespaceDefinitionNode ImplicitNamespace { [DebuggerStepThrough] get; }
+    public NamespaceSymbol ImplicitNamespaceSymbol { [DebuggerStepThrough] get; }
+    public IFixedList<IUsingDirectiveNode> UsingDirectives { [DebuggerStepThrough] get; }
+    public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { [DebuggerStepThrough] get; }
+    public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
+    public NamespaceScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                (ctx) => (NamespaceScope)Inherited_ContainingLexicalScope(ctx));
+    private NamespaceScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.CompilationUnit_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+
+    public CompilationUnitNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ICompilationUnitSyntax syntax, IPackageFacetNode containingDeclaration, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, INamespaceDefinitionNode implicitNamespace, NamespaceSymbol implicitNamespaceSymbol, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> definitions, DiagnosticCollection diagnostics)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Syntax = syntax;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        ImplicitNamespaceName = implicitNamespaceName;
+        ImplicitNamespace = implicitNamespace;
+        ImplicitNamespaceSymbol = implicitNamespaceSymbol;
+        UsingDirectives = usingDirectives;
+        Definitions = definitions;
+        Diagnostics = diagnostics;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UsingDirectiveNode : SemanticNode, IUsingDirectiveNode
+{
+    private IUsingDirectiveNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IUsingDirectiveSyntax Syntax { [DebuggerStepThrough] get; }
+    public NamespaceName Name { [DebuggerStepThrough] get; }
+
+    public UsingDirectiveNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IUsingDirectiveSyntax syntax, NamespaceName name)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Syntax = syntax;
+        Name = name;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitionNode
+{
+    private INamespaceBlockDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public StandardName? Name { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public INamespaceDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool IsGlobalQualified { [DebuggerStepThrough] get; }
+    public NamespaceName DeclaredNames { [DebuggerStepThrough] get; }
+    public IFixedList<IUsingDirectiveNode> UsingDirectives { [DebuggerStepThrough] get; }
+    public IFixedList<INamespaceBlockMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
+    public INamespaceDefinitionNode Definition { [DebuggerStepThrough] get; }
+    public INamespaceDefinitionNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public INamespaceDefinitionNode ContainingNamespace { [DebuggerStepThrough] get; }
+    public NamespaceSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public NamespaceSymbol Symbol { [DebuggerStepThrough] get; }
+    public NamespaceSearchScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                (ctx) => (NamespaceSearchScope)Inherited_ContainingLexicalScope(ctx));
+    private NamespaceSearchScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.NamespaceBlockDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+
+    public NamespaceBlockDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, StandardName? name, IPackageFacetNode facet, INamespaceDefinitionSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> members, INamespaceDefinitionNode definition, INamespaceDefinitionNode containingDeclaration, INamespaceDefinitionNode containingNamespace, NamespaceSymbol containingSymbol, NamespaceSymbol symbol)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Name = name;
+        Facet = facet;
+        Syntax = syntax;
+        IsGlobalQualified = isGlobalQualified;
+        DeclaredNames = declaredNames;
+        UsingDirectives = usingDirectives;
+        Members = members;
+        Definition = definition;
+        ContainingDeclaration = containingDeclaration;
+        ContainingNamespace = containingNamespace;
+        ContainingSymbol = containingSymbol;
+        Symbol = symbol;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
+{
+    private INamespaceDefinitionNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public NamespaceSymbol Symbol { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IFixedList<INamespaceMemberDeclarationNode> NestedMembers { [DebuggerStepThrough] get; }
+    public IFixedList<INamespaceDefinitionNode> MemberNamespaces { [DebuggerStepThrough] get; }
+    public IFixedList<IPackageMemberDefinitionNode> PackageMembers { [DebuggerStepThrough] get; }
+    public IFixedList<INamespaceMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
+    public FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> MembersByName
+        => GrammarAttribute.IsCached(in membersByNameCached) ? membersByName!
+            : this.Synthetic(ref membersByNameCached, ref membersByName,
+                NameLookupAspect.NamespaceDeclaration_MembersByName);
+    private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? membersByName;
+    private bool membersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> NestedMembersByName
+        => GrammarAttribute.IsCached(in nestedMembersByNameCached) ? nestedMembersByName!
+            : this.Synthetic(ref nestedMembersByNameCached, ref nestedMembersByName,
+                NameLookupAspect.NamespaceDeclaration_NestedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? nestedMembersByName;
+    private bool nestedMembersByNameCached;
+
+    public NamespaceDefinitionNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, NamespaceSymbol symbol, IdentifierName name, IFixedList<INamespaceMemberDeclarationNode> nestedMembers, IFixedList<INamespaceDefinitionNode> memberNamespaces, IFixedList<IPackageMemberDefinitionNode> packageMembers, IFixedList<INamespaceMemberDefinitionNode> members)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Symbol = symbol;
+        Name = name;
+        NestedMembers = nestedMembers;
+        MemberNamespaces = memberNamespaces;
+        PackageMembers = packageMembers;
+        Members = members;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
+{
+    private IFunctionDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public IFunctionDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public INamespaceDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public NamespaceSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
+    public ITypeNode? Return { [DebuggerStepThrough] get; }
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IBodyNode Body { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public FunctionType Type { [DebuggerStepThrough] get; }
+    public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.FunctionDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+
+    public FunctionDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, AccessModifier accessModifier, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFunctionDefinitionSyntax syntax, INamespaceDeclarationNode containingDeclaration, NamespaceSymbol containingSymbol, IFixedList<IAttributeNode> attributes, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type, FunctionSymbol symbol)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        AccessModifier = accessModifier;
+        VariableBindingsMap = variableBindingsMap;
+        Syntax = syntax;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        Attributes = attributes;
+        Name = name;
+        Parameters = parameters;
+        Return = @return;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+        Type = type;
+        Symbol = symbol;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
+{
+    private IClassDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public Symbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public IFixedSet<IClassMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
+    public bool IsConst { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+    public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public IClassDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
+    public bool IsAbstract { [DebuggerStepThrough] get; }
+    public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
+    public IStandardTypeNameNode? BaseTypeName { [DebuggerStepThrough] get; }
+    public IFixedList<IStandardTypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
+    public ObjectType DeclaredType { [DebuggerStepThrough] get; }
+    public IFixedList<IClassMemberDefinitionNode> SourceMembers { [DebuggerStepThrough] get; }
+    public IFixedSet<IClassMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
+    public IDefaultConstructorDefinitionNode? DefaultConstructor { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.TypeDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public LexicalScope SupertypesLexicalScope
+        => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
+            : this.Synthetic(ref supertypesLexicalScopeCached, ref supertypesLexicalScope,
+                LexicalScopingAspect.TypeDefinition_SupertypesLexicalScope);
+    private LexicalScope? supertypesLexicalScope;
+    private bool supertypesLexicalScopeCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
+
+    public ClassDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, Symbol containingSymbol, IFixedSet<IClassMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, UserTypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IClassDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, bool isAbstract, IFixedList<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedList<IClassMemberDefinitionNode> sourceMembers, IFixedSet<IClassMemberDefinitionNode> members, IDefaultConstructorDefinitionNode? defaultConstructor)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        InclusiveMembers = inclusiveMembers;
+        IsConst = isConst;
+        Name = name;
+        Symbol = symbol;
+        Supertypes = supertypes;
+        AccessModifier = accessModifier;
+        Syntax = syntax;
+        Attributes = attributes;
+        IsAbstract = isAbstract;
+        GenericParameters = genericParameters;
+        BaseTypeName = baseTypeName;
+        SupertypeNames = supertypeNames;
+        DeclaredType = declaredType;
+        SourceMembers = sourceMembers;
+        Members = members;
+        DefaultConstructor = defaultConstructor;
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ContainsNode(Self.AllSupertypeNames, child))
+            return LexicalScopingAspect.TypeDefinition_AllSupertypeNames_Broadcast_ContainingLexicalScope(this);
+        if (ContainsNode(Self.Members, child))
+            return LexicalScopingAspect.TypeDefinition_Members_Broadcast_ContainingLexicalScope(this);
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
+{
+    private IStructDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public Symbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public IFixedSet<IStructMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
+    public bool IsConst { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+    public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public IStructDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
+    public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
+    public IFixedList<IStandardTypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
+    public StructType DeclaredType { [DebuggerStepThrough] get; }
+    public IFixedList<IStructMemberDefinitionNode> SourceMembers { [DebuggerStepThrough] get; }
+    public IFixedSet<IStructMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
+    public IDefaultInitializerDefinitionNode? DefaultInitializer { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.TypeDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public LexicalScope SupertypesLexicalScope
+        => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
+            : this.Synthetic(ref supertypesLexicalScopeCached, ref supertypesLexicalScope,
+                LexicalScopingAspect.TypeDefinition_SupertypesLexicalScope);
+    private LexicalScope? supertypesLexicalScope;
+    private bool supertypesLexicalScopeCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
+
+    public StructDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, Symbol containingSymbol, IFixedSet<IStructMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, UserTypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IStructDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, StructType declaredType, IFixedList<IStructMemberDefinitionNode> sourceMembers, IFixedSet<IStructMemberDefinitionNode> members, IDefaultInitializerDefinitionNode? defaultInitializer)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        InclusiveMembers = inclusiveMembers;
+        IsConst = isConst;
+        Name = name;
+        Symbol = symbol;
+        Supertypes = supertypes;
+        AccessModifier = accessModifier;
+        Syntax = syntax;
+        Attributes = attributes;
+        GenericParameters = genericParameters;
+        SupertypeNames = supertypeNames;
+        DeclaredType = declaredType;
+        SourceMembers = sourceMembers;
+        Members = members;
+        DefaultInitializer = defaultInitializer;
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ContainsNode(Self.AllSupertypeNames, child))
+            return LexicalScopingAspect.TypeDefinition_AllSupertypeNames_Broadcast_ContainingLexicalScope(this);
+        if (ContainsNode(Self.Members, child))
+            return LexicalScopingAspect.TypeDefinition_Members_Broadcast_ContainingLexicalScope(this);
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
+{
+    private ITraitDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public Symbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
+    public bool IsConst { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+    public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public ITraitDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
+    public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
+    public IFixedList<IStandardTypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
+    public ObjectType DeclaredType { [DebuggerStepThrough] get; }
+    public IFixedSet<ITraitMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.TypeDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public LexicalScope SupertypesLexicalScope
+        => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
+            : this.Synthetic(ref supertypesLexicalScopeCached, ref supertypesLexicalScope,
+                LexicalScopingAspect.TypeDefinition_SupertypesLexicalScope);
+    private LexicalScope? supertypesLexicalScope;
+    private bool supertypesLexicalScopeCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
+
+    public TraitDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, Symbol containingSymbol, IFixedSet<ITraitMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, UserTypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, ITraitDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedSet<ITraitMemberDefinitionNode> members)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        InclusiveMembers = inclusiveMembers;
+        IsConst = isConst;
+        Name = name;
+        Symbol = symbol;
+        Supertypes = supertypes;
+        AccessModifier = accessModifier;
+        Syntax = syntax;
+        Attributes = attributes;
+        GenericParameters = genericParameters;
+        SupertypeNames = supertypeNames;
+        DeclaredType = declaredType;
+        Members = members;
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ContainsNode(Self.AllSupertypeNames, child))
+            return LexicalScopingAspect.TypeDefinition_AllSupertypeNames_Broadcast_ContainingLexicalScope(this);
+        if (ContainsNode(Self.Members, child))
+            return LexicalScopingAspect.TypeDefinition_Members_Broadcast_ContainingLexicalScope(this);
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class GenericParameterNode : SemanticNode, IGenericParameterNode
+{
+    private IGenericParameterNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
+    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public IGenericParameterSyntax Syntax { [DebuggerStepThrough] get; }
+    public ICapabilityConstraintNode Constraint { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public TypeParameterIndependence Independence { [DebuggerStepThrough] get; }
+    public TypeParameterVariance Variance { [DebuggerStepThrough] get; }
+    public GenericParameter Parameter { [DebuggerStepThrough] get; }
+    public IDeclaredUserType ContainingDeclaredType { [DebuggerStepThrough] get; }
+    public GenericParameterType DeclaredType { [DebuggerStepThrough] get; }
+    public IUserTypeDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public GenericParameterTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedSet<ITypeMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
+
+    public GenericParameterNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IPackageFacetDeclarationNode facet, IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, IDeclaredUserType containingDeclaredType, GenericParameterType declaredType, IUserTypeDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, GenericParameterTypeSymbol symbol, IFixedSet<ITypeMemberDefinitionNode> members)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Supertypes = supertypes;
+        InclusiveMembers = inclusiveMembers;
+        Facet = facet;
+        Syntax = syntax;
+        Constraint = constraint;
+        Name = name;
+        Independence = independence;
+        Variance = variance;
+        Parameter = parameter;
+        ContainingDeclaredType = containingDeclaredType;
+        DeclaredType = declaredType;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        Symbol = symbol;
+        Members = members;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitionNode
+{
+    private IAbstractMethodDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public MethodKind Kind { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public MethodSymbol Symbol { [DebuggerStepThrough] get; }
+    public int Arity { [DebuggerStepThrough] get; }
+    public FunctionType MethodGroupType { [DebuggerStepThrough] get; }
+    public IAbstractMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
+    public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
+    public ITypeNode? Return { [DebuggerStepThrough] get; }
+    public ObjectType ContainingDeclaredType { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.MethodDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+
+    public AbstractMethodDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, ObjectType containingDeclaredType)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        AccessModifier = accessModifier;
+        ContainingSymbol = containingSymbol;
+        Kind = kind;
+        Name = name;
+        Symbol = symbol;
+        Arity = arity;
+        MethodGroupType = methodGroupType;
+        Syntax = syntax;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Return = @return;
+        ContainingDeclaredType = containingDeclaredType;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitionNode
+{
+    private IStandardMethodDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public MethodKind Kind { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public MethodSymbol Symbol { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public int Arity { [DebuggerStepThrough] get; }
+    public FunctionType MethodGroupType { [DebuggerStepThrough] get; }
+    public IStandardMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
+    public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
+    public ITypeNode? Return { [DebuggerStepThrough] get; }
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IBodyNode Body { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.MethodDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+
+    public StandardMethodDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        AccessModifier = accessModifier;
+        ContainingSymbol = containingSymbol;
+        Kind = kind;
+        Name = name;
+        Symbol = symbol;
+        VariableBindingsMap = variableBindingsMap;
+        Arity = arity;
+        MethodGroupType = methodGroupType;
+        Syntax = syntax;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Return = @return;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNode
+{
+    private IGetterMethodDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public MethodKind Kind { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public MethodSymbol Symbol { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public IGetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
+    public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
+    public ITypeNode Return { [DebuggerStepThrough] get; }
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IBodyNode Body { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.MethodDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+
+    public GetterMethodDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        AccessModifier = accessModifier;
+        ContainingSymbol = containingSymbol;
+        Kind = kind;
+        Name = name;
+        Symbol = symbol;
+        VariableBindingsMap = variableBindingsMap;
+        Syntax = syntax;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Return = @return;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNode
+{
+    private ISetterMethodDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public MethodKind Kind { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public MethodSymbol Symbol { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public ISetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
+    public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
+    public ITypeNode? Return { [DebuggerStepThrough] get; }
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IBodyNode Body { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.MethodDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+
+    public SetterMethodDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        AccessModifier = accessModifier;
+        ContainingSymbol = containingSymbol;
+        Kind = kind;
+        Name = name;
+        Symbol = symbol;
+        VariableBindingsMap = variableBindingsMap;
+        Syntax = syntax;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Return = @return;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorDefinitionNode
+{
+    private IDefaultConstructorDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public IConstructorDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public ConstructorSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IBodyNode? Body { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.ConstructorDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+
+    public DefaultConstructorDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IConstructorDefinitionSyntax? syntax, IdentifierName? name, ConstructorSymbol symbol, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        VariableBindingsMap = variableBindingsMap;
+        AccessModifier = accessModifier;
+        Syntax = syntax;
+        Name = name;
+        Symbol = symbol;
+        Parameters = parameters;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDefinitionNode
+{
+    private ISourceConstructorDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public ConstructorSymbol Symbol { [DebuggerStepThrough] get; }
+    public IConstructorDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IConstructorSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
+    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IBlockBodyNode Body { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.ConstructorDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+
+    public SourceConstructorDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, ConstructorSymbol symbol, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        VariableBindingsMap = variableBindingsMap;
+        AccessModifier = accessModifier;
+        Name = name;
+        Symbol = symbol;
+        Syntax = syntax;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerDefinitionNode
+{
+    private IDefaultInitializerDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public IInitializerDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public InitializerSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IBodyNode? Body { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.InitializerDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+
+    public DefaultInitializerDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IInitializerDefinitionSyntax? syntax, IdentifierName? name, InitializerSymbol symbol, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        VariableBindingsMap = variableBindingsMap;
+        AccessModifier = accessModifier;
+        Syntax = syntax;
+        Name = name;
+        Symbol = symbol;
+        Parameters = parameters;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDefinitionNode
+{
+    private ISourceInitializerDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public InitializerSymbol Symbol { [DebuggerStepThrough] get; }
+    public IInitializerDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IInitializerSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
+    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IBlockBodyNode Body { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.InitializerDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+
+    public SourceInitializerDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, InitializerSymbol symbol, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        VariableBindingsMap = variableBindingsMap;
+        AccessModifier = accessModifier;
+        Name = name;
+        Symbol = symbol;
+        Syntax = syntax;
+        SelfParameter = selfParameter;
+        Parameters = parameters;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
+{
+    private IFieldDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public bool IsLentBinding { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public IFieldDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public ITypeNode TypeNode { [DebuggerStepThrough] get; }
+    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
+    public DataType BindingType { [DebuggerStepThrough] get; }
+    public FieldSymbol Symbol { [DebuggerStepThrough] get; }
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? Initializer { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? CurrentInitializer { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateInitializer { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.FieldDefinition_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.FieldDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+
+    public FieldDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, FieldSymbol symbol, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer, IExitNode exit)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        AccessModifier = accessModifier;
+        ContainingSymbol = containingSymbol;
+        IsLentBinding = isLentBinding;
+        VariableBindingsMap = variableBindingsMap;
+        Syntax = syntax;
+        IsMutableBinding = isMutableBinding;
+        Name = name;
+        TypeNode = typeNode;
+        BindingAntetype = bindingAntetype;
+        BindingType = bindingType;
+        Symbol = symbol;
+        Entry = entry;
+        Initializer = initializer;
+        CurrentInitializer = currentInitializer;
+        IntermediateInitializer = intermediateInitializer;
+        Exit = exit;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionDefinitionNode
+{
+    private IAssociatedFunctionDefinitionNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IPackageFacetNode Facet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
+    public IAssociatedFunctionDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
+    public ITypeNode? Return { [DebuggerStepThrough] get; }
+    public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
+    public FunctionType Type { [DebuggerStepThrough] get; }
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IBodyNode Body { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.AssociatedFunctionDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+
+    public AssociatedFunctionDefinitionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IPackageFacetNode facet, ISymbolDeclarationNode containingDeclaration, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, FunctionSymbol symbol, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Facet = facet;
+        ContainingDeclaration = containingDeclaration;
+        ContainingSymbol = containingSymbol;
+        VariableBindingsMap = variableBindingsMap;
+        AccessModifier = accessModifier;
+        Syntax = syntax;
+        Name = name;
+        Parameters = parameters;
+        Return = @return;
+        Symbol = symbol;
+        Type = type;
+        Entry = entry;
+        Body = body;
+        Exit = exit;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class AttributeNode : SemanticNode, IAttributeNode
+{
+    private IAttributeNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IAttributeSyntax Syntax { [DebuggerStepThrough] get; }
+    public IStandardTypeNameNode TypeName { [DebuggerStepThrough] get; }
+    public ConstructorSymbol? ReferencedSymbol { [DebuggerStepThrough] get; }
+
+    public AttributeNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IAttributeSyntax syntax, IStandardTypeNameNode typeName, ConstructorSymbol? referencedSymbol)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Syntax = syntax;
+        TypeName = typeName;
+        ReferencedSymbol = referencedSymbol;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class CapabilitySetNode : SemanticNode, ICapabilitySetNode
+{
+    private ICapabilitySetNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ICapabilitySetSyntax Syntax { [DebuggerStepThrough] get; }
+    public CapabilitySet Constraint { [DebuggerStepThrough] get; }
+
+    public CapabilitySetNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ICapabilitySetSyntax syntax, CapabilitySet constraint)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Syntax = syntax;
+        Constraint = constraint;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class CapabilityNode : SemanticNode, ICapabilityNode
+{
+    private ICapabilityNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ICapabilityConstraint Constraint { [DebuggerStepThrough] get; }
+    public ICapabilitySyntax Syntax { [DebuggerStepThrough] get; }
+    public Capability Capability { [DebuggerStepThrough] get; }
+
+    public CapabilityNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ICapabilityConstraint constraint, ICapabilitySyntax syntax, Capability capability)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Constraint = constraint;
+        Syntax = syntax;
+        Capability = capability;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class NamedParameterNode : SemanticNode, INamedParameterNode
+{
+    private INamedParameterNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public bool Unused { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public ParameterType ParameterType { [DebuggerStepThrough] get; }
+    public INamedParameterSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
+    public bool IsLentBinding { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public ITypeNode TypeNode { [DebuggerStepThrough] get; }
+    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
+    public DataType BindingType { [DebuggerStepThrough] get; }
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.Parameter_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+
+    public NamedParameterNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, bool unused, IFlowState flowStateAfter, ParameterType parameterType, INamedParameterSyntax syntax, bool isMutableBinding, bool isLentBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Unused = unused;
+        FlowStateAfter = flowStateAfter;
+        ParameterType = parameterType;
+        Syntax = syntax;
+        IsMutableBinding = isMutableBinding;
+        IsLentBinding = isLentBinding;
+        Name = name;
+        TypeNode = typeNode;
+        BindingAntetype = bindingAntetype;
+        BindingType = bindingType;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParameterNode
+{
+    private IConstructorSelfParameterNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public bool Unused { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public ITypeDefinitionNode ContainingTypeDefinition { [DebuggerStepThrough] get; }
+    public SelfParameterType ParameterType { [DebuggerStepThrough] get; }
+    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
+    public IConstructorSelfParameterSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool IsLentBinding { [DebuggerStepThrough] get; }
+    public ICapabilityNode Capability { [DebuggerStepThrough] get; }
+    public CapabilityType BindingType { [DebuggerStepThrough] get; }
+    public ObjectType ContainingDeclaredType { [DebuggerStepThrough] get; }
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.Parameter_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+
+    public ConstructorSelfParameterNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType, ObjectType containingDeclaredType)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Name = name;
+        Unused = unused;
+        FlowStateAfter = flowStateAfter;
+        ContainingTypeDefinition = containingTypeDefinition;
+        ParameterType = parameterType;
+        BindingAntetype = bindingAntetype;
+        Syntax = syntax;
+        IsLentBinding = isLentBinding;
+        Capability = capability;
+        BindingType = bindingType;
+        ContainingDeclaredType = containingDeclaredType;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParameterNode
+{
+    private IInitializerSelfParameterNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public bool Unused { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public ITypeDefinitionNode ContainingTypeDefinition { [DebuggerStepThrough] get; }
+    public SelfParameterType ParameterType { [DebuggerStepThrough] get; }
+    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
+    public IInitializerSelfParameterSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool IsLentBinding { [DebuggerStepThrough] get; }
+    public ICapabilityNode Capability { [DebuggerStepThrough] get; }
+    public CapabilityType BindingType { [DebuggerStepThrough] get; }
+    public StructType ContainingDeclaredType { [DebuggerStepThrough] get; }
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.Parameter_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+
+    public InitializerSelfParameterNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType, StructType containingDeclaredType)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Name = name;
+        Unused = unused;
+        FlowStateAfter = flowStateAfter;
+        ContainingTypeDefinition = containingTypeDefinition;
+        ParameterType = parameterType;
+        BindingAntetype = bindingAntetype;
+        Syntax = syntax;
+        IsLentBinding = isLentBinding;
+        Capability = capability;
+        BindingType = bindingType;
+        ContainingDeclaredType = containingDeclaredType;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
+{
+    private IMethodSelfParameterNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public bool Unused { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public ITypeDefinitionNode ContainingTypeDefinition { [DebuggerStepThrough] get; }
+    public IDeclaredUserType ContainingDeclaredType { [DebuggerStepThrough] get; }
+    public SelfParameterType ParameterType { [DebuggerStepThrough] get; }
+    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
+    public Pseudotype BindingType { [DebuggerStepThrough] get; }
+    public IMethodSelfParameterSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool IsLentBinding { [DebuggerStepThrough] get; }
+    public ICapabilityConstraintNode Capability { [DebuggerStepThrough] get; }
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.Parameter_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+
+    public MethodSelfParameterNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, IDeclaredUserType containingDeclaredType, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Name = name;
+        Unused = unused;
+        FlowStateAfter = flowStateAfter;
+        ContainingTypeDefinition = containingTypeDefinition;
+        ContainingDeclaredType = containingDeclaredType;
+        ParameterType = parameterType;
+        BindingAntetype = bindingAntetype;
+        BindingType = bindingType;
+        Syntax = syntax;
+        IsLentBinding = isLentBinding;
+        Capability = capability;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class FieldParameterNode : SemanticNode, IFieldParameterNode
+{
+    private IFieldParameterNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public bool Unused { [DebuggerStepThrough] get; }
+    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public DataType BindingType { [DebuggerStepThrough] get; }
+    public ParameterType ParameterType { [DebuggerStepThrough] get; }
+    public IFieldParameterSyntax Syntax { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public ITypeDefinitionNode ContainingTypeDefinition { [DebuggerStepThrough] get; }
+    public IFieldDefinitionNode? ReferencedField { [DebuggerStepThrough] get; }
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.Parameter_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+
+    public FieldParameterNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, bool unused, IMaybeAntetype bindingAntetype, IFlowState flowStateAfter, DataType bindingType, ParameterType parameterType, IFieldParameterSyntax syntax, IdentifierName name, ITypeDefinitionNode containingTypeDefinition, IFieldDefinitionNode? referencedField)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Unused = unused;
+        BindingAntetype = bindingAntetype;
+        FlowStateAfter = flowStateAfter;
+        BindingType = bindingType;
+        ParameterType = parameterType;
+        Syntax = syntax;
+        Name = name;
+        ContainingTypeDefinition = containingTypeDefinition;
+        ReferencedField = referencedField;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class BlockBodyNode : SemanticNode, IBlockBodyNode
+{
+    private IBlockBodyNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IBlockBodySyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<IBodyStatementNode> Statements { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+
+    public BlockBodyNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IFlowState flowStateAfter, IBlockBodySyntax syntax, IFixedList<IBodyStatementNode> statements)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Statements = statements;
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (IndexOfNode(Self.Statements, child) is {} statementIndex)
+            return LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, statementIndex);
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
+{
+    private IExpressionBodyNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IFixedList<IStatementNode> Statements { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IExpressionBodySyntax Syntax { [DebuggerStepThrough] get; }
+    public IResultStatementNode ResultStatement { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+
+    public ExpressionBodyNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IFixedList<IStatementNode> statements, IFlowState flowStateAfter, IExpressionBodySyntax syntax, IResultStatementNode resultStatement, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Statements = statements;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        ResultStatement = resultStatement;
+        ExpectedAntetype = expectedAntetype;
+        ExpectedType = expectedType;
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (IndexOfNode(Self.Statements, child) is {} statementIndex)
+            return LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, statementIndex);
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
+{
+    private IIdentifierTypeNameNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
+    public DataType NamedType { [DebuggerStepThrough] get; }
+    public TypeSymbol? ReferencedSymbol { [DebuggerStepThrough] get; }
+    public BareType? NamedBareType { [DebuggerStepThrough] get; }
+    public bool IsAttributeType { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public IIdentifierTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+
+    public IdentifierTypeNameNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, TypeSymbol? referencedSymbol, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IIdentifierTypeNameSyntax syntax, IdentifierName name)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        ReferencedSymbol = referencedSymbol;
+        NamedBareType = namedBareType;
+        IsAttributeType = isAttributeType;
+        ReferencedDeclaration = referencedDeclaration;
+        Syntax = syntax;
+        Name = name;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
+{
+    private ISpecialTypeNameNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
+    public DataType NamedType { [DebuggerStepThrough] get; }
+    public BareType? NamedBareType { [DebuggerStepThrough] get; }
+    public ISpecialTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public SpecialTypeName Name { [DebuggerStepThrough] get; }
+    public TypeSymbol ReferencedSymbol { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+
+    public SpecialTypeNameNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, ISpecialTypeNameSyntax syntax, SpecialTypeName name, TypeSymbol referencedSymbol)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        NamedBareType = namedBareType;
+        Syntax = syntax;
+        Name = name;
+        ReferencedSymbol = referencedSymbol;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
+{
+    private IGenericTypeNameNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
+    public DataType NamedType { [DebuggerStepThrough] get; }
+    public TypeSymbol? ReferencedSymbol { [DebuggerStepThrough] get; }
+    public BareType? NamedBareType { [DebuggerStepThrough] get; }
+    public bool IsAttributeType { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public IGenericTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public GenericName Name { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+
+    public GenericTypeNameNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, TypeSymbol? referencedSymbol, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        ReferencedSymbol = referencedSymbol;
+        NamedBareType = namedBareType;
+        IsAttributeType = isAttributeType;
+        ReferencedDeclaration = referencedDeclaration;
+        Syntax = syntax;
+        Name = name;
+        TypeArguments = typeArguments;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
+{
+    private IQualifiedTypeNameNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
+    public DataType NamedType { [DebuggerStepThrough] get; }
+    public TypeName Name { [DebuggerStepThrough] get; }
+    public TypeSymbol? ReferencedSymbol { [DebuggerStepThrough] get; }
+    public BareType? NamedBareType { [DebuggerStepThrough] get; }
+    public IQualifiedTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public ITypeNameNode Context { [DebuggerStepThrough] get; }
+    public IStandardTypeNameNode QualifiedName { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+
+    public QualifiedTypeNameNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, TypeName name, TypeSymbol? referencedSymbol, BareType? namedBareType, IQualifiedTypeNameSyntax syntax, ITypeNameNode context, IStandardTypeNameNode qualifiedName)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        Name = name;
+        ReferencedSymbol = referencedSymbol;
+        NamedBareType = namedBareType;
+        Syntax = syntax;
+        Context = context;
+        QualifiedName = qualifiedName;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class OptionalTypeNode : SemanticNode, IOptionalTypeNode
+{
+    private IOptionalTypeNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
+    public DataType NamedType { [DebuggerStepThrough] get; }
+    public IOptionalTypeSyntax Syntax { [DebuggerStepThrough] get; }
+    public ITypeNode Referent { [DebuggerStepThrough] get; }
+
+    public OptionalTypeNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, IOptionalTypeSyntax syntax, ITypeNode referent)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        Syntax = syntax;
+        Referent = referent;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
+{
+    private ICapabilityTypeNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
+    public DataType NamedType { [DebuggerStepThrough] get; }
+    public ICapabilityTypeSyntax Syntax { [DebuggerStepThrough] get; }
+    public ICapabilityNode Capability { [DebuggerStepThrough] get; }
+    public ITypeNode Referent { [DebuggerStepThrough] get; }
+
+    public CapabilityTypeNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, ICapabilityTypeSyntax syntax, ICapabilityNode capability, ITypeNode referent)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        Syntax = syntax;
+        Capability = capability;
+        Referent = referent;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
+{
+    private IFunctionTypeNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
+    public DataType NamedType { [DebuggerStepThrough] get; }
+    public IFunctionTypeSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<IParameterTypeNode> Parameters { [DebuggerStepThrough] get; }
+    public ITypeNode Return { [DebuggerStepThrough] get; }
+
+    public FunctionTypeNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, IFunctionTypeSyntax syntax, IFixedList<IParameterTypeNode> parameters, ITypeNode @return)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        Syntax = syntax;
+        Parameters = parameters;
+        Return = @return;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ParameterTypeNode : SemanticNode, IParameterTypeNode
+{
+    private IParameterTypeNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IParameterTypeSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool IsLent { [DebuggerStepThrough] get; }
+    public ITypeNode Referent { [DebuggerStepThrough] get; }
+    public ParameterType Parameter { [DebuggerStepThrough] get; }
+
+    public ParameterTypeNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IParameterTypeSyntax syntax, bool isLent, ITypeNode referent, ParameterType parameter)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Syntax = syntax;
+        IsLent = isLent;
+        Referent = referent;
+        Parameter = parameter;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeNode
+{
+    private ICapabilityViewpointTypeNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
+    public DataType NamedType { [DebuggerStepThrough] get; }
+    public ICapabilityViewpointTypeSyntax Syntax { [DebuggerStepThrough] get; }
+    public ICapabilityNode Capability { [DebuggerStepThrough] get; }
+    public ITypeNode Referent { [DebuggerStepThrough] get; }
+
+    public CapabilityViewpointTypeNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, ICapabilityViewpointTypeSyntax syntax, ICapabilityNode capability, ITypeNode referent)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        Syntax = syntax;
+        Capability = capability;
+        Referent = referent;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
+{
+    private ISelfViewpointTypeNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
+    public DataType NamedType { [DebuggerStepThrough] get; }
+    public ISelfViewpointTypeSyntax Syntax { [DebuggerStepThrough] get; }
+    public ITypeNode Referent { [DebuggerStepThrough] get; }
+    public Pseudotype? NamedSelfType { [DebuggerStepThrough] get; }
+
+    public SelfViewpointTypeNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMaybeAntetype namedAntetype, DataType namedType, ISelfViewpointTypeSyntax syntax, ITypeNode referent, Pseudotype? namedSelfType)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        NamedAntetype = namedAntetype;
+        NamedType = namedType;
+        Syntax = syntax;
+        Referent = referent;
+        NamedSelfType = namedSelfType;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class EntryNode : SemanticNode, IEntryNode
+{
+    private IEntryNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public ICodeSyntax? Syntax { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap()
+        => Inherited_VariableBindingsMap(GrammarAttribute.CurrentInheritanceContext());
+
+    public EntryNode(ISemanticNode parent, IPackageDeclarationNode package, ICodeSyntax? syntax, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
+    {
+        Parent = parent;
+        Package = package;
+        Syntax = syntax;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        DataFlowPrevious = dataFlowPrevious;
+        DefinitelyAssigned = definitelyAssigned;
+        DefinitelyUnassigned = definitelyUnassigned;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ExitNode : SemanticNode, IExitNode
+{
+    private IExitNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public ICodeSyntax? Syntax { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+
+    public ExitNode(ISemanticNode parent, IPackageDeclarationNode package, ICodeSyntax? syntax, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
+    {
+        Parent = parent;
+        Package = package;
+        Syntax = syntax;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        DataFlowPrevious = dataFlowPrevious;
+        DefinitelyAssigned = definitelyAssigned;
+        DefinitelyUnassigned = definitelyUnassigned;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ResultStatementNode : SemanticNode, IResultStatementNode
+{
+    private IResultStatementNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeAntetype? ResultAntetype { [DebuggerStepThrough] get; }
+    public DataType? ResultType { [DebuggerStepThrough] get; }
+    public IMaybeAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IResultStatementSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Expression { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode CurrentExpression { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateExpression { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+
+    public ResultStatementNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IMaybeAntetype antetype, DataType type, IResultStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, IFlowState flowStateAfter)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ResultAntetype = resultAntetype;
+        ResultType = resultType;
+        Antetype = antetype;
+        Type = type;
+        Syntax = syntax;
+        Expression = expression;
+        CurrentExpression = currentExpression;
+        IntermediateExpression = intermediateExpression;
+        ExpectedAntetype = expectedAntetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclarationStatementNode
+{
+    private IVariableDeclarationStatementNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeAntetype? ResultAntetype { [DebuggerStepThrough] get; }
+    public DataType? ResultType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public bool IsLentBinding { [DebuggerStepThrough] get; }
+    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
+    public DataType BindingType { [DebuggerStepThrough] get; }
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
+    public IVariableDeclarationStatementSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public ICapabilityNode? Capability { [DebuggerStepThrough] get; }
+    public ITypeNode? Type { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? Initializer { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? CurrentInitializer { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateInitializer { [DebuggerStepThrough] get; }
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.VariableDeclarationStatement_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.VariableDeclarationStatement_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+
+    public VariableDeclarationStatementNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IVariableDeclarationStatementSyntax syntax, bool isMutableBinding, IdentifierName name, ICapabilityNode? capability, ITypeNode? type, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ResultAntetype = resultAntetype;
+        ResultType = resultType;
+        FlowStateAfter = flowStateAfter;
+        IsLentBinding = isLentBinding;
+        BindingAntetype = bindingAntetype;
+        BindingType = bindingType;
+        DataFlowPrevious = dataFlowPrevious;
+        DefinitelyAssigned = definitelyAssigned;
+        DefinitelyUnassigned = definitelyUnassigned;
+        Syntax = syntax;
+        IsMutableBinding = isMutableBinding;
+        Name = name;
+        Capability = capability;
+        Type = type;
+        Initializer = initializer;
+        CurrentInitializer = currentInitializer;
+        IntermediateInitializer = intermediateInitializer;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
+{
+    private IExpressionStatementNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeAntetype? ResultAntetype { [DebuggerStepThrough] get; }
+    public DataType? ResultType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IExpressionStatementSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Expression { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode CurrentExpression { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateExpression { [DebuggerStepThrough] get; }
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+
+    public ExpressionStatementNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, IExpressionStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ResultAntetype = resultAntetype;
+        ResultType = resultType;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Expression = expression;
+        CurrentExpression = currentExpression;
+        IntermediateExpression = intermediateExpression;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
+{
+    private IBindingContextPatternNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IBindingContextPatternSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
+    public IPatternNode Pattern { [DebuggerStepThrough] get; }
+    public ITypeNode? Type { [DebuggerStepThrough] get; }
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId? MatchReferentValueId
+        => GrammarAttribute.IsCached(in matchReferentValueIdCached) ? matchReferentValueId
+            : this.Inherited(ref matchReferentValueIdCached, ref matchReferentValueId, ref syncLock,
+                Inherited_MatchReferentValueId);
+    private ValueId? matchReferentValueId;
+    private bool matchReferentValueIdCached;
+    public IMaybeAntetype ContextBindingAntetype()
+        => Inherited_ContextBindingAntetype(GrammarAttribute.CurrentInheritanceContext());
+    public DataType ContextBindingType()
+        => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
+
+    public BindingContextPatternNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFlowState flowStateAfter, IBindingContextPatternSyntax syntax, bool isMutableBinding, IPatternNode pattern, ITypeNode? type)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        IsMutableBinding = isMutableBinding;
+        Pattern = pattern;
+        Type = type;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class BindingPatternNode : SemanticNode, IBindingPatternNode
+{
+    private IBindingPatternNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public bool IsLentBinding { [DebuggerStepThrough] get; }
+    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
+    public DataType BindingType { [DebuggerStepThrough] get; }
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
+    public IBindingPatternSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId? MatchReferentValueId
+        => GrammarAttribute.IsCached(in matchReferentValueIdCached) ? matchReferentValueId
+            : this.Inherited(ref matchReferentValueIdCached, ref matchReferentValueId, ref syncLock,
+                Inherited_MatchReferentValueId);
+    private ValueId? matchReferentValueId;
+    private bool matchReferentValueIdCached;
+    public IMaybeAntetype ContextBindingAntetype()
+        => Inherited_ContextBindingAntetype(GrammarAttribute.CurrentInheritanceContext());
+    public DataType ContextBindingType()
+        => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.BindingPattern_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+
+    public BindingPatternNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IBindingPatternSyntax syntax, bool isMutableBinding, IdentifierName name)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        FlowStateAfter = flowStateAfter;
+        IsLentBinding = isLentBinding;
+        BindingAntetype = bindingAntetype;
+        BindingType = bindingType;
+        DataFlowPrevious = dataFlowPrevious;
+        DefinitelyAssigned = definitelyAssigned;
+        DefinitelyUnassigned = definitelyUnassigned;
+        Syntax = syntax;
+        IsMutableBinding = isMutableBinding;
+        Name = name;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
+{
+    private IOptionalPatternNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IOptionalPatternSyntax Syntax { [DebuggerStepThrough] get; }
+    public IOptionalOrBindingPatternNode Pattern { [DebuggerStepThrough] get; }
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId? MatchReferentValueId
+        => GrammarAttribute.IsCached(in matchReferentValueIdCached) ? matchReferentValueId
+            : this.Inherited(ref matchReferentValueIdCached, ref matchReferentValueId, ref syncLock,
+                Inherited_MatchReferentValueId);
+    private ValueId? matchReferentValueId;
+    private bool matchReferentValueIdCached;
+    public IMaybeAntetype ContextBindingAntetype()
+        => Inherited_ContextBindingAntetype(GrammarAttribute.CurrentInheritanceContext());
+    public DataType ContextBindingType()
+        => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
+
+    public OptionalPatternNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFlowState flowStateAfter, IOptionalPatternSyntax syntax, IOptionalOrBindingPatternNode pattern)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Pattern = pattern;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
+{
+    private IBlockExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IBlockExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<IStatementNode> Statements { [DebuggerStepThrough] get; }
+    public IMaybeAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public BlockExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, IBlockExpressionSyntax syntax, IFixedList<IStatementNode> statements, IMaybeAntetype antetype, DataType type, IFlowState flowStateAfter)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        ExpectedType = expectedType;
+        Syntax = syntax;
+        Statements = statements;
+        Antetype = antetype;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (IndexOfNode(Self.Statements, child) is {} statementIndex)
+            return LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, statementIndex);
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
+{
+    private INewObjectExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
+    public INewObjectExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public ITypeNameNode ConstructingType { [DebuggerStepThrough] get; }
+    public IdentifierName? ConstructorName { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { [DebuggerStepThrough] get; }
+    public IFixedList<IExpressionNode?> IntermediateArguments { [DebuggerStepThrough] get; }
+    public IMaybeAntetype ConstructingAntetype { [DebuggerStepThrough] get; }
+    public IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { [DebuggerStepThrough] get; }
+    public IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { [DebuggerStepThrough] get; }
+    public IConstructorDeclarationNode? ReferencedConstructor { [DebuggerStepThrough] get; }
+    public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public PackageNameScope PackageNameScope()
+        => Inherited_PackageNameScope(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public NewObjectExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, INewObjectExpressionSyntax syntax, ITypeNameNode constructingType, IdentifierName? constructorName, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IMaybeAntetype constructingAntetype, IFixedSet<IConstructorDeclarationNode> referencedConstructors, IFixedSet<IConstructorDeclarationNode> compatibleConstructors, IConstructorDeclarationNode? referencedConstructor, ContextualizedOverload? contextualizedOverload)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        Syntax = syntax;
+        ConstructingType = constructingType;
+        ConstructorName = constructorName;
+        Arguments = arguments;
+        IntermediateArguments = intermediateArguments;
+        ConstructingAntetype = constructingAntetype;
+        ReferencedConstructors = referencedConstructors;
+        CompatibleConstructors = compatibleConstructors;
+        ReferencedConstructor = referencedConstructor;
+        ContextualizedOverload = contextualizedOverload;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
+{
+    private IUnsafeExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IUnsafeExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Expression { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateExpression { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public UnsafeExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IUnsafeExpressionSyntax syntax, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Expression = expression;
+        IntermediateExpression = intermediateExpression;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
+{
+    private IBoolLiteralExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IBoolLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool Value { [DebuggerStepThrough] get; }
+    public BoolConstValueType Type { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public BoolLiteralExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, IBoolLiteralExpressionSyntax syntax, bool value, BoolConstValueType type)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Value = value;
+        Type = type;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressionNode
+{
+    private IIntegerLiteralExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IIntegerLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public BigInteger Value { [DebuggerStepThrough] get; }
+    public IntegerConstValueType Type { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public IntegerLiteralExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, IIntegerLiteralExpressionSyntax syntax, BigInteger value, IntegerConstValueType type)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Value = value;
+        Type = type;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
+{
+    private INoneLiteralExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public INoneLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public OptionalType Type { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public NoneLiteralExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, INoneLiteralExpressionSyntax syntax, OptionalType type)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Type = type;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionNode
+{
+    private IStringLiteralExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IStringLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public string Value { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public StringLiteralExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, IStringLiteralExpressionSyntax syntax, string value, DataType type)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Value = value;
+        Type = type;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
+{
+    private IAssignmentExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
+    public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousAssignableExpressionNode LeftOperand { [DebuggerStepThrough] get; }
+    public IAmbiguousAssignableExpressionNode CurrentLeftOperand { [DebuggerStepThrough] get; }
+    public IAssignableExpressionNode? IntermediateLeftOperand { [DebuggerStepThrough] get; }
+    public AssignmentOperator Operator { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode RightOperand { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode CurrentRightOperand { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateRightOperand { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public AssignmentExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IAssignmentExpressionSyntax syntax, IAmbiguousAssignableExpressionNode leftOperand, IAmbiguousAssignableExpressionNode currentLeftOperand, IAssignableExpressionNode? intermediateLeftOperand, AssignmentOperator @operator, IAmbiguousExpressionNode rightOperand, IAmbiguousExpressionNode currentRightOperand, IExpressionNode? intermediateRightOperand)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        DataFlowPrevious = dataFlowPrevious;
+        DefinitelyAssigned = definitelyAssigned;
+        DefinitelyUnassigned = definitelyUnassigned;
+        Syntax = syntax;
+        LeftOperand = leftOperand;
+        CurrentLeftOperand = currentLeftOperand;
+        IntermediateLeftOperand = intermediateLeftOperand;
+        Operator = @operator;
+        RightOperand = rightOperand;
+        CurrentRightOperand = currentRightOperand;
+        IntermediateRightOperand = intermediateRightOperand;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressionNode
+{
+    private IBinaryOperatorExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IBinaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode LeftOperand { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateLeftOperand { [DebuggerStepThrough] get; }
+    public BinaryOperator Operator { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode RightOperand { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateRightOperand { [DebuggerStepThrough] get; }
+    public IAntetype? NumericOperatorCommonAntetype { [DebuggerStepThrough] get; }
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public BinaryOperatorExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IBinaryOperatorExpressionSyntax syntax, IAmbiguousExpressionNode leftOperand, IExpressionNode? intermediateLeftOperand, BinaryOperator @operator, IAmbiguousExpressionNode rightOperand, IExpressionNode? intermediateRightOperand, IAntetype? numericOperatorCommonAntetype)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        LeftOperand = leftOperand;
+        IntermediateLeftOperand = intermediateLeftOperand;
+        Operator = @operator;
+        RightOperand = rightOperand;
+        IntermediateRightOperand = intermediateRightOperand;
+        NumericOperatorCommonAntetype = numericOperatorCommonAntetype;
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.RightOperand))
+            return LexicalScopingAspect.BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(this);
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionNode
+{
+    private IUnaryOperatorExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IUnaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public UnaryOperatorFixity Fixity { [DebuggerStepThrough] get; }
+    public UnaryOperator Operator { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Operand { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateOperand { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public UnaryOperatorExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IUnaryOperatorExpressionSyntax syntax, UnaryOperatorFixity fixity, UnaryOperator @operator, IAmbiguousExpressionNode operand, IExpressionNode? intermediateOperand)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Fixity = fixity;
+        Operator = @operator;
+        Operand = operand;
+        IntermediateOperand = intermediateOperand;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class IdExpressionNode : SemanticNode, IIdExpressionNode
+{
+    private IIdExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IIdExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Referent { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateReferent { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public IdExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IIdExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Referent = referent;
+        IntermediateReferent = intermediateReferent;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
+{
+    private IConversionExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IConversionExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Referent { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateReferent { [DebuggerStepThrough] get; }
+    public ConversionOperator Operator { [DebuggerStepThrough] get; }
+    public ITypeNode ConvertToType { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public ConversionExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IConversionExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent, ConversionOperator @operator, ITypeNode convertToType)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Referent = referent;
+        IntermediateReferent = intermediateReferent;
+        Operator = @operator;
+        ConvertToType = convertToType;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionExpressionNode
+{
+    private IImplicitConversionExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IExpressionNode Referent { [DebuggerStepThrough] get; }
+    public IExpressionNode CurrentReferent { [DebuggerStepThrough] get; }
+    public SimpleAntetype Antetype { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public ImplicitConversionExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IExpressionNode referent, IExpressionNode currentReferent, SimpleAntetype antetype)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Referent = referent;
+        CurrentReferent = currentReferent;
+        Antetype = antetype;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNode
+{
+    private IPatternMatchExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IPatternMatchExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Referent { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateReferent { [DebuggerStepThrough] get; }
+    public IPatternNode Pattern { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public PatternMatchExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IPatternMatchExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent, IPatternNode pattern)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Referent = referent;
+        IntermediateReferent = intermediateReferent;
+        Pattern = pattern;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class IfExpressionNode : SemanticNode, IIfExpressionNode
+{
+    private IIfExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IIfExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Condition { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateCondition { [DebuggerStepThrough] get; }
+    public IBlockOrResultNode ThenBlock { [DebuggerStepThrough] get; }
+    public IElseClauseNode? ElseClause { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public IfExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IIfExpressionSyntax syntax, IAmbiguousExpressionNode condition, IExpressionNode? intermediateCondition, IBlockOrResultNode thenBlock, IElseClauseNode? elseClause, IFlowState flowStateAfter)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        Syntax = syntax;
+        Condition = condition;
+        IntermediateCondition = intermediateCondition;
+        ThenBlock = thenBlock;
+        ElseClause = elseClause;
+        FlowStateAfter = flowStateAfter;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
+{
+    private ILoopExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public ILoopExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public LoopExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ILoopExpressionSyntax syntax, IBlockExpressionNode block)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Block = block;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
+{
+    private IWhileExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IWhileExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Condition { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateCondition { [DebuggerStepThrough] get; }
+    public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public WhileExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IWhileExpressionSyntax syntax, IAmbiguousExpressionNode condition, IExpressionNode? intermediateCondition, IBlockExpressionNode block)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Condition = condition;
+        IntermediateCondition = intermediateCondition;
+        Block = block;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
+{
+    private IForeachExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public bool IsLentBinding { [DebuggerStepThrough] get; }
+    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public DataType BindingType { [DebuggerStepThrough] get; }
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
+    public IForeachExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool IsMutableBinding { [DebuggerStepThrough] get; }
+    public IdentifierName VariableName { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode InExpression { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateInExpression { [DebuggerStepThrough] get; }
+    public ITypeNode? DeclaredType { [DebuggerStepThrough] get; }
+    public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode? ReferencedIterableDeclaration { [DebuggerStepThrough] get; }
+    public IStandardMethodDeclarationNode? ReferencedIterateMethod { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype IteratorAntetype { [DebuggerStepThrough] get; }
+    public DataType IteratorType { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode? ReferencedIteratorDeclaration { [DebuggerStepThrough] get; }
+    public IStandardMethodDeclarationNode? ReferencedNextMethod { [DebuggerStepThrough] get; }
+    public IMaybeAntetype IteratedAntetype { [DebuggerStepThrough] get; }
+    public DataType IteratedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateBeforeBlock { [DebuggerStepThrough] get; }
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public PackageNameScope PackageNameScope()
+        => Inherited_PackageNameScope(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.ForeachExpression_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.ForeachExpression_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public ForeachExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, IdentifierName name, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IForeachExpressionSyntax syntax, bool isMutableBinding, IdentifierName variableName, IAmbiguousExpressionNode inExpression, IExpressionNode? intermediateInExpression, ITypeNode? declaredType, IBlockExpressionNode block, ITypeDeclarationNode? referencedIterableDeclaration, IStandardMethodDeclarationNode? referencedIterateMethod, IMaybeExpressionAntetype iteratorAntetype, DataType iteratorType, ITypeDeclarationNode? referencedIteratorDeclaration, IStandardMethodDeclarationNode? referencedNextMethod, IMaybeAntetype iteratedAntetype, DataType iteratedType, IFlowState flowStateBeforeBlock)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        IsLentBinding = isLentBinding;
+        BindingAntetype = bindingAntetype;
+        Name = name;
+        BindingType = bindingType;
+        DataFlowPrevious = dataFlowPrevious;
+        DefinitelyAssigned = definitelyAssigned;
+        DefinitelyUnassigned = definitelyUnassigned;
+        Syntax = syntax;
+        IsMutableBinding = isMutableBinding;
+        VariableName = variableName;
+        InExpression = inExpression;
+        IntermediateInExpression = intermediateInExpression;
+        DeclaredType = declaredType;
+        Block = block;
+        ReferencedIterableDeclaration = referencedIterableDeclaration;
+        ReferencedIterateMethod = referencedIterateMethod;
+        IteratorAntetype = iteratorAntetype;
+        IteratorType = iteratorType;
+        ReferencedIteratorDeclaration = referencedIteratorDeclaration;
+        ReferencedNextMethod = referencedNextMethod;
+        IteratedAntetype = iteratedAntetype;
+        IteratedType = iteratedType;
+        FlowStateBeforeBlock = flowStateBeforeBlock;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
+{
+    private IBreakExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public NeverType Type { [DebuggerStepThrough] get; }
+    public IBreakExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? Value { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateValue { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public BreakExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? value, IExpressionNode? intermediateValue)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Type = type;
+        Syntax = syntax;
+        Value = value;
+        IntermediateValue = intermediateValue;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class NextExpressionNode : SemanticNode, INextExpressionNode
+{
+    private INextExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public NeverType Type { [DebuggerStepThrough] get; }
+    public INextExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public NextExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, INextExpressionSyntax syntax)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Type = type;
+        Syntax = syntax;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
+{
+    private IReturnExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public NeverType Type { [DebuggerStepThrough] get; }
+    public IReturnExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? Value { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? CurrentValue { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateValue { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IExitNode ControlFlowExit()
+        => Inherited_ControlFlowExit(GrammarAttribute.CurrentInheritanceContext());
+    public DataType? ExpectedReturnType
+        => GrammarAttribute.IsCached(in expectedReturnTypeCached) ? expectedReturnType
+            : this.Inherited(ref expectedReturnTypeCached, ref expectedReturnType,
+                Inherited_ExpectedReturnType);
+    private DataType? expectedReturnType;
+    private bool expectedReturnTypeCached;
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public ReturnExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, IReturnExpressionSyntax syntax, IAmbiguousExpressionNode? value, IAmbiguousExpressionNode? currentValue, IExpressionNode? intermediateValue)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Type = type;
+        Syntax = syntax;
+        Value = value;
+        CurrentValue = currentValue;
+        IntermediateValue = intermediateValue;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocationExpressionNode
+{
+    private IUnresolvedInvocationExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Expression { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode CurrentExpression { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public UnresolvedInvocationExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IInvocationExpressionSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IAmbiguousExpressionNode> currentArguments)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Syntax = syntax;
+        Expression = expression;
+        CurrentExpression = currentExpression;
+        Arguments = arguments;
+        CurrentArguments = currentArguments;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationExpressionNode
+{
+    private IFunctionInvocationExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
+    public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFunctionGroupNameNode FunctionGroup { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { [DebuggerStepThrough] get; }
+    public IFixedList<IExpressionNode?> IntermediateArguments { [DebuggerStepThrough] get; }
+    public IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
+    public IFunctionLikeDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public FunctionInvocationExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IFunctionGroupNameNode functionGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IFunctionLikeDeclarationNode> compatibleDeclarations, IFunctionLikeDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        Syntax = syntax;
+        FunctionGroup = functionGroup;
+        Arguments = arguments;
+        IntermediateArguments = intermediateArguments;
+        CompatibleDeclarations = compatibleDeclarations;
+        ReferencedDeclaration = referencedDeclaration;
+        ContextualizedOverload = contextualizedOverload;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpressionNode
+{
+    private IMethodInvocationExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
+    public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IMethodGroupNameNode MethodGroup { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments { [DebuggerStepThrough] get; }
+    public IFixedList<IExpressionNode?> IntermediateArguments { [DebuggerStepThrough] get; }
+    public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
+    public IStandardMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public MethodInvocationExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IMethodGroupNameNode methodGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IAmbiguousExpressionNode> currentArguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IStandardMethodDeclarationNode> compatibleDeclarations, IStandardMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        Syntax = syntax;
+        MethodGroup = methodGroup;
+        Arguments = arguments;
+        CurrentArguments = currentArguments;
+        IntermediateArguments = intermediateArguments;
+        CompatibleDeclarations = compatibleDeclarations;
+        ReferencedDeclaration = referencedDeclaration;
+        ContextualizedOverload = contextualizedOverload;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpressionNode
+{
+    private IGetterInvocationExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
+    public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IExpressionNode Context { [DebuggerStepThrough] get; }
+    public StandardName PropertyName { [DebuggerStepThrough] get; }
+    public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { [DebuggerStepThrough] get; }
+    public IGetterMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public GetterInvocationExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, IGetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        Syntax = syntax;
+        Context = context;
+        PropertyName = propertyName;
+        ReferencedPropertyAccessors = referencedPropertyAccessors;
+        ReferencedDeclaration = referencedDeclaration;
+        ContextualizedOverload = contextualizedOverload;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpressionNode
+{
+    private ISetterInvocationExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
+    public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IExpressionNode Context { [DebuggerStepThrough] get; }
+    public StandardName PropertyName { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Value { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateValue { [DebuggerStepThrough] get; }
+    public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { [DebuggerStepThrough] get; }
+    public ISetterMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public SetterInvocationExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IAssignmentExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IAmbiguousExpressionNode value, IExpressionNode? intermediateValue, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, ISetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        Syntax = syntax;
+        Context = context;
+        PropertyName = propertyName;
+        Value = value;
+        IntermediateValue = intermediateValue;
+        ReferencedPropertyAccessors = referencedPropertyAccessors;
+        ReferencedDeclaration = referencedDeclaration;
+        ContextualizedOverload = contextualizedOverload;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionReferenceInvocationExpressionNode
+{
+    private IFunctionReferenceInvocationExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
+    public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IExpressionNode Expression { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { [DebuggerStepThrough] get; }
+    public IFixedList<IExpressionNode?> IntermediateArguments { [DebuggerStepThrough] get; }
+    public FunctionAntetype FunctionAntetype { [DebuggerStepThrough] get; }
+    public FunctionType FunctionType { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public FunctionReferenceInvocationExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IExpressionNode expression, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, FunctionAntetype functionAntetype, FunctionType functionType)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        Syntax = syntax;
+        Expression = expression;
+        Arguments = arguments;
+        IntermediateArguments = intermediateArguments;
+        FunctionAntetype = functionAntetype;
+        FunctionType = functionType;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvocationExpressionNode
+{
+    private IInitializerInvocationExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
+    public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IInitializerGroupNameNode InitializerGroup { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { [DebuggerStepThrough] get; }
+    public IFixedList<IExpressionNode?> IntermediateArguments { [DebuggerStepThrough] get; }
+    public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
+    public IInitializerDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public InitializerInvocationExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IInitializerGroupNameNode initializerGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IInitializerDeclarationNode> compatibleDeclarations, IInitializerDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        AllArguments = allArguments;
+        AllIntermediateArguments = allIntermediateArguments;
+        Syntax = syntax;
+        InitializerGroup = initializerGroup;
+        Arguments = arguments;
+        IntermediateArguments = intermediateArguments;
+        CompatibleDeclarations = compatibleDeclarations;
+        ReferencedDeclaration = referencedDeclaration;
+        ContextualizedOverload = contextualizedOverload;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExpressionNode
+{
+    private IUnknownInvocationExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Expression { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> Arguments { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public UnknownInvocationExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IInvocationExpressionSyntax syntax, IAmbiguousExpressionNode expression, IFixedList<IAmbiguousExpressionNode> arguments)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Expression = expression;
+        Arguments = arguments;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressionNode
+{
+    private IIdentifierNameExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IFixedList<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public IdentifierNameExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IFixedList<IDeclarationNode> referencedDeclarations, IIdentifierNameExpressionSyntax syntax, IdentifierName name)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ReferencedDeclarations = referencedDeclarations;
+        Syntax = syntax;
+        Name = name;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
+{
+    private IGenericNameExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IFixedList<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public IGenericNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public GenericName Name { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public LexicalScope ContainingLexicalScope
+        => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
+            : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
+                Inherited_ContainingLexicalScope);
+    private LexicalScope? containingLexicalScope;
+    private bool containingLexicalScopeCached;
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public GenericNameExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IFixedList<IDeclarationNode> referencedDeclarations, IGenericNameExpressionSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ReferencedDeclarations = referencedDeclarations;
+        Syntax = syntax;
+        Name = name;
+        TypeArguments = typeArguments;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class MemberAccessExpressionNode : SemanticNode, IMemberAccessExpressionNode
+{
+    private IMemberAccessExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Context { [DebuggerStepThrough] get; }
+    public StandardName MemberName { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public PackageNameScope PackageNameScope()
+        => Inherited_PackageNameScope(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public MemberAccessExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMemberAccessExpressionSyntax syntax, IAmbiguousExpressionNode context, StandardName memberName, IFixedList<ITypeNode> typeArguments)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Syntax = syntax;
+        Context = context;
+        MemberName = memberName;
+        TypeArguments = typeArguments;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class PropertyNameNode : SemanticNode, IPropertyNameNode
+{
+    private IPropertyNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IExpressionNode Context { [DebuggerStepThrough] get; }
+    public StandardName PropertyName { [DebuggerStepThrough] get; }
+    public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public PropertyNameNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Syntax = syntax;
+        Context = context;
+        PropertyName = propertyName;
+        ReferencedPropertyAccessors = referencedPropertyAccessors;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNameNode
+{
+    private IUnqualifiedNamespaceNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public UnknownType Type { [DebuggerStepThrough] get; }
+    public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public UnqualifiedNamespaceNameNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, UnknownType type, IFixedList<INamespaceDeclarationNode> referencedDeclarations, IIdentifierNameExpressionSyntax syntax, IdentifierName name)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Type = type;
+        ReferencedDeclarations = referencedDeclarations;
+        Syntax = syntax;
+        Name = name;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNode
+{
+    private IQualifiedNamespaceNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public UnknownType Type { [DebuggerStepThrough] get; }
+    public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public INamespaceNameNode Context { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public QualifiedNamespaceNameNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, UnknownType type, IFixedList<INamespaceDeclarationNode> referencedDeclarations, IMemberAccessExpressionSyntax syntax, INamespaceNameNode context, IdentifierName name)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Type = type;
+        ReferencedDeclarations = referencedDeclarations;
+        Syntax = syntax;
+        Context = context;
+        Name = name;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
+{
+    private IFunctionGroupNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public INameExpressionNode? Context { [DebuggerStepThrough] get; }
+    public StandardName FunctionName { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedSet<IFunctionLikeDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public FunctionGroupNameNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, INameExpressionSyntax syntax, INameExpressionNode? context, StandardName functionName, IFixedList<ITypeNode> typeArguments, IFixedSet<IFunctionLikeDeclarationNode> referencedDeclarations)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Context = context;
+        FunctionName = functionName;
+        TypeArguments = typeArguments;
+        ReferencedDeclarations = referencedDeclarations;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class FunctionNameNode : SemanticNode, IFunctionNameNode
+{
+    private IFunctionNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFunctionGroupNameNode FunctionGroup { [DebuggerStepThrough] get; }
+    public StandardName FunctionName { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFunctionLikeDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public FunctionNameNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, INameExpressionSyntax syntax, IFunctionGroupNameNode functionGroup, StandardName functionName, IFixedList<ITypeNode> typeArguments, IFunctionLikeDeclarationNode? referencedDeclaration)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        FunctionGroup = functionGroup;
+        FunctionName = functionName;
+        TypeArguments = typeArguments;
+        ReferencedDeclaration = referencedDeclaration;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
+{
+    private IMethodGroupNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IExpressionNode Context { [DebuggerStepThrough] get; }
+    public IExpressionNode CurrentContext { [DebuggerStepThrough] get; }
+    public StandardName MethodName { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public MethodGroupNameNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IMemberAccessExpressionSyntax syntax, IExpressionNode context, IExpressionNode currentContext, StandardName methodName, IFixedList<ITypeNode> typeArguments, IFixedSet<IStandardMethodDeclarationNode> referencedDeclarations)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Context = context;
+        CurrentContext = currentContext;
+        MethodName = methodName;
+        TypeArguments = typeArguments;
+        ReferencedDeclarations = referencedDeclarations;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
+{
+    private IFieldAccessExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IExpressionNode Context { [DebuggerStepThrough] get; }
+    public IdentifierName FieldName { [DebuggerStepThrough] get; }
+    public IFieldDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public FieldAccessExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IMemberAccessExpressionSyntax syntax, IExpressionNode context, IdentifierName fieldName, IFieldDeclarationNode referencedDeclaration)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Context = context;
+        FieldName = fieldName;
+        ReferencedDeclaration = referencedDeclaration;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNode
+{
+    private IVariableNameExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public ILocalBindingNode ReferencedDefinition { [DebuggerStepThrough] get; }
+    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public VariableNameExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IIdentifierNameExpressionSyntax syntax, IdentifierName name, ILocalBindingNode referencedDefinition, IFixedSet<IDataFlowNode> dataFlowPrevious)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Name = name;
+        ReferencedDefinition = referencedDefinition;
+        DataFlowPrevious = dataFlowPrevious;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpressionNode
+{
+    private IStandardTypeNameExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
+    public BareType? NamedBareType { [DebuggerStepThrough] get; }
+    public IStandardNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public StandardTypeNameExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, StandardName name, ITypeDeclarationNode referencedDeclaration, IMaybeAntetype namedAntetype, BareType? namedBareType, IStandardNameExpressionSyntax syntax, IFixedList<ITypeNode> typeArguments)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Name = name;
+        ReferencedDeclaration = referencedDeclaration;
+        NamedAntetype = namedAntetype;
+        NamedBareType = namedBareType;
+        Syntax = syntax;
+        TypeArguments = typeArguments;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExpressionNode
+{
+    private IQualifiedTypeNameExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
+    public BareType? NamedBareType { [DebuggerStepThrough] get; }
+    public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public INamespaceNameNode Context { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public QualifiedTypeNameExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, StandardName name, ITypeDeclarationNode referencedDeclaration, IMaybeAntetype namedAntetype, BareType? namedBareType, IMemberAccessExpressionSyntax syntax, INamespaceNameNode context, IFixedList<ITypeNode> typeArguments)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Name = name;
+        ReferencedDeclaration = referencedDeclaration;
+        NamedAntetype = namedAntetype;
+        NamedBareType = namedBareType;
+        Syntax = syntax;
+        Context = context;
+        TypeArguments = typeArguments;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
+{
+    private IInitializerGroupNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public ITypeNameExpressionNode Context { [DebuggerStepThrough] get; }
+    public StandardName? InitializerName { [DebuggerStepThrough] get; }
+    public IMaybeAntetype InitializingAntetype { [DebuggerStepThrough] get; }
+    public IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public InitializerGroupNameNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, INameExpressionSyntax syntax, ITypeNameExpressionNode context, StandardName? initializerName, IMaybeAntetype initializingAntetype, IFixedSet<IInitializerDeclarationNode> referencedDeclarations)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Context = context;
+        InitializerName = initializerName;
+        InitializingAntetype = initializingAntetype;
+        ReferencedDeclarations = referencedDeclarations;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpressionNode
+{
+    private ISpecialTypeNameExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public ISpecialTypeNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public SpecialTypeName Name { [DebuggerStepThrough] get; }
+    public TypeSymbol ReferencedSymbol { [DebuggerStepThrough] get; }
+    public UnknownType Type { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public SpecialTypeNameExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, ISpecialTypeNameExpressionSyntax syntax, SpecialTypeName name, TypeSymbol referencedSymbol, UnknownType type)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Name = name;
+        ReferencedSymbol = referencedSymbol;
+        Type = type;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
+{
+    private ISelfExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public ISelfExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool IsImplicit { [DebuggerStepThrough] get; }
+    public Pseudotype Pseudotype { [DebuggerStepThrough] get; }
+    public IExecutableDefinitionNode ContainingDeclaration { [DebuggerStepThrough] get; }
+    public ISelfParameterNode? ReferencedDefinition { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public IFlowState FlowStateBefore()
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public SelfExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, ISelfExpressionSyntax syntax, bool isImplicit, Pseudotype pseudotype, IExecutableDefinitionNode containingDeclaration, ISelfParameterNode? referencedDefinition)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        IsImplicit = isImplicit;
+        Pseudotype = pseudotype;
+        ContainingDeclaration = containingDeclaration;
+        ReferencedDefinition = referencedDefinition;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
+{
+    private IMissingNameExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IMissingNameSyntax Syntax { [DebuggerStepThrough] get; }
+    public UnknownType Type { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public MissingNameExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, IMissingNameSyntax syntax, UnknownType type)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Type = type;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifierNameExpressionNode
+{
+    private IUnknownIdentifierNameExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public UnknownType Type { [DebuggerStepThrough] get; }
+    public IFixedSet<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public UnknownIdentifierNameExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, UnknownType type, IFixedSet<IDeclarationNode> referencedDeclarations, IIdentifierNameExpressionSyntax syntax, IdentifierName name)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Type = type;
+        ReferencedDeclarations = referencedDeclarations;
+        Syntax = syntax;
+        Name = name;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameExpressionNode
+{
+    private IUnknownGenericNameExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public UnknownType Type { [DebuggerStepThrough] get; }
+    public IFixedSet<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public IGenericNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public GenericName Name { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public UnknownGenericNameExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, UnknownType type, IFixedSet<IDeclarationNode> referencedDeclarations, IGenericNameExpressionSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Type = type;
+        ReferencedDeclarations = referencedDeclarations;
+        Syntax = syntax;
+        Name = name;
+        TypeArguments = typeArguments;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAccessExpressionNode
+{
+    private IUnknownMemberAccessExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public UnknownType Type { [DebuggerStepThrough] get; }
+    public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IExpressionNode Context { [DebuggerStepThrough] get; }
+    public StandardName MemberName { [DebuggerStepThrough] get; }
+    public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public IFixedSet<IDeclarationNode> ReferencedMembers { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public UnknownMemberAccessExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, UnknownType type, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName memberName, IFixedList<ITypeNode> typeArguments, IFixedSet<IDeclarationNode> referencedMembers)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        FlowStateAfter = flowStateAfter;
+        Type = type;
+        Syntax = syntax;
+        Context = context;
+        MemberName = memberName;
+        TypeArguments = typeArguments;
+        ReferencedMembers = referencedMembers;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionNode
+{
+    private IAmbiguousMoveExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IMoveExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public ISimpleNameNode Referent { [DebuggerStepThrough] get; }
+    public INameExpressionNode? IntermediateReferent { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public AmbiguousMoveExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IMoveExpressionSyntax syntax, ISimpleNameNode referent, INameExpressionNode? intermediateReferent)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Syntax = syntax;
+        Referent = referent;
+        IntermediateReferent = intermediateReferent;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNode
+{
+    private IMoveVariableExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public bool IsImplicit { [DebuggerStepThrough] get; }
+    public ILocalBindingNameExpressionNode Referent { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public MoveVariableExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isImplicit, ILocalBindingNameExpressionNode referent)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        IsImplicit = isImplicit;
+        Referent = referent;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
+{
+    private IMoveValueExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public bool IsImplicit { [DebuggerStepThrough] get; }
+    public IExpressionNode Referent { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public MoveValueExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isImplicit, IExpressionNode referent)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        IsImplicit = isImplicit;
+        Referent = referent;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpressionNode
+{
+    private IImplicitTempMoveExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IExpressionNode Referent { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public ImplicitTempMoveExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IExpressionNode referent)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Referent = referent;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpressionNode
+{
+    private IAmbiguousFreezeExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public IFreezeExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public ISimpleNameNode Referent { [DebuggerStepThrough] get; }
+    public INameExpressionNode? IntermediateReferent { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public AmbiguousFreezeExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, IFreezeExpressionSyntax syntax, ISimpleNameNode referent, INameExpressionNode? intermediateReferent)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        Syntax = syntax;
+        Referent = referent;
+        IntermediateReferent = intermediateReferent;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressionNode
+{
+    private IFreezeVariableExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public bool IsImplicit { [DebuggerStepThrough] get; }
+    public bool IsTemporary { [DebuggerStepThrough] get; }
+    public ILocalBindingNameExpressionNode Referent { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public FreezeVariableExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isImplicit, bool isTemporary, ILocalBindingNameExpressionNode referent)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        IsImplicit = isImplicit;
+        IsTemporary = isTemporary;
+        Referent = referent;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
+{
+    private IFreezeValueExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public bool IsImplicit { [DebuggerStepThrough] get; }
+    public bool IsTemporary { [DebuggerStepThrough] get; }
+    public IExpressionNode Referent { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public FreezeValueExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isImplicit, bool isTemporary, IExpressionNode referent)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        IsImplicit = isImplicit;
+        IsTemporary = isTemporary;
+        Referent = referent;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpressionNode
+{
+    private IPrepareToReturnExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IExpressionNode Value { [DebuggerStepThrough] get; }
+    public IExpressionNode CurrentValue { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public PrepareToReturnExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IExpressionNode value, IExpressionNode currentValue)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        Syntax = syntax;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Value = value;
+        CurrentValue = currentValue;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
+{
+    private IAsyncBlockExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IAsyncBlockExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public AsyncBlockExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAsyncBlockExpressionSyntax syntax, IBlockExpressionNode block)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Block = block;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
+{
+    private IAsyncStartExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IAsyncStartExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public bool Scheduled { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Expression { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateExpression { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public AsyncStartExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAsyncStartExpressionSyntax syntax, bool scheduled, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Scheduled = scheduled;
+        Expression = expression;
+        IntermediateExpression = intermediateExpression;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
+{
+    private IAwaitExpressionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public CodeFile File { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
+    public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
+    public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType? ExpectedType { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
+    public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
+    public IAwaitExpressionSyntax Syntax { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode Expression { [DebuggerStepThrough] get; }
+    public IExpressionNode? IntermediateExpression { [DebuggerStepThrough] get; }
+    public LexicalScope ContainingLexicalScope()
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public IPreviousValueId PreviousValueId()
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry()
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowFollowing()
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public bool ImplicitRecoveryAllowed()
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+    public bool ShouldPrepareToReturn()
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+    public ValueId ValueId
+        => GrammarAttribute.IsCached(in valueIdCached) ? valueId
+            : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
+                ValueIdsAspect.AmbiguousExpression_ValueId);
+    private ValueId valueId;
+    private bool valueIdCached;
+
+    public AwaitExpressionNode(ISemanticNode parent, IPackageDeclarationNode package, CodeFile file, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAwaitExpressionSyntax syntax, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression)
+    {
+        Parent = parent;
+        Package = package;
+        File = file;
+        ControlFlowNext = controlFlowNext;
+        ControlFlowPrevious = controlFlowPrevious;
+        ExpectedAntetype = expectedAntetype;
+        Antetype = antetype;
+        ExpectedType = expectedType;
+        Type = type;
+        FlowStateAfter = flowStateAfter;
+        Syntax = syntax;
+        Expression = expression;
+        IntermediateExpression = intermediateExpression;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
+{
+    private IPackageSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public IdentifierName? AliasOrName { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public PackageSymbol Symbol { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode MainFacet { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode TestingFacet { [DebuggerStepThrough] get; }
+
+    public PackageSymbolNode(ISyntax? syntax, IdentifierName? aliasOrName, IdentifierName name, PackageSymbol symbol, IPackageFacetDeclarationNode mainFacet, IPackageFacetDeclarationNode testingFacet)
+    {
+        Syntax = syntax;
+        AliasOrName = aliasOrName;
+        Name = name;
+        Symbol = symbol;
+        MainFacet = mainFacet;
+        TestingFacet = testingFacet;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
+{
+    private IPackageFacetSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IdentifierName? PackageAliasOrName { [DebuggerStepThrough] get; }
+    public IdentifierName PackageName { [DebuggerStepThrough] get; }
+    public PackageSymbol Symbol { [DebuggerStepThrough] get; }
+    public INamespaceDeclarationNode GlobalNamespace { [DebuggerStepThrough] get; }
+
+    public PackageFacetSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IdentifierName? packageAliasOrName, IdentifierName packageName, PackageSymbol symbol, INamespaceDeclarationNode globalNamespace)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        PackageAliasOrName = packageAliasOrName;
+        PackageName = packageName;
+        Symbol = symbol;
+        GlobalNamespace = globalNamespace;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class NamespaceSymbolNode : SemanticNode, INamespaceSymbolNode
+{
+    private INamespaceSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public NamespaceSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedList<INamespaceMemberDeclarationNode> NestedMembers { [DebuggerStepThrough] get; }
+    public IFixedList<INamespaceMemberDeclarationNode> Members { [DebuggerStepThrough] get; }
+    public FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> MembersByName
+        => GrammarAttribute.IsCached(in membersByNameCached) ? membersByName!
+            : this.Synthetic(ref membersByNameCached, ref membersByName,
+                NameLookupAspect.NamespaceDeclaration_MembersByName);
+    private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? membersByName;
+    private bool membersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> NestedMembersByName
+        => GrammarAttribute.IsCached(in nestedMembersByNameCached) ? nestedMembersByName!
+            : this.Synthetic(ref nestedMembersByNameCached, ref nestedMembersByName,
+                NameLookupAspect.NamespaceDeclaration_NestedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? nestedMembersByName;
+    private bool nestedMembersByNameCached;
+
+    public NamespaceSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName name, NamespaceSymbol symbol, IFixedList<INamespaceMemberDeclarationNode> nestedMembers, IFixedList<INamespaceMemberDeclarationNode> members)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Name = name;
+        Symbol = symbol;
+        NestedMembers = nestedMembers;
+        Members = members;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class FunctionSymbolNode : SemanticNode, IFunctionSymbolNode
+{
+    private IFunctionSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+    public FunctionType Type { [DebuggerStepThrough] get; }
+
+    public FunctionSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, FunctionSymbol symbol, StandardName name, FunctionType type)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Symbol = symbol;
+        Name = name;
+        Type = type;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class PrimitiveTypeSymbolNode : SemanticNode, IPrimitiveTypeSymbolNode
+{
+    private IPrimitiveTypeSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public TypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
+    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
+    public SpecialTypeName Name { [DebuggerStepThrough] get; }
+    public IFixedSet<ITypeMemberDeclarationNode> Members { [DebuggerStepThrough] get; }
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.PrimitiveTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.PrimitiveTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
+
+    public PrimitiveTypeSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, TypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, SpecialTypeName name, IFixedSet<ITypeMemberDeclarationNode> members)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Symbol = symbol;
+        Supertypes = supertypes;
+        InclusiveMembers = inclusiveMembers;
+        Name = name;
+        Members = members;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class UserTypeSymbolNode : SemanticNode, IUserTypeSymbolNode
+{
+    private IUserTypeSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+    public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
+    public IFixedList<IGenericParameterDeclarationNode> GenericParameters { [DebuggerStepThrough] get; }
+    public IFixedSet<ITypeMemberDeclarationNode> Members { [DebuggerStepThrough] get; }
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
+
+    public UserTypeSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IFixedSet<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IFixedList<IGenericParameterDeclarationNode> genericParameters, IFixedSet<ITypeMemberDeclarationNode> members)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Supertypes = supertypes;
+        Name = name;
+        Symbol = symbol;
+        InclusiveMembers = inclusiveMembers;
+        GenericParameters = genericParameters;
+        Members = members;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ClassSymbolNode : SemanticNode, IClassSymbolNode
+{
+    private IClassSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+    public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedSet<IClassMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
+    public IFixedList<IGenericParameterDeclarationNode> GenericParameters { [DebuggerStepThrough] get; }
+    public IFixedSet<IClassMemberDeclarationNode> Members { [DebuggerStepThrough] get; }
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
+
+    public ClassSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IFixedSet<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IFixedSet<IClassMemberDeclarationNode> inclusiveMembers, IFixedList<IGenericParameterDeclarationNode> genericParameters, IFixedSet<IClassMemberDeclarationNode> members)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Supertypes = supertypes;
+        Name = name;
+        Symbol = symbol;
+        InclusiveMembers = inclusiveMembers;
+        GenericParameters = genericParameters;
+        Members = members;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class StructSymbolNode : SemanticNode, IStructSymbolNode
+{
+    private IStructSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+    public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedSet<IStructMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
+    public IFixedList<IGenericParameterDeclarationNode> GenericParameters { [DebuggerStepThrough] get; }
+    public IFixedSet<IStructMemberDeclarationNode> Members { [DebuggerStepThrough] get; }
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
+
+    public StructSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IFixedSet<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IFixedSet<IStructMemberDeclarationNode> inclusiveMembers, IFixedList<IGenericParameterDeclarationNode> genericParameters, IFixedSet<IStructMemberDeclarationNode> members)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Supertypes = supertypes;
+        Name = name;
+        Symbol = symbol;
+        InclusiveMembers = inclusiveMembers;
+        GenericParameters = genericParameters;
+        Members = members;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
+{
+    private ITraitSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+    public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
+    public IFixedList<IGenericParameterDeclarationNode> GenericParameters { [DebuggerStepThrough] get; }
+    public IFixedSet<ITraitMemberDeclarationNode> Members { [DebuggerStepThrough] get; }
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
+
+    public TraitSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IFixedSet<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IFixedSet<ITraitMemberDeclarationNode> inclusiveMembers, IFixedList<IGenericParameterDeclarationNode> genericParameters, IFixedSet<ITraitMemberDeclarationNode> members)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Supertypes = supertypes;
+        Name = name;
+        Symbol = symbol;
+        InclusiveMembers = inclusiveMembers;
+        GenericParameters = genericParameters;
+        Members = members;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class GenericParameterSymbolNode : SemanticNode, IGenericParameterSymbolNode
+{
+    private IGenericParameterSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
+    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public GenericParameterTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public IFixedSet<ITypeMemberDeclarationNode> Members { [DebuggerStepThrough] get; }
+
+    public GenericParameterSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IPackageFacetDeclarationNode facet, IdentifierName name, GenericParameterTypeSymbol symbol, IFixedSet<ITypeMemberDeclarationNode> members)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Supertypes = supertypes;
+        InclusiveMembers = inclusiveMembers;
+        Facet = facet;
+        Name = name;
+        Symbol = symbol;
+        Members = members;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class StandardMethodSymbolNode : SemanticNode, IStandardMethodSymbolNode
+{
+    private IStandardMethodSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public MethodSymbol Symbol { [DebuggerStepThrough] get; }
+    public int Arity { [DebuggerStepThrough] get; }
+    public FunctionType MethodGroupType { [DebuggerStepThrough] get; }
+
+    public StandardMethodSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName name, MethodSymbol symbol, int arity, FunctionType methodGroupType)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Name = name;
+        Symbol = symbol;
+        Arity = arity;
+        MethodGroupType = methodGroupType;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class GetterMethodSymbolNode : SemanticNode, IGetterMethodSymbolNode
+{
+    private IGetterMethodSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public MethodSymbol Symbol { [DebuggerStepThrough] get; }
+
+    public GetterMethodSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName name, MethodSymbol symbol)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Name = name;
+        Symbol = symbol;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class SetterMethodSymbolNode : SemanticNode, ISetterMethodSymbolNode
+{
+    private ISetterMethodSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public MethodSymbol Symbol { [DebuggerStepThrough] get; }
+
+    public SetterMethodSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName name, MethodSymbol symbol)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Name = name;
+        Symbol = symbol;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class ConstructorSymbolNode : SemanticNode, IConstructorSymbolNode
+{
+    private IConstructorSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public ConstructorSymbol Symbol { [DebuggerStepThrough] get; }
+
+    public ConstructorSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName? name, ConstructorSymbol symbol)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Name = name;
+        Symbol = symbol;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class InitializerSymbolNode : SemanticNode, IInitializerSymbolNode
+{
+    private IInitializerSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public IdentifierName? Name { [DebuggerStepThrough] get; }
+    public InitializerSymbol Symbol { [DebuggerStepThrough] get; }
+
+    public InitializerSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName? name, InitializerSymbol symbol)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Name = name;
+        Symbol = symbol;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class FieldSymbolNode : SemanticNode, IFieldSymbolNode
+{
+    private IFieldSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public DataType BindingType { [DebuggerStepThrough] get; }
+    public FieldSymbol Symbol { [DebuggerStepThrough] get; }
+
+    public FieldSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, IdentifierName name, DataType bindingType, FieldSymbol symbol)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Name = name;
+        BindingType = bindingType;
+        Symbol = symbol;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class AssociatedFunctionSymbolNode : SemanticNode, IAssociatedFunctionSymbolNode
+{
+    private IAssociatedFunctionSymbolNode Self { [Inline] get => this; }
+
+    public ISyntax? Syntax { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package { [DebuggerStepThrough] get; }
+    public IPackageFacetDeclarationNode Facet { [DebuggerStepThrough] get; }
+    public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
+    public FunctionType Type { [DebuggerStepThrough] get; }
+    public StandardName Name { [DebuggerStepThrough] get; }
+
+    public AssociatedFunctionSymbolNode(ISyntax? syntax, ISemanticNode parent, IPackageDeclarationNode package, IPackageFacetDeclarationNode facet, FunctionSymbol symbol, FunctionType type, StandardName name)
+    {
+        Syntax = syntax;
+        Parent = parent;
+        Package = package;
+        Facet = facet;
+        Symbol = symbol;
+        Type = type;
+        Name = name;
+    }
 }
 

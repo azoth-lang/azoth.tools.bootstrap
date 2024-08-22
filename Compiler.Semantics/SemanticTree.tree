@@ -2,7 +2,6 @@
 ◊root-supertype Semantic;
 ◊prefix I;
 ◊suffix Node;
-◊gen-classes false;
 ◊class-suffix Node;
 ◊using System.Collections.Generic;
 ◊using System.Numerics;
