@@ -74,7 +74,6 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
 
     internal override PackageNameScope InheritedPackageNameScope(IChildNode child, IChildNode descendant)
     {
-        // We are assuming these will be cached in the child nodes
         if (descendant == MainFacet)
             return LexicalScopingAspect.Package_MainFacet_PackageNameScope(this);
         if (descendant == TestingFacet)

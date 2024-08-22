@@ -1,0 +1,25 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
+◊name ContextAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Code;
+
+// ↓ ↑ ⮡
+
+↓ computed Child.Package: PackageDeclaration;
+
+// ---------- Code Files
+↓ computed Code.File: `CodeFile`;
+= CompilationUnit.*.**.File;
+
+// ---------- Definitions
+↓ Definition.Facet: PackageFacet;
+
+// -------------------------------------------------------------------------------------------------
+// Declarations
+// -------------------------------------------------------------------------------------------------
+
+// ---------- Packages
+= PackageDeclaration.*.**.Package => this;
+
+// ---------- Facets
+= PackageFacetDeclaration.*.**.Facet => this;
+↓ computed PackageFacetChildDeclaration.Facet: PackageFacetDeclaration;

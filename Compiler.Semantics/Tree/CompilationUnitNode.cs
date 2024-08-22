@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
@@ -57,7 +56,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
         => SymbolNodeAspect.CompilationUnit_InheritedContainingDeclaration(this);
 
     internal override CodeFile InheritedFile(IChildNode child, IChildNode descendant)
-        => FileAspect.CompilationUnit_InheritedFile(this);
+        => ContextAspect.CompilationUnit_Children_Broadcast_File(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LexicalScope;

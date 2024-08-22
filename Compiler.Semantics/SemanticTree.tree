@@ -29,7 +29,7 @@
 
 Semantic <: `ITreeNode` = Syntax:`ISyntax`?;
 // Parent and Package types quoted so that is is not treated as a child node
-Child <: `IChildTreeNode<ISemanticNode>` = Parent:`ISemanticNode` Package:`IPackageDeclarationNode`;
+Child <: `IChildTreeNode<ISemanticNode>` = Parent:`ISemanticNode`;
 
 // ---------- Special Parts
 BodyOrBlock <: Code = Statements:`IStatementNode`*;
@@ -66,7 +66,7 @@ PackageMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefini
     = Attributes:Attribute* AccessModifier:`AccessModifier`;
 
 // ---------- Code Files
-Code <: Child = Syntax:`ICodeSyntax`? File:`CodeFile`;
+Code <: Child = Syntax:`ICodeSyntax`?;
 
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
     ContainingDeclaration:`IPackageFacetNode` ContainingSymbol:`PackageSymbol`
@@ -77,7 +77,7 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 // ---------- Definitions
-Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? Facet:`IPackageFacetNode`
+Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`?
     ContainingDeclaration:`ISymbolDeclarationNode` ContainingSymbol:`Symbol`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol`;
 ExecutableDefinition <: Definition = Entry Exit
@@ -501,8 +501,7 @@ PackageFacetDeclaration <: ChildDeclaration, SymbolDeclaration
     = PackageAliasOrName:`IdentifierName`? PackageName:`IdentifierName`
     Symbol:`PackageSymbol` GlobalNamespace:NamespaceDeclaration;
 
-PackageFacetChildDeclaration <: ChildDeclaration
-    = Name:`StandardName`? Facet:`IPackageFacetDeclarationNode`;
+PackageFacetChildDeclaration <: ChildDeclaration = Name:`StandardName`?;
 
 // ---------- Namespace Declarations
 NamespaceDeclaration <: NamespaceMemberDeclaration = Name:`IdentifierName` Symbol:`NamespaceSymbol`
