@@ -53,7 +53,11 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     }
 
     internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => SymbolNodeAspect.CompilationUnit_InheritedContainingDeclaration(this);
+    {
+        if (ReferenceEquals(child, descendant))
+            return SymbolNodeAspect.CompilationUnit_Children_ContainingDeclaration(this);
+        return base.InheritedContainingDeclaration(child, descendant, ctx);
+    }
 
     internal override CodeFile InheritedFile(IChildNode child, IChildNode descendant)
         => ContextAspect.CompilationUnit_Children_Broadcast_File(this);

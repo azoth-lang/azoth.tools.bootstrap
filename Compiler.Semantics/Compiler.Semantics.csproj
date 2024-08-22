@@ -41,7 +41,7 @@
     <ProjectReference Include="..\Compiler.Primitives\Compiler.Primitives.csproj" />
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SemanticTree.tree&quot; &quot;$(ProjectDir)LexicalScopes\LexicalScoping.aspect&quot; &quot;$(ProjectDir)Structure\Inheritance.aspect&quot; &quot;$(ProjectDir)Types\ValueIds.aspect&quot; &quot;$(ProjectDir)Types\ExpressionTypes.aspect&quot; &quot;$(ProjectDir)ControlFlow\ControlFlow.aspect&quot; &quot;$(ProjectDir)Antetypes\NameBindingAntetypes.aspect&quot; &quot;$(ProjectDir)Types\NameBindingTypes.aspect&quot; &quot;$(ProjectDir)Types\TypeMemberDeclarations.aspect&quot; &quot;$(ProjectDir)NameBinding\NameLookup.aspect&quot; &quot;$(ProjectDir)Structure\Context.aspect&quot;" />
+    <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SemanticTree.tree&quot; &quot;$(ProjectDir)LexicalScopes\LexicalScoping.aspect&quot; &quot;$(ProjectDir)Structure\Inheritance.aspect&quot; &quot;$(ProjectDir)Types\ValueIds.aspect&quot; &quot;$(ProjectDir)Types\ExpressionTypes.aspect&quot; &quot;$(ProjectDir)ControlFlow\ControlFlow.aspect&quot; &quot;$(ProjectDir)Antetypes\NameBindingAntetypes.aspect&quot; &quot;$(ProjectDir)Types\NameBindingTypes.aspect&quot; &quot;$(ProjectDir)Types\TypeMemberDeclarations.aspect&quot; &quot;$(ProjectDir)NameBinding\NameLookup.aspect&quot; &quot;$(ProjectDir)Structure\Context.aspect&quot; &quot;$(ProjectDir)Symbols\SymbolNode.aspect&quot;" />
   </Target>
   <ItemGroup>
     <Compile Update="SemanticTree.tree.cs">
@@ -79,6 +79,9 @@
     </Compile>
     <Compile Update="Structure\ContextAspect.g.cs">
       <DependentUpon>Context.aspect</DependentUpon>
+    </Compile>
+    <Compile Update="Symbols\SymbolNodeAspect.g.cs">
+      <DependentUpon>SymbolNode.aspect</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

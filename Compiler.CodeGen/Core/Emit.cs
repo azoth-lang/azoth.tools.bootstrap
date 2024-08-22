@@ -164,7 +164,13 @@ internal static class Emit
                 return builder.ToString();
             }
             case EvaluationStrategy.Computed:
-                return $"{Environment.NewLine}        => {attribute.MethodPrefix}_{attribute.Name}(GrammarAttribute.CurrentInheritanceContext());";
+            {
+                var supertype = attribute.AttributeSupertype.Type;
+                var castRequired = attribute.Type != supertype;
+                var cast = castRequired ? $"({Type(attribute.Type)})" : "";
+                return $"{Environment.NewLine}        "
+                       + $"=> {cast}{attribute.MethodPrefix}_{attribute.Name}(GrammarAttribute.CurrentInheritanceContext());";
+            }
         }
     }
     #endregion

@@ -61,5 +61,7 @@ public abstract class TypeModel : IEquatable<TypeModel>
     /// </summary>
     public abstract NonOptionalType ToNonOptional();
 
+    public TreeNodeModel? ReferencedNode() => (UnderlyingSymbol as InternalSymbol)?.ReferencedNode;
+
     public abstract override string ToString();
 }

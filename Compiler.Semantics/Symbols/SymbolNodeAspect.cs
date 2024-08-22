@@ -14,7 +14,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
-internal static class SymbolNodeAspect
+internal static partial class SymbolNodeAspect
 {
     public static INamespaceDefinitionNode PackageFacet_GlobalNamespace(IPackageFacetNode node)
     {
@@ -64,7 +64,7 @@ internal static class SymbolNodeAspect
         return current;
     }
 
-    public static INamespaceDeclarationNode CompilationUnit_InheritedContainingDeclaration(ICompilationUnitNode node)
+    public static INamespaceDeclarationNode CompilationUnit_Children_ContainingDeclaration(ICompilationUnitNode node)
         => node.ImplicitNamespace;
 
     public static IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node)

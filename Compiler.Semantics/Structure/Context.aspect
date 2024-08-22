@@ -4,14 +4,32 @@
 
 // ↓ ↑ ⮡
 
+// Attribute supertype needed because of the conflict between types of inherited attributes
+↓ *.ContainingDeclaration <: SymbolDeclaration;
+
+// ---------- Parent
 ↓ computed Child.Package: PackageDeclaration;
 
 // ---------- Code Files
 ↓ computed Code.File: `CodeFile`;
 = CompilationUnit.*.**.File;
+↓ computed CompilationUnit.ContainingDeclaration: PackageFacet;
 
 // ---------- Definitions
 ↓ Definition.Facet: PackageFacet;
+↓ computed Definition.ContainingDeclaration: SymbolDeclaration;
+
+// ---------- Namespace Definitions
+↓ computed NamespaceBlockDefinition.ContainingDeclaration: NamespaceDefinition;
+
+// ---------- Function Definition
+↓ computed FunctionDefinition.ContainingDeclaration: NamespaceDeclaration;
+
+// ---------- Type Definition Parts
+↓ computed GenericParameter.ContainingDeclaration: UserTypeDeclaration;
+
+// ---------- Name Expressions
+↓ SelfExpression.ContainingDeclaration: ExecutableDefinition;
 
 // -------------------------------------------------------------------------------------------------
 // Declarations
@@ -23,3 +41,6 @@
 // ---------- Facets
 = PackageFacetDeclaration.*.**.Facet => this;
 ↓ computed PackageFacetChildDeclaration.Facet: PackageFacetDeclaration;
+
+
+// Next: ContainingDeclaration

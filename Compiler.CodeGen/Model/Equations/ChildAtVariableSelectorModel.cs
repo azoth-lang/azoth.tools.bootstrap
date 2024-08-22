@@ -2,15 +2,16 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
-public sealed class ChildAtVariableSelectorModel : SelectorModel
+public sealed class ChildAtVariableSelectorModel : NamedChildSelectorModel
 {
     public override ChildAtVariableSelectorSyntax Syntax { get; }
-    public string Child => Syntax.Child;
     public string Variable => Syntax.Variable;
 
     public ChildAtVariableSelectorModel(ChildAtVariableSelectorSyntax syntax)
-        : base(syntax.Broadcast)
+        : base(syntax.Child, syntax.Broadcast)
     {
         Syntax = syntax;
     }
+
+    protected override string ToChildSelectorString() => $"{Child}[{Variable}]";
 }

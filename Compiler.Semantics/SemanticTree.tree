@@ -27,6 +27,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
+// ---------- Parent
 Semantic <: `ITreeNode` = Syntax:`ISyntax`?;
 // Parent and Package types quoted so that is is not treated as a child node
 Child <: `IChildTreeNode<ISemanticNode>` = Parent:`ISemanticNode`;
@@ -68,8 +69,7 @@ PackageMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefini
 // ---------- Code Files
 Code <: Child = Syntax:`ICodeSyntax`?;
 
-CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
-    ContainingDeclaration:`IPackageFacetNode` ContainingSymbol:`PackageSymbol`
+CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` ContainingSymbol:`PackageSymbol`
     ImplicitNamespaceName:`NamespaceName` ImplicitNamespace:`INamespaceDefinitionNode` ImplicitNamespaceSymbol:`NamespaceSymbol`
     UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*
     Diagnostics:`DiagnosticCollection`;
@@ -77,8 +77,7 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 
 // ---------- Definitions
-Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`?
-    ContainingDeclaration:`ISymbolDeclarationNode` ContainingSymbol:`Symbol`;
+Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? ContainingSymbol:`Symbol`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol`;
 ExecutableDefinition <: Definition = Entry Exit
     VariableBindingsMap:`FixedDictionary<IVariableBindingNode,int>`;
@@ -92,7 +91,7 @@ ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
     IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
     UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*
-    Definition:`INamespaceDefinitionNode` ContainingDeclaration:`INamespaceDefinitionNode`
+    Definition:`INamespaceDefinitionNode`
     ContainingNamespace:`INamespaceDefinitionNode` ContainingSymbol:`NamespaceSymbol`
     Symbol:`NamespaceSymbol`;
 NamespaceBlockMemberDefinition <: Definition;
@@ -103,8 +102,7 @@ NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 
 // ---------- Function Definition
 FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration, ConcreteFunctionInvocableDefinition
-    = Syntax:`IFunctionDefinitionSyntax`
-    ContainingDeclaration:`INamespaceDeclarationNode` ContainingSymbol:`NamespaceSymbol`
+    = Syntax:`IFunctionDefinitionSyntax` ContainingSymbol:`NamespaceSymbol`
     Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
     Entry Body Exit
     Type:`FunctionType` Symbol:`FunctionSymbol`;
@@ -138,7 +136,7 @@ TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSy
 GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParameterSyntax`
     Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`
     Parameter:`GenericParameter` ContainingDeclaredType:`IDeclaredUserType` DeclaredType:`GenericParameterType`
-    ContainingDeclaration:`IUserTypeDeclarationNode` ContainingSymbol:`UserTypeSymbol`
+    ContainingSymbol:`UserTypeSymbol`
     Symbol:`GenericParameterTypeSymbol` Members:{TypeMemberDefinition};
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
@@ -436,7 +434,7 @@ InstanceExpression <: NameExpression, SimpleName = Syntax:`IInstanceExpressionSy
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression, LocalBindingNameExpression
     = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype`
-    ContainingDeclaration:`IExecutableDefinitionNode` ReferencedDefinition:`ISelfParameterNode`?;
+    ReferencedDefinition:`ISelfParameterNode`?;
 MissingNameExpression <: NameExpression, SimpleName, AssignableExpression
     = Syntax:`IMissingNameSyntax` Type:`UnknownType`;
 UnknownNameExpression <: NameExpression = Syntax:`INameExpressionSyntax` Type:`UnknownType`;

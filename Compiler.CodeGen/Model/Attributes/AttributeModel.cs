@@ -52,7 +52,7 @@ public abstract class AttributeModel : IMemberModel
     /// <summary>
     /// Is the type of this property a reference to another node?
     /// </summary>
-    public bool ReferencesNode => Type.UnderlyingSymbol is InternalSymbol { ReferencedNode: not null };
+    public bool ReferencesNode => Type.UnderlyingSymbol is InternalSymbol;
 
     protected AttributeModel()
     {
