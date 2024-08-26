@@ -8,14 +8,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class AmbiguousMoveExpressionNode : ExpressionNode, IAmbiguousMoveExpressionNode
 {
     public override IMoveExpressionSyntax Syntax { get; }
-    private RewritableChild<ISimpleNameNode> referent;
+    private RewritableChild<IUnresolvedSimpleNameNode> referent;
     private bool referentCached;
-    public ISimpleNameNode TempReferent
+    public IUnresolvedSimpleNameNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
-    public INameExpressionNode? Referent => TempReferent as INameExpressionNode;
+    public ISimpleNameExpressionNode? Referent => TempReferent as ISimpleNameExpressionNode;
 
-    public AmbiguousMoveExpressionNode(IMoveExpressionSyntax syntax, ISimpleNameNode referent)
+    public AmbiguousMoveExpressionNode(IMoveExpressionSyntax syntax, IUnresolvedSimpleNameNode referent)
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);

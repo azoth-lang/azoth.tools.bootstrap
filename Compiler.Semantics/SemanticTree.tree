@@ -350,7 +350,7 @@ ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax`
     TempValue:AmbiguousExpression? CurrentValue:`IAmbiguousExpressionNode`? Value:`IExpressionNode`?;
 
 // ---------- Invocation Expressions
-UnresolvedInvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
+temp UnresolvedInvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
     Arguments:AmbiguousExpression* CurrentArguments:`IAmbiguousExpressionNode`*;
 InvocationExpression <: Expression =
@@ -387,10 +387,10 @@ UnknownInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
 // TODO consider renaming to `UnboundNameExpression` because the final tree could have a bound name that is still ambigous (e.g. could not determine what it refers to)
 temp AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
 temp AmbiguousName <: AmbiguousNameExpression;
-temp SimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
+temp UnresolvedSimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
 temp StandardNameExpression <: AmbiguousName = Syntax:`IStandardNameExpressionSyntax`
     Name:`StandardName` ReferencedDeclarations:`IDeclarationNode`*;
-temp IdentifierNameExpression <: AmbiguousName, StandardNameExpression, SimpleName, AmbiguousAssignableExpression
+temp IdentifierNameExpression <: AmbiguousName, StandardNameExpression, UnresolvedSimpleName, AmbiguousAssignableExpression
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 temp GenericNameExpression <: AmbiguousName, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
@@ -403,6 +403,7 @@ temp PropertyName <: AmbiguousName, AmbiguousAssignableExpression
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression = Syntax:`INameExpressionSyntax`;
 LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
+SimpleNameExpression <: NameExpression, UnresolvedSimpleName;
 // TODO Name <: NameExpression
 NamespaceName <: NameExpression = Type:`UnknownType` ReferencedDeclarations:`INamespaceDeclarationNode`*;
 UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
@@ -416,7 +417,7 @@ MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     ReferencedDeclarations:{`IStandardMethodDeclarationNode`};
 FieldAccessExpression <: NameExpression, AssignableExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
-VariableNameExpression <: LocalBindingNameExpression, AssignableExpression, SimpleName
+VariableNameExpression <: LocalBindingNameExpression, AssignableExpression, SimpleNameExpression
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName` ReferencedDefinition:`ILocalBindingNode`
     DataFlowPrevious:`IFixedSet<IDataFlowNode>`;
 TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
@@ -431,17 +432,17 @@ InitializerGroupName <: NameExpression = Syntax:`INameExpressionSyntax`
 // TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression
 SpecialTypeNameExpression <: NameExpression
     = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol` Type:`UnknownType`;
-InstanceExpression <: NameExpression, SimpleName = Syntax:`IInstanceExpressionSyntax`; // i.e. `self` or `base`
+InstanceExpression <: NameExpression, SimpleNameExpression = Syntax:`IInstanceExpressionSyntax`; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression, LocalBindingNameExpression
     = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool` Pseudotype:`Pseudotype`
     ReferencedDefinition:`ISelfParameterNode`?;
-MissingNameExpression <: NameExpression, SimpleName, AssignableExpression
+MissingNameExpression <: NameExpression, SimpleNameExpression, AssignableExpression
     = Syntax:`IMissingNameSyntax` Type:`UnknownType`;
 UnknownNameExpression <: NameExpression = Syntax:`INameExpressionSyntax` Type:`UnknownType`;
 UnknownStandardNameExpression <: UnknownNameExpression
     = Syntax:`IStandardNameExpressionSyntax` Name:`StandardName` ReferencedDeclarations:{`IDeclarationNode`};
-UnknownIdentifierNameExpression <: UnknownStandardNameExpression, SimpleName, AssignableExpression
+UnknownIdentifierNameExpression <: UnknownStandardNameExpression, SimpleNameExpression, AssignableExpression
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 UnknownGenericNameExpression <: UnknownStandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
@@ -450,13 +451,13 @@ UnknownMemberAccessExpression <: UnknownNameExpression, AssignableExpression
     ReferencedMembers:{`IDeclarationNode`};
 
 // ---------- Capability Expressions
-temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` TempReferent:SimpleName Referent:`INameExpressionNode`?;
+temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` TempReferent:UnresolvedSimpleName Referent:`ISimpleNameExpressionNode`?;
 RecoveryExpression <: Expression = IsImplicit:`bool`;
 MoveExpression <: RecoveryExpression = Referent:Expression;
 MoveVariableExpression <: MoveExpression = Referent:LocalBindingNameExpression;
 MoveValueExpression <: MoveExpression = Referent:Expression;
 ImplicitTempMoveExpression <: Expression = Referent:Expression;
-temp AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` TempReferent:SimpleName Referent:`INameExpressionNode`?;
+temp AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` TempReferent:UnresolvedSimpleName Referent:`ISimpleNameExpressionNode`?;
 FreezeExpression <: RecoveryExpression = Referent:Expression IsTemporary:`bool`;
 FreezeVariableExpression <: FreezeExpression = Referent:LocalBindingNameExpression;
 FreezeValueExpression <: FreezeExpression = Referent:Expression;

@@ -46,14 +46,35 @@ public class TreeNodeModel
     /// to allow overriding this.</remarks>
     public bool IsAbstract => !ChildNodes.IsEmpty;
 
+    /// <summary>
+    /// Whether this node needs a sync lock declared in it for the use by any of its attributes.
+    /// </summary>
     public bool IsSyncLockRequired => isSyncLockRequired.Value;
     private readonly Lazy<bool> isSyncLockRequired;
 
+    /// <summary>
+    /// All nodes that are descendants of this node in the type hierarchy.
+    /// </summary>
+    /// <remarks>Does not include the current node.</remarks>
     public IFixedSet<TreeNodeModel> DescendantNodes => descendantNodes.Value;
     private readonly Lazy<IFixedSet<TreeNodeModel>> descendantNodes;
 
+    /// <summary>
+    /// Whether this node type directly or indirectly inherits from the root supertype.
+    /// </summary>
     public bool InheritsFromRootSupertype => inheritsFromRootSupertype.Value;
     private readonly Lazy<bool> inheritsFromRootSupertype;
+
+    public IFixedSet<SymbolType> CandidateFinalTypes => candidateFinalTypes.Value;
+    private readonly Lazy<IFixedSet<SymbolType>> candidateFinalTypes;
+
+    /// <summary>
+    /// The node type that this node type will be transformed into in the final tree.
+    /// </summary>
+    /// <remarks>If <see cref="IsTemp"/> is false, it will be this node. Otherwise, it will be the
+    /// non-temp node type below this.</remarks>
+    public TreeNodeModel? FinalNodeType => finalNodeType.Value;
+    private readonly Lazy<TreeNodeModel?> finalNodeType;
 
     /// <summary>
     /// The properties declared for the node in the definition file.
@@ -160,6 +181,10 @@ public class TreeNodeModel
         descendantNodes = new(() => ChildNodes.Concat(ChildNodes.SelectMany(r => r.DescendantNodes)).ToFixedSet());
         inheritsFromRootSupertype = new(() => Tree.RootSupertype is not null
             && (Defines == Tree.RootSupertype || SupertypeNodes.Any(s => s.InheritsFromRootSupertype)));
+        candidateFinalTypes = new(() => DescendantNodes.Where(n => !n.IsTemp)
+                                                       .Select(n => n.DefinesType)
+                                                       .MostGeneralTypes());
+        finalNodeType = IsTemp ? new(() => CandidateFinalTypes.TrySingle()?.ReferencedNode()) : new(this);
 
         // Attributes
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new PropertyModel(this, p)).ToFixedList();

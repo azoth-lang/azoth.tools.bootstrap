@@ -50,26 +50,7 @@ public sealed class InheritedAttributeEquationModel : EquationModel
     }
 
     private IFixedSet<TypeModel> ComputeInheritedToTypes()
-    {
-        var mostSpecific = new List<TypeModel>();
-        foreach (var type in InheritedToAttributes.Select(a => a.Type).Distinct())
-        {
-            for (var i = mostSpecific.Count - 1; i >= 0; i--)
-            {
-                var mostSpecificType = mostSpecific[i];
-                if (IsMoreSpecific(mostSpecificType, type)) goto nextType;
-                if (IsMoreSpecific(type, mostSpecificType)) mostSpecific.RemoveAt(i);
-            }
-
-            mostSpecific.Add(type);
-
-        nextType:;
-        }
-
-        return mostSpecific.ToFixedSet();
-    }
-
-    private bool IsMoreSpecific(TypeModel self, TypeModel other) => self.IsSubtypeOf(other);
+        => InheritedToAttributes.Select(a => a.Type).MostSpecificTypes();
 
     public override string ToString()
     {

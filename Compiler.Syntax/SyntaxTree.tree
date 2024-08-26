@@ -50,6 +50,7 @@ InvocableDefinition <: EntityDefinition = Parameters:ConstructorOrInitializerPar
 ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrInitializerParameter* Body;
 
 // ---------- Namespace Definitions
+// TODO rename to NamespaceMemberDefinition
 NonMemberDefinition <: Definition;
 NamespaceDefinition <: NonMemberDefinition = IsGlobalQualified:`bool` DeclaredNames:`NamespaceName` UsingDirectives:UsingDirective* Definitions:NonMemberDefinition*;
 
