@@ -1,3 +1,4 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
@@ -13,9 +14,18 @@ public sealed class PropertyModel : AttributeModel
 
     public override TreeNodeModel Node { get; }
     public override string Name { get; }
+    /// <summary>
+    /// The name of the temporary property.
+    /// </summary>
+    /// <remarks>For properties that have non-temporary types, this is just the name.</remarks>
+    public string TempName => IsTemp ? $"Temp{Name}" : Name;
     public override bool IsMethod => false;
     public override TypeModel Type { get; }
     public bool IsChild => ReferencesNode;
+    public bool IsTemp => Type.ReferencedNode()?.IsTemp ?? false;
+    public TypeModel FinalType => finalType.Value;
+    private readonly Lazy<TypeModel> finalType;
+    public bool IsCollection => Type is CollectionTypeModel;
 
     public PropertyModel(TreeNodeModel node, PropertySyntax syntax)
     {
@@ -23,6 +33,7 @@ public sealed class PropertyModel : AttributeModel
         Syntax = syntax;
         Name = Syntax.Name;
         Type = TypeModel.CreateFromSyntax(Node.Tree, syntax.Type);
+        finalType = new(ComputeFinalType);
     }
 
     public PropertyModel(TreeNodeModel node, string name, TypeModel type)
@@ -30,6 +41,15 @@ public sealed class PropertyModel : AttributeModel
         Node = node;
         Name = name;
         Type = type;
+        finalType = new(ComputeFinalType);
+    }
+
+    private TypeModel ComputeFinalType()
+    {
+        if (!IsChild || !Type.ReferencedNode()!.IsTemp)
+            return Type;
+
+        return Type.WithOptionalSymbol(Type.ReferencedNode()!.FinalNode!.Defines);
     }
 
     public override string ToString() => $"{Node.Defines}.{Name}:{Type}";

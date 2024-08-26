@@ -8,7 +8,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-[Closed(typeof(NonOptionalType), typeof(OptionalType))]
+[Closed(typeof(NonOptionalTypeModel), typeof(OptionalTypeModel))]
 public abstract class TypeModel : IEquatable<TypeModel>
 {
     [return: NotNullIfNotNull(nameof(syntax))]
@@ -18,11 +18,18 @@ public abstract class TypeModel : IEquatable<TypeModel>
             return null;
         return syntax switch
         {
-            SymbolTypeSyntax syn => SymbolType.CreateFromSyntax(tree, syn.Symbol),
+            SymbolTypeSyntax syn => SymbolTypeModel.CreateFromSyntax(tree, syn.Symbol),
             CollectionTypeSyntax syn => CreateFromSyntax(tree, syn),
-            OptionalTypeSyntax syn => new OptionalType(CreateFromSyntax(tree, syn.Referent)),
+            OptionalTypeSyntax syn => CreateFromSyntax(tree, syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
+    }
+
+    private static OptionalTypeModel CreateFromSyntax(TreeModel tree, OptionalTypeSyntax syntax)
+    {
+        if (CreateFromSyntax(tree, syntax.Referent) is not NonOptionalTypeModel nonOptionalType)
+            throw new InvalidOperationException("Optional type must have a non-optional referent.");
+        return new(nonOptionalType);
     }
 
     public static TypeModel CreateFromSyntax(TreeModel tree, CollectionTypeSyntax syntax)
@@ -54,14 +61,24 @@ public abstract class TypeModel : IEquatable<TypeModel>
     public static bool operator !=(TypeModel? left, TypeModel? right) => !Equals(left, right);
     #endregion
 
-    public abstract TypeModel WithSymbol(Symbol symbol);
+    /// <summary>
+    /// This type with the <see cref="UnderlyingSymbol"/> replaced with the given
+    /// <paramref name="symbol"/> as an optional type.
+    /// </summary>
+    public abstract TypeModel WithOptionalSymbol(Symbol symbol);
 
     public abstract bool IsSubtypeOf(TypeModel other);
 
     /// <summary>
-    /// Convert to an outer type that is not optional. (Does not remove optional types inside collections.)
+    /// Remove the top-level optional type if it exists
     /// </summary>
-    public abstract NonOptionalType ToNonOptional();
+    /// <remarks>Does not affect nested optional types.</remarks>
+    public abstract NonOptionalTypeModel ToNonOptional();
+
+    /// <summary>
+    /// Make this type optional if it isn't already.
+    /// </summary>
+    public abstract OptionalTypeModel ToOptional();
 
     public TreeNodeModel? ReferencedNode() => (UnderlyingSymbol as InternalSymbol)?.ReferencedNode;
 

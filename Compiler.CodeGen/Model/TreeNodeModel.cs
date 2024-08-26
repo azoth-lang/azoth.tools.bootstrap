@@ -23,7 +23,7 @@ public class TreeNodeModel
     /// </summary>
     public bool IsTemp => Syntax.IsTemp;
     public InternalSymbol Defines { get; }
-    public SymbolType DefinesType { get; }
+    public SymbolTypeModel DefinesType { get; }
     /// <summary>
     /// The directly declared supertypes of this node.
     /// </summary>
@@ -65,15 +65,15 @@ public class TreeNodeModel
     public bool InheritsFromRootSupertype => inheritsFromRootSupertype.Value;
     private readonly Lazy<bool> inheritsFromRootSupertype;
 
-    public IFixedSet<SymbolType> CandidateFinalTypes => candidateFinalTypes.Value;
-    private readonly Lazy<IFixedSet<SymbolType>> candidateFinalTypes;
+    public IFixedSet<TreeNodeModel> CandidateFinalNodes => candidateFinalTypes.Value;
+    private readonly Lazy<IFixedSet<TreeNodeModel>> candidateFinalTypes;
 
     /// <summary>
-    /// The node type that this node type will be transformed into in the final tree.
+    /// The node that this node will be transformed into in the final tree.
     /// </summary>
     /// <remarks>If <see cref="IsTemp"/> is false, it will be this node. Otherwise, it will be the
     /// non-temp node type below this.</remarks>
-    public TreeNodeModel? FinalNodeType => finalNodeType.Value;
+    public TreeNodeModel? FinalNode => finalNodeType.Value;
     private readonly Lazy<TreeNodeModel?> finalNodeType;
 
     /// <summary>
@@ -164,7 +164,7 @@ public class TreeNodeModel
         Tree = tree;
         Syntax = syntax;
         Defines = Symbol.CreateInternalFromSyntax(tree, syntax.Defines);
-        DefinesType = new SymbolType(Defines);
+        DefinesType = new SymbolTypeModel(Defines);
         Supertypes = syntax.Supertypes.Select(s => Symbol.CreateFromSyntax(tree, s)).ToFixedSet();
         // Add root supertype if no supertypes are declared
         if (Tree.RootSupertype is { } root && root != Defines && !Supertypes.Any(s => s is InternalSymbol))
@@ -183,8 +183,10 @@ public class TreeNodeModel
             && (Defines == Tree.RootSupertype || SupertypeNodes.Any(s => s.InheritsFromRootSupertype)));
         candidateFinalTypes = new(() => DescendantNodes.Where(n => !n.IsTemp)
                                                        .Select(n => n.DefinesType)
-                                                       .MostGeneralTypes());
-        finalNodeType = IsTemp ? new(() => CandidateFinalTypes.TrySingle()?.ReferencedNode()) : new(this);
+                                                       .MostGeneralTypes()
+                                                       .Select(t => t.ReferencedNode()!)
+                                                       .ToFixedSet());
+        finalNodeType = IsTemp ? new(() => CandidateFinalNodes.TrySingle()) : new(this);
 
         // Attributes
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new PropertyModel(this, p)).ToFixedList();

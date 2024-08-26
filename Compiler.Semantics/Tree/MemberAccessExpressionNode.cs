@@ -16,9 +16,10 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
     public override IMemberAccessExpressionSyntax Syntax { get; }
     private RewritableChild<IAmbiguousExpressionNode> context;
     private bool contextCached;
-    public IAmbiguousExpressionNode Context
+    public IAmbiguousExpressionNode TempContext
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
+    public IExpressionNode? Context => TempContext as IExpressionNode;
     public StandardName MemberName => Syntax.MemberName;
     public IFixedList<ITypeNode> TypeArguments { get; }
 
@@ -40,7 +41,7 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
         ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_UnknownNameExpressionContext(this)
         ?? base.Rewrite();
 
-    public override ConditionalLexicalScope FlowLexicalScope() => Context.FlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => TempContext.FlowLexicalScope();
 
     public PackageNameScope PackageNameScope() => InheritedPackageNameScope();
 

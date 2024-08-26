@@ -28,7 +28,15 @@ namespace <#=tree.Namespace #>;
 public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(node) #>
 {
 <#      foreach (var attribute in node.AttributesRequiringDeclaration) { #>
+<#          switch (attribute) { #>
+<#              case PropertyModel prop when prop.IsChild && prop.IsTemp: #>
+    <#= Emit.IsNew(prop) #><#= Emit.Type(prop.Type) #> <#= prop.TempName #> { get; }
+    <#= Emit.IsNew(prop) #><#= Emit.Type(prop.FinalType) #> <#= prop.Name #> { get; }
+<#                  break;#>
+<#              default: #>
     <#= Emit.IsNew(attribute) #><#= Emit.Type(attribute.Type) #> <#= attribute.Name #><#= Emit.ParametersAndBody(attribute) #>
+<#                  break;#>
+<#          } #>
 <#          foreach (var baseAttribute in Build.BaseAttributes(node, attribute)) { #>
     <#= Emit.Type(baseAttribute.Type) #> <#= Emit.TypeName(baseAttribute.Node.Defines) #>.<#= baseAttribute.Name #><#= Emit.Parameters(baseAttribute) #> => <#= attribute.Name #><#= Emit.Parameters(attribute) #>;
 <#          } #>
@@ -38,8 +46,8 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#      } #>
 <#      if (tree.GenerateClasses && !node.IsAbstract) { #>
 
-    public static <#= Emit.TypeName(node.Defines) #> Create(<#=string.Join(", ", node.ActualProperties.Select(p => $"{Emit.Type(p.Type)} {Emit.ParameterName(p)}")) #>)
-        => new <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", node.ActualProperties.Select(p => Emit.ParameterName(p))) #>);
+    public static <#= Emit.TypeName(node.Defines) #> Create(<#=string.Join(", ", node.ActualProperties.Select(p => $"{Emit.Type(p.Type)} {Emit.VariableName(p)}")) #>)
+        => new <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", node.ActualProperties.Select(p => Emit.VariableName(p))) #>);
 <#      } #>
 }
 
@@ -159,7 +167,18 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#      } #>
 
 <#      foreach (var property in node.ActualProperties) { #>
+<#          if (property.IsChild && property.IsTemp) { #>
+<#              if (property.IsCollection) { #>
+    private <#= Emit.RewritableBackingType(property) #> <#=Emit.VariableName(property) #>;
+    public <#= Emit.Type(property.Type) #> <#= property.TempName #> => <#= Emit.VariableName(property) #>;
+    public <#= Emit.Type(property.FinalType) #> <#= property.Name #> => <#= Emit.VariableName(property) #>.AsFinalType;
+<#              } else { #>
+    public <#= Emit.Type(property.Type) #> <#= property.TempName #> { [DebuggerStepThrough] get; }
+    public <#= Emit.Type(property.FinalType) #> <#= property.Name #> => <#= property.TempName #> as <#= Emit.Type(property.FinalType.ToNonOptional()) #>;
+<#              } #>
+<#          } else { #>
     public <#= Emit.Type(property.Type) #> <#= property.Name #> { [DebuggerStepThrough] get; }
+<#          } #>
 <#      } #>
 <#      foreach (var attr in node.ActualAttributes.OfType<ContextAttributeModel>()) { #>
     public <#= Emit.Type(attr.Type) #> <#= attr.Name #><#= Emit.Parameters(attr) #><#= Emit.Body(attr) #>
@@ -176,10 +195,14 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#          } #>
 <#      } #>
 
-    public <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", node.ActualProperties.Select(p => $"{Emit.Type(p.Type)} {Emit.ParameterName(p)}")) #>)
+    public <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", node.ActualProperties.Select(p => $"{Emit.Type(p.Type)} {Emit.VariableName(p)}")) #>)
     {
 <#      foreach (var property in node.ActualProperties) { #>
-        <#=property.Name #> = <#=Emit.ParameterName(property) #>;
+<#          if (property.IsChild && property.IsTemp && property.IsCollection) { #>
+        this.<#=Emit.VariableName(property) #> = <#= Emit.ChildAttach(property) #>;
+<#          } else { #>
+        <#=property.TempName #> = <#=Emit.VariableName(property) #>;
+<#          } #>
 <#      } #>
 <#      foreach (var equation in node.ActualEquations.OfType<SynthesizedAttributeEquationModel>().Where(eq => eq.Strategy == EvaluationStrategy.Eager)) { #>
         <#= equation.Name #> = <#= Emit.EagerBody(equation) #>;

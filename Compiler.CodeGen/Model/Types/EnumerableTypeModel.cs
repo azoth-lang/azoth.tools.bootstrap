@@ -21,12 +21,12 @@ public sealed class EnumerableTypeModel : CollectionTypeModel
     public override int GetHashCode() => HashCode.Combine(ElementType, typeof(EnumerableTypeModel));
     #endregion
 
-    public override EnumerableTypeModel WithSymbol(Symbol symbol)
-        => new EnumerableTypeModel(ElementType.WithSymbol(symbol));
+    public override EnumerableTypeModel WithOptionalSymbol(Symbol symbol)
+        => new EnumerableTypeModel(ElementType.WithOptionalSymbol(symbol));
 
     public override bool IsSubtypeOf(TypeModel other)
     {
-        if (other is OptionalType optionalType) return IsSubtypeOf(optionalType.UnderlyingType);
+        if (other is OptionalTypeModel optionalType) return IsSubtypeOf(optionalType.UnderlyingType);
         return other is EnumerableTypeModel enumerableType && ElementType.IsSubtypeOf(enumerableType.ElementType);
     }
     public override string ToString() => $"IEnumerable<{ElementType}>";

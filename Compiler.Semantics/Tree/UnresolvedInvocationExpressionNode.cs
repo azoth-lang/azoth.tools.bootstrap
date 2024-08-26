@@ -15,13 +15,15 @@ internal sealed class UnresolvedInvocationExpressionNode : AmbiguousExpressionNo
     public override IInvocationExpressionSyntax Syntax { get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
-    public IAmbiguousExpressionNode Expression
+    public IAmbiguousExpressionNode TempExpression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
+    public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
 
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
-    public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
+    public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
 
     public UnresolvedInvocationExpressionNode(
@@ -31,19 +33,19 @@ internal sealed class UnresolvedInvocationExpressionNode : AmbiguousExpressionNo
     {
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
-        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
-        if (child == Expression)
+        if (child == TempExpression)
             return ContainingLexicalScope;
-        if (Arguments.IndexOf(child) is int argumentIndex)
+        if (TempArguments.IndexOf(child) is int argumentIndex)
         {
             if (argumentIndex == 0)
-                return Expression.FlowLexicalScope().True;
+                return TempExpression.FlowLexicalScope().True;
 
-            return Arguments[argumentIndex - 1].FlowLexicalScope().True;
+            return TempArguments[argumentIndex - 1].FlowLexicalScope().True;
         }
         return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }

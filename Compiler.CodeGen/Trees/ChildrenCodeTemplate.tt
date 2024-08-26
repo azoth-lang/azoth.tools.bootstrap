@@ -28,13 +28,13 @@ public static class <#=Emit.TypeName(tree.RootSupertype)#>Extensions
             case <#=Emit.TypeName(node.Defines) #> n:
 <#      foreach(var property in node.ActualAttributes.OfType<PropertyModel>().Where(p => p.IsChild)) { #>
 <#          if (property.Type is CollectionTypeModel) { #>
-                foreach (var child in n.<#=property.Name #>)
+                foreach (var child in n.<#=property.TempName #>)
                     yield return child;
-<#          } else if (property.Type is OptionalType) { #>
-                if (n.<#=property.Name #> is not null)
-                    yield return n.<#=property.Name #>;
+<#          } else if (property.Type is OptionalTypeModel) { #>
+                if (n.<#=property.TempName #> is not null)
+                    yield return n.<#=property.TempName #>;
 <#          } else { #>
-                yield return n.<#=property.Name #>;
+                yield return n.<#=property.TempName #>;
 <#          } #>
 <#      } #>
                 yield break;

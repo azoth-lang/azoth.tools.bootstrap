@@ -22,12 +22,12 @@ public sealed class ListTypeModel : CollectionTypeModel
     public override int GetHashCode() => HashCode.Combine(ElementType, typeof(ListTypeModel));
     #endregion
 
-    public override ListTypeModel WithSymbol(Symbol symbol)
-        => new ListTypeModel(ElementType.WithSymbol(symbol));
+    public override ListTypeModel WithOptionalSymbol(Symbol symbol)
+        => new ListTypeModel(ElementType.WithOptionalSymbol(symbol));
 
     public override bool IsSubtypeOf(TypeModel other)
     {
-        if (other is OptionalType optionalType) return IsSubtypeOf(optionalType.UnderlyingType);
+        if (other is OptionalTypeModel optionalType) return IsSubtypeOf(optionalType.UnderlyingType);
         return other is ListTypeModel listType && ElementType.IsSubtypeOf(listType.ElementType);
     }
 

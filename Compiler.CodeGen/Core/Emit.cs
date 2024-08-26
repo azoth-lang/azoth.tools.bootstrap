@@ -56,10 +56,10 @@ internal static class Emit
     private static string Type(TypeModel type, Func<Symbol, string> emitSymbol)
         => type switch
         {
-            SymbolType t => emitSymbol(t.Symbol),
+            SymbolTypeModel t => emitSymbol(t.Symbol),
             ListTypeModel t => $"IFixedList<{Type(t.ElementType, emitSymbol)}>",
             SetTypeModel t => $"IFixedSet<{Type(t.ElementType, emitSymbol)}>",
-            OptionalType t => $"{Type(t.UnderlyingType, emitSymbol)}?",
+            OptionalTypeModel t => $"{Type(t.UnderlyingType, emitSymbol)}?",
             EnumerableTypeModel t => $"IEnumerable<{Type(t.ElementType, emitSymbol)}>",
             _ => throw ExhaustiveMatch.Failed(type)
         };
@@ -79,8 +79,44 @@ internal static class Emit
     public static string IsNew(AttributeModel attribute)
         => attribute.IsNewDefinition ? "new " : "";
 
-    public static string ParameterName(AttributeModel attribute)
+    public static string VariableName(AttributeModel attribute)
         => attribute.Name.ToCamelCase();
+
+    public static string RewritableBackingType(PropertyModel property)
+    {
+        switch (property.Type)
+        {
+            case SetTypeModel:
+                throw new NotImplementedException($"Rewritable backing type not yet implemented for {property.Type}.");
+            case CollectionTypeModel collectionType:
+                var finalElementType = ((CollectionTypeModel)property.FinalType).ElementType.ToNonOptional();
+                return property.IsTemp
+                    ? $"IRewritableChildList<{Type(collectionType.ElementType)}, {Type(finalElementType)}>"
+                    : $"IRewritableChildList<{Type(property.Type)}>";
+            default:
+                throw new NotImplementedException($"Rewritable backing type not yet implemented for {property.Type}.");
+        }
+    }
+
+    public static string ChildAttach(PropertyModel property)
+    {
+        switch (property.Type)
+        {
+            case SetTypeModel:
+                throw new NotImplementedException($"{nameof(ChildAttach)} not yet implemented for {property.Type}.");
+            case CollectionTypeModel:
+
+                var childListClass = "ChildList";
+                if (property.IsTemp)
+                {
+                    var finalElementType = ((CollectionTypeModel)property.FinalType).ElementType.ToNonOptional();
+                    childListClass += $"<{Type(finalElementType)}>";
+                }
+                return $"{childListClass}.Create(this, nameof({property.Name}), {VariableName(property)})";
+            default:
+                throw new NotImplementedException($"{nameof(ChildAttach)} not yet implemented for {property.Type}.");
+        }
+    }
 
     public static string Parameters(AttributeModel attribute)
     {
@@ -149,9 +185,9 @@ internal static class Emit
                 var value = attribute.Name.ToCamelCase();
                 var cached = attribute.Name.ToCamelCase() + "Cached";
                 var isValueType = attribute.Type.IsValueType;
-                var notNull = attribute.Type is OptionalType || isValueType ? "" : "!";
+                var notNull = attribute.Type is OptionalTypeModel || isValueType ? "" : "!";
                 // Remove any optional type that might be on it and then ensure there is one optional type
-                var fieldType = !isValueType ? new OptionalType(attribute.Type.ToNonOptional()) : attribute.Type;
+                var fieldType = !isValueType ? attribute.Type.ToOptional() : attribute.Type;
                 var syncLock = isValueType ? " ref syncLock," : "";
                 var supertype = attribute.AttributeSupertype.Type;
                 var castRequired = attribute.Type != supertype;
@@ -203,9 +239,9 @@ internal static class Emit
                 var value = equation.Name.ToCamelCase();
                 var cached = equation.Name.ToCamelCase() + "Cached";
                 var isValueType = equation.Type.IsValueType;
-                var notNull = equation.Type is OptionalType || isValueType ? "" : "!";
+                var notNull = equation.Type is OptionalTypeModel || isValueType ? "" : "!";
                 // Remove any optional type that might be on it and then ensure there is one optional type
-                var fieldType = !isValueType ? new OptionalType(equation.Type.ToNonOptional()) : equation.Type;
+                var fieldType = !isValueType ? equation.Type.ToOptional() : equation.Type;
                 var syncLock = isValueType ? " ref syncLock," : "";
                 builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
                 builder.AppendLine($"            : this.Synthetic(ref {cached}, ref {value},{syncLock}");

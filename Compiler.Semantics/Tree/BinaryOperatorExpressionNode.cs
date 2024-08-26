@@ -80,7 +80,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         if (child == CurrentLeftOperand)
             return ContainingLexicalScope;
         if (child == CurrentRightOperand)
-            return LexicalScopingAspect.BinaryOperatorExpression_TempRightOperand_Broadcast_ContainingLexicalScope(this);
+            return LexicalScopingAspect.BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(this);
         throw new ArgumentException("Not a child of this node.", nameof(child));
     }
 

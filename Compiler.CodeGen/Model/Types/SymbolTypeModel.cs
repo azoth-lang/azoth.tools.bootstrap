@@ -5,18 +5,18 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
-public sealed class SymbolType : NonOptionalType
+public sealed class SymbolTypeModel : NonOptionalTypeModel
 {
-    public static SymbolType? Create(Symbol? symbol)
-        => symbol is null ? null : new SymbolType(symbol);
+    public static SymbolTypeModel? Create(Symbol? symbol)
+        => symbol is null ? null : new SymbolTypeModel(symbol);
 
-    public static SymbolType CreateFromSyntax(TreeModel tree, SymbolSyntax syntax)
+    public static SymbolTypeModel CreateFromSyntax(TreeModel tree, SymbolSyntax syntax)
         => new(Symbol.CreateFromSyntax(tree, syntax));
 
     public Symbol Symbol { get; }
     public override bool IsValueType => Symbol.IsValueType;
 
-    public SymbolType(Symbol symbol)
+    public SymbolTypeModel(Symbol symbol)
         : base(symbol)
     {
         Symbol = symbol;
@@ -27,20 +27,21 @@ public sealed class SymbolType : NonOptionalType
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is SymbolType type
+        return other is SymbolTypeModel type
                && Symbol.Equals(type.Symbol);
     }
 
     public override int GetHashCode() => HashCode.Combine(Symbol);
     #endregion
 
-    public override SymbolType WithSymbol(Symbol symbol) => new(symbol);
+    public override OptionalTypeModel WithOptionalSymbol(Symbol symbol)
+        => new(new SymbolTypeModel(symbol));
 
     public override bool IsSubtypeOf(TypeModel other)
     {
-        if (other is OptionalType optionalType)
+        if (other is OptionalTypeModel optionalType)
             return IsSubtypeOf(optionalType.UnderlyingType);
-        if (other is not SymbolType type) return false;
+        if (other is not SymbolTypeModel type) return false;
         if (Symbol.Equals(type.Symbol)) return true;
         if (Symbol is not InternalSymbol symbol
             || type.Symbol is not InternalSymbol otherSymbol) return false;

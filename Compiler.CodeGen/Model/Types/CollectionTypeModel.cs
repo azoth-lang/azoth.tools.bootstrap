@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
     typeof(ListTypeModel),
     typeof(SetTypeModel),
     typeof(EnumerableTypeModel))]
-public abstract class CollectionTypeModel : NonOptionalType
+public abstract class CollectionTypeModel : NonOptionalTypeModel
 {
     public TypeModel ElementType { get; }
 
@@ -17,5 +17,5 @@ public abstract class CollectionTypeModel : NonOptionalType
         ElementType = elementType;
     }
 
-    public abstract override CollectionTypeModel WithSymbol(Symbol symbol);
+    public abstract override CollectionTypeModel WithOptionalSymbol(Symbol symbol);
 }

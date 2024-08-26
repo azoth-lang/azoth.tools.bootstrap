@@ -11,10 +11,13 @@ internal sealed class UnknownInvocationExpressionNode : ExpressionNode, IUnknown
     public override IInvocationExpressionSyntax Syntax { get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
-    public IAmbiguousExpressionNode Expression
+    public IAmbiguousExpressionNode TempExpression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
-    public IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    public IExpressionNode? Expression => TempExpression as IExpressionNode;
+    private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
+    public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public override IMaybeExpressionAntetype Antetype => IAntetype.Unknown;
 
     public UnknownInvocationExpressionNode(
@@ -24,6 +27,6 @@ internal sealed class UnknownInvocationExpressionNode : ExpressionNode, IUnknown
     {
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
-        Arguments = ChildList.Create(this, nameof(Arguments), arguments);
+        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 }

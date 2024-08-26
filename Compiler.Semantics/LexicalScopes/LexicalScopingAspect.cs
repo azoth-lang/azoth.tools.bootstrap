@@ -126,7 +126,7 @@ internal static partial class LexicalScopingAspect
         return node.TempRightOperand.FlowLexicalScope();
     }
 
-    public static partial LexicalScope BinaryOperatorExpression_TempRightOperand_Broadcast_ContainingLexicalScope(IBinaryOperatorExpressionNode node)
+    public static partial LexicalScope BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(IBinaryOperatorExpressionNode node)
     {
         var flowScope = node.TempLeftOperand.FlowLexicalScope();
         // Logical-or is short-circuiting, so the right operand is only evaluated if the left

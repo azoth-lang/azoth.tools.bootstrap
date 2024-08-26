@@ -93,7 +93,7 @@ public sealed class TreeModel : IHasUsingNamespaces
         errors |= ValidateAmbiguousAttributes();
         errors |= ValidateUndefinedAttributes();
         errors |= ValidateInheritedEquationsProduceSingleType();
-        errors |= ValidateFinalTypes();
+        errors |= ValidateFinalNodes();
         if (errors)
             throw new ValidationFailedException();
     }
@@ -172,18 +172,18 @@ public sealed class TreeModel : IHasUsingNamespaces
         return errors;
     }
 
-    private bool ValidateFinalTypes()
+    private bool ValidateFinalNodes()
     {
         var errors = false;
         // Only temp nodes used as child attribute types need a final type
         var tempNodes = Nodes.SelectMany(n => n.ActualProperties).Where(p => p.IsChild)
                              .Select(p => p.Type.ReferencedNode()!).Where(n => n.IsTemp).Distinct();
         foreach (var node in tempNodes)
-            if (node.FinalNodeType is null)
+            if (node.FinalNode is null)
             {
                 errors = true;
                 Console.Error.WriteLine($"ERROR: Node '{node.Defines}' is a temp node that must have"
-                                        + $" a final type and doesn't. Candidates are: {string.Join(", ", node.CandidateFinalTypes)}");
+                                        + $" a final node and doesn't. Candidates are: {string.Join(", ", node.CandidateFinalNodes)}");
             }
         return errors;
     }

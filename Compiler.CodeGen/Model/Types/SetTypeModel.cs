@@ -21,12 +21,12 @@ public sealed class SetTypeModel : CollectionTypeModel
     public override int GetHashCode() => HashCode.Combine(ElementType, typeof(SetTypeModel));
     #endregion
 
-    public override SetTypeModel WithSymbol(Symbol symbol)
-        => new SetTypeModel(ElementType.WithSymbol(symbol));
+    public override SetTypeModel WithOptionalSymbol(Symbol symbol)
+        => new SetTypeModel(ElementType.WithOptionalSymbol(symbol));
 
     public override bool IsSubtypeOf(TypeModel other)
     {
-        if (other is OptionalType optionalType) return IsSubtypeOf(optionalType.UnderlyingType);
+        if (other is OptionalTypeModel optionalType) return IsSubtypeOf(optionalType.UnderlyingType);
         return other is SetTypeModel setType && ElementType.IsSubtypeOf(setType.ElementType);
     }
 
