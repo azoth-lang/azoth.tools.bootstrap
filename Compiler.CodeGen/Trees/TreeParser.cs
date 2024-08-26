@@ -38,9 +38,9 @@ internal static class TreeParser
     private static TreeNodeSyntax ParseNode(string statement)
     {
         var (declaration, definition) = SplitDeclarationAndDefinition(statement);
-        var (defines, supertypes) = ParseDeclaration(declaration);
+        var (isTemp, defines, supertypes) = ParseDeclaration(declaration);
         var properties = ParseProperties(definition).ToFixedList();
-        return new(defines, supertypes, properties);
+        return new(isTemp, defines, supertypes, properties);
     }
 
     private static (string Declaration, string? Definition) SplitDeclarationAndDefinition(string statement)
@@ -73,13 +73,30 @@ internal static class TreeParser
     public static IEnumerable<string> SplitProperties(string definition)
         => definition.SplitOrEmpty(' ').Where(v => !string.IsNullOrWhiteSpace(v));
 
-    private static (SymbolSyntax Defines, IEnumerable<SymbolSyntax> Supertypes) ParseDeclaration(
+    private static (bool isTemp, SymbolSyntax Defines, IEnumerable<SymbolSyntax> Supertypes) ParseDeclaration(
         string declaration)
     {
         var (defines, supertypes) = SplitDeclaration(declaration);
-        var definesSymbol = ParseSymbol(defines);
+        var segments = SplitWhitespace(defines);
+        bool isTemp = false;
+        SymbolSyntax definesSymbol;
+        switch (segments.Length)
+        {
+            case 0:
+            case 1:
+                definesSymbol = ParseSymbol(defines);
+                break;
+            default:
+                if (segments[0] == "temp")
+                {
+                    isTemp = true;
+                    defines = string.Join(' ', segments.Skip(1));
+                }
+                definesSymbol = ParseSymbol(defines);
+                break;
+        }
         var supertypeSyntax = ParseSupertypes(supertypes);
-        return (definesSymbol, supertypeSyntax);
+        return (isTemp, definesSymbol, supertypeSyntax);
     }
 
     public static (string Defines, string? Parents) SplitDeclaration(string declaration)

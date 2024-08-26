@@ -45,8 +45,7 @@ public static class AspectParser
 
     private static TypeDeclarationSyntax ParseStructDeclaration(string statement)
     {
-        var segments = statement.Split(Array.Empty<char>(),
-            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var segments = SplitWhitespace(statement);
         if (segments.Length != 2)
             throw new FormatException($"Invalid struct declaration: '{statement}'");
         if (segments[0] != "struct")
@@ -255,8 +254,7 @@ public static class AspectParser
 
     private static EvaluationStrategy? ParseEvaluationStrategy(ref string node)
     {
-        var parts = node.Split(Array.Empty<char>(),
-            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var parts = SplitWhitespace(node);
         switch (parts.Length)
         {
             case 0:

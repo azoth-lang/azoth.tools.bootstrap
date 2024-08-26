@@ -179,4 +179,7 @@ internal static class Parsing
         if (endsWith) value = value[prefix.Length..].Trim();
         return endsWith;
     }
+
+    public static string[] SplitWhitespace(string statement)
+        => statement.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 }

@@ -282,8 +282,8 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 
 // ---------- Expressions
 // TODO rename Ambiguous to `Unresolved` or `Unbound` because it is not ambiguous, it is just not bound
-AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
-AmbiguousAssignableExpression <: AmbiguousExpression = Syntax:`IAssignableExpressionSyntax`;
+temp AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
+temp AmbiguousAssignableExpression <: AmbiguousExpression = Syntax:`IAssignableExpressionSyntax`;
 Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`
     ExpectedAntetype:`IMaybeExpressionAntetype`? Antetype:`IMaybeExpressionAntetype`
     ExpectedType:`DataType`? Type:`DataType` FlowStateAfter:`IFlowState`;
@@ -385,18 +385,18 @@ UnknownInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
 
 // ---------- Ambiguous Name Expressions
 // TODO consider renaming to `UnboundNameExpression` because the final tree could have a bound name that is still ambigous (e.g. could not determine what it refers to)
-AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
-AmbiguousName <: AmbiguousNameExpression;
-SimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
-StandardNameExpression <: AmbiguousName = Syntax:`IStandardNameExpressionSyntax`
+temp AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
+temp AmbiguousName <: AmbiguousNameExpression;
+temp SimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
+temp StandardNameExpression <: AmbiguousName = Syntax:`IStandardNameExpressionSyntax`
     Name:`StandardName` ReferencedDeclarations:`IDeclarationNode`*;
-IdentifierNameExpression <: AmbiguousName, StandardNameExpression, SimpleName, AmbiguousAssignableExpression
+temp IdentifierNameExpression <: AmbiguousName, StandardNameExpression, SimpleName, AmbiguousAssignableExpression
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
-GenericNameExpression <: AmbiguousName, StandardNameExpression
+temp GenericNameExpression <: AmbiguousName, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
-MemberAccessExpression <: AmbiguousName, AmbiguousAssignableExpression
+temp MemberAccessExpression <: AmbiguousName, AmbiguousAssignableExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression MemberName:`StandardName` TypeArguments:Type*;
-PropertyName <: AmbiguousName, AmbiguousAssignableExpression
+temp PropertyName <: AmbiguousName, AmbiguousAssignableExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:Expression PropertyName:`StandardName`
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`};
 
@@ -450,13 +450,13 @@ UnknownMemberAccessExpression <: UnknownNameExpression, AssignableExpression
     ReferencedMembers:{`IDeclarationNode`};
 
 // ---------- Capability Expressions
-AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` TempReferent:SimpleName Referent:`INameExpressionNode`?;
+temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` TempReferent:SimpleName Referent:`INameExpressionNode`?;
 RecoveryExpression <: Expression = IsImplicit:`bool`;
 MoveExpression <: RecoveryExpression = Referent:Expression;
 MoveVariableExpression <: MoveExpression = Referent:LocalBindingNameExpression;
 MoveValueExpression <: MoveExpression = Referent:Expression;
 ImplicitTempMoveExpression <: Expression = Referent:Expression;
-AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` TempReferent:SimpleName Referent:`INameExpressionNode`?;
+temp AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` TempReferent:SimpleName Referent:`INameExpressionNode`?;
 FreezeExpression <: RecoveryExpression = Referent:Expression IsTemporary:`bool`;
 FreezeVariableExpression <: FreezeExpression = Referent:LocalBindingNameExpression;
 FreezeValueExpression <: FreezeExpression = Referent:Expression;

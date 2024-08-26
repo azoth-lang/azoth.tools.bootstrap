@@ -18,6 +18,10 @@ public class TreeNodeModel
     public TreeModel Tree { get; }
     public TreeNodeSyntax Syntax { get; }
 
+    /// <summary>
+    /// Whether this node type is temporary, meaning it should not be part of the final tree.
+    /// </summary>
+    public bool IsTemp => Syntax.IsTemp;
     public InternalSymbol Defines { get; }
     public SymbolType DefinesType { get; }
     /// <summary>
