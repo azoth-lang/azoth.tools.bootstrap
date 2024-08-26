@@ -21,7 +21,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         => GrammarAttribute.IsCached(in conditionCached) ? condition.UnsafeValue
             : this.RewritableChild(ref conditionCached, ref condition);
     public IAmbiguousExpressionNode CurrentCondition => condition.UnsafeValue;
-    public IExpressionNode? IntermediateCondition => TempCondition as IExpressionNode;
+    public IExpressionNode? Condition => TempCondition as IExpressionNode;
     private RewritableChild<IBlockOrResultNode> thenBlock;
     private bool thenBlockCached;
     public IBlockOrResultNode ThenBlock
@@ -78,7 +78,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         IInheritanceContext ctx)
     {
         if (child == ThenBlock || child == ElseClause)
-            return IntermediateCondition?.FlowStateAfter ?? IFlowState.Empty;
+            return Condition?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 

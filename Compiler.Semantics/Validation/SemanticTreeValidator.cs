@@ -128,7 +128,7 @@ internal class SemanticTreeValidator
                 break;
             case IReturnExpressionNode n:
                 // Force flow state to the return where it matters
-                _ = n.IntermediateValue?.FlowStateAfter;
+                _ = n.Value?.FlowStateAfter;
                 break;
         }
 

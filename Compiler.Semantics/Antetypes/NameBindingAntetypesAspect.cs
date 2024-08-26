@@ -16,7 +16,7 @@ internal static partial class NameBindingAntetypesAspect
     }
 
     public static IMaybeAntetype PatternMatchExpression_Pattern_ContextBindingAntetype_(IPatternMatchExpressionNode node)
-        => node.IntermediateReferent?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
+        => node.Referent?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
     public static IMaybeAntetype BindingContextPattern_Pattern_ContextBindingAntetype(IBindingContextPatternNode node)
         => node.Type?.NamedAntetype ?? node.ContextBindingAntetype();
@@ -34,13 +34,13 @@ internal static partial class NameBindingAntetypesAspect
         => node.ContextBindingAntetype();
 
     public static IMaybeAntetype VariableDeclarationStatement_BindingAntetype(IVariableDeclarationStatementNode node)
-        => node.Type?.NamedAntetype ?? node.IntermediateInitializer?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
+        => node.Type?.NamedAntetype ?? node.Initializer?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
     public static void VariableDeclarationStatement_ContributeDiagnostics(
         IVariableDeclarationStatementNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.Type is null && node.IntermediateInitializer is null)
+        if (node.Type is null && node.Initializer is null)
             diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.NameSpan,
                 "Inference of local variable types not implemented"));
     }

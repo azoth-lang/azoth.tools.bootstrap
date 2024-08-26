@@ -9,7 +9,7 @@ internal static class ForeachExpressionTypeAspect
 {
     public static DataType ForeachExpression_IteratorType(IForeachExpressionNode node)
     {
-        var iterableType = node.IntermediateInExpression?.Type ?? DataType.Unknown;
+        var iterableType = node.InExpression?.Type ?? DataType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
         var iteratorType = iterableType is NonEmptyType nonEmptyIterableType && iterateMethod is not null
             ? nonEmptyIterableType.ReplaceTypeParametersIn(iterateMethod.MethodGroupType.Return.Type)
@@ -31,9 +31,9 @@ internal static class ForeachExpressionTypeAspect
 
     public static IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)
     {
-        var flowState = node.IntermediateInExpression?.FlowStateAfter ?? IFlowState.Empty;
+        var flowState = node.InExpression?.FlowStateAfter ?? IFlowState.Empty;
         // This uses the node.BindingValueId so it doesn't conflict with the `foreach` expression result
-        return flowState.Declare(node, node.IntermediateInExpression?.ValueId);
+        return flowState.Declare(node, node.InExpression?.ValueId);
     }
 
     public static DataType ForeachExpression_Type(IForeachExpressionNode _)
@@ -42,13 +42,13 @@ internal static class ForeachExpressionTypeAspect
 
     public static IFlowState ForeachExpression_FlowStateAfter(IForeachExpressionNode node)
         // TODO loop flow state
-        => (node.IntermediateInExpression?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty)
+        => (node.InExpression?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty)
             // TODO when the `foreach` has a type other than void, correctly handle the value id
             .Constant(node.ValueId);
 
     public static void ForeachExpression_ContributeDiagnostics(IForeachExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        var iterableType = node.IntermediateInExpression?.Type ?? DataType.Unknown;
+        var iterableType = node.InExpression?.Type ?? DataType.Unknown;
         if (iterableType is UnknownType)
             // Don't know if there are any errors until the type is known
             return;

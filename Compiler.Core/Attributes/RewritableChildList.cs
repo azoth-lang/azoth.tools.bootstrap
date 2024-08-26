@@ -89,12 +89,12 @@ internal sealed class RewritableChildList<TNode, TChild, TFinal> : RewritableChi
     where TChild : class, IChildTreeNode<TNode>
     where TFinal : class, IChildTreeNode
 {
-    public IFixedList<TFinal?> Intermediate { get; }
+    public IFixedList<TFinal?> AsFinalType { get; }
 
     internal RewritableChildList(TNode node, string attributeName, IEnumerable<TChild> initialValues)
         : base(node, attributeName, initialValues)
     {
-        Intermediate = new IntermediateList(this);
+        AsFinalType = new IntermediateList(this);
     }
 
     private sealed class IntermediateList(RewritableChildList<TNode, TChild> children) : RewritableChildList<TFinal?>, IFixedList<TFinal?>

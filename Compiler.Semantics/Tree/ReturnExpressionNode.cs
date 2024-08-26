@@ -19,7 +19,7 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
     public IAmbiguousExpressionNode? CurrentValue => value.UnsafeValue;
-    public IExpressionNode? IntermediateValue => TempValue as IExpressionNode;
+    public IExpressionNode? Value => TempValue as IExpressionNode;
     public override IMaybeExpressionAntetype Antetype => IAntetype.Never;
     private DataType? expectedReturnType;
     private bool expectedReturnTypeCached;

@@ -25,8 +25,8 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => TempArguments;
-    public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
-    public IEnumerable<IExpressionNode?> AllIntermediateArguments => IntermediateArguments;
+    public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
+    public IEnumerable<IExpressionNode?> AllArguments => Arguments;
     private IMaybeAntetype? constructingAntetype;
     private bool constructingAntetypeCached;
     public IMaybeAntetype ConstructingAntetype
@@ -120,7 +120,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
             && arguments.Current.IndexOf(ambiguousExpression) is int index and > 0)
-            return IntermediateArguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
+            return Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 
@@ -134,7 +134,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
             && CurrentArguments.IndexOf(ambiguousExpression) is int index && index < CurrentArguments.Count - 1)
-            return ControlFlowSet.CreateNormal(IntermediateArguments[index + 1]);
+            return ControlFlowSet.CreateNormal(Arguments[index + 1]);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 

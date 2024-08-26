@@ -24,18 +24,18 @@ internal static partial class ControlFlowAspect
         => node.ControlFlowFollowing();
 
     public static ControlFlowSet ExpressionStatement_ControlFlowNext(IExpressionStatementNode node)
-        => ControlFlowSet.CreateNormal(node.IntermediateExpression);
+        => ControlFlowSet.CreateNormal(node.Expression);
 
     public static ControlFlowSet VariableDeclarationStatement_ControlFlowNext(
         IVariableDeclarationStatementNode node)
     {
         if (node.TempInitializer is not null)
-            return ControlFlowSet.CreateNormal(node.IntermediateInitializer);
+            return ControlFlowSet.CreateNormal(node.Initializer);
         return node.ControlFlowFollowing();
     }
 
     public static ControlFlowSet ResultStatement_ControlFlowNext(IResultStatementNode node)
-        => ControlFlowSet.CreateNormal(node.IntermediateExpression);
+        => ControlFlowSet.CreateNormal(node.Expression);
 
     public static ControlFlowSet Expression_ControlFlowNext(IExpressionNode node)
         => node.ControlFlowFollowing();
@@ -60,13 +60,13 @@ internal static partial class ControlFlowAspect
         => ControlFlowSet.CreateNormal(node.Context);
 
     public static ControlFlowSet AssignmentExpression_ControlFlowNext(IAssignmentExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.IntermediateLeftOperand);
+        => ControlFlowSet.CreateNormal(node.LeftOperand);
 
     public static ControlFlowSet SetterInvocationExpression_ControlFlowNext(ISetterInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Context);
 
     public static ControlFlowSet UnsafeExpression_ControlFlowNext(IUnsafeExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.IntermediateExpression);
+        => ControlFlowSet.CreateNormal(node.Expression);
 
     public static ControlFlowSet MethodGroupName_ControlFlowNext(
         IMethodGroupNameNode node)
@@ -76,43 +76,43 @@ internal static partial class ControlFlowAspect
         INewObjectExpressionNode node)
     {
         if (!node.TempArguments.IsEmpty)
-            return ControlFlowSet.CreateNormal(node.IntermediateArguments[0]);
+            return ControlFlowSet.CreateNormal(node.Arguments[0]);
         return node.ControlFlowFollowing();
     }
 
     public static ControlFlowSet IfExpression_ControlFlowNext(
         IIfExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.IntermediateCondition);
+        => ControlFlowSet.CreateNormal(node.Condition);
 
     public static ControlFlowSet BinaryOperatorExpression_ControlFlowNext(
         IBinaryOperatorExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.IntermediateLeftOperand);
+        => ControlFlowSet.CreateNormal(node.LeftOperand);
 
     public static ControlFlowSet ImplicitConversionExpression_ControlFlowNext(IImplicitConversionExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Referent);
 
     public static ControlFlowSet ConversionExpression_ControlFlowNext(IConversionExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.IntermediateReferent);
+        => ControlFlowSet.CreateNormal(node.Referent);
 
     public static ControlFlowSet ReturnExpression_ControlFlowNext(
         IReturnExpressionNode node)
     {
         if (node.TempValue is not null)
-            return ControlFlowSet.CreateNormal(node.IntermediateValue);
+            return ControlFlowSet.CreateNormal(node.Value);
         return ControlFlowSet.CreateNormal(node.ControlFlowExit());
     }
 
     public static ControlFlowSet WhileExpression_ControlFlowNext(IWhileExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.IntermediateCondition);
+        => ControlFlowSet.CreateNormal(node.Condition);
 
     public static ControlFlowSet LoopExpression_ControlFlowNext(ILoopExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Block);
 
     public static ControlFlowSet ForeachExpression_ControlFlowNext(IForeachExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.IntermediateInExpression);
+        => ControlFlowSet.CreateNormal(node.InExpression);
 
     public static ControlFlowSet UnaryOperatorExpression_ControlFlowNext(IUnaryOperatorExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.IntermediateOperand);
+        => ControlFlowSet.CreateNormal(node.Operand);
 
     public static ControlFlowSet BlockExpression_ControlFlowNext(IBlockExpressionNode node)
     {
@@ -131,13 +131,13 @@ internal static partial class ControlFlowAspect
         => ControlFlowSet.CreateNormal(node.Referent);
 
     public static ControlFlowSet IdExpression_ControlFlowNext(IIdExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.IntermediateReferent);
+        => ControlFlowSet.CreateNormal(node.Referent);
 
     public static ControlFlowSet AwaitExpression_ControlFlowNext(IAwaitExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.IntermediateExpression);
+        => ControlFlowSet.CreateNormal(node.Expression);
 
     public static ControlFlowSet PatternMatchExpression_ControlFlowNext(IPatternMatchExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.IntermediateReferent);
+        => ControlFlowSet.CreateNormal(node.Referent);
 
     public static ControlFlowSet BindingPattern_ControlFlowNext(IBindingPatternNode node)
         => node.ControlFlowFollowing();

@@ -23,7 +23,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
             : this.RewritableChild(ref leftOperandCached, ref leftOperand);
     public IAmbiguousExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
-    public IExpressionNode? IntermediateLeftOperand => TempLeftOperand as IExpressionNode;
+    public IExpressionNode? LeftOperand => TempLeftOperand as IExpressionNode;
     public BinaryOperator Operator => Syntax.Operator;
     private RewritableChild<IAmbiguousExpressionNode> rightOperand;
     private bool rightOperandCached;
@@ -31,7 +31,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         => GrammarAttribute.IsCached(in rightOperandCached) ? rightOperand.UnsafeValue
             : this.RewritableChild(ref rightOperandCached, ref rightOperand);
     public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
-    public IExpressionNode? IntermediateRightOperand => TempRightOperand as IExpressionNode;
+    public IExpressionNode? RightOperand => TempRightOperand as IExpressionNode;
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
     public override LexicalScope ContainingLexicalScope
@@ -90,7 +90,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         IInheritanceContext ctx)
     {
         if (child == CurrentRightOperand)
-            return IntermediateLeftOperand?.FlowStateAfter ?? IFlowState.Empty;
+            return LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 
@@ -116,7 +116,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         IChildNode descendant,
         IInheritanceContext ctx)
     {
-        if (child == CurrentLeftOperand) return ControlFlowSet.CreateNormal(IntermediateRightOperand);
+        if (child == CurrentLeftOperand) return ControlFlowSet.CreateNormal(RightOperand);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 }

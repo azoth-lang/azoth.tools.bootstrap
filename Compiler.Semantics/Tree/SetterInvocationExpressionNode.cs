@@ -29,9 +29,9 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
     public IAmbiguousExpressionNode CurrentValue => value.UnsafeValue;
-    public IExpressionNode? IntermediateValue => TempValue as IExpressionNode;
+    public IExpressionNode? Value => TempValue as IExpressionNode;
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => [Context, TempValue];
-    public IEnumerable<IExpressionNode?> AllIntermediateArguments => [Context, IntermediateValue];
+    public IEnumerable<IExpressionNode?> AllArguments => [Context, Value];
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     public ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
     private IMaybeExpressionAntetype? antetype;
@@ -89,7 +89,7 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
 
     internal override ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
-        if (child == Context) return ControlFlowSet.CreateNormal(IntermediateValue);
+        if (child == Context) return ControlFlowSet.CreateNormal(Value);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 

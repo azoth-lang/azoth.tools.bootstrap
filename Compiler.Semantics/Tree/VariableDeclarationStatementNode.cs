@@ -31,7 +31,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
             : this.RewritableChild(ref initializerCached, ref initializer);
     public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
-    public IExpressionNode? IntermediateInitializer => TempInitializer as IExpressionNode;
+    public IExpressionNode? Initializer => TempInitializer as IExpressionNode;
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
     public LexicalScope ContainingLexicalScope

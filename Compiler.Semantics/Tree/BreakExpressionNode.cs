@@ -15,7 +15,7 @@ internal sealed class BreakExpressionNode : ExpressionNode, IBreakExpressionNode
     public IAmbiguousExpressionNode? TempValue
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
-    public IExpressionNode? IntermediateValue => TempValue as IExpressionNode;
+    public IExpressionNode? Value => TempValue as IExpressionNode;
     public override IMaybeExpressionAntetype Antetype => IAntetype.Never;
     public override NeverType Type => DataType.Never;
     private IFlowState? flowStateAfter;

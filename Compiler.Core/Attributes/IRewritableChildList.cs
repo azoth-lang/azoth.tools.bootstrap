@@ -10,5 +10,5 @@ public interface IRewritableChildList<out TChild> : IFixedList<TChild>
 
 public interface IRewritableChildList<out TChild, out TFinal> : IRewritableChildList<TChild>
 {
-    IFixedList<TFinal?> Intermediate { get; }
+    IFixedList<TFinal?> AsFinalType { get; }
 }

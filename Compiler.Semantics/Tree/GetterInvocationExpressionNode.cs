@@ -24,7 +24,7 @@ internal sealed class GetterInvocationExpressionNode : ExpressionNode, IGetterIn
     public IExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName PropertyName { get; }
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => Context.Yield();
-    public IEnumerable<IExpressionNode?> AllIntermediateArguments => Context.Yield();
+    public IEnumerable<IExpressionNode?> AllArguments => Context.Yield();
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     public IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
     private IMaybeExpressionAntetype? antetype;

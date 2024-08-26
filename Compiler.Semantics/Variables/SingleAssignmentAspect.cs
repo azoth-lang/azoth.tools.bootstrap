@@ -39,7 +39,7 @@ internal static class SingleAssignmentAspect
     public static BindingFlags<IVariableBindingNode> AssignmentExpression_DefinitelyUnassigned(IAssignmentExpressionNode node)
     {
         var previous = node.DefinitelyUnassignedPrevious();
-        if (node.IntermediateLeftOperand is IVariableNameExpressionNode { ReferencedDefinition: IVariableBindingNode variableBinding })
+        if (node.LeftOperand is IVariableNameExpressionNode { ReferencedDefinition: IVariableBindingNode variableBinding })
             return previous.Set(variableBinding, false);
         return previous;
     }

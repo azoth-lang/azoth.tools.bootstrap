@@ -19,7 +19,7 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         => GrammarAttribute.IsCached(in conditionCached) ? condition.UnsafeValue
             : this.RewritableChild(ref conditionCached, ref condition);
     public IAmbiguousExpressionNode CurrentCondition => condition.UnsafeValue;
-    public IExpressionNode? IntermediateCondition => TempCondition as IExpressionNode;
+    public IExpressionNode? Condition => TempCondition as IExpressionNode;
     private RewritableChild<IBlockExpressionNode> block;
     private bool blockCached;
     public IBlockExpressionNode Block
@@ -67,7 +67,7 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         IInheritanceContext ctx)
     {
         if (child == Block)
-            return IntermediateCondition?.FlowStateAfter ?? IFlowState.Empty;
+            return Condition?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 
@@ -79,7 +79,7 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         if (child == CurrentCondition)
             return ControlFlowSet.CreateNormal(Block).Union(ControlFlowFollowing());
         if (child == CurrentBlock)
-            return ControlFlowSet.CreateLoop(IntermediateCondition).Union(ControlFlowFollowing());
+            return ControlFlowSet.CreateLoop(Condition).Union(ControlFlowFollowing());
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 

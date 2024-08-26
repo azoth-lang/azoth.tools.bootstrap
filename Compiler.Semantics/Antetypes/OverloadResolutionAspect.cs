@@ -20,7 +20,7 @@ internal static class OverloadResolutionAspect
     public static IFixedSet<IFunctionLikeDeclarationNode> FunctionInvocationExpression_CompatibleDeclarations(
         IFunctionInvocationExpressionNode node)
     {
-        var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
+        var arguments = node.Arguments.Select(AntetypeIfKnown);
         var argumentAntetypes = ArgumentAntetypes.ForFunction(arguments);
         return node.FunctionGroup.ReferencedDeclarations
                    .Select(AntetypeContextualizedOverload.Create)
@@ -63,7 +63,7 @@ internal static class OverloadResolutionAspect
         IMethodInvocationExpressionNode node)
     {
         var contextAntetype = node.MethodGroup.Context.Antetype;
-        var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
+        var arguments = node.Arguments.Select(AntetypeIfKnown);
         var argumentAntetypes = ArgumentAntetypes.ForMethod(contextAntetype, arguments);
         return node.MethodGroup.ReferencedDeclarations
                    .Select(d => AntetypeContextualizedOverload.Create(contextAntetype, d))
@@ -128,7 +128,7 @@ internal static class OverloadResolutionAspect
         IInitializerInvocationExpressionNode node)
     {
         var initializingAntetype = node.InitializerGroup.InitializingAntetype;
-        var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
+        var arguments = node.Arguments.Select(AntetypeIfKnown);
         var argumentAntetypes = ArgumentAntetypes.ForInitializer(arguments);
         return node.InitializerGroup.ReferencedDeclarations
                    .Select(d => AntetypeContextualizedOverload.Create(initializingAntetype, d))
@@ -155,7 +155,7 @@ internal static class OverloadResolutionAspect
         INewObjectExpressionNode node)
     {
         var constructingAntetype = node.ConstructingAntetype;
-        var arguments = node.IntermediateArguments.Select(AntetypeIfKnown);
+        var arguments = node.Arguments.Select(AntetypeIfKnown);
         var argumentAntetypes = ArgumentAntetypes.ForConstructor(arguments);
         return node.ReferencedConstructors
                    .Select(d => AntetypeContextualizedOverload.Create(constructingAntetype, d))

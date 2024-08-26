@@ -35,7 +35,7 @@ internal static class DefiniteAssignmentAspect
     public static BindingFlags<IVariableBindingNode> AssignmentExpression_DefinitelyAssigned(IAssignmentExpressionNode node)
     {
         var previous = node.DefinitelyAssignedPrevious();
-        if (node.IntermediateLeftOperand is IVariableNameExpressionNode { ReferencedDefinition: IVariableBindingNode variableBinding })
+        if (node.LeftOperand is IVariableNameExpressionNode { ReferencedDefinition: IVariableBindingNode variableBinding })
             return previous.Set(variableBinding, true);
         return previous;
     }

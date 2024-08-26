@@ -20,7 +20,7 @@ internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpr
     public IAmbiguousExpressionNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
-    public IExpressionNode? IntermediateReferent => TempReferent as IExpressionNode;
+    public IExpressionNode? Referent => TempReferent as IExpressionNode;
     public ConversionOperator Operator => Syntax.Operator;
     public ITypeNode ConvertToType { get; }
     private IMaybeExpressionAntetype? antetype;

@@ -25,7 +25,7 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
         => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
             : this.RewritableChild(ref leftOperandCached, ref leftOperand);
     public IAmbiguousAssignableExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
-    public IAssignableExpressionNode? IntermediateLeftOperand => TempLeftOperand as IAssignableExpressionNode;
+    public IAssignableExpressionNode? LeftOperand => TempLeftOperand as IAssignableExpressionNode;
     public AssignmentOperator Operator => Syntax.Operator;
     private RewritableChild<IAmbiguousExpressionNode> rightOperand;
     private bool rightOperandCached;
@@ -33,7 +33,7 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
         => GrammarAttribute.IsCached(in rightOperandCached) ? rightOperand.UnsafeValue
             : this.RewritableChild(ref rightOperandCached, ref rightOperand);
     public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
-    public IExpressionNode? IntermediateRightOperand => TempRightOperand as IExpressionNode;
+    public IExpressionNode? RightOperand => TempRightOperand as IExpressionNode;
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
@@ -90,19 +90,19 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
         IChildNode descendant,
         IInheritanceContext ctx)
     {
-        if (child == CurrentRightOperand) return IntermediateLeftOperand?.FlowStateAfter ?? IFlowState.Empty;
+        if (child == CurrentRightOperand) return LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
-        if (child == CurrentRightOperand) return IntermediateLeftOperand?.Antetype;
+        if (child == CurrentRightOperand) return LeftOperand?.Antetype;
         return base.InheritedExpectedAntetype(child, descendant, ctx);
     }
 
     internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
-        if (child == CurrentRightOperand) return IntermediateLeftOperand?.Type;
+        if (child == CurrentRightOperand) return LeftOperand?.Type;
         return base.InheritedExpectedType(child, descendant, ctx);
     }
 
@@ -112,7 +112,7 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     internal override ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == CurrentLeftOperand)
-            return ControlFlowSet.CreateNormal(IntermediateRightOperand);
+            return ControlFlowSet.CreateNormal(RightOperand);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 

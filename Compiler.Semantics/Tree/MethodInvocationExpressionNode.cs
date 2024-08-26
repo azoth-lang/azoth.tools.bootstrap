@@ -21,8 +21,8 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => TempArguments.Prepend(MethodGroup.Context);
-    public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
-    public IEnumerable<IExpressionNode?> AllIntermediateArguments => IntermediateArguments.Prepend(MethodGroup.Context);
+    public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
+    public IEnumerable<IExpressionNode?> AllArguments => Arguments.Prepend(MethodGroup.Context);
     private IFixedSet<IStandardMethodDeclarationNode>? compatibleDeclarations;
     private bool compatibleDeclarationsCached;
     public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations
@@ -81,7 +81,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         {
             if (index == 0)
                 return MethodGroup.FlowStateAfter;
-            return IntermediateArguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
+            return Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
         }
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
@@ -97,11 +97,11 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         if (child == MethodGroup)
         {
             if (!TempArguments.IsEmpty)
-                return ControlFlowSet.CreateNormal(IntermediateArguments[0]);
+                return ControlFlowSet.CreateNormal(Arguments[0]);
         }
         else if (child is IAmbiguousExpressionNode ambiguousExpression
                  && CurrentArguments.IndexOf(ambiguousExpression) is int index && index < CurrentArguments.Count - 1)
-            return ControlFlowSet.CreateNormal(IntermediateArguments[index + 1]);
+            return ControlFlowSet.CreateNormal(Arguments[index + 1]);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }
 

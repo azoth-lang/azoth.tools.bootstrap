@@ -22,7 +22,7 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
     public IAmbiguousExpressionNode TempOperand
         => GrammarAttribute.IsCached(in operandCached) ? operand.UnsafeValue
             : this.RewritableChild(ref operandCached, ref operand);
-    public IExpressionNode? IntermediateOperand => TempOperand as IExpressionNode;
+    public IExpressionNode? Operand => TempOperand as IExpressionNode;
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype

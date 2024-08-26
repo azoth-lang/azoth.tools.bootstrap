@@ -19,7 +19,7 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
-    public IExpressionNode? IntermediateExpression => TempExpression as IExpressionNode;
+    public IExpressionNode? Expression => TempExpression as IExpressionNode;
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
     public IMaybeExpressionAntetype? ExpectedAntetype
@@ -44,8 +44,8 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
     public override DataType ResultType => Type;
     public override ValueId? ResultValueId => ValueId;
     public override IFlowState FlowStateAfter
-        => IntermediateExpression?.FlowStateAfter ?? IFlowState.Empty;
-    public ValueId ValueId => IntermediateExpression?.ValueId ?? default;
+        => Expression?.FlowStateAfter ?? IFlowState.Empty;
+    public ValueId ValueId => Expression?.ValueId ?? default;
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public override ControlFlowSet ControlFlowNext

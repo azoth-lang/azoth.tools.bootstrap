@@ -16,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 internal static class ExpressionAntetypesAspect
 {
     public static IMaybeExpressionAntetype UnsafeExpression_Antetype(IUnsafeExpressionNode node)
-        => node.IntermediateExpression?.Antetype ?? IAntetype.Unknown;
+        => node.Expression?.Antetype ?? IAntetype.Unknown;
 
     public static IMaybeExpressionAntetype FunctionInvocationExpression_Antetype(IFunctionInvocationExpressionNode node)
         // TODO should probably use Antetype on the declaration
@@ -53,15 +53,15 @@ internal static class ExpressionAntetypesAspect
     }
 
     public static IMaybeExpressionAntetype AssignmentExpression_Antetype(IAssignmentExpressionNode node)
-        => node.IntermediateLeftOperand?.Antetype ?? IAntetype.Unknown;
+        => node.LeftOperand?.Antetype ?? IAntetype.Unknown;
 
     public static IMaybeAntetype ResultStatement_Antetype(IResultStatementNode node)
-        => node.IntermediateExpression?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
+        => node.Expression?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
     public static IAntetype? BinaryOperatorExpression_NumericOperatorCommonAntetype(IBinaryOperatorExpressionNode node)
     {
-        var leftAntetype = node.IntermediateLeftOperand?.Antetype ?? IAntetype.Unknown;
-        var rightAntetype = node.IntermediateRightOperand?.Antetype ?? IAntetype.Unknown;
+        var leftAntetype = node.LeftOperand?.Antetype ?? IAntetype.Unknown;
+        var rightAntetype = node.RightOperand?.Antetype ?? IAntetype.Unknown;
         return (leftAntetype, node.Operator, rightAntetype) switch
         {
             (IntegerConstValueAntetype, BinaryOperator.Plus, IntegerConstValueAntetype) => null,
@@ -118,8 +118,8 @@ internal static class ExpressionAntetypesAspect
 
     public static IMaybeExpressionAntetype BinaryOperatorExpression_Antetype(IBinaryOperatorExpressionNode node)
     {
-        var leftAntetype = node.IntermediateLeftOperand?.Antetype ?? IAntetype.Unknown;
-        var rightAntetype = node.IntermediateRightOperand?.Antetype ?? IAntetype.Unknown;
+        var leftAntetype = node.LeftOperand?.Antetype ?? IAntetype.Unknown;
+        var rightAntetype = node.RightOperand?.Antetype ?? IAntetype.Unknown;
         return (leftAntetype, node.Operator, rightAntetype) switch
         {
             (IntegerConstValueAntetype left, BinaryOperator.Plus, IntegerConstValueAntetype right) => left.Add(right),
@@ -249,11 +249,11 @@ internal static class ExpressionAntetypesAspect
         => IAntetype.None;
 
     public static IMaybeExpressionAntetype AsyncStartExpression_Antetype(IAsyncStartExpressionNode node)
-        => Intrinsic.PromiseOf(node.IntermediateExpression?.Antetype ?? IAntetype.Unknown);
+        => Intrinsic.PromiseOf(node.Expression?.Antetype ?? IAntetype.Unknown);
 
     public static IMaybeExpressionAntetype AwaitExpression_Antetype(IAwaitExpressionNode node)
     {
-        if (node.IntermediateExpression?.Antetype is UserGenericNominalAntetype { DeclaredAntetype: var declaredAntetype } antetype
+        if (node.Expression?.Antetype is UserGenericNominalAntetype { DeclaredAntetype: var declaredAntetype } antetype
             && Intrinsic.PromiseAntetype.Equals(declaredAntetype))
             return antetype.TypeArguments[0];
 
@@ -263,11 +263,11 @@ internal static class ExpressionAntetypesAspect
     public static void AwaitExpression_ContributeDiagnostics(IAwaitExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO eliminate code duplication with AwaitExpression_Antetype
-        if (node.IntermediateExpression?.Antetype is UserGenericNominalAntetype { DeclaredAntetype: var declaredAntetype }
+        if (node.Expression?.Antetype is UserGenericNominalAntetype { DeclaredAntetype: var declaredAntetype }
             && Intrinsic.PromiseAntetype.Equals(declaredAntetype))
             return;
 
-        diagnostics.Add(TypeError.CannotAwaitType(node.File, node.Syntax.Span, node.IntermediateExpression!.Type));
+        diagnostics.Add(TypeError.CannotAwaitType(node.File, node.Syntax.Span, node.Expression!.Type));
     }
 
     public static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype(IUnaryOperatorExpressionNode node)
@@ -281,12 +281,12 @@ internal static class ExpressionAntetypesAspect
 
     private static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype_Not(IUnaryOperatorExpressionNode node)
     {
-        if (node.IntermediateOperand?.Antetype is BoolConstValueAntetype antetype) return antetype.Not();
+        if (node.Operand?.Antetype is BoolConstValueAntetype antetype) return antetype.Not();
         return IAntetype.Bool;
     }
 
     private static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype_Minus(IUnaryOperatorExpressionNode node)
-        => node.IntermediateOperand?.Antetype switch
+        => node.Operand?.Antetype switch
         {
             IntegerConstValueAntetype t => t.Negate(),
             FixedSizeIntegerAntetype t => t.WithSign(),
@@ -297,7 +297,7 @@ internal static class ExpressionAntetypesAspect
         };
 
     private static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype_Plus(IUnaryOperatorExpressionNode node)
-        => node.IntermediateOperand?.Antetype switch
+        => node.Operand?.Antetype switch
         {
             INumericAntetype t => t,
             _ => IAntetype.Unknown,
@@ -307,7 +307,7 @@ internal static class ExpressionAntetypesAspect
         IUnaryOperatorExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
-        var operandAntetype = node.IntermediateOperand!.Antetype;
+        var operandAntetype = node.Operand!.Antetype;
         var cannotBeAppliedToOperandType = node.Operator switch
         {
             UnaryOperator.Not => operandAntetype is not (BoolAntetype or BoolConstValueAntetype),
@@ -318,7 +318,7 @@ internal static class ExpressionAntetypesAspect
 
         if (cannotBeAppliedToOperandType)
             diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandOfType(node.File,
-                node.Syntax.Span, node.Operator, node.IntermediateOperand!.Type));
+                node.Syntax.Span, node.Operator, node.Operand!.Type));
     }
 
     public static IMaybeExpressionAntetype GetterInvocationExpression_Antetype(IGetterInvocationExpressionNode node)

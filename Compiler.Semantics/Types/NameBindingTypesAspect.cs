@@ -13,12 +13,12 @@ internal static partial class NameBindingTypesAspect
         IVariableDeclarationStatementNode node,
         ICapabilityNode? capability)
     {
-        if (node.IntermediateInitializer?.Type.ToNonConstValueType() is not NonEmptyType type)
+        if (node.Initializer?.Type.ToNonConstValueType() is not NonEmptyType type)
             return null;
 
         if (capability is null)
         {
-            if (node.IntermediateInitializer is IAmbiguousMoveExpressionNode)
+            if (node.Initializer is IAmbiguousMoveExpressionNode)
                 // If no capability is specified and it is an explicit move, then take the mutable type.
                 return type;
 
@@ -34,8 +34,8 @@ internal static partial class NameBindingTypesAspect
 
     public static IFlowState VariableDeclarationStatement_FlowStateAfter(IVariableDeclarationStatementNode node)
     {
-        var flowStateBefore = node.IntermediateInitializer?.FlowStateAfter ?? node.FlowStateBefore();
-        return flowStateBefore.Declare(node, node.IntermediateInitializer?.ValueId);
+        var flowStateBefore = node.Initializer?.FlowStateAfter ?? node.FlowStateBefore();
+        return flowStateBefore.Declare(node, node.Initializer?.ValueId);
     }
 
     public static DataType ForeachExpression_BindingType(IForeachExpressionNode node)
@@ -49,7 +49,7 @@ internal static partial class NameBindingTypesAspect
         => node.FlowStateBefore().Declare(node, node.MatchReferentValueId);
 
     public static DataType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node)
-        => node.IntermediateReferent?.Type.ToNonConstValueType() ?? DataType.Unknown;
+        => node.Referent?.Type.ToNonConstValueType() ?? DataType.Unknown;
 
     public static DataType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node)
     {

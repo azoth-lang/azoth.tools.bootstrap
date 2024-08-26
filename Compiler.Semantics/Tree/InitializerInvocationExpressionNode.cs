@@ -18,8 +18,8 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => TempArguments;
-    public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
-    public IEnumerable<IExpressionNode?> AllIntermediateArguments => IntermediateArguments;
+    public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
+    public IEnumerable<IExpressionNode?> AllArguments => Arguments;
     private IFixedSet<IInitializerDeclarationNode>? compatibleDeclarations;
     private bool compatibleDeclarationsCached;
     public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations
@@ -78,7 +78,7 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
             && arguments.Current.IndexOf(ambiguousExpression) is int index and > 0)
-            return IntermediateArguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
+            return Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 

@@ -19,7 +19,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
-    public IExpressionNode? IntermediateReferent => TempReferent as IExpressionNode;
+    public IExpressionNode? Referent => TempReferent as IExpressionNode;
     public IPatternNode Pattern { get; }
     public override IMaybeExpressionAntetype Antetype => IAntetype.Bool;
     public override DataType Type => DataType.Bool;
@@ -67,14 +67,14 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     internal override IFlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Pattern)
-            return IntermediateReferent?.FlowStateAfter ?? IFlowState.Empty;
+            return Referent?.FlowStateAfter ?? IFlowState.Empty;
         return base.InheritedFlowStateBefore(child, descendant, ctx);
     }
 
     internal override ValueId? InheritedMatchReferentValueId(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Pattern)
-            return IntermediateReferent?.ValueId;
+            return Referent?.ValueId;
         return base.InheritedMatchReferentValueId(child, descendant, ctx);
     }
 

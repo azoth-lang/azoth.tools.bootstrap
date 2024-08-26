@@ -28,7 +28,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         => GrammarAttribute.IsCached(in inExpressionCached) ? inExpression.UnsafeValue
             : this.RewritableChild(ref inExpressionCached, ref inExpression);
     public IAmbiguousExpressionNode CurrentInExpression => inExpression.UnsafeValue;
-    public IExpressionNode? IntermediateInExpression => TempInExpression as IExpressionNode;
+    public IExpressionNode? InExpression => TempInExpression as IExpressionNode;
     public ITypeNode? DeclaredType { get; }
     private RewritableChild<IBlockExpressionNode> block;
     private bool blockCached;

@@ -13,7 +13,7 @@ internal sealed class AmbiguousMoveExpressionNode : ExpressionNode, IAmbiguousMo
     public ISimpleNameNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
-    public INameExpressionNode? IntermediateReferent => TempReferent as INameExpressionNode;
+    public INameExpressionNode? Referent => TempReferent as INameExpressionNode;
 
     public AmbiguousMoveExpressionNode(IMoveExpressionSyntax syntax, ISimpleNameNode referent)
     {

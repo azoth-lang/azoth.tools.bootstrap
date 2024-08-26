@@ -50,7 +50,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
             : this.RewritableChild(ref initializerCached, ref initializer);
     public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
-    public IExpressionNode? IntermediateInitializer => TempInitializer as IExpressionNode;
+    public IExpressionNode? Initializer => TempInitializer as IExpressionNode;
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
     public ValueIdScope ValueIdScope
@@ -95,7 +95,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         IChildNode descendant,
         IInheritanceContext ctx)
     {
-        if (descendant == Entry) return ControlFlowSet.CreateNormal(IntermediateInitializer ?? (IControlFlowNode)Exit);
+        if (descendant == Entry) return ControlFlowSet.CreateNormal(Initializer ?? (IControlFlowNode)Exit);
         if (descendant == CurrentInitializer) return ControlFlowSet.CreateNormal(Exit);
         return base.InheritedControlFlowFollowing(child, descendant, ctx);
     }

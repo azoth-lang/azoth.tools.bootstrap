@@ -27,7 +27,7 @@ struct `ValueId`;
 ⮡ Statement.PreviousValueId(): `IPreviousValueId`;
 ↑ Statement.ResultValueId: `ValueId`?;
 = ResultStatement.ResultValueId => ValueId;
-= ResultStatement.ValueId => IntermediateExpression?.ValueId ?? default;
+= ResultStatement.ValueId => Expression?.ValueId ?? default;
 = VariableDeclarationStatement.ResultValueId => null;
 = ExpressionStatement.ResultValueId => null;
 
