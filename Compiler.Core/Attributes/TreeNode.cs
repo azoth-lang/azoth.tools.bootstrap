@@ -18,9 +18,9 @@ public abstract class TreeNode : IChildTreeNode
     protected virtual ITreeNode? PeekParent() => null;
     ITreeNode? ITreeNode.PeekParent() => PeekParent();
 
-    protected virtual IChildTreeNode? Rewrite()
+    protected virtual IChildTreeNode Rewrite()
         => MayHaveRewrite ? this : throw Child.RewriteNotSupported(this);
-    IChildTreeNode? IChildTreeNode.Rewrite() => Rewrite();
+    IChildTreeNode IChildTreeNode.Rewrite() => Rewrite();
 
     protected TreeNode() { }
 

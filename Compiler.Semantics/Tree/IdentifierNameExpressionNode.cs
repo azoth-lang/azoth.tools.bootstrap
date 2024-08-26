@@ -30,6 +30,6 @@ internal sealed class IdentifierNameExpressionNode : AmbiguousNameExpressionNode
         Syntax = syntax;
     }
 
-    protected override IChildNode? Rewrite()
+    protected override IChildNode Rewrite()
         => BindingAmbiguousNamesAspect.IdentifierName_Rewrite(this) ?? base.Rewrite();
 }

@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 // ReSharper disable PartialTypeWithSinglePart
+#nullable enable
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class ValueIdsAspect

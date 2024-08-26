@@ -12,11 +12,12 @@ using <#=usingNamespace #>;
 namespace <#=aspect.Namespace #>;
 
 // ReSharper disable PartialTypeWithSinglePart
+#nullable enable
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class <#= aspect.Name #>
 {
-<#  foreach(var equation in aspect.AllDeclaredEquations.Where(eq => ShouldEmit.EquationPartialImplementation(eq))) { #>
+<#  foreach (var equation in aspect.AllDeclaredEquations.Where(eq => ShouldEmit.EquationPartialImplementation(eq))) { #>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 <#          switch (equation) { #>
 <#              case SynthesizedAttributeEquationModel eq: #>
@@ -26,5 +27,8 @@ internal static partial class <#= aspect.Name #>
     public static partial <#= Emit.Type(eq.Type) #> <#= Emit.EquationMethod(eq) #>(<#= Emit.TypeName(eq.Node.Defines) #> node<#= Emit.EquationMethodExtraParams(eq) #>);
 <#                  break;#>
 <#          } #>
+<#  } #>
+<#  foreach (var rule in aspect.RewriteRules) { #>
+    public static partial <#= Emit.Type(rule.RewriteToType) #>? <#= Emit.RewriteRuleMethod(rule) #>(<#= Emit.TypeName(rule.Node.Defines) #> node);
 <#  } #>
 }

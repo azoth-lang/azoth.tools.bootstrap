@@ -1,4 +1,11 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 ◊name OverloadResolutionAspect;
 
-// ↓ ↑ ⮡
+// ↓ ↑ ⮡ ✎
+
+✎ UnresolvedInvocationExpression FunctionGroupNameExpression;
+✎ UnresolvedInvocationExpression MethodGroupNameExpression;
+✎ UnresolvedInvocationExpression TypeNameExpression;
+✎ UnresolvedInvocationExpression InitializerGroupNameExpression;
+✎ UnresolvedInvocationExpression FunctionReferenceExpression;
+✎ UnresolvedInvocationExpression ToUnknown;

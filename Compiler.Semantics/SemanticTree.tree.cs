@@ -7515,6 +7515,7 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
 {
     private IUnresolvedInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -7549,6 +7550,15 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
         CurrentArguments = currentArguments;
     }
+
+    protected override IChildTreeNode Rewrite()
+        => OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionGroupNameExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_MethodGroupNameExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_TypeNameExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(this)
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_ToUnknown(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]

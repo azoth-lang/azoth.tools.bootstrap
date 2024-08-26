@@ -357,4 +357,19 @@ internal static class Emit
         return "";
     }
     #endregion
+
+    #region Rewrite Rules
+    public static string RuleJoin(IFixedList<RewriteRuleModel> rules, RewriteRuleModel rule)
+    {
+        var isFirst = rules[0] == rule;
+        return isFirst ? "=>" : "??";
+    }
+
+    public static string QualifiedRewriteRuleMethod(RewriteRuleModel rule)
+        => $"{rule.Aspect.Name}.{RewriteRuleMethod(rule)}";
+
+    public static string RewriteRuleMethod(RewriteRuleModel rule)
+        => rule.Name is not null ? $"{rule.NodeSymbol}_Rewrite_{rule.Name}"
+            : $"{rule.NodeSymbol}_Rewrite";
+    #endregion
 }

@@ -159,6 +159,15 @@ public class TreeNodeModel
         => inheritedAttributeEquationGroups.Value;
     private readonly Lazy<IFixedSet<InheritedAttributeEquationGroupModel>> inheritedAttributeEquationGroups;
 
+    public IFixedList<RewriteRuleModel> DeclaredRewriteRules => declaredRewriteRules.Value;
+    private readonly Lazy<IFixedList<RewriteRuleModel>> declaredRewriteRules;
+
+    public IFixedList<RewriteRuleModel> InheritedRewriteRules => inheritedRewriteRules.Value;
+    private readonly Lazy<IFixedList<RewriteRuleModel>> inheritedRewriteRules;
+
+    public IFixedList<RewriteRuleModel> ActualRewriteRules => actualRewriteRules.Value;
+    private readonly Lazy<IFixedList<RewriteRuleModel>> actualRewriteRules;
+
     public TreeNodeModel(TreeModel tree, TreeNodeSyntax syntax)
     {
         Tree = tree;
@@ -240,6 +249,11 @@ public class TreeNodeModel
             => ActualEquations.OfType<InheritedAttributeEquationModel>()
                               .GroupBy(e => e.Name, (_, eqs) => new InheritedAttributeEquationGroupModel(this, eqs))
                               .ToFixedSet());
+
+        // Rewrite rules
+        declaredRewriteRules = new(() => Tree.Aspects.SelectMany(a => a.RewriteRules).Where(r => r.Node == this).ToFixedList());
+        inheritedRewriteRules = new(() => SupertypeNodes.SelectMany(r => r.InheritedRewriteRules).Distinct().ToFixedList());
+        actualRewriteRules = new(() => DeclaredRewriteRules.Concat(InheritedRewriteRules).ToFixedList());
     }
 
     /// <summary>

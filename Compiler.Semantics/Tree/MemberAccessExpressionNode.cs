@@ -33,7 +33,7 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
-    protected override IChildNode? Rewrite()
+    protected override IChildNode Rewrite()
         => BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_FunctionOrMethodGroupNameContext(this)
         ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_NamespaceNameContext(this)
         ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_TypeNameExpressionContext(this)

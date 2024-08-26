@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeSupertypes;
@@ -50,7 +49,7 @@ public sealed class InheritedAttributeEquationModel : EquationModel
     }
 
     private IFixedSet<TypeModel> ComputeInheritedToTypes()
-        => InheritedToAttributes.Select(a => a.Type).MostSpecificTypes();
+        => InheritedToAttributes.Select(a => a.Type).MostSpecificTypes().ToFixedSet();
 
     public override string ToString()
     {

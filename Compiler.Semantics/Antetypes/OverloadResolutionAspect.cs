@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
 internal static partial class OverloadResolutionAspect
 {
-    public static IExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionGroupNameExpression(IUnresolvedInvocationExpressionNode node)
+    public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionGroupNameExpression(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not IFunctionGroupNameNode function) return null;
 
@@ -52,7 +52,7 @@ internal static partial class OverloadResolutionAspect
         }
     }
 
-    public static IExpressionNode? UnresolvedInvocationExpression_Rewrite_MethodGroupNameExpression(IUnresolvedInvocationExpressionNode node)
+    public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_MethodGroupNameExpression(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not IMethodGroupNameNode method) return null;
 
@@ -101,7 +101,7 @@ internal static partial class OverloadResolutionAspect
         }
     }
 
-    public static IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_TypeNameExpression(
+    public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_TypeNameExpression(
         IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not ITypeNameExpressionNode context) return null;
@@ -115,7 +115,7 @@ internal static partial class OverloadResolutionAspect
         return new UnresolvedInvocationExpressionNode(node.Syntax, initializerGroupName, node.CurrentArguments);
     }
 
-    public static IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(
+    public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(
         IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not IInitializerGroupNameNode initializer)
@@ -140,7 +140,7 @@ internal static partial class OverloadResolutionAspect
         IInitializerInvocationExpressionNode node)
         => node.CompatibleDeclarations.TrySingle();
 
-    public static IExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(IUnresolvedInvocationExpressionNode node)
+    public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(IUnresolvedInvocationExpressionNode node)
     {
         if (node.Expression is not { Antetype: FunctionAntetype } expression)
             return null;
@@ -148,7 +148,7 @@ internal static partial class OverloadResolutionAspect
         return new FunctionReferenceInvocationExpressionNode(node.Syntax, expression, node.CurrentArguments);
     }
 
-    public static IAmbiguousExpressionNode UnresolvedInvocationExpression_Rewrite_ToUnknown(IUnresolvedInvocationExpressionNode node)
+    public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_ToUnknown(IUnresolvedInvocationExpressionNode node)
         => new UnknownInvocationExpressionNode(node.Syntax, node.CurrentExpression, node.CurrentArguments);
 
     public static IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(

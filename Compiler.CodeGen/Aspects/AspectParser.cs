@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
@@ -17,8 +18,8 @@ public static class AspectParser
         var ns = GetRequiredConfig(lines, "namespace");
         var name = GetRequiredConfig(lines, "name");
         var usingNamespaces = ParseUsingNamespaces(lines);
-        var (typeDeclarations, attributeSupertypes, attributes, equations) = ParseStatements(lines);
-        return new(ns, name, usingNamespaces, typeDeclarations, attributeSupertypes, attributes, equations);
+        var (typeDeclarations, attributeSupertypes, attributes, equations, rewriteRules) = ParseStatements(lines);
+        return new(ns, name, usingNamespaces, typeDeclarations, attributeSupertypes, attributes, equations, rewriteRules);
     }
 
     private static AspectStatementsSyntax ParseStatements(
@@ -29,18 +30,21 @@ public static class AspectParser
         var attributeSupertypes = new List<InheritedAttributeSupertypeSyntax>();
         var attributes = new List<AspectAttributeSyntax>();
         var equations = new List<EquationSyntax>();
+        var rewriteRules = new List<RewriteRuleSyntax>();
         foreach (var statement in statements)
         {
             if (statement.StartsWith("struct"))
                 typeDeclarations.Add(ParseStructDeclaration(statement));
             else if (statement.StartsWith('='))
                 equations.Add(ParseEquation(statement));
+            else if (statement.StartsWith('✎'))
+                rewriteRules.Add(ParseRewriteRule(statement));
             else if (statement.StartsWith('↓') && statement.Contains("<:"))
                 attributeSupertypes.Add(ParseInheritedAttributeSupertype(statement));
             else
                 attributes.Add(ParseAttribute(statement));
         }
-        return new(typeDeclarations, attributeSupertypes, attributes, equations);
+        return new(typeDeclarations, attributeSupertypes, attributes, equations, rewriteRules);
     }
 
     private static TypeDeclarationSyntax ParseStructDeclaration(string statement)
@@ -276,17 +280,36 @@ public static class AspectParser
         }
     }
 
+    private static RewriteRuleSyntax ParseRewriteRule(string statement)
+    {
+        if (!ParseOffStart(ref statement, "✎"))
+            throw new ArgumentException("Not a rewrite rule.", nameof(statement));
+
+        var segments = SplitWhitespace(statement);
+        return segments.Length switch
+        {
+            0 or 1 => new(ParseSymbol(statement), null),
+            2 => new(ParseSymbol(segments[0]), segments[1]),
+            _ => new(ParseSymbol(segments[0]), string.Join(" ", segments.Skip(1)))
+        };
+    }
+
+
     private record AspectStatementsSyntax(
         IFixedSet<TypeDeclarationSyntax> TypeDeclarations,
         IFixedSet<InheritedAttributeSupertypeSyntax> AttributeSupertypes,
         IFixedList<AspectAttributeSyntax> Attributes,
-        IFixedList<EquationSyntax> Equations)
+        IFixedList<EquationSyntax> Equations,
+        IFixedList<RewriteRuleSyntax> RewriteRules)
     {
         public AspectStatementsSyntax(
             IEnumerable<TypeDeclarationSyntax> typeDeclarations,
             IEnumerable<InheritedAttributeSupertypeSyntax> attributeSupertypes,
             IEnumerable<AspectAttributeSyntax> attributes,
-            IEnumerable<EquationSyntax> equations)
-            : this(typeDeclarations.ToFixedSet(), attributeSupertypes.ToFixedSet(), attributes.ToFixedList(), equations.ToFixedList()) { }
+            IEnumerable<EquationSyntax> equations,
+            IEnumerable<RewriteRuleSyntax> rewriteRules)
+            : this(typeDeclarations.ToFixedSet(), attributeSupertypes.ToFixedSet(),
+                attributes.ToFixedList(), equations.ToFixedList(), rewriteRules.ToFixedList())
+        { }
     }
 }

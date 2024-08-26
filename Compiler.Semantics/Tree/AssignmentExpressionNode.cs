@@ -122,7 +122,7 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
         base.CollectDiagnostics(diagnostics);
     }
 
-    protected override IChildNode? Rewrite()
+    protected override IChildNode Rewrite()
         => BindingAmbiguousNamesAspect.AssignmentExpression_Rewrite_PropertyNameLeftOperand(this)
         ?? base.Rewrite();
 }

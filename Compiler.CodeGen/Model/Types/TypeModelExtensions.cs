@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 public static class TypeModelExtensions
 {
-    public static IFixedSet<T> MostSpecificTypes<T>(this IEnumerable<T> types)
+    public static IEnumerable<T> MostSpecificTypes<T>(this IEnumerable<T> types)
         where T : TypeModel
     {
         var mostSpecific = new List<T>();
@@ -24,10 +23,10 @@ public static class TypeModelExtensions
         nextType:;
         }
 
-        return mostSpecific.ToFixedSet();
+        return mostSpecific;
     }
 
-    public static IFixedSet<T> MostGeneralTypes<T>(this IEnumerable<T> types)
+    public static IEnumerable<T> MostGeneralTypes<T>(this IEnumerable<T> types)
         where T : TypeModel
     {
         var mostGeneral = new List<T>();
@@ -45,6 +44,6 @@ public static class TypeModelExtensions
         nextType:;
         }
 
-        return mostGeneral.ToFixedSet();
+        return mostGeneral;
     }
 }

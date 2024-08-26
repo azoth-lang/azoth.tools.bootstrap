@@ -68,5 +68,6 @@ internal sealed class UnresolvedInvocationExpressionNode : AmbiguousExpressionNo
         ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(this)
         ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_TypeNameExpression(this)
         ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(this)
-        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_ToUnknown(this);
+        ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_ToUnknown(this)
+        ?? base.Rewrite();
 }

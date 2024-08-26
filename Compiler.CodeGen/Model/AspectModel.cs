@@ -23,6 +23,7 @@ public sealed class AspectModel : IHasUsingNamespaces
     public IFixedList<SynthesizedAttributeEquationModel> ImplicitlyDeclaredEquations => implicitlyDeclaredEquations.Value;
     private readonly Lazy<IFixedList<SynthesizedAttributeEquationModel>> implicitlyDeclaredEquations;
     public IEnumerable<EquationModel> AllDeclaredEquations => DeclaredEquations.Concat(ImplicitlyDeclaredEquations);
+    public IFixedList<RewriteRuleModel> RewriteRules { get; }
 
     public AspectModel(TreeModel tree, AspectSyntax syntax)
     {
@@ -33,6 +34,7 @@ public sealed class AspectModel : IHasUsingNamespaces
         Attributes = syntax.Attributes.Select(a => AspectAttributeModel.Create(this, a)).ToFixedList();
         DeclaredEquations = syntax.Equations.Select(e => EquationModel.Create(this, e)).ToFixedList();
         implicitlyDeclaredEquations = new(() => ComputeImplicitlyDeclaredEquations().ToFixedList());
+        RewriteRules = syntax.RewriteRules.Select(r => new RewriteRuleModel(this, r)).ToFixedList();
     }
 
     private IEnumerable<SynthesizedAttributeEquationModel> ComputeImplicitlyDeclaredEquations()

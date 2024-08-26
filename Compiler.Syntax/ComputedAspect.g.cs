@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 // ReSharper disable PartialTypeWithSinglePart
+#nullable enable
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class ComputedAspect

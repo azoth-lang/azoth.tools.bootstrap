@@ -14,6 +14,7 @@ public sealed class AspectSyntax
     public IFixedSet<InheritedAttributeSupertypeSyntax> AttributeSupertypes { get; }
     public IFixedList<AspectAttributeSyntax> Attributes { get; }
     public IFixedList<EquationSyntax> Equations { get; }
+    public IFixedList<RewriteRuleSyntax> RewriteRules { get; }
 
     public AspectSyntax(
         string @namespace,
@@ -22,7 +23,8 @@ public sealed class AspectSyntax
         IEnumerable<TypeDeclarationSyntax> typeDeclarations,
         IEnumerable<InheritedAttributeSupertypeSyntax> attributeSupertypes,
         IEnumerable<AspectAttributeSyntax> attributes,
-        IEnumerable<EquationSyntax> equations)
+        IEnumerable<EquationSyntax> equations,
+        IEnumerable<RewriteRuleSyntax> rewriteRules)
     {
         Namespace = @namespace;
         Name = name;
@@ -31,5 +33,6 @@ public sealed class AspectSyntax
         AttributeSupertypes = attributeSupertypes.ToFixedSet();
         Attributes = attributes.ToFixedList();
         Equations = equations.ToFixedList();
+        RewriteRules = rewriteRules.ToFixedList();
     }
 }

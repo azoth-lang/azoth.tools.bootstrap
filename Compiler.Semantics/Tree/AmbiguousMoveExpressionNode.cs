@@ -23,7 +23,7 @@ internal sealed class AmbiguousMoveExpressionNode : ExpressionNode, IAmbiguousMo
 
     public override ConditionalLexicalScope FlowLexicalScope() => TempReferent.FlowLexicalScope();
 
-    protected override IChildNode? Rewrite()
+    protected override IChildNode Rewrite()
         => CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Variable(this)
         ?? CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Value(this)
         ?? base.Rewrite();

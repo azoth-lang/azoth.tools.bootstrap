@@ -67,8 +67,8 @@ internal abstract class ChildNode : SemanticNode, IChildNode
         Volatile.Write(ref parent, newParentNode);
     }
 
-    protected virtual IChildNode? Rewrite() => MayHaveRewrite ? this : throw Child.RewriteNotSupported(this);
-    IChildTreeNode? IChildTreeNode.Rewrite() => Rewrite();
+    protected virtual IChildNode Rewrite() => MayHaveRewrite ? this : throw Child.RewriteNotSupported(this);
+    IChildTreeNode IChildTreeNode.Rewrite() => Rewrite();
 
     /// <remarks>Volatile write not necessary because an out-of-order read is not an issue since it
     /// will just re-figure out the fact that the node is final. Does not check the invariant that

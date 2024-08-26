@@ -34,7 +34,7 @@ internal sealed class FunctionGroupNameNode : NameExpressionNode, IFunctionGroup
             "Must be at least one referenced declaration");
     }
 
-    protected override IChildNode? Rewrite()
+    protected override IChildNode Rewrite()
         => BindingAmbiguousNamesAspect.FunctionGroupName_Rewrite(this)
         ?? base.Rewrite();
 
