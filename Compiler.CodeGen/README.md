@@ -48,8 +48,8 @@
 
 ### Intertype Declared Members
 
-| Declaration                                                                              | Meaning                                                                    |
-| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Declaration                                                                   | Meaning                                                                    |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | `+` *Node*.*Attribute*`(`*Params*`):` *Type*`;`<sup>1</sup>                   | Intertype method attribute, always computed                                |
 | `+` *Node*.*Attribute*`(`*Params*`):` *Type* `=>` *Expression*`;`<sup>1</sup> | Intertype method attribute with default inline expression, always computed |
 
@@ -60,8 +60,8 @@
 For inherited and previous attributes, the framework must treat value types differently. To do that
 it is necessary to declare which types are values types.
 
-| Declaration          | Meaning                                  |
-| -------------------- | ---------------------------------------- |
+| Declaration                    | Meaning                                  |
+| ------------------------------ | ---------------------------------------- |
 | `struct` `` ` ``*Name*`` `; `` | Declares that the symbol is a value type |
 
 ### Synthesized Attributes
@@ -136,4 +136,8 @@ May want to support both JastAdd style collection attributes and aggregating att
 
 ### Rewrites
 
-`✎` ?
+Rewrite rule names are optional. They exist to distinguish rewrites from each other.
+
+| Declaration           | Meaning                                                  |
+| --------------------- | -------------------------------------------------------- |
+| `✎` *Node* *Name*?`;` | Add a rewrite rule to the given node with the given name |

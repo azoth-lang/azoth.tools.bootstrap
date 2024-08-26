@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
-internal static class OverloadResolutionAspect
+internal static partial class OverloadResolutionAspect
 {
     public static IExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionGroupNameExpression(IUnresolvedInvocationExpressionNode node)
     {
@@ -142,7 +142,7 @@ internal static class OverloadResolutionAspect
 
     public static IExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(IUnresolvedInvocationExpressionNode node)
     {
-        if (node.Expression is not IExpressionNode { Antetype: FunctionAntetype } expression)
+        if (node.Expression is not { Antetype: FunctionAntetype } expression)
             return null;
 
         return new FunctionReferenceInvocationExpressionNode(node.Syntax, expression, node.CurrentArguments);
