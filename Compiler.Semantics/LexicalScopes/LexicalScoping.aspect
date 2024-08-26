@@ -76,7 +76,7 @@
 // ---------- Operator Expressions
 = AssignmentExpression.FlowLexicalScope();
 ↓ BinaryOperatorExpression.ContainingLexicalScope: `LexicalScope`;
-= BinaryOperatorExpression.RightOperand.**.ContainingLexicalScope;
+= BinaryOperatorExpression.TempRightOperand.**.ContainingLexicalScope;
 = BinaryOperatorExpression.FlowLexicalScope();
 = UnaryOperatorExpression.FlowLexicalScope();
 

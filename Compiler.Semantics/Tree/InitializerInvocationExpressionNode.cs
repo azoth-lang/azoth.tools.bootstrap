@@ -15,9 +15,9 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
     public override IInvocationExpressionSyntax Syntax { get; }
     public IInitializerGroupNameNode InitializerGroup { get; }
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
-    public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments => Arguments;
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => TempArguments;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     public IEnumerable<IExpressionNode?> AllIntermediateArguments => IntermediateArguments;
     private IFixedSet<IInitializerDeclarationNode>? compatibleDeclarations;
@@ -65,7 +65,7 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
     {
         Syntax = syntax;
         InitializerGroup = Child.Attach(this, initializerGroup);
-        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
     public IFlowState FlowStateBefore()

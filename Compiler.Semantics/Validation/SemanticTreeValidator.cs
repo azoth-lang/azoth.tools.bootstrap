@@ -120,7 +120,7 @@ internal class SemanticTreeValidator
                 _ = n.ContainingDeclaration;
                 break;
             case IIdExpressionNode n:
-                _ = n.Referent;
+                _ = n.TempReferent;
                 //_ = n.Type;
                 break;
             case IVariableDeclarationStatementNode n:

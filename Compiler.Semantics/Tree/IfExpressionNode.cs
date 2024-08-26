@@ -17,11 +17,11 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     ICodeSyntax IElseClauseNode.Syntax => Syntax;
     private RewritableChild<IAmbiguousExpressionNode> condition;
     private bool conditionCached;
-    public IAmbiguousExpressionNode Condition
+    public IAmbiguousExpressionNode TempCondition
         => GrammarAttribute.IsCached(in conditionCached) ? condition.UnsafeValue
             : this.RewritableChild(ref conditionCached, ref condition);
     public IAmbiguousExpressionNode CurrentCondition => condition.UnsafeValue;
-    public IExpressionNode? IntermediateCondition => Condition as IExpressionNode;
+    public IExpressionNode? IntermediateCondition => TempCondition as IExpressionNode;
     private RewritableChild<IBlockOrResultNode> thenBlock;
     private bool thenBlockCached;
     public IBlockOrResultNode ThenBlock
@@ -66,9 +66,9 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == ThenBlock)
-            return Condition.FlowLexicalScope().True;
+            return TempCondition.FlowLexicalScope().True;
         if (child == ElseClause)
-            return Condition.FlowLexicalScope().False;
+            return TempCondition.FlowLexicalScope().False;
         return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }
 

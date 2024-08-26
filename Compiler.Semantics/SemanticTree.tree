@@ -186,7 +186,7 @@ SourceInitializerDefinition <: InitializerDefinition
     SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Entry Body:BlockBody Exit;
 FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, NamedBinding, FieldDeclaration, ExecutableDefinition
     = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type BindingAntetype:`IMaybeAntetype` BindingType:`DataType`
-    Symbol:`FieldSymbol` Entry Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
+    Symbol:`FieldSymbol` Entry TempInitializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
     IntermediateInitializer:`IExpressionNode`? Exit;
 AssociatedFunctionDefinition <: ConcreteFunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
@@ -261,15 +261,15 @@ DataFlow <: ControlFlow = DataFlowPrevious:`IFixedSet<IDataFlowNode>`
 Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?
     ResultType:`DataType`? FlowStateAfter:`IFlowState`;
 ResultStatement <: Statement, BlockOrResult = Syntax:`IResultStatementSyntax`
-    Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode` IntermediateExpression:`IExpressionNode`?
+    TempExpression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode` IntermediateExpression:`IExpressionNode`?
     ExpectedAntetype:`IMaybeExpressionAntetype`? ExpectedType:`DataType`?;
 BodyStatement <: Statement = Syntax:`IBodyStatementSyntax`;
 VariableDeclarationStatement <: BodyStatement, VariableBinding = Syntax:`IVariableDeclarationStatementSyntax`
     IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type?
-    Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
+    TempInitializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
     IntermediateInitializer:`IExpressionNode`?;
 ExpressionStatement <: BodyStatement = Syntax:`IExpressionStatementSyntax`
-    Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
+    TempExpression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
     IntermediateExpression:`IExpressionNode`?;
 
 // ---------- Patterns
@@ -291,12 +291,13 @@ AssignableExpression <: Expression, AmbiguousAssignableExpression = Syntax:`IAss
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*
     Antetype:`IMaybeAntetype`;
 NewObjectExpression <: InvocationExpression = Syntax:`INewObjectExpressionSyntax`
-    ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression*
+    ConstructingType:TypeName ConstructorName:`IdentifierName`? TempArguments:AmbiguousExpression*
     IntermediateArguments:`IExpressionNode?`*
     ConstructingAntetype:`IMaybeAntetype` ReferencedConstructors:{`IConstructorDeclarationNode`}
     CompatibleConstructors:{`IConstructorDeclarationNode`} ReferencedConstructor:`IConstructorDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
-UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
+UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` TempExpression:AmbiguousExpression
+    IntermediateExpression:`IExpressionNode`?;
 NeverTypedExpression <: Expression = Type:`NeverType`;
 
 // ---------- Literal Expressions
@@ -309,33 +310,33 @@ StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionS
 
 // ---------- Operator Expressions
 AssignmentExpression <: Expression, DataFlow = Syntax:`IAssignmentExpressionSyntax`
-    LeftOperand:AmbiguousAssignableExpression CurrentLeftOperand:`IAmbiguousAssignableExpressionNode` IntermediateLeftOperand:`IAssignableExpressionNode`?
+    TempLeftOperand:AmbiguousAssignableExpression CurrentLeftOperand:`IAmbiguousAssignableExpressionNode` IntermediateLeftOperand:`IAssignableExpressionNode`?
     Operator:`AssignmentOperator`
-    RightOperand:AmbiguousExpression CurrentRightOperand:`IAmbiguousExpressionNode` IntermediateRightOperand:`IExpressionNode`?;
+    TempRightOperand:AmbiguousExpression CurrentRightOperand:`IAmbiguousExpressionNode` IntermediateRightOperand:`IExpressionNode`?;
 BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax`
-    LeftOperand:AmbiguousExpression IntermediateLeftOperand:`IExpressionNode`?
+    TempLeftOperand:AmbiguousExpression IntermediateLeftOperand:`IExpressionNode`?
     Operator:`BinaryOperator`
-    RightOperand:AmbiguousExpression IntermediateRightOperand:`IExpressionNode`?
+    TempRightOperand:AmbiguousExpression IntermediateRightOperand:`IExpressionNode`?
     NumericOperatorCommonAntetype:`IAntetype`?;
 UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` Fixity:`UnaryOperatorFixity`
-    Operator:`UnaryOperator` Operand:AmbiguousExpression IntermediateOperand:`IExpressionNode`?;
-IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression IntermediateReferent:`IExpressionNode`?;
+    Operator:`UnaryOperator` TempOperand:AmbiguousExpression IntermediateOperand:`IExpressionNode`?;
+IdExpression <: Expression = Syntax:`IIdExpressionSyntax` TempReferent:AmbiguousExpression IntermediateReferent:`IExpressionNode`?;
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax`
-    Referent:AmbiguousExpression IntermediateReferent:`IExpressionNode?`
+    TempReferent:AmbiguousExpression IntermediateReferent:`IExpressionNode?`
     Operator:`ConversionOperator` ConvertToType:Type;
 ImplicitConversionExpression <: Expression = Referent:Expression CurrentReferent:`IExpressionNode`
     Antetype:`SimpleAntetype`;
 PatternMatchExpression <: Expression = Syntax:`IPatternMatchExpressionSyntax`
-    Referent:AmbiguousExpression IntermediateReferent:`IExpressionNode`? Pattern;
+    TempReferent:AmbiguousExpression IntermediateReferent:`IExpressionNode`? Pattern;
 
 // ---------- Control Flow Expressions
 IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax`
-    Condition:AmbiguousExpression IntermediateCondition:`IExpressionNode`? ThenBlock:BlockOrResult ElseClause?;
+    TempCondition:AmbiguousExpression IntermediateCondition:`IExpressionNode`? ThenBlock:BlockOrResult ElseClause?;
 LoopExpression <: Expression = Syntax:`ILoopExpressionSyntax` Block:BlockExpression;
 WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax`
-    Condition:AmbiguousExpression IntermediateCondition:`IExpressionNode`? Block:BlockExpression;
+    TempCondition:AmbiguousExpression IntermediateCondition:`IExpressionNode`? Block:BlockExpression;
 ForeachExpression <: Expression, VariableBinding = Syntax:`IForeachExpressionSyntax`
-    IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:AmbiguousExpression
+    IsMutableBinding:`bool` VariableName:`IdentifierName` TempInExpression:AmbiguousExpression
     IntermediateInExpression:`IExpressionNode`? DeclaredType:Type? Block:BlockExpression
     ReferencedIterableDeclaration:`ITypeDeclarationNode`? ReferencedIterateMethod:`IStandardMethodDeclarationNode`?
     IteratorAntetype:`IMaybeExpressionAntetype` IteratorType:`DataType`
@@ -343,24 +344,24 @@ ForeachExpression <: Expression, VariableBinding = Syntax:`IForeachExpressionSyn
     IteratedAntetype:`IMaybeAntetype` IteratedType:`DataType`
     FlowStateBeforeBlock:`IFlowState`;
 BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax`
-    Value:AmbiguousExpression? IntermediateValue:`IExpressionNode`?;
+    TempValue:AmbiguousExpression? IntermediateValue:`IExpressionNode`?;
 NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;
 ReturnExpression <: NeverTypedExpression = Syntax:`IReturnExpressionSyntax`
-    Value:AmbiguousExpression? CurrentValue:`IAmbiguousExpressionNode`? IntermediateValue:`IExpressionNode`?;
+    TempValue:AmbiguousExpression? CurrentValue:`IAmbiguousExpressionNode`? IntermediateValue:`IExpressionNode`?;
 
 // ---------- Invocation Expressions
 UnresolvedInvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
     Arguments:AmbiguousExpression* CurrentArguments:`IAmbiguousExpressionNode`*;
 InvocationExpression <: Expression =
-    AllArguments:`IEnumerable<IAmbiguousExpressionNode>` AllIntermediateArguments:`IEnumerable<IExpressionNode?>`;
+    TempAllArguments:`IEnumerable<IAmbiguousExpressionNode>` AllIntermediateArguments:`IEnumerable<IExpressionNode?>`;
 FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
-    FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
+    FunctionGroup:FunctionGroupName TempArguments:AmbiguousExpression*
     IntermediateArguments:`IExpressionNode?`*
     CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
 MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
-    MethodGroup:MethodGroupName Arguments:AmbiguousExpression* CurrentArguments:`IAmbiguousExpressionNode`*
+    MethodGroup:MethodGroupName TempArguments:AmbiguousExpression* CurrentArguments:`IAmbiguousExpressionNode`*
     IntermediateArguments:`IExpressionNode?`*
     CompatibleDeclarations:{`IStandardMethodDeclarationNode`} ReferencedDeclaration:`IStandardMethodDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
@@ -369,14 +370,14 @@ GetterInvocationExpression <: InvocationExpression = Syntax:`IMemberAccessExpres
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`IGetterMethodDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
 SetterInvocationExpression <: InvocationExpression = Syntax:`IAssignmentExpressionSyntax`
-    Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression IntermediateValue:`IExpressionNode`?
+    Context:Expression PropertyName:`StandardName` TempValue:AmbiguousExpression IntermediateValue:`IExpressionNode`?
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`ISetterMethodDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
 FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
-    Expression:Expression Arguments:AmbiguousExpression* IntermediateArguments:`IExpressionNode?`*
+    Expression:Expression TempArguments:AmbiguousExpression* IntermediateArguments:`IExpressionNode?`*
     FunctionAntetype:`FunctionAntetype` FunctionType:`FunctionType`;
 InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
-    InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression* IntermediateArguments:`IExpressionNode?`*
+    InitializerGroup:InitializerGroupName TempArguments:AmbiguousExpression* IntermediateArguments:`IExpressionNode?`*
     CompatibleDeclarations:{`IInitializerDeclarationNode`} ReferencedDeclaration:`IInitializerDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
 UnknownInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
@@ -449,13 +450,13 @@ UnknownMemberAccessExpression <: UnknownNameExpression, AssignableExpression
     ReferencedMembers:{`IDeclarationNode`};
 
 // ---------- Capability Expressions
-AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
+AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` TempReferent:SimpleName IntermediateReferent:`INameExpressionNode`?;
 RecoveryExpression <: Expression = IsImplicit:`bool`;
 MoveExpression <: RecoveryExpression = Referent:Expression;
 MoveVariableExpression <: MoveExpression = Referent:LocalBindingNameExpression;
 MoveValueExpression <: MoveExpression = Referent:Expression;
 ImplicitTempMoveExpression <: Expression = Referent:Expression;
-AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` Referent:SimpleName IntermediateReferent:`INameExpressionNode`?;
+AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` TempReferent:SimpleName IntermediateReferent:`INameExpressionNode`?;
 FreezeExpression <: RecoveryExpression = Referent:Expression IsTemporary:`bool`;
 FreezeVariableExpression <: FreezeExpression = Referent:LocalBindingNameExpression;
 FreezeValueExpression <: FreezeExpression = Referent:Expression;
@@ -464,9 +465,9 @@ PrepareToReturnExpression <: Expression = Value:Expression CurrentValue:`IExpres
 // ---------- Async Expressions
 AsyncBlockExpression <: Expression = Syntax:`IAsyncBlockExpressionSyntax` Block:BlockExpression;
 AsyncStartExpression <: Expression = Syntax:`IAsyncStartExpressionSyntax` Scheduled:`bool`
-    Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
+    TempExpression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
 AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax`
-    Expression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
+    TempExpression:AmbiguousExpression IntermediateExpression:`IExpressionNode`?;
 
 
 // -------------------------------------------------------------------------------------------------

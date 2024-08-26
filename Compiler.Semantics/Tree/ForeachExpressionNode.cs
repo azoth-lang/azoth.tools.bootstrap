@@ -24,11 +24,11 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public IdentifierName VariableName => Syntax.VariableName;
     private RewritableChild<IAmbiguousExpressionNode> inExpression;
     private bool inExpressionCached;
-    public IAmbiguousExpressionNode InExpression
+    public IAmbiguousExpressionNode TempInExpression
         => GrammarAttribute.IsCached(in inExpressionCached) ? inExpression.UnsafeValue
             : this.RewritableChild(ref inExpressionCached, ref inExpression);
     public IAmbiguousExpressionNode CurrentInExpression => inExpression.UnsafeValue;
-    public IExpressionNode? IntermediateInExpression => InExpression as IExpressionNode;
+    public IExpressionNode? IntermediateInExpression => TempInExpression as IExpressionNode;
     public ITypeNode? DeclaredType { get; }
     private RewritableChild<IBlockExpressionNode> block;
     private bool blockCached;

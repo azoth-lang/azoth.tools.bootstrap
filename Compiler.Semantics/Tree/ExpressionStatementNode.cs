@@ -13,11 +13,11 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
     public override IExpressionStatementSyntax Syntax { get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
-    public IAmbiguousExpressionNode Expression
+    public IAmbiguousExpressionNode TempExpression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
-    public IExpressionNode? IntermediateExpression => Expression as IExpressionNode;
+    public IExpressionNode? IntermediateExpression => TempExpression as IExpressionNode;
     public override IMaybeAntetype? ResultAntetype => null;
     public override DataType? ResultType => null;
     public override ValueId? ResultValueId => null;

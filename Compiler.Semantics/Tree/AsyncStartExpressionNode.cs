@@ -14,10 +14,10 @@ internal sealed class AsyncStartExpressionNode : ExpressionNode, IAsyncStartExpr
     public bool Scheduled => Syntax.Scheduled;
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
-    public IAmbiguousExpressionNode Expression
+    public IAmbiguousExpressionNode TempExpression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
-    public IExpressionNode? IntermediateExpression => Expression as IExpressionNode;
+    public IExpressionNode? IntermediateExpression => TempExpression as IExpressionNode;
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype

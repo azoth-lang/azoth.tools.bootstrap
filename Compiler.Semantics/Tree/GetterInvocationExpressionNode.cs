@@ -23,7 +23,7 @@ internal sealed class GetterInvocationExpressionNode : ExpressionNode, IGetterIn
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName PropertyName { get; }
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments => Context.Yield();
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => Context.Yield();
     public IEnumerable<IExpressionNode?> AllIntermediateArguments => Context.Yield();
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     public IGetterMethodDeclarationNode? ReferencedDeclaration { get; }

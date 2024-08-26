@@ -15,10 +15,10 @@ internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
     public override IIdExpressionSyntax Syntax { get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
     private bool referentCached;
-    public IAmbiguousExpressionNode Referent
+    public IAmbiguousExpressionNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
-    public IExpressionNode? IntermediateReferent => Referent as IExpressionNode;
+    public IExpressionNode? IntermediateReferent => TempReferent as IExpressionNode;
     public override IMaybeExpressionAntetype Antetype
         => IntermediateReferent?.Antetype ?? IAntetype.Unknown;
     private DataType? type;
@@ -39,7 +39,7 @@ internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
         this.referent = Child.Create(this, referent);
     }
 
-    public override ConditionalLexicalScope FlowLexicalScope() => Referent.FlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => TempReferent.FlowLexicalScope();
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {

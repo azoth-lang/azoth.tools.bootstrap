@@ -54,8 +54,8 @@ internal static class ForeachExpressionTypeAspect
             return;
 
         if (node.IteratorType is UnknownType)
-            diagnostics.Add(OtherSemanticError.ForeachNoIterateOrNextMethod(node.File, node.InExpression.Syntax, iterableType));
+            diagnostics.Add(OtherSemanticError.ForeachNoIterateOrNextMethod(node.File, node.TempInExpression.Syntax, iterableType));
         else if (node.ReferencedNextMethod is null)
-            diagnostics.Add(OtherSemanticError.ForeachNoNextMethod(node.File, node.InExpression.Syntax, iterableType));
+            diagnostics.Add(OtherSemanticError.ForeachNoNextMethod(node.File, node.TempInExpression.Syntax, iterableType));
     }
 }

@@ -15,11 +15,11 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     public override IPatternMatchExpressionSyntax Syntax { get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
     private bool referentCached;
-    public IAmbiguousExpressionNode Referent
+    public IAmbiguousExpressionNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
-    public IExpressionNode? IntermediateReferent => Referent as IExpressionNode;
+    public IExpressionNode? IntermediateReferent => TempReferent as IExpressionNode;
     public IPatternNode Pattern { get; }
     public override IMaybeExpressionAntetype Antetype => IAntetype.Bool;
     public override DataType Type => DataType.Bool;
@@ -44,7 +44,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Pattern)
-            return Referent.FlowLexicalScope().True;
+            return TempReferent.FlowLexicalScope().True;
         return ContainingLexicalScope;
     }
 

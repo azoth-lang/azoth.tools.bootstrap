@@ -10,10 +10,10 @@ internal sealed class AmbiguousMoveExpressionNode : ExpressionNode, IAmbiguousMo
     public override IMoveExpressionSyntax Syntax { get; }
     private RewritableChild<ISimpleNameNode> referent;
     private bool referentCached;
-    public ISimpleNameNode Referent
+    public ISimpleNameNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
-    public INameExpressionNode? IntermediateReferent => Referent as INameExpressionNode;
+    public INameExpressionNode? IntermediateReferent => TempReferent as INameExpressionNode;
 
     public AmbiguousMoveExpressionNode(IMoveExpressionSyntax syntax, ISimpleNameNode referent)
     {
@@ -21,7 +21,7 @@ internal sealed class AmbiguousMoveExpressionNode : ExpressionNode, IAmbiguousMo
         this.referent = Child.Create(this, referent);
     }
 
-    public override ConditionalLexicalScope FlowLexicalScope() => Referent.FlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => TempReferent.FlowLexicalScope();
 
     protected override IChildNode? Rewrite()
         => CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Variable(this)

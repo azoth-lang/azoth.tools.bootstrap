@@ -19,10 +19,10 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
     public UnaryOperator Operator => Syntax.Operator;
     private RewritableChild<IAmbiguousExpressionNode> operand;
     private bool operandCached;
-    public IAmbiguousExpressionNode Operand
+    public IAmbiguousExpressionNode TempOperand
         => GrammarAttribute.IsCached(in operandCached) ? operand.UnsafeValue
             : this.RewritableChild(ref operandCached, ref operand);
-    public IExpressionNode? IntermediateOperand => Operand as IExpressionNode;
+    public IExpressionNode? IntermediateOperand => TempOperand as IExpressionNode;
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype

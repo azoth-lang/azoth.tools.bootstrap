@@ -22,9 +22,9 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
         => GrammarAttribute.IsCached(in functionGroupCached) ? functionGroup.UnsafeValue
             : this.RewritableChild(ref functionGroupCached, ref functionGroup);
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
-    public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments => Arguments;
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => TempArguments;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     public IEnumerable<IExpressionNode?> AllIntermediateArguments => IntermediateArguments;
     private IFixedSet<IFunctionLikeDeclarationNode>? compatibleDeclarations;
@@ -72,16 +72,16 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     {
         Syntax = syntax;
         this.functionGroup = Child.Create(this, functionGroup);
-        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
-        if (Arguments.IndexOf(child) is int argumentIndex)
+        if (TempArguments.IndexOf(child) is int argumentIndex)
         {
             if (argumentIndex == 0) return ContainingLexicalScope;
 
-            return Arguments[argumentIndex - 1].FlowLexicalScope().True;
+            return TempArguments[argumentIndex - 1].FlowLexicalScope().True;
         }
 
         return base.InheritedContainingLexicalScope(child, descendant, ctx);
@@ -119,7 +119,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     {
         if (child == FunctionGroup)
         {
-            if (!Arguments.IsEmpty)
+            if (!TempArguments.IsEmpty)
                 return ControlFlowSet.CreateNormal(IntermediateArguments[0]);
         }
         else if (child is IAmbiguousExpressionNode ambiguousExpression

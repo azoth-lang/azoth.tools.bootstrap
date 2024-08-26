@@ -29,7 +29,7 @@ internal static partial class ControlFlowAspect
     public static ControlFlowSet VariableDeclarationStatement_ControlFlowNext(
         IVariableDeclarationStatementNode node)
     {
-        if (node.Initializer is not null)
+        if (node.TempInitializer is not null)
             return ControlFlowSet.CreateNormal(node.IntermediateInitializer);
         return node.ControlFlowFollowing();
     }
@@ -75,7 +75,7 @@ internal static partial class ControlFlowAspect
     public static ControlFlowSet NewObjectExpression_ControlFlowNext(
         INewObjectExpressionNode node)
     {
-        if (!node.Arguments.IsEmpty)
+        if (!node.TempArguments.IsEmpty)
             return ControlFlowSet.CreateNormal(node.IntermediateArguments[0]);
         return node.ControlFlowFollowing();
     }
@@ -97,7 +97,7 @@ internal static partial class ControlFlowAspect
     public static ControlFlowSet ReturnExpression_ControlFlowNext(
         IReturnExpressionNode node)
     {
-        if (node.Value is not null)
+        if (node.TempValue is not null)
             return ControlFlowSet.CreateNormal(node.IntermediateValue);
         return ControlFlowSet.CreateNormal(node.ControlFlowExit());
     }

@@ -15,11 +15,11 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
     public override IWhileExpressionSyntax Syntax { get; }
     private RewritableChild<IAmbiguousExpressionNode> condition;
     private bool conditionCached;
-    public IAmbiguousExpressionNode Condition
+    public IAmbiguousExpressionNode TempCondition
         => GrammarAttribute.IsCached(in conditionCached) ? condition.UnsafeValue
             : this.RewritableChild(ref conditionCached, ref condition);
     public IAmbiguousExpressionNode CurrentCondition => condition.UnsafeValue;
-    public IExpressionNode? IntermediateCondition => Condition as IExpressionNode;
+    public IExpressionNode? IntermediateCondition => TempCondition as IExpressionNode;
     private RewritableChild<IBlockExpressionNode> block;
     private bool blockCached;
     public IBlockExpressionNode Block
@@ -57,7 +57,7 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Block)
-            return Condition.FlowLexicalScope().True;
+            return TempCondition.FlowLexicalScope().True;
         return base.InheritedContainingLexicalScope(child, descendant, ctx);
     }
 

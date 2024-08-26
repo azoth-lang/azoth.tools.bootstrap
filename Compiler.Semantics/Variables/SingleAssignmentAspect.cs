@@ -25,7 +25,7 @@ internal static class SingleAssignmentAspect
     public static BindingFlags<IVariableBindingNode> VariableDeclarationStatement_DefinitelyUnassigned(IVariableDeclarationStatementNode node)
     {
         var previous = node.DefinitelyUnassignedPrevious();
-        if (node.Initializer is null) return previous;
+        if (node.TempInitializer is null) return previous;
         // TODO this is technically marking it as assigned inside the initializer too. (Of course it isn't in scope there)
         return node.DefinitelyUnassignedPrevious().Set(node, false);
     }
@@ -68,7 +68,7 @@ internal static class SingleAssignmentAspect
                 Parent: IAssignmentExpressionNode assignment,
                 ReferencedDefinition: IVariableBindingNode { IsMutableBinding: false } variableBinding
             }
-            || assignment.LeftOperand != node)
+            || assignment.TempLeftOperand != node)
             return;
 
         var definitelyUnassigned = DefinitelyUnassignedPrevious(node, node.DataFlowPrevious);

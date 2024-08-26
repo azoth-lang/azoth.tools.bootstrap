@@ -18,9 +18,9 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     public override IInvocationExpressionSyntax Syntax { get; }
     public IMethodGroupNameNode MethodGroup { get; }
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
-    public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments => Arguments.Prepend(MethodGroup.Context);
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => TempArguments.Prepend(MethodGroup.Context);
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     public IEnumerable<IExpressionNode?> AllIntermediateArguments => IntermediateArguments.Prepend(MethodGroup.Context);
     private IFixedSet<IStandardMethodDeclarationNode>? compatibleDeclarations;
@@ -68,7 +68,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     {
         Syntax = syntax;
         MethodGroup = Child.Attach(this, methodGroup);
-        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
     internal override IFlowState InheritedFlowStateBefore(
@@ -96,7 +96,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     {
         if (child == MethodGroup)
         {
-            if (!Arguments.IsEmpty)
+            if (!TempArguments.IsEmpty)
                 return ControlFlowSet.CreateNormal(IntermediateArguments[0]);
         }
         else if (child is IAmbiguousExpressionNode ambiguousExpression

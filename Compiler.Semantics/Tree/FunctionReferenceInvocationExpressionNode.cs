@@ -23,9 +23,9 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
     public IExpressionNode CurrentExpression => expression.UnsafeValue;
     public FunctionAntetype FunctionAntetype { get; }
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
-    public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments => Arguments;
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => TempArguments;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     public IEnumerable<IExpressionNode?> AllIntermediateArguments => IntermediateArguments;
     private IMaybeExpressionAntetype? antetype;
@@ -59,7 +59,7 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
         FunctionAntetype = (FunctionAntetype)expression.Antetype;
-        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
     internal override IFlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
@@ -81,7 +81,7 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
     {
         if (child == CurrentExpression)
         {
-            if (!Arguments.IsEmpty)
+            if (!TempArguments.IsEmpty)
                 return ControlFlowSet.CreateNormal(IntermediateArguments[0]);
         }
         else if (child is IAmbiguousExpressionNode ambiguousExpression

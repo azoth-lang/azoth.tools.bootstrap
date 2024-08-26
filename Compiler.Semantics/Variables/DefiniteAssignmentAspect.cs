@@ -19,7 +19,7 @@ internal static class DefiniteAssignmentAspect
     public static BindingFlags<IVariableBindingNode> VariableDeclarationStatement_DefinitelyAssigned(IVariableDeclarationStatementNode node)
     {
         var previous = node.DefinitelyAssignedPrevious();
-        if (node.Initializer is null) return previous;
+        if (node.TempInitializer is null) return previous;
         // TODO this is technically marking it as assigned inside the initializer too. (Of course it isn't in scope there)
         return previous.Set(node, true);
     }

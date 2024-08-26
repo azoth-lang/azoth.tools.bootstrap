@@ -21,19 +21,19 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     public override IAssignmentExpressionSyntax Syntax { get; }
     private RewritableChild<IAmbiguousAssignableExpressionNode> leftOperand;
     private bool leftOperandCached;
-    public IAmbiguousAssignableExpressionNode LeftOperand
+    public IAmbiguousAssignableExpressionNode TempLeftOperand
         => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
             : this.RewritableChild(ref leftOperandCached, ref leftOperand);
     public IAmbiguousAssignableExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
-    public IAssignableExpressionNode? IntermediateLeftOperand => LeftOperand as IAssignableExpressionNode;
+    public IAssignableExpressionNode? IntermediateLeftOperand => TempLeftOperand as IAssignableExpressionNode;
     public AssignmentOperator Operator => Syntax.Operator;
     private RewritableChild<IAmbiguousExpressionNode> rightOperand;
     private bool rightOperandCached;
-    public IAmbiguousExpressionNode RightOperand
+    public IAmbiguousExpressionNode TempRightOperand
         => GrammarAttribute.IsCached(in rightOperandCached) ? rightOperand.UnsafeValue
             : this.RewritableChild(ref rightOperandCached, ref rightOperand);
     public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
-    public IExpressionNode? IntermediateRightOperand => RightOperand as IExpressionNode;
+    public IExpressionNode? IntermediateRightOperand => TempRightOperand as IExpressionNode;
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype

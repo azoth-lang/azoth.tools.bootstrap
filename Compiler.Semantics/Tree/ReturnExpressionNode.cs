@@ -15,11 +15,11 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
     public override IReturnExpressionSyntax Syntax { get; }
     private RewritableChild<IAmbiguousExpressionNode?> value;
     private bool valueCached;
-    public IAmbiguousExpressionNode? Value
+    public IAmbiguousExpressionNode? TempValue
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
     public IAmbiguousExpressionNode? CurrentValue => value.UnsafeValue;
-    public IExpressionNode? IntermediateValue => Value as IExpressionNode;
+    public IExpressionNode? IntermediateValue => TempValue as IExpressionNode;
     public override IMaybeExpressionAntetype Antetype => IAntetype.Never;
     private DataType? expectedReturnType;
     private bool expectedReturnTypeCached;

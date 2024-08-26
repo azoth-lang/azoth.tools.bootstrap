@@ -46,11 +46,11 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
             : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.FieldDefinition_Symbol);
     private RewritableChild<IAmbiguousExpressionNode?> initializer;
     private bool initializerCached;
-    public IAmbiguousExpressionNode? Initializer
+    public IAmbiguousExpressionNode? TempInitializer
         => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
             : this.RewritableChild(ref initializerCached, ref initializer);
     public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
-    public IExpressionNode? IntermediateInitializer => Initializer as IExpressionNode;
+    public IExpressionNode? IntermediateInitializer => TempInitializer as IExpressionNode;
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
     public ValueIdScope ValueIdScope

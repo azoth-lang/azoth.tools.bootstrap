@@ -826,7 +826,7 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     DataType INamedBindingNode.BindingType => BindingType;
     Pseudotype IBindingNode.BindingType => BindingType;
     DataType IFieldDeclarationNode.BindingType => BindingType;
-    IAmbiguousExpressionNode? Initializer { get; }
+    IAmbiguousExpressionNode? TempInitializer { get; }
     IAmbiguousExpressionNode? CurrentInitializer { get; }
     IExpressionNode? IntermediateInitializer { get; }
     new LexicalScope ContainingLexicalScope { get; }
@@ -835,8 +835,8 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
 
-    public static IFieldDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, FieldSymbol symbol, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer, IExitNode exit)
-        => new FieldDefinitionNode(parent, accessModifier, containingSymbol, isLentBinding, variableBindingsMap, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, symbol, entry, initializer, currentInitializer, intermediateInitializer, exit);
+    public static IFieldDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, FieldSymbol symbol, IEntryNode entry, IAmbiguousExpressionNode? tempInitializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer, IExitNode exit)
+        => new FieldDefinitionNode(parent, accessModifier, containingSymbol, isLentBinding, variableBindingsMap, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, symbol, entry, tempInitializer, currentInitializer, intermediateInitializer, exit);
 }
 
 // [Closed(typeof(AssociatedFunctionDefinitionNode))]
@@ -1441,7 +1441,7 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICodeSyntax IElseClauseNode.Syntax => Syntax;
-    IAmbiguousExpressionNode Expression { get; }
+    IAmbiguousExpressionNode TempExpression { get; }
     IAmbiguousExpressionNode CurrentExpression { get; }
     IExpressionNode? IntermediateExpression { get; }
     IMaybeExpressionAntetype? ExpectedAntetype { get; }
@@ -1454,8 +1454,8 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
     ValueId IElseClauseNode.ValueId
         => IntermediateExpression?.ValueId ?? default;
 
-    public static IResultStatementNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IMaybeAntetype antetype, DataType type, IResultStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, IFlowState flowStateAfter)
-        => new ResultStatementNode(parent, controlFlowNext, controlFlowPrevious, resultAntetype, resultType, antetype, type, syntax, expression, currentExpression, intermediateExpression, expectedAntetype, expectedType, flowStateAfter);
+    public static IResultStatementNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IMaybeAntetype antetype, DataType type, IResultStatementSyntax syntax, IAmbiguousExpressionNode tempExpression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, IFlowState flowStateAfter)
+        => new ResultStatementNode(parent, controlFlowNext, controlFlowPrevious, resultAntetype, resultType, antetype, type, syntax, tempExpression, currentExpression, intermediateExpression, expectedAntetype, expectedType, flowStateAfter);
 }
 
 [Closed(
@@ -1482,7 +1482,7 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
     ICapabilityNode? Capability { get; }
     ITypeNode? Type { get; }
-    IAmbiguousExpressionNode? Initializer { get; }
+    IAmbiguousExpressionNode? TempInitializer { get; }
     IAmbiguousExpressionNode? CurrentInitializer { get; }
     IExpressionNode? IntermediateInitializer { get; }
     new LexicalScope ContainingLexicalScope { get; }
@@ -1494,8 +1494,8 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     ValueId? IStatementNode.ResultValueId
         => null;
 
-    public static IVariableDeclarationStatementNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IVariableDeclarationStatementSyntax syntax, bool isMutableBinding, IdentifierName name, ICapabilityNode? capability, ITypeNode? type, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer)
-        => new VariableDeclarationStatementNode(parent, controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, isLentBinding, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, name, capability, type, initializer, currentInitializer, intermediateInitializer);
+    public static IVariableDeclarationStatementNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IVariableDeclarationStatementSyntax syntax, bool isMutableBinding, IdentifierName name, ICapabilityNode? capability, ITypeNode? type, IAmbiguousExpressionNode? tempInitializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer)
+        => new VariableDeclarationStatementNode(parent, controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, isLentBinding, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, name, capability, type, tempInitializer, currentInitializer, intermediateInitializer);
 }
 
 // [Closed(typeof(ExpressionStatementNode))]
@@ -1507,14 +1507,14 @@ public partial interface IExpressionStatementNode : IBodyStatementNode
     IStatementSyntax IStatementNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAmbiguousExpressionNode Expression { get; }
+    IAmbiguousExpressionNode TempExpression { get; }
     IAmbiguousExpressionNode CurrentExpression { get; }
     IExpressionNode? IntermediateExpression { get; }
     ValueId? IStatementNode.ResultValueId
         => null;
 
-    public static IExpressionStatementNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, IExpressionStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression)
-        => new ExpressionStatementNode(parent, controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, syntax, expression, currentExpression, intermediateExpression);
+    public static IExpressionStatementNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, IExpressionStatementSyntax syntax, IAmbiguousExpressionNode tempExpression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression)
+        => new ExpressionStatementNode(parent, controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, syntax, tempExpression, currentExpression, intermediateExpression);
 }
 
 [Closed(
@@ -1724,7 +1724,7 @@ public partial interface INewObjectExpressionNode : IInvocationExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeNameNode ConstructingType { get; }
     IdentifierName? ConstructorName { get; }
-    IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> IntermediateArguments { get; }
     IMaybeAntetype ConstructingAntetype { get; }
     IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { get; }
@@ -1734,8 +1734,8 @@ public partial interface INewObjectExpressionNode : IInvocationExpressionNode
     PackageNameScope PackageNameScope();
     IFlowState FlowStateBefore();
 
-    public static INewObjectExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, INewObjectExpressionSyntax syntax, ITypeNameNode constructingType, IdentifierName? constructorName, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IMaybeAntetype constructingAntetype, IFixedSet<IConstructorDeclarationNode> referencedConstructors, IFixedSet<IConstructorDeclarationNode> compatibleConstructors, IConstructorDeclarationNode? referencedConstructor, ContextualizedOverload? contextualizedOverload)
-        => new NewObjectExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, constructingType, constructorName, arguments, intermediateArguments, constructingAntetype, referencedConstructors, compatibleConstructors, referencedConstructor, contextualizedOverload);
+    public static INewObjectExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, INewObjectExpressionSyntax syntax, ITypeNameNode constructingType, IdentifierName? constructorName, IFixedList<IAmbiguousExpressionNode> tempArguments, IFixedList<IExpressionNode?> intermediateArguments, IMaybeAntetype constructingAntetype, IFixedSet<IConstructorDeclarationNode> referencedConstructors, IFixedSet<IConstructorDeclarationNode> compatibleConstructors, IConstructorDeclarationNode? referencedConstructor, ContextualizedOverload? contextualizedOverload)
+        => new NewObjectExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, tempAllArguments, allIntermediateArguments, syntax, constructingType, constructorName, tempArguments, intermediateArguments, constructingAntetype, referencedConstructors, compatibleConstructors, referencedConstructor, contextualizedOverload);
 }
 
 // [Closed(typeof(UnsafeExpressionNode))]
@@ -1746,11 +1746,11 @@ public partial interface IUnsafeExpressionNode : IExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAmbiguousExpressionNode Expression { get; }
+    IAmbiguousExpressionNode TempExpression { get; }
     IExpressionNode? IntermediateExpression { get; }
 
-    public static IUnsafeExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IUnsafeExpressionSyntax syntax, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression)
-        => new UnsafeExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, expression, intermediateExpression);
+    public static IUnsafeExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IUnsafeExpressionSyntax syntax, IAmbiguousExpressionNode tempExpression, IExpressionNode? intermediateExpression)
+        => new UnsafeExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, tempExpression, intermediateExpression);
 }
 
 [Closed(
@@ -1854,18 +1854,18 @@ public partial interface IAssignmentExpressionNode : IExpressionNode, IDataFlowN
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAmbiguousAssignableExpressionNode LeftOperand { get; }
+    IAmbiguousAssignableExpressionNode TempLeftOperand { get; }
     IAmbiguousAssignableExpressionNode CurrentLeftOperand { get; }
     IAssignableExpressionNode? IntermediateLeftOperand { get; }
     AssignmentOperator Operator { get; }
-    IAmbiguousExpressionNode RightOperand { get; }
+    IAmbiguousExpressionNode TempRightOperand { get; }
     IAmbiguousExpressionNode CurrentRightOperand { get; }
     IExpressionNode? IntermediateRightOperand { get; }
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.AssignmentExpression_FlowLexicalScope(this);
 
-    public static IAssignmentExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IAssignmentExpressionSyntax syntax, IAmbiguousAssignableExpressionNode leftOperand, IAmbiguousAssignableExpressionNode currentLeftOperand, IAssignableExpressionNode? intermediateLeftOperand, AssignmentOperator @operator, IAmbiguousExpressionNode rightOperand, IAmbiguousExpressionNode currentRightOperand, IExpressionNode? intermediateRightOperand)
-        => new AssignmentExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, leftOperand, currentLeftOperand, intermediateLeftOperand, @operator, rightOperand, currentRightOperand, intermediateRightOperand);
+    public static IAssignmentExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IAssignmentExpressionSyntax syntax, IAmbiguousAssignableExpressionNode tempLeftOperand, IAmbiguousAssignableExpressionNode currentLeftOperand, IAssignableExpressionNode? intermediateLeftOperand, AssignmentOperator @operator, IAmbiguousExpressionNode tempRightOperand, IAmbiguousExpressionNode currentRightOperand, IExpressionNode? intermediateRightOperand)
+        => new AssignmentExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, tempLeftOperand, currentLeftOperand, intermediateLeftOperand, @operator, tempRightOperand, currentRightOperand, intermediateRightOperand);
 }
 
 // [Closed(typeof(BinaryOperatorExpressionNode))]
@@ -1876,10 +1876,10 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAmbiguousExpressionNode LeftOperand { get; }
+    IAmbiguousExpressionNode TempLeftOperand { get; }
     IExpressionNode? IntermediateLeftOperand { get; }
     BinaryOperator Operator { get; }
-    IAmbiguousExpressionNode RightOperand { get; }
+    IAmbiguousExpressionNode TempRightOperand { get; }
     IExpressionNode? IntermediateRightOperand { get; }
     IAntetype? NumericOperatorCommonAntetype { get; }
     new LexicalScope ContainingLexicalScope { get; }
@@ -1887,8 +1887,8 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.BinaryOperatorExpression_FlowLexicalScope(this);
 
-    public static IBinaryOperatorExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IBinaryOperatorExpressionSyntax syntax, IAmbiguousExpressionNode leftOperand, IExpressionNode? intermediateLeftOperand, BinaryOperator @operator, IAmbiguousExpressionNode rightOperand, IExpressionNode? intermediateRightOperand, IAntetype? numericOperatorCommonAntetype)
-        => new BinaryOperatorExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, leftOperand, intermediateLeftOperand, @operator, rightOperand, intermediateRightOperand, numericOperatorCommonAntetype);
+    public static IBinaryOperatorExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IBinaryOperatorExpressionSyntax syntax, IAmbiguousExpressionNode tempLeftOperand, IExpressionNode? intermediateLeftOperand, BinaryOperator @operator, IAmbiguousExpressionNode tempRightOperand, IExpressionNode? intermediateRightOperand, IAntetype? numericOperatorCommonAntetype)
+        => new BinaryOperatorExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, tempLeftOperand, intermediateLeftOperand, @operator, tempRightOperand, intermediateRightOperand, numericOperatorCommonAntetype);
 }
 
 // [Closed(typeof(UnaryOperatorExpressionNode))]
@@ -1901,13 +1901,13 @@ public partial interface IUnaryOperatorExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     UnaryOperatorFixity Fixity { get; }
     UnaryOperator Operator { get; }
-    IAmbiguousExpressionNode Operand { get; }
+    IAmbiguousExpressionNode TempOperand { get; }
     IExpressionNode? IntermediateOperand { get; }
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.UnaryOperatorExpression_FlowLexicalScope(this);
 
-    public static IUnaryOperatorExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IUnaryOperatorExpressionSyntax syntax, UnaryOperatorFixity fixity, UnaryOperator @operator, IAmbiguousExpressionNode operand, IExpressionNode? intermediateOperand)
-        => new UnaryOperatorExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, fixity, @operator, operand, intermediateOperand);
+    public static IUnaryOperatorExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IUnaryOperatorExpressionSyntax syntax, UnaryOperatorFixity fixity, UnaryOperator @operator, IAmbiguousExpressionNode tempOperand, IExpressionNode? intermediateOperand)
+        => new UnaryOperatorExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, fixity, @operator, tempOperand, intermediateOperand);
 }
 
 // [Closed(typeof(IdExpressionNode))]
@@ -1918,11 +1918,11 @@ public partial interface IIdExpressionNode : IExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAmbiguousExpressionNode Referent { get; }
+    IAmbiguousExpressionNode TempReferent { get; }
     IExpressionNode? IntermediateReferent { get; }
 
-    public static IIdExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IIdExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent)
-        => new IdExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, referent, intermediateReferent);
+    public static IIdExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IIdExpressionSyntax syntax, IAmbiguousExpressionNode tempReferent, IExpressionNode? intermediateReferent)
+        => new IdExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, tempReferent, intermediateReferent);
 }
 
 // [Closed(typeof(ConversionExpressionNode))]
@@ -1933,13 +1933,13 @@ public partial interface IConversionExpressionNode : IExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAmbiguousExpressionNode Referent { get; }
+    IAmbiguousExpressionNode TempReferent { get; }
     IExpressionNode? IntermediateReferent { get; }
     ConversionOperator Operator { get; }
     ITypeNode ConvertToType { get; }
 
-    public static IConversionExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IConversionExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent, ConversionOperator @operator, ITypeNode convertToType)
-        => new ConversionExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, referent, intermediateReferent, @operator, convertToType);
+    public static IConversionExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IConversionExpressionSyntax syntax, IAmbiguousExpressionNode tempReferent, IExpressionNode? intermediateReferent, ConversionOperator @operator, ITypeNode convertToType)
+        => new ConversionExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, tempReferent, intermediateReferent, @operator, convertToType);
 }
 
 // [Closed(typeof(ImplicitConversionExpressionNode))]
@@ -1963,12 +1963,12 @@ public partial interface IPatternMatchExpressionNode : IExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAmbiguousExpressionNode Referent { get; }
+    IAmbiguousExpressionNode TempReferent { get; }
     IExpressionNode? IntermediateReferent { get; }
     IPatternNode Pattern { get; }
 
-    public static IPatternMatchExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IPatternMatchExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent, IPatternNode pattern)
-        => new PatternMatchExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, referent, intermediateReferent, pattern);
+    public static IPatternMatchExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IPatternMatchExpressionSyntax syntax, IAmbiguousExpressionNode tempReferent, IExpressionNode? intermediateReferent, IPatternNode pattern)
+        => new PatternMatchExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, tempReferent, intermediateReferent, pattern);
 }
 
 // [Closed(typeof(IfExpressionNode))]
@@ -1980,7 +1980,7 @@ public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICodeSyntax IElseClauseNode.Syntax => Syntax;
-    IAmbiguousExpressionNode Condition { get; }
+    IAmbiguousExpressionNode TempCondition { get; }
     IExpressionNode? IntermediateCondition { get; }
     IBlockOrResultNode ThenBlock { get; }
     IElseClauseNode? ElseClause { get; }
@@ -1991,8 +1991,8 @@ public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
 
-    public static IIfExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IIfExpressionSyntax syntax, IAmbiguousExpressionNode condition, IExpressionNode? intermediateCondition, IBlockOrResultNode thenBlock, IElseClauseNode? elseClause, IFlowState flowStateAfter)
-        => new IfExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, syntax, condition, intermediateCondition, thenBlock, elseClause, flowStateAfter);
+    public static IIfExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IIfExpressionSyntax syntax, IAmbiguousExpressionNode tempCondition, IExpressionNode? intermediateCondition, IBlockOrResultNode thenBlock, IElseClauseNode? elseClause, IFlowState flowStateAfter)
+        => new IfExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, syntax, tempCondition, intermediateCondition, thenBlock, elseClause, flowStateAfter);
 }
 
 // [Closed(typeof(LoopExpressionNode))]
@@ -2017,12 +2017,12 @@ public partial interface IWhileExpressionNode : IExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAmbiguousExpressionNode Condition { get; }
+    IAmbiguousExpressionNode TempCondition { get; }
     IExpressionNode? IntermediateCondition { get; }
     IBlockExpressionNode Block { get; }
 
-    public static IWhileExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IWhileExpressionSyntax syntax, IAmbiguousExpressionNode condition, IExpressionNode? intermediateCondition, IBlockExpressionNode block)
-        => new WhileExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, condition, intermediateCondition, block);
+    public static IWhileExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IWhileExpressionSyntax syntax, IAmbiguousExpressionNode tempCondition, IExpressionNode? intermediateCondition, IBlockExpressionNode block)
+        => new WhileExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, tempCondition, intermediateCondition, block);
 }
 
 // [Closed(typeof(ForeachExpressionNode))]
@@ -2035,7 +2035,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     ISyntax? ISemanticNode.Syntax => Syntax;
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
     IdentifierName VariableName { get; }
-    IAmbiguousExpressionNode InExpression { get; }
+    IAmbiguousExpressionNode TempInExpression { get; }
     IExpressionNode? IntermediateInExpression { get; }
     ITypeNode? DeclaredType { get; }
     IBlockExpressionNode Block { get; }
@@ -2054,8 +2054,8 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope LexicalScope { get; }
 
-    public static IForeachExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, IdentifierName name, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IForeachExpressionSyntax syntax, bool isMutableBinding, IdentifierName variableName, IAmbiguousExpressionNode inExpression, IExpressionNode? intermediateInExpression, ITypeNode? declaredType, IBlockExpressionNode block, ITypeDeclarationNode? referencedIterableDeclaration, IStandardMethodDeclarationNode? referencedIterateMethod, IMaybeExpressionAntetype iteratorAntetype, DataType iteratorType, ITypeDeclarationNode? referencedIteratorDeclaration, IStandardMethodDeclarationNode? referencedNextMethod, IMaybeAntetype iteratedAntetype, DataType iteratedType, IFlowState flowStateBeforeBlock)
-        => new ForeachExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, isLentBinding, bindingAntetype, name, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, variableName, inExpression, intermediateInExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, iteratorType, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype, iteratedType, flowStateBeforeBlock);
+    public static IForeachExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, IdentifierName name, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IForeachExpressionSyntax syntax, bool isMutableBinding, IdentifierName variableName, IAmbiguousExpressionNode tempInExpression, IExpressionNode? intermediateInExpression, ITypeNode? declaredType, IBlockExpressionNode block, ITypeDeclarationNode? referencedIterableDeclaration, IStandardMethodDeclarationNode? referencedIterateMethod, IMaybeExpressionAntetype iteratorAntetype, DataType iteratorType, ITypeDeclarationNode? referencedIteratorDeclaration, IStandardMethodDeclarationNode? referencedNextMethod, IMaybeAntetype iteratedAntetype, DataType iteratedType, IFlowState flowStateBeforeBlock)
+        => new ForeachExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, isLentBinding, bindingAntetype, name, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, variableName, tempInExpression, intermediateInExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, iteratorType, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype, iteratedType, flowStateBeforeBlock);
 }
 
 // [Closed(typeof(BreakExpressionNode))]
@@ -2066,11 +2066,11 @@ public partial interface IBreakExpressionNode : INeverTypedExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAmbiguousExpressionNode? Value { get; }
+    IAmbiguousExpressionNode? TempValue { get; }
     IExpressionNode? IntermediateValue { get; }
 
-    public static IBreakExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? value, IExpressionNode? intermediateValue)
-        => new BreakExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, type, syntax, value, intermediateValue);
+    public static IBreakExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? tempValue, IExpressionNode? intermediateValue)
+        => new BreakExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, type, syntax, tempValue, intermediateValue);
 }
 
 // [Closed(typeof(NextExpressionNode))]
@@ -2094,14 +2094,14 @@ public partial interface IReturnExpressionNode : INeverTypedExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAmbiguousExpressionNode? Value { get; }
+    IAmbiguousExpressionNode? TempValue { get; }
     IAmbiguousExpressionNode? CurrentValue { get; }
     IExpressionNode? IntermediateValue { get; }
     IExitNode ControlFlowExit();
     DataType? ExpectedReturnType { get; }
 
-    public static IReturnExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, IReturnExpressionSyntax syntax, IAmbiguousExpressionNode? value, IAmbiguousExpressionNode? currentValue, IExpressionNode? intermediateValue)
-        => new ReturnExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, type, syntax, value, currentValue, intermediateValue);
+    public static IReturnExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, IReturnExpressionSyntax syntax, IAmbiguousExpressionNode? tempValue, IAmbiguousExpressionNode? currentValue, IExpressionNode? intermediateValue)
+        => new ReturnExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, flowStateAfter, type, syntax, tempValue, currentValue, intermediateValue);
 }
 
 // [Closed(typeof(UnresolvedInvocationExpressionNode))]
@@ -2132,7 +2132,7 @@ public partial interface IUnresolvedInvocationExpressionNode : IAmbiguousExpress
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInvocationExpressionNode : IExpressionNode
 {
-    IEnumerable<IAmbiguousExpressionNode> AllArguments { get; }
+    IEnumerable<IAmbiguousExpressionNode> TempAllArguments { get; }
     IEnumerable<IExpressionNode?> AllIntermediateArguments { get; }
 }
 
@@ -2145,15 +2145,15 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFunctionGroupNameNode FunctionGroup { get; }
-    IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> IntermediateArguments { get; }
     IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { get; }
     IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState FlowStateBefore();
 
-    public static IFunctionInvocationExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IFunctionGroupNameNode functionGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IFunctionLikeDeclarationNode> compatibleDeclarations, IFunctionLikeDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
-        => new FunctionInvocationExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, functionGroup, arguments, intermediateArguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
+    public static IFunctionInvocationExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IFunctionGroupNameNode functionGroup, IFixedList<IAmbiguousExpressionNode> tempArguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IFunctionLikeDeclarationNode> compatibleDeclarations, IFunctionLikeDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+        => new FunctionInvocationExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, tempAllArguments, allIntermediateArguments, syntax, functionGroup, tempArguments, intermediateArguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
 }
 
 // [Closed(typeof(MethodInvocationExpressionNode))]
@@ -2165,15 +2165,15 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IMethodGroupNameNode MethodGroup { get; }
-    IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     IFixedList<IExpressionNode?> IntermediateArguments { get; }
     IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
 
-    public static IMethodInvocationExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IMethodGroupNameNode methodGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IAmbiguousExpressionNode> currentArguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IStandardMethodDeclarationNode> compatibleDeclarations, IStandardMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
-        => new MethodInvocationExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, methodGroup, arguments, currentArguments, intermediateArguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
+    public static IMethodInvocationExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IMethodGroupNameNode methodGroup, IFixedList<IAmbiguousExpressionNode> tempArguments, IFixedList<IAmbiguousExpressionNode> currentArguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IStandardMethodDeclarationNode> compatibleDeclarations, IStandardMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+        => new MethodInvocationExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, tempAllArguments, allIntermediateArguments, syntax, methodGroup, tempArguments, currentArguments, intermediateArguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
 }
 
 // [Closed(typeof(GetterInvocationExpressionNode))]
@@ -2190,8 +2190,8 @@ public partial interface IGetterInvocationExpressionNode : IInvocationExpression
     IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
 
-    public static IGetterInvocationExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, IGetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
-        => new GetterInvocationExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, context, propertyName, referencedPropertyAccessors, referencedDeclaration, contextualizedOverload);
+    public static IGetterInvocationExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, IGetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+        => new GetterInvocationExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, tempAllArguments, allIntermediateArguments, syntax, context, propertyName, referencedPropertyAccessors, referencedDeclaration, contextualizedOverload);
 }
 
 // [Closed(typeof(SetterInvocationExpressionNode))]
@@ -2204,14 +2204,14 @@ public partial interface ISetterInvocationExpressionNode : IInvocationExpression
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     StandardName PropertyName { get; }
-    IAmbiguousExpressionNode Value { get; }
+    IAmbiguousExpressionNode TempValue { get; }
     IExpressionNode? IntermediateValue { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
 
-    public static ISetterInvocationExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IAssignmentExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IAmbiguousExpressionNode value, IExpressionNode? intermediateValue, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, ISetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
-        => new SetterInvocationExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, context, propertyName, value, intermediateValue, referencedPropertyAccessors, referencedDeclaration, contextualizedOverload);
+    public static ISetterInvocationExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IAssignmentExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IAmbiguousExpressionNode tempValue, IExpressionNode? intermediateValue, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, ISetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+        => new SetterInvocationExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, tempAllArguments, allIntermediateArguments, syntax, context, propertyName, tempValue, intermediateValue, referencedPropertyAccessors, referencedDeclaration, contextualizedOverload);
 }
 
 // [Closed(typeof(FunctionReferenceInvocationExpressionNode))]
@@ -2223,13 +2223,13 @@ public partial interface IFunctionReferenceInvocationExpressionNode : IInvocatio
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionNode Expression { get; }
-    IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> IntermediateArguments { get; }
     FunctionAntetype FunctionAntetype { get; }
     FunctionType FunctionType { get; }
 
-    public static IFunctionReferenceInvocationExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IExpressionNode expression, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, FunctionAntetype functionAntetype, FunctionType functionType)
-        => new FunctionReferenceInvocationExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, expression, arguments, intermediateArguments, functionAntetype, functionType);
+    public static IFunctionReferenceInvocationExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IExpressionNode expression, IFixedList<IAmbiguousExpressionNode> tempArguments, IFixedList<IExpressionNode?> intermediateArguments, FunctionAntetype functionAntetype, FunctionType functionType)
+        => new FunctionReferenceInvocationExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, tempAllArguments, allIntermediateArguments, syntax, expression, tempArguments, intermediateArguments, functionAntetype, functionType);
 }
 
 // [Closed(typeof(InitializerInvocationExpressionNode))]
@@ -2241,15 +2241,15 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IInitializerGroupNameNode InitializerGroup { get; }
-    IFixedList<IAmbiguousExpressionNode> Arguments { get; }
+    IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> IntermediateArguments { get; }
     IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
     IInitializerDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState FlowStateBefore();
 
-    public static IInitializerInvocationExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IInitializerGroupNameNode initializerGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IInitializerDeclarationNode> compatibleDeclarations, IInitializerDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
-        => new InitializerInvocationExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, allArguments, allIntermediateArguments, syntax, initializerGroup, arguments, intermediateArguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
+    public static IInitializerInvocationExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IInitializerGroupNameNode initializerGroup, IFixedList<IAmbiguousExpressionNode> tempArguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IInitializerDeclarationNode> compatibleDeclarations, IInitializerDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+        => new InitializerInvocationExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, tempAllArguments, allIntermediateArguments, syntax, initializerGroup, tempArguments, intermediateArguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
 }
 
 // [Closed(typeof(UnknownInvocationExpressionNode))]
@@ -2765,11 +2765,11 @@ public partial interface IAmbiguousMoveExpressionNode : IAmbiguousExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ISimpleNameNode Referent { get; }
+    ISimpleNameNode TempReferent { get; }
     INameExpressionNode? IntermediateReferent { get; }
 
-    public static IAmbiguousMoveExpressionNode Create(ISemanticNode parent, IMoveExpressionSyntax syntax, ISimpleNameNode referent, INameExpressionNode? intermediateReferent)
-        => new AmbiguousMoveExpressionNode(parent, syntax, referent, intermediateReferent);
+    public static IAmbiguousMoveExpressionNode Create(ISemanticNode parent, IMoveExpressionSyntax syntax, ISimpleNameNode tempReferent, INameExpressionNode? intermediateReferent)
+        => new AmbiguousMoveExpressionNode(parent, syntax, tempReferent, intermediateReferent);
 }
 
 [Closed(
@@ -2828,11 +2828,11 @@ public partial interface IAmbiguousFreezeExpressionNode : IAmbiguousExpressionNo
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ISimpleNameNode Referent { get; }
+    ISimpleNameNode TempReferent { get; }
     INameExpressionNode? IntermediateReferent { get; }
 
-    public static IAmbiguousFreezeExpressionNode Create(ISemanticNode parent, IFreezeExpressionSyntax syntax, ISimpleNameNode referent, INameExpressionNode? intermediateReferent)
-        => new AmbiguousFreezeExpressionNode(parent, syntax, referent, intermediateReferent);
+    public static IAmbiguousFreezeExpressionNode Create(ISemanticNode parent, IFreezeExpressionSyntax syntax, ISimpleNameNode tempReferent, INameExpressionNode? intermediateReferent)
+        => new AmbiguousFreezeExpressionNode(parent, syntax, tempReferent, intermediateReferent);
 }
 
 [Closed(
@@ -2899,11 +2899,11 @@ public partial interface IAsyncStartExpressionNode : IExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     bool Scheduled { get; }
-    IAmbiguousExpressionNode Expression { get; }
+    IAmbiguousExpressionNode TempExpression { get; }
     IExpressionNode? IntermediateExpression { get; }
 
-    public static IAsyncStartExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAsyncStartExpressionSyntax syntax, bool scheduled, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression)
-        => new AsyncStartExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, scheduled, expression, intermediateExpression);
+    public static IAsyncStartExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAsyncStartExpressionSyntax syntax, bool scheduled, IAmbiguousExpressionNode tempExpression, IExpressionNode? intermediateExpression)
+        => new AsyncStartExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, scheduled, tempExpression, intermediateExpression);
 }
 
 // [Closed(typeof(AwaitExpressionNode))]
@@ -2914,11 +2914,11 @@ public partial interface IAwaitExpressionNode : IExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAmbiguousExpressionNode Expression { get; }
+    IAmbiguousExpressionNode TempExpression { get; }
     IExpressionNode? IntermediateExpression { get; }
 
-    public static IAwaitExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAwaitExpressionSyntax syntax, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression)
-        => new AwaitExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, expression, intermediateExpression);
+    public static IAwaitExpressionNode Create(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAwaitExpressionSyntax syntax, IAmbiguousExpressionNode tempExpression, IExpressionNode? intermediateExpression)
+        => new AwaitExpressionNode(parent, controlFlowNext, controlFlowPrevious, expectedAntetype, antetype, expectedType, type, flowStateAfter, syntax, tempExpression, intermediateExpression);
 }
 
 [Closed(
@@ -4968,7 +4968,7 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     public DataType BindingType { [DebuggerStepThrough] get; }
     public FieldSymbol Symbol { [DebuggerStepThrough] get; }
     public IEntryNode Entry { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode? Initializer { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? TempInitializer { [DebuggerStepThrough] get; }
     public IAmbiguousExpressionNode? CurrentInitializer { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateInitializer { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
@@ -5003,7 +5003,7 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public FieldDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, FieldSymbol symbol, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer, IExitNode exit)
+    public FieldDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, FieldSymbol symbol, IEntryNode entry, IAmbiguousExpressionNode? tempInitializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer, IExitNode exit)
     {
         Parent = parent;
         AccessModifier = accessModifier;
@@ -5018,7 +5018,7 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
         BindingType = bindingType;
         Symbol = symbol;
         Entry = entry;
-        Initializer = initializer;
+        TempInitializer = tempInitializer;
         CurrentInitializer = currentInitializer;
         IntermediateInitializer = intermediateInitializer;
         Exit = exit;
@@ -5870,7 +5870,7 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
     public IMaybeAntetype Antetype { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IResultStatementSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode Expression { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempExpression { [DebuggerStepThrough] get; }
     public IAmbiguousExpressionNode CurrentExpression { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateExpression { [DebuggerStepThrough] get; }
     public IMaybeExpressionAntetype? ExpectedAntetype { [DebuggerStepThrough] get; }
@@ -5889,7 +5889,7 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
     public IPreviousValueId PreviousValueId()
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    public ResultStatementNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IMaybeAntetype antetype, DataType type, IResultStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, IFlowState flowStateAfter)
+    public ResultStatementNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IMaybeAntetype antetype, DataType type, IResultStatementSyntax syntax, IAmbiguousExpressionNode tempExpression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression, IMaybeExpressionAntetype? expectedAntetype, DataType? expectedType, IFlowState flowStateAfter)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -5899,7 +5899,7 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
         Antetype = antetype;
         Type = type;
         Syntax = syntax;
-        Expression = expression;
+        TempExpression = tempExpression;
         CurrentExpression = currentExpression;
         IntermediateExpression = intermediateExpression;
         ExpectedAntetype = expectedAntetype;
@@ -5931,7 +5931,7 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public ICapabilityNode? Capability { [DebuggerStepThrough] get; }
     public ITypeNode? Type { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode? Initializer { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? TempInitializer { [DebuggerStepThrough] get; }
     public IAmbiguousExpressionNode? CurrentInitializer { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateInitializer { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -5965,7 +5965,7 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
 
-    public VariableDeclarationStatementNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IVariableDeclarationStatementSyntax syntax, bool isMutableBinding, IdentifierName name, ICapabilityNode? capability, ITypeNode? type, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer)
+    public VariableDeclarationStatementNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IVariableDeclarationStatementSyntax syntax, bool isMutableBinding, IdentifierName name, ICapabilityNode? capability, ITypeNode? type, IAmbiguousExpressionNode? tempInitializer, IAmbiguousExpressionNode? currentInitializer, IExpressionNode? intermediateInitializer)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -5984,7 +5984,7 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         Name = name;
         Capability = capability;
         Type = type;
-        Initializer = initializer;
+        TempInitializer = tempInitializer;
         CurrentInitializer = currentInitializer;
         IntermediateInitializer = intermediateInitializer;
     }
@@ -6002,7 +6002,7 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
     public DataType? ResultType { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IExpressionStatementSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode Expression { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempExpression { [DebuggerStepThrough] get; }
     public IAmbiguousExpressionNode CurrentExpression { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateExpression { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -6018,7 +6018,7 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
     public IPreviousValueId PreviousValueId()
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    public ExpressionStatementNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, IExpressionStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression)
+    public ExpressionStatementNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, IExpressionStatementSyntax syntax, IAmbiguousExpressionNode tempExpression, IAmbiguousExpressionNode currentExpression, IExpressionNode? intermediateExpression)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -6027,7 +6027,7 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
         ResultType = resultType;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        Expression = expression;
+        TempExpression = tempExpression;
         CurrentExpression = currentExpression;
         IntermediateExpression = intermediateExpression;
     }
@@ -6274,12 +6274,12 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     public DataType? ExpectedType { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
     public INewObjectExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameNode ConstructingType { [DebuggerStepThrough] get; }
     public IdentifierName? ConstructorName { [DebuggerStepThrough] get; }
-    public IFixedList<IAmbiguousExpressionNode> Arguments { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> TempArguments { [DebuggerStepThrough] get; }
     public IFixedList<IExpressionNode?> IntermediateArguments { [DebuggerStepThrough] get; }
     public IMaybeAntetype ConstructingAntetype { [DebuggerStepThrough] get; }
     public IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { [DebuggerStepThrough] get; }
@@ -6313,7 +6313,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public NewObjectExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, INewObjectExpressionSyntax syntax, ITypeNameNode constructingType, IdentifierName? constructorName, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IMaybeAntetype constructingAntetype, IFixedSet<IConstructorDeclarationNode> referencedConstructors, IFixedSet<IConstructorDeclarationNode> compatibleConstructors, IConstructorDeclarationNode? referencedConstructor, ContextualizedOverload? contextualizedOverload)
+    public NewObjectExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, INewObjectExpressionSyntax syntax, ITypeNameNode constructingType, IdentifierName? constructorName, IFixedList<IAmbiguousExpressionNode> tempArguments, IFixedList<IExpressionNode?> intermediateArguments, IMaybeAntetype constructingAntetype, IFixedSet<IConstructorDeclarationNode> referencedConstructors, IFixedSet<IConstructorDeclarationNode> compatibleConstructors, IConstructorDeclarationNode? referencedConstructor, ContextualizedOverload? contextualizedOverload)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -6323,12 +6323,12 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         ExpectedType = expectedType;
         Type = type;
         FlowStateAfter = flowStateAfter;
-        AllArguments = allArguments;
+        TempAllArguments = tempAllArguments;
         AllIntermediateArguments = allIntermediateArguments;
         Syntax = syntax;
         ConstructingType = constructingType;
         ConstructorName = constructorName;
-        Arguments = arguments;
+        TempArguments = tempArguments;
         IntermediateArguments = intermediateArguments;
         ConstructingAntetype = constructingAntetype;
         ReferencedConstructors = referencedConstructors;
@@ -6353,7 +6353,7 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IUnsafeExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode Expression { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempExpression { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateExpression { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -6378,7 +6378,7 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnsafeExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IUnsafeExpressionSyntax syntax, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression)
+    public UnsafeExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IUnsafeExpressionSyntax syntax, IAmbiguousExpressionNode tempExpression, IExpressionNode? intermediateExpression)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -6389,7 +6389,7 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        Expression = expression;
+        TempExpression = tempExpression;
         IntermediateExpression = intermediateExpression;
     }
 }
@@ -6638,11 +6638,11 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousAssignableExpressionNode LeftOperand { [DebuggerStepThrough] get; }
+    public IAmbiguousAssignableExpressionNode TempLeftOperand { [DebuggerStepThrough] get; }
     public IAmbiguousAssignableExpressionNode CurrentLeftOperand { [DebuggerStepThrough] get; }
     public IAssignableExpressionNode? IntermediateLeftOperand { [DebuggerStepThrough] get; }
     public AssignmentOperator Operator { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode RightOperand { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempRightOperand { [DebuggerStepThrough] get; }
     public IAmbiguousExpressionNode CurrentRightOperand { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateRightOperand { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -6668,7 +6668,7 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public AssignmentExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IAssignmentExpressionSyntax syntax, IAmbiguousAssignableExpressionNode leftOperand, IAmbiguousAssignableExpressionNode currentLeftOperand, IAssignableExpressionNode? intermediateLeftOperand, AssignmentOperator @operator, IAmbiguousExpressionNode rightOperand, IAmbiguousExpressionNode currentRightOperand, IExpressionNode? intermediateRightOperand)
+    public AssignmentExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IAssignmentExpressionSyntax syntax, IAmbiguousAssignableExpressionNode tempLeftOperand, IAmbiguousAssignableExpressionNode currentLeftOperand, IAssignableExpressionNode? intermediateLeftOperand, AssignmentOperator @operator, IAmbiguousExpressionNode tempRightOperand, IAmbiguousExpressionNode currentRightOperand, IExpressionNode? intermediateRightOperand)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -6682,11 +6682,11 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
         DefinitelyAssigned = definitelyAssigned;
         DefinitelyUnassigned = definitelyUnassigned;
         Syntax = syntax;
-        LeftOperand = leftOperand;
+        TempLeftOperand = tempLeftOperand;
         CurrentLeftOperand = currentLeftOperand;
         IntermediateLeftOperand = intermediateLeftOperand;
         Operator = @operator;
-        RightOperand = rightOperand;
+        TempRightOperand = tempRightOperand;
         CurrentRightOperand = currentRightOperand;
         IntermediateRightOperand = intermediateRightOperand;
     }
@@ -6707,10 +6707,10 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IBinaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode LeftOperand { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempLeftOperand { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateLeftOperand { [DebuggerStepThrough] get; }
     public BinaryOperator Operator { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode RightOperand { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempRightOperand { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateRightOperand { [DebuggerStepThrough] get; }
     public IAntetype? NumericOperatorCommonAntetype { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -6740,7 +6740,7 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     private ValueId valueId;
     private bool valueIdCached;
 
-    public BinaryOperatorExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IBinaryOperatorExpressionSyntax syntax, IAmbiguousExpressionNode leftOperand, IExpressionNode? intermediateLeftOperand, BinaryOperator @operator, IAmbiguousExpressionNode rightOperand, IExpressionNode? intermediateRightOperand, IAntetype? numericOperatorCommonAntetype)
+    public BinaryOperatorExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IBinaryOperatorExpressionSyntax syntax, IAmbiguousExpressionNode tempLeftOperand, IExpressionNode? intermediateLeftOperand, BinaryOperator @operator, IAmbiguousExpressionNode tempRightOperand, IExpressionNode? intermediateRightOperand, IAntetype? numericOperatorCommonAntetype)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -6751,18 +6751,18 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        LeftOperand = leftOperand;
+        TempLeftOperand = tempLeftOperand;
         IntermediateLeftOperand = intermediateLeftOperand;
         Operator = @operator;
-        RightOperand = rightOperand;
+        TempRightOperand = tempRightOperand;
         IntermediateRightOperand = intermediateRightOperand;
         NumericOperatorCommonAntetype = numericOperatorCommonAntetype;
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(child, Self.RightOperand))
-            return LexicalScopingAspect.BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(this);
+        if (ReferenceEquals(child, Self.TempRightOperand))
+            return LexicalScopingAspect.BinaryOperatorExpression_TempRightOperand_Broadcast_ContainingLexicalScope(this);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 }
@@ -6784,7 +6784,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     public IUnaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public UnaryOperatorFixity Fixity { [DebuggerStepThrough] get; }
     public UnaryOperator Operator { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode Operand { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempOperand { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateOperand { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -6809,7 +6809,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnaryOperatorExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IUnaryOperatorExpressionSyntax syntax, UnaryOperatorFixity fixity, UnaryOperator @operator, IAmbiguousExpressionNode operand, IExpressionNode? intermediateOperand)
+    public UnaryOperatorExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IUnaryOperatorExpressionSyntax syntax, UnaryOperatorFixity fixity, UnaryOperator @operator, IAmbiguousExpressionNode tempOperand, IExpressionNode? intermediateOperand)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -6822,7 +6822,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
         Syntax = syntax;
         Fixity = fixity;
         Operator = @operator;
-        Operand = operand;
+        TempOperand = tempOperand;
         IntermediateOperand = intermediateOperand;
     }
 }
@@ -6842,7 +6842,7 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IIdExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode Referent { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempReferent { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateReferent { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -6867,7 +6867,7 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public IdExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IIdExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent)
+    public IdExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IIdExpressionSyntax syntax, IAmbiguousExpressionNode tempReferent, IExpressionNode? intermediateReferent)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -6878,7 +6878,7 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        Referent = referent;
+        TempReferent = tempReferent;
         IntermediateReferent = intermediateReferent;
     }
 }
@@ -6898,7 +6898,7 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IConversionExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode Referent { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempReferent { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateReferent { [DebuggerStepThrough] get; }
     public ConversionOperator Operator { [DebuggerStepThrough] get; }
     public ITypeNode ConvertToType { [DebuggerStepThrough] get; }
@@ -6925,7 +6925,7 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public ConversionExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IConversionExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent, ConversionOperator @operator, ITypeNode convertToType)
+    public ConversionExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IConversionExpressionSyntax syntax, IAmbiguousExpressionNode tempReferent, IExpressionNode? intermediateReferent, ConversionOperator @operator, ITypeNode convertToType)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -6936,7 +6936,7 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        Referent = referent;
+        TempReferent = tempReferent;
         IntermediateReferent = intermediateReferent;
         Operator = @operator;
         ConvertToType = convertToType;
@@ -7014,7 +7014,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IPatternMatchExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode Referent { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempReferent { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateReferent { [DebuggerStepThrough] get; }
     public IPatternNode Pattern { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -7040,7 +7040,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
     private ValueId valueId;
     private bool valueIdCached;
 
-    public PatternMatchExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IPatternMatchExpressionSyntax syntax, IAmbiguousExpressionNode referent, IExpressionNode? intermediateReferent, IPatternNode pattern)
+    public PatternMatchExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IPatternMatchExpressionSyntax syntax, IAmbiguousExpressionNode tempReferent, IExpressionNode? intermediateReferent, IPatternNode pattern)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -7051,7 +7051,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        Referent = referent;
+        TempReferent = tempReferent;
         IntermediateReferent = intermediateReferent;
         Pattern = pattern;
     }
@@ -7071,7 +7071,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     public DataType? ExpectedType { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IIfExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode Condition { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempCondition { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateCondition { [DebuggerStepThrough] get; }
     public IBlockOrResultNode ThenBlock { [DebuggerStepThrough] get; }
     public IElseClauseNode? ElseClause { [DebuggerStepThrough] get; }
@@ -7099,7 +7099,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public IfExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IIfExpressionSyntax syntax, IAmbiguousExpressionNode condition, IExpressionNode? intermediateCondition, IBlockOrResultNode thenBlock, IElseClauseNode? elseClause, IFlowState flowStateAfter)
+    public IfExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IIfExpressionSyntax syntax, IAmbiguousExpressionNode tempCondition, IExpressionNode? intermediateCondition, IBlockOrResultNode thenBlock, IElseClauseNode? elseClause, IFlowState flowStateAfter)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -7109,7 +7109,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         ExpectedType = expectedType;
         Type = type;
         Syntax = syntax;
-        Condition = condition;
+        TempCondition = tempCondition;
         IntermediateCondition = intermediateCondition;
         ThenBlock = thenBlock;
         ElseClause = elseClause;
@@ -7186,7 +7186,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IWhileExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode Condition { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempCondition { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateCondition { [DebuggerStepThrough] get; }
     public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -7212,7 +7212,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public WhileExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IWhileExpressionSyntax syntax, IAmbiguousExpressionNode condition, IExpressionNode? intermediateCondition, IBlockExpressionNode block)
+    public WhileExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IWhileExpressionSyntax syntax, IAmbiguousExpressionNode tempCondition, IExpressionNode? intermediateCondition, IBlockExpressionNode block)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -7223,7 +7223,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        Condition = condition;
+        TempCondition = tempCondition;
         IntermediateCondition = intermediateCondition;
         Block = block;
     }
@@ -7253,7 +7253,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     public IForeachExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IdentifierName VariableName { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode InExpression { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempInExpression { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateInExpression { [DebuggerStepThrough] get; }
     public ITypeNode? DeclaredType { [DebuggerStepThrough] get; }
     public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
@@ -7307,7 +7307,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public ForeachExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, IdentifierName name, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IForeachExpressionSyntax syntax, bool isMutableBinding, IdentifierName variableName, IAmbiguousExpressionNode inExpression, IExpressionNode? intermediateInExpression, ITypeNode? declaredType, IBlockExpressionNode block, ITypeDeclarationNode? referencedIterableDeclaration, IStandardMethodDeclarationNode? referencedIterateMethod, IMaybeExpressionAntetype iteratorAntetype, DataType iteratorType, ITypeDeclarationNode? referencedIteratorDeclaration, IStandardMethodDeclarationNode? referencedNextMethod, IMaybeAntetype iteratedAntetype, DataType iteratedType, IFlowState flowStateBeforeBlock)
+    public ForeachExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, IdentifierName name, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IForeachExpressionSyntax syntax, bool isMutableBinding, IdentifierName variableName, IAmbiguousExpressionNode tempInExpression, IExpressionNode? intermediateInExpression, ITypeNode? declaredType, IBlockExpressionNode block, ITypeDeclarationNode? referencedIterableDeclaration, IStandardMethodDeclarationNode? referencedIterateMethod, IMaybeExpressionAntetype iteratorAntetype, DataType iteratorType, ITypeDeclarationNode? referencedIteratorDeclaration, IStandardMethodDeclarationNode? referencedNextMethod, IMaybeAntetype iteratedAntetype, DataType iteratedType, IFlowState flowStateBeforeBlock)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -7327,7 +7327,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         Syntax = syntax;
         IsMutableBinding = isMutableBinding;
         VariableName = variableName;
-        InExpression = inExpression;
+        TempInExpression = tempInExpression;
         IntermediateInExpression = intermediateInExpression;
         DeclaredType = declaredType;
         Block = block;
@@ -7358,7 +7358,7 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public NeverType Type { [DebuggerStepThrough] get; }
     public IBreakExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode? Value { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? TempValue { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateValue { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -7383,7 +7383,7 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public BreakExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? value, IExpressionNode? intermediateValue)
+    public BreakExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? tempValue, IExpressionNode? intermediateValue)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -7394,7 +7394,7 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
         FlowStateAfter = flowStateAfter;
         Type = type;
         Syntax = syntax;
-        Value = value;
+        TempValue = tempValue;
         IntermediateValue = intermediateValue;
     }
 }
@@ -7466,7 +7466,7 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public NeverType Type { [DebuggerStepThrough] get; }
     public IReturnExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode? Value { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? TempValue { [DebuggerStepThrough] get; }
     public IAmbiguousExpressionNode? CurrentValue { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateValue { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -7500,7 +7500,7 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public ReturnExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, IReturnExpressionSyntax syntax, IAmbiguousExpressionNode? value, IAmbiguousExpressionNode? currentValue, IExpressionNode? intermediateValue)
+    public ReturnExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, IFlowState flowStateAfter, NeverType type, IReturnExpressionSyntax syntax, IAmbiguousExpressionNode? tempValue, IAmbiguousExpressionNode? currentValue, IExpressionNode? intermediateValue)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -7511,7 +7511,7 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
         FlowStateAfter = flowStateAfter;
         Type = type;
         Syntax = syntax;
-        Value = value;
+        TempValue = tempValue;
         CurrentValue = currentValue;
         IntermediateValue = intermediateValue;
     }
@@ -7569,11 +7569,11 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     public DataType? ExpectedType { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFunctionGroupNameNode FunctionGroup { [DebuggerStepThrough] get; }
-    public IFixedList<IAmbiguousExpressionNode> Arguments { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> TempArguments { [DebuggerStepThrough] get; }
     public IFixedList<IExpressionNode?> IntermediateArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
     public IFunctionLikeDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
@@ -7603,7 +7603,7 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     private ValueId valueId;
     private bool valueIdCached;
 
-    public FunctionInvocationExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IFunctionGroupNameNode functionGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IFunctionLikeDeclarationNode> compatibleDeclarations, IFunctionLikeDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public FunctionInvocationExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IFunctionGroupNameNode functionGroup, IFixedList<IAmbiguousExpressionNode> tempArguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IFunctionLikeDeclarationNode> compatibleDeclarations, IFunctionLikeDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -7613,11 +7613,11 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         ExpectedType = expectedType;
         Type = type;
         FlowStateAfter = flowStateAfter;
-        AllArguments = allArguments;
+        TempAllArguments = tempAllArguments;
         AllIntermediateArguments = allIntermediateArguments;
         Syntax = syntax;
         FunctionGroup = functionGroup;
-        Arguments = arguments;
+        TempArguments = tempArguments;
         IntermediateArguments = intermediateArguments;
         CompatibleDeclarations = compatibleDeclarations;
         ReferencedDeclaration = referencedDeclaration;
@@ -7639,11 +7639,11 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     public DataType? ExpectedType { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodGroupNameNode MethodGroup { [DebuggerStepThrough] get; }
-    public IFixedList<IAmbiguousExpressionNode> Arguments { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> TempArguments { [DebuggerStepThrough] get; }
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments { [DebuggerStepThrough] get; }
     public IFixedList<IExpressionNode?> IntermediateArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
@@ -7672,7 +7672,7 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     private ValueId valueId;
     private bool valueIdCached;
 
-    public MethodInvocationExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IMethodGroupNameNode methodGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IAmbiguousExpressionNode> currentArguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IStandardMethodDeclarationNode> compatibleDeclarations, IStandardMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public MethodInvocationExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IMethodGroupNameNode methodGroup, IFixedList<IAmbiguousExpressionNode> tempArguments, IFixedList<IAmbiguousExpressionNode> currentArguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IStandardMethodDeclarationNode> compatibleDeclarations, IStandardMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -7682,11 +7682,11 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         ExpectedType = expectedType;
         Type = type;
         FlowStateAfter = flowStateAfter;
-        AllArguments = allArguments;
+        TempAllArguments = tempAllArguments;
         AllIntermediateArguments = allIntermediateArguments;
         Syntax = syntax;
         MethodGroup = methodGroup;
-        Arguments = arguments;
+        TempArguments = tempArguments;
         CurrentArguments = currentArguments;
         IntermediateArguments = intermediateArguments;
         CompatibleDeclarations = compatibleDeclarations;
@@ -7709,7 +7709,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     public DataType? ExpectedType { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IExpressionNode Context { [DebuggerStepThrough] get; }
@@ -7740,7 +7740,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     private ValueId valueId;
     private bool valueIdCached;
 
-    public GetterInvocationExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, IGetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public GetterInvocationExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, IGetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -7750,7 +7750,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
         ExpectedType = expectedType;
         Type = type;
         FlowStateAfter = flowStateAfter;
-        AllArguments = allArguments;
+        TempAllArguments = tempAllArguments;
         AllIntermediateArguments = allIntermediateArguments;
         Syntax = syntax;
         Context = context;
@@ -7775,12 +7775,12 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     public DataType? ExpectedType { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IExpressionNode Context { [DebuggerStepThrough] get; }
     public StandardName PropertyName { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode Value { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempValue { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateValue { [DebuggerStepThrough] get; }
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { [DebuggerStepThrough] get; }
     public ISetterMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
@@ -7808,7 +7808,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     private ValueId valueId;
     private bool valueIdCached;
 
-    public SetterInvocationExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IAssignmentExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IAmbiguousExpressionNode value, IExpressionNode? intermediateValue, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, ISetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public SetterInvocationExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IAssignmentExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IAmbiguousExpressionNode tempValue, IExpressionNode? intermediateValue, IFixedSet<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, ISetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -7818,12 +7818,12 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         ExpectedType = expectedType;
         Type = type;
         FlowStateAfter = flowStateAfter;
-        AllArguments = allArguments;
+        TempAllArguments = tempAllArguments;
         AllIntermediateArguments = allIntermediateArguments;
         Syntax = syntax;
         Context = context;
         PropertyName = propertyName;
-        Value = value;
+        TempValue = tempValue;
         IntermediateValue = intermediateValue;
         ReferencedPropertyAccessors = referencedPropertyAccessors;
         ReferencedDeclaration = referencedDeclaration;
@@ -7845,11 +7845,11 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     public DataType? ExpectedType { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IExpressionNode Expression { [DebuggerStepThrough] get; }
-    public IFixedList<IAmbiguousExpressionNode> Arguments { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> TempArguments { [DebuggerStepThrough] get; }
     public IFixedList<IExpressionNode?> IntermediateArguments { [DebuggerStepThrough] get; }
     public FunctionAntetype FunctionAntetype { [DebuggerStepThrough] get; }
     public FunctionType FunctionType { [DebuggerStepThrough] get; }
@@ -7876,7 +7876,7 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     private ValueId valueId;
     private bool valueIdCached;
 
-    public FunctionReferenceInvocationExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IExpressionNode expression, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, FunctionAntetype functionAntetype, FunctionType functionType)
+    public FunctionReferenceInvocationExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IExpressionNode expression, IFixedList<IAmbiguousExpressionNode> tempArguments, IFixedList<IExpressionNode?> intermediateArguments, FunctionAntetype functionAntetype, FunctionType functionType)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -7886,11 +7886,11 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
         ExpectedType = expectedType;
         Type = type;
         FlowStateAfter = flowStateAfter;
-        AllArguments = allArguments;
+        TempAllArguments = tempAllArguments;
         AllIntermediateArguments = allIntermediateArguments;
         Syntax = syntax;
         Expression = expression;
-        Arguments = arguments;
+        TempArguments = tempArguments;
         IntermediateArguments = intermediateArguments;
         FunctionAntetype = functionAntetype;
         FunctionType = functionType;
@@ -7911,11 +7911,11 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     public DataType? ExpectedType { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments { [DebuggerStepThrough] get; }
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllIntermediateArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IInitializerGroupNameNode InitializerGroup { [DebuggerStepThrough] get; }
-    public IFixedList<IAmbiguousExpressionNode> Arguments { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> TempArguments { [DebuggerStepThrough] get; }
     public IFixedList<IExpressionNode?> IntermediateArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
     public IInitializerDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
@@ -7945,7 +7945,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     private ValueId valueId;
     private bool valueIdCached;
 
-    public InitializerInvocationExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> allArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IInitializerGroupNameNode initializerGroup, IFixedList<IAmbiguousExpressionNode> arguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IInitializerDeclarationNode> compatibleDeclarations, IInitializerDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public InitializerInvocationExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allIntermediateArguments, IInvocationExpressionSyntax syntax, IInitializerGroupNameNode initializerGroup, IFixedList<IAmbiguousExpressionNode> tempArguments, IFixedList<IExpressionNode?> intermediateArguments, IFixedSet<IInitializerDeclarationNode> compatibleDeclarations, IInitializerDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -7955,11 +7955,11 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
         ExpectedType = expectedType;
         Type = type;
         FlowStateAfter = flowStateAfter;
-        AllArguments = allArguments;
+        TempAllArguments = tempAllArguments;
         AllIntermediateArguments = allIntermediateArguments;
         Syntax = syntax;
         InitializerGroup = initializerGroup;
-        Arguments = arguments;
+        TempArguments = tempArguments;
         IntermediateArguments = intermediateArguments;
         CompatibleDeclarations = compatibleDeclarations;
         ReferencedDeclaration = referencedDeclaration;
@@ -9133,7 +9133,7 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public IMoveExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public ISimpleNameNode Referent { [DebuggerStepThrough] get; }
+    public ISimpleNameNode TempReferent { [DebuggerStepThrough] get; }
     public INameExpressionNode? IntermediateReferent { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -9150,11 +9150,11 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
     private ValueId valueId;
     private bool valueIdCached;
 
-    public AmbiguousMoveExpressionNode(ISemanticNode parent, IMoveExpressionSyntax syntax, ISimpleNameNode referent, INameExpressionNode? intermediateReferent)
+    public AmbiguousMoveExpressionNode(ISemanticNode parent, IMoveExpressionSyntax syntax, ISimpleNameNode tempReferent, INameExpressionNode? intermediateReferent)
     {
         Parent = parent;
         Syntax = syntax;
-        Referent = referent;
+        TempReferent = tempReferent;
         IntermediateReferent = intermediateReferent;
     }
 }
@@ -9333,7 +9333,7 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public IFreezeExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public ISimpleNameNode Referent { [DebuggerStepThrough] get; }
+    public ISimpleNameNode TempReferent { [DebuggerStepThrough] get; }
     public INameExpressionNode? IntermediateReferent { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -9350,11 +9350,11 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
     private ValueId valueId;
     private bool valueIdCached;
 
-    public AmbiguousFreezeExpressionNode(ISemanticNode parent, IFreezeExpressionSyntax syntax, ISimpleNameNode referent, INameExpressionNode? intermediateReferent)
+    public AmbiguousFreezeExpressionNode(ISemanticNode parent, IFreezeExpressionSyntax syntax, ISimpleNameNode tempReferent, INameExpressionNode? intermediateReferent)
     {
         Parent = parent;
         Syntax = syntax;
-        Referent = referent;
+        TempReferent = tempReferent;
         IntermediateReferent = intermediateReferent;
     }
 }
@@ -9601,7 +9601,7 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IAsyncStartExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool Scheduled { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode Expression { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempExpression { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateExpression { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -9626,7 +9626,7 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public AsyncStartExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAsyncStartExpressionSyntax syntax, bool scheduled, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression)
+    public AsyncStartExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAsyncStartExpressionSyntax syntax, bool scheduled, IAmbiguousExpressionNode tempExpression, IExpressionNode? intermediateExpression)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -9638,7 +9638,7 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
         Scheduled = scheduled;
-        Expression = expression;
+        TempExpression = tempExpression;
         IntermediateExpression = intermediateExpression;
     }
 }
@@ -9658,7 +9658,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IAwaitExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode Expression { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode TempExpression { [DebuggerStepThrough] get; }
     public IExpressionNode? IntermediateExpression { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -9683,7 +9683,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public AwaitExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAwaitExpressionSyntax syntax, IAmbiguousExpressionNode expression, IExpressionNode? intermediateExpression)
+    public AwaitExpressionNode(ISemanticNode parent, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype? expectedAntetype, IMaybeExpressionAntetype antetype, DataType? expectedType, DataType type, IFlowState flowStateAfter, IAwaitExpressionSyntax syntax, IAmbiguousExpressionNode tempExpression, IExpressionNode? intermediateExpression)
     {
         Parent = parent;
         ControlFlowNext = controlFlowNext;
@@ -9694,7 +9694,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        Expression = expression;
+        TempExpression = tempExpression;
         IntermediateExpression = intermediateExpression;
     }
 }

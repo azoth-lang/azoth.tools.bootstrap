@@ -9,7 +9,7 @@ internal static class VariablesAspect
         => VariableBindings(node.Body);
 
     public static FixedDictionary<IVariableBindingNode, int> FieldDefinition_VariableBindingsMap(IFieldDefinitionNode node)
-        => VariableBindings(node.Initializer);
+        => VariableBindings(node.TempInitializer);
 
     private static FixedDictionary<IVariableBindingNode, int> VariableBindings(IChildNode? node)
     {

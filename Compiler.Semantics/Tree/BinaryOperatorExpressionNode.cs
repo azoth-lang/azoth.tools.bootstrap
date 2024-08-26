@@ -19,19 +19,19 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     public override IBinaryOperatorExpressionSyntax Syntax { get; }
     private RewritableChild<IAmbiguousExpressionNode> leftOperand;
     private bool leftOperandCached;
-    public IAmbiguousExpressionNode LeftOperand
+    public IAmbiguousExpressionNode TempLeftOperand
         => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
             : this.RewritableChild(ref leftOperandCached, ref leftOperand);
     public IAmbiguousExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
-    public IExpressionNode? IntermediateLeftOperand => LeftOperand as IExpressionNode;
+    public IExpressionNode? IntermediateLeftOperand => TempLeftOperand as IExpressionNode;
     public BinaryOperator Operator => Syntax.Operator;
     private RewritableChild<IAmbiguousExpressionNode> rightOperand;
     private bool rightOperandCached;
-    public IAmbiguousExpressionNode RightOperand
+    public IAmbiguousExpressionNode TempRightOperand
         => GrammarAttribute.IsCached(in rightOperandCached) ? rightOperand.UnsafeValue
             : this.RewritableChild(ref rightOperandCached, ref rightOperand);
     public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
-    public IExpressionNode? IntermediateRightOperand => RightOperand as IExpressionNode;
+    public IExpressionNode? IntermediateRightOperand => TempRightOperand as IExpressionNode;
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
     public override LexicalScope ContainingLexicalScope
@@ -80,7 +80,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         if (child == CurrentLeftOperand)
             return ContainingLexicalScope;
         if (child == CurrentRightOperand)
-            return LexicalScopingAspect.BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(this);
+            return LexicalScopingAspect.BinaryOperatorExpression_TempRightOperand_Broadcast_ContainingLexicalScope(this);
         throw new ArgumentException("Not a child of this node.", nameof(child));
     }
 

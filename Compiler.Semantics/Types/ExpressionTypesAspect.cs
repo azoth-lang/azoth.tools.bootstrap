@@ -359,7 +359,7 @@ internal static partial class ExpressionTypesAspect
 
     public static void FieldAccessExpression_ContributeDiagnostics(IFieldAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.Parent is IAssignmentExpressionNode assignmentNode && assignmentNode.LeftOperand == node)
+        if (node.Parent is IAssignmentExpressionNode assignmentNode && assignmentNode.TempLeftOperand == node)
             // In this case, a different error will be reported and CannotAccessMutableBindingFieldOfIdentityReference
             // should not be reported.
             return;

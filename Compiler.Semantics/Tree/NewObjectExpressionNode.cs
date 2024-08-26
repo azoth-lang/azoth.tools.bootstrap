@@ -22,9 +22,9 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     public ITypeNameNode ConstructingType { get; }
     public IdentifierName? ConstructorName => Syntax.ConstructorName;
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
-    public IFixedList<IAmbiguousExpressionNode> Arguments => arguments;
+    public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments => Arguments;
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => TempArguments;
     public IFixedList<IExpressionNode?> IntermediateArguments => arguments.Intermediate;
     public IEnumerable<IExpressionNode?> AllIntermediateArguments => IntermediateArguments;
     private IMaybeAntetype? constructingAntetype;
@@ -86,7 +86,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     {
         Syntax = syntax;
         ConstructingType = Child.Attach(this, type);
-        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+        this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
@@ -100,12 +100,12 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     {
         if (child == ConstructingType)
             return ContainingLexicalScope;
-        var argumentIndex = Arguments.IndexOf(child)
+        var argumentIndex = TempArguments.IndexOf(child)
                             ?? throw new ArgumentException("Is not a child of this node.", nameof(child));
         if (argumentIndex == 0)
             return ContainingLexicalScope;
 
-        return Arguments[argumentIndex - 1].FlowLexicalScope().True;
+        return TempArguments[argumentIndex - 1].FlowLexicalScope().True;
     }
 
     public PackageNameScope PackageNameScope() => InheritedPackageNameScope();

@@ -35,7 +35,7 @@ internal static partial class LexicalScopingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ConditionalLexicalScope AssignmentExpression_FlowLexicalScope(IAssignmentExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial LexicalScope BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(IBinaryOperatorExpressionNode node);
+    public static partial LexicalScope BinaryOperatorExpression_TempRightOperand_Broadcast_ContainingLexicalScope(IBinaryOperatorExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ConditionalLexicalScope BinaryOperatorExpression_FlowLexicalScope(IBinaryOperatorExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

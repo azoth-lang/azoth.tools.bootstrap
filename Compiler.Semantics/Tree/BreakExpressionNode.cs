@@ -12,10 +12,10 @@ internal sealed class BreakExpressionNode : ExpressionNode, IBreakExpressionNode
     public override IBreakExpressionSyntax Syntax { get; }
     private RewritableChild<IAmbiguousExpressionNode?> value;
     private bool valueCached;
-    public IAmbiguousExpressionNode? Value
+    public IAmbiguousExpressionNode? TempValue
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
-    public IExpressionNode? IntermediateValue => Value as IExpressionNode;
+    public IExpressionNode? IntermediateValue => TempValue as IExpressionNode;
     public override IMaybeExpressionAntetype Antetype => IAntetype.Never;
     public override NeverType Type => DataType.Never;
     private IFlowState? flowStateAfter;

@@ -25,12 +25,12 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     public StandardName PropertyName { get; }
     private RewritableChild<IAmbiguousExpressionNode> value;
     private bool valueCached;
-    public IAmbiguousExpressionNode Value
+    public IAmbiguousExpressionNode TempValue
         => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
             : this.RewritableChild(ref valueCached, ref value);
     public IAmbiguousExpressionNode CurrentValue => value.UnsafeValue;
-    public IExpressionNode? IntermediateValue => Value as IExpressionNode;
-    public IEnumerable<IAmbiguousExpressionNode> AllArguments => [Context, Value];
+    public IExpressionNode? IntermediateValue => TempValue as IExpressionNode;
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => [Context, TempValue];
     public IEnumerable<IExpressionNode?> AllIntermediateArguments => [Context, IntermediateValue];
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     public ISetterMethodDeclarationNode? ReferencedDeclaration { get; }

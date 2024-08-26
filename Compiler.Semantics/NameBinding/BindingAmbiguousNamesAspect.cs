@@ -163,7 +163,7 @@ internal static class BindingAmbiguousNamesAspect
     public static IExpressionNode? PropertyName_Rewrite(IPropertyNameNode node)
     {
         if (node.Parent is IAssignmentExpressionNode assignmentExpression
-            && assignmentExpression.LeftOperand == node)
+            && assignmentExpression.TempLeftOperand == node)
         {
             // Property on left hand of assignment will be rewritten by the assignment expression
             return null;
@@ -176,7 +176,7 @@ internal static class BindingAmbiguousNamesAspect
 
     public static IExpressionNode? AssignmentExpression_Rewrite_PropertyNameLeftOperand(IAssignmentExpressionNode node)
     {
-        if (node.LeftOperand is not IPropertyNameNode propertyName)
+        if (node.TempLeftOperand is not IPropertyNameNode propertyName)
             return null;
 
         var setter = propertyName.ReferencedPropertyAccessors.OfType<ISetterMethodDeclarationNode>().TrySingle();

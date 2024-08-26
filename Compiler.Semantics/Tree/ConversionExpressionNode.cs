@@ -17,10 +17,10 @@ internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpr
     public override IConversionExpressionSyntax Syntax { get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
     private bool referentCached;
-    public IAmbiguousExpressionNode Referent
+    public IAmbiguousExpressionNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
-    public IExpressionNode? IntermediateReferent => Referent as IExpressionNode;
+    public IExpressionNode? IntermediateReferent => TempReferent as IExpressionNode;
     public ConversionOperator Operator => Syntax.Operator;
     public ITypeNode ConvertToType { get; }
     private IMaybeExpressionAntetype? antetype;
@@ -52,7 +52,7 @@ internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpr
         ConvertToType = Child.Attach(this, convertToType);
     }
 
-    public override ConditionalLexicalScope FlowLexicalScope() => Referent.FlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => TempReferent.FlowLexicalScope();
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.ConversionExpression_ControlFlowNext(this);

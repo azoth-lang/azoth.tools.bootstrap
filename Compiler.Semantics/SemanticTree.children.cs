@@ -171,8 +171,8 @@ public static class ISemanticNodeExtensions
             case IFieldDefinitionNode n:
                 yield return n.TypeNode;
                 yield return n.Entry;
-                if (n.Initializer is not null)
-                    yield return n.Initializer;
+                if (n.TempInitializer is not null)
+                    yield return n.TempInitializer;
                 yield return n.Exit;
                 yield break;
             case IAssociatedFunctionDefinitionNode n:
@@ -251,18 +251,18 @@ public static class ISemanticNodeExtensions
             case IExitNode n:
                 yield break;
             case IResultStatementNode n:
-                yield return n.Expression;
+                yield return n.TempExpression;
                 yield break;
             case IVariableDeclarationStatementNode n:
                 if (n.Capability is not null)
                     yield return n.Capability;
                 if (n.Type is not null)
                     yield return n.Type;
-                if (n.Initializer is not null)
-                    yield return n.Initializer;
+                if (n.TempInitializer is not null)
+                    yield return n.TempInitializer;
                 yield break;
             case IExpressionStatementNode n:
-                yield return n.Expression;
+                yield return n.TempExpression;
                 yield break;
             case IBindingContextPatternNode n:
                 yield return n.Pattern;
@@ -280,11 +280,11 @@ public static class ISemanticNodeExtensions
                 yield break;
             case INewObjectExpressionNode n:
                 yield return n.ConstructingType;
-                foreach (var child in n.Arguments)
+                foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
             case IUnsafeExpressionNode n:
-                yield return n.Expression;
+                yield return n.TempExpression;
                 yield break;
             case IBoolLiteralExpressionNode n:
                 yield break;
@@ -295,32 +295,32 @@ public static class ISemanticNodeExtensions
             case IStringLiteralExpressionNode n:
                 yield break;
             case IAssignmentExpressionNode n:
-                yield return n.LeftOperand;
-                yield return n.RightOperand;
+                yield return n.TempLeftOperand;
+                yield return n.TempRightOperand;
                 yield break;
             case IBinaryOperatorExpressionNode n:
-                yield return n.LeftOperand;
-                yield return n.RightOperand;
+                yield return n.TempLeftOperand;
+                yield return n.TempRightOperand;
                 yield break;
             case IUnaryOperatorExpressionNode n:
-                yield return n.Operand;
+                yield return n.TempOperand;
                 yield break;
             case IIdExpressionNode n:
-                yield return n.Referent;
+                yield return n.TempReferent;
                 yield break;
             case IConversionExpressionNode n:
-                yield return n.Referent;
+                yield return n.TempReferent;
                 yield return n.ConvertToType;
                 yield break;
             case IImplicitConversionExpressionNode n:
                 yield return n.Referent;
                 yield break;
             case IPatternMatchExpressionNode n:
-                yield return n.Referent;
+                yield return n.TempReferent;
                 yield return n.Pattern;
                 yield break;
             case IIfExpressionNode n:
-                yield return n.Condition;
+                yield return n.TempCondition;
                 yield return n.ThenBlock;
                 if (n.ElseClause is not null)
                     yield return n.ElseClause;
@@ -329,24 +329,24 @@ public static class ISemanticNodeExtensions
                 yield return n.Block;
                 yield break;
             case IWhileExpressionNode n:
-                yield return n.Condition;
+                yield return n.TempCondition;
                 yield return n.Block;
                 yield break;
             case IForeachExpressionNode n:
-                yield return n.InExpression;
+                yield return n.TempInExpression;
                 if (n.DeclaredType is not null)
                     yield return n.DeclaredType;
                 yield return n.Block;
                 yield break;
             case IBreakExpressionNode n:
-                if (n.Value is not null)
-                    yield return n.Value;
+                if (n.TempValue is not null)
+                    yield return n.TempValue;
                 yield break;
             case INextExpressionNode n:
                 yield break;
             case IReturnExpressionNode n:
-                if (n.Value is not null)
-                    yield return n.Value;
+                if (n.TempValue is not null)
+                    yield return n.TempValue;
                 yield break;
             case IUnresolvedInvocationExpressionNode n:
                 yield return n.Expression;
@@ -355,12 +355,12 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IFunctionInvocationExpressionNode n:
                 yield return n.FunctionGroup;
-                foreach (var child in n.Arguments)
+                foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
             case IMethodInvocationExpressionNode n:
                 yield return n.MethodGroup;
-                foreach (var child in n.Arguments)
+                foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
             case IGetterInvocationExpressionNode n:
@@ -368,16 +368,16 @@ public static class ISemanticNodeExtensions
                 yield break;
             case ISetterInvocationExpressionNode n:
                 yield return n.Context;
-                yield return n.Value;
+                yield return n.TempValue;
                 yield break;
             case IFunctionReferenceInvocationExpressionNode n:
                 yield return n.Expression;
-                foreach (var child in n.Arguments)
+                foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
             case IInitializerInvocationExpressionNode n:
                 yield return n.InitializerGroup;
-                foreach (var child in n.Arguments)
+                foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
             case IUnknownInvocationExpressionNode n:
@@ -453,7 +453,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IAmbiguousMoveExpressionNode n:
-                yield return n.Referent;
+                yield return n.TempReferent;
                 yield break;
             case IMoveVariableExpressionNode n:
                 yield return n.Referent;
@@ -465,7 +465,7 @@ public static class ISemanticNodeExtensions
                 yield return n.Referent;
                 yield break;
             case IAmbiguousFreezeExpressionNode n:
-                yield return n.Referent;
+                yield return n.TempReferent;
                 yield break;
             case IFreezeVariableExpressionNode n:
                 yield return n.Referent;
@@ -480,10 +480,10 @@ public static class ISemanticNodeExtensions
                 yield return n.Block;
                 yield break;
             case IAsyncStartExpressionNode n:
-                yield return n.Expression;
+                yield return n.TempExpression;
                 yield break;
             case IAwaitExpressionNode n:
-                yield return n.Expression;
+                yield return n.TempExpression;
                 yield break;
             case IPackageSymbolNode n:
                 yield return n.MainFacet;

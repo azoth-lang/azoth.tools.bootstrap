@@ -15,10 +15,10 @@ internal sealed class UnsafeExpressionNode : ExpressionNode, IUnsafeExpressionNo
     public override IUnsafeExpressionSyntax Syntax { get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
-    public IAmbiguousExpressionNode Expression
+    public IAmbiguousExpressionNode TempExpression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
-    public IExpressionNode? IntermediateExpression => Expression as IExpressionNode;
+    public IExpressionNode? IntermediateExpression => TempExpression as IExpressionNode;
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
@@ -43,7 +43,7 @@ internal sealed class UnsafeExpressionNode : ExpressionNode, IUnsafeExpressionNo
         this.expression = Child.Create(this, expression);
     }
 
-    public override ConditionalLexicalScope FlowLexicalScope() => Expression.FlowLexicalScope();
+    public override ConditionalLexicalScope FlowLexicalScope() => TempExpression.FlowLexicalScope();
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.UnsafeExpression_ControlFlowNext(this);

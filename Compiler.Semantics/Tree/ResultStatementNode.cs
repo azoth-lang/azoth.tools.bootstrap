@@ -15,11 +15,11 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
     ICodeSyntax IElseClauseNode.Syntax => Syntax;
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
-    public IAmbiguousExpressionNode Expression
+    public IAmbiguousExpressionNode TempExpression
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
-    public IExpressionNode? IntermediateExpression => Expression as IExpressionNode;
+    public IExpressionNode? IntermediateExpression => TempExpression as IExpressionNode;
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
     public IMaybeExpressionAntetype? ExpectedAntetype

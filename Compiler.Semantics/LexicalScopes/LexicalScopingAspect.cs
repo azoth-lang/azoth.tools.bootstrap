@@ -123,12 +123,12 @@ internal static partial class LexicalScopingAspect
         if (node.Operator == BinaryOperator.Or)
             // Cannot statically be sure which part of the expression was evaluated
             return ConditionalLexicalScope.Unconditional(node.ContainingLexicalScope());
-        return node.RightOperand.FlowLexicalScope();
+        return node.TempRightOperand.FlowLexicalScope();
     }
 
-    public static partial LexicalScope BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(IBinaryOperatorExpressionNode node)
+    public static partial LexicalScope BinaryOperatorExpression_TempRightOperand_Broadcast_ContainingLexicalScope(IBinaryOperatorExpressionNode node)
     {
-        var flowScope = node.LeftOperand.FlowLexicalScope();
+        var flowScope = node.TempLeftOperand.FlowLexicalScope();
         // Logical-or is short-circuiting, so the right operand is only evaluated if the left
         // operand is false. Otherwise, the operator is logical-and or another operator and the
         // right operand will be evaluated when the left operand is true (or always).
@@ -139,17 +139,17 @@ internal static partial class LexicalScopingAspect
     /// side because parts of it will be evaluated first. For simplicity, both sides are evaluated
     /// in the containing lexical scope and only the right hand scope is used.</remarks>
     public static partial ConditionalLexicalScope AssignmentExpression_FlowLexicalScope(IAssignmentExpressionNode node)
-        => node.RightOperand.FlowLexicalScope();
+        => node.TempRightOperand.FlowLexicalScope();
 
     public static partial ConditionalLexicalScope UnaryOperatorExpression_FlowLexicalScope(IUnaryOperatorExpressionNode node)
     {
-        var flow = node.Operand.FlowLexicalScope();
+        var flow = node.TempOperand.FlowLexicalScope();
         return node.Operator == UnaryOperator.Not ? flow.Swapped() : flow;
     }
 
     public static partial LexicalScope ForeachExpression_LexicalScope(IForeachExpressionNode node)
     {
-        var flowScope = node.InExpression.FlowLexicalScope().True;
+        var flowScope = node.TempInExpression.FlowLexicalScope().True;
         return new DeclarationScope(flowScope, node);
     }
 

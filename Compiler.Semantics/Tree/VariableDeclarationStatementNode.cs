@@ -27,11 +27,11 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public ITypeNode? Type { get; }
     private RewritableChild<IAmbiguousExpressionNode?> initializer;
     private bool initializerCached;
-    public IAmbiguousExpressionNode? Initializer
+    public IAmbiguousExpressionNode? TempInitializer
         => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
             : this.RewritableChild(ref initializerCached, ref initializer);
     public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
-    public IExpressionNode? IntermediateInitializer => Initializer as IExpressionNode;
+    public IExpressionNode? IntermediateInitializer => TempInitializer as IExpressionNode;
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
     public LexicalScope ContainingLexicalScope
