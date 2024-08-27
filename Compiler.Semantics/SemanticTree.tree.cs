@@ -151,19 +151,19 @@ public partial interface IPackageNode : IPackageDeclarationNode
     new IPackageFacetNode TestingFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
     DiagnosticCollection Diagnostics { get; }
-    IFunctionDefinitionNode? EntryPoint { get; }
     FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations { get; }
     new IdentifierName Name
         => Syntax.Name;
     IdentifierName IPackageDeclarationNode.Name => Name;
+    IFunctionDefinitionNode? EntryPoint { get; }
     IPackageSymbols PackageSymbols { get; }
     IPackageReferenceNode IntrinsicsReference { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
     IdentifierName? IPackageDeclarationNode.AliasOrName
         => null;
 
-    public static IPackageNode Create(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFunctionDefinitionNode? entryPoint)
-        => new PackageNode(syntax, references, mainFacet, testingFacet, diagnostics, entryPoint);
+    public static IPackageNode Create(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics)
+        => new PackageNode(syntax, references, mainFacet, testingFacet, diagnostics);
 }
 
 // [Closed(typeof(PackageReferenceNode))]
@@ -189,13 +189,13 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     PackageSymbol PackageSymbol { get; }
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
-    IFixedSet<IPackageMemberDefinitionNode> Definitions { get; }
     PackageNameScope PackageNameScope { get; }
     new INamespaceDefinitionNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
+    IFixedSet<IPackageMemberDefinitionNode> Definitions { get; }
 
-    public static IPackageFacetNode Create(ISemanticNode parent, IdentifierName? packageAliasOrName, PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IFixedSet<ICompilationUnitNode> compilationUnits, IFixedSet<IPackageMemberDefinitionNode> definitions)
-        => new PackageFacetNode(parent, packageAliasOrName, symbol, syntax, packageName, packageSymbol, compilationUnits, definitions);
+    public static IPackageFacetNode Create(ISemanticNode parent, IdentifierName? packageAliasOrName, PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IFixedSet<ICompilationUnitNode> compilationUnits)
+        => new PackageFacetNode(parent, packageAliasOrName, symbol, syntax, packageName, packageSymbol, compilationUnits);
 }
 
 [Closed(
@@ -3749,7 +3749,6 @@ file class PackageNode : SemanticNode, IPackageNode
     public IPackageFacetNode MainFacet { [DebuggerStepThrough] get; }
     public IPackageFacetNode TestingFacet { [DebuggerStepThrough] get; }
     public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
-    public IFunctionDefinitionNode? EntryPoint { [DebuggerStepThrough] get; }
     public PackageSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
             : this.Synthetic(ref symbolCached, ref symbol,
@@ -3762,6 +3761,12 @@ file class PackageNode : SemanticNode, IPackageNode
                 SymbolNodeAspect.Package_PackageDeclarations);
     private FixedDictionary<IdentifierName, IPackageDeclarationNode>? packageDeclarations;
     private bool packageDeclarationsCached;
+    public IFunctionDefinitionNode? EntryPoint
+        => GrammarAttribute.IsCached(in entryPointCached) ? entryPoint
+            : this.Synthetic(ref entryPointCached, ref entryPoint,
+                DefinitionsAspect.Package_EntryPoint);
+    private IFunctionDefinitionNode? entryPoint;
+    private bool entryPointCached;
     public IPackageSymbols PackageSymbols
         => GrammarAttribute.IsCached(in packageSymbolsCached) ? packageSymbols!
             : this.Synthetic(ref packageSymbolsCached, ref packageSymbols,
@@ -3781,14 +3786,13 @@ file class PackageNode : SemanticNode, IPackageNode
     private IFixedSet<ITypeDeclarationNode>? primitivesDeclarations;
     private bool primitivesDeclarationsCached;
 
-    public PackageNode(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFunctionDefinitionNode? entryPoint)
+    public PackageNode(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics)
     {
         Syntax = syntax;
         References = references;
         MainFacet = mainFacet;
         TestingFacet = testingFacet;
         Diagnostics = diagnostics;
-        EntryPoint = entryPoint;
     }
 
     internal override IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -3847,7 +3851,6 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     public IdentifierName PackageName { [DebuggerStepThrough] get; }
     public PackageSymbol PackageSymbol { [DebuggerStepThrough] get; }
     public IFixedSet<ICompilationUnitNode> CompilationUnits { [DebuggerStepThrough] get; }
-    public IFixedSet<IPackageMemberDefinitionNode> Definitions { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public PackageNameScope PackageNameScope
@@ -3862,8 +3865,14 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
                 SymbolNodeAspect.PackageFacet_GlobalNamespace);
     private INamespaceDefinitionNode? globalNamespace;
     private bool globalNamespaceCached;
+    public IFixedSet<IPackageMemberDefinitionNode> Definitions
+        => GrammarAttribute.IsCached(in definitionsCached) ? definitions!
+            : this.Synthetic(ref definitionsCached, ref definitions,
+                DefinitionsAspect.PackageFacet_Definitions);
+    private IFixedSet<IPackageMemberDefinitionNode>? definitions;
+    private bool definitionsCached;
 
-    public PackageFacetNode(ISemanticNode parent, IdentifierName? packageAliasOrName, PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IFixedSet<ICompilationUnitNode> compilationUnits, IFixedSet<IPackageMemberDefinitionNode> definitions)
+    public PackageFacetNode(ISemanticNode parent, IdentifierName? packageAliasOrName, PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IFixedSet<ICompilationUnitNode> compilationUnits)
     {
         Parent = parent;
         PackageAliasOrName = packageAliasOrName;
@@ -3872,7 +3881,6 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
         PackageName = packageName;
         PackageSymbol = packageSymbol;
         CompilationUnits = compilationUnits;
-        Definitions = definitions;
     }
 
     internal override IPackageFacetDeclarationNode Inherited_Facet(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

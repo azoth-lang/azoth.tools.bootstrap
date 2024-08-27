@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal static partial class DefinitionsAspect
 {
-    public static IFixedSet<IPackageMemberDefinitionNode> PackageFacet_Definitions(IPackageFacetNode node)
+    public static partial IFixedSet<IPackageMemberDefinitionNode> PackageFacet_Definitions(IPackageFacetNode node)
     {
         return node.CompilationUnits.SelectMany(n => n.Definitions)
                    .SelectMany(n => MoreEnumerable.TraverseDepthFirst(n, NamespaceChildren))
@@ -17,7 +17,7 @@ internal static partial class DefinitionsAspect
             => (m as INamespaceBlockDefinitionNode)?.Members ?? Enumerable.Empty<INamespaceBlockMemberDefinitionNode>();
     }
 
-    public static IFunctionDefinitionNode? Package_EntryPoint(IPackageNode node)
+    public static partial IFunctionDefinitionNode? Package_EntryPoint(IPackageNode node)
         // TODO warn on and remove main functions that don't have correct parameters or types
         // TODO compiler error on multiple main functions
         => node.MainFacet.Definitions.OfType<IFunctionDefinitionNode>().SingleOrDefault(f => f.Name == "main");
