@@ -32,7 +32,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     private ValueAttribute<IFixedSet<ITypeDeclarationNode>> primitivesDeclarations;
     public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations
         => primitivesDeclarations.TryGetValue(out var value) ? value
-            : primitivesDeclarations.GetValue(this, BuiltInsAspect.Package_PrimitivesDeclarations);
+            : primitivesDeclarations.GetValue(this, n => ChildSet.Attach(this, BuiltInsAspect.Package_PrimitivesDeclarations(n)));
     private IFunctionDefinitionNode? entryPoint;
     private bool entryPointCached;
     public IFunctionDefinitionNode? EntryPoint
@@ -49,7 +49,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     private ValueAttribute<IPackageReferenceNode> intrinsicsReference;
     public IPackageReferenceNode IntrinsicsReference
         => intrinsicsReference.TryGetValue(out var value) ? value
-            : intrinsicsReference.GetValue(this, BuiltInsAspect.Package_IntrinsicsReference);
+            : intrinsicsReference.GetValue(this, n => Child.Attach(this, BuiltInsAspect.Package_IntrinsicsReference(n)));
     public IPackageFacetNode MainFacet { get; }
     public IPackageFacetNode TestingFacet { get; }
 

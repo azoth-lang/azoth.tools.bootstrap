@@ -3771,13 +3771,13 @@ file class PackageNode : SemanticNode, IPackageNode
     public IPackageReferenceNode IntrinsicsReference
         => GrammarAttribute.IsCached(in intrinsicsReferenceCached) ? intrinsicsReference!
             : this.Synthetic(ref intrinsicsReferenceCached, ref intrinsicsReference,
-                BuiltInsAspect.Package_IntrinsicsReference);
+                n => Child.Attach(this, BuiltInsAspect.Package_IntrinsicsReference(n)));
     private IPackageReferenceNode? intrinsicsReference;
     private bool intrinsicsReferenceCached;
     public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations
         => GrammarAttribute.IsCached(in primitivesDeclarationsCached) ? primitivesDeclarations!
             : this.Synthetic(ref primitivesDeclarationsCached, ref primitivesDeclarations,
-                BuiltInsAspect.Package_PrimitivesDeclarations);
+                n => ChildSet.Attach(this, BuiltInsAspect.Package_PrimitivesDeclarations(n)));
     private IFixedSet<ITypeDeclarationNode>? primitivesDeclarations;
     private bool primitivesDeclarationsCached;
 

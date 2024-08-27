@@ -30,6 +30,8 @@ public abstract class AttributeModel : IMemberModel
     public virtual string TempName => Name;
     public abstract bool IsMethod { get; }
     public abstract TypeModel Type { get; }
+    public virtual TypeModel FinalType => Type;
+    public abstract bool IsTemp { get; }
     public virtual bool IsSyncLockRequired => false;
 
     public abstract bool IsChild { get; }

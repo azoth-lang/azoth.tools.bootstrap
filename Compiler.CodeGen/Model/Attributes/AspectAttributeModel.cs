@@ -34,6 +34,7 @@ public abstract class AspectAttributeModel : AttributeModel
     public sealed override string Name { get; }
     public override bool IsMethod { get; }
     public sealed override TypeModel Type { get; }
+    public override bool IsTemp => false;
 
     protected AspectAttributeModel(AspectModel aspect, InternalSymbol nodeSymbol, string name, bool isMethod, TypeModel type)
     {

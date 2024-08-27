@@ -202,7 +202,7 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
     {
 <#      foreach (var property in Build.PropertiesForClass(node)) { #>
 <#          if (property.IsChild && property.IsTemp && property.IsCollection) { #>
-        this.<#=Emit.VariableName(property) #> = <#= Emit.ChildAttach(property) #>;
+        this.<#= Emit.VariableName(property) #> = <#= Emit.ChildAttach(property) #><#= Emit.VariableName(property) #>);
 <#          } else { #>
         <#=property.TempName #> = <#=Emit.VariableName(property) #>;
 <#          } #>

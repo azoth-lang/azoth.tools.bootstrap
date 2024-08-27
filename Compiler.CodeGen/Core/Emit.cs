@@ -75,6 +75,29 @@ internal static class Emit
     public static string BaseClass(TreeModel tree)
         => tree.SimplifiedTree ? "" : $"{BaseClassName(tree)}, ";
 
+    #region Members
+    public static string ChildAttach(IMemberModel member)
+    {
+        switch (member.Type)
+        {
+            case SetTypeModel:
+                return "ChildSet.Attach(this, ";
+            case CollectionTypeModel:
+
+                var childListClass = "ChildList";
+                if (member.IsTemp)
+                {
+                    var finalElementType = ((CollectionTypeModel)member.FinalType).ElementType.ToNonOptional();
+                    childListClass += $"<{Type(finalElementType)}>";
+                }
+
+                return $"{childListClass}.Create(this, nameof({member.Name}), ";
+            default:
+                return "Child.Attach(this, ";
+        }
+    }
+    #endregion
+
     #region Attributes
     public static string IsNew(AttributeModel attribute)
         => attribute.IsNewDefinition ? "new " : "";
@@ -95,26 +118,6 @@ internal static class Emit
                     : $"IRewritableChildList<{Type(property.Type)}>";
             default:
                 throw new NotImplementedException($"Rewritable backing type not yet implemented for {property.Type}.");
-        }
-    }
-
-    public static string ChildAttach(PropertyModel property)
-    {
-        switch (property.Type)
-        {
-            case SetTypeModel:
-                throw new NotImplementedException($"{nameof(ChildAttach)} not yet implemented for {property.Type}.");
-            case CollectionTypeModel:
-
-                var childListClass = "ChildList";
-                if (property.IsTemp)
-                {
-                    var finalElementType = ((CollectionTypeModel)property.FinalType).ElementType.ToNonOptional();
-                    childListClass += $"<{Type(finalElementType)}>";
-                }
-                return $"{childListClass}.Create(this, nameof({property.Name}), {VariableName(property)})";
-            default:
-                throw new NotImplementedException($"{nameof(ChildAttach)} not yet implemented for {property.Type}.");
         }
     }
 
@@ -243,10 +246,15 @@ internal static class Emit
                 // Remove any optional type that might be on it and then ensure there is one optional type
                 var fieldType = !isValueType ? equation.Type.ToOptional() : equation.Type;
                 var syncLock = isValueType ? " ref syncLock," : "";
+                var isChild = equation.Attribute.IsChild;
+                var attachStart = isChild ? $"n => {ChildAttach(equation)}" : "";
+                var attachEnd = isChild ? "(n))" : "";
                 builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
                 builder.AppendLine($"            : this.Synthetic(ref {cached}, ref {value},{syncLock}");
                 builder.Append("                ");
+                builder.Append(attachStart);
                 AppendQualifiedEquationMethod(equation, builder);
+                builder.Append(attachEnd);
                 builder.AppendLine(");");
                 builder.AppendLine($"    private {Type(fieldType)} {value};");
                 builder.Append($"    private bool {cached};");

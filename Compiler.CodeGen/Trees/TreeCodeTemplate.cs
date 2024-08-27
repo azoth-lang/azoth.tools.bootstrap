@@ -1153,7 +1153,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             
             #line default
             #line hidden
-            this.Write(";\r\n");
+            
+            #line 205 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.VariableName(property)));
+            
+            #line default
+            #line hidden
+            this.Write(");\r\n");
             
             #line 206 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           } else { 

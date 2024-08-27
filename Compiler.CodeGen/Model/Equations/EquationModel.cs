@@ -31,6 +31,8 @@ public abstract class EquationModel : IMemberModel
     public string Name { get; }
     public bool IsMethod { get; }
     public abstract TypeModel Type { get; }
+    TypeModel IMemberModel.FinalType => Type;
+    bool IMemberModel.IsTemp => false;
     public string? Expression { get; }
     public virtual bool IsSyncLockRequired => false;
 

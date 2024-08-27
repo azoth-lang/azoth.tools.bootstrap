@@ -22,8 +22,8 @@ public sealed class PropertyModel : AttributeModel
     public override bool IsMethod => false;
     public override TypeModel Type { get; }
     public override bool IsChild => ReferencesNode;
-    public bool IsTemp => Type.ReferencedNode()?.IsTemp ?? false;
-    public TypeModel FinalType => finalType.Value;
+    public override bool IsTemp => Type.ReferencedNode()?.IsTemp ?? false;
+    public override TypeModel FinalType => finalType.Value;
     private readonly Lazy<TypeModel> finalType;
     public bool IsCollection => Type is CollectionTypeModel;
 
