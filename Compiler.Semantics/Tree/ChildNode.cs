@@ -37,7 +37,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     }
 
     [DebuggerStepThrough]
-    protected sealed override ITreeNode PeekParent()
+    protected sealed override SemanticNode PeekParent()
         // Use volatile read to ensure order of operations as seen by other threads
         => Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
 

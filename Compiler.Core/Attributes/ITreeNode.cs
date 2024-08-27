@@ -3,7 +3,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 public interface ITreeNode
 {
     /// <summary>
-    /// Whether this node is/will be in the final tree.
+    /// Whether this node is/will be in the final tree. CAUTION: Not updated for every node. Only
+    /// correct for nodes that are needed to determine if rewrites are complete.
     /// </summary>
     /// <remarks>The set of nodes that will be in the final tree starts at the root of the tree and
     /// grows downward from there. For a node to be in the final tree, it's parent must be in the

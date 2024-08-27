@@ -53,6 +53,6 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     public GenericParameterNode(IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint)
     {
         Syntax = syntax;
-        Constraint = constraint;
+        Constraint = Child.Attach(this, constraint);
     }
 }

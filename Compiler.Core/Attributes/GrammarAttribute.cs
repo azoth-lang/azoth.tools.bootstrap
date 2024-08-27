@@ -491,15 +491,10 @@ public static class GrammarAttribute
                 attributeScope.AddToRewriteContext(current!, next);
 
             current = next;
-
-            if (TCyclic.IsFinalValue(current))
-                // TODO there are issues with this. This node may be final, but if dependencies
-                // changed or were cycles, then the parent needs to know that
-                attributeScope.MarkFinal();
-
         } while (attributeScope.RootOfChangedComponent);
 
-        if (attributeScope.IsFinal)
+        // If either the attribute is final or the value is final, then the value can be cached
+        if (attributeScope.IsFinal || TCyclic.IsFinalValue(current))
             Volatile.Write(ref cached, true);
 
         attributeScope.Success();
