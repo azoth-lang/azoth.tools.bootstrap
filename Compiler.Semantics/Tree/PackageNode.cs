@@ -14,10 +14,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class PackageNode : SemanticNode, IPackageNode
 {
     public override IPackageSyntax Syntax { get; }
-    /// <remarks>Implements <see cref="IPackageDeclarationNode.AliasOrName"/> which
-    /// should be <see langword="null"/> for the current package.</remarks>
-    public IdentifierName? AliasOrName => null;
-    public IdentifierName Name => Syntax.Name;
     private PackageSymbol? symbol;
     private bool symbolCached;
     public PackageSymbol Symbol

@@ -46,7 +46,7 @@ LocalBinding <: NamedBinding = Syntax:`ILocalBindingSyntax`;
 VariableBinding <: LocalBinding, DataFlow;
 
 // ---------- Packages
-Package <: PackageDeclaration = Syntax:`IPackageSyntax` Name:`IdentifierName` Symbol:`PackageSymbol`
+Package <: PackageDeclaration = Syntax:`IPackageSyntax` Symbol:`PackageSymbol`
     References:{PackageReference} IntrinsicsReference:`IPackageReferenceNode`
     PackageDeclarations:`FixedDictionary<IdentifierName,IPackageDeclarationNode>`
     MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`DiagnosticCollection`
