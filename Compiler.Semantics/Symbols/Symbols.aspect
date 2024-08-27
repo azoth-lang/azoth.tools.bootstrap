@@ -1,4 +1,34 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 ◊name SymbolsAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 // ↓ ↑ ⮡ ✎
+
+// ---------- Packages
+= Package.Symbol;
+↑ Package.PackageSymbols: `IPackageSymbols`;
+
+// ---------- Function Definition
+↑ FunctionDefinition.Symbol:`FunctionSymbol`;
+
+// ---------- Type Definitions
+= TypeDefinition.Symbol;
+
+// ---------- Type Definition Parts
+= GenericParameter.Symbol;
+
+// ---------- Member Definitions
+↑ MethodDefinition.Symbol: `MethodSymbol`;
+= MethodDefinition.Symbol;
+↑ ConstructorDefinition.Symbol: `ConstructorSymbol`;
+↑ InitializerDefinition.Symbol: `InitializerSymbol`;
+↑ FieldDefinition.Symbol: `FieldSymbol`;
+↑ AssociatedFunctionDefinition.Symbol: `FunctionSymbol`;
+
+// ---------- Attributes
+↑ Attribute.ReferencedSymbol:`ConstructorSymbol`?;
+
+// ---------- Types
+↑ TypeName.ReferencedSymbol:`TypeSymbol`?;
+= StandardTypeName.ReferencedSymbol;
+↑ SpecialTypeName.ReferencedSymbol:`TypeSymbol`;

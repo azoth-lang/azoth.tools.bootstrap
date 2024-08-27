@@ -46,12 +46,11 @@ LocalBinding <: NamedBinding = Syntax:`ILocalBindingSyntax`;
 VariableBinding <: LocalBinding, DataFlow;
 
 // ---------- Packages
-Package <: PackageDeclaration = Syntax:`IPackageSyntax` Symbol:`PackageSymbol`
+Package <: PackageDeclaration = Syntax:`IPackageSyntax`
     References:{PackageReference} IntrinsicsReference:`IPackageReferenceNode`
     PackageDeclarations:`FixedDictionary<IdentifierName,IPackageDeclarationNode>`
     MainFacet:PackageFacet TestingFacet:PackageFacet Diagnostics:`DiagnosticCollection`
-    PrimitivesDeclarations:{TypeDeclaration} EntryPoint:`IFunctionDefinitionNode`?
-    PackageSymbols:`IPackageSymbols`;
+    PrimitivesDeclarations:{TypeDeclaration} EntryPoint:`IFunctionDefinitionNode`?;
 
 PackageReference <: Child = Syntax:`IPackageReferenceSyntax`? SymbolNode:`IPackageSymbolNode`
     AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
@@ -104,13 +103,12 @@ NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration, ConcreteFunctionInvocableDefinition
     = Syntax:`IFunctionDefinitionSyntax` ContainingSymbol:`NamespaceSymbol`
     Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
-    Entry Body Exit
-    Type:`FunctionType` Symbol:`FunctionSymbol`;
+    Entry Body Exit Type:`FunctionType`;
 
 // ---------- Type Definitions
 TypeDefinition <: PackageMemberDefinition, AssociatedMemberDefinition, UserTypeDeclaration
     = Syntax:`ITypeDefinitionSyntax` IsConst:`bool` Name:`StandardName`
-    DeclaredType:`IDeclaredUserType` Symbol:`UserTypeSymbol`
+    DeclaredType:`IDeclaredUserType`
     GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName* Supertypes:{`BareReferenceType`}
     Members:{TypeMemberDefinition};
@@ -136,8 +134,7 @@ TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSy
 GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParameterSyntax`
     Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`
     Parameter:`GenericParameter` ContainingDeclaredType:`IDeclaredUserType` DeclaredType:`GenericParameterType`
-    ContainingSymbol:`UserTypeSymbol`
-    Symbol:`GenericParameterTypeSymbol` Members:{TypeMemberDefinition};
+    ContainingSymbol:`UserTypeSymbol` Members:{TypeMemberDefinition};
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
 TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberDefinitionSyntax`? AccessModifier:`AccessModifier`;
@@ -150,8 +147,8 @@ AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, Stru
 
 // ---------- Member Definitions
 MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition, MethodDeclaration
-    = Syntax:`IMethodDefinitionSyntax` Kind:`MethodKind` Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
-    Symbol:`MethodSymbol`;
+    = Syntax:`IMethodDefinitionSyntax` Kind:`MethodKind` Name:`IdentifierName`
+    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
 // TODO getters and setters can be abstract too
 AbstractMethodDefinition <: MethodDefinition, StandardMethodDeclaration = Syntax:`IAbstractMethodDefinitionSyntax`
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
@@ -169,16 +166,14 @@ GetterMethodDefinition <: ConcreteMethodDefinition, GetterMethodDeclaration = Sy
 SetterMethodDefinition <: ConcreteMethodDefinition, SetterMethodDeclaration = Syntax:`ISetterMethodDefinitionSyntax`
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Entry Body Exit;
 ConstructorDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, ConstructorDeclaration
-    = Syntax:`IConstructorDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*
-    Symbol:`ConstructorSymbol`;
+    = Syntax:`IConstructorDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*;
 DefaultConstructorDefinition <: ConstructorDefinition
     = Parameters:ConstructorOrInitializerParameter* Entry Body? Exit;
 SourceConstructorDefinition <: ConstructorDefinition
     = Syntax:`IConstructorDefinitionSyntax`
     SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Entry Body:BlockBody Exit;
 InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, InitializerDeclaration
-    = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*
-    Symbol:`InitializerSymbol`;
+    = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*;
 DefaultInitializerDefinition <: InitializerDefinition
     = Parameters:ConstructorOrInitializerParameter* Entry Body? Exit;
 SourceInitializerDefinition <: InitializerDefinition
@@ -186,14 +181,13 @@ SourceInitializerDefinition <: InitializerDefinition
     SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Entry Body:BlockBody Exit;
 FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, NamedBinding, FieldDeclaration, ExecutableDefinition
     = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type BindingAntetype:`IMaybeAntetype` BindingType:`DataType`
-    Symbol:`FieldSymbol` Entry Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?
-    Exit;
+    Entry Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`? Exit;
 AssociatedFunctionDefinition <: ConcreteFunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
-   Symbol:`FunctionSymbol` Type:`FunctionType` Entry Body Exit;
+    Type:`FunctionType` Entry Body Exit;
 
 // ---------- Attributes
-Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName ReferencedSymbol:`ConstructorSymbol`?;
+Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName;
 
 // ---------- Capabilities
 CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`ICapabilityConstraint`;
@@ -232,12 +226,11 @@ ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement
 Type <: Code = Syntax:`ITypeSyntax` NamedAntetype:`IMaybeAntetype` NamedType:`DataType`;
 // TODO start from generalized names in syntax and rewrite to type names
 TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName`
-    ReferencedSymbol:`TypeSymbol`? NamedBareType:`BareType`?;
+    NamedBareType:`BareType`?;
 StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` IsAttributeType:`bool` Name:`StandardName` ReferencedDeclaration:`ITypeDeclarationNode`?;
 SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
 IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax` Name:`IdentifierName`;
-SpecialTypeName <: SimpleTypeName = Syntax:`ISpecialTypeNameSyntax` Name:`SpecialTypeName`
-    ReferencedSymbol:`TypeSymbol`;
+SpecialTypeName <: SimpleTypeName = Syntax:`ISpecialTypeNameSyntax` Name:`SpecialTypeName`;
 GenericTypeName <: StandardTypeName = Syntax:`IGenericTypeNameSyntax` Name:`GenericName` TypeArguments:Type*;
 QualifiedTypeName <: TypeName = Syntax:`IQualifiedTypeNameSyntax` Context:TypeName QualifiedName:StandardTypeName;
 OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;

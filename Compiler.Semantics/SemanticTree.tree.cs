@@ -15,6 +15,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Declarations;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
@@ -154,15 +155,15 @@ public partial interface IPackageNode : IPackageDeclarationNode
     DiagnosticCollection Diagnostics { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
     IFunctionDefinitionNode? EntryPoint { get; }
-    IPackageSymbols PackageSymbols { get; }
     new IdentifierName Name
         => Syntax.Name;
     IdentifierName IPackageDeclarationNode.Name => Name;
+    IPackageSymbols PackageSymbols { get; }
     IdentifierName? IPackageDeclarationNode.AliasOrName
         => null;
 
-    public static IPackageNode Create(IPackageSyntax syntax, PackageSymbol symbol, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, FixedDictionary<IdentifierName,IPackageDeclarationNode> packageDeclarations, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint, IPackageSymbols packageSymbols)
-        => new PackageNode(syntax, symbol, references, intrinsicsReference, packageDeclarations, mainFacet, testingFacet, diagnostics, primitivesDeclarations, entryPoint, packageSymbols);
+    public static IPackageNode Create(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, FixedDictionary<IdentifierName,IPackageDeclarationNode> packageDeclarations, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint)
+        => new PackageNode(syntax, references, intrinsicsReference, packageDeclarations, mainFacet, testingFacet, diagnostics, primitivesDeclarations, entryPoint);
 }
 
 // [Closed(typeof(PackageReferenceNode))]
@@ -411,17 +412,17 @@ public partial interface IFunctionDefinitionNode : IPackageMemberDefinitionNode,
     new FunctionType Type { get; }
     FunctionType IFunctionLikeDeclarationNode.Type => Type;
     FunctionType IConcreteFunctionInvocableDefinitionNode.Type => Type;
+    new INamespaceDeclarationNode ContainingDeclaration { get; }
+    ISymbolDeclarationNode IDefinitionNode.ContainingDeclaration => ContainingDeclaration;
     new FunctionSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
     FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
-    new INamespaceDeclarationNode ContainingDeclaration { get; }
-    ISymbolDeclarationNode IDefinitionNode.ContainingDeclaration => ContainingDeclaration;
 
-    public static IFunctionDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFunctionDefinitionSyntax syntax, NamespaceSymbol containingSymbol, IFixedList<IAttributeNode> attributes, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type, FunctionSymbol symbol)
-        => new FunctionDefinitionNode(parent, accessModifier, variableBindingsMap, syntax, containingSymbol, attributes, name, parameters, @return, entry, body, exit, type, symbol);
+    public static IFunctionDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFunctionDefinitionSyntax syntax, NamespaceSymbol containingSymbol, IFixedList<IAttributeNode> attributes, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
+        => new FunctionDefinitionNode(parent, accessModifier, variableBindingsMap, syntax, containingSymbol, attributes, name, parameters, @return, entry, body, exit, type);
 }
 
 [Closed(
@@ -479,8 +480,8 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     IEnumerable<IStandardTypeNameNode> ITypeDefinitionNode.AllSupertypeNames
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
 
-    public static IClassDefinitionNode Create(ISemanticNode parent, Symbol containingSymbol, IFixedSet<IClassMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, UserTypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IClassDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, bool isAbstract, IFixedList<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedList<IClassMemberDefinitionNode> sourceMembers, IFixedSet<IClassMemberDefinitionNode> members, IDefaultConstructorDefinitionNode? defaultConstructor)
-        => new ClassDefinitionNode(parent, containingSymbol, inclusiveMembers, isConst, name, symbol, supertypes, accessModifier, syntax, attributes, isAbstract, genericParameters, baseTypeName, supertypeNames, declaredType, sourceMembers, members, defaultConstructor);
+    public static IClassDefinitionNode Create(ISemanticNode parent, Symbol containingSymbol, IFixedSet<IClassMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IClassDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, bool isAbstract, IFixedList<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedList<IClassMemberDefinitionNode> sourceMembers, IFixedSet<IClassMemberDefinitionNode> members, IDefaultConstructorDefinitionNode? defaultConstructor)
+        => new ClassDefinitionNode(parent, containingSymbol, inclusiveMembers, isConst, name, supertypes, accessModifier, syntax, attributes, isAbstract, genericParameters, baseTypeName, supertypeNames, declaredType, sourceMembers, members, defaultConstructor);
 }
 
 // [Closed(typeof(StructDefinitionNode))]
@@ -502,8 +503,8 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     IFixedSet<IStructMemberDeclarationNode> IStructDeclarationNode.Members => Members;
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
 
-    public static IStructDefinitionNode Create(ISemanticNode parent, Symbol containingSymbol, IFixedSet<IStructMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, UserTypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IStructDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, StructType declaredType, IFixedList<IStructMemberDefinitionNode> sourceMembers, IFixedSet<IStructMemberDefinitionNode> members, IDefaultInitializerDefinitionNode? defaultInitializer)
-        => new StructDefinitionNode(parent, containingSymbol, inclusiveMembers, isConst, name, symbol, supertypes, accessModifier, syntax, attributes, genericParameters, supertypeNames, declaredType, sourceMembers, members, defaultInitializer);
+    public static IStructDefinitionNode Create(ISemanticNode parent, Symbol containingSymbol, IFixedSet<IStructMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IStructDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, StructType declaredType, IFixedList<IStructMemberDefinitionNode> sourceMembers, IFixedSet<IStructMemberDefinitionNode> members, IDefaultInitializerDefinitionNode? defaultInitializer)
+        => new StructDefinitionNode(parent, containingSymbol, inclusiveMembers, isConst, name, supertypes, accessModifier, syntax, attributes, genericParameters, supertypeNames, declaredType, sourceMembers, members, defaultInitializer);
 }
 
 // [Closed(typeof(TraitDefinitionNode))]
@@ -523,8 +524,8 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITraitMemberDeclarationNode> ITraitDeclarationNode.Members => Members;
 
-    public static ITraitDefinitionNode Create(ISemanticNode parent, Symbol containingSymbol, IFixedSet<ITraitMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, UserTypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, ITraitDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedSet<ITraitMemberDefinitionNode> members)
-        => new TraitDefinitionNode(parent, containingSymbol, inclusiveMembers, isConst, name, symbol, supertypes, accessModifier, syntax, attributes, genericParameters, supertypeNames, declaredType, members);
+    public static ITraitDefinitionNode Create(ISemanticNode parent, Symbol containingSymbol, IFixedSet<ITraitMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, ITraitDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedSet<ITraitMemberDefinitionNode> members)
+        => new TraitDefinitionNode(parent, containingSymbol, inclusiveMembers, isConst, name, supertypes, accessModifier, syntax, attributes, genericParameters, supertypeNames, declaredType, members);
 }
 
 // [Closed(typeof(GenericParameterNode))]
@@ -545,8 +546,8 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IUserTypeDeclarationNode ContainingDeclaration { get; }
 
-    public static IGenericParameterNode Create(ISemanticNode parent, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, IDeclaredUserType containingDeclaredType, GenericParameterType declaredType, UserTypeSymbol containingSymbol, GenericParameterTypeSymbol symbol, IFixedSet<ITypeMemberDefinitionNode> members)
-        => new GenericParameterNode(parent, supertypes, inclusiveMembers, syntax, constraint, name, independence, variance, parameter, containingDeclaredType, declaredType, containingSymbol, symbol, members);
+    public static IGenericParameterNode Create(ISemanticNode parent, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, IDeclaredUserType containingDeclaredType, GenericParameterType declaredType, UserTypeSymbol containingSymbol, IFixedSet<ITypeMemberDefinitionNode> members)
+        => new GenericParameterNode(parent, supertypes, inclusiveMembers, syntax, constraint, name, independence, variance, parameter, containingDeclaredType, declaredType, containingSymbol, members);
 }
 
 [Closed(
@@ -651,8 +652,8 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
     ISyntax? ISemanticNode.Syntax => Syntax;
     ObjectType ContainingDeclaredType { get; }
 
-    public static IAbstractMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, ObjectType containingDeclaredType)
-        => new AbstractMethodDefinitionNode(parent, accessModifier, containingSymbol, kind, name, symbol, arity, methodGroupType, syntax, selfParameter, parameters, @return, containingDeclaredType);
+    public static IAbstractMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, ObjectType containingDeclaredType)
+        => new AbstractMethodDefinitionNode(parent, accessModifier, containingSymbol, kind, name, arity, methodGroupType, syntax, selfParameter, parameters, @return, containingDeclaredType);
 }
 
 [Closed(
@@ -684,8 +685,8 @@ public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefiniti
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
 
-    public static IStandardMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new StandardMethodDefinitionNode(parent, accessModifier, containingSymbol, kind, name, symbol, variableBindingsMap, arity, methodGroupType, syntax, selfParameter, parameters, @return, entry, body, exit);
+    public static IStandardMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new StandardMethodDefinitionNode(parent, accessModifier, containingSymbol, kind, name, variableBindingsMap, arity, methodGroupType, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
 // [Closed(typeof(GetterMethodDefinitionNode))]
@@ -702,8 +703,8 @@ public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinition
     new ITypeNode Return { get; }
     ITypeNode? IMethodDefinitionNode.Return => Return;
 
-    public static IGetterMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new GetterMethodDefinitionNode(parent, accessModifier, containingSymbol, kind, name, symbol, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
+    public static IGetterMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new GetterMethodDefinitionNode(parent, accessModifier, containingSymbol, kind, name, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
 // [Closed(typeof(SetterMethodDefinitionNode))]
@@ -718,8 +719,8 @@ public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinition
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
 
-    public static ISetterMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new SetterMethodDefinitionNode(parent, accessModifier, containingSymbol, kind, name, symbol, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
+    public static ISetterMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new SetterMethodDefinitionNode(parent, accessModifier, containingSymbol, kind, name, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
 [Closed(
@@ -745,8 +746,8 @@ public partial interface IConstructorDefinitionNode : IConcreteInvocableDefiniti
 public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinitionNode
 {
 
-    public static IDefaultConstructorDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IConstructorDefinitionSyntax? syntax, IdentifierName? name, ConstructorSymbol symbol, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
-        => new DefaultConstructorDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, syntax, name, symbol, parameters, entry, body, exit);
+    public static IDefaultConstructorDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IConstructorDefinitionSyntax? syntax, IdentifierName? name, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+        => new DefaultConstructorDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, syntax, name, parameters, entry, body, exit);
 }
 
 // [Closed(typeof(SourceConstructorDefinitionNode))]
@@ -763,8 +764,8 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static ISourceConstructorDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, ConstructorSymbol symbol, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
-        => new SourceConstructorDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, name, symbol, syntax, selfParameter, parameters, entry, body, exit);
+    public static ISourceConstructorDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+        => new SourceConstructorDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, name, syntax, selfParameter, parameters, entry, body, exit);
 }
 
 [Closed(
@@ -790,8 +791,8 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
 public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinitionNode
 {
 
-    public static IDefaultInitializerDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IInitializerDefinitionSyntax? syntax, IdentifierName? name, InitializerSymbol symbol, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
-        => new DefaultInitializerDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, syntax, name, symbol, parameters, entry, body, exit);
+    public static IDefaultInitializerDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IInitializerDefinitionSyntax? syntax, IdentifierName? name, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+        => new DefaultInitializerDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, syntax, name, parameters, entry, body, exit);
 }
 
 // [Closed(typeof(SourceInitializerDefinitionNode))]
@@ -808,8 +809,8 @@ public partial interface ISourceInitializerDefinitionNode : IInitializerDefiniti
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static ISourceInitializerDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, InitializerSymbol symbol, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
-        => new SourceInitializerDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, name, symbol, syntax, selfParameter, parameters, entry, body, exit);
+    public static ISourceInitializerDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+        => new SourceInitializerDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, name, syntax, selfParameter, parameters, entry, body, exit);
 }
 
 // [Closed(typeof(FieldDefinitionNode))]
@@ -837,11 +838,14 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IDefinitionNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
+    new FieldSymbol Symbol { get; }
+    Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    FieldSymbol IFieldDeclarationNode.Symbol => Symbol;
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
 
-    public static IFieldDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, FieldSymbol symbol, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
-        => new FieldDefinitionNode(parent, accessModifier, containingSymbol, isLentBinding, variableBindingsMap, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, symbol, entry, initializer, currentInitializer, exit);
+    public static IFieldDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
+        => new FieldDefinitionNode(parent, accessModifier, containingSymbol, isLentBinding, variableBindingsMap, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, entry, initializer, currentInitializer, exit);
 }
 
 // [Closed(typeof(AssociatedFunctionDefinitionNode))]
@@ -859,18 +863,18 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionIn
     StandardName IAssociatedMemberDefinitionNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
     StandardName IAssociatedFunctionDeclarationNode.Name => Name;
+    new FunctionType Type { get; }
+    FunctionType IConcreteFunctionInvocableDefinitionNode.Type => Type;
+    FunctionType IFunctionLikeDeclarationNode.Type => Type;
     new FunctionSymbol Symbol { get; }
     FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
-    new FunctionType Type { get; }
-    FunctionType IConcreteFunctionInvocableDefinitionNode.Type => Type;
-    FunctionType IFunctionLikeDeclarationNode.Type => Type;
 
-    public static IAssociatedFunctionDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, FunctionSymbol symbol, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new AssociatedFunctionDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, syntax, name, parameters, @return, symbol, type, entry, body, exit);
+    public static IAssociatedFunctionDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new AssociatedFunctionDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, syntax, name, parameters, @return, type, entry, body, exit);
 }
 
 // [Closed(typeof(AttributeNode))]
@@ -883,8 +887,8 @@ public partial interface IAttributeNode : ICodeNode
     IStandardTypeNameNode TypeName { get; }
     ConstructorSymbol? ReferencedSymbol { get; }
 
-    public static IAttributeNode Create(ISemanticNode parent, IAttributeSyntax syntax, IStandardTypeNameNode typeName, ConstructorSymbol? referencedSymbol)
-        => new AttributeNode(parent, syntax, typeName, referencedSymbol);
+    public static IAttributeNode Create(ISemanticNode parent, IAttributeSyntax syntax, IStandardTypeNameNode typeName)
+        => new AttributeNode(parent, syntax, typeName);
 }
 
 [Closed(
@@ -1161,9 +1165,9 @@ public partial interface ITypeNameNode : ITypeNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     TypeName Name { get; }
-    TypeSymbol? ReferencedSymbol { get; }
     BareType? NamedBareType { get; }
     LexicalScope ContainingLexicalScope { get; }
+    TypeSymbol? ReferencedSymbol { get; }
 }
 
 [Closed(
@@ -1211,8 +1215,8 @@ public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpl
     StandardName IStandardTypeNameNode.Name => Name;
     TypeName ITypeNameNode.Name => Name;
 
-    public static IIdentifierTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, TypeSymbol? referencedSymbol, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IIdentifierTypeNameSyntax syntax, IdentifierName name)
-        => new IdentifierTypeNameNode(parent, namedAntetype, namedType, referencedSymbol, namedBareType, isAttributeType, referencedDeclaration, syntax, name);
+    public static IIdentifierTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IIdentifierTypeNameSyntax syntax, IdentifierName name)
+        => new IdentifierTypeNameNode(parent, namedAntetype, namedType, namedBareType, isAttributeType, referencedDeclaration, syntax, name);
 }
 
 // [Closed(typeof(SpecialTypeNameNode))]
@@ -1230,8 +1234,8 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
     new TypeSymbol ReferencedSymbol { get; }
     TypeSymbol? ITypeNameNode.ReferencedSymbol => ReferencedSymbol;
 
-    public static ISpecialTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, ISpecialTypeNameSyntax syntax, SpecialTypeName name, TypeSymbol referencedSymbol)
-        => new SpecialTypeNameNode(parent, namedAntetype, namedType, namedBareType, syntax, name, referencedSymbol);
+    public static ISpecialTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, ISpecialTypeNameSyntax syntax, SpecialTypeName name)
+        => new SpecialTypeNameNode(parent, namedAntetype, namedType, namedBareType, syntax, name);
 }
 
 // [Closed(typeof(GenericTypeNameNode))]
@@ -1249,8 +1253,8 @@ public partial interface IGenericTypeNameNode : IStandardTypeNameNode
     TypeName ITypeNameNode.Name => Name;
     IFixedList<ITypeNode> TypeArguments { get; }
 
-    public static IGenericTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, TypeSymbol? referencedSymbol, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
-        => new GenericTypeNameNode(parent, namedAntetype, namedType, referencedSymbol, namedBareType, isAttributeType, referencedDeclaration, syntax, name, typeArguments);
+    public static IGenericTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
+        => new GenericTypeNameNode(parent, namedAntetype, namedType, namedBareType, isAttributeType, referencedDeclaration, syntax, name, typeArguments);
 }
 
 // [Closed(typeof(QualifiedTypeNameNode))]
@@ -1265,8 +1269,8 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
     ITypeNameNode Context { get; }
     IStandardTypeNameNode QualifiedName { get; }
 
-    public static IQualifiedTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, TypeName name, TypeSymbol? referencedSymbol, BareType? namedBareType, IQualifiedTypeNameSyntax syntax, ITypeNameNode context, IStandardTypeNameNode qualifiedName)
-        => new QualifiedTypeNameNode(parent, namedAntetype, namedType, name, referencedSymbol, namedBareType, syntax, context, qualifiedName);
+    public static IQualifiedTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, TypeName name, BareType? namedBareType, IQualifiedTypeNameSyntax syntax, ITypeNameNode context, IStandardTypeNameNode qualifiedName)
+        => new QualifiedTypeNameNode(parent, namedAntetype, namedType, name, namedBareType, syntax, context, qualifiedName);
 }
 
 // [Closed(typeof(OptionalTypeNode))]
@@ -3741,7 +3745,6 @@ file class PackageNode : SemanticNode, IPackageNode
     private IPackageNode Self { [Inline] get => this; }
 
     public IPackageSyntax Syntax { [DebuggerStepThrough] get; }
-    public PackageSymbol Symbol { [DebuggerStepThrough] get; }
     public IFixedSet<IPackageReferenceNode> References { [DebuggerStepThrough] get; }
     public IPackageReferenceNode IntrinsicsReference { [DebuggerStepThrough] get; }
     public FixedDictionary<IdentifierName,IPackageDeclarationNode> PackageDeclarations { [DebuggerStepThrough] get; }
@@ -3750,12 +3753,22 @@ file class PackageNode : SemanticNode, IPackageNode
     public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
     public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { [DebuggerStepThrough] get; }
     public IFunctionDefinitionNode? EntryPoint { [DebuggerStepThrough] get; }
-    public IPackageSymbols PackageSymbols { [DebuggerStepThrough] get; }
+    public PackageSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.Package_Symbol);
+    private PackageSymbol? symbol;
+    private bool symbolCached;
+    public IPackageSymbols PackageSymbols
+        => GrammarAttribute.IsCached(in packageSymbolsCached) ? packageSymbols!
+            : this.Synthetic(ref packageSymbolsCached, ref packageSymbols,
+                SymbolsAspect.Package_PackageSymbols);
+    private IPackageSymbols? packageSymbols;
+    private bool packageSymbolsCached;
 
-    public PackageNode(IPackageSyntax syntax, PackageSymbol symbol, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, FixedDictionary<IdentifierName,IPackageDeclarationNode> packageDeclarations, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint, IPackageSymbols packageSymbols)
+    public PackageNode(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, FixedDictionary<IdentifierName,IPackageDeclarationNode> packageDeclarations, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint)
     {
         Syntax = syntax;
-        Symbol = symbol;
         References = references;
         IntrinsicsReference = intrinsicsReference;
         PackageDeclarations = packageDeclarations;
@@ -3764,7 +3777,6 @@ file class PackageNode : SemanticNode, IPackageNode
         Diagnostics = diagnostics;
         PrimitivesDeclarations = primitivesDeclarations;
         EntryPoint = entryPoint;
-        PackageSymbols = packageSymbols;
     }
 
     internal override IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -4047,7 +4059,6 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     public IBodyNode Body { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
     public FunctionType Type { [DebuggerStepThrough] get; }
-    public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -4072,6 +4083,12 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
                 LexicalScopingAspect.FunctionDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public FunctionSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.FunctionDefinition_Symbol);
+    private FunctionSymbol? symbol;
+    private bool symbolCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -4079,7 +4096,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public FunctionDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFunctionDefinitionSyntax syntax, NamespaceSymbol containingSymbol, IFixedList<IAttributeNode> attributes, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type, FunctionSymbol symbol)
+    public FunctionDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFunctionDefinitionSyntax syntax, NamespaceSymbol containingSymbol, IFixedList<IAttributeNode> attributes, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
     {
         Parent = parent;
         AccessModifier = accessModifier;
@@ -4094,7 +4111,6 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         Body = body;
         Exit = exit;
         Type = type;
-        Symbol = symbol;
     }
 }
 
@@ -4108,7 +4124,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     public IFixedSet<IClassMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
     public bool IsConst { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
-    public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IClassDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -4151,6 +4166,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 LexicalScopingAspect.TypeDefinition_SupertypesLexicalScope);
     private LexicalScope? supertypesLexicalScope;
     private bool supertypesLexicalScopeCached;
+    public UserTypeSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.TypeDefinition_Symbol);
+    private UserTypeSymbol? symbol;
+    private bool symbolCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -4164,14 +4185,13 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public ClassDefinitionNode(ISemanticNode parent, Symbol containingSymbol, IFixedSet<IClassMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, UserTypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IClassDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, bool isAbstract, IFixedList<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedList<IClassMemberDefinitionNode> sourceMembers, IFixedSet<IClassMemberDefinitionNode> members, IDefaultConstructorDefinitionNode? defaultConstructor)
+    public ClassDefinitionNode(ISemanticNode parent, Symbol containingSymbol, IFixedSet<IClassMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IClassDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, bool isAbstract, IFixedList<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedList<IClassMemberDefinitionNode> sourceMembers, IFixedSet<IClassMemberDefinitionNode> members, IDefaultConstructorDefinitionNode? defaultConstructor)
     {
         Parent = parent;
         ContainingSymbol = containingSymbol;
         InclusiveMembers = inclusiveMembers;
         IsConst = isConst;
         Name = name;
-        Symbol = symbol;
         Supertypes = supertypes;
         AccessModifier = accessModifier;
         Syntax = syntax;
@@ -4206,7 +4226,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     public IFixedSet<IStructMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
     public bool IsConst { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
-    public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IStructDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -4247,6 +4266,12 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 LexicalScopingAspect.TypeDefinition_SupertypesLexicalScope);
     private LexicalScope? supertypesLexicalScope;
     private bool supertypesLexicalScopeCached;
+    public UserTypeSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.TypeDefinition_Symbol);
+    private UserTypeSymbol? symbol;
+    private bool symbolCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -4260,14 +4285,13 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public StructDefinitionNode(ISemanticNode parent, Symbol containingSymbol, IFixedSet<IStructMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, UserTypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IStructDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, StructType declaredType, IFixedList<IStructMemberDefinitionNode> sourceMembers, IFixedSet<IStructMemberDefinitionNode> members, IDefaultInitializerDefinitionNode? defaultInitializer)
+    public StructDefinitionNode(ISemanticNode parent, Symbol containingSymbol, IFixedSet<IStructMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, IStructDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, StructType declaredType, IFixedList<IStructMemberDefinitionNode> sourceMembers, IFixedSet<IStructMemberDefinitionNode> members, IDefaultInitializerDefinitionNode? defaultInitializer)
     {
         Parent = parent;
         ContainingSymbol = containingSymbol;
         InclusiveMembers = inclusiveMembers;
         IsConst = isConst;
         Name = name;
-        Symbol = symbol;
         Supertypes = supertypes;
         AccessModifier = accessModifier;
         Syntax = syntax;
@@ -4300,7 +4324,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     public IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
     public bool IsConst { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
-    public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public ITraitDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -4339,6 +4362,12 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 LexicalScopingAspect.TypeDefinition_SupertypesLexicalScope);
     private LexicalScope? supertypesLexicalScope;
     private bool supertypesLexicalScopeCached;
+    public UserTypeSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.TypeDefinition_Symbol);
+    private UserTypeSymbol? symbol;
+    private bool symbolCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -4352,14 +4381,13 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public TraitDefinitionNode(ISemanticNode parent, Symbol containingSymbol, IFixedSet<ITraitMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, UserTypeSymbol symbol, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, ITraitDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedSet<ITraitMemberDefinitionNode> members)
+    public TraitDefinitionNode(ISemanticNode parent, Symbol containingSymbol, IFixedSet<ITraitMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IFixedSet<BareReferenceType> supertypes, AccessModifier accessModifier, ITraitDefinitionSyntax syntax, IFixedList<IAttributeNode> attributes, IFixedList<IGenericParameterNode> genericParameters, IFixedList<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IFixedSet<ITraitMemberDefinitionNode> members)
     {
         Parent = parent;
         ContainingSymbol = containingSymbol;
         InclusiveMembers = inclusiveMembers;
         IsConst = isConst;
         Name = name;
-        Symbol = symbol;
         Supertypes = supertypes;
         AccessModifier = accessModifier;
         Syntax = syntax;
@@ -4397,7 +4425,6 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
     public IDeclaredUserType ContainingDeclaredType { [DebuggerStepThrough] get; }
     public GenericParameterType DeclaredType { [DebuggerStepThrough] get; }
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
-    public GenericParameterTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public IFixedSet<ITypeMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -4407,8 +4434,14 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public GenericParameterTypeSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.GenericParameter_Symbol);
+    private GenericParameterTypeSymbol? symbol;
+    private bool symbolCached;
 
-    public GenericParameterNode(ISemanticNode parent, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, IDeclaredUserType containingDeclaredType, GenericParameterType declaredType, UserTypeSymbol containingSymbol, GenericParameterTypeSymbol symbol, IFixedSet<ITypeMemberDefinitionNode> members)
+    public GenericParameterNode(ISemanticNode parent, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, IDeclaredUserType containingDeclaredType, GenericParameterType declaredType, UserTypeSymbol containingSymbol, IFixedSet<ITypeMemberDefinitionNode> members)
     {
         Parent = parent;
         Supertypes = supertypes;
@@ -4422,7 +4455,6 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
         ContainingDeclaredType = containingDeclaredType;
         DeclaredType = declaredType;
         ContainingSymbol = containingSymbol;
-        Symbol = symbol;
         Members = members;
     }
 }
@@ -4437,7 +4469,6 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
-    public MethodSymbol Symbol { [DebuggerStepThrough] get; }
     public int Arity { [DebuggerStepThrough] get; }
     public FunctionType MethodGroupType { [DebuggerStepThrough] get; }
     public IAbstractMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -4469,6 +4500,12 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
                 LexicalScopingAspect.MethodDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public MethodSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.MethodDefinition_Symbol);
+    private MethodSymbol? symbol;
+    private bool symbolCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -4476,14 +4513,13 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public AbstractMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, ObjectType containingDeclaredType)
+    public AbstractMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, ObjectType containingDeclaredType)
     {
         Parent = parent;
         AccessModifier = accessModifier;
         ContainingSymbol = containingSymbol;
         Kind = kind;
         Name = name;
-        Symbol = symbol;
         Arity = arity;
         MethodGroupType = methodGroupType;
         Syntax = syntax;
@@ -4504,7 +4540,6 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
-    public MethodSymbol Symbol { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public int Arity { [DebuggerStepThrough] get; }
     public FunctionType MethodGroupType { [DebuggerStepThrough] get; }
@@ -4539,6 +4574,12 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
                 LexicalScopingAspect.MethodDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public MethodSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.MethodDefinition_Symbol);
+    private MethodSymbol? symbol;
+    private bool symbolCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -4546,14 +4587,13 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public StandardMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public StandardMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
         Parent = parent;
         AccessModifier = accessModifier;
         ContainingSymbol = containingSymbol;
         Kind = kind;
         Name = name;
-        Symbol = symbol;
         VariableBindingsMap = variableBindingsMap;
         Arity = arity;
         MethodGroupType = methodGroupType;
@@ -4577,7 +4617,6 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
-    public MethodSymbol Symbol { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IGetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
@@ -4610,6 +4649,12 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
                 LexicalScopingAspect.MethodDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public MethodSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.MethodDefinition_Symbol);
+    private MethodSymbol? symbol;
+    private bool symbolCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -4617,14 +4662,13 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public GetterMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public GetterMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
         Parent = parent;
         AccessModifier = accessModifier;
         ContainingSymbol = containingSymbol;
         Kind = kind;
         Name = name;
-        Symbol = symbol;
         VariableBindingsMap = variableBindingsMap;
         Syntax = syntax;
         SelfParameter = selfParameter;
@@ -4646,7 +4690,6 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
-    public MethodSymbol Symbol { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public ISetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
@@ -4679,6 +4722,12 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
                 LexicalScopingAspect.MethodDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public MethodSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.MethodDefinition_Symbol);
+    private MethodSymbol? symbol;
+    private bool symbolCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -4686,14 +4735,13 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public SetterMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, MethodSymbol symbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public SetterMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
         Parent = parent;
         AccessModifier = accessModifier;
         ContainingSymbol = containingSymbol;
         Kind = kind;
         Name = name;
-        Symbol = symbol;
         VariableBindingsMap = variableBindingsMap;
         Syntax = syntax;
         SelfParameter = selfParameter;
@@ -4716,7 +4764,6 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IConstructorDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
-    public ConstructorSymbol Symbol { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IBodyNode? Body { [DebuggerStepThrough] get; }
@@ -4739,6 +4786,12 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     private bool facetCached;
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public ConstructorSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.DefaultConstructorDefinition_Symbol);
+    private ConstructorSymbol? symbol;
+    private bool symbolCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -4752,7 +4805,7 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public DefaultConstructorDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IConstructorDefinitionSyntax? syntax, IdentifierName? name, ConstructorSymbol symbol, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    public DefaultConstructorDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IConstructorDefinitionSyntax? syntax, IdentifierName? name, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
     {
         Parent = parent;
         ContainingSymbol = containingSymbol;
@@ -4760,7 +4813,6 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
         AccessModifier = accessModifier;
         Syntax = syntax;
         Name = name;
-        Symbol = symbol;
         Parameters = parameters;
         Entry = entry;
         Body = body;
@@ -4778,7 +4830,6 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
-    public ConstructorSymbol Symbol { [DebuggerStepThrough] get; }
     public IConstructorDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IConstructorSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -4803,6 +4854,12 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     private bool facetCached;
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public ConstructorSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.SourceConstructorDefinition_Symbol);
+    private ConstructorSymbol? symbol;
+    private bool symbolCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -4816,14 +4873,13 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public SourceConstructorDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, ConstructorSymbol symbol, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    public SourceConstructorDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
     {
         Parent = parent;
         ContainingSymbol = containingSymbol;
         VariableBindingsMap = variableBindingsMap;
         AccessModifier = accessModifier;
         Name = name;
-        Symbol = symbol;
         Syntax = syntax;
         SelfParameter = selfParameter;
         Parameters = parameters;
@@ -4844,7 +4900,6 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IInitializerDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
-    public InitializerSymbol Symbol { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IBodyNode? Body { [DebuggerStepThrough] get; }
@@ -4867,6 +4922,12 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     private bool facetCached;
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public InitializerSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.DefaultInitializerDefinition_Symbol);
+    private InitializerSymbol? symbol;
+    private bool symbolCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -4880,7 +4941,7 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public DefaultInitializerDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IInitializerDefinitionSyntax? syntax, IdentifierName? name, InitializerSymbol symbol, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    public DefaultInitializerDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IInitializerDefinitionSyntax? syntax, IdentifierName? name, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
     {
         Parent = parent;
         ContainingSymbol = containingSymbol;
@@ -4888,7 +4949,6 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
         AccessModifier = accessModifier;
         Syntax = syntax;
         Name = name;
-        Symbol = symbol;
         Parameters = parameters;
         Entry = entry;
         Body = body;
@@ -4906,7 +4966,6 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
-    public InitializerSymbol Symbol { [DebuggerStepThrough] get; }
     public IInitializerDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IInitializerSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -4931,6 +4990,12 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     private bool facetCached;
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public InitializerSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.SourceInitializerDefinition_Symbol);
+    private InitializerSymbol? symbol;
+    private bool symbolCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -4944,14 +5009,13 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public SourceInitializerDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, InitializerSymbol symbol, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    public SourceInitializerDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IFixedList<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
     {
         Parent = parent;
         ContainingSymbol = containingSymbol;
         VariableBindingsMap = variableBindingsMap;
         AccessModifier = accessModifier;
         Name = name;
-        Symbol = symbol;
         Syntax = syntax;
         SelfParameter = selfParameter;
         Parameters = parameters;
@@ -4978,7 +5042,6 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     public ITypeNode TypeNode { [DebuggerStepThrough] get; }
     public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
     public DataType BindingType { [DebuggerStepThrough] get; }
-    public FieldSymbol Symbol { [DebuggerStepThrough] get; }
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IAmbiguousExpressionNode? TempInitializer { [DebuggerStepThrough] get; }
     public IExpressionNode? Initializer => TempInitializer as IExpressionNode;
@@ -5014,8 +5077,14 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
                 ValueIdsAspect.FieldDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public FieldSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.FieldDefinition_Symbol);
+    private FieldSymbol? symbol;
+    private bool symbolCached;
 
-    public FieldDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, FieldSymbol symbol, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
+    public FieldDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
     {
         Parent = parent;
         AccessModifier = accessModifier;
@@ -5028,7 +5097,6 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
         TypeNode = typeNode;
         BindingAntetype = bindingAntetype;
         BindingType = bindingType;
-        Symbol = symbol;
         Entry = entry;
         TempInitializer = initializer;
         CurrentInitializer = currentInitializer;
@@ -5049,7 +5117,6 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
-    public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
     public FunctionType Type { [DebuggerStepThrough] get; }
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IBodyNode Body { [DebuggerStepThrough] get; }
@@ -5078,6 +5145,12 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
                 LexicalScopingAspect.AssociatedFunctionDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public FunctionSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.AssociatedFunctionDefinition_Symbol);
+    private FunctionSymbol? symbol;
+    private bool symbolCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -5085,7 +5158,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public AssociatedFunctionDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, FunctionSymbol symbol, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public AssociatedFunctionDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
         Parent = parent;
         ContainingSymbol = containingSymbol;
@@ -5095,7 +5168,6 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         Name = name;
         Parameters = parameters;
         Return = @return;
-        Symbol = symbol;
         Type = type;
         Entry = entry;
         Body = body;
@@ -5111,18 +5183,22 @@ file class AttributeNode : SemanticNode, IAttributeNode
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public IAttributeSyntax Syntax { [DebuggerStepThrough] get; }
     public IStandardTypeNameNode TypeName { [DebuggerStepThrough] get; }
-    public ConstructorSymbol? ReferencedSymbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public ConstructorSymbol? ReferencedSymbol
+        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol
+            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
+                SymbolsAspect.Attribute_ReferencedSymbol);
+    private ConstructorSymbol? referencedSymbol;
+    private bool referencedSymbolCached;
 
-    public AttributeNode(ISemanticNode parent, IAttributeSyntax syntax, IStandardTypeNameNode typeName, ConstructorSymbol? referencedSymbol)
+    public AttributeNode(ISemanticNode parent, IAttributeSyntax syntax, IStandardTypeNameNode typeName)
     {
         Parent = parent;
         Syntax = syntax;
         TypeName = typeName;
-        ReferencedSymbol = referencedSymbol;
     }
 }
 
@@ -5496,7 +5572,6 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
-    public TypeSymbol? ReferencedSymbol { [DebuggerStepThrough] get; }
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public bool IsAttributeType { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
@@ -5512,13 +5587,18 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public TypeSymbol? ReferencedSymbol
+        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol
+            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
+                SymbolsAspect.StandardTypeName_ReferencedSymbol);
+    private TypeSymbol? referencedSymbol;
+    private bool referencedSymbolCached;
 
-    public IdentifierTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, TypeSymbol? referencedSymbol, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IIdentifierTypeNameSyntax syntax, IdentifierName name)
+    public IdentifierTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IIdentifierTypeNameSyntax syntax, IdentifierName name)
     {
         Parent = parent;
         NamedAntetype = namedAntetype;
         NamedType = namedType;
-        ReferencedSymbol = referencedSymbol;
         NamedBareType = namedBareType;
         IsAttributeType = isAttributeType;
         ReferencedDeclaration = referencedDeclaration;
@@ -5538,7 +5618,6 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public ISpecialTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public SpecialTypeName Name { [DebuggerStepThrough] get; }
-    public TypeSymbol ReferencedSymbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -5549,8 +5628,14 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public TypeSymbol ReferencedSymbol
+        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol!
+            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
+                SymbolsAspect.SpecialTypeName_ReferencedSymbol);
+    private TypeSymbol? referencedSymbol;
+    private bool referencedSymbolCached;
 
-    public SpecialTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, ISpecialTypeNameSyntax syntax, SpecialTypeName name, TypeSymbol referencedSymbol)
+    public SpecialTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, ISpecialTypeNameSyntax syntax, SpecialTypeName name)
     {
         Parent = parent;
         NamedAntetype = namedAntetype;
@@ -5558,7 +5643,6 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
         NamedBareType = namedBareType;
         Syntax = syntax;
         Name = name;
-        ReferencedSymbol = referencedSymbol;
     }
 }
 
@@ -5570,7 +5654,6 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
-    public TypeSymbol? ReferencedSymbol { [DebuggerStepThrough] get; }
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public bool IsAttributeType { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
@@ -5587,13 +5670,18 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public TypeSymbol? ReferencedSymbol
+        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol
+            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
+                SymbolsAspect.StandardTypeName_ReferencedSymbol);
+    private TypeSymbol? referencedSymbol;
+    private bool referencedSymbolCached;
 
-    public GenericTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, TypeSymbol? referencedSymbol, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
+    public GenericTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
     {
         Parent = parent;
         NamedAntetype = namedAntetype;
         NamedType = namedType;
-        ReferencedSymbol = referencedSymbol;
         NamedBareType = namedBareType;
         IsAttributeType = isAttributeType;
         ReferencedDeclaration = referencedDeclaration;
@@ -5612,7 +5700,6 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
     public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
     public TypeName Name { [DebuggerStepThrough] get; }
-    public TypeSymbol? ReferencedSymbol { [DebuggerStepThrough] get; }
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public IQualifiedTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameNode Context { [DebuggerStepThrough] get; }
@@ -5627,14 +5714,19 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public TypeSymbol? ReferencedSymbol
+        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol
+            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
+                SymbolsAspect.QualifiedTypeName_ReferencedSymbol);
+    private TypeSymbol? referencedSymbol;
+    private bool referencedSymbolCached;
 
-    public QualifiedTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, TypeName name, TypeSymbol? referencedSymbol, BareType? namedBareType, IQualifiedTypeNameSyntax syntax, ITypeNameNode context, IStandardTypeNameNode qualifiedName)
+    public QualifiedTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, TypeName name, BareType? namedBareType, IQualifiedTypeNameSyntax syntax, ITypeNameNode context, IStandardTypeNameNode qualifiedName)
     {
         Parent = parent;
         NamedAntetype = namedAntetype;
         NamedType = namedType;
         Name = name;
-        ReferencedSymbol = referencedSymbol;
         NamedBareType = namedBareType;
         Syntax = syntax;
         Context = context;

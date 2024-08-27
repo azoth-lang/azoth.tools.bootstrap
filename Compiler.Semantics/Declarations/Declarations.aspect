@@ -1,0 +1,8 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Declarations;
+◊name DeclarationsAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
+
+// ↓ ↑ ⮡ ✎
+
+// ---------- Packages
+
