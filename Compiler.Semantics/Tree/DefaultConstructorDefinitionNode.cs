@@ -16,7 +16,7 @@ internal sealed class DefaultConstructorDefinitionNode : ConstructorDefinitionNo
     private bool symbolCached;
     public override ConstructorSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.DefaultConstructorDefinition_Symbol);
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolsAspect.DefaultConstructorDefinition_Symbol);
 
     public DefaultConstructorDefinitionNode()
         : base(FixedList.Empty<IConstructorOrInitializerParameterNode>())

@@ -17,7 +17,7 @@ internal sealed class SourceConstructorDefinitionNode : ConstructorDefinitionNod
     private bool symbolCached;
     public override ConstructorSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.SourceConstructorDefinition_Symbol);
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolsAspect.SourceConstructorDefinition_Symbol);
 
     public SourceConstructorDefinitionNode(
         IConstructorDefinitionSyntax syntax,

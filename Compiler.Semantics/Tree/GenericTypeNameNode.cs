@@ -21,7 +21,7 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
         => attributeType.TryGetValue(out var value) ? value
             : attributeType.GetValue(InheritedIsAttributeType);
     public override GenericName Name => Syntax.Name;
-    public override TypeSymbol? ReferencedSymbol => SymbolAspect.StandardTypeName_ReferencedSymbol(this);
+    public override TypeSymbol? ReferencedSymbol => SymbolsAspect.StandardTypeName_ReferencedSymbol(this);
     public IFixedList<ITypeNode> TypeArguments { get; }
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;

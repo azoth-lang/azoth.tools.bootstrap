@@ -32,7 +32,7 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
     private bool symbolCached;
     public override FunctionSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.AssociatedFunctionDefinition_Symbol);
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolsAspect.AssociatedFunctionDefinition_Symbol);
     private FunctionType? type;
     private bool typeCached;
     public FunctionType Type

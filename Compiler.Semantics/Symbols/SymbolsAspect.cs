@@ -9,7 +9,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
-internal static class SymbolAspect
+internal static class SymbolsAspect
 {
     /// <summary>
     /// All the symbols of this package in a form suitable for other packages to reference.

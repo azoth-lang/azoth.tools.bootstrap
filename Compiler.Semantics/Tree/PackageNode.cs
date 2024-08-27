@@ -18,7 +18,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     private bool symbolCached;
     public PackageSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.Package_Symbol);
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolsAspect.Package_Symbol);
     private ValueAttribute<FixedDictionary<IdentifierName, IPackageDeclarationNode>> packageDeclarations;
     public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
         => packageDeclarations.TryGetValue(out var value) ? value
@@ -44,7 +44,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public IPackageSymbols PackageSymbols
         => GrammarAttribute.IsCached(in packageSymbolsCached) ? packageSymbols!
             : this.Synthetic(ref packageSymbolsCached, ref packageSymbols,
-                SymbolAspect.Package_PackageSymbols, ReferenceEqualityComparer.Instance);
+                SymbolsAspect.Package_PackageSymbols, ReferenceEqualityComparer.Instance);
     public IFixedSet<IPackageReferenceNode> References { get; }
     private ValueAttribute<IPackageReferenceNode> intrinsicsReference;
     public IPackageReferenceNode IntrinsicsReference

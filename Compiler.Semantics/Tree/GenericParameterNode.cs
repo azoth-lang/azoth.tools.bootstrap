@@ -45,7 +45,7 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     private bool symbolCached;
     public GenericParameterTypeSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.GenericParameter_Symbol);
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolsAspect.GenericParameter_Symbol);
     public IFixedSet<ITypeMemberDefinitionNode> Members => [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers => [];

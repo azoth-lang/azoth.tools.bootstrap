@@ -29,7 +29,7 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
     private bool symbolCached;
     public override MethodSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.MethodDefinition_Symbol);
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolsAspect.MethodDefinition_Symbol);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
     public ValueIdScope ValueIdScope

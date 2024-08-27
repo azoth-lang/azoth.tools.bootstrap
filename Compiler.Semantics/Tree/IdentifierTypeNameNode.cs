@@ -27,7 +27,7 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
                 SymbolNodeAspect.StandardTypeName_ReferencedDeclaration, ReferenceEqualityComparer.Instance);
     public override TypeSymbol? ReferencedSymbol
-        => SymbolAspect.StandardTypeName_ReferencedSymbol(this);
+        => SymbolsAspect.StandardTypeName_ReferencedSymbol(this);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
     public override IMaybeAntetype NamedAntetype

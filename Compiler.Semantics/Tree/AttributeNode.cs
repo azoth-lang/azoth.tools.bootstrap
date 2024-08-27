@@ -14,7 +14,7 @@ internal sealed class AttributeNode : CodeNode, IAttributeNode
     private ValueAttribute<ConstructorSymbol?> referencedSymbol;
     public ConstructorSymbol? ReferencedSymbol
         => referencedSymbol.TryGetValue(out var value) ? value
-            : referencedSymbol.GetValue(this, SymbolAspect.Attribute_ReferencedSymbol);
+            : referencedSymbol.GetValue(this, SymbolsAspect.Attribute_ReferencedSymbol);
 
     public AttributeNode(IAttributeSyntax syntax, IStandardTypeNameNode typeName)
     {

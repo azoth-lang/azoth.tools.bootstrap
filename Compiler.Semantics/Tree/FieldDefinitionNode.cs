@@ -43,7 +43,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     private bool symbolCached;
     public override FieldSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.FieldDefinition_Symbol);
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolsAspect.FieldDefinition_Symbol);
     private RewritableChild<IAmbiguousExpressionNode?> initializer;
     private bool initializerCached;
     public IAmbiguousExpressionNode? TempInitializer

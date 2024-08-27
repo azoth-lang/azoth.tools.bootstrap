@@ -32,7 +32,7 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
     private bool symbolCached;
     public override FunctionSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.FunctionDefinition_Symbol);
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolsAspect.FunctionDefinition_Symbol);
     public IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     public ITypeNode? Return { get; }

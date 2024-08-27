@@ -17,7 +17,7 @@ internal class SourceInitializerDefinitionNode : InitializerDefinitionNode, ISou
     private bool symbolCached;
     public override InitializerSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.SourceInitializerDefinition_Symbol);
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolsAspect.SourceInitializerDefinition_Symbol);
 
     public SourceInitializerDefinitionNode(
         IInitializerDefinitionSyntax syntax,

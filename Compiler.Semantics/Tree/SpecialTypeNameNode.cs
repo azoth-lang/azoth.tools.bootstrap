@@ -18,7 +18,7 @@ internal sealed class SpecialTypeNameNode : TypeNameNode, ISpecialTypeNameNode
     private bool referencedSymbolCached;
     public override TypeSymbol ReferencedSymbol
         => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol!
-            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol, SymbolAspect.SpecialTypeName_ReferencedSymbol);
+            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol, SymbolsAspect.SpecialTypeName_ReferencedSymbol);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
     public override IMaybeAntetype NamedAntetype

@@ -17,7 +17,7 @@ internal class DefaultInitializerDefinitionNode : InitializerDefinitionNode, IDe
     private bool symbolCached;
     public override InitializerSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol, SymbolAspect.DefaultInitializerDefinition_Symbol);
+            : this.Synthetic(ref symbolCached, ref symbol, SymbolsAspect.DefaultInitializerDefinition_Symbol);
 
     public DefaultInitializerDefinitionNode()
         : base(FixedList.Empty<IConstructorOrInitializerParameterNode>()) { }
