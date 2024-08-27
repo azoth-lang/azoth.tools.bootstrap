@@ -1,0 +1,8 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
+◊name DefinitionsAspect;
+
+// ↓ ↑ ⮡ ✎
+
+/// <remarks>Implements <see cref="IPackageDeclarationNode.AliasOrName"/> which
+/// should be <see langword="null"/> for the current package.</remarks>
+= Package.AliasOrName => null;

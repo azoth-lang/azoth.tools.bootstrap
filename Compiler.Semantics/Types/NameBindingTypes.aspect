@@ -1,8 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name NameBindingTypesAspect;
 
-// ↓ ↑ ⮡
-
+// ↓ ↑ ⮡ ✎
 
 // ---------- Patterns
 ↓ Pattern.ContextBindingType(): `DataType`;

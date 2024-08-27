@@ -2,7 +2,7 @@
 ◊name ContextAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 
-// ↓ ↑ ⮡
+// ↓ ↑ ⮡ ✎
 
 // Attribute supertype needed because of the conflict between types of inherited attributes
 ↓ *.ContainingDeclaration <: SymbolDeclaration;

@@ -1,7 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 ◊name SymbolNodeAspect;
 
-// ↓ ↑ ⮡
+// ↓ ↑ ⮡ ✎
 
 // ---------- Code Files
 = CompilationUnit.*.ContainingDeclaration;

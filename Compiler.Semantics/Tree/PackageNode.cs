@@ -42,7 +42,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public IFunctionDefinitionNode? EntryPoint
         => GrammarAttribute.IsCached(in entryPointCached) ? entryPoint
             : this.Synthetic(ref entryPointCached, ref entryPoint,
-                DefinitionAspect.Package_EntryPoint, ReferenceEqualityComparer.Instance);
+                DefinitionsAspect.Package_EntryPoint, ReferenceEqualityComparer.Instance);
     private IPackageSymbols? packageSymbols;
     private bool packageSymbolsCached;
     public IPackageSymbols PackageSymbols

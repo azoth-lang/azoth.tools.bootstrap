@@ -38,4 +38,7 @@ internal static class Build
         // Here on ID, the IA.A property does not have a most specific implementation. The two
         // explicit implementations in IB and IC are at the same level of specificity.
         => node.AllInheritedAttributesNamedSameAs(attribute).Where(p => p.IsDeclarationRequired);
+
+    public static IEnumerable<PropertyModel> PropertiesForClass(TreeNodeModel node)
+        => node.ActualProperties.Where(p => node.EquationFor(p) is null);
 }

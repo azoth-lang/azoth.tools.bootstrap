@@ -1,6 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name ExpressionTypesAspect;
 
+// ↓ ↑ ⮡ ✎
 
 // ---------- Parameters
 ↓ Parameter.FlowStateBefore(): `IFlowState`;

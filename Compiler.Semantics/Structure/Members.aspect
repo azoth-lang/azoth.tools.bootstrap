@@ -2,7 +2,7 @@
 ◊name MembersAspect;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-// ↓ ↑ ⮡
+// ↓ ↑ ⮡ ✎
 
 // ---------- Special Parts
 ↑ BodyOrBlock.Statements: Statement*;

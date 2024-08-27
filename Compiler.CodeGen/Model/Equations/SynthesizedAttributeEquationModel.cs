@@ -14,8 +14,12 @@ public sealed class SynthesizedAttributeEquationModel : SubtreeEquationModel
             a => HashCode.Combine(a.Name));
 
     public override SynthesizedAttributeEquationSyntax? Syntax { get; }
-    public override SynthesizedAttributeModel Attribute => attribute.Value;
-    private readonly Lazy<SynthesizedAttributeModel> attribute;
+    /// <summary>
+    /// The <see cref="SynthesizedAttributeModel"/> or <see cref="PropertyModel"/> that this equation
+    /// provides a value for.
+    /// </summary>
+    public override AttributeModel Attribute => attribute.Value;
+    private readonly Lazy<AttributeModel> attribute;
     public override EvaluationStrategy Strategy => strategy.Value;
     private readonly Lazy<EvaluationStrategy> strategy;
     public TypeModel? TypeOverride { get; }
@@ -37,7 +41,7 @@ public sealed class SynthesizedAttributeEquationModel : SubtreeEquationModel
         Syntax = syntax;
         strategy = new(ComputeStrategy);
         TypeOverride = TypeModel.CreateFromSyntax(Aspect.Tree, syntax.TypeOverride);
-        attribute = new(GetAttribute<SynthesizedAttributeModel>);
+        attribute = new(GetAttribute);
     }
 
     public SynthesizedAttributeEquationModel(TreeNodeModel node, SynthesizedAttributeModel attribute)
@@ -45,7 +49,7 @@ public sealed class SynthesizedAttributeEquationModel : SubtreeEquationModel
     {
         strategy = new(attribute.Strategy);
 
-        this.attribute = new(GetAttribute<SynthesizedAttributeModel>);
+        this.attribute = new(GetAttribute);
     }
 
     /// <remarks>
@@ -57,8 +61,16 @@ public sealed class SynthesizedAttributeEquationModel : SubtreeEquationModel
     {
         if (IsMethod)
             return EvaluationStrategy.Computed;
-        return Syntax!.Strategy.WithDefault(Expression, Attribute.Strategy);
+        var synthesizedAttribute = Attribute as SynthesizedAttributeModel;
+        var defaultStrategy = synthesizedAttribute?.Strategy ?? EvaluationStrategy.Lazy;
+        return Syntax!.Strategy.WithDefault(Expression, defaultStrategy);
     }
+
+
+    private AttributeModel GetAttribute()
+        => (AttributeModel?)Aspect.Tree.AttributeFor<SynthesizedAttributeModel>(NodeSymbol, Name)
+           ?? Aspect.Tree.AttributeFor<PropertyModel>(NodeSymbol, Name)
+           ?? throw new($"{NodeSymbol}.{Name} doesn't have a corresponding attribute.");
 
     public override string ToString()
     {

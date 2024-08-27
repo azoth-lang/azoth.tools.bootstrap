@@ -1,7 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name TypeMemberDeclarationsAspect;
 
-// ↓ ↑ ⮡
+// ↓ ↑ ⮡ ✎
 
 // ---------- Control Flow Expressions
 ↓ ReturnExpression.ExpectedReturnType: `DataType`?;

@@ -27,7 +27,7 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
     private ValueAttribute<IFixedSet<IPackageMemberDefinitionNode>> definitions;
     public IFixedSet<IPackageMemberDefinitionNode> Definitions
         => definitions.TryGetValue(out var value) ? value
-            : definitions.GetValue(this, DefinitionAspect.PackageFacet_Definitions);
+            : definitions.GetValue(this, DefinitionsAspect.PackageFacet_Definitions);
 
     private ValueAttribute<PackageNameScope> packageNameScope;
     public PackageNameScope PackageNameScope

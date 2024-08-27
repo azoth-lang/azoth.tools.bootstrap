@@ -155,9 +155,11 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
     IFunctionDefinitionNode? EntryPoint { get; }
     IPackageSymbols PackageSymbols { get; }
+    IdentifierName? IPackageDeclarationNode.AliasOrName
+        => null;
 
-    public static IPackageNode Create(IdentifierName? aliasOrName, IPackageSyntax syntax, IdentifierName name, PackageSymbol symbol, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, FixedDictionary<IdentifierName,IPackageDeclarationNode> packageDeclarations, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint, IPackageSymbols packageSymbols)
-        => new PackageNode(aliasOrName, syntax, name, symbol, references, intrinsicsReference, packageDeclarations, mainFacet, testingFacet, diagnostics, primitivesDeclarations, entryPoint, packageSymbols);
+    public static IPackageNode Create(IPackageSyntax syntax, IdentifierName name, PackageSymbol symbol, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, FixedDictionary<IdentifierName,IPackageDeclarationNode> packageDeclarations, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint, IPackageSymbols packageSymbols)
+        => new PackageNode(syntax, name, symbol, references, intrinsicsReference, packageDeclarations, mainFacet, testingFacet, diagnostics, primitivesDeclarations, entryPoint, packageSymbols);
 }
 
 // [Closed(typeof(PackageReferenceNode))]
@@ -3735,7 +3737,6 @@ file class PackageNode : SemanticNode, IPackageNode
 {
     private IPackageNode Self { [Inline] get => this; }
 
-    public IdentifierName? AliasOrName { [DebuggerStepThrough] get; }
     public IPackageSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public PackageSymbol Symbol { [DebuggerStepThrough] get; }
@@ -3749,9 +3750,8 @@ file class PackageNode : SemanticNode, IPackageNode
     public IFunctionDefinitionNode? EntryPoint { [DebuggerStepThrough] get; }
     public IPackageSymbols PackageSymbols { [DebuggerStepThrough] get; }
 
-    public PackageNode(IdentifierName? aliasOrName, IPackageSyntax syntax, IdentifierName name, PackageSymbol symbol, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, FixedDictionary<IdentifierName,IPackageDeclarationNode> packageDeclarations, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint, IPackageSymbols packageSymbols)
+    public PackageNode(IPackageSyntax syntax, IdentifierName name, PackageSymbol symbol, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, FixedDictionary<IdentifierName,IPackageDeclarationNode> packageDeclarations, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint, IPackageSymbols packageSymbols)
     {
-        AliasOrName = aliasOrName;
         Syntax = syntax;
         Name = name;
         Symbol = symbol;

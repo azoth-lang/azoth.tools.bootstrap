@@ -2,7 +2,7 @@
 ◊name ValueIdsAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
-// ↓ ↑ ⮡
+// ↓ ↑ ⮡ ✎
 
 // Type Declarations
 struct `ValueId`;
