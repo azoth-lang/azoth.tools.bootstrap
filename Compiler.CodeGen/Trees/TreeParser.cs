@@ -76,31 +76,18 @@ internal static class TreeParser
     private static (bool isTemp, SymbolSyntax Defines, IEnumerable<SymbolSyntax> Supertypes) ParseDeclaration(
         string declaration)
     {
-        var (defines, supertypes) = SplitDeclaration(declaration);
-        var segments = SplitWhitespace(defines);
+        (declaration, var supertypes) = OptionalSplitTwo(declaration, "<:", "Too many `<:` in: '{0}'");
+        var (tempKeyword, defines) = OptionalSplitOffStart(declaration);
         bool isTemp = false;
-        SymbolSyntax definesSymbol;
-        switch (segments.Length)
-        {
-            case 0:
-            case 1:
-                definesSymbol = ParseSymbol(defines);
-                break;
-            default:
-                if (segments[0] == "temp")
-                {
-                    isTemp = true;
-                    defines = string.Join(' ', segments.Skip(1));
-                }
-                definesSymbol = ParseSymbol(defines);
-                break;
-        }
+        if (tempKeyword == "temp")
+            isTemp = true;
+        else
+            defines = declaration;
+
+        var definesSymbol = ParseSymbol(defines);
         var supertypeSyntax = ParseSupertypes(supertypes);
         return (isTemp, definesSymbol, supertypeSyntax);
     }
-
-    public static (string Defines, string? Parents) SplitDeclaration(string declaration)
-        => OptionalSplitTwo(declaration, "<:", "Too many `<:` in: '{0}'");
 
     private static IEnumerable<SymbolSyntax> ParseSupertypes(string? supertypes)
     {

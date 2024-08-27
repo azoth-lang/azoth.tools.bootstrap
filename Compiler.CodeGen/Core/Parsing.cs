@@ -99,24 +99,24 @@ internal static class Parsing
     }
 
     public static IEnumerable<string> SplitCommaSeparated(string supertypes)
-        => supertypes.Split(',').Select(p => p.Trim());
+        => supertypes.Split(',', StringSplitOptions.TrimEntries);
 
     public static (string, string?) OptionalSplitTwo(string value, string separator, string errorMessage)
     {
         var index = value.IndexOf(separator, StringComparison.InvariantCulture);
         if (index == -1) return (value, null);
-        return SplitTwo(value, separator, index, errorMessage);
+        return BisectImplementation(value, separator, index, errorMessage);
     }
 
-    public static (string, string) SplitTwo(string value, string separator, string errorMessage)
+    public static (string, string) Bisect(string value, string separator, string errorMessage)
     {
         var index = value.IndexOf(separator, StringComparison.InvariantCulture);
         if (index == -1)
             throw new FormatException(string.Format(errorMessage, value));
-        return SplitTwo(value, separator, index, errorMessage);
+        return BisectImplementation(value, separator, index, errorMessage);
     }
 
-    private static (string, string) SplitTwo(string value, string separator, int atIndex, string errorMessage)
+    private static (string, string) BisectImplementation(string value, string separator, int atIndex, string errorMessage)
     {
         var secondIndex = value.IndexOf(separator, atIndex + separator.Length, StringComparison.InvariantCulture);
         if (secondIndex != -1)
@@ -124,18 +124,50 @@ internal static class Parsing
         return (value[..atIndex].Trim(), value[(atIndex + separator.Length)..].Trim());
     }
 
-    public static (string, string?) OptionalSplitAtFirst(string value, string separator)
+    public static (string, string) Bisect(string value, string errorMessage)
     {
-        var index = value.IndexOf(separator, StringComparison.InvariantCulture);
+        var maybeIndex = value.IndexOfWhitespace();
+        if (maybeIndex is not { } index)
+            throw new FormatException(string.Format(errorMessage, value));
+        var secondIndex = value.IndexOfWhitespace(index + 1);
+        if (secondIndex is not null)
+            throw new FormatException(string.Format(errorMessage, value));
+        return (value[..index].Trim(), value[(index + 1)..].Trim());
+    }
+
+    public static (string?, string) OptionalSplitOffStart(string value)
+    {
+        var maybeIndex = value.IndexOfWhitespace();
+        if (maybeIndex is not { } index) return (null, value);
+        return (value[..index].Trim(), value[(index + 1)..].Trim());
+    }
+
+    public static (string, string?) OptionalSplitOffEnd(string value, string separator)
+    {
+        var index = value.LastIndexOf(separator, StringComparison.InvariantCulture);
         if (index == -1) return (value, null);
         return (value[..index].Trim(), value[(index + separator.Length)..].Trim());
     }
 
-    public static (string, string) SplitAtFirst(string value, string separator, string errorMessage)
+    public static (string, string?) OptionalSplitOffEnd(string value)
+    {
+        var maybeIndex = value.LastIndexOfWhitespace();
+        if (maybeIndex is not { } index) return (value, null);
+        return (value[..index].Trim(), value[(index + 1)..].Trim());
+    }
+
+    public static (string, string) SplitOffStart(string value, string separator, string errorMessage)
     {
         var index = value.IndexOf(separator, StringComparison.InvariantCulture);
         if (index == -1) throw new FormatException(string.Format(errorMessage, value));
         return (value[..index].Trim(), value[(index + separator.Length)..].Trim());
+    }
+
+    public static (string, string) SplitOffStart(string value, string errorMessage)
+    {
+        var maybeIndex = value.IndexOfWhitespace();
+        if (maybeIndex is not { } index) throw new FormatException(string.Format(errorMessage, value));
+        return (value[..index].Trim(), value[(index + 1)..].Trim());
     }
 
     [return: NotNullIfNotNull(nameof(type))]
@@ -179,7 +211,4 @@ internal static class Parsing
         if (endsWith) value = value[prefix.Length..].Trim();
         return endsWith;
     }
-
-    public static string[] SplitWhitespace(string statement)
-        => statement.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 }

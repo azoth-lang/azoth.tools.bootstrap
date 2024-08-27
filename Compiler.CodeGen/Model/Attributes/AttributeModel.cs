@@ -27,9 +27,12 @@ public abstract class AttributeModel : IMemberModel
     public abstract AttributeSyntax? Syntax { get; }
     public abstract TreeNodeModel Node { get; }
     public abstract string Name { get; }
+    public virtual string TempName => Name;
     public abstract bool IsMethod { get; }
     public abstract TypeModel Type { get; }
     public virtual bool IsSyncLockRequired => false;
+
+    public abstract bool IsChild { get; }
 
     /// <summary>
     /// Something is a new definition if it replaces some parent definition.

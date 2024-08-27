@@ -18,10 +18,10 @@ public sealed class PropertyModel : AttributeModel
     /// The name of the temporary property.
     /// </summary>
     /// <remarks>For properties that have non-temporary types, this is just the name.</remarks>
-    public string TempName => IsTemp ? $"Temp{Name}" : Name;
+    public override string TempName => IsTemp ? $"Temp{Name}" : Name;
     public override bool IsMethod => false;
     public override TypeModel Type { get; }
-    public bool IsChild => ReferencesNode;
+    public override bool IsChild => ReferencesNode;
     public bool IsTemp => Type.ReferencedNode()?.IsTemp ?? false;
     public TypeModel FinalType => finalType.Value;
     private readonly Lazy<TypeModel> finalType;

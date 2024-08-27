@@ -8,13 +8,14 @@ public sealed class SynthesizedAttributeSyntax : AspectAttributeSyntax
     public string? DefaultExpression { get; }
 
     public SynthesizedAttributeSyntax(
+        bool isChild,
         EvaluationStrategy? strategy,
         SymbolSyntax node,
         string name,
         bool isMethod,
         TypeSyntax type,
         string? defaultExpression)
-        : base(strategy, node, name, isMethod, type)
+        : base(isChild, strategy, node, name, isMethod, type)
     {
         DefaultExpression = defaultExpression;
     }

@@ -11,7 +11,7 @@ public sealed class InheritedAttributeSyntax : AspectAttributeSyntax
         string name,
         bool isMethod,
         TypeSyntax type)
-        : base(strategy, node, name, isMethod, type)
+        : base(false, strategy, node, name, isMethod, type)
     {
     }
 

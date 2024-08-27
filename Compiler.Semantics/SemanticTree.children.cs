@@ -20,6 +20,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield return n.MainFacet;
                 yield return n.TestingFacet;
+                yield return n.IntrinsicsReference;
                 foreach (var child in n.PrimitivesDeclarations)
                     yield return child;
                 yield break;

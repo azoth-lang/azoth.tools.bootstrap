@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
@@ -49,13 +48,11 @@ public static class AspectParser
 
     private static TypeDeclarationSyntax ParseStructDeclaration(string statement)
     {
-        var segments = SplitWhitespace(statement);
-        if (segments.Length != 2)
-            throw new FormatException($"Invalid struct declaration: '{statement}'");
-        if (segments[0] != "struct")
+        var (structKeyword, name) = Bisect(statement, "Should be exactly one space in: '{0}'");
+        if (structKeyword != "struct")
             throw new FormatException($"Struct declarations does not start with 'struct': '{statement}'");
-        var name = ParseSymbol(segments[1]);
-        return new(true, name);
+        var nameSyntax = ParseSymbol(name);
+        return new(true, nameSyntax);
     }
 
     private static InheritedAttributeSupertypeSyntax ParseInheritedAttributeSupertype(string statement)
@@ -63,8 +60,8 @@ public static class AspectParser
         if (!ParseOffStart(ref statement, "↓"))
             throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
 
-        var (definition, type) = SplitTwo(statement, "<:", "Should be exactly one `<:` in: '{0}'");
-        var (node, name) = SplitAtFirst(definition, ".", "Missing `.` between '*' and attribute in: '{0}'");
+        var (definition, type) = Bisect(statement, "<:", "Should be exactly one `<:` in: '{0}'");
+        var (node, name) = SplitOffStart(definition, ".", "Missing `.` between '*' and attribute in: '{0}'");
         if (node != "*")
             throw new FormatException("Supertype must be for all nodes (i.e. node must be '*').");
         var typeSyntax = ParseType(type);
@@ -87,14 +84,15 @@ public static class AspectParser
             throw new ArgumentException("Not a synthesized attribute statement.", nameof(statement));
 
         var (definition, defaultExpression) = OptionalSplitTwo(statement, "=>", "Too many `=>` in: '{0}'");
-        (definition, var type) = SplitTwo(definition, ":", "Should be exactly one `:` in: '{0}'");
-        (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        (definition, var type) = Bisect(definition, ":", "Should be exactly one `:` in: '{0}'");
+        (var node, definition) = SplitOffStart(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        var isChild = ParseIsChild(ref node);
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
         var isMethod = ParseOffEnd(ref definition, "()");
         var name = definition;
         var typeSyntax = ParseType(type);
         var nodeSymbol = ParseSymbol(node);
-        return new(evaluationStrategy, nodeSymbol, name, isMethod, typeSyntax, defaultExpression);
+        return new(isChild, evaluationStrategy, nodeSymbol, name, isMethod, typeSyntax, defaultExpression);
     }
 
     private static InheritedAttributeSyntax ParseInheritedAttribute(string statement)
@@ -102,8 +100,8 @@ public static class AspectParser
         if (!ParseOffStart(ref statement, "↓"))
             throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
 
-        var (definition, type) = SplitTwo(statement, ":", "Should be exactly one `:` in: '{0}'");
-        (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        var (definition, type) = Bisect(statement, ":", "Should be exactly one `:` in: '{0}'");
+        (var node, definition) = SplitOffStart(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
         var isMethod = ParseOffEnd(ref definition, "()");
         var name = definition;
@@ -117,8 +115,8 @@ public static class AspectParser
         if (!ParseOffStart(ref statement, "⮡"))
             throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
 
-        var (definition, type) = SplitTwo(statement, ":", "Should be exactly one `:` in: '{0}'");
-        (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        var (definition, type) = Bisect(statement, ":", "Should be exactly one `:` in: '{0}'");
+        (var node, definition) = SplitOffStart(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
         var isMethod = ParseOffEnd(ref definition, "()");
         var name = definition;
@@ -133,8 +131,8 @@ public static class AspectParser
             throw new ArgumentException("Not an intertype method attribute statement.", nameof(statement));
 
         var (definition, defaultExpression) = OptionalSplitTwo(statement, "=>", "Should be exactly one `=>` in: '{0}'");
-        (definition, var type) = SplitTwo(definition, ":", "Should be exactly one `:` in: '{0}'");
-        (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        (definition, var type) = Bisect(definition, ":", "Should be exactly one `:` in: '{0}'");
+        (var node, definition) = SplitOffStart(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var parameters = ParseOffParameters(ref definition);
         var name = definition;
         var typeSyntax = ParseType(type);
@@ -144,7 +142,7 @@ public static class AspectParser
 
     private static string ParseOffParameters(ref string definition)
     {
-        (definition, var parameters) = SplitAtFirst(definition, "(", "Missing `(` the start parameters in: '{0}'");
+        (definition, var parameters) = SplitOffStart(definition, "(", "Missing `(` the start parameters in: '{0}'");
         if (!ParseOffEnd(ref parameters, ")"))
             throw new FormatException("Missing `)` at the end of parameters.");
         return parameters;
@@ -156,7 +154,7 @@ public static class AspectParser
             throw new ArgumentException("Not an equation.", nameof(statement));
         var (definition, expression) = OptionalSplitTwo(statement, "=>", "Too many `=>` in: '{0}'");
         (definition, var typeOverride) = OptionalSplitTwo(definition, ":", "Too many `:` in: '{0}'");
-        (var node, definition) = SplitAtFirst(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        (var node, definition) = SplitOffStart(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
         var parameters = TryParseOffParameters(ref definition);
         var isMethod = parameters is not null;
@@ -175,7 +173,7 @@ public static class AspectParser
 
     private static string? TryParseOffParameters(ref string definition)
     {
-        (definition, var parameters) = OptionalSplitAtFirst(definition, "(");
+        (definition, var parameters) = OptionalSplitOffEnd(definition, "(");
         if (parameters is null) return null;
         if (!ParseOffEnd(ref parameters, ")")) throw new FormatException("Missing `)` at the end of parameters.");
         return parameters;
@@ -256,28 +254,28 @@ public static class AspectParser
         }
     }
 
+    private static bool ParseIsChild(ref string node)
+    {
+        var (keyword, rest) = OptionalSplitOffStart(node);
+        if (keyword == "child")
+        {
+            node = rest;
+            return true;
+        }
+        return false;
+    }
+
     private static EvaluationStrategy? ParseEvaluationStrategy(ref string node)
     {
-        var parts = SplitWhitespace(node);
-        switch (parts.Length)
+        (var strategy, node) = OptionalSplitOffStart(node);
+        return strategy switch
         {
-            case 0:
-                throw new FormatException($"Empty node '{node}' for attribute.");
-            case 1:
-                return null;
-            case 2:
-                var strategy = parts[0];
-                node = parts[1];
-                return strategy switch
-                {
-                    "eager" => EvaluationStrategy.Eager,
-                    "lazy" => EvaluationStrategy.Lazy,
-                    "computed" => EvaluationStrategy.Computed,
-                    _ => throw new FormatException($"Unknown evaluation strategy '{strategy}'"),
-                };
-            default:
-                throw new FormatException($"Too many parts in node '{node}' for attribute.");
-        }
+            null => null,
+            "eager" => EvaluationStrategy.Eager,
+            "lazy" => EvaluationStrategy.Lazy,
+            "computed" => EvaluationStrategy.Computed,
+            _ => throw new FormatException($"Unknown evaluation strategy '{strategy}'"),
+        };
     }
 
     private static RewriteRuleSyntax ParseRewriteRule(string statement)
@@ -285,15 +283,9 @@ public static class AspectParser
         if (!ParseOffStart(ref statement, "✎"))
             throw new ArgumentException("Not a rewrite rule.", nameof(statement));
 
-        var segments = SplitWhitespace(statement);
-        return segments.Length switch
-        {
-            0 or 1 => new(ParseSymbol(statement), null),
-            2 => new(ParseSymbol(segments[0]), segments[1]),
-            _ => new(ParseSymbol(segments[0]), string.Join(" ", segments.Skip(1)))
-        };
+        var (node, name) = OptionalSplitOffEnd(statement);
+        return new(ParseSymbol(node), name);
     }
-
 
     private record AspectStatementsSyntax(
         IFixedSet<TypeDeclarationSyntax> TypeDeclarations,

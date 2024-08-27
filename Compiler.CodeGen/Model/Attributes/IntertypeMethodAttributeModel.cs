@@ -7,6 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 public class IntertypeMethodAttributeModel : AspectAttributeModel
 {
     public override IntertypeMethodAttributeSyntax? Syntax { get; }
+    public override bool IsChild => false;
     public string Parameters { get; }
     public string? DefaultExpression { get; }
 

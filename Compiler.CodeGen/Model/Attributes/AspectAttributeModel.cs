@@ -27,6 +27,7 @@ public abstract class AspectAttributeModel : AttributeModel
 
     public AspectModel Aspect { get; }
     public abstract override AspectAttributeSyntax? Syntax { get; }
+    public override bool IsChild => Syntax?.IsChild ?? false;
     public InternalSymbol NodeSymbol { get; }
     public override TreeNodeModel Node => node.Value;
     private readonly Lazy<TreeNodeModel> node;

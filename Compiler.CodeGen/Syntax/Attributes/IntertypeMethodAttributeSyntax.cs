@@ -11,7 +11,7 @@ public sealed class IntertypeMethodAttributeSyntax : AspectAttributeSyntax
     public string? DefaultExpression { get; }
 
     public IntertypeMethodAttributeSyntax(SymbolSyntax node, string name, string parameters, TypeSyntax type, string? defaultExpression)
-        : base(EvaluationStrategy.Computed, node, name, true, type)
+        : base(false, EvaluationStrategy.Computed, node, name, true, type)
     {
         Parameters = parameters;
         DefaultExpression = defaultExpression;

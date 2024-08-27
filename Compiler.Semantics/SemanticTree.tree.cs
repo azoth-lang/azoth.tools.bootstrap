@@ -146,24 +146,24 @@ public partial interface IPackageNode : IPackageDeclarationNode
     new IPackageSyntax Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFixedSet<IPackageReferenceNode> References { get; }
-    IPackageReferenceNode IntrinsicsReference { get; }
     new IPackageFacetNode MainFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
     new IPackageFacetNode TestingFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
     DiagnosticCollection Diagnostics { get; }
-    IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
     IFunctionDefinitionNode? EntryPoint { get; }
     FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations { get; }
     new IdentifierName Name
         => Syntax.Name;
     IdentifierName IPackageDeclarationNode.Name => Name;
     IPackageSymbols PackageSymbols { get; }
+    IPackageReferenceNode IntrinsicsReference { get; }
+    IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
     IdentifierName? IPackageDeclarationNode.AliasOrName
         => null;
 
-    public static IPackageNode Create(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint)
-        => new PackageNode(syntax, references, intrinsicsReference, mainFacet, testingFacet, diagnostics, primitivesDeclarations, entryPoint);
+    public static IPackageNode Create(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFunctionDefinitionNode? entryPoint)
+        => new PackageNode(syntax, references, mainFacet, testingFacet, diagnostics, entryPoint);
 }
 
 // [Closed(typeof(PackageReferenceNode))]
@@ -3746,11 +3746,9 @@ file class PackageNode : SemanticNode, IPackageNode
 
     public IPackageSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedSet<IPackageReferenceNode> References { [DebuggerStepThrough] get; }
-    public IPackageReferenceNode IntrinsicsReference { [DebuggerStepThrough] get; }
     public IPackageFacetNode MainFacet { [DebuggerStepThrough] get; }
     public IPackageFacetNode TestingFacet { [DebuggerStepThrough] get; }
     public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
-    public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { [DebuggerStepThrough] get; }
     public IFunctionDefinitionNode? EntryPoint { [DebuggerStepThrough] get; }
     public PackageSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
@@ -3770,16 +3768,26 @@ file class PackageNode : SemanticNode, IPackageNode
                 SymbolsAspect.Package_PackageSymbols);
     private IPackageSymbols? packageSymbols;
     private bool packageSymbolsCached;
+    public IPackageReferenceNode IntrinsicsReference
+        => GrammarAttribute.IsCached(in intrinsicsReferenceCached) ? intrinsicsReference!
+            : this.Synthetic(ref intrinsicsReferenceCached, ref intrinsicsReference,
+                BuiltInsAspect.Package_IntrinsicsReference);
+    private IPackageReferenceNode? intrinsicsReference;
+    private bool intrinsicsReferenceCached;
+    public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations
+        => GrammarAttribute.IsCached(in primitivesDeclarationsCached) ? primitivesDeclarations!
+            : this.Synthetic(ref primitivesDeclarationsCached, ref primitivesDeclarations,
+                BuiltInsAspect.Package_PrimitivesDeclarations);
+    private IFixedSet<ITypeDeclarationNode>? primitivesDeclarations;
+    private bool primitivesDeclarationsCached;
 
-    public PackageNode(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint)
+    public PackageNode(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFunctionDefinitionNode? entryPoint)
     {
         Syntax = syntax;
         References = references;
-        IntrinsicsReference = intrinsicsReference;
         MainFacet = mainFacet;
         TestingFacet = testingFacet;
         Diagnostics = diagnostics;
-        PrimitivesDeclarations = primitivesDeclarations;
         EntryPoint = entryPoint;
     }
 

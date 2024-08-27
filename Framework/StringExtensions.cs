@@ -101,4 +101,28 @@ public static partial class StringExtensions
             return FixedList.Empty<string>();
         return value.Split(separators).ToFixedList();
     }
+
+    public static int? IndexOfWhitespace(this string value)
+    {
+        for (var i = 0; i < value.Length; i++)
+            if (char.IsWhiteSpace(value[i]))
+                return i;
+        return null;
+    }
+
+    public static int? IndexOfWhitespace(this string value, int startAtIndex)
+    {
+        for (var i = startAtIndex; i < value.Length; i++)
+            if (char.IsWhiteSpace(value[i]))
+                return i;
+        return null;
+    }
+
+    public static int? LastIndexOfWhitespace(this string value)
+    {
+        for (var i = value.Length - 1; i >= 0; i--)
+            if (char.IsWhiteSpace(value[i]))
+                return i;
+        return null;
+    }
 }
