@@ -72,7 +72,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     }
 
     internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => SymbolNodeAspect.TypeDeclaration_InheritedContainingDeclaration(this);
+        => SymbolNodeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaration(this);
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => ContainingDeclaredTypeAspect.TypeDeclaration_InheritedContainingDeclaredType(this);
@@ -90,7 +90,7 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         => this;
 
     internal override bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
-        => SymbolNodeAspect.TypeDeclaration_InheritedIsAttributeType(this);
+        => SymbolNodeAspect.TypeDefinition_Children_Broadcast_IsAttributeType(this);
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {

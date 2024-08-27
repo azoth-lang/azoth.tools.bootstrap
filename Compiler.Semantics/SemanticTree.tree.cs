@@ -147,7 +147,6 @@ public partial interface IPackageNode : IPackageDeclarationNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFixedSet<IPackageReferenceNode> References { get; }
     IPackageReferenceNode IntrinsicsReference { get; }
-    FixedDictionary<IdentifierName,IPackageDeclarationNode> PackageDeclarations { get; }
     new IPackageFacetNode MainFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
     new IPackageFacetNode TestingFacet { get; }
@@ -155,6 +154,7 @@ public partial interface IPackageNode : IPackageDeclarationNode
     DiagnosticCollection Diagnostics { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
     IFunctionDefinitionNode? EntryPoint { get; }
+    FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations { get; }
     new IdentifierName Name
         => Syntax.Name;
     IdentifierName IPackageDeclarationNode.Name => Name;
@@ -162,8 +162,8 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IdentifierName? IPackageDeclarationNode.AliasOrName
         => null;
 
-    public static IPackageNode Create(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, FixedDictionary<IdentifierName,IPackageDeclarationNode> packageDeclarations, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint)
-        => new PackageNode(syntax, references, intrinsicsReference, packageDeclarations, mainFacet, testingFacet, diagnostics, primitivesDeclarations, entryPoint);
+    public static IPackageNode Create(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint)
+        => new PackageNode(syntax, references, intrinsicsReference, mainFacet, testingFacet, diagnostics, primitivesDeclarations, entryPoint);
 }
 
 // [Closed(typeof(PackageReferenceNode))]
@@ -172,13 +172,13 @@ public partial interface IPackageReferenceNode : IChildNode
 {
     new IPackageReferenceSyntax? Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IPackageSymbolNode SymbolNode { get; }
     IdentifierName AliasOrName { get; }
     IPackageSymbols PackageSymbols { get; }
     bool IsTrusted { get; }
+    IPackageSymbolNode SymbolNode { get; }
 
-    public static IPackageReferenceNode Create(ISemanticNode parent, IPackageReferenceSyntax? syntax, IPackageSymbolNode symbolNode, IdentifierName aliasOrName, IPackageSymbols packageSymbols, bool isTrusted)
-        => new PackageReferenceNode(parent, syntax, symbolNode, aliasOrName, packageSymbols, isTrusted);
+    public static IPackageReferenceNode Create(ISemanticNode parent, IPackageReferenceSyntax? syntax, IdentifierName aliasOrName, IPackageSymbols packageSymbols, bool isTrusted)
+        => new PackageReferenceNode(parent, syntax, aliasOrName, packageSymbols, isTrusted);
 }
 
 // [Closed(typeof(PackageFacetNode))]
@@ -190,12 +190,12 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     PackageSymbol PackageSymbol { get; }
     IFixedSet<ICompilationUnitNode> CompilationUnits { get; }
     IFixedSet<IPackageMemberDefinitionNode> Definitions { get; }
+    PackageNameScope PackageNameScope { get; }
     new INamespaceDefinitionNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
-    PackageNameScope PackageNameScope { get; }
 
-    public static IPackageFacetNode Create(ISemanticNode parent, IdentifierName? packageAliasOrName, PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IFixedSet<ICompilationUnitNode> compilationUnits, IFixedSet<IPackageMemberDefinitionNode> definitions, INamespaceDefinitionNode globalNamespace)
-        => new PackageFacetNode(parent, packageAliasOrName, symbol, syntax, packageName, packageSymbol, compilationUnits, definitions, globalNamespace);
+    public static IPackageFacetNode Create(ISemanticNode parent, IdentifierName? packageAliasOrName, PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IFixedSet<ICompilationUnitNode> compilationUnits, IFixedSet<IPackageMemberDefinitionNode> definitions)
+        => new PackageFacetNode(parent, packageAliasOrName, symbol, syntax, packageName, packageSymbol, compilationUnits, definitions);
 }
 
 [Closed(
@@ -239,7 +239,6 @@ public partial interface ICompilationUnitNode : ICodeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     PackageSymbol ContainingSymbol { get; }
     NamespaceName ImplicitNamespaceName { get; }
-    INamespaceDefinitionNode ImplicitNamespace { get; }
     NamespaceSymbol ImplicitNamespaceSymbol { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
@@ -247,9 +246,10 @@ public partial interface ICompilationUnitNode : ICodeNode
     NamespaceScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
     IPackageFacetNode ContainingDeclaration { get; }
+    INamespaceDefinitionNode ImplicitNamespace { get; }
 
-    public static ICompilationUnitNode Create(ISemanticNode parent, ICompilationUnitSyntax syntax, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, INamespaceDefinitionNode implicitNamespace, NamespaceSymbol implicitNamespaceSymbol, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> definitions, DiagnosticCollection diagnostics)
-        => new CompilationUnitNode(parent, syntax, containingSymbol, implicitNamespaceName, implicitNamespace, implicitNamespaceSymbol, usingDirectives, definitions, diagnostics);
+    public static ICompilationUnitNode Create(ISemanticNode parent, ICompilationUnitSyntax syntax, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, NamespaceSymbol implicitNamespaceSymbol, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> definitions, DiagnosticCollection diagnostics)
+        => new CompilationUnitNode(parent, syntax, containingSymbol, implicitNamespaceName, implicitNamespaceSymbol, usingDirectives, definitions, diagnostics);
 }
 
 // [Closed(typeof(UsingDirectiveNode))]
@@ -351,8 +351,6 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
     NamespaceName DeclaredNames { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionNode> Members { get; }
-    INamespaceDefinitionNode Definition { get; }
-    INamespaceDefinitionNode ContainingNamespace { get; }
     new NamespaceSymbol ContainingSymbol { get; }
     Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
     NamespaceSymbol Symbol { get; }
@@ -360,9 +358,11 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
     LexicalScope IDefinitionNode.ContainingLexicalScope => ContainingLexicalScope;
     new INamespaceDefinitionNode ContainingDeclaration { get; }
     ISymbolDeclarationNode IDefinitionNode.ContainingDeclaration => ContainingDeclaration;
+    INamespaceDefinitionNode ContainingNamespace { get; }
+    INamespaceDefinitionNode Definition { get; }
 
-    public static INamespaceBlockDefinitionNode Create(ISemanticNode parent, StandardName? name, INamespaceDefinitionSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> members, INamespaceDefinitionNode definition, INamespaceDefinitionNode containingNamespace, NamespaceSymbol containingSymbol, NamespaceSymbol symbol)
-        => new NamespaceBlockDefinitionNode(parent, name, syntax, isGlobalQualified, declaredNames, usingDirectives, members, definition, containingNamespace, containingSymbol, symbol);
+    public static INamespaceBlockDefinitionNode Create(ISemanticNode parent, StandardName? name, INamespaceDefinitionSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> members, NamespaceSymbol containingSymbol, NamespaceSymbol symbol)
+        => new NamespaceBlockDefinitionNode(parent, name, syntax, isGlobalQualified, declaredNames, usingDirectives, members, containingSymbol, symbol);
 }
 
 [Closed(
@@ -1093,8 +1093,8 @@ public partial interface IFieldParameterNode : IConstructorOrInitializerParamete
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IFieldDefinitionNode? ReferencedField { get; }
 
-    public static IFieldParameterNode Create(ISemanticNode parent, bool unused, IMaybeAntetype bindingAntetype, IFlowState flowStateAfter, DataType bindingType, ParameterType parameterType, IFieldParameterSyntax syntax, IdentifierName name, ITypeDefinitionNode containingTypeDefinition, IFieldDefinitionNode? referencedField)
-        => new FieldParameterNode(parent, unused, bindingAntetype, flowStateAfter, bindingType, parameterType, syntax, name, containingTypeDefinition, referencedField);
+    public static IFieldParameterNode Create(ISemanticNode parent, bool unused, IMaybeAntetype bindingAntetype, IFlowState flowStateAfter, DataType bindingType, ParameterType parameterType, IFieldParameterSyntax syntax, IdentifierName name, ITypeDefinitionNode containingTypeDefinition)
+        => new FieldParameterNode(parent, unused, bindingAntetype, flowStateAfter, bindingType, parameterType, syntax, name, containingTypeDefinition);
 }
 
 [Closed(
@@ -1215,8 +1215,8 @@ public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpl
     StandardName IStandardTypeNameNode.Name => Name;
     TypeName ITypeNameNode.Name => Name;
 
-    public static IIdentifierTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IIdentifierTypeNameSyntax syntax, IdentifierName name)
-        => new IdentifierTypeNameNode(parent, namedAntetype, namedType, namedBareType, isAttributeType, referencedDeclaration, syntax, name);
+    public static IIdentifierTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, IIdentifierTypeNameSyntax syntax, IdentifierName name)
+        => new IdentifierTypeNameNode(parent, namedAntetype, namedType, namedBareType, isAttributeType, syntax, name);
 }
 
 // [Closed(typeof(SpecialTypeNameNode))]
@@ -1253,8 +1253,8 @@ public partial interface IGenericTypeNameNode : IStandardTypeNameNode
     TypeName ITypeNameNode.Name => Name;
     IFixedList<ITypeNode> TypeArguments { get; }
 
-    public static IGenericTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
-        => new GenericTypeNameNode(parent, namedAntetype, namedType, namedBareType, isAttributeType, referencedDeclaration, syntax, name, typeArguments);
+    public static IGenericTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
+        => new GenericTypeNameNode(parent, namedAntetype, namedType, namedBareType, isAttributeType, syntax, name, typeArguments);
 }
 
 // [Closed(typeof(QualifiedTypeNameNode))]
@@ -3747,7 +3747,6 @@ file class PackageNode : SemanticNode, IPackageNode
     public IPackageSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedSet<IPackageReferenceNode> References { [DebuggerStepThrough] get; }
     public IPackageReferenceNode IntrinsicsReference { [DebuggerStepThrough] get; }
-    public FixedDictionary<IdentifierName,IPackageDeclarationNode> PackageDeclarations { [DebuggerStepThrough] get; }
     public IPackageFacetNode MainFacet { [DebuggerStepThrough] get; }
     public IPackageFacetNode TestingFacet { [DebuggerStepThrough] get; }
     public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
@@ -3759,6 +3758,12 @@ file class PackageNode : SemanticNode, IPackageNode
                 SymbolsAspect.Package_Symbol);
     private PackageSymbol? symbol;
     private bool symbolCached;
+    public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
+        => GrammarAttribute.IsCached(in packageDeclarationsCached) ? packageDeclarations!
+            : this.Synthetic(ref packageDeclarationsCached, ref packageDeclarations,
+                SymbolNodeAspect.Package_PackageDeclarations);
+    private FixedDictionary<IdentifierName, IPackageDeclarationNode>? packageDeclarations;
+    private bool packageDeclarationsCached;
     public IPackageSymbols PackageSymbols
         => GrammarAttribute.IsCached(in packageSymbolsCached) ? packageSymbols!
             : this.Synthetic(ref packageSymbolsCached, ref packageSymbols,
@@ -3766,12 +3771,11 @@ file class PackageNode : SemanticNode, IPackageNode
     private IPackageSymbols? packageSymbols;
     private bool packageSymbolsCached;
 
-    public PackageNode(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, FixedDictionary<IdentifierName,IPackageDeclarationNode> packageDeclarations, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint)
+    public PackageNode(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageReferenceNode intrinsicsReference, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics, IFixedSet<ITypeDeclarationNode> primitivesDeclarations, IFunctionDefinitionNode? entryPoint)
     {
         Syntax = syntax;
         References = references;
         IntrinsicsReference = intrinsicsReference;
-        PackageDeclarations = packageDeclarations;
         MainFacet = mainFacet;
         TestingFacet = testingFacet;
         Diagnostics = diagnostics;
@@ -3801,18 +3805,22 @@ file class PackageReferenceNode : SemanticNode, IPackageReferenceNode
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public IPackageReferenceSyntax? Syntax { [DebuggerStepThrough] get; }
-    public IPackageSymbolNode SymbolNode { [DebuggerStepThrough] get; }
     public IdentifierName AliasOrName { [DebuggerStepThrough] get; }
     public IPackageSymbols PackageSymbols { [DebuggerStepThrough] get; }
     public bool IsTrusted { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public IPackageSymbolNode SymbolNode
+        => GrammarAttribute.IsCached(in symbolNodeCached) ? symbolNode!
+            : this.Synthetic(ref symbolNodeCached, ref symbolNode,
+                SymbolNodeAspect.PackageReference_SymbolNode);
+    private IPackageSymbolNode? symbolNode;
+    private bool symbolNodeCached;
 
-    public PackageReferenceNode(ISemanticNode parent, IPackageReferenceSyntax? syntax, IPackageSymbolNode symbolNode, IdentifierName aliasOrName, IPackageSymbols packageSymbols, bool isTrusted)
+    public PackageReferenceNode(ISemanticNode parent, IPackageReferenceSyntax? syntax, IdentifierName aliasOrName, IPackageSymbols packageSymbols, bool isTrusted)
     {
         Parent = parent;
         Syntax = syntax;
-        SymbolNode = symbolNode;
         AliasOrName = aliasOrName;
         PackageSymbols = packageSymbols;
         IsTrusted = isTrusted;
@@ -3832,7 +3840,6 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     public PackageSymbol PackageSymbol { [DebuggerStepThrough] get; }
     public IFixedSet<ICompilationUnitNode> CompilationUnits { [DebuggerStepThrough] get; }
     public IFixedSet<IPackageMemberDefinitionNode> Definitions { [DebuggerStepThrough] get; }
-    public INamespaceDefinitionNode GlobalNamespace { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public PackageNameScope PackageNameScope
@@ -3841,8 +3848,14 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
                 Inherited_PackageNameScope);
     private PackageNameScope? packageNameScope;
     private bool packageNameScopeCached;
+    public INamespaceDefinitionNode GlobalNamespace
+        => GrammarAttribute.IsCached(in globalNamespaceCached) ? globalNamespace!
+            : this.Synthetic(ref globalNamespaceCached, ref globalNamespace,
+                SymbolNodeAspect.PackageFacet_GlobalNamespace);
+    private INamespaceDefinitionNode? globalNamespace;
+    private bool globalNamespaceCached;
 
-    public PackageFacetNode(ISemanticNode parent, IdentifierName? packageAliasOrName, PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IFixedSet<ICompilationUnitNode> compilationUnits, IFixedSet<IPackageMemberDefinitionNode> definitions, INamespaceDefinitionNode globalNamespace)
+    public PackageFacetNode(ISemanticNode parent, IdentifierName? packageAliasOrName, PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IFixedSet<ICompilationUnitNode> compilationUnits, IFixedSet<IPackageMemberDefinitionNode> definitions)
     {
         Parent = parent;
         PackageAliasOrName = packageAliasOrName;
@@ -3852,7 +3865,6 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
         PackageSymbol = packageSymbol;
         CompilationUnits = compilationUnits;
         Definitions = definitions;
-        GlobalNamespace = globalNamespace;
     }
 
     internal override IPackageFacetDeclarationNode Inherited_Facet(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -3870,7 +3882,6 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     public ICompilationUnitSyntax Syntax { [DebuggerStepThrough] get; }
     public PackageSymbol ContainingSymbol { [DebuggerStepThrough] get; }
     public NamespaceName ImplicitNamespaceName { [DebuggerStepThrough] get; }
-    public INamespaceDefinitionNode ImplicitNamespace { [DebuggerStepThrough] get; }
     public NamespaceSymbol ImplicitNamespaceSymbol { [DebuggerStepThrough] get; }
     public IFixedList<IUsingDirectiveNode> UsingDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { [DebuggerStepThrough] get; }
@@ -3893,14 +3904,19 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
                 LexicalScopingAspect.CompilationUnit_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public INamespaceDefinitionNode ImplicitNamespace
+        => GrammarAttribute.IsCached(in implicitNamespaceCached) ? implicitNamespace!
+            : this.Synthetic(ref implicitNamespaceCached, ref implicitNamespace,
+                SymbolNodeAspect.CompilationUnit_ImplicitNamespace);
+    private INamespaceDefinitionNode? implicitNamespace;
+    private bool implicitNamespaceCached;
 
-    public CompilationUnitNode(ISemanticNode parent, ICompilationUnitSyntax syntax, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, INamespaceDefinitionNode implicitNamespace, NamespaceSymbol implicitNamespaceSymbol, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> definitions, DiagnosticCollection diagnostics)
+    public CompilationUnitNode(ISemanticNode parent, ICompilationUnitSyntax syntax, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, NamespaceSymbol implicitNamespaceSymbol, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> definitions, DiagnosticCollection diagnostics)
     {
         Parent = parent;
         Syntax = syntax;
         ContainingSymbol = containingSymbol;
         ImplicitNamespaceName = implicitNamespaceName;
-        ImplicitNamespace = implicitNamespace;
         ImplicitNamespaceSymbol = implicitNamespaceSymbol;
         UsingDirectives = usingDirectives;
         Definitions = definitions;
@@ -3953,8 +3969,6 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
     public NamespaceName DeclaredNames { [DebuggerStepThrough] get; }
     public IFixedList<IUsingDirectiveNode> UsingDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
-    public INamespaceDefinitionNode Definition { [DebuggerStepThrough] get; }
-    public INamespaceDefinitionNode ContainingNamespace { [DebuggerStepThrough] get; }
     public NamespaceSymbol ContainingSymbol { [DebuggerStepThrough] get; }
     public NamespaceSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -3981,8 +3995,20 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
                 LexicalScopingAspect.NamespaceBlockDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public INamespaceDefinitionNode ContainingNamespace
+        => GrammarAttribute.IsCached(in containingNamespaceCached) ? containingNamespace!
+            : this.Synthetic(ref containingNamespaceCached, ref containingNamespace,
+                SymbolNodeAspect.NamespaceBlockDefinition_ContainingNamespace);
+    private INamespaceDefinitionNode? containingNamespace;
+    private bool containingNamespaceCached;
+    public INamespaceDefinitionNode Definition
+        => GrammarAttribute.IsCached(in definitionCached) ? definition!
+            : this.Synthetic(ref definitionCached, ref definition,
+                SymbolNodeAspect.NamespaceBlockDefinition_Definition);
+    private INamespaceDefinitionNode? definition;
+    private bool definitionCached;
 
-    public NamespaceBlockDefinitionNode(ISemanticNode parent, StandardName? name, INamespaceDefinitionSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> members, INamespaceDefinitionNode definition, INamespaceDefinitionNode containingNamespace, NamespaceSymbol containingSymbol, NamespaceSymbol symbol)
+    public NamespaceBlockDefinitionNode(ISemanticNode parent, StandardName? name, INamespaceDefinitionSyntax syntax, bool isGlobalQualified, NamespaceName declaredNames, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> members, NamespaceSymbol containingSymbol, NamespaceSymbol symbol)
     {
         Parent = parent;
         Name = name;
@@ -3991,8 +4017,6 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
         DeclaredNames = declaredNames;
         UsingDirectives = usingDirectives;
         Members = members;
-        Definition = definition;
-        ContainingNamespace = containingNamespace;
         ContainingSymbol = containingSymbol;
         Symbol = symbol;
     }
@@ -5465,7 +5489,6 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
     public IFieldParameterSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public ITypeDefinitionNode ContainingTypeDefinition { [DebuggerStepThrough] get; }
-    public IFieldDefinitionNode? ReferencedField { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -5474,6 +5497,12 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public IFieldDefinitionNode? ReferencedField
+        => GrammarAttribute.IsCached(in referencedFieldCached) ? referencedField
+            : this.Synthetic(ref referencedFieldCached, ref referencedField,
+                SymbolNodeAspect.FieldParameter_ReferencedField);
+    private IFieldDefinitionNode? referencedField;
+    private bool referencedFieldCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
@@ -5481,7 +5510,7 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public FieldParameterNode(ISemanticNode parent, bool unused, IMaybeAntetype bindingAntetype, IFlowState flowStateAfter, DataType bindingType, ParameterType parameterType, IFieldParameterSyntax syntax, IdentifierName name, ITypeDefinitionNode containingTypeDefinition, IFieldDefinitionNode? referencedField)
+    public FieldParameterNode(ISemanticNode parent, bool unused, IMaybeAntetype bindingAntetype, IFlowState flowStateAfter, DataType bindingType, ParameterType parameterType, IFieldParameterSyntax syntax, IdentifierName name, ITypeDefinitionNode containingTypeDefinition)
     {
         Parent = parent;
         Unused = unused;
@@ -5492,7 +5521,6 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
         Syntax = syntax;
         Name = name;
         ContainingTypeDefinition = containingTypeDefinition;
-        ReferencedField = referencedField;
     }
 }
 
@@ -5574,7 +5602,6 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     public DataType NamedType { [DebuggerStepThrough] get; }
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public bool IsAttributeType { [DebuggerStepThrough] get; }
-    public ITypeDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IIdentifierTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -5587,6 +5614,12 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public ITypeDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                SymbolNodeAspect.StandardTypeName_ReferencedDeclaration);
+    private ITypeDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
     public TypeSymbol? ReferencedSymbol
         => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol
             : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
@@ -5594,14 +5627,13 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
 
-    public IdentifierTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IIdentifierTypeNameSyntax syntax, IdentifierName name)
+    public IdentifierTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, IIdentifierTypeNameSyntax syntax, IdentifierName name)
     {
         Parent = parent;
         NamedAntetype = namedAntetype;
         NamedType = namedType;
         NamedBareType = namedBareType;
         IsAttributeType = isAttributeType;
-        ReferencedDeclaration = referencedDeclaration;
         Syntax = syntax;
         Name = name;
     }
@@ -5656,7 +5688,6 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     public DataType NamedType { [DebuggerStepThrough] get; }
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public bool IsAttributeType { [DebuggerStepThrough] get; }
-    public ITypeDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IGenericTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public GenericName Name { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
@@ -5670,6 +5701,12 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public ITypeDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                SymbolNodeAspect.StandardTypeName_ReferencedDeclaration);
+    private ITypeDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
     public TypeSymbol? ReferencedSymbol
         => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol
             : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
@@ -5677,14 +5714,13 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
 
-    public GenericTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, ITypeDeclarationNode? referencedDeclaration, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
+    public GenericTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
     {
         Parent = parent;
         NamedAntetype = namedAntetype;
         NamedType = namedType;
         NamedBareType = namedBareType;
         IsAttributeType = isAttributeType;
-        ReferencedDeclaration = referencedDeclaration;
         Syntax = syntax;
         Name = name;
         TypeArguments = typeArguments;

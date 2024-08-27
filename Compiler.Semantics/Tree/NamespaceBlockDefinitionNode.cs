@@ -20,14 +20,14 @@ internal class NamespaceBlockDefinitionNode : DefinitionNode, INamespaceBlockDef
     private ValueAttribute<INamespaceDefinitionNode> containingNamespace;
     public INamespaceDefinitionNode ContainingNamespace
         => containingNamespace.TryGetValue(out var value) ? value
-            : containingNamespace.GetValue(this, SymbolNodeAspect.NamespaceBlockDefinition_ContainingDeclaration);
+            : containingNamespace.GetValue(this, SymbolNodeAspect.NamespaceBlockDefinition_ContainingNamespace);
     public override NamespaceSymbol ContainingSymbol => ContainingDeclaration.Symbol;
     public override NamespaceSearchScope ContainingLexicalScope
         => (NamespaceSearchScope)base.ContainingLexicalScope;
     private ValueAttribute<INamespaceDefinitionNode> definition;
     public INamespaceDefinitionNode Definition
         => definition.TryGetValue(out var value) ? value
-            : definition.GetValue(this, SymbolNodeAspect.NamespaceBlockDefinition_Declaration);
+            : definition.GetValue(this, SymbolNodeAspect.NamespaceBlockDefinition_Definition);
     public override NamespaceSymbol Symbol => Definition.Symbol;
 
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
@@ -48,7 +48,7 @@ internal class NamespaceBlockDefinitionNode : DefinitionNode, INamespaceBlockDef
     }
 
     internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => SymbolNodeAspect.NamespaceBlockDefinition_InheritedContainingDeclaration(this);
+        => SymbolNodeAspect.NamespaceBlockDefinition_Children_Broadcast_ContainingDeclaration(this);
 
     internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LexicalScope;

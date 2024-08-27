@@ -16,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
 internal static partial class SymbolNodeAspect
 {
-    public static INamespaceDefinitionNode PackageFacet_GlobalNamespace(IPackageFacetNode node)
+    public static partial INamespaceDefinitionNode PackageFacet_GlobalNamespace(IPackageFacetNode node)
     {
         var packageSymbol = node.PackageSymbol;
         var builder = new NamespaceDefinitionNodeBuilder(packageSymbol);
@@ -52,7 +52,7 @@ internal static partial class SymbolNodeAspect
         }
     }
 
-    public static INamespaceDefinitionNode CompilationUnit_ImplicitNamespaceDeclaration(ICompilationUnitNode node)
+    public static partial INamespaceDefinitionNode CompilationUnit_ImplicitNamespace(ICompilationUnitNode node)
         => FindNamespace(node.ContainingDeclaration.GlobalNamespace, node.ImplicitNamespaceName);
 
     private static INamespaceDefinitionNode FindNamespace(INamespaceDefinitionNode containingDeclarationNode, NamespaceName ns)
@@ -67,34 +67,34 @@ internal static partial class SymbolNodeAspect
     public static partial INamespaceDefinitionNode CompilationUnit_Children_ContainingDeclaration(ICompilationUnitNode node)
         => node.ImplicitNamespace;
 
-    public static IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node)
+    public static partial IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node)
         => new PackageSymbolNode(node);
 
-    public static FixedDictionary<IdentifierName, IPackageDeclarationNode> Package_PackageDeclarations(IPackageNode node)
+    public static partial FixedDictionary<IdentifierName, IPackageDeclarationNode> Package_PackageDeclarations(IPackageNode node)
         => node.References.Select(r => r.SymbolNode).Append<IPackageDeclarationNode>(node)
                .ToFixedDictionary(n => n.AliasOrName ?? node.Symbol.Name);
 
-    public static INamespaceDefinitionNode NamespaceBlockDefinition_ContainingDeclaration(INamespaceBlockDefinitionNode node)
+    public static partial INamespaceDefinitionNode NamespaceBlockDefinition_ContainingNamespace(INamespaceBlockDefinitionNode node)
         => node.IsGlobalQualified ? node.Facet.GlobalNamespace : node.ContainingDeclaration;
 
-    public static INamespaceDefinitionNode NamespaceBlockDefinition_Declaration(INamespaceBlockDefinitionNode node)
+    public static partial INamespaceDefinitionNode NamespaceBlockDefinition_Definition(INamespaceBlockDefinitionNode node)
         => FindNamespace(node.ContainingNamespace, node.DeclaredNames);
 
-    public static INamespaceDeclarationNode NamespaceBlockDefinition_InheritedContainingDeclaration(INamespaceBlockDefinitionNode node)
+    public static INamespaceDeclarationNode NamespaceBlockDefinition_Children_Broadcast_ContainingDeclaration(INamespaceBlockDefinitionNode node)
         => node.Definition;
 
-    public static bool Attribute_InheritedIsAttributeType_Child(IAttributeNode _) => true;
+    public static bool Attribute_TypeName_IsAttributeType(IAttributeNode _) => true;
 
-    public static IUserTypeDeclarationNode TypeDeclaration_InheritedContainingDeclaration(ITypeDefinitionNode node)
+    public static IUserTypeDeclarationNode TypeDefinition_Children_Broadcast_ContainingDeclaration(ITypeDefinitionNode node)
         => node;
 
-    public static bool TypeDeclaration_InheritedIsAttributeType(ITypeDefinitionNode _)
+    public static bool TypeDefinition_Children_Broadcast_IsAttributeType(ITypeDefinitionNode _)
         => false;
 
-    public static bool FunctionDeclaration_InheritedIsAttributeType(IFunctionDefinitionNode _)
+    public static bool FunctionDefinition_Children_Broadcast_IsAttributeType(IFunctionDefinitionNode _)
         => false;
 
-    public static ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)
+    public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)
     {
         var symbolNode = LookupDeclarations(node).TrySingle();
         if (node.IsAttributeType)
@@ -127,12 +127,12 @@ internal static partial class SymbolNodeAspect
         return node.ContainingLexicalScope.Lookup(name).OfType<ITypeDeclarationNode>().ToFixedSet();
     }
 
-    public static IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node)
+    public static partial IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node)
         // TODO report error for field parameter without referenced field
         => node.ContainingTypeDefinition.Members.OfType<IFieldDefinitionNode>().FirstOrDefault(f => f.Name == node.Name);
 
     #region Construct for Symbols
-    public static IChildDeclarationNode? Symbol(Symbol symbol)
+    public static IChildDeclarationNode Symbol(Symbol symbol)
         => symbol switch
         {
             NamespaceSymbol sym => new NamespaceSymbolNode(sym),

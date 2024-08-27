@@ -1,7 +1,35 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 ◊name SymbolNodeAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ↑ ⮡ ✎
 
+// ---------- Packages
+↑ Package.PackageDeclarations: `FixedDictionary<IdentifierName, IPackageDeclarationNode>`;
+↑ PackageReference.SymbolNode: PackageSymbol;
+
+// ---------- Facets
+↑ PackageFacet.GlobalNamespace: NamespaceDefinition;
+
 // ---------- Code Files
 = CompilationUnit.*.ContainingDeclaration;
+↑ CompilationUnit.ImplicitNamespace: NamespaceDefinition;
+
+// ---------- Namespace Definitions
+↑ NamespaceBlockDefinition.ContainingNamespace: NamespaceDefinition;
+↑ NamespaceBlockDefinition.Definition: NamespaceDefinition;
+// = NamespaceBlockDefinition.*.**.ContainingDeclaration;
+
+// ---------- Type Definitions
+// = TypeDefinition.*.**.ContainingDeclaration;
+
+// ---------- Attributes
+// = Attribute.TypeName.IsAttributeType => true;
+
+// ---------- Parameters
+↑ FieldParameter.ReferencedField: FieldDefinition?;
+
+// ---------- Types
+↑ StandardTypeName.ReferencedDeclaration: TypeDeclaration?;
+= StandardTypeName.ReferencedDeclaration;

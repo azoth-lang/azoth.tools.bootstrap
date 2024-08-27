@@ -26,7 +26,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     private ValueAttribute<INamespaceDefinitionNode> implicitNamespaceDeclaration;
     public INamespaceDefinitionNode ImplicitNamespace
         => implicitNamespaceDeclaration.TryGetValue(out var value) ? value
-            : implicitNamespaceDeclaration.GetValue(this, SymbolNodeAspect.CompilationUnit_ImplicitNamespaceDeclaration);
+            : implicitNamespaceDeclaration.GetValue(this, SymbolNodeAspect.CompilationUnit_ImplicitNamespace);
     public NamespaceSymbol ImplicitNamespaceSymbol => ImplicitNamespace.Symbol;
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }

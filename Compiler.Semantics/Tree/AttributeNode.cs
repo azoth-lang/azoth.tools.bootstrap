@@ -25,7 +25,7 @@ internal sealed class AttributeNode : CodeNode, IAttributeNode
     internal override bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
     {
         if (descendant == TypeName)
-            return SymbolNodeAspect.Attribute_InheritedIsAttributeType_Child(this);
+            return SymbolNodeAspect.Attribute_TypeName_IsAttributeType(this);
         return base.InheritedIsAttributeType(child, descendant);
     }
 
