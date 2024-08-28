@@ -9,14 +9,15 @@ public class IntertypeMethodAttributeModel : AspectAttributeModel
     public override IntertypeMethodAttributeSyntax? Syntax { get; }
     public override bool IsChild => false;
     public string Parameters { get; }
+    public override TypeModel Type { get; }
     public string? DefaultExpression { get; }
 
     public IntertypeMethodAttributeModel(AspectModel aspect, IntertypeMethodAttributeSyntax syntax)
-        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name,
-            true, TypeModel.CreateFromSyntax(aspect.Tree, syntax.Type))
+        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, true)
     {
         Syntax = syntax;
         Parameters = syntax.Parameters;
+        Type = TypeModel.CreateFromSyntax(aspect.Tree, syntax.Type);
         DefaultExpression = syntax.DefaultExpression;
     }
 

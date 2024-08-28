@@ -101,6 +101,7 @@ public static class AspectParser
             '↓' => ParseInheritedAttribute(statement),
             '⮡' => ParsePreviousAttribute(statement),
             '+' => ParseIntertypeMethodAttribute(statement),
+            '↗' => ParseAggregateAttribute(statement),
             _ => throw new($"Unknown attribute kind: {statement}"),
         };
 
@@ -172,6 +173,15 @@ public static class AspectParser
         if (!ParseOffEnd(ref parameters, ")"))
             throw new FormatException("Missing `)` at the end of parameters.");
         return parameters;
+    }
+
+    private static AggregateAttributeSyntax ParseAggregateAttribute(string statement)
+    {
+        if (!ParseOffStart(ref statement, "↗↖"))
+            throw new ArgumentException("Not an aggregate attribute statement.", nameof(statement));
+
+        var (node, attribute) = Bisect(statement, ".", "Should be exactly one `.` in: '{0}'");
+        return new(ParseSymbol(node), attribute);
     }
 
     private static EquationSyntax ParseEquation(string statement)

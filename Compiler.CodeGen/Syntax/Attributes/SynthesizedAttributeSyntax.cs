@@ -5,6 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
 public sealed class SynthesizedAttributeSyntax : AspectAttributeSyntax
 {
+    public override TypeSyntax Type { get; }
     public string? DefaultExpression { get; }
 
     public SynthesizedAttributeSyntax(
@@ -15,8 +16,9 @@ public sealed class SynthesizedAttributeSyntax : AspectAttributeSyntax
         bool isMethod,
         TypeSyntax type,
         string? defaultExpression)
-        : base(isChild, strategy, node, name, isMethod, type)
+        : base(isChild, strategy, node, name, isMethod)
     {
+        Type = type;
         DefaultExpression = defaultExpression;
     }
 

@@ -32,11 +32,11 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     public IFixedSet<AttributeFamilyModel> DeclaredAttributeKins { get; }
 
-    public IFixedSet<ContextAttributeFamilyModel> ImplicitAttributeSupertypes => implicitAttributeSupertypes.Value;
-    private readonly Lazy<IFixedSet<ContextAttributeFamilyModel>> implicitAttributeSupertypes;
+    public IFixedSet<ContextAttributeFamilyModel> ImplicitAttributeFamilies => implicitAttributeFamilies.Value;
+    private readonly Lazy<IFixedSet<ContextAttributeFamilyModel>> implicitAttributeFamilies;
 
-    public IFixedSet<AttributeFamilyModel> AllAttributeFamilies => allAttributeSupertypes.Value;
-    private readonly Lazy<IFixedSet<AttributeFamilyModel>> allAttributeSupertypes;
+    public IFixedSet<AttributeFamilyModel> AllAttributeFamilies => allAttributeFamilies.Value;
+    private readonly Lazy<IFixedSet<AttributeFamilyModel>> allAttributeFamilies;
 
     public TreeModel(TreeSyntax syntax, List<AspectSyntax> aspects)
     {
@@ -52,9 +52,9 @@ public sealed class TreeModel : IHasUsingNamespaces
         Aspects = aspects.Select(a => new AspectModel(this, a)).ToFixedList();
         TypeDeclarations = Aspects.SelectMany(a => a.TypeDeclarations).ToFixedDictionary(d => d.Name);
         DeclaredAttributeKins = Aspects.SelectMany(a => a.DeclaredAttributeKins).ToFixedSet();
-        implicitAttributeSupertypes = new(ComputeImplicitAttributeSupertypes);
-        allAttributeSupertypes = new(()
-            => DeclaredAttributeKins.Concat(ImplicitAttributeSupertypes).ToFixedSet());
+        implicitAttributeFamilies = new(ComputeImplicitAttributeFamilies);
+        allAttributeFamilies = new(()
+            => DeclaredAttributeKins.Concat(ImplicitAttributeFamilies).ToFixedSet());
     }
 
     public TreeNodeModel? NodeFor(InternalSymbol symbol) => NodeFor(symbol.ShortName);
@@ -71,7 +71,7 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     private readonly FixedDictionary<string, TreeNodeModel> nodesLookup;
 
-    private IFixedSet<ContextAttributeFamilyModel> ComputeImplicitAttributeSupertypes()
+    private IFixedSet<ContextAttributeFamilyModel> ComputeImplicitAttributeFamilies()
     {
         var declaredAttributeSupertypes = DeclaredAttributeKins.Select(s => s.Name).ToFixedSet();
         var implicitInheritedAttributeSupertypes = ComputeGroupedDeclaredAttributes<InheritedAttributeModel>()

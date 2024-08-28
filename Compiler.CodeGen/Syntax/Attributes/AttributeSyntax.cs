@@ -9,12 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 public abstract class AttributeSyntax
 {
     public string Name { get; }
-    public TypeSyntax Type { get; }
+    public abstract TypeSyntax? Type { get; }
 
-    protected AttributeSyntax(string name, TypeSyntax type)
+    protected AttributeSyntax(string name)
     {
         Name = name;
-        Type = type;
     }
 
     public abstract override string ToString();

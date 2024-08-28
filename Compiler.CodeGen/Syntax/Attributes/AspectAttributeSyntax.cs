@@ -1,5 +1,4 @@
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
@@ -8,7 +7,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
     typeof(SynthesizedAttributeSyntax),
     typeof(InheritedAttributeSyntax),
     typeof(PreviousAttributeSyntax),
-    typeof(IntertypeMethodAttributeSyntax))]
+    typeof(IntertypeMethodAttributeSyntax),
+    typeof(AggregateAttributeSyntax))]
 public abstract class AspectAttributeSyntax : AttributeSyntax
 {
     public bool IsChild { get; }
@@ -21,9 +21,8 @@ public abstract class AspectAttributeSyntax : AttributeSyntax
         EvaluationStrategy? strategy,
         SymbolSyntax node,
         string name,
-        bool isMethod,
-        TypeSyntax type)
-        : base(name, type)
+        bool isMethod)
+        : base(name)
     {
         IsChild = isChild;
         Strategy = strategy;

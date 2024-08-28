@@ -13,7 +13,7 @@ public sealed class InheritedAttributeEquationGroupModel
 {
     public TreeNodeModel Node { get; }
     public string Name { get; }
-    public TypeModel Type => Equations[0].AttributeSupertype.Type;
+    public TypeModel Type => Equations[0].AttributeFamily.Type;
     public IFixedList<InheritedAttributeEquationModel> Equations { get; }
     public bool IsAllDescendants => Equations.Any(a => a.IsAllDescendants);
 

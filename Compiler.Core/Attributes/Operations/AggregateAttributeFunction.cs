@@ -4,18 +4,18 @@ using System.Runtime.CompilerServices;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes.Operations;
 
-internal readonly struct InheritedAttributeFunction<TNode, T> : IAttributeFunction<TNode, T>
+internal readonly struct AggregateAttributeFunction<TNode, T> : IAttributeFunction<TNode, T>
 {
-    private readonly Func<IInheritanceContext, T> compute;
+    private readonly Func<T> compute;
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public InheritedAttributeFunction(Func<IInheritanceContext, T> compute)
+    public AggregateAttributeFunction(Func<T> compute)
     {
         this.compute = compute;
     }
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public T Compute(TNode _, IInheritanceContext ctx) => compute(ctx);
+    public T Compute(TNode node, IInheritanceContext ctx) => compute();
 }

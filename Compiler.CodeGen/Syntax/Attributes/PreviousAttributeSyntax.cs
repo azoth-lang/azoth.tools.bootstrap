@@ -5,13 +5,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
 public sealed class PreviousAttributeSyntax : AspectAttributeSyntax
 {
+    public override TypeSyntax Type { get; }
+
     public PreviousAttributeSyntax(
         EvaluationStrategy? strategy,
         SymbolSyntax node,
         string name,
         bool isMethod,
         TypeSyntax type)
-        : base(false, strategy, node, name, isMethod, type) { }
+        : base(false, strategy, node, name, isMethod)
+    {
+        Type = type;
+    }
 
     public override string ToString()
     {

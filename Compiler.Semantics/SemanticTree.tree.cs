@@ -150,20 +150,20 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
     new IPackageFacetNode TestingFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
-    DiagnosticCollection Diagnostics { get; }
     FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations { get; }
     new IdentifierName Name
         => Syntax.Name;
     IdentifierName IPackageDeclarationNode.Name => Name;
     IFunctionDefinitionNode? EntryPoint { get; }
+    DiagnosticCollection Diagnostics { get; }
     IPackageSymbols PackageSymbols { get; }
     IPackageReferenceNode IntrinsicsReference { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
     IdentifierName? IPackageDeclarationNode.AliasOrName
         => null;
 
-    public static IPackageNode Create(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics)
-        => new PackageNode(syntax, references, mainFacet, testingFacet, diagnostics);
+    public static IPackageNode Create(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet)
+        => new PackageNode(syntax, references, mainFacet, testingFacet);
 }
 
 // [Closed(typeof(PackageReferenceNode))]
@@ -242,14 +242,14 @@ public partial interface ICompilationUnitNode : ICodeNode
     NamespaceSymbol ImplicitNamespaceSymbol { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
-    DiagnosticCollection Diagnostics { get; }
     NamespaceScope ContainingLexicalScope { get; }
     LexicalScope LexicalScope { get; }
     IPackageFacetNode ContainingDeclaration { get; }
     INamespaceDefinitionNode ImplicitNamespace { get; }
+    DiagnosticCollection Diagnostics { get; }
 
-    public static ICompilationUnitNode Create(ISemanticNode parent, ICompilationUnitSyntax syntax, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, NamespaceSymbol implicitNamespaceSymbol, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> definitions, DiagnosticCollection diagnostics)
-        => new CompilationUnitNode(parent, syntax, containingSymbol, implicitNamespaceName, implicitNamespaceSymbol, usingDirectives, definitions, diagnostics);
+    public static ICompilationUnitNode Create(ISemanticNode parent, ICompilationUnitSyntax syntax, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, NamespaceSymbol implicitNamespaceSymbol, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> definitions)
+        => new CompilationUnitNode(parent, syntax, containingSymbol, implicitNamespaceName, implicitNamespaceSymbol, usingDirectives, definitions);
 }
 
 // [Closed(typeof(UsingDirectiveNode))]
@@ -3642,8 +3642,33 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected ISymbolDeclarationNode Inherited_ContainingDeclaration(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_ContainingDeclaration(this, this, ctx);
 
-    internal virtual bool MayContribute_Diagnostics => false;
-    internal virtual bool SubtreeMayContribute_Diagnostics => false;
+    internal virtual AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Neutral;
+    protected IFixedSet<SemanticNode> CollectContributors_Diagnostics()
+    {
+        var contributors = new List<SemanticNode>();
+        foreach (var child in Children().Cast<SemanticNode>())
+            child.CollectContributors_Diagnostics(contributors);
+        return contributors.ToFixedSet();
+    }
+    internal void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        var kind = Diagnostics_NodeKind;
+        if (kind.MayContribute() || kind.HasAttribute())
+            contributors.Add(this);
+        if (!kind.SubtreeMayContribute())
+            return;
+        foreach (var child in Children().Cast<SemanticNode>())
+            child.CollectContributors_Diagnostics(contributors);
+    }
+    protected DiagnosticCollection Collect_Diagnostics(IFixedSet<SemanticNode> contributors)
+    {
+        var builder = new DiagnosticCollectionBuilder();
+        Contribute_Diagnostics(builder, false);
+        foreach (var contributor in contributors)
+            contributor.Contribute_Diagnostics(builder);
+        return builder.Build();
+    }
+    internal virtual void Contribute_Diagnostics(DiagnosticCollectionBuilder builder, bool contributeAttribute = true) { }
 
     internal virtual IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         // TODO does this need to throw an exception for the root of the tree?
@@ -3751,7 +3776,13 @@ file class PackageNode : SemanticNode, IPackageNode
     public IFixedSet<IPackageReferenceNode> References { [DebuggerStepThrough] get; }
     public IPackageFacetNode MainFacet { [DebuggerStepThrough] get; }
     public IPackageFacetNode TestingFacet { [DebuggerStepThrough] get; }
-    public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
+    public DiagnosticCollection Diagnostics
+        => GrammarAttribute.IsCached(in diagnosticsCached) ? diagnostics!
+            : this.Aggregate(ref diagnosticsContributors, ref diagnosticsCached, ref diagnostics,
+                CollectContributors_Diagnostics, Collect_Diagnostics);
+    private DiagnosticCollection? diagnostics;
+    private bool diagnosticsCached;
+    private IFixedSet<SemanticNode>? diagnosticsContributors;
     public PackageSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
             : this.Synthetic(ref symbolCached, ref symbol,
@@ -3789,13 +3820,12 @@ file class PackageNode : SemanticNode, IPackageNode
     private IFixedSet<ITypeDeclarationNode>? primitivesDeclarations;
     private bool primitivesDeclarationsCached;
 
-    public PackageNode(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet, DiagnosticCollection diagnostics)
+    public PackageNode(IPackageSyntax syntax, IFixedSet<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet)
     {
         Syntax = syntax;
         References = references;
         MainFacet = mainFacet;
         TestingFacet = testingFacet;
-        Diagnostics = diagnostics;
     }
 
     internal override IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -3904,7 +3934,6 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     public NamespaceSymbol ImplicitNamespaceSymbol { [DebuggerStepThrough] get; }
     public IFixedList<IUsingDirectiveNode> UsingDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { [DebuggerStepThrough] get; }
-    public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -3917,6 +3946,13 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     private bool containingLexicalScopeCached;
     public IPackageFacetNode ContainingDeclaration
         => (IPackageFacetNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public DiagnosticCollection Diagnostics
+        => GrammarAttribute.IsCached(in diagnosticsCached) ? diagnostics!
+            : this.Aggregate(ref diagnosticsContributors, ref diagnosticsCached, ref diagnostics,
+                CollectContributors_Diagnostics, Collect_Diagnostics);
+    private DiagnosticCollection? diagnostics;
+    private bool diagnosticsCached;
+    private IFixedSet<SemanticNode>? diagnosticsContributors;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -3930,7 +3966,7 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     private INamespaceDefinitionNode? implicitNamespace;
     private bool implicitNamespaceCached;
 
-    public CompilationUnitNode(ISemanticNode parent, ICompilationUnitSyntax syntax, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, NamespaceSymbol implicitNamespaceSymbol, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> definitions, DiagnosticCollection diagnostics)
+    public CompilationUnitNode(ISemanticNode parent, ICompilationUnitSyntax syntax, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, NamespaceSymbol implicitNamespaceSymbol, IFixedList<IUsingDirectiveNode> usingDirectives, IFixedList<INamespaceBlockMemberDefinitionNode> definitions)
     {
         Parent = parent;
         Syntax = syntax;
@@ -3939,7 +3975,6 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
         ImplicitNamespaceSymbol = implicitNamespaceSymbol;
         UsingDirectives = usingDirectives;
         Definitions = definitions;
-        Diagnostics = diagnostics;
     }
 
     internal override CodeFile Inherited_File(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

@@ -153,8 +153,33 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
         => Previous(ctx).Previous_<#= attr.Name #>(this, ctx);
 <#                  break;#>
 <#              case AggregateAttributeFamilyModel family: #>
-    internal virtual bool MayContribute_<#= family.Name #> => false;
-    internal virtual bool SubtreeMayContribute_<#= family.Name #> => false;
+    internal virtual AggregateAttributeNodeKind <#= family.Name #>_NodeKind => AggregateAttributeNodeKind.Neutral;
+    protected IFixedSet<<#= Emit.BaseClassName(tree) #>> CollectContributors_<#= family.Name #>()
+    {
+        var contributors = new List<<#= Emit.BaseClassName(tree) #>>();
+        foreach (var child in Children().Cast<<#= Emit.BaseClassName(tree) #>>())
+            child.CollectContributors_<#= family.Name #>(contributors);
+        return contributors.ToFixedSet();
+    }
+    internal void CollectContributors_<#= family.Name #>(List<<#= Emit.BaseClassName(tree) #>> contributors)
+    {
+        var kind = <#= family.Name #>_NodeKind;
+        if (kind.MayContribute() || kind.HasAttribute())
+            contributors.Add(this);
+        if (!kind.SubtreeMayContribute())
+            return;
+        foreach (var child in Children().Cast<<#= Emit.BaseClassName(tree) #>>())
+            child.CollectContributors_<#= family.Name #>(contributors);
+    }
+    protected <#= Emit.Type(family.Type) #> Collect_<#= family.Name #>(IFixedSet<<#= Emit.BaseClassName(tree) #>> contributors)
+    {
+        var builder = <#= family.ConstructExpression #>;
+        Contribute_<#= family.Name #>(builder, false);
+        foreach (var contributor in contributors)
+            contributor.Contribute_<#= family.Name #>(builder);
+        return builder.<#= family.DoneMethod #>();
+    }
+    internal virtual void Contribute_<#= family.Name #>(<#= Emit.Type(family.FromType) #> builder, bool contributeAttribute = true) { }
 <#                  break;#>
 <#          } #>
 <#      } #>
@@ -188,6 +213,9 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#          } #>
 <#      } #>
 <#      foreach (var attr in node.ActualAttributes.OfType<ContextAttributeModel>()) { #>
+    public <#= Emit.Type(attr.Type) #> <#= attr.Name #><#= Emit.Parameters(attr) #><#= Emit.Body(attr) #>
+<#      } #>
+<#      foreach (var attr in node.ActualAttributes.OfType<AggregateAttributeModel>()) { #>
     public <#= Emit.Type(attr.Type) #> <#= attr.Name #><#= Emit.Parameters(attr) #><#= Emit.Body(attr) #>
 <#      } #>
 <#      foreach (var equation in node.ActualEquations) { #>

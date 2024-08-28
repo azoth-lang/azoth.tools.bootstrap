@@ -33,23 +33,26 @@ public abstract class ContextAttributeModel : AspectAttributeModel
 
     public abstract string MethodPrefix { get; }
 
-    public abstract ContextAttributeFamilyModel AttributeSupertype { get; }
+    public abstract ContextAttributeFamilyModel AttributeFamily { get; }
 
     public abstract EvaluationStrategy Strategy { get; }
+
+    public override TypeModel Type { get; }
 
     public sealed override bool IsSyncLockRequired
         => Strategy == EvaluationStrategy.Lazy && Type.IsValueType;
 
     protected ContextAttributeModel(AspectModel aspect, InternalSymbol nodeSymbol, string name, bool isMethod, TypeModel type)
-        : base(aspect, nodeSymbol, name, isMethod, type) { }
+        : base(aspect, nodeSymbol, name, isMethod)
+    {
+        Type = type;
+    }
 
     protected ContextAttributeModel(AspectModel aspect, TreeNodeModel node, string name, bool isMethod, TypeModel type)
-        : base(aspect, node, name, isMethod, type) { }
-
-    protected T ComputeAttributeSupertype<T>()
-        where T : ContextAttributeFamilyModel
-        => Aspect.Tree.AllAttributeFamilies.OfType<T>()
-                 .Single(s => s.Name == Name);
+        : base(aspect, node, name, isMethod)
+    {
+        Type = type;
+    }
 
     public sealed override string ToString()
     {

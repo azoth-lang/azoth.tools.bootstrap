@@ -4,9 +4,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
 public sealed class PropertySyntax : AttributeSyntax
 {
+    public override TypeSyntax Type { get; }
+
     public PropertySyntax(string name, TypeSyntax type)
-        : base(name, type)
+        : base(name)
     {
+        Type = type;
     }
 
     public override string ToString() => $"{Name}:{Type}";

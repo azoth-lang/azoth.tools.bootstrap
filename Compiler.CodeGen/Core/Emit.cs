@@ -132,6 +132,7 @@ internal static class Emit
         => attribute switch
         {
             PropertyModel _ => " { get; }",
+            AggregateAttributeModel _ => " { get; }",
             SynthesizedAttributeModel a => ParametersAndBody(a),
             InheritedAttributeModel a => a.IsMethod ? "();" : " { get; }",
             PreviousAttributeModel a => a.IsMethod ? "();" : " { get; }",
@@ -186,13 +187,13 @@ internal static class Emit
                 var builder = new StringBuilder();
                 builder.AppendLine();
                 var value = attribute.Name.ToCamelCase();
-                var cached = attribute.Name.ToCamelCase() + "Cached";
+                var cached = value + "Cached";
                 var isValueType = attribute.Type.IsValueType;
                 var notNull = attribute.Type is OptionalTypeModel || isValueType ? "" : "!";
                 // Remove any optional type that might be on it and then ensure there is one optional type
                 var fieldType = !isValueType ? attribute.Type.ToOptional() : attribute.Type;
                 var syncLock = isValueType ? " ref syncLock," : "";
-                var supertype = attribute.AttributeSupertype.Type;
+                var supertype = attribute.AttributeFamily.Type;
                 var castRequired = attribute.Type != supertype;
                 var castStart = castRequired ? $"(ctx) => ({Type(attribute.Type)})" : "";
                 var castEnd = castRequired ? "(ctx)" : "";
@@ -205,13 +206,34 @@ internal static class Emit
             }
             case EvaluationStrategy.Computed:
             {
-                var supertype = attribute.AttributeSupertype.Type;
+                var supertype = attribute.AttributeFamily.Type;
                 var castRequired = attribute.Type != supertype;
                 var cast = castRequired ? $"({Type(attribute.Type)})" : "";
                 return $"{Environment.NewLine}        "
                        + $"=> {cast}{attribute.MethodPrefix}_{attribute.Name}(GrammarAttribute.CurrentInheritanceContext());";
             }
         }
+    }
+
+    public static string Body(AggregateAttributeModel attribute)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine();
+        var value = attribute.Name.ToCamelCase();
+        var cached = value + "Cached";
+        var contributors = value + "Contributors";
+        var isValueType = attribute.Type.IsValueType;
+        var notNull = attribute.Type is OptionalTypeModel || isValueType ? "" : "!";
+        // Remove any optional type that might be on it and then ensure there is one optional type
+        var fieldType = !isValueType ? attribute.Type.ToOptional() : attribute.Type;
+        var syncLock = isValueType ? " ref syncLock," : "";
+        builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
+        builder.AppendLine($"            : this.Aggregate(ref {contributors}, ref {cached}, ref {value},{syncLock}");
+        builder.AppendLine($"                CollectContributors_{attribute.Name}, Collect_{attribute.Name});");
+        builder.AppendLine($"    private {Type(fieldType)} {value};");
+        builder.AppendLine($"    private bool {cached};");
+        builder.Append($"    private IFixedSet<{BaseClassName(attribute.Aspect.Tree)}>? {contributors};");
+        return builder.ToString();
     }
     #endregion
 

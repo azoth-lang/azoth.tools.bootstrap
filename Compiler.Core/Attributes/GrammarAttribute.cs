@@ -297,6 +297,59 @@ public static class GrammarAttribute
             EqualityComparer<T?>.Default, ref syncLock, attributeName);
     #endregion
 
+    #region Aggregate overloads
+    /// <summary>
+    /// Read the value of an aggregate attribute.
+    /// </summary>
+    [Inline]
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T Aggregate<TNode, T>(
+        this TNode node,
+        ref IFixedSet<TNode>? contributors,
+        ref bool cached,
+        ref T? value,
+        Func<IFixedSet<TNode>> collectContributors,
+        Func<IFixedSet<TNode>, T> collect,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class, ITreeNode
+        where T : class?
+    {
+        var actualContributors = GetContributors(ref contributors, collectContributors, attributeName);
+        if (actualContributors is null)
+            // Another thread has already computed the value
+            return value!;
+
+        var result = node.NonCircular(ref cached, ref value, AttributeFunction.Create<TNode, T>(Compute),
+            EqualityComparer<T>.Default, attributeName);
+
+        if (cached) contributors = null;
+
+        return result;
+
+        T Compute() => collect(actualContributors);
+    }
+
+    private static IFixedSet<T>? GetContributors<T>(
+        ref IFixedSet<T>? contributors,
+        Func<IFixedSet<T>> collectContributors,
+        string attributeName)
+        where T : class?
+    {
+        var actualContributors = Interlocked.CompareExchange(ref contributors, InProgressFixedSet<T>.Instance, null);
+        if (actualContributors is null)
+        {
+            actualContributors = collectContributors();
+            var previousValue = Interlocked.CompareExchange(ref contributors, actualContributors, InProgressFixedSet<T>.Instance);
+            if (!ReferenceEquals(previousValue, InProgressFixedSet<T>.Instance))
+                actualContributors = previousValue;
+        }
+        else if (actualContributors == InProgressFixedSet<T>.Instance)
+            throw new InvalidOperationException($"Circular dependency in collecting contributors for aggregate attribute '{attributeName}'.");
+        return actualContributors;
+    }
+    #endregion
+
     #region Circular overloads
     /// <summary>
     /// Read the value of a circular attribute that already has an initial value and is

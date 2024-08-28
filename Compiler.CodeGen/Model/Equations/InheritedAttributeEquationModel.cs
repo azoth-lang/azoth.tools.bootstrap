@@ -12,11 +12,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 public sealed class InheritedAttributeEquationModel : EquationModel
 {
     public override InheritedAttributeEquationSyntax Syntax { get; }
-    public InheritedAttributeFamilyModel AttributeSupertype => attributeSupertype.Value;
-    private readonly Lazy<InheritedAttributeFamilyModel> attributeSupertype;
+    public InheritedAttributeFamilyModel AttributeFamily => attributeFamily.Value;
+    private readonly Lazy<InheritedAttributeFamilyModel> attributeFamily;
     public SelectorModel Selector { get; }
     public bool IsAllDescendants => Selector.IsAllDescendants;
-    public override TypeModel Type => InheritedToTypes.TrySingle() ?? AttributeSupertype.Type;
+    public override TypeModel Type => InheritedToTypes.TrySingle() ?? AttributeFamily.Type;
     public IFixedSet<InheritedAttributeModel> InheritedToAttributes => inheritedToAttributes.Value;
     private readonly Lazy<IFixedSet<InheritedAttributeModel>> inheritedToAttributes;
     /// <summary>
@@ -33,19 +33,19 @@ public sealed class InheritedAttributeEquationModel : EquationModel
     {
         Syntax = syntax;
         Selector = SelectorModel.Create(syntax.Selector);
-        attributeSupertype = new(ComputeAttributeSupertype);
+        attributeFamily = new(ComputeAttributeFamily);
         inheritedToAttributes = new(ComputeInheritedToAttributes);
         inheritedToTypes = new(ComputeInheritedToTypes);
     }
 
-    private InheritedAttributeFamilyModel ComputeAttributeSupertype()
+    private InheritedAttributeFamilyModel ComputeAttributeFamily()
         => Aspect.Tree.AllAttributeFamilies.OfType<InheritedAttributeFamilyModel>()
                  .Single(a => a.Name == Name);
 
     private IFixedSet<InheritedAttributeModel> ComputeInheritedToAttributes()
     {
         var selectedAttributes = Selector.SelectNodes(Node).SelectMany(n => n.ActualAttributes).ToFixedSet();
-        return AttributeSupertype.Instances.Where(a => selectedAttributes.Contains(a)).ToFixedSet();
+        return AttributeFamily.Instances.Where(a => selectedAttributes.Contains(a)).ToFixedSet();
     }
 
     private IFixedSet<TypeModel> ComputeInheritedToTypes()

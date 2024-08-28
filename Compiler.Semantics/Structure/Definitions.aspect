@@ -1,8 +1,9 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 ◊name DefinitionsAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ↑ ⮡ ✎ ↗↖
 
 ↗↖ *.Diagnostics:`DiagnosticCollection` from `DiagnosticCollectionBuilder` done Build;
 
@@ -13,6 +14,10 @@
 = Package.AliasOrName => null;
 ↑ Package.Name: `IdentifierName` => Syntax.Name;
 ↑ Package.EntryPoint: FunctionDefinition?;
+↗↖ Package.Diagnostics;
 
 // ---------- Facets
 ↑ PackageFacet.Definitions: {PackageMemberDefinition};
+
+// ---------- Code Files
+↗↖ CompilationUnit.Diagnostics;

@@ -21,8 +21,8 @@ public sealed class PreviousAttributeModel : ContextAttributeModel
     public override char Prefix => '⮡';
     public override string MethodPrefix => "Previous";
 
-    public override PreviousAttributeFamilyModel AttributeSupertype => attributeSupertype.Value;
-    private readonly Lazy<PreviousAttributeFamilyModel> attributeSupertype;
+    public override PreviousAttributeFamilyModel AttributeFamily => attributeFamily.Value;
+    private readonly Lazy<PreviousAttributeFamilyModel> attributeFamily;
 
     public override PreviousAttributeSyntax? Syntax { get; }
 
@@ -39,7 +39,7 @@ public sealed class PreviousAttributeModel : ContextAttributeModel
 
         Syntax = syntax;
         Strategy = syntax.IsMethod ? EvaluationStrategy.Computed : syntax.Strategy ?? EvaluationStrategy.Lazy;
-        attributeSupertype = new(ComputeAttributeSupertype<PreviousAttributeFamilyModel>);
+        attributeFamily = new(ComputeAttributeFamily<PreviousAttributeFamilyModel>);
     }
 
     private PreviousAttributeModel(
@@ -52,6 +52,6 @@ public sealed class PreviousAttributeModel : ContextAttributeModel
         : base(aspect, node, name, isMethod, type)
     {
         Strategy = strategy;
-        attributeSupertype = new(ComputeAttributeSupertype<PreviousAttributeFamilyModel>);
+        attributeFamily = new(ComputeAttributeFamily<PreviousAttributeFamilyModel>);
     }
 }

@@ -1,6 +1,7 @@
 using System;
+using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using ExhaustiveMatching;
 
@@ -12,7 +13,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 [Closed(
     typeof(SynthesizedAttributeModel),
     typeof(ContextAttributeModel),
-    typeof(IntertypeMethodAttributeModel))]
+    typeof(IntertypeMethodAttributeModel),
+    typeof(AggregateAttributeModel))]
 public abstract class AspectAttributeModel : AttributeModel
 {
     public static AspectAttributeModel Create(AspectModel aspect, AspectAttributeSyntax syntax)
@@ -22,6 +24,7 @@ public abstract class AspectAttributeModel : AttributeModel
             InheritedAttributeSyntax syn => new InheritedAttributeModel(aspect, syn),
             PreviousAttributeSyntax syn => new PreviousAttributeModel(aspect, syn),
             IntertypeMethodAttributeSyntax syn => new IntertypeMethodAttributeModel(aspect, syn),
+            AggregateAttributeSyntax syn => new AggregateAttributeModel(aspect, syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
@@ -33,29 +36,31 @@ public abstract class AspectAttributeModel : AttributeModel
     private readonly Lazy<TreeNodeModel> node;
     public sealed override string Name { get; }
     public override bool IsMethod { get; }
-    public sealed override TypeModel Type { get; }
     public override bool IsTemp => false;
 
-    protected AspectAttributeModel(AspectModel aspect, InternalSymbol nodeSymbol, string name, bool isMethod, TypeModel type)
+    protected AspectAttributeModel(AspectModel aspect, InternalSymbol nodeSymbol, string name, bool isMethod)
     {
         Aspect = aspect;
         NodeSymbol = nodeSymbol;
         Name = name;
         IsMethod = isMethod;
-        Type = type;
 
         node = new(() => aspect.Tree.NodeFor(NodeSymbol)
                          ?? throw new($"Attribute '{Syntax}' refers to node '{NodeSymbol}' that does not exist."));
     }
 
-    protected AspectAttributeModel(AspectModel aspect, TreeNodeModel node, string name, bool isMethod, TypeModel type)
+    protected AspectAttributeModel(AspectModel aspect, TreeNodeModel node, string name, bool isMethod)
     {
         Aspect = aspect;
         Name = name;
         IsMethod = isMethod;
         NodeSymbol = node.Defines;
-        Type = type;
 
         this.node = new(node);
     }
+
+    protected T ComputeAttributeFamily<T>()
+        where T : AttributeFamilyModel
+        => Aspect.Tree.AllAttributeFamilies.OfType<T>()
+                 .Single(s => s.Name == Name);
 }
