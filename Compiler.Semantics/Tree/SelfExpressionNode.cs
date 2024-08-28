@@ -21,7 +21,7 @@ internal sealed class SelfExpressionNode : NameExpressionNode, ISelfExpressionNo
     public IExecutableDefinitionNode ContainingDeclaration
         => GrammarAttribute.IsCached(in containingDeclarationCached) ? containingDeclaration!
             : this.Inherited(ref containingDeclarationCached, ref containingDeclaration,
-                ctx => (IExecutableDefinitionNode)InheritedContainingDeclaration(ctx),
+                ctx => (IExecutableDefinitionNode)Inherited_ContainingDeclaration(ctx),
                 ReferenceEqualityComparer.Instance);
     private ISelfParameterNode? referencedDefinition;
     private bool referencedDefinitionCached;
@@ -65,5 +65,5 @@ internal sealed class SelfExpressionNode : NameExpressionNode, ISelfExpressionNo
     }
 
     public IFlowState FlowStateBefore()
-        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 }

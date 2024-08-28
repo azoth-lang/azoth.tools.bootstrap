@@ -21,7 +21,7 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     private ValueAttribute<IPackageFacetDeclarationNode> facet;
     public IPackageFacetDeclarationNode Facet
         => facet.TryGetValue(out var value) ? value
-            : facet.GetValue(InheritedFacet);
+            : facet.GetValue(Inherited_Facet);
     public TypeParameterIndependence Independence => Syntax.Independence;
     public TypeParameterVariance Variance => Syntax.Variance;
     private ValueAttribute<GenericParameter> parameter;
@@ -39,7 +39,7 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
         => declaredType.TryGetValue(out var value) ? value
             : declaredType.GetValue(this, TypeDeclarationsAspect.GenericParameter_DeclaredType);
     public IUserTypeDeclarationNode ContainingDeclaration
-        => (IUserTypeDeclarationNode)InheritedContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+        => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public UserTypeSymbol ContainingSymbol => ContainingDeclaration.Symbol;
     private GenericParameterTypeSymbol? symbol;
     private bool symbolCached;

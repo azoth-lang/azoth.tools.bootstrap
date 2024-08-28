@@ -71,13 +71,13 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         SupertypeNames = ChildList.Attach(this, supertypeNames);
     }
 
-    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => SymbolNodeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaration(this);
 
     internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => ContainingDeclaredTypeAspect.TypeDeclaration_InheritedContainingDeclaredType(this);
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (GenericParameters.Contains(child))
             return ContainingLexicalScope;

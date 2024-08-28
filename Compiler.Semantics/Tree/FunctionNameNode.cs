@@ -51,7 +51,7 @@ internal sealed class FunctionNameNode : NameExpressionNode, IFunctionNameNode
     }
 
     public IFlowState FlowStateBefore()
-        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => null;

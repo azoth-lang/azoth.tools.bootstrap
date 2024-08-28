@@ -36,7 +36,7 @@ internal sealed class UnresolvedInvocationExpressionNode : AmbiguousExpressionNo
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == TempExpression)
             return ContainingLexicalScope;
@@ -47,7 +47,7 @@ internal sealed class UnresolvedInvocationExpressionNode : AmbiguousExpressionNo
 
             return TempArguments[argumentIndex - 1].FlowLexicalScope().True;
         }
-        return base.InheritedContainingLexicalScope(child, descendant, ctx);
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

@@ -63,29 +63,29 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         this.elseClause = Child.Create(this, elseClause);
     }
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == ThenBlock)
             return TempCondition.FlowLexicalScope().True;
         if (child == ElseClause)
             return TempCondition.FlowLexicalScope().False;
-        return base.InheritedContainingLexicalScope(child, descendant, ctx);
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
-    internal override IFlowState InheritedFlowStateBefore(
+    internal override IFlowState Inherited_FlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
     {
         if (child == ThenBlock || child == ElseClause)
             return Condition?.FlowStateAfter ?? IFlowState.Empty;
-        return base.InheritedFlowStateBefore(child, descendant, ctx);
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.IfExpression_ControlFlowNext(this);
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
@@ -96,7 +96,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
                 return ControlFlowSet.CreateNormal(ThenBlock, ElseClause!);
             return ControlFlowSet.CreateNormal(ThenBlock).Union(ControlFlowFollowing());
         }
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

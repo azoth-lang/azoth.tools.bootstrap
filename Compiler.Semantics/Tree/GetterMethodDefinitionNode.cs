@@ -40,19 +40,19 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
         Body = Child.Attach(this, body);
     }
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Body) return LexicalScope;
-        return base.InheritedContainingLexicalScope(child, descendant, ctx);
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
-    internal override FixedDictionary<IVariableBindingNode, int> InheritedVariableBindingsMap(
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
         => VariableBindingsMap;
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
@@ -60,16 +60,16 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
         if (descendant == Entry)
             return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
         if (child == Body) return ControlFlowSet.CreateNormal(Exit);
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override IEntryNode InheritedControlFlowEntry(
+    internal override IEntryNode Inherited_ControlFlowEntry(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
         => Entry;
 
-    internal override IExitNode InheritedControlFlowExit(
+    internal override IExitNode Inherited_ControlFlowExit(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)

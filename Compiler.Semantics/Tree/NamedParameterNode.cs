@@ -38,7 +38,7 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
+                Inherited_ContainingLexicalScope, ReferenceEqualityComparer.Instance);
     private ValueAttribute<ParameterType> parameterType;
     public ParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value
@@ -63,5 +63,5 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     }
 
     public ControlFlowSet ControlFlowFollowing()
-        => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 }

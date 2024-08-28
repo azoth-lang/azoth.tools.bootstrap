@@ -45,13 +45,13 @@ internal sealed class LoopExpressionNode : ExpressionNode, ILoopExpressionNode
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.LoopExpression_ControlFlowNext(this);
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
     {
         if (child == CurrentBlock)
             return ControlFlowSet.CreateLoop(CurrentBlock).Union(ControlFlowFollowing());
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 }

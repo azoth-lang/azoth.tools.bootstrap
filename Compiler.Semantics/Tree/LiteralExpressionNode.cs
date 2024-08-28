@@ -17,5 +17,5 @@ internal abstract class LiteralExpressionNode : ExpressionNode, ILiteralExpressi
                 ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
 
     public IFlowState FlowStateBefore()
-        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 }

@@ -26,7 +26,7 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
     public DataType? ExpectedReturnType
         => GrammarAttribute.IsCached(in expectedReturnTypeCached) ? expectedReturnType
             : this.Inherited(ref expectedReturnTypeCached, ref expectedReturnType,
-                InheritedExpectedReturnType);
+                Inherited_ExpectedReturnType);
     public override NeverType Type => DataType.Never;
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
@@ -63,25 +63,25 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.ReturnExpression_ControlFlowNext(this);
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
     {
         if (child == CurrentValue) return ControlFlowSet.CreateNormal(ControlFlowExit());
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     public IExitNode ControlFlowExit()
-        => InheritedControlFlowExit(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ControlFlowExit(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentValue) return true;
-        return base.InheritedImplicitRecoveryAllowed(child, descendant, ctx);
+        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
     }
 
-    internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentValue) return true;
         return false;

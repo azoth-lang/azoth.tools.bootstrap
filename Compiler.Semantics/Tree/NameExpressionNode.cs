@@ -26,10 +26,10 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
                 ctx => CollectControlFlowPrevious(this, ctx));
 
     public IEntryNode ControlFlowEntry()
-        => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
 
     public ControlFlowSet ControlFlowFollowing()
-        => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 
     protected override void CollectControlFlowPrevious(
         IControlFlowNode target,
@@ -43,12 +43,12 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
         => ControlFlowAspect.Expression_ControlFlowNext(this);
 
     public bool ImplicitRecoveryAllowed()
-        => InheritedImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
 
     public bool ShouldPrepareToReturn()
-        => InheritedShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => false;
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)

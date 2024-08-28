@@ -75,7 +75,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (TempArguments.IndexOf(child) is int argumentIndex)
         {
@@ -84,7 +84,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
             return TempArguments[argumentIndex - 1].FlowLexicalScope().True;
         }
 
-        return base.InheritedContainingLexicalScope(child, descendant, ctx);
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
@@ -94,7 +94,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
         base.CollectDiagnostics(diagnostics);
     }
 
-    internal override IFlowState InheritedFlowStateBefore(
+    internal override IFlowState Inherited_FlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
@@ -103,16 +103,16 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
             && CurrentArguments.IndexOf(ambiguousExpression) is int index and > 0)
             return Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
 
-        return base.InheritedFlowStateBefore(child, descendant, ctx);
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     public IFlowState FlowStateBefore()
-        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.FunctionInvocationExpression_ControlFlowNext(this);
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
@@ -125,7 +125,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
         else if (child is IAmbiguousExpressionNode ambiguousExpression
                  && CurrentArguments.IndexOf(ambiguousExpression) is int index && index < CurrentArguments.Count - 1)
             return ControlFlowSet.CreateNormal(Arguments[index + 1]);
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

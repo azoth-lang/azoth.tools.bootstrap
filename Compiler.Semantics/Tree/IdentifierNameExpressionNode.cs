@@ -18,7 +18,7 @@ internal sealed class IdentifierNameExpressionNode : AmbiguousNameExpressionNode
     public override LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
+                Inherited_ContainingLexicalScope, ReferenceEqualityComparer.Instance);
     private ValueAttribute<IFixedList<IDeclarationNode>> referencedDeclarations;
     public IFixedList<IDeclarationNode> ReferencedDeclarations
         => referencedDeclarations.TryGetValue(out var value) ? value

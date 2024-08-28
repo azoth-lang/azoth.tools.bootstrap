@@ -35,9 +35,9 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
     }
 
     public LexicalScope ContainingLexicalScope()
-        => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         var statementIndex = child == ResultStatement ? 0 : throw new InvalidOperationException("Caller is not a child");
         return LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, statementIndex);
@@ -57,13 +57,13 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
         return base.InheritedExpectedType(child, descendant, ctx);
     }
 
-    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == ResultStatement.CurrentExpression) return true;
         return false;
     }
 
-    internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == ResultStatement.CurrentExpression) return true;
         return false;

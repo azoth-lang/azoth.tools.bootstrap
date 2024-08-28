@@ -69,9 +69,9 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
     }
 
     public IFlowState FlowStateBefore()
-        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override IFlowState InheritedFlowStateBefore(
+    internal override IFlowState Inherited_FlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
@@ -79,7 +79,7 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
         if (child is IAmbiguousExpressionNode ambiguousExpression
             && arguments.Current.IndexOf(ambiguousExpression) is int index and > 0)
             return Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
-        return base.InheritedFlowStateBefore(child, descendant, ctx);
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

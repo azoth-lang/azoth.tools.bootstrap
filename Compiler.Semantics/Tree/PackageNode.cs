@@ -38,13 +38,13 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
     public IFunctionDefinitionNode? EntryPoint
         => GrammarAttribute.IsCached(in entryPointCached) ? entryPoint
             : this.Synthetic(ref entryPointCached, ref entryPoint,
-                DefinitionsAspect.Package_EntryPoint, ReferenceEqualityComparer.Instance);
+                DefinitionsAspect.Package_EntryPoint);
     private IPackageSymbols? packageSymbols;
     private bool packageSymbolsCached;
     public IPackageSymbols PackageSymbols
         => GrammarAttribute.IsCached(in packageSymbolsCached) ? packageSymbols!
             : this.Synthetic(ref packageSymbolsCached, ref packageSymbols,
-                SymbolsAspect.Package_PackageSymbols, ReferenceEqualityComparer.Instance);
+                SymbolsAspect.Package_PackageSymbols);
     public IFixedSet<IPackageReferenceNode> References { get; }
     private ValueAttribute<IPackageReferenceNode> intrinsicsReference;
     public IPackageReferenceNode IntrinsicsReference
@@ -65,15 +65,15 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
         TestingFacet = Child.Attach(this, testingFacet);
     }
 
-    internal override IPackageDeclarationNode InheritedPackage(IChildNode child, IChildNode descendant)
+    internal override IPackageDeclarationNode Inherited_Package(IChildNode child, IChildNode descendant)
         => this;
 
-    internal override PackageNameScope InheritedPackageNameScope(IChildNode child, IChildNode descendant)
+    internal override PackageNameScope Inherited_PackageNameScope(IChildNode child, IChildNode descendant)
     {
         if (descendant == MainFacet)
             return LexicalScopingAspect.Package_MainFacet_PackageNameScope(this);
         if (descendant == TestingFacet)
             return LexicalScopingAspect.Package_TestingFacet_PackageNameScope(this);
-        return base.InheritedPackageNameScope(child, descendant);
+        return base.Inherited_PackageNameScope(child, descendant);
     }
 }

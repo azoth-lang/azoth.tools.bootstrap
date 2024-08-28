@@ -28,7 +28,7 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
+                Inherited_ContainingLexicalScope, ReferenceEqualityComparer.Instance);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
     public ValueId BindingValueId
@@ -83,11 +83,11 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     public override ConditionalLexicalScope FlowLexicalScope()
         => LexicalScopingAspect.BindingPattern_FlowLexicalScope(this);
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
+    internal override IPreviousValueId Previous_PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => BindingValueId;
 
     public IFlowState FlowStateBefore()
-        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {

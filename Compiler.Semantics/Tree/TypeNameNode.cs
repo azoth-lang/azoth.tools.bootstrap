@@ -19,7 +19,7 @@ internal abstract class TypeNameNode : TypeNode, ITypeNameNode
     public virtual LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
+                Inherited_ContainingLexicalScope, ReferenceEqualityComparer.Instance);
     public abstract BareType? NamedBareType { get; }
     public abstract TypeSymbol? ReferencedSymbol { get; }
     private DataType? namedType;

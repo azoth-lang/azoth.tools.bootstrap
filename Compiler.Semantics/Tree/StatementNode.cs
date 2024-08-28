@@ -29,18 +29,18 @@ internal abstract class StatementNode : CodeNode, IStatementNode
     private protected StatementNode() { }
 
     LexicalScope IStatementNode.ContainingLexicalScope()
-        => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LexicalScope;
 
     public IPreviousValueId PreviousValueId()
-        => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    public IEntryNode ControlFlowEntry() => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+    public IEntryNode ControlFlowEntry() => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
 
     public ControlFlowSet ControlFlowFollowing()
-        => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 
     protected override void CollectControlFlowPrevious(
         IControlFlowNode target,

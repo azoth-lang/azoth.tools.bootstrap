@@ -43,12 +43,12 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
 
     public override ConditionalLexicalScope FlowLexicalScope() => TempContext.FlowLexicalScope();
 
-    public PackageNameScope PackageNameScope() => InheritedPackageNameScope();
+    public PackageNameScope PackageNameScope() => Inherited_PackageNameScope();
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => null;
 
-    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         // By default, implicit recovery is not allowed
         => false;
 }

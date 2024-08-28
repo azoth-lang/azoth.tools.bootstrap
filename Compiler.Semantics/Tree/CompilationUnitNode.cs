@@ -19,7 +19,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     public override CodeFile File => Syntax.File;
 
     public IPackageFacetNode ContainingDeclaration
-        => (IPackageFacetNode)Parent.InheritedContainingDeclaration(this, this, GrammarAttribute.CurrentInheritanceContext());
+        => (IPackageFacetNode)Parent.Inherited_ContainingDeclaration(this, this, GrammarAttribute.CurrentInheritanceContext());
     public PackageSymbol ContainingSymbol => ContainingDeclaration.PackageSymbol;
     public NamespaceName ImplicitNamespaceName => Syntax.ImplicitNamespaceName;
 
@@ -31,7 +31,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
     public NamespaceScope ContainingLexicalScope
-        => (NamespaceScope)InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+        => (NamespaceScope)Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
     public LexicalScope LexicalScope
@@ -52,17 +52,17 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
         Definitions = ChildList.Attach(this, declarations);
     }
 
-    internal override ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return SymbolNodeAspect.CompilationUnit_Children_ContainingDeclaration(this);
-        return base.InheritedContainingDeclaration(child, descendant, ctx);
+        return base.Inherited_ContainingDeclaration(child, descendant, ctx);
     }
 
-    internal override CodeFile InheritedFile(IChildNode child, IChildNode descendant)
+    internal override CodeFile Inherited_File(IChildNode child, IChildNode descendant)
         => ContextAspect.CompilationUnit_Children_Broadcast_File(this);
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LexicalScope;
 
     private DiagnosticCollection GetDiagnostics()

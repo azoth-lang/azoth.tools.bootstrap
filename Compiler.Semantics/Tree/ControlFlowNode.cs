@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal abstract class ControlFlowNode : ChildNode, IControlFlowNode
 {
     public sealed override ICodeSyntax? Syntax => null;
-    public CodeFile File => InheritedFile();
+    public CodeFile File => Inherited_File();
     public abstract ControlFlowSet ControlFlowNext { get; }
     private ControlFlowSet? controlFlowPrevious;
     private bool controlFlowPreviousCached;
@@ -22,7 +22,7 @@ internal abstract class ControlFlowNode : ChildNode, IControlFlowNode
     public abstract IEntryNode ControlFlowEntry();
 
     public virtual ControlFlowSet ControlFlowFollowing()
-        => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 
     protected override void CollectControlFlowPrevious(
         IControlFlowNode target,

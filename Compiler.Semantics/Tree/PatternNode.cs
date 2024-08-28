@@ -22,7 +22,7 @@ internal abstract class PatternNode : CodeNode, IPatternNode
     public ValueId? MatchReferentValueId
         => GrammarAttribute.IsCached(in matchReferentValueIdCached) ? matchReferentValueId
             : this.Inherited(ref matchReferentValueIdCached, ref matchReferentValueId, ref SyncLock,
-                InheritedMatchReferentValueId);
+                Inherited_MatchReferentValueId);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public ControlFlowSet ControlFlowNext
@@ -41,17 +41,17 @@ internal abstract class PatternNode : CodeNode, IPatternNode
     public abstract ConditionalLexicalScope FlowLexicalScope();
 
     public IPreviousValueId PreviousValueId()
-        => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    public IMaybeAntetype ContextBindingAntetype() => InheritedContextBindingAntetype();
+    public IMaybeAntetype ContextBindingAntetype() => Inherited_ContextBindingAntetype();
 
-    public DataType ContextBindingType() => InheritedContextBindingType();
+    public DataType ContextBindingType() => Inherited_ContextBindingType();
 
     public ControlFlowSet ControlFlowFollowing()
-        => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 
     public IEntryNode ControlFlowEntry()
-        => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
 
     protected abstract ControlFlowSet ComputeControlFlow();
 

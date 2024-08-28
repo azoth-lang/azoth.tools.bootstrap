@@ -18,7 +18,7 @@ internal abstract class AmbiguousExpressionNode : CodeNode, IAmbiguousExpression
             : this.Synthetic(ref valueIdCached, ref valueId, ref SyncLock,
                 ValueIdsAspect.AmbiguousExpression_ValueId);
     public virtual LexicalScope ContainingLexicalScope
-        => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
     private protected AmbiguousExpressionNode() { }
 
@@ -28,5 +28,5 @@ internal abstract class AmbiguousExpressionNode : CodeNode, IAmbiguousExpression
         => LexicalScopingAspect.AmbiguousExpression_FlowLexicalScope(this);
 
     public IPreviousValueId PreviousValueId()
-        => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 }

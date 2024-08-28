@@ -71,7 +71,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
-    internal override IFlowState InheritedFlowStateBefore(
+    internal override IFlowState Inherited_FlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
@@ -83,13 +83,13 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
                 return MethodGroup.FlowStateAfter;
             return Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
         }
-        return base.InheritedFlowStateBefore(child, descendant, ctx);
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.MethodInvocationExpression_ControlFlowNext(this);
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
@@ -102,15 +102,15 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         else if (child is IAmbiguousExpressionNode ambiguousExpression
                  && CurrentArguments.IndexOf(ambiguousExpression) is int index && index < CurrentArguments.Count - 1)
             return ControlFlowSet.CreateNormal(Arguments[index + 1]);
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
-        // TODO this is a hack that is working only because method group nodes aren't getting the default expression InheritedImplicitRecoveryAllowed applied
+        // TODO this is a hack that is working only because method group nodes aren't getting the default expression Inherited_ImplicitRecoveryAllowed applied
         if (child == MethodGroup && descendant == MethodGroup.CurrentContext)
             return true;
-        return base.InheritedImplicitRecoveryAllowed(child, descendant, ctx);
+        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

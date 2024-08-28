@@ -75,22 +75,22 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
         ReferencedDeclaration = referencedDeclaration;
     }
 
-    internal override IFlowState InheritedFlowStateBefore(
+    internal override IFlowState Inherited_FlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
     {
         if (child == CurrentValue) return Context.FlowStateAfter;
-        return base.InheritedFlowStateBefore(child, descendant, ctx);
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.SetterInvocationExpression_ControlFlowNext(this);
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Context) return ControlFlowSet.CreateNormal(Value);
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

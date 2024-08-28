@@ -37,7 +37,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     public override LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
+                Inherited_ContainingLexicalScope, ReferenceEqualityComparer.Instance);
     private IAntetype? numericOperatorCommonAntetype;
     private bool numericOperatorCommonAntetypeCached;
     public IAntetype? NumericOperatorCommonAntetype
@@ -75,7 +75,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     public override ConditionalLexicalScope FlowLexicalScope()
         => LexicalScopingAspect.BinaryOperatorExpression_FlowLexicalScope(this);
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == CurrentLeftOperand)
             return ContainingLexicalScope;
@@ -84,14 +84,14 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         throw new ArgumentException("Not a child of this node.", nameof(child));
     }
 
-    internal override IFlowState InheritedFlowStateBefore(
+    internal override IFlowState Inherited_FlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
     {
         if (child == CurrentRightOperand)
             return LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
-        return base.InheritedFlowStateBefore(child, descendant, ctx);
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
@@ -111,12 +111,12 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.BinaryOperatorExpression_ControlFlowNext(this);
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
     {
         if (child == CurrentLeftOperand) return ControlFlowSet.CreateNormal(RightOperand);
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 }

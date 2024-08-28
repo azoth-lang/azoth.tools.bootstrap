@@ -51,7 +51,7 @@ internal sealed class VariableNameExpressionNode : NameExpressionNode, IVariable
     }
 
     public IFlowState FlowStateBefore()
-        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {

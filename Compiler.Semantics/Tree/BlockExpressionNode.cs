@@ -46,21 +46,21 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
 
     LexicalScope IBlockExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, Statements.IndexOf(child)!.Value);
 
-    internal override IFlowState InheritedFlowStateBefore(
+    internal override IFlowState Inherited_FlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
     {
         if (Statements.IndexOf(child) is int index and > 0)
             return Statements[index - 1].FlowStateAfter;
-        return base.InheritedFlowStateBefore(child, descendant, ctx);
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     public IFlowState FlowStateBefore()
-        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {
@@ -71,11 +71,11 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.BlockExpression_ControlFlowNext(this);
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child is IStatementNode statement && Statements.IndexOf(statement) is int index
                                               && index < Statements.Count - 1)
             return ControlFlowSet.CreateNormal(Statements[index + 1]);
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 }

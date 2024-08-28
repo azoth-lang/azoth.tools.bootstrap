@@ -85,13 +85,13 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     public override ConditionalLexicalScope FlowLexicalScope()
         => LexicalScopingAspect.AssignmentExpression_FlowLexicalScope(this);
 
-    internal override IFlowState InheritedFlowStateBefore(
+    internal override IFlowState Inherited_FlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
     {
         if (child == CurrentRightOperand) return LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
-        return base.InheritedFlowStateBefore(child, descendant, ctx);
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
@@ -109,11 +109,11 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.AssignmentExpression_ControlFlowNext(this);
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == CurrentLeftOperand)
             return ControlFlowSet.CreateNormal(RightOperand);
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)

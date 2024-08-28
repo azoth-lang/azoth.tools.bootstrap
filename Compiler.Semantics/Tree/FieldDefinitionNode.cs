@@ -82,30 +82,30 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         base.CollectDiagnostics(diagnostics);
     }
 
-    internal override DataType? InheritedExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == CurrentInitializer)
             // Null is the signal that this is a field initializer and not a method body
             return null;
-        return base.InheritedExpectedReturnType(child, descendant, ctx);
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
     {
         if (descendant == Entry) return ControlFlowSet.CreateNormal(Initializer ?? (IControlFlowNode)Exit);
         if (descendant == CurrentInitializer) return ControlFlowSet.CreateNormal(Exit);
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override FixedDictionary<IVariableBindingNode, int> InheritedVariableBindingsMap(
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
         => VariableBindingsMap;
 
-    internal override IEntryNode InheritedControlFlowEntry(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IEntryNode Inherited_ControlFlowEntry(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => Entry;
 }

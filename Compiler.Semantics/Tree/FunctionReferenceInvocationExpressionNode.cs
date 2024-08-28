@@ -62,19 +62,19 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
-    internal override IFlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IFlowState Inherited_FlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
             && arguments.Current.IndexOf(ambiguousExpression) is int index and > 0)
             return Arguments[index - 1]?.FlowStateAfter ?? Expression.FlowStateAfter;
 
-        return base.InheritedFlowStateBefore(child, descendant, ctx);
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.FunctionReferenceInvocation_ControlFlowNext(this);
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
@@ -89,7 +89,7 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
                  && index < CurrentArguments.Count - 1)
             return ControlFlowSet.CreateNormal(Arguments[index + 1]);
 
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

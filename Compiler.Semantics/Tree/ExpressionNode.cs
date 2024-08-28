@@ -53,18 +53,18 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     private protected ExpressionNode() { }
 
     public IEntryNode ControlFlowEntry()
-        => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
 
     public ControlFlowSet ControlFlowFollowing()
-        => InheritedControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 
     public bool ImplicitRecoveryAllowed()
-        => InheritedImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
 
     public bool ShouldPrepareToReturn()
-        => InheritedShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
+    internal override IPreviousValueId Previous_PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
 
     // TODO remove once all nodes properly provide the expected antetype
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
@@ -83,11 +83,11 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     protected virtual ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.Expression_ControlFlowNext(this);
 
-    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         // By default, implicit recovery is not allowed
         => false;
 
-    internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => false;
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)

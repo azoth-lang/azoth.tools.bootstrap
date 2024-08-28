@@ -22,22 +22,22 @@ internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
     }
 
     public LexicalScope ContainingLexicalScope()
-        => InheritedContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, Statements.IndexOf(child)!.Value);
 
-    internal override IFlowState InheritedFlowStateBefore(
+    internal override IFlowState Inherited_FlowStateBefore(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
     {
         if (Statements.IndexOf(child) is int index and > 0)
             return Statements[index - 1].FlowStateAfter;
-        return base.InheritedFlowStateBefore(child, descendant, ctx);
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
@@ -45,6 +45,6 @@ internal sealed class BlockBodyNode : CodeNode, IBlockBodyNode
         if (child is IStatementNode statement
             && Statements.IndexOf(statement) is int index && index < Statements.Count - 1)
             return ControlFlowSet.CreateNormal(Statements[index + 1]);
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 }

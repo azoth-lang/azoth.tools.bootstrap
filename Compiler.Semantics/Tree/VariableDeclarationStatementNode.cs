@@ -37,7 +37,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                InheritedContainingLexicalScope, ReferenceEqualityComparer.Instance);
+                Inherited_ContainingLexicalScope, ReferenceEqualityComparer.Instance);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
     public override LexicalScope LexicalScope
@@ -111,11 +111,11 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         this.initializer = Child.Create(this, initializer);
     }
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
+    internal override IPreviousValueId Previous_PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => BindingValueId;
 
     public IFlowState FlowStateBefore()
-        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
@@ -135,7 +135,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         return base.InheritedExpectedType(child, descendant, ctx);
     }
 
-    internal override bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentInitializer)
             // TODO implicit recovery is allowed for initializers, but only if no variable will be affected
@@ -144,7 +144,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         return false;
     }
 
-    internal override bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => false;
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)

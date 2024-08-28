@@ -75,19 +75,19 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
         Exit = Child.Attach(this, new ExitNode());
     }
 
-    internal override LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Body) return LexicalScope;
-        return base.InheritedContainingLexicalScope(child, descendant, ctx);
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
     public IFlowState FlowStateBefore()
         => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore(this);
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
+    internal override IPreviousValueId Previous_PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => ValueIdsAspect.InvocableDefinition_PreviousValueId(this);
 
-    internal override IFlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IFlowState Inherited_FlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Body)
             return Parameters.LastOrDefault()?.FlowStateAfter ?? FlowStateBefore();
@@ -98,7 +98,7 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
             return Parameters[index - 1].FlowStateAfter;
         }
 
-        return base.InheritedFlowStateBefore(child, descendant, ctx);
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
@@ -113,18 +113,18 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
         return base.InheritedExpectedType(child, descendant, ctx);
     }
 
-    internal override DataType? InheritedExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (child == Body) return Type.Return.Type;
-        return base.InheritedExpectedReturnType(child, descendant, ctx);
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
-    internal override FixedDictionary<IVariableBindingNode, int> InheritedVariableBindingsMap(
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
         => VariableBindingsMap;
 
-    internal override ControlFlowSet InheritedControlFlowFollowing(
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
@@ -132,16 +132,16 @@ internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNod
         if (descendant == Entry)
             return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
         if (child == Body) return ControlFlowSet.CreateNormal(Exit);
-        return base.InheritedControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override IEntryNode InheritedControlFlowEntry(
+    internal override IEntryNode Inherited_ControlFlowEntry(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)
         => Entry;
 
-    internal override IExitNode InheritedControlFlowExit(
+    internal override IExitNode Inherited_ControlFlowExit(
         IChildNode child,
         IChildNode descendant,
         IInheritanceContext ctx)

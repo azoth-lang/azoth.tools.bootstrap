@@ -27,11 +27,11 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
     private protected ParameterNode() { }
 
     public IFlowState FlowStateBefore()
-        => InheritedFlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
     public IPreviousValueId PreviousValueId()
-        => PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
+    internal override IPreviousValueId Previous_PreviousValueId(IChildNode before, IInheritanceContext ctx)
         => BindingValueId;
 }

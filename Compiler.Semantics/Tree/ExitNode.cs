@@ -32,5 +32,5 @@ internal sealed class ExitNode : ControlFlowNode, IExitNode
                 SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
 
     public override IEntryNode ControlFlowEntry()
-        => InheritedControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
 }

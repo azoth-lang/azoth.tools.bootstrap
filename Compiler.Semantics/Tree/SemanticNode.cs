@@ -35,20 +35,20 @@ internal abstract class SemanticNode : ISemanticNode
     internal SemanticNode LastDescendant()
         => ((SemanticNode?)this.Children().LastOrDefault())?.LastDescendant() ?? this;
 
-    internal virtual ISymbolDeclarationNode InheritedContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedContainingDeclaration), child, descendant);
+    internal virtual ISymbolDeclarationNode Inherited_ContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_ContainingDeclaration), child, descendant);
 
-    internal virtual IPackageDeclarationNode InheritedPackage(IChildNode child, IChildNode descendant)
-        => throw Child.InheritFailed(nameof(InheritedPackage), child, descendant);
+    internal virtual IPackageDeclarationNode Inherited_Package(IChildNode child, IChildNode descendant)
+        => throw Child.InheritFailed(nameof(Inherited_Package), child, descendant);
 
-    internal virtual CodeFile InheritedFile(IChildNode child, IChildNode descendant)
-        => throw Child.InheritFailed(nameof(InheritedFile), child, descendant);
+    internal virtual CodeFile Inherited_File(IChildNode child, IChildNode descendant)
+        => throw Child.InheritFailed(nameof(Inherited_File), child, descendant);
 
-    internal virtual PackageNameScope InheritedPackageNameScope(IChildNode child, IChildNode descendant)
-        => throw Child.InheritFailed(nameof(InheritedPackageNameScope), child, descendant);
+    internal virtual PackageNameScope Inherited_PackageNameScope(IChildNode child, IChildNode descendant)
+        => throw Child.InheritFailed(nameof(Inherited_PackageNameScope), child, descendant);
 
-    internal virtual LexicalScope InheritedContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedContainingLexicalScope), child, descendant);
+    internal virtual LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_ContainingLexicalScope), child, descendant);
 
     internal virtual IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(InheritedContainingDeclaredType), child, descendant);
@@ -65,20 +65,20 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual ISymbolTree InheritedSymbolTree(IChildNode child, IChildNode descendant)
         => throw Child.InheritFailed(nameof(InheritedSymbolTree), child, descendant);
 
-    internal virtual IPackageFacetDeclarationNode InheritedFacet(IChildNode child, IChildNode descendant)
-        => throw Child.InheritFailed(nameof(InheritedFacet), child, descendant);
+    internal virtual IPackageFacetDeclarationNode Inherited_Facet(IChildNode child, IChildNode descendant)
+        => throw Child.InheritFailed(nameof(Inherited_Facet), child, descendant);
 
-    internal virtual IFlowState InheritedFlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedFlowStateBefore), child, descendant);
+    internal virtual IFlowState Inherited_FlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_FlowStateBefore), child, descendant);
 
-    internal virtual IMaybeAntetype InheritedContextBindingAntetype(IChildNode child, IChildNode descendant)
-        => throw Child.InheritFailed(nameof(InheritedContextBindingAntetype), child, descendant);
+    internal virtual IMaybeAntetype Inherited_ContextBindingAntetype(IChildNode child, IChildNode descendant)
+        => throw Child.InheritFailed(nameof(Inherited_ContextBindingAntetype), child, descendant);
 
-    internal virtual DataType InheritedContextBindingType(IChildNode child, IChildNode descendant)
-        => throw Child.InheritFailed(nameof(InheritedContextBindingType), child, descendant);
+    internal virtual DataType Inherited_ContextBindingType(IChildNode child, IChildNode descendant)
+        => throw Child.InheritFailed(nameof(Inherited_ContextBindingType), child, descendant);
 
-    internal virtual ValueId? InheritedMatchReferentValueId(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedContextBindingType), child, descendant);
+    internal virtual ValueId? Inherited_MatchReferentValueId(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_ContextBindingType), child, descendant);
 
     internal virtual IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(InheritedExpectedAntetype), child, descendant);
@@ -86,29 +86,29 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(InheritedExpectedType), child, descendant);
 
-    internal virtual DataType? InheritedExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedExpectedReturnType), child, descendant);
+    internal virtual DataType? Inherited_ExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_ExpectedReturnType), child, descendant);
 
-    internal virtual ControlFlowSet InheritedControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedControlFlowFollowing), child, descendant);
+    internal virtual ControlFlowSet Inherited_ControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_ControlFlowFollowing), child, descendant);
 
-    internal virtual FixedDictionary<IVariableBindingNode, int> InheritedVariableBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedVariableBindingsMap), child, descendant);
+    internal virtual FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_VariableBindingsMap), child, descendant);
 
-    internal virtual IEntryNode InheritedControlFlowEntry(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedControlFlowEntry), child, descendant);
+    internal virtual IEntryNode Inherited_ControlFlowEntry(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_ControlFlowEntry), child, descendant);
 
-    internal virtual IExitNode InheritedControlFlowExit(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedControlFlowExit), child, descendant);
+    internal virtual IExitNode Inherited_ControlFlowExit(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_ControlFlowExit), child, descendant);
 
-    internal virtual bool InheritedImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedImplicitRecoveryAllowed), child, descendant);
+    internal virtual bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_ImplicitRecoveryAllowed), child, descendant);
 
-    internal virtual bool InheritedShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedShouldPrepareToReturn), child, descendant);
+    internal virtual bool Inherited_ShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_ShouldPrepareToReturn), child, descendant);
 
-    internal virtual IPreviousValueId PreviousValueId(IChildNode before, IInheritanceContext ctx)
-        => throw Child.PreviousFailed(nameof(PreviousValueId), before);
+    internal virtual IPreviousValueId Previous_PreviousValueId(IChildNode before, IInheritanceContext ctx)
+        => throw Child.PreviousFailed(nameof(Previous_PreviousValueId), before);
 
     protected virtual void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
     {

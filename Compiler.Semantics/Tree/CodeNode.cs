@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal abstract class CodeNode : ChildNode, ICodeNode
 {
     public abstract override ICodeSyntax? Syntax { get; }
-    public virtual CodeFile File => InheritedFile();
+    public virtual CodeFile File => Inherited_File();
 
     private protected CodeNode() { }
 }
