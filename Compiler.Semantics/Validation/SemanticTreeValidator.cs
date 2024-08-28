@@ -67,6 +67,7 @@ internal class SemanticTreeValidator
             case IPackageNode n:
                 _ = n.PackageDeclarations;
                 _ = n.PackageSymbols;
+                _ = n.Diagnostics;
                 break;
             case IPackageFacetNode n:
                 _ = n.Definitions;
@@ -75,6 +76,7 @@ internal class SemanticTreeValidator
             case ICompilationUnitNode n:
                 _ = n.ContainingLexicalScope;
                 _ = n.LexicalScope;
+                _ = n.Diagnostics;
                 break;
             case INamespaceBlockDefinitionNode n:
                 _ = n.Symbol;
