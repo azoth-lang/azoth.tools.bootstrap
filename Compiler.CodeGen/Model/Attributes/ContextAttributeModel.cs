@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeSupertypes;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeKins;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
@@ -33,7 +33,7 @@ public abstract class ContextAttributeModel : AspectAttributeModel
 
     public abstract string MethodPrefix { get; }
 
-    public abstract ContextAttributesModel AttributeSupertype { get; }
+    public abstract ContextAttributeKinModel AttributeSupertype { get; }
 
     public abstract EvaluationStrategy Strategy { get; }
 
@@ -47,7 +47,7 @@ public abstract class ContextAttributeModel : AspectAttributeModel
         : base(aspect, node, name, isMethod, type) { }
 
     protected T ComputeAttributeSupertype<T>()
-        where T : ContextAttributesModel
+        where T : ContextAttributeKinModel
         => Aspect.Tree.AllAttributeSupertypes.OfType<T>()
                  .Single(s => s.Name == Name);
 

@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeKins;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeSupertypes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
@@ -12,8 +12,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 public sealed class InheritedAttributeEquationModel : EquationModel
 {
     public override InheritedAttributeEquationSyntax Syntax { get; }
-    public InheritedAttributesModel AttributeSupertype => attributeSupertype.Value;
-    private readonly Lazy<InheritedAttributesModel> attributeSupertype;
+    public InheritedAttributeKinModel AttributeSupertype => attributeSupertype.Value;
+    private readonly Lazy<InheritedAttributeKinModel> attributeSupertype;
     public SelectorModel Selector { get; }
     public bool IsAllDescendants => Selector.IsAllDescendants;
     public override TypeModel Type => InheritedToTypes.TrySingle() ?? AttributeSupertype.Type;
@@ -38,8 +38,8 @@ public sealed class InheritedAttributeEquationModel : EquationModel
         inheritedToTypes = new(ComputeInheritedToTypes);
     }
 
-    private InheritedAttributesModel ComputeAttributeSupertype()
-        => Aspect.Tree.AllAttributeSupertypes.OfType<InheritedAttributesModel>()
+    private InheritedAttributeKinModel ComputeAttributeSupertype()
+        => Aspect.Tree.AllAttributeSupertypes.OfType<InheritedAttributeKinModel>()
                  .Single(a => a.Name == Name);
 
     private IFixedSet<InheritedAttributeModel> ComputeInheritedToAttributes()

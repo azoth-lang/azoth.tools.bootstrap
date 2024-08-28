@@ -3,19 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeSupertypes;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeKins;
 
-public sealed class PreviousAttributesModel : ContextAttributesModel
+/// <summary>
+/// The supertype for an inherited attribute. Also acts as a collection of all instances of the attribute.
+/// </summary>
+public sealed class InheritedAttributeKinModel : ContextAttributeKinModel
 {
     public override string Name { get; }
     public override TypeModel Type => type.Value;
     private readonly Lazy<TypeModel> type;
-    public IFixedSet<PreviousAttributeModel> Instances => instances.Value;
-    private readonly Lazy<IFixedSet<PreviousAttributeModel>> instances;
+    public IFixedSet<InheritedAttributeModel> Instances => instances.Value;
+    private readonly Lazy<IFixedSet<InheritedAttributeModel>> instances;
 
-    public PreviousAttributesModel(TreeModel tree, IEnumerable<PreviousAttributeModel> instances)
+    public InheritedAttributeKinModel(TreeModel tree, IEnumerable<InheritedAttributeModel> instances)
         : base(tree)
     {
         this.instances = new(instances.ToFixedSet());
@@ -26,6 +30,14 @@ public sealed class PreviousAttributesModel : ContextAttributesModel
         if (Instances.Any(a => a.Name != Name))
             throw new ArgumentException("All instances must have the same name.", nameof(instances));
         type = new(ComputeType);
+    }
+
+    public InheritedAttributeKinModel(TreeModel tree, InheritedAttributeSupertypeSyntax syntax)
+        : base(tree)
+    {
+        Name = syntax.Name;
+        type = new(TypeModel.CreateFromSyntax(tree, syntax.Type));
+        instances = new(ComputeInstances);
     }
 
     private TypeModel ComputeType()
@@ -42,5 +54,9 @@ public sealed class PreviousAttributesModel : ContextAttributesModel
         return types.Single();
     }
 
-    public override string ToString() => $"⮡ *.{Name} <: {Type}";
+    private IFixedSet<InheritedAttributeModel> ComputeInstances()
+        => Tree.Aspects.SelectMany(a => a.Attributes).OfType<InheritedAttributeModel>()
+               .Where(a => a.Name == Name).ToFixedSet();
+
+    public override string ToString() => $"↓ *.{Name} <: {Type}";
 }

@@ -1,5 +1,5 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeSupertypes;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeKins;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
@@ -21,8 +21,8 @@ public sealed class PreviousAttributeModel : ContextAttributeModel
     public override char Prefix => '⮡';
     public override string MethodPrefix => "Previous";
 
-    public override PreviousAttributesModel AttributeSupertype => attributeSupertype.Value;
-    private readonly Lazy<PreviousAttributesModel> attributeSupertype;
+    public override PreviousAttributeKinModel AttributeSupertype => attributeSupertype.Value;
+    private readonly Lazy<PreviousAttributeKinModel> attributeSupertype;
 
     public override PreviousAttributeSyntax? Syntax { get; }
 
@@ -39,7 +39,7 @@ public sealed class PreviousAttributeModel : ContextAttributeModel
 
         Syntax = syntax;
         Strategy = syntax.IsMethod ? EvaluationStrategy.Computed : syntax.Strategy ?? EvaluationStrategy.Lazy;
-        attributeSupertype = new(ComputeAttributeSupertype<PreviousAttributesModel>);
+        attributeSupertype = new(ComputeAttributeSupertype<PreviousAttributeKinModel>);
     }
 
     private PreviousAttributeModel(
@@ -52,6 +52,6 @@ public sealed class PreviousAttributeModel : ContextAttributeModel
         : base(aspect, node, name, isMethod, type)
     {
         Strategy = strategy;
-        attributeSupertype = new(ComputeAttributeSupertype<PreviousAttributesModel>);
+        attributeSupertype = new(ComputeAttributeSupertype<PreviousAttributeKinModel>);
     }
 }

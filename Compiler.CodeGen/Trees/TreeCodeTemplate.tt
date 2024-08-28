@@ -6,7 +6,7 @@
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes" #>
-<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeSupertypes" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeKins" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(tree,
@@ -138,14 +138,14 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
 <#      foreach (var attr in tree.AllAttributeSupertypes) { #>
 
 <#          switch (attr) { #>
-<#              case InheritedAttributeSupertypeModel: #>
+<#              case InheritedAttributeKinModel: #>
     internal virtual <#= Emit.Type(attr.Type) #> Inherited_<#= attr.Name #>(<#= Emit.BaseClassName(tree) #> child, <#= Emit.BaseClassName(tree) #> descendant, IInheritanceContext ctx)
         // TODO does this need to throw an exception for the root of the tree?
         => GetParent(ctx).Inherited_<#= attr.Name #>(this, descendant, ctx);
     protected <#= Emit.Type(attr.Type) #> Inherited_<#= attr.Name #>(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_<#= attr.Name #>(this, this, ctx);
 <#                  break;#>
-<#              case PreviousAttributeSupertypeModel: #>
+<#              case PreviousAttributeKinModel: #>
     internal virtual <#= Emit.Type(attr.Type) #> Previous_<#= attr.Name #>(<#= Emit.BaseClassName(tree) #> before, IInheritanceContext ctx)
         // TODO does this need to throw an exception for the root of the tree?
         => Previous(ctx).Previous_<#= attr.Name #>(this, ctx);
