@@ -1,15 +1,15 @@
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeKins;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeFamilies;
 
-public sealed class AggregateAttributeKinSyntax : AttributeKinSyntax
+public sealed class AggregateAttributeFamilySyntax : AttributeFamilySyntax
 {
     public TypeSyntax FromType { get; }
     public string? ConstructExpression { get; }
     public string? AggregateMethod { get; }
     public string DoneMethod { get; }
 
-    public AggregateAttributeKinSyntax(
+    public AggregateAttributeFamilySyntax(
         string name,
         TypeSyntax type,
         TypeSyntax fromType,

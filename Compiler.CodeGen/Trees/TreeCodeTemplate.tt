@@ -6,7 +6,7 @@
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes" #>
-<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeKins" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(tree,
@@ -105,7 +105,7 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
     // TODO can this be more efficient?
     internal <#= Emit.BaseClassName(tree) #> LastDescendant()
         => ((<#= Emit.BaseClassName(tree) #>?)Children().LastOrDefault())?.LastDescendant() ?? this;
-<#      if (tree.AllAttributeSupertypes.Any()) { #>
+<#      if (tree.AllAttributeFamilies.Any()) { #>
 
     protected int? IndexOfNode<T>(IEnumerable<T> nodes, <#= Emit.BaseClassName(tree) #> node)
         where T : <#= Emit.TypeName(tree.RootSupertype) #>
@@ -135,17 +135,17 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
         where T : <#= Emit.TypeName(tree.RootSupertype) #>
         => node is T value ? nodes.Contains(value) : false;
 <#      } #>
-<#      foreach (var attr in tree.AllAttributeSupertypes) { #>
+<#      foreach (var attr in tree.AllAttributeFamilies) { #>
 
 <#          switch (attr) { #>
-<#              case InheritedAttributeKinModel: #>
+<#              case InheritedAttributeFamilyModel: #>
     internal virtual <#= Emit.Type(attr.Type) #> Inherited_<#= attr.Name #>(<#= Emit.BaseClassName(tree) #> child, <#= Emit.BaseClassName(tree) #> descendant, IInheritanceContext ctx)
         // TODO does this need to throw an exception for the root of the tree?
         => GetParent(ctx).Inherited_<#= attr.Name #>(this, descendant, ctx);
     protected <#= Emit.Type(attr.Type) #> Inherited_<#= attr.Name #>(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_<#= attr.Name #>(this, this, ctx);
 <#                  break;#>
-<#              case PreviousAttributeKinModel: #>
+<#              case PreviousAttributeFamilyModel: #>
     internal virtual <#= Emit.Type(attr.Type) #> Previous_<#= attr.Name #>(<#= Emit.BaseClassName(tree) #> before, IInheritanceContext ctx)
         // TODO does this need to throw an exception for the root of the tree?
         => Previous(ctx).Previous_<#= attr.Name #>(this, ctx);

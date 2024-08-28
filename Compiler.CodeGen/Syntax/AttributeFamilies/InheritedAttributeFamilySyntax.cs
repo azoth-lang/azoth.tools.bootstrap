@@ -1,12 +1,12 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeKins;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeFamilies;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public sealed class InheritedAttributeKinSyntax : AttributeKinSyntax
+public sealed class InheritedAttributeFamilySyntax : AttributeFamilySyntax
 {
-    public InheritedAttributeKinSyntax(string name, TypeSyntax type)
+    public InheritedAttributeFamilySyntax(string name, TypeSyntax type)
         : base(name, type)
     {
     }

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeKins;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
@@ -30,13 +30,13 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     public FixedDictionary<ExternalSymbol, TypeDeclarationModel> TypeDeclarations { get; }
 
-    public IFixedSet<AttributeKinModel> DeclaredAttributeKins { get; }
+    public IFixedSet<AttributeFamilyModel> DeclaredAttributeKins { get; }
 
-    public IFixedSet<ContextAttributeKinModel> ImplicitAttributeSupertypes => implicitAttributeSupertypes.Value;
-    private readonly Lazy<IFixedSet<ContextAttributeKinModel>> implicitAttributeSupertypes;
+    public IFixedSet<ContextAttributeFamilyModel> ImplicitAttributeSupertypes => implicitAttributeSupertypes.Value;
+    private readonly Lazy<IFixedSet<ContextAttributeFamilyModel>> implicitAttributeSupertypes;
 
-    public IFixedSet<AttributeKinModel> AllAttributeFamilies => allAttributeSupertypes.Value;
-    private readonly Lazy<IFixedSet<AttributeKinModel>> allAttributeSupertypes;
+    public IFixedSet<AttributeFamilyModel> AllAttributeFamilies => allAttributeSupertypes.Value;
+    private readonly Lazy<IFixedSet<AttributeFamilyModel>> allAttributeSupertypes;
 
     public TreeModel(TreeSyntax syntax, List<AspectSyntax> aspects)
     {
@@ -71,16 +71,16 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     private readonly FixedDictionary<string, TreeNodeModel> nodesLookup;
 
-    private IFixedSet<ContextAttributeKinModel> ComputeImplicitAttributeSupertypes()
+    private IFixedSet<ContextAttributeFamilyModel> ComputeImplicitAttributeSupertypes()
     {
         var declaredAttributeSupertypes = DeclaredAttributeKins.Select(s => s.Name).ToFixedSet();
         var implicitInheritedAttributeSupertypes = ComputeGroupedDeclaredAttributes<InheritedAttributeModel>()
                                                         .Where(g => !declaredAttributeSupertypes.Contains(g.Key))
-                                                        .Select(attrs => new InheritedAttributeKinModel(this, attrs));
+                                                        .Select(attrs => new InheritedAttributeFamilyModel(this, attrs));
         var implicitPreviousAttributeSupertypes = ComputeGroupedDeclaredAttributes<PreviousAttributeModel>()
-                                                        .Select(attrs => new PreviousAttributeKinModel(this, attrs));
+                                                        .Select(attrs => new PreviousAttributeFamilyModel(this, attrs));
         return implicitInheritedAttributeSupertypes
-               .Concat<ContextAttributeKinModel>(implicitPreviousAttributeSupertypes).ToFixedSet();
+               .Concat<ContextAttributeFamilyModel>(implicitPreviousAttributeSupertypes).ToFixedSet();
     }
 
     private IEnumerable<IGrouping<string, T>> ComputeGroupedDeclaredAttributes<T>()

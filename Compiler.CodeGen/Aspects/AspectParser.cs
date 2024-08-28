@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeKins;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using Azoth.Tools.Bootstrap.Framework;
@@ -18,8 +18,8 @@ public static class AspectParser
         var ns = GetRequiredConfig(lines, "namespace");
         var name = GetRequiredConfig(lines, "name");
         var usingNamespaces = ParseUsingNamespaces(lines);
-        var (typeDeclarations, attributeKins, attributes, equations, rewriteRules) = ParseStatements(lines);
-        return new(ns, name, usingNamespaces, typeDeclarations, attributeKins, attributes, equations, rewriteRules);
+        var (typeDeclarations, attributeFamilies, attributes, equations, rewriteRules) = ParseStatements(lines);
+        return new(ns, name, usingNamespaces, typeDeclarations, attributeFamilies, attributes, equations, rewriteRules);
     }
 
     private static AspectStatementsSyntax ParseStatements(
@@ -27,7 +27,7 @@ public static class AspectParser
     {
         var statements = ParseToStatements(lines).ToFixedList();
         var typeDeclarations = new List<TypeDeclarationSyntax>();
-        var attributeSupertypes = new List<InheritedAttributeKinSyntax>();
+        var attributeSupertypes = new List<InheritedAttributeFamilySyntax>();
         var attributes = new List<AspectAttributeSyntax>();
         var equations = new List<EquationSyntax>();
         var rewriteRules = new List<RewriteRuleSyntax>();
@@ -40,7 +40,7 @@ public static class AspectParser
             else if (statement.StartsWith('✎'))
                 rewriteRules.Add(ParseRewriteRule(statement));
             else if (statement.StartsWith('↓') && statement.Contains("<:"))
-                attributeSupertypes.Add(ParseInheritedAttributeSupertype(statement));
+                attributeSupertypes.Add(ParseInheritedAttributeFamily(statement));
             else
                 attributes.Add(ParseAttribute(statement));
         }
@@ -56,7 +56,7 @@ public static class AspectParser
         return new(true, nameSyntax);
     }
 
-    private static InheritedAttributeKinSyntax ParseInheritedAttributeSupertype(string statement)
+    private static InheritedAttributeFamilySyntax ParseInheritedAttributeFamily(string statement)
     {
         if (!ParseOffStart(ref statement, "↓"))
             throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
@@ -290,18 +290,18 @@ public static class AspectParser
 
     private record AspectStatementsSyntax(
         IFixedSet<TypeDeclarationSyntax> TypeDeclarations,
-        IFixedSet<AttributeKinSyntax> AttributeKins,
+        IFixedSet<AttributeFamilySyntax> AttributeFamilies,
         IFixedList<AspectAttributeSyntax> Attributes,
         IFixedList<EquationSyntax> Equations,
         IFixedList<RewriteRuleSyntax> RewriteRules)
     {
         public AspectStatementsSyntax(
             IEnumerable<TypeDeclarationSyntax> typeDeclarations,
-            IEnumerable<AttributeKinSyntax> attributeKins,
+            IEnumerable<AttributeFamilySyntax> attributeFamilies,
             IEnumerable<AspectAttributeSyntax> attributes,
             IEnumerable<EquationSyntax> equations,
             IEnumerable<RewriteRuleSyntax> rewriteRules)
-            : this(typeDeclarations.ToFixedSet(), attributeKins.ToFixedSet(),
+            : this(typeDeclarations.ToFixedSet(), attributeFamilies.ToFixedSet(),
                 attributes.ToFixedList(), equations.ToFixedList(), rewriteRules.ToFixedList())
         { }
     }

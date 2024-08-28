@@ -1,5 +1,5 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeKins;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
@@ -21,8 +21,8 @@ public sealed class InheritedAttributeModel : ContextAttributeModel, IContextAtt
     public override char Prefix => '↓';
     public override string MethodPrefix => "Inherited";
 
-    public override InheritedAttributeKinModel AttributeSupertype => attributeSupertype.Value;
-    private readonly Lazy<InheritedAttributeKinModel> attributeSupertype;
+    public override InheritedAttributeFamilyModel AttributeSupertype => attributeSupertype.Value;
+    private readonly Lazy<InheritedAttributeFamilyModel> attributeSupertype;
 
     public override InheritedAttributeSyntax? Syntax { get; }
 
@@ -40,7 +40,7 @@ public sealed class InheritedAttributeModel : ContextAttributeModel, IContextAtt
         Syntax = syntax;
         Strategy = syntax.IsMethod ? EvaluationStrategy.Computed
             : syntax.Strategy ?? EvaluationStrategy.Lazy;
-        attributeSupertype = new(ComputeAttributeSupertype<InheritedAttributeKinModel>);
+        attributeSupertype = new(ComputeAttributeSupertype<InheritedAttributeFamilyModel>);
     }
     private InheritedAttributeModel(
         AspectModel aspect,
@@ -52,6 +52,6 @@ public sealed class InheritedAttributeModel : ContextAttributeModel, IContextAtt
         : base(aspect, node, name, isMethod, type)
     {
         Strategy = strategy;
-        attributeSupertype = new(ComputeAttributeSupertype<InheritedAttributeKinModel>);
+        attributeSupertype = new(ComputeAttributeSupertype<InheritedAttributeFamilyModel>);
     }
 }

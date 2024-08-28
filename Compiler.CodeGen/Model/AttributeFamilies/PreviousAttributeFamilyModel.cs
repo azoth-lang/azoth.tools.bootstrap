@@ -3,24 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeKins;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeKins;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 
 /// <summary>
-/// Provides a common supertype for all instances of an inherited attribute.
+/// Provides a common supertype for all instances of a previous attribute.
 /// </summary>
 /// <remarks>Also acts as a collection of all instances of the attribute.</remarks>
-public sealed class InheritedAttributeKinModel : ContextAttributeKinModel
+public sealed class PreviousAttributeFamilyModel : ContextAttributeFamilyModel
 {
     public override string Name { get; }
     public override TypeModel Type => type.Value;
     private readonly Lazy<TypeModel> type;
-    public IFixedSet<InheritedAttributeModel> Instances => instances.Value;
-    private readonly Lazy<IFixedSet<InheritedAttributeModel>> instances;
+    public IFixedSet<PreviousAttributeModel> Instances => instances.Value;
+    private readonly Lazy<IFixedSet<PreviousAttributeModel>> instances;
 
-    public InheritedAttributeKinModel(TreeModel tree, IEnumerable<InheritedAttributeModel> instances)
+    public PreviousAttributeFamilyModel(TreeModel tree, IEnumerable<PreviousAttributeModel> instances)
         : base(tree)
     {
         this.instances = new(instances.ToFixedSet());
@@ -31,14 +30,6 @@ public sealed class InheritedAttributeKinModel : ContextAttributeKinModel
         if (Instances.Any(a => a.Name != Name))
             throw new ArgumentException("All instances must have the same name.", nameof(instances));
         type = new(ComputeType);
-    }
-
-    public InheritedAttributeKinModel(TreeModel tree, InheritedAttributeKinSyntax syntax)
-        : base(tree)
-    {
-        Name = syntax.Name;
-        type = new(TypeModel.CreateFromSyntax(tree, syntax.Type));
-        instances = new(ComputeInstances);
     }
 
     private TypeModel ComputeType()
@@ -55,9 +46,5 @@ public sealed class InheritedAttributeKinModel : ContextAttributeKinModel
         return types.Single();
     }
 
-    private IFixedSet<InheritedAttributeModel> ComputeInstances()
-        => Tree.Aspects.SelectMany(a => a.Attributes).OfType<InheritedAttributeModel>()
-               .Where(a => a.Name == Name).ToFixedSet();
-
-    public override string ToString() => $"↓ *.{Name} <: {Type}";
+    public override string ToString() => $"⮡ *.{Name} <: {Type}";
 }

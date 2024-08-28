@@ -2,16 +2,16 @@ using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeKins;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeFamilies;
 
-[Closed(typeof(InheritedAttributeKinSyntax), typeof(AggregateAttributeKinSyntax))]
+[Closed(typeof(InheritedAttributeFamilySyntax), typeof(AggregateAttributeFamilySyntax))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public abstract class AttributeKinSyntax
+public abstract class AttributeFamilySyntax
 {
     public string Name { get; }
     public TypeSyntax Type { get; }
 
-    protected AttributeKinSyntax(string name, TypeSyntax type)
+    protected AttributeFamilySyntax(string name, TypeSyntax type)
     {
         Name = name;
         Type = type;

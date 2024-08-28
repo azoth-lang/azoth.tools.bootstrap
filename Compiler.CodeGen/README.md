@@ -79,15 +79,15 @@ it is necessary to declare which types are values types.
 
 ### Inherited Attributes
 
-| Declaration                                                        | Meaning                                          |
-| ------------------------------------------------------------------ | ------------------------------------------------ |
-| `↓` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Inherited attribute, defaults to lazy            |
-| `=` *Node*`.`*Selector*`.`*Attribute*`;`                           | Inherited equation                               |
-| `=` *Node*`.`*Selector*`.`*Attribute* `=>` *Expression*`;`         | Inherited equation with inline expression        |
-| `↓` *Node*.*Attribute*`():` *Type*`;`                              | Inherited attribute method, always computed      |
-| `=` *Node*`.`*Selector*`.`*Attribute*`();`                         | Inherited method equation                        |
-| `=` *Node*`.`*Selector*`.`*Attribute*`()` `=>` *Expression*`;`     | Inherited method equation with inline expression |
-| `↓` `*.`*Attribute* `<:` *Type*`;`<sup>1</sup>                     | Specify a common supertype of the attribute      |
+| Declaration                                                        | Meaning                                                         |
+| ------------------------------------------------------------------ | --------------------------------------------------------------- |
+| `↓` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Inherited attribute, defaults to lazy                           |
+| `=` *Node*`.`*Selector*`.`*Attribute*`;`                           | Inherited equation                                              |
+| `=` *Node*`.`*Selector*`.`*Attribute* `=>` *Expression*`;`         | Inherited equation with inline expression                       |
+| `↓` *Node*.*Attribute*`():` *Type*`;`                              | Inherited attribute method, always computed                     |
+| `=` *Node*`.`*Selector*`.`*Attribute*`();`                         | Inherited method equation                                       |
+| `=` *Node*`.`*Selector*`.`*Attribute*`()` `=>` *Expression*`;`     | Inherited method equation with inline expression                |
+| `↓` `*.`*Attribute* `<:` *Type*`;`<sup>1</sup>                     | An inherited attribute family that specifies a common supertype |
 
 1. Only necessary when code generation is not able to determine the type and gives an error.
 
@@ -111,15 +111,15 @@ for a node to provide the attribute value, nodes are searched in the reverse of 
 traversal. That is, for inherited attributes, values flow down the tree. For previous attributes,
 values flow down from the parent to the first child and then across to the next child.
 
-| Declaration                                                        | Meaning                                                 |
-| ------------------------------------------------------------------ | ------------------------------------------------------- |
-| `⮡` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Previous attribute, defaults to lazy                    |
-| `=` *Node*`.⮡.`*Attribute*`;`                                      | Previous equation                                       |
-| `=` *Node*`.⮡.`*Attribute* `=>` *Expression*`;`                    | Previous equation with inline expression                |
-| `⮡` *Node*.*Attribute*`():` *Type*`;`                              | Previous attribute method, always computed              |
-| `=` *Node*`.⮡.`*Attribute*`();`                                    | Previous method equation                                |
-| `=` *Node*`.⮡.`*Attribute*`()` `=>` *Expression*`;`                | Previous method equation with inline expression         |
-| `⮡` `*.`*Attribute* `<:` *Type*`;`                                 | Specify a common supertype of the attribute<sup>1</sup> |
+| Declaration                                                        | Meaning                                                       |
+| ------------------------------------------------------------------ | ------------------------------------------------------------- |
+| `⮡` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Previous attribute, defaults to lazy                          |
+| `=` *Node*`.⮡.`*Attribute*`;`                                      | Previous equation                                             |
+| `=` *Node*`.⮡.`*Attribute* `=>` *Expression*`;`                    | Previous equation with inline expression                      |
+| `⮡` *Node*.*Attribute*`():` *Type*`;`                              | Previous attribute method, always computed                    |
+| `=` *Node*`.⮡.`*Attribute*`();`                                    | Previous method equation                                      |
+| `=` *Node*`.⮡.`*Attribute*`()` `=>` *Expression*`;`                | Previous method equation with inline expression               |
+| `⮡` `*.`*Attribute* `<:` *Type*`;`<sup>1</sup>                     | A previous attribute family that specifies a common supertype |
 
 1. Not yet implemented. Only necessary when code generation is not able to determine the type and
    gives an error.
@@ -149,7 +149,7 @@ directly support cycles themselves.
 
 | Declaration                                                                                              | Meaning                                               |
 | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| `↗↖` `*.`*Attribute*`:` *Type* `from` *Type* (`=>` *Expression*)? (`with` *Method*)? `done` *Method* `;` | An aggregate attribute for a tree                     |
+| `↗↖` `*.`*Attribute*`:` *Type* `from` *Type* (`=>` *Expression*)? (`with` *Method*)? `done` *Method* `;` | An aggregate attribute family                         |
 | `↗↖` *Node*`.`*Attribute*`;`                                                                             | An aggregate attribute on a specific node             |
 | `=` *Node*`.↑.`*Attribute*`;`                                                                            | Equation contributing to a parent aggregate attribute |
 
