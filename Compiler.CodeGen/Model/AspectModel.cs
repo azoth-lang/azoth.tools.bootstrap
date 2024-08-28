@@ -17,7 +17,7 @@ public sealed class AspectModel : IHasUsingNamespaces
     public string Name => Syntax.Name;
     public IFixedSet<string> UsingNamespaces => Syntax.UsingNamespaces;
     public IFixedSet<TypeDeclarationModel> TypeDeclarations { get; }
-    public IFixedSet<InheritedAttributeKinModel> DeclaredAttributeSupertypes { get; }
+    public IFixedSet<AttributeKinModel> DeclaredAttributeKins { get; }
     public IFixedList<AspectAttributeModel> Attributes { get; }
     public IFixedList<EquationModel> DeclaredEquations { get; }
     public IFixedList<SynthesizedAttributeEquationModel> ImplicitlyDeclaredEquations => implicitlyDeclaredEquations.Value;
@@ -30,7 +30,7 @@ public sealed class AspectModel : IHasUsingNamespaces
         Tree = tree;
         Syntax = syntax;
         TypeDeclarations = syntax.TypeDeclarations.Select(t => new TypeDeclarationModel(tree, t)).ToFixedSet();
-        DeclaredAttributeSupertypes = syntax.AttributeSupertypes.Select(s => new InheritedAttributeKinModel(Tree, s)).ToFixedSet();
+        DeclaredAttributeKins = syntax.AttributeKins.Select(s => AttributeKinModel.Create(Tree, s)).ToFixedSet();
         Attributes = syntax.Attributes.Select(a => AspectAttributeModel.Create(this, a)).ToFixedList();
         DeclaredEquations = syntax.Equations.Select(e => EquationModel.Create(this, e)).ToFixedList();
         implicitlyDeclaredEquations = new(() => ComputeImplicitlyDeclaredEquations().ToFixedList());

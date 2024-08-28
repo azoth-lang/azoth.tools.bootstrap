@@ -48,7 +48,7 @@ public abstract class ContextAttributeModel : AspectAttributeModel
 
     protected T ComputeAttributeSupertype<T>()
         where T : ContextAttributeKinModel
-        => Aspect.Tree.AllAttributeSupertypes.OfType<T>()
+        => Aspect.Tree.AllAttributeFamilies.OfType<T>()
                  .Single(s => s.Name == Name);
 
     public sealed override string ToString()

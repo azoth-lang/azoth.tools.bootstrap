@@ -39,7 +39,7 @@ public sealed class InheritedAttributeEquationModel : EquationModel
     }
 
     private InheritedAttributeKinModel ComputeAttributeSupertype()
-        => Aspect.Tree.AllAttributeSupertypes.OfType<InheritedAttributeKinModel>()
+        => Aspect.Tree.AllAttributeFamilies.OfType<InheritedAttributeKinModel>()
                  .Single(a => a.Name == Name);
 
     private IFixedSet<InheritedAttributeModel> ComputeInheritedToAttributes()

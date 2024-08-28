@@ -18,8 +18,8 @@ public static class AspectParser
         var ns = GetRequiredConfig(lines, "namespace");
         var name = GetRequiredConfig(lines, "name");
         var usingNamespaces = ParseUsingNamespaces(lines);
-        var (typeDeclarations, attributeSupertypes, attributes, equations, rewriteRules) = ParseStatements(lines);
-        return new(ns, name, usingNamespaces, typeDeclarations, attributeSupertypes, attributes, equations, rewriteRules);
+        var (typeDeclarations, attributeKins, attributes, equations, rewriteRules) = ParseStatements(lines);
+        return new(ns, name, usingNamespaces, typeDeclarations, attributeKins, attributes, equations, rewriteRules);
     }
 
     private static AspectStatementsSyntax ParseStatements(
@@ -290,18 +290,18 @@ public static class AspectParser
 
     private record AspectStatementsSyntax(
         IFixedSet<TypeDeclarationSyntax> TypeDeclarations,
-        IFixedSet<InheritedAttributeKinSyntax> AttributeSupertypes,
+        IFixedSet<AttributeKinSyntax> AttributeKins,
         IFixedList<AspectAttributeSyntax> Attributes,
         IFixedList<EquationSyntax> Equations,
         IFixedList<RewriteRuleSyntax> RewriteRules)
     {
         public AspectStatementsSyntax(
             IEnumerable<TypeDeclarationSyntax> typeDeclarations,
-            IEnumerable<InheritedAttributeKinSyntax> attributeSupertypes,
+            IEnumerable<AttributeKinSyntax> attributeKins,
             IEnumerable<AspectAttributeSyntax> attributes,
             IEnumerable<EquationSyntax> equations,
             IEnumerable<RewriteRuleSyntax> rewriteRules)
-            : this(typeDeclarations.ToFixedSet(), attributeSupertypes.ToFixedSet(),
+            : this(typeDeclarations.ToFixedSet(), attributeKins.ToFixedSet(),
                 attributes.ToFixedList(), equations.ToFixedList(), rewriteRules.ToFixedList())
         { }
     }
