@@ -1,15 +1,15 @@
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeKins;
 
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
-public sealed class InheritedAttributeSupertypeSyntax
+public sealed class InheritedAttributeKinSyntax
 {
     public string Name { get; }
     public TypeSyntax Type { get; }
 
-    public InheritedAttributeSupertypeSyntax(string name, TypeSyntax type)
+    public InheritedAttributeKinSyntax(string name, TypeSyntax type)
     {
         Name = name;
         Type = type;

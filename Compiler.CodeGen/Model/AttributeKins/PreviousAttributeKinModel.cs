@@ -7,6 +7,10 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeKins;
 
+/// <summary>
+/// Provides a common supertype for all instances of a previous attribute.
+/// </summary>
+/// <remarks>Also acts as a collection of all instances of the attribute.</remarks>
 public sealed class PreviousAttributeKinModel : ContextAttributeKinModel
 {
     public override string Name { get; }

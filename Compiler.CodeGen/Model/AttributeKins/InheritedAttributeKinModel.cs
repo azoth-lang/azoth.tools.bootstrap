@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeKins;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeKins;
 
 /// <summary>
-/// The supertype for an inherited attribute. Also acts as a collection of all instances of the attribute.
+/// Provides a common supertype for all instances of an inherited attribute.
 /// </summary>
+/// <remarks>Also acts as a collection of all instances of the attribute.</remarks>
 public sealed class InheritedAttributeKinModel : ContextAttributeKinModel
 {
     public override string Name { get; }
@@ -32,7 +33,7 @@ public sealed class InheritedAttributeKinModel : ContextAttributeKinModel
         type = new(ComputeType);
     }
 
-    public InheritedAttributeKinModel(TreeModel tree, InheritedAttributeSupertypeSyntax syntax)
+    public InheritedAttributeKinModel(TreeModel tree, InheritedAttributeKinSyntax syntax)
         : base(tree)
     {
         Name = syntax.Name;

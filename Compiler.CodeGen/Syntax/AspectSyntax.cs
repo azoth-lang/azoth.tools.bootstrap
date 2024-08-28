@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeKins;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using Azoth.Tools.Bootstrap.Framework;
@@ -11,7 +12,7 @@ public sealed class AspectSyntax
     public string Name { get; }
     public IFixedSet<TypeDeclarationSyntax> TypeDeclarations { get; }
     public IFixedSet<string> UsingNamespaces { get; }
-    public IFixedSet<InheritedAttributeSupertypeSyntax> AttributeSupertypes { get; }
+    public IFixedSet<InheritedAttributeKinSyntax> AttributeSupertypes { get; }
     public IFixedList<AspectAttributeSyntax> Attributes { get; }
     public IFixedList<EquationSyntax> Equations { get; }
     public IFixedList<RewriteRuleSyntax> RewriteRules { get; }
@@ -21,7 +22,7 @@ public sealed class AspectSyntax
         string name,
         IEnumerable<string> usingNamespaces,
         IEnumerable<TypeDeclarationSyntax> typeDeclarations,
-        IEnumerable<InheritedAttributeSupertypeSyntax> attributeSupertypes,
+        IEnumerable<InheritedAttributeKinSyntax> attributeSupertypes,
         IEnumerable<AspectAttributeSyntax> attributes,
         IEnumerable<EquationSyntax> equations,
         IEnumerable<RewriteRuleSyntax> rewriteRules)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeKins;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using Azoth.Tools.Bootstrap.Framework;
@@ -26,7 +27,7 @@ public static class AspectParser
     {
         var statements = ParseToStatements(lines).ToFixedList();
         var typeDeclarations = new List<TypeDeclarationSyntax>();
-        var attributeSupertypes = new List<InheritedAttributeSupertypeSyntax>();
+        var attributeSupertypes = new List<InheritedAttributeKinSyntax>();
         var attributes = new List<AspectAttributeSyntax>();
         var equations = new List<EquationSyntax>();
         var rewriteRules = new List<RewriteRuleSyntax>();
@@ -55,7 +56,7 @@ public static class AspectParser
         return new(true, nameSyntax);
     }
 
-    private static InheritedAttributeSupertypeSyntax ParseInheritedAttributeSupertype(string statement)
+    private static InheritedAttributeKinSyntax ParseInheritedAttributeSupertype(string statement)
     {
         if (!ParseOffStart(ref statement, "↓"))
             throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
@@ -289,14 +290,14 @@ public static class AspectParser
 
     private record AspectStatementsSyntax(
         IFixedSet<TypeDeclarationSyntax> TypeDeclarations,
-        IFixedSet<InheritedAttributeSupertypeSyntax> AttributeSupertypes,
+        IFixedSet<InheritedAttributeKinSyntax> AttributeSupertypes,
         IFixedList<AspectAttributeSyntax> Attributes,
         IFixedList<EquationSyntax> Equations,
         IFixedList<RewriteRuleSyntax> RewriteRules)
     {
         public AspectStatementsSyntax(
             IEnumerable<TypeDeclarationSyntax> typeDeclarations,
-            IEnumerable<InheritedAttributeSupertypeSyntax> attributeSupertypes,
+            IEnumerable<InheritedAttributeKinSyntax> attributeSupertypes,
             IEnumerable<AspectAttributeSyntax> attributes,
             IEnumerable<EquationSyntax> equations,
             IEnumerable<RewriteRuleSyntax> rewriteRules)
