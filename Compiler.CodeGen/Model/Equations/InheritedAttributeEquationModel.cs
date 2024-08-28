@@ -12,8 +12,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 public sealed class InheritedAttributeEquationModel : EquationModel
 {
     public override InheritedAttributeEquationSyntax Syntax { get; }
-    public InheritedAttributeSupertypeModel AttributeSupertype => attributeSupertype.Value;
-    private readonly Lazy<InheritedAttributeSupertypeModel> attributeSupertype;
+    public InheritedAttributesModel AttributeSupertype => attributeSupertype.Value;
+    private readonly Lazy<InheritedAttributesModel> attributeSupertype;
     public SelectorModel Selector { get; }
     public bool IsAllDescendants => Selector.IsAllDescendants;
     public override TypeModel Type => InheritedToTypes.TrySingle() ?? AttributeSupertype.Type;
@@ -38,8 +38,8 @@ public sealed class InheritedAttributeEquationModel : EquationModel
         inheritedToTypes = new(ComputeInheritedToTypes);
     }
 
-    private InheritedAttributeSupertypeModel ComputeAttributeSupertype()
-        => Aspect.Tree.AllAttributeSupertypes.OfType<InheritedAttributeSupertypeModel>()
+    private InheritedAttributesModel ComputeAttributeSupertype()
+        => Aspect.Tree.AllAttributeSupertypes.OfType<InheritedAttributesModel>()
                  .Single(a => a.Name == Name);
 
     private IFixedSet<InheritedAttributeModel> ComputeInheritedToAttributes()

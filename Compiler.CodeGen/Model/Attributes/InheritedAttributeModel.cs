@@ -21,8 +21,8 @@ public sealed class InheritedAttributeModel : ContextAttributeModel, IContextAtt
     public override char Prefix => '↓';
     public override string MethodPrefix => "Inherited";
 
-    public override InheritedAttributeSupertypeModel AttributeSupertype => attributeSupertype.Value;
-    private readonly Lazy<InheritedAttributeSupertypeModel> attributeSupertype;
+    public override InheritedAttributesModel AttributeSupertype => attributeSupertype.Value;
+    private readonly Lazy<InheritedAttributesModel> attributeSupertype;
 
     public override InheritedAttributeSyntax? Syntax { get; }
 
@@ -40,7 +40,7 @@ public sealed class InheritedAttributeModel : ContextAttributeModel, IContextAtt
         Syntax = syntax;
         Strategy = syntax.IsMethod ? EvaluationStrategy.Computed
             : syntax.Strategy ?? EvaluationStrategy.Lazy;
-        attributeSupertype = new(ComputeAttributeSupertype<InheritedAttributeSupertypeModel>);
+        attributeSupertype = new(ComputeAttributeSupertype<InheritedAttributesModel>);
     }
     private InheritedAttributeModel(
         AspectModel aspect,
@@ -52,6 +52,6 @@ public sealed class InheritedAttributeModel : ContextAttributeModel, IContextAtt
         : base(aspect, node, name, isMethod, type)
     {
         Strategy = strategy;
-        attributeSupertype = new(ComputeAttributeSupertype<InheritedAttributeSupertypeModel>);
+        attributeSupertype = new(ComputeAttributeSupertype<InheritedAttributesModel>);
     }
 }

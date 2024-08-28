@@ -33,7 +33,7 @@ public abstract class ContextAttributeModel : AspectAttributeModel
 
     public abstract string MethodPrefix { get; }
 
-    public abstract AttributeSupertypeModel AttributeSupertype { get; }
+    public abstract ContextAttributesModel AttributeSupertype { get; }
 
     public abstract EvaluationStrategy Strategy { get; }
 
@@ -47,7 +47,7 @@ public abstract class ContextAttributeModel : AspectAttributeModel
         : base(aspect, node, name, isMethod, type) { }
 
     protected T ComputeAttributeSupertype<T>()
-        where T : AttributeSupertypeModel
+        where T : ContextAttributesModel
         => Aspect.Tree.AllAttributeSupertypes.OfType<T>()
                  .Single(s => s.Name == Name);
 

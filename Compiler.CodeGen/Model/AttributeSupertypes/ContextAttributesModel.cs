@@ -3,14 +3,14 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeSupertypes;
 
-[Closed(typeof(InheritedAttributeSupertypeModel), typeof(PreviousAttributeSupertypeModel))]
-public abstract class AttributeSupertypeModel
+[Closed(typeof(InheritedAttributesModel), typeof(PreviousAttributesModel))]
+public abstract class ContextAttributesModel : AttributesModel
 {
     public TreeModel Tree { get; }
     public abstract string Name { get; }
     public abstract TypeModel Type { get; }
 
-    protected AttributeSupertypeModel(TreeModel tree)
+    protected ContextAttributesModel(TreeModel tree)
     {
         Tree = tree;
     }
