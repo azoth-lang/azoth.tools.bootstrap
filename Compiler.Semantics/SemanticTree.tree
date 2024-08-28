@@ -195,15 +195,14 @@ NamedParameter <: ConstructorOrInitializerParameter, LocalBinding = Syntax:`INam
     IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName`
     TypeNode:Type;
 SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool`
-    ContainingTypeDefinition:`ITypeDefinitionNode` ParameterType:`SelfParameterType`;
+    ParameterType:`SelfParameterType`;
 ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax`
     IsLentBinding:`bool` Capability BindingType:`CapabilityType`;
 InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax`
     IsLentBinding:`bool` Capability BindingType:`CapabilityType`;
 MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool`
     Capability:CapabilityConstraint ;
-FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`
-    ContainingTypeDefinition:`ITypeDefinitionNode`;
+FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`;
 
 // ---------- Function Parts
 Body <: BodyOrBlock = FlowStateAfter:`IFlowState`;

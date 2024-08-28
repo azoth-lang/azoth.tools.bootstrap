@@ -132,11 +132,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected Pseudotype? Inherited_MethodSelfType(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_MethodSelfType(this, this, ctx);
 
-    internal override ITypeDefinitionNode InheritedContainingTypeDefinition(IChildNode child, IChildNode descendant)
-        => Parent.InheritedContainingTypeDefinition(this, descendant);
+    internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(IChildNode child, IChildNode descendant)
+        => Parent.Inherited_ContainingTypeDefinition(this, descendant);
 
-    protected ITypeDefinitionNode InheritedContainingTypeDefinition()
-        => Parent.InheritedContainingTypeDefinition(this, this);
+    protected ITypeDefinitionNode Inherited_ContainingTypeDefinition()
+        => Parent.Inherited_ContainingTypeDefinition(this, this);
 
     internal override bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
         => Parent.InheritedIsAttributeType(this, descendant);

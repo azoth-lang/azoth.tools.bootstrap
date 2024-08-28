@@ -1008,8 +1008,8 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ITypeDefinitionNode ContainingTypeDefinition { get; }
     SelfParameterType ParameterType { get; }
+    ITypeDefinitionNode ContainingTypeDefinition { get; }
     IDeclaredUserType ContainingDeclaredType { get; }
     new IMaybeAntetype BindingAntetype { get; }
     IMaybeAntetype IParameterNode.BindingAntetype => BindingAntetype;
@@ -1037,8 +1037,8 @@ public partial interface IConstructorSelfParameterNode : ISelfParameterNode
     Pseudotype IParameterNode.BindingType => BindingType;
     Pseudotype IBindingNode.BindingType => BindingType;
 
-    public static IConstructorSelfParameterNode Create(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
-        => new ConstructorSelfParameterNode(parent, name, unused, flowStateAfter, containingTypeDefinition, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType);
+    public static IConstructorSelfParameterNode Create(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
+        => new ConstructorSelfParameterNode(parent, name, unused, flowStateAfter, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType);
 }
 
 // [Closed(typeof(InitializerSelfParameterNode))]
@@ -1056,8 +1056,8 @@ public partial interface IInitializerSelfParameterNode : ISelfParameterNode
     Pseudotype IParameterNode.BindingType => BindingType;
     Pseudotype IBindingNode.BindingType => BindingType;
 
-    public static IInitializerSelfParameterNode Create(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
-        => new InitializerSelfParameterNode(parent, name, unused, flowStateAfter, containingTypeDefinition, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType);
+    public static IInitializerSelfParameterNode Create(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
+        => new InitializerSelfParameterNode(parent, name, unused, flowStateAfter, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType);
 }
 
 // [Closed(typeof(MethodSelfParameterNode))]
@@ -1071,8 +1071,8 @@ public partial interface IMethodSelfParameterNode : ISelfParameterNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityConstraintNode Capability { get; }
 
-    public static IMethodSelfParameterNode Create(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability)
-        => new MethodSelfParameterNode(parent, name, unused, flowStateAfter, containingTypeDefinition, parameterType, bindingAntetype, bindingType, syntax, isLentBinding, capability);
+    public static IMethodSelfParameterNode Create(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability)
+        => new MethodSelfParameterNode(parent, name, unused, flowStateAfter, parameterType, bindingAntetype, bindingType, syntax, isLentBinding, capability);
 }
 
 // [Closed(typeof(FieldParameterNode))]
@@ -1089,8 +1089,8 @@ public partial interface IFieldParameterNode : IConstructorOrInitializerParamete
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IFieldDefinitionNode? ReferencedField { get; }
 
-    public static IFieldParameterNode Create(ISemanticNode parent, bool unused, IMaybeAntetype bindingAntetype, IFlowState flowStateAfter, DataType bindingType, ParameterType parameterType, IFieldParameterSyntax syntax, IdentifierName name, ITypeDefinitionNode containingTypeDefinition)
-        => new FieldParameterNode(parent, unused, bindingAntetype, flowStateAfter, bindingType, parameterType, syntax, name, containingTypeDefinition);
+    public static IFieldParameterNode Create(ISemanticNode parent, bool unused, IMaybeAntetype bindingAntetype, IFlowState flowStateAfter, DataType bindingType, ParameterType parameterType, IFieldParameterSyntax syntax, IdentifierName name)
+        => new FieldParameterNode(parent, unused, bindingAntetype, flowStateAfter, bindingType, parameterType, syntax, name);
 }
 
 [Closed(
@@ -3702,6 +3702,12 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected IFlowState Inherited_FlowStateBefore(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_FlowStateBefore(this, this, ctx);
 
+    internal virtual ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_ContainingTypeDefinition(this, descendant, ctx);
+    protected ITypeDefinitionNode Inherited_ContainingTypeDefinition(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ContainingTypeDefinition(this, this, ctx);
+
     internal virtual Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         // TODO does this need to throw an exception for the root of the tree?
         => GetParent(ctx).Inherited_MethodSelfType(this, descendant, ctx);
@@ -4301,6 +4307,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
+    internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
+
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return ContainingDeclaredTypeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
@@ -4404,6 +4415,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
+    internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
+
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return ContainingDeclaredTypeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
@@ -4501,6 +4517,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         if (ContainsNode(Self.Members, child))
             return LexicalScopingAspect.TypeDefinition_Members_Broadcast_ContainingLexicalScope(this);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
     }
 
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5434,7 +5455,6 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public bool Unused { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public ITypeDefinitionNode ContainingTypeDefinition { [DebuggerStepThrough] get; }
     public SelfParameterType ParameterType { [DebuggerStepThrough] get; }
     public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
     public IConstructorSelfParameterSyntax Syntax { [DebuggerStepThrough] get; }
@@ -5449,6 +5469,12 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ITypeDefinitionNode ContainingTypeDefinition
+        => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
+            : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
+                Inherited_ContainingTypeDefinition);
+    private ITypeDefinitionNode? containingTypeDefinition;
+    private bool containingTypeDefinitionCached;
     public IDeclaredUserType ContainingDeclaredType
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
             : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
@@ -5462,13 +5488,12 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public ConstructorSelfParameterNode(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
+    public ConstructorSelfParameterNode(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
     {
         Parent = parent;
         Name = name;
         Unused = unused;
         FlowStateAfter = flowStateAfter;
-        ContainingTypeDefinition = containingTypeDefinition;
         ParameterType = parameterType;
         BindingAntetype = bindingAntetype;
         Syntax = syntax;
@@ -5488,7 +5513,6 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public bool Unused { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public ITypeDefinitionNode ContainingTypeDefinition { [DebuggerStepThrough] get; }
     public SelfParameterType ParameterType { [DebuggerStepThrough] get; }
     public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
     public IInitializerSelfParameterSyntax Syntax { [DebuggerStepThrough] get; }
@@ -5503,6 +5527,12 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ITypeDefinitionNode ContainingTypeDefinition
+        => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
+            : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
+                Inherited_ContainingTypeDefinition);
+    private ITypeDefinitionNode? containingTypeDefinition;
+    private bool containingTypeDefinitionCached;
     public IDeclaredUserType ContainingDeclaredType
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
             : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
@@ -5516,13 +5546,12 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public InitializerSelfParameterNode(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
+    public InitializerSelfParameterNode(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
     {
         Parent = parent;
         Name = name;
         Unused = unused;
         FlowStateAfter = flowStateAfter;
-        ContainingTypeDefinition = containingTypeDefinition;
         ParameterType = parameterType;
         BindingAntetype = bindingAntetype;
         Syntax = syntax;
@@ -5542,7 +5571,6 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public bool Unused { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public ITypeDefinitionNode ContainingTypeDefinition { [DebuggerStepThrough] get; }
     public SelfParameterType ParameterType { [DebuggerStepThrough] get; }
     public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
     public Pseudotype BindingType { [DebuggerStepThrough] get; }
@@ -5557,6 +5585,12 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ITypeDefinitionNode ContainingTypeDefinition
+        => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
+            : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
+                Inherited_ContainingTypeDefinition);
+    private ITypeDefinitionNode? containingTypeDefinition;
+    private bool containingTypeDefinitionCached;
     public IDeclaredUserType ContainingDeclaredType
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
             : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
@@ -5570,13 +5604,12 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public MethodSelfParameterNode(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability)
+    public MethodSelfParameterNode(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability)
     {
         Parent = parent;
         Name = name;
         Unused = unused;
         FlowStateAfter = flowStateAfter;
-        ContainingTypeDefinition = containingTypeDefinition;
         ParameterType = parameterType;
         BindingAntetype = bindingAntetype;
         BindingType = bindingType;
@@ -5600,7 +5633,6 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
     public ParameterType ParameterType { [DebuggerStepThrough] get; }
     public IFieldParameterSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
-    public ITypeDefinitionNode ContainingTypeDefinition { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -5609,6 +5641,12 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ITypeDefinitionNode ContainingTypeDefinition
+        => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
+            : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
+                Inherited_ContainingTypeDefinition);
+    private ITypeDefinitionNode? containingTypeDefinition;
+    private bool containingTypeDefinitionCached;
     public IFieldDefinitionNode? ReferencedField
         => GrammarAttribute.IsCached(in referencedFieldCached) ? referencedField
             : this.Synthetic(ref referencedFieldCached, ref referencedField,
@@ -5622,7 +5660,7 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public FieldParameterNode(ISemanticNode parent, bool unused, IMaybeAntetype bindingAntetype, IFlowState flowStateAfter, DataType bindingType, ParameterType parameterType, IFieldParameterSyntax syntax, IdentifierName name, ITypeDefinitionNode containingTypeDefinition)
+    public FieldParameterNode(ISemanticNode parent, bool unused, IMaybeAntetype bindingAntetype, IFlowState flowStateAfter, DataType bindingType, ParameterType parameterType, IFieldParameterSyntax syntax, IdentifierName name)
     {
         Parent = parent;
         Unused = unused;
@@ -5632,7 +5670,6 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
         ParameterType = parameterType;
         Syntax = syntax;
         Name = name;
-        ContainingTypeDefinition = containingTypeDefinition;
     }
 }
 

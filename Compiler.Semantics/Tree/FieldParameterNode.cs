@@ -18,7 +18,7 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
     private ValueAttribute<ITypeDefinitionNode> containingTypeDeclaration;
     public ITypeDefinitionNode ContainingTypeDefinition
         => containingTypeDeclaration.TryGetValue(out var value) ? value
-            : containingTypeDeclaration.GetValue(InheritedContainingTypeDefinition);
+            : containingTypeDeclaration.GetValue(Inherited_ContainingTypeDefinition);
     private ValueAttribute<IFieldDefinitionNode?> referencedField;
     public IFieldDefinitionNode? ReferencedField
         => referencedField.TryGetValue(out var value) ? value

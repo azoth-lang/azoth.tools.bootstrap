@@ -16,7 +16,7 @@ internal abstract class SelfParameterNode : ParameterNode, ISelfParameterNode
     private ValueAttribute<ITypeDefinitionNode> containingTypeDeclaration;
     public ITypeDefinitionNode ContainingTypeDefinition
         => containingTypeDeclaration.TryGetValue(out var value) ? value
-            : containingTypeDeclaration.GetValue(InheritedContainingTypeDefinition);
+            : containingTypeDeclaration.GetValue(Inherited_ContainingTypeDefinition);
     private IDeclaredUserType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
     public IDeclaredUserType ContainingDeclaredType

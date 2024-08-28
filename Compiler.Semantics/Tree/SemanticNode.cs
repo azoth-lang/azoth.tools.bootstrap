@@ -56,8 +56,8 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual Pseudotype? Inherited_MethodSelfType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_MethodSelfType), child, descendant);
 
-    internal virtual ITypeDefinitionNode InheritedContainingTypeDefinition(IChildNode child, IChildNode descendant)
-        => throw Child.InheritFailed(nameof(InheritedContainingTypeDefinition), child, descendant);
+    internal virtual ITypeDefinitionNode Inherited_ContainingTypeDefinition(IChildNode child, IChildNode descendant)
+        => throw Child.InheritFailed(nameof(Inherited_ContainingTypeDefinition), child, descendant);
 
     internal virtual bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
         => throw Child.InheritFailed(nameof(InheritedIsAttributeType), child, descendant);

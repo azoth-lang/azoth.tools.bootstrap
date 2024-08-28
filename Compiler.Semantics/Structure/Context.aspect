@@ -26,7 +26,12 @@
 ↓ computed FunctionDefinition.ContainingDeclaration: NamespaceDeclaration;
 
 // ---------- Type Definition Parts
+= TypeDefinition.*.**.ContainingTypeDefinition => this;
 ↓ computed GenericParameter.ContainingDeclaration: UserTypeDeclaration;
+
+// ---------- Parameters
+↓ SelfParameter.ContainingTypeDefinition: TypeDefinition;
+↓ FieldParameter.ContainingTypeDefinition: TypeDefinition;
 
 // ---------- Name Expressions
 ↓ SelfExpression.ContainingDeclaration: ExecutableDefinition;
