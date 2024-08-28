@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 /// <summary>
 /// Attributes for types related to any sort of type expression (e.g. `Foo?`)
 /// </summary>
-internal static class TypeExpressionsAspect
+internal static partial class TypeExpressionsAspect
 {
     public static DataType TypeName_NamedType(ITypeNameNode node)
         => (node.NamedBareType?.WithRead() ?? node.ReferencedSymbol?.GetDataType()) ?? DataType.Unknown;
@@ -51,12 +51,12 @@ internal static class TypeExpressionsAspect
             diagnostics.Add(TypeError.CapabilityViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
     }
 
-    public static Pseudotype ConcreteMethodDeclaration_InheritedSelfType(IConcreteMethodDefinitionNode node)
+    public static partial Pseudotype? ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(IConcreteMethodDefinitionNode node)
         => node.SelfParameter.BindingType;
 
     public static DataType SelfViewpointType_NamedType(ISelfViewpointTypeNode node)
     {
-        var selfType = node.NamedSelfType;
+        var selfType = node.MethodSelfType;
         var referentType = node.Referent.NamedType;
         if (selfType is CapabilityType { Capability: var capability }
             && referentType is GenericParameterType genericParameterType)
@@ -72,7 +72,7 @@ internal static class TypeExpressionsAspect
 
     public static void SelfViewpointType_ContributeDiagnostics(ISelfViewpointTypeNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.NamedSelfType is not (CapabilityType or CapabilityTypeConstraint))
+        if (node.MethodSelfType is not (CapabilityType or CapabilityTypeConstraint))
             diagnostics.Add(TypeError.SelfViewpointNotAvailable(node.File, node.Syntax));
 
         if (node.Referent.NamedType is not GenericParameterType)

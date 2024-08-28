@@ -1365,10 +1365,10 @@ public partial interface ISelfViewpointTypeNode : IViewpointTypeNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    Pseudotype? NamedSelfType { get; }
+    Pseudotype? MethodSelfType { get; }
 
-    public static ISelfViewpointTypeNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, ISelfViewpointTypeSyntax syntax, ITypeNode referent, Pseudotype? namedSelfType)
-        => new SelfViewpointTypeNode(parent, namedAntetype, namedType, syntax, referent, namedSelfType);
+    public static ISelfViewpointTypeNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, ISelfViewpointTypeSyntax syntax, ITypeNode referent)
+        => new SelfViewpointTypeNode(parent, namedAntetype, namedType, syntax, referent);
 }
 
 [Closed(
@@ -3702,6 +3702,12 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected IFlowState Inherited_FlowStateBefore(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_FlowStateBefore(this, this, ctx);
 
+    internal virtual Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_MethodSelfType(this, descendant, ctx);
+    protected Pseudotype? Inherited_MethodSelfType(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_MethodSelfType(this, this, ctx);
+
     internal virtual IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         // TODO does this need to throw an exception for the root of the tree?
         => GetParent(ctx).Inherited_ControlFlowEntry(this, descendant, ctx);
@@ -4708,6 +4714,11 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         Body = body;
         Exit = exit;
     }
+
+    internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4781,6 +4792,11 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         Body = body;
         Exit = exit;
     }
+
+    internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4853,6 +4869,11 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         Entry = entry;
         Body = body;
         Exit = exit;
+    }
+
+    internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
 }
 
@@ -6002,20 +6023,24 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
     public DataType NamedType { [DebuggerStepThrough] get; }
     public ISelfViewpointTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
-    public Pseudotype? NamedSelfType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public Pseudotype? MethodSelfType
+        => GrammarAttribute.IsCached(in methodSelfTypeCached) ? methodSelfType
+            : this.Inherited(ref methodSelfTypeCached, ref methodSelfType,
+                Inherited_MethodSelfType);
+    private Pseudotype? methodSelfType;
+    private bool methodSelfTypeCached;
 
-    public SelfViewpointTypeNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, ISelfViewpointTypeSyntax syntax, ITypeNode referent, Pseudotype? namedSelfType)
+    public SelfViewpointTypeNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, ISelfViewpointTypeSyntax syntax, ITypeNode referent)
     {
         Parent = parent;
         NamedAntetype = namedAntetype;
         NamedType = namedType;
         Syntax = syntax;
         Referent = referent;
-        NamedSelfType = namedSelfType;
     }
 }
 

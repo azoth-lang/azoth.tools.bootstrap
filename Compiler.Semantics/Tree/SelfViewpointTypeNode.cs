@@ -24,12 +24,14 @@ internal sealed class SelfViewpointTypeNode : TypeNode, ISelfViewpointTypeNode
     private bool namedTypeCached;
     public override DataType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : this.Synthetic(ref namedTypeCached, ref namedType, TypeExpressionsAspect.SelfViewpointType_NamedType);
-    private Pseudotype? namedSelfType;
-    private bool namedSelfTypeCached;
-    public Pseudotype? NamedSelfType
-        => GrammarAttribute.IsCached(in namedSelfTypeCached) ? namedSelfType
-            : this.Inherited(ref namedSelfTypeCached, ref namedSelfType, InheritedSelfType);
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.SelfViewpointType_NamedType);
+    private Pseudotype? methodSelfType;
+    private bool methodSelfTypeCached;
+    public Pseudotype? MethodSelfType
+        => GrammarAttribute.IsCached(in methodSelfTypeCached) ? methodSelfType
+            : this.Inherited(ref methodSelfTypeCached, ref methodSelfType,
+                Inherited_MethodSelfType);
 
     public SelfViewpointTypeNode(ISelfViewpointTypeSyntax syntax, ITypeNode referent)
     {

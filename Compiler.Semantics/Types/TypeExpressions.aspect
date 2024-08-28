@@ -1,0 +1,11 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+◊name TypeExpressionsAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
+
+// ↓ ↑ ⮡ ✎
+
+// ---------- Member Definitions
+= ConcreteMethodDefinition.*.**.MethodSelfType;
+
+// ---------- Types
+↓ SelfViewpointType.MethodSelfType: `Pseudotype`?;

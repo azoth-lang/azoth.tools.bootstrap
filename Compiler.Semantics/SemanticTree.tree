@@ -228,7 +228,7 @@ FunctionType <: Type = Syntax:`IFunctionTypeSyntax` Parameters:ParameterType* Re
 ParameterType <: Code = Syntax:`IParameterTypeSyntax` IsLent:`bool` Referent:Type Parameter:`ParameterType`;
 ViewpointType <: Type = Syntax:`IViewpointTypeSyntax` Referent:Type;
 CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSyntax` Capability Referent:Type;
-SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type NamedSelfType:`Pseudotype`?;
+SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type;
 
 // ---------- Control Flow
 ControlFlow <: Code = ControlFlowNext:`ControlFlowSet` ControlFlowPrevious:`ControlFlowSet`;

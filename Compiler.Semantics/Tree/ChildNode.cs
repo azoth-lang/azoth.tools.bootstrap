@@ -126,11 +126,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected virtual IDeclaredUserType Inherited_ContainingDeclaredType(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_ContainingDeclaredType(this, this, ctx);
 
-    internal override Pseudotype? InheritedSelfType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => GetParent(ctx).InheritedSelfType(this, descendant, ctx);
+    internal override Pseudotype? Inherited_MethodSelfType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_MethodSelfType(this, descendant, ctx);
 
-    protected Pseudotype? InheritedSelfType(IInheritanceContext ctx)
-        => GetParent(ctx).InheritedSelfType(this, this, ctx);
+    protected Pseudotype? Inherited_MethodSelfType(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_MethodSelfType(this, this, ctx);
 
     internal override ITypeDefinitionNode InheritedContainingTypeDefinition(IChildNode child, IChildNode descendant)
         => Parent.InheritedContainingTypeDefinition(this, descendant);

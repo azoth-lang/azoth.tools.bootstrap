@@ -53,8 +53,8 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual IDeclaredUserType Inherited_ContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_ContainingDeclaredType), child, descendant);
 
-    internal virtual Pseudotype? InheritedSelfType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedSelfType), child, descendant);
+    internal virtual Pseudotype? Inherited_MethodSelfType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_MethodSelfType), child, descendant);
 
     internal virtual ITypeDefinitionNode InheritedContainingTypeDefinition(IChildNode child, IChildNode descendant)
         => throw Child.InheritFailed(nameof(InheritedContainingTypeDefinition), child, descendant);
