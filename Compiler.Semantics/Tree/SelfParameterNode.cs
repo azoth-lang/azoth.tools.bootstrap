@@ -22,7 +22,7 @@ internal abstract class SelfParameterNode : ParameterNode, ISelfParameterNode
     public IDeclaredUserType ContainingDeclaredType
         => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
             : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
-                InheritedContainingDeclaredType);
+                Inherited_ContainingDeclaredType);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
     public override IMaybeAntetype BindingAntetype

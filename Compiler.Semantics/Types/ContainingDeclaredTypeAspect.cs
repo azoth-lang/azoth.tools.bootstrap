@@ -2,8 +2,8 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-internal static class ContainingDeclaredTypeAspect
+internal static partial class ContainingDeclaredTypeAspect
 {
-    public static IDeclaredUserType TypeDeclaration_InheritedContainingDeclaredType(ITypeDefinitionNode node)
+    public static partial IDeclaredUserType TypeDefinition_Children_Broadcast_ContainingDeclaredType(ITypeDefinitionNode node)
         => node.DeclaredType;
 }

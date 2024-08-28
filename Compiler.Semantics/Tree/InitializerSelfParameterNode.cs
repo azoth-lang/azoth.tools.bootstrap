@@ -4,14 +4,12 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class InitializerSelfParameterNode : SelfParameterNode, IInitializerSelfParameterNode
 {
     public override IInitializerSelfParameterSyntax Syntax { get; }
-    public new StructType ContainingDeclaredType => (StructType)base.ContainingDeclaredType;
     public ICapabilityNode Capability { get; }
     public override IdentifierName? Name => Syntax.Name;
     private ValueAttribute<CapabilityType> bindingType;

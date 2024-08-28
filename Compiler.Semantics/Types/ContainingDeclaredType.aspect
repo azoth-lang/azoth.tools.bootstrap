@@ -1,0 +1,22 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+◊name ContainingDeclaredTypeAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+
+// ↓ ↑ ⮡ ✎
+
+↓ *.ContainingDeclaredType <: `IDeclaredUserType`;
+
+// ---------- Type Definitions
+= TypeDefinition.*.**.ContainingDeclaredType;
+// = ClassDefinition.*.**.ContainingDeclaredType;
+// = StructDefinition.*.**.ContainingDeclaredType;
+// = TraitDefinition.*.**.ContainingDeclaredType;
+
+// ---------- Type Definition Parts
+↓ GenericParameter.ContainingDeclaredType: `IDeclaredUserType`;
+
+// ---------- Member Definitions
+↓ AbstractMethodDefinition.ContainingDeclaredType: `IDeclaredUserType`;
+
+// ---------- Parameters
+↓ SelfParameter.ContainingDeclaredType: `IDeclaredUserType`;

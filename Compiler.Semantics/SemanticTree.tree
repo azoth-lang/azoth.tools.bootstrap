@@ -125,7 +125,7 @@ TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSy
 // ---------- Type Definition Parts
 GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParameterSyntax`
     Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`
-    Parameter:`GenericParameter` ContainingDeclaredType:`IDeclaredUserType` DeclaredType:`GenericParameterType`
+    Parameter:`GenericParameter` DeclaredType:`GenericParameterType`
     ContainingSymbol:`UserTypeSymbol` Members:{TypeMemberDefinition};
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
@@ -143,8 +143,7 @@ MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemb
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
 // TODO getters and setters can be abstract too
 AbstractMethodDefinition <: MethodDefinition, StandardMethodDeclaration = Syntax:`IAbstractMethodDefinitionSyntax`
-    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
-    ContainingDeclaredType:`ObjectType`;
+    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
 ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteInvocableDefinition
     = Syntax:`IConcreteMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
     Entry Body Exit;
@@ -196,13 +195,11 @@ NamedParameter <: ConstructorOrInitializerParameter, LocalBinding = Syntax:`INam
     IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName`
     TypeNode:Type;
 SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool`
-    ContainingTypeDefinition:`ITypeDefinitionNode` ContainingDeclaredType:`IDeclaredUserType`
-    // TODO remove parameter symbols
-    ParameterType:`SelfParameterType`;
+    ContainingTypeDefinition:`ITypeDefinitionNode` ParameterType:`SelfParameterType`;
 ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax`
-    IsLentBinding:`bool` Capability BindingType:`CapabilityType` ContainingDeclaredType:`ObjectType`;
+    IsLentBinding:`bool` Capability BindingType:`CapabilityType`;
 InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax`
-    IsLentBinding:`bool` Capability BindingType:`CapabilityType` ContainingDeclaredType:`StructType`;
+    IsLentBinding:`bool` Capability BindingType:`CapabilityType`;
 MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool`
     Capability:CapabilityConstraint ;
 FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`

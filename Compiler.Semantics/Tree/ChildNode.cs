@@ -120,11 +120,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected LexicalScope Inherited_ContainingLexicalScope(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_ContainingLexicalScope(this, this, ctx);
 
-    internal override IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => Parent.InheritedContainingDeclaredType(this, descendant, ctx);
+    internal override IDeclaredUserType Inherited_ContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ContainingDeclaredType(this, descendant, ctx);
 
-    protected virtual IDeclaredUserType InheritedContainingDeclaredType(IInheritanceContext ctx)
-        => GetParent(ctx).InheritedContainingDeclaredType(this, this, ctx);
+    protected virtual IDeclaredUserType Inherited_ContainingDeclaredType(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ContainingDeclaredType(this, this, ctx);
 
     internal override Pseudotype? InheritedSelfType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => GetParent(ctx).InheritedSelfType(this, descendant, ctx);

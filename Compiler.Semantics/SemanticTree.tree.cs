@@ -539,15 +539,15 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     TypeParameterIndependence Independence { get; }
     TypeParameterVariance Variance { get; }
     GenericParameter Parameter { get; }
-    IDeclaredUserType ContainingDeclaredType { get; }
     GenericParameterType DeclaredType { get; }
     UserTypeSymbol ContainingSymbol { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IUserTypeDeclarationNode ContainingDeclaration { get; }
+    IDeclaredUserType ContainingDeclaredType { get; }
 
-    public static IGenericParameterNode Create(ISemanticNode parent, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, IDeclaredUserType containingDeclaredType, GenericParameterType declaredType, UserTypeSymbol containingSymbol, IFixedSet<ITypeMemberDefinitionNode> members)
-        => new GenericParameterNode(parent, supertypes, inclusiveMembers, syntax, constraint, name, independence, variance, parameter, containingDeclaredType, declaredType, containingSymbol, members);
+    public static IGenericParameterNode Create(ISemanticNode parent, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, GenericParameterType declaredType, UserTypeSymbol containingSymbol, IFixedSet<ITypeMemberDefinitionNode> members)
+        => new GenericParameterNode(parent, supertypes, inclusiveMembers, syntax, constraint, name, independence, variance, parameter, declaredType, containingSymbol, members);
 }
 
 [Closed(
@@ -650,10 +650,10 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    ObjectType ContainingDeclaredType { get; }
+    IDeclaredUserType ContainingDeclaredType { get; }
 
-    public static IAbstractMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, ObjectType containingDeclaredType)
-        => new AbstractMethodDefinitionNode(parent, accessModifier, containingSymbol, kind, name, arity, methodGroupType, syntax, selfParameter, parameters, @return, containingDeclaredType);
+    public static IAbstractMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return)
+        => new AbstractMethodDefinitionNode(parent, accessModifier, containingSymbol, kind, name, arity, methodGroupType, syntax, selfParameter, parameters, @return);
 }
 
 [Closed(
@@ -1009,8 +1009,8 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeDefinitionNode ContainingTypeDefinition { get; }
-    IDeclaredUserType ContainingDeclaredType { get; }
     SelfParameterType ParameterType { get; }
+    IDeclaredUserType ContainingDeclaredType { get; }
     new IMaybeAntetype BindingAntetype { get; }
     IMaybeAntetype IParameterNode.BindingAntetype => BindingAntetype;
     IMaybeAntetype IBindingNode.BindingAntetype => BindingAntetype;
@@ -1036,11 +1036,9 @@ public partial interface IConstructorSelfParameterNode : ISelfParameterNode
     Pseudotype ISelfParameterNode.BindingType => BindingType;
     Pseudotype IParameterNode.BindingType => BindingType;
     Pseudotype IBindingNode.BindingType => BindingType;
-    new ObjectType ContainingDeclaredType { get; }
-    IDeclaredUserType ISelfParameterNode.ContainingDeclaredType => ContainingDeclaredType;
 
-    public static IConstructorSelfParameterNode Create(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType, ObjectType containingDeclaredType)
-        => new ConstructorSelfParameterNode(parent, name, unused, flowStateAfter, containingTypeDefinition, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType, containingDeclaredType);
+    public static IConstructorSelfParameterNode Create(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
+        => new ConstructorSelfParameterNode(parent, name, unused, flowStateAfter, containingTypeDefinition, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType);
 }
 
 // [Closed(typeof(InitializerSelfParameterNode))]
@@ -1057,11 +1055,9 @@ public partial interface IInitializerSelfParameterNode : ISelfParameterNode
     Pseudotype ISelfParameterNode.BindingType => BindingType;
     Pseudotype IParameterNode.BindingType => BindingType;
     Pseudotype IBindingNode.BindingType => BindingType;
-    new StructType ContainingDeclaredType { get; }
-    IDeclaredUserType ISelfParameterNode.ContainingDeclaredType => ContainingDeclaredType;
 
-    public static IInitializerSelfParameterNode Create(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType, StructType containingDeclaredType)
-        => new InitializerSelfParameterNode(parent, name, unused, flowStateAfter, containingTypeDefinition, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType, containingDeclaredType);
+    public static IInitializerSelfParameterNode Create(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
+        => new InitializerSelfParameterNode(parent, name, unused, flowStateAfter, containingTypeDefinition, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType);
 }
 
 // [Closed(typeof(MethodSelfParameterNode))]
@@ -1075,8 +1071,8 @@ public partial interface IMethodSelfParameterNode : ISelfParameterNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityConstraintNode Capability { get; }
 
-    public static IMethodSelfParameterNode Create(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, IDeclaredUserType containingDeclaredType, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability)
-        => new MethodSelfParameterNode(parent, name, unused, flowStateAfter, containingTypeDefinition, containingDeclaredType, parameterType, bindingAntetype, bindingType, syntax, isLentBinding, capability);
+    public static IMethodSelfParameterNode Create(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability)
+        => new MethodSelfParameterNode(parent, name, unused, flowStateAfter, containingTypeDefinition, parameterType, bindingAntetype, bindingType, syntax, isLentBinding, capability);
 }
 
 // [Closed(typeof(FieldParameterNode))]
@@ -3670,6 +3666,12 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     }
     internal virtual void Contribute_Diagnostics(DiagnosticCollectionBuilder builder, bool contributeAttribute = true) { }
 
+    internal virtual IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_ContainingDeclaredType(this, descendant, ctx);
+    protected IDeclaredUserType Inherited_ContainingDeclaredType(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ContainingDeclaredType(this, this, ctx);
+
     internal virtual IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         // TODO does this need to throw an exception for the root of the tree?
         => GetParent(ctx).Inherited_Package(this, descendant, ctx);
@@ -4292,6 +4294,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
             return LexicalScopingAspect.TypeDefinition_Members_Broadcast_ContainingLexicalScope(this);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
+
+    internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ContainingDeclaredTypeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4390,6 +4397,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
             return LexicalScopingAspect.TypeDefinition_Members_Broadcast_ContainingLexicalScope(this);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
+
+    internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ContainingDeclaredTypeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4484,6 +4496,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
             return LexicalScopingAspect.TypeDefinition_Members_Broadcast_ContainingLexicalScope(this);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
+
+    internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ContainingDeclaredTypeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4500,7 +4517,6 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
     public TypeParameterIndependence Independence { [DebuggerStepThrough] get; }
     public TypeParameterVariance Variance { [DebuggerStepThrough] get; }
     public GenericParameter Parameter { [DebuggerStepThrough] get; }
-    public IDeclaredUserType ContainingDeclaredType { [DebuggerStepThrough] get; }
     public GenericParameterType DeclaredType { [DebuggerStepThrough] get; }
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
     public IFixedSet<ITypeMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
@@ -4512,6 +4528,12 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public IDeclaredUserType ContainingDeclaredType
+        => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
+            : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
+                Inherited_ContainingDeclaredType);
+    private IDeclaredUserType? containingDeclaredType;
+    private bool containingDeclaredTypeCached;
     public GenericParameterTypeSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
             : this.Synthetic(ref symbolCached, ref symbol,
@@ -4519,7 +4541,7 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
     private GenericParameterTypeSymbol? symbol;
     private bool symbolCached;
 
-    public GenericParameterNode(ISemanticNode parent, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, IDeclaredUserType containingDeclaredType, GenericParameterType declaredType, UserTypeSymbol containingSymbol, IFixedSet<ITypeMemberDefinitionNode> members)
+    public GenericParameterNode(ISemanticNode parent, IFixedSet<BareReferenceType> supertypes, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, GenericParameterType declaredType, UserTypeSymbol containingSymbol, IFixedSet<ITypeMemberDefinitionNode> members)
     {
         Parent = parent;
         Supertypes = supertypes;
@@ -4530,7 +4552,6 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
         Independence = independence;
         Variance = variance;
         Parameter = parameter;
-        ContainingDeclaredType = containingDeclaredType;
         DeclaredType = declaredType;
         ContainingSymbol = containingSymbol;
         Members = members;
@@ -4553,7 +4574,6 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
-    public ObjectType ContainingDeclaredType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -4572,6 +4592,12 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
     private bool facetCached;
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public IDeclaredUserType ContainingDeclaredType
+        => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
+            : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
+                Inherited_ContainingDeclaredType);
+    private IDeclaredUserType? containingDeclaredType;
+    private bool containingDeclaredTypeCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -4591,7 +4617,7 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public AbstractMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return, ObjectType containingDeclaredType)
+    public AbstractMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IFixedList<INamedParameterNode> parameters, ITypeNode? @return)
     {
         Parent = parent;
         AccessModifier = accessModifier;
@@ -4604,7 +4630,6 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
         SelfParameter = selfParameter;
         Parameters = parameters;
         Return = @return;
-        ContainingDeclaredType = containingDeclaredType;
     }
 }
 
@@ -5395,7 +5420,6 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
     public bool IsLentBinding { [DebuggerStepThrough] get; }
     public ICapabilityNode Capability { [DebuggerStepThrough] get; }
     public CapabilityType BindingType { [DebuggerStepThrough] get; }
-    public ObjectType ContainingDeclaredType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -5404,6 +5428,12 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public IDeclaredUserType ContainingDeclaredType
+        => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
+            : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
+                Inherited_ContainingDeclaredType);
+    private IDeclaredUserType? containingDeclaredType;
+    private bool containingDeclaredTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
@@ -5411,7 +5441,7 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public ConstructorSelfParameterNode(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType, ObjectType containingDeclaredType)
+    public ConstructorSelfParameterNode(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
     {
         Parent = parent;
         Name = name;
@@ -5424,7 +5454,6 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
         IsLentBinding = isLentBinding;
         Capability = capability;
         BindingType = bindingType;
-        ContainingDeclaredType = containingDeclaredType;
     }
 }
 
@@ -5445,7 +5474,6 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
     public bool IsLentBinding { [DebuggerStepThrough] get; }
     public ICapabilityNode Capability { [DebuggerStepThrough] get; }
     public CapabilityType BindingType { [DebuggerStepThrough] get; }
-    public StructType ContainingDeclaredType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -5454,6 +5482,12 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public IDeclaredUserType ContainingDeclaredType
+        => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
+            : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
+                Inherited_ContainingDeclaredType);
+    private IDeclaredUserType? containingDeclaredType;
+    private bool containingDeclaredTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
@@ -5461,7 +5495,7 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public InitializerSelfParameterNode(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType, StructType containingDeclaredType)
+    public InitializerSelfParameterNode(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
     {
         Parent = parent;
         Name = name;
@@ -5474,7 +5508,6 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
         IsLentBinding = isLentBinding;
         Capability = capability;
         BindingType = bindingType;
-        ContainingDeclaredType = containingDeclaredType;
     }
 }
 
@@ -5489,7 +5522,6 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
     public bool Unused { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public ITypeDefinitionNode ContainingTypeDefinition { [DebuggerStepThrough] get; }
-    public IDeclaredUserType ContainingDeclaredType { [DebuggerStepThrough] get; }
     public SelfParameterType ParameterType { [DebuggerStepThrough] get; }
     public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
     public Pseudotype BindingType { [DebuggerStepThrough] get; }
@@ -5504,6 +5536,12 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public IDeclaredUserType ContainingDeclaredType
+        => GrammarAttribute.IsCached(in containingDeclaredTypeCached) ? containingDeclaredType!
+            : this.Inherited(ref containingDeclaredTypeCached, ref containingDeclaredType,
+                Inherited_ContainingDeclaredType);
+    private IDeclaredUserType? containingDeclaredType;
+    private bool containingDeclaredTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
@@ -5511,14 +5549,13 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public MethodSelfParameterNode(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, IDeclaredUserType containingDeclaredType, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability)
+    public MethodSelfParameterNode(ISemanticNode parent, IdentifierName? name, bool unused, IFlowState flowStateAfter, ITypeDefinitionNode containingTypeDefinition, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability)
     {
         Parent = parent;
         Name = name;
         Unused = unused;
         FlowStateAfter = flowStateAfter;
         ContainingTypeDefinition = containingTypeDefinition;
-        ContainingDeclaredType = containingDeclaredType;
         ParameterType = parameterType;
         BindingAntetype = bindingAntetype;
         BindingType = bindingType;

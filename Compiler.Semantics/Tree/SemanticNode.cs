@@ -50,8 +50,8 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_ContainingLexicalScope), child, descendant);
 
-    internal virtual IDeclaredUserType InheritedContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedContainingDeclaredType), child, descendant);
+    internal virtual IDeclaredUserType Inherited_ContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_ContainingDeclaredType), child, descendant);
 
     internal virtual Pseudotype? InheritedSelfType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(InheritedSelfType), child, descendant);
