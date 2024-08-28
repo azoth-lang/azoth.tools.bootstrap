@@ -106,7 +106,10 @@ it is necessary to declare which types are values types.
 
 ### Previous Attributes
 
-Previous attributes are similar to inherited attributes except that instead of searching up the tree for a node to provide the attribute value, nodes are searched in the reverse of a pre-order traversal. That is, for inherited attributes, values flow down the tree. For previous attributes, values flow down from the parent to the first child and then across to the next child.
+Previous attributes are similar to inherited attributes except that instead of searching up the tree
+for a node to provide the attribute value, nodes are searched in the reverse of a pre-order
+traversal. That is, for inherited attributes, values flow down the tree. For previous attributes,
+values flow down from the parent to the first child and then across to the next child.
 
 | Declaration                                                        | Meaning                                                 |
 | ------------------------------------------------------------------ | ------------------------------------------------------- |
@@ -125,14 +128,38 @@ Previous attributes are similar to inherited attributes except that instead of s
 
 `⟳` *Node*`.`*Attribute*`:` *Type*`;`
 
+### Aggregate Attributes
+
+Aggregate attributes are similar to collection attributes but are simpler in some ways. An aggregate
+attribute aggregates values from the subtree rooted at a node (including from that node). If the
+same aggregate attribute exists higher in the tree, it will aggregate all values from the lower
+aggregate attribute. Thus, the two aggregate attributes do not need to evaluate child attributes
+twice.
+
+For aggregate attributes, the aggregation is performed by an aggregating type which is described
+with a `from` clause. The `=>` provides an expression to construct a new/empty one. Otherwise the
+default constructor will be called. The `with` provides a method to call to add other aggregates to
+the aggregate. If no method is specified, `Add` will be used.
+
+Aggregate attributes are evaluated in two phases. In the first phase, nodes that could contribute a
+value to the aggregate are collected. This phase does not allow cycles in the evaluation. In the
+second phase, values are collected from the nodes to contribute to the aggregate value. This phase,
+like regular synthetic and inherited attributes. Can be part of a circular attribute, but do not
+directly support cycles themselves.
+
+| Declaration                                                                                | Meaning                                               |
+| ------------------------------------------------------------------------------------------ | ----------------------------------------------------- |
+| `↗↖` *Node*.*Attribute*`:` *Type* `from` *Type* (`=>` *Expression*)? (`with` *Method*)?`;` | An aggregate attribute                                |
+| `=` *Node*`.↑.`*Attribute*`;`                                                              | Equation contributing to a parent aggregate attribute |
+
 ### Collection Attributes
 
 May want to support both JastAdd style collection attributes and aggregating attributes.
 
-`[*]` *Node*`.`*Attribute*`:` *Type* (`root` *Node*)?`;` // TODO how to set builders?
-
-*Node* `contributes` *exp* `when` *cond* *to* *Node*`.`*Attribute* `for` *target-exp*`;`
-*Node* `contributes` *exp* `when` *cond* *to* *Node*`.`*Attribute*`;`
+| Declaration                                                                                  | Meaning                                         |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `→*←` *Node*`.`*Attribute*`:` *Type* (`root` *Node*)? `from` *Type* (`=>` *Expression*)? `;` | A collection attribute                          |
+| `=` *Node*`.→*.`*Node*`.`*Attribute* (`when` *cond*)? (`for` *target-exp*)?`;`               | Equation contributing to a collection attribute |
 
 ### Rewrites
 
