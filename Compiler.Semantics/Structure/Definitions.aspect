@@ -4,6 +4,8 @@
 
 // ↓ ↑ ⮡ ✎
 
+↗↖ *.Diagnostics:`DiagnosticCollection` from `DiagnosticCollectionBuilder` done Build;
+
 // ---------- Packages
 
 /// <remarks>Implements <see cref="IPackageDeclarationNode.AliasOrName"/> which

@@ -3642,6 +3642,9 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected ISymbolDeclarationNode Inherited_ContainingDeclaration(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_ContainingDeclaration(this, this, ctx);
 
+    internal virtual bool MayContribute_Diagnostics => false;
+    internal virtual bool SubtreeMayContribute_Diagnostics => false;
+
     internal virtual IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         // TODO does this need to throw an exception for the root of the tree?
         => GetParent(ctx).Inherited_Package(this, descendant, ctx);

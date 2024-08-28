@@ -27,7 +27,7 @@ public static class AspectParser
     {
         var statements = ParseToStatements(lines).ToFixedList();
         var typeDeclarations = new List<TypeDeclarationSyntax>();
-        var attributeSupertypes = new List<InheritedAttributeFamilySyntax>();
+        var attributeFamilies = new List<AttributeFamilySyntax>();
         var attributes = new List<AspectAttributeSyntax>();
         var equations = new List<EquationSyntax>();
         var rewriteRules = new List<RewriteRuleSyntax>();
@@ -35,16 +35,18 @@ public static class AspectParser
         {
             if (statement.StartsWith("struct"))
                 typeDeclarations.Add(ParseStructDeclaration(statement));
+            else if (statement.StartsWith('↓') && statement.Contains("<:"))
+                attributeFamilies.Add(ParseInheritedAttributeFamily(statement));
+            else if (statement.StartsWith("↗↖") && statement.Contains(':'))
+                attributeFamilies.Add(ParseAggregateAttributeFamily(statement));
             else if (statement.StartsWith('='))
                 equations.Add(ParseEquation(statement));
             else if (statement.StartsWith('✎'))
                 rewriteRules.Add(ParseRewriteRule(statement));
-            else if (statement.StartsWith('↓') && statement.Contains("<:"))
-                attributeSupertypes.Add(ParseInheritedAttributeFamily(statement));
             else
                 attributes.Add(ParseAttribute(statement));
         }
-        return new(typeDeclarations, attributeSupertypes, attributes, equations, rewriteRules);
+        return new(typeDeclarations, attributeFamilies, attributes, equations, rewriteRules);
     }
 
     private static TypeDeclarationSyntax ParseStructDeclaration(string statement)
@@ -62,11 +64,34 @@ public static class AspectParser
             throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
 
         var (definition, type) = Bisect(statement, "<:", "Should be exactly one `<:` in: '{0}'");
-        var (node, name) = SplitOffStart(definition, ".", "Missing `.` between '*' and attribute in: '{0}'");
-        if (node != "*")
-            throw new FormatException("Supertype must be for all nodes (i.e. node must be '*').");
+        string name = ParseAttributeFamily(definition);
         var typeSyntax = ParseType(type);
         return new(name, typeSyntax);
+    }
+
+    private static AggregateAttributeFamilySyntax ParseAggregateAttributeFamily(string statement)
+    {
+        if (!ParseOffStart(ref statement, "↗↖"))
+            throw new ArgumentException("Not an aggregate attribute family statement.", nameof(statement));
+
+        (var definition, statement) = Bisect(statement, ":", "Should be exactly one `:` in: '{0}'");
+        var name = ParseAttributeFamily(definition);
+        (statement, var doneMethod) = SplitOffEnd(statement, "Should end in done method: '{0}'");
+        (statement, var doneKeyword) = SplitOffEnd(statement, "Missing done keyword: '{0}'");
+        if (doneKeyword != "done") throw new FormatException($"Expected 'done', found: '{doneKeyword}'");
+        (statement, var aggregateMethod) = OptionalSplitOffEnd(statement, "with");
+        (statement, var constructExpression) = OptionalSplitOffEnd(statement, "=>");
+        var (type, fromType) = Bisect(statement, "from", "Should be exactly one `from` in: '{0}'");
+        var typeSyntax = ParseType(type);
+        var fromTypeSyntax = ParseType(fromType);
+        return new(name, typeSyntax, fromTypeSyntax, constructExpression, aggregateMethod, doneMethod);
+    }
+
+    private static string ParseAttributeFamily(string definition)
+    {
+        var (node, name) = SplitOffStart(definition, ".", "Missing `.` between '*' and attribute in: '{0}'");
+        if (node != "*") throw new FormatException("Family must be for all nodes (i.e. node must be '*').");
+        return name;
     }
 
     private static AspectAttributeSyntax ParseAttribute(string statement)

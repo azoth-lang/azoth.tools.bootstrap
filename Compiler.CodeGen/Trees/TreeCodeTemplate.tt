@@ -152,6 +152,10 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
     protected <#= Emit.Type(attr.Type) #> Previous_<#= attr.Name #>(IInheritanceContext ctx)
         => Previous(ctx).Previous_<#= attr.Name #>(this, ctx);
 <#                  break;#>
+<#              case AggregateAttributeFamilyModel family: #>
+    internal virtual bool MayContribute_<#= family.Name #> => false;
+    internal virtual bool SubtreeMayContribute_<#= family.Name #> => false;
+<#                  break;#>
 <#          } #>
 <#      } #>
 }

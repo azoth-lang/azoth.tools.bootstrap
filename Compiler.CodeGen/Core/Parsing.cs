@@ -170,6 +170,20 @@ internal static class Parsing
         return (value[..index].Trim(), value[(index + 1)..].Trim());
     }
 
+    public static (string, string) SplitOffEnd(string value, string separator, string errorMessage)
+    {
+        var index = value.LastIndexOf(separator, StringComparison.InvariantCulture);
+        if (index == -1) throw new FormatException(string.Format(errorMessage, value));
+        return (value[..index].Trim(), value[(index + separator.Length)..].Trim());
+    }
+
+    public static (string, string) SplitOffEnd(string value, string errorMessage)
+    {
+        var maybeIndex = value.LastIndexOfWhitespace();
+        if (maybeIndex is not { } index) throw new FormatException(string.Format(errorMessage, value));
+        return (value[..index].Trim(), value[(index + 1)..].Trim());
+    }
+
     [return: NotNullIfNotNull(nameof(type))]
     public static TypeSyntax? ParseType(string? type)
     {

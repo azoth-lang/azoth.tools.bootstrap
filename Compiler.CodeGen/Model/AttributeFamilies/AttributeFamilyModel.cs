@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeFamilies;
@@ -9,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 /// <summary>
 /// A model for something that applies to all the attributes with a given name in the tree.
 /// </summary>
-[Closed(typeof(ContextAttributeFamilyModel))]
+[Closed(typeof(ContextAttributeFamilyModel), typeof(AggregateAttributeFamilyModel))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class AttributeFamilyModel
 {
@@ -18,7 +17,7 @@ public abstract class AttributeFamilyModel
         return syntax switch
         {
             InheritedAttributeFamilySyntax syn => new InheritedAttributeFamilyModel(tree, syn),
-            AggregateAttributeFamilySyntax syn => throw new NotImplementedException(),
+            AggregateAttributeFamilySyntax syn => new AggregateAttributeFamilyModel(tree, syn),
             _ => throw ExhaustiveMatch.Failed(syntax),
         };
     }
