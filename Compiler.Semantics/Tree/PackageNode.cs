@@ -79,5 +79,6 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
         return base.Inherited_PackageNameScope(child, descendant, ctx);
     }
 
-    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Attribute;
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+        => contributors.Add(this);
 }

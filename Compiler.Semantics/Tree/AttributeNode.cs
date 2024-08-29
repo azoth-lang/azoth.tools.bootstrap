@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
@@ -29,7 +30,11 @@ internal sealed class AttributeNode : CodeNode, IAttributeNode
         return base.Inherited_IsAttributeType(child, descendant, ctx);
     }
 
-    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {

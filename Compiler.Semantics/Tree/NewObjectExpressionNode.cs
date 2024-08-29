@@ -89,7 +89,11 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
-    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {

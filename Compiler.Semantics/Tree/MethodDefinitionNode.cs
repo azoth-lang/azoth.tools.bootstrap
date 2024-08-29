@@ -51,7 +51,11 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
         Exit = Child.Attach(this, new ExitNode());
     }
 
-    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {

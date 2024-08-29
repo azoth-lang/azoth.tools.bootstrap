@@ -154,7 +154,6 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
         => Previous(ctx)!.Previous_<#= attr.Name #>(this, ctx);
 <#                  break;#>
 <#              case AggregateAttributeFamilyModel family: #>
-    internal virtual AggregateAttributeNodeKind <#= family.Name #>_NodeKind => AggregateAttributeNodeKind.Neutral;
     protected IFixedSet<<#= Emit.BaseClassName(tree) #>> CollectContributors_<#= family.Name #>()
     {
         var contributors = new List<<#= Emit.BaseClassName(tree) #>>();
@@ -162,14 +161,8 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
             child.CollectContributors_<#= family.Name #>(contributors);
         return contributors.ToFixedSet();
     }
-    // TODO remove NodeKind and just have nodes override this method to add themselves etc.
-    internal void CollectContributors_<#= family.Name #>(List<<#= Emit.BaseClassName(tree) #>> contributors)
+    internal virtual void CollectContributors_<#= family.Name #>(List<<#= Emit.BaseClassName(tree) #>> contributors)
     {
-        var kind = <#= family.Name #>_NodeKind;
-        if (kind.MayContribute() || kind.HasAttribute())
-            contributors.Add(this);
-        if (!kind.SubtreeMayContribute())
-            return;
         foreach (var child in Children().Cast<<#= Emit.BaseClassName(tree) #>>())
             child.CollectContributors_<#= family.Name #>(contributors);
     }

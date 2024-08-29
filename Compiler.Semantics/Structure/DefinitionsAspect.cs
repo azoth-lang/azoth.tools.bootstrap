@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Framework;
 using MoreLinq;
 
@@ -21,4 +22,7 @@ internal static partial class DefinitionsAspect
         // TODO warn on and remove main functions that don't have correct parameters or types
         // TODO compiler error on multiple main functions
         => node.MainFacet.Definitions.OfType<IFunctionDefinitionNode>().SingleOrDefault(f => f.Name == "main");
+
+    public static void CompilationUnit_Contribute_This_Diagnostics(ICompilationUnitNode node, DiagnosticCollectionBuilder diagnostics)
+        => diagnostics.Add(node.Syntax.Diagnostics);
 }

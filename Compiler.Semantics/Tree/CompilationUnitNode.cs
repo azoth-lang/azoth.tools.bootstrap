@@ -69,12 +69,12 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => LexicalScope;
 
-    internal override AggregateAttributeNodeKind Diagnostics_NodeKind
-        => AggregateAttributeNodeKind.AttributeWithContributor;
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+        => contributors.Add(this);
 
     internal override void Contribute_This_Diagnostics(DiagnosticCollectionBuilder builder)
-        => DiagnosticsAspect.CompilationUnit_Contribute_This_Diagnostics(this, builder);
+        => DefinitionsAspect.CompilationUnit_Contribute_This_Diagnostics(this, builder);
 
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
-        => diagnostics.Add(Diagnostics);
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+        => builder.Add(Diagnostics);
 }

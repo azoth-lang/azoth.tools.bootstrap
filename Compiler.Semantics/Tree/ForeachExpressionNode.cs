@@ -177,7 +177,11 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         // Include the BindingValueId in the value id flow
         => BindingValueId;
 
-    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {

@@ -3643,7 +3643,6 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected ISymbolDeclarationNode Inherited_ContainingDeclaration(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContainingDeclaration(this, this, ctx);
 
-    internal virtual AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Neutral;
     protected IFixedSet<SemanticNode> CollectContributors_Diagnostics()
     {
         var contributors = new List<SemanticNode>();
@@ -3651,14 +3650,8 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
             child.CollectContributors_Diagnostics(contributors);
         return contributors.ToFixedSet();
     }
-    // TODO remove NodeKind and just have nodes override this method to add themselves etc.
-    internal void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    internal virtual void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
-        var kind = Diagnostics_NodeKind;
-        if (kind.MayContribute() || kind.HasAttribute())
-            contributors.Add(this);
-        if (!kind.SubtreeMayContribute())
-            return;
         foreach (var child in Children().Cast<SemanticNode>())
             child.CollectContributors_Diagnostics(contributors);
     }

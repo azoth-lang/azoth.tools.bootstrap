@@ -38,7 +38,11 @@ internal sealed class FunctionGroupNameNode : NameExpressionNode, IFunctionGroup
         => BindingAmbiguousNamesAspect.FunctionGroupName_Rewrite(this)
         ?? base.Rewrite();
 
-    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
