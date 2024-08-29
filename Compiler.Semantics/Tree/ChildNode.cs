@@ -205,7 +205,7 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => GetParent(ctx).Inherited_VariableBindingsMap(this, descendant, ctx);
 
-    protected FixedDictionary<IVariableBindingNode, int> InheritedLocalBindingsMap(IInheritanceContext ctx)
+    protected FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_VariableBindingsMap(this, this, ctx);
 
     internal override IEntryNode Inherited_ControlFlowEntry(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

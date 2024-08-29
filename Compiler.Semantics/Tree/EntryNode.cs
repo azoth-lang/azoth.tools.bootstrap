@@ -29,7 +29,7 @@ internal sealed class EntryNode : ControlFlowNode, IEntryNode
                 SingleAssignmentAspect.Entry_DefinitelyUnassigned);
 
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap()
-        => InheritedLocalBindingsMap(GrammarAttribute.CurrentInheritanceContext());
+        => Inherited_VariableBindingsMap(GrammarAttribute.CurrentInheritanceContext());
 
     public override IEntryNode ControlFlowEntry() => this;
 }
