@@ -248,9 +248,7 @@ public partial interface IPackageMemberDefinitionNode : INamespaceBlockMemberDef
     IFixedList<IAttributeNode> Attributes { get; }
     AccessModifier AccessModifier { get; }
     new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode INamespaceBlockMemberDefinitionNode.Parent => Parent;
     ISemanticNode IChildNode.Parent => Parent;
-    ISemanticNode INamespaceMemberDeclarationNode.Parent => Parent;
 }
 
 [Closed(
@@ -504,13 +502,7 @@ public partial interface ITypeDefinitionNode : IPackageMemberDefinitionNode, IAs
     IEnumerable<IStandardTypeNameNode> AllSupertypeNames
         => SupertypeNames;
     new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IPackageMemberDefinitionNode.Parent => Parent;
-    ISemanticNode INamespaceBlockMemberDefinitionNode.Parent => Parent;
     ISemanticNode IChildNode.Parent => Parent;
-    ISemanticNode INamespaceMemberDeclarationNode.Parent => Parent;
-    ISemanticNode ITypeMemberDeclarationNode.Parent => Parent;
-    ISemanticNode IUserTypeDeclarationNode.Parent => Parent;
-    ISemanticNode ITypeDeclarationNode.Parent => Parent;
     new AccessModifier AccessModifier { get; }
     AccessModifier IPackageMemberDefinitionNode.AccessModifier => AccessModifier;
     AccessModifier ITypeMemberDefinitionNode.AccessModifier => AccessModifier;
@@ -1535,9 +1527,7 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
     DataType? ExpectedType { get; }
     IMaybeExpressionAntetype? ExpectedAntetype { get; }
     new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IStatementNode.Parent => Parent;
     ISemanticNode IChildNode.Parent => Parent;
-    ISemanticNode IElseClauseNode.Parent => Parent;
     new IFlowState FlowStateAfter { get; }
     IFlowState IStatementNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
@@ -1794,9 +1784,7 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
     IMaybeAntetype IBlockOrResultNode.Antetype => Antetype;
     IFlowState FlowStateBefore();
     new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IAmbiguousExpressionNode.Parent => Parent;
     ISemanticNode IChildNode.Parent => Parent;
-    ISemanticNode IElseClauseNode.Parent => Parent;
     new LexicalScope ContainingLexicalScope();
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope();
     LexicalScope IBodyOrBlockNode.ContainingLexicalScope() => ContainingLexicalScope();
@@ -2085,9 +2073,7 @@ public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
     IBlockOrResultNode ThenBlock { get; }
     IElseClauseNode? ElseClause { get; }
     new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IAmbiguousExpressionNode.Parent => Parent;
     ISemanticNode IChildNode.Parent => Parent;
-    ISemanticNode IElseClauseNode.Parent => Parent;
     new ValueId ValueId { get; }
     ValueId IAmbiguousExpressionNode.ValueId => ValueId;
     ValueId IElseClauseNode.ValueId => ValueId;
@@ -3247,10 +3233,7 @@ public partial interface IUserTypeDeclarationNode : IPackageMemberDeclarationNod
     FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName { get; }
     FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName { get; }
     new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode INamespaceMemberDeclarationNode.Parent => Parent;
     ISemanticNode IChildNode.Parent => Parent;
-    ISemanticNode ITypeMemberDeclarationNode.Parent => Parent;
-    ISemanticNode ITypeDeclarationNode.Parent => Parent;
     IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(StandardName named)
         => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(StandardName named)
@@ -3306,9 +3289,7 @@ public partial interface IGenericParameterDeclarationNode : ITypeDeclarationNode
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode ITypeDeclarationNode.Parent => Parent;
     ISemanticNode IChildNode.Parent => Parent;
-    ISemanticNode ITypeMemberDeclarationNode.Parent => Parent;
     IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(StandardName named)
         => [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(StandardName named)
