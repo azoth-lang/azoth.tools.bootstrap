@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal sealed class PackageNode : SemanticNode, IPackageNode
 {
-    public override IPackageSyntax Syntax { get; }
+    public IPackageSyntax Syntax { get; }
     private PackageSymbol? symbol;
     private bool symbolCached;
     public PackageSymbol Symbol
@@ -25,10 +25,11 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
             : packageDeclarations.GetValue(this, SymbolNodeAspect.Package_PackageDeclarations);
     private DiagnosticCollection? diagnostics;
     private bool diagnosticsCached;
+    private IFixedSet<SemanticNode>? diagnosticsContributors;
     public DiagnosticCollection Diagnostics
         => GrammarAttribute.IsCached(in diagnosticsCached) ? diagnostics!
-            : this.Synthetic(ref diagnosticsCached, ref diagnostics,
-                DiagnosticsAspect.Package);
+            : this.Aggregate(ref diagnosticsContributors, ref diagnosticsCached, ref diagnostics,
+                CollectContributors_Diagnostics, Collect_Diagnostics);
     private ValueAttribute<IFixedSet<ITypeDeclarationNode>> primitivesDeclarations;
     public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations
         => primitivesDeclarations.TryGetValue(out var value) ? value
@@ -58,6 +59,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
         IEnumerable<IPackageReferenceNode> references,
         IPackageFacetNode mainFacet,
         IPackageFacetNode testingFacet)
+        : base(true)
     {
         Syntax = syntax;
         References = ChildSet.Attach(this, references);
@@ -76,4 +78,6 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
             return LexicalScopingAspect.Package_TestingFacet_PackageNameScope(this);
         return base.Inherited_PackageNameScope(child, descendant, ctx);
     }
+
+    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Attribute;
 }

@@ -41,10 +41,12 @@ internal sealed class MoveVariableExpressionNode : ExpressionNode, IMoveVariable
         IsImplicit = isImplicit;
     }
 
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ExpressionTypesAspect.MoveVariableExpression_ContributeDiagnostics(this, diagnostics);
-        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
+        base.Contribute_Diagnostics(diagnostics);
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()

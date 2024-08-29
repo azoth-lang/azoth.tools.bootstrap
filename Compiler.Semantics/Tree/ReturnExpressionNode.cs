@@ -53,11 +53,13 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         InvalidStructureAspect.ReturnExpression_ContributeDiagnostics(this, diagnostics);
         ExpressionTypesAspect.ReturnExpression_ContributeDiagnostics(this, diagnostics);
-        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
+        base.Contribute_Diagnostics(diagnostics);
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()

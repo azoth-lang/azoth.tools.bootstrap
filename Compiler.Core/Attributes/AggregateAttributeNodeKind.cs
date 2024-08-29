@@ -6,8 +6,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 [Flags]
 public enum AggregateAttributeNodeKind
 {
+    // Kinds
     Neutral = SubtreeMayContribute,
+    Contributor = MayContribute | SubtreeMayContribute,
+    Attribute = HasAttribute,
+    AttributeWithContributor = HasAttribute | MayContribute,
 
+    // Flags
     HasAttribute = 1 << 0,
     MayContribute = 1 << 1,
     SubtreeMayContribute = 1 << 2,

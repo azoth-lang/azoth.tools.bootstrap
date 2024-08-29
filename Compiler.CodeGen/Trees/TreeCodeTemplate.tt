@@ -63,14 +63,15 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
     protected <#= Emit.BaseClassName(tree) #>(bool inFinalTree) : base(inFinalTree) { }
 
     [DebuggerStepThrough]
-    protected sealed override SemanticNode PeekParent()
-        // Use volatile read to ensure order of operations as seen by other threads
-        => Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
+    protected sealed override SemanticNode? PeekParent()
+        // Use volatile read to ensure order of operations as seen by other threads. If parent is
+        // null, report an error if not in final tree. Root nodes are always in the final tree.
+        => Volatile.Read(in parent) ?? (InFinalTree ? null : throw Child.ParentMissing(this));
 
-    private <#= Emit.BaseClassName(tree) #> GetParent(IInheritanceContext ctx)
+    private <#= Emit.BaseClassName(tree) #>? GetParent(IInheritanceContext ctx)
     {
         // Use volatile read to ensure order of operations as seen by other threads
-        var node = Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
+        var node = Volatile.Read(in parent) ?? (InFinalTree ? null : throw Child.ParentMissing(this));
         ctx.AccessParentOf(this);
         return node;
     }
@@ -87,10 +88,12 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
     /// <summary>
     /// The previous node to this one in a preorder traversal of the tree.
     /// </summary>
-    protected virtual <#= Emit.BaseClassName(tree) #> Previous(IInheritanceContext ctx)
+    protected virtual <#= Emit.BaseClassName(tree) #>? Previous(IInheritanceContext ctx)
     {
         <#= Emit.BaseClassName(tree) #>? previous = null;
         var parent = GetParent(ctx);
+        if (parent is null)
+            return null;
         foreach (var child in parent.Children().Cast<<#= Emit.BaseClassName(tree) #>>())
         {
             if (child == this)
@@ -140,17 +143,15 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
 <#          switch (attr) { #>
 <#              case InheritedAttributeFamilyModel: #>
     internal virtual <#= Emit.Type(attr.Type) #> Inherited_<#= attr.Name #>(<#= Emit.BaseClassName(tree) #> child, <#= Emit.BaseClassName(tree) #> descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_<#= attr.Name #>(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("<#= attr.Name #>", child, descendant)).Inherited_<#= attr.Name #>(this, descendant, ctx);
     protected <#= Emit.Type(attr.Type) #> Inherited_<#= attr.Name #>(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_<#= attr.Name #>(this, this, ctx);
+        => GetParent(ctx)!.Inherited_<#= attr.Name #>(this, this, ctx);
 <#                  break;#>
 <#              case PreviousAttributeFamilyModel: #>
     internal virtual <#= Emit.Type(attr.Type) #> Previous_<#= attr.Name #>(<#= Emit.BaseClassName(tree) #> before, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => Previous(ctx).Previous_<#= attr.Name #>(this, ctx);
+        => (Previous(ctx) ?? throw Child.PreviousFailed("<#= attr.Name #>", before)).Previous_<#= attr.Name #>(this, ctx);
     protected <#= Emit.Type(attr.Type) #> Previous_<#= attr.Name #>(IInheritanceContext ctx)
-        => Previous(ctx).Previous_<#= attr.Name #>(this, ctx);
+        => Previous(ctx)!.Previous_<#= attr.Name #>(this, ctx);
 <#                  break;#>
 <#              case AggregateAttributeFamilyModel family: #>
     internal virtual AggregateAttributeNodeKind <#= family.Name #>_NodeKind => AggregateAttributeNodeKind.Neutral;
@@ -161,6 +162,7 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
             child.CollectContributors_<#= family.Name #>(contributors);
         return contributors.ToFixedSet();
     }
+    // TODO remove NodeKind and just have nodes override this method to add themselves etc.
     internal void CollectContributors_<#= family.Name #>(List<<#= Emit.BaseClassName(tree) #>> contributors)
     {
         var kind = <#= family.Name #>_NodeKind;
@@ -174,12 +176,13 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
     protected <#= Emit.Type(family.Type) #> Collect_<#= family.Name #>(IFixedSet<<#= Emit.BaseClassName(tree) #>> contributors)
     {
         var builder = <#= family.ConstructExpression #>;
-        Contribute_<#= family.Name #>(builder, false);
+        Contribute_This_<#= family.Name #>(builder);
         foreach (var contributor in contributors)
             contributor.Contribute_<#= family.Name #>(builder);
         return builder.<#= family.DoneMethod #>();
     }
-    internal virtual void Contribute_<#= family.Name #>(<#= Emit.Type(family.FromType) #> builder, bool contributeAttribute = true) { }
+    internal virtual void Contribute_This_<#= family.Name #>(<#= Emit.Type(family.FromType) #> builder) { }
+    internal virtual void Contribute_<#= family.Name #>(<#= Emit.Type(family.FromType) #> builder) { }
 <#                  break;#>
 <#          } #>
 <#      } #>

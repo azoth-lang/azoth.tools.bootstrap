@@ -92,9 +92,11 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => false;
 
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         TypeDeclarationsAspect.TypeDeclaration_ContributeDiagnostics(this, diagnostics);
-        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
+        base.Contribute_Diagnostics(diagnostics);
     }
 }

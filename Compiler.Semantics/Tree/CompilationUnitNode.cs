@@ -19,7 +19,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     public override CodeFile File => Syntax.File;
 
     public IPackageFacetNode ContainingDeclaration
-        => (IPackageFacetNode)Parent.Inherited_ContainingDeclaration(this, this, GrammarAttribute.CurrentInheritanceContext());
+        => (IPackageFacetNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public PackageSymbol ContainingSymbol => ContainingDeclaration.PackageSymbol;
     public NamespaceName ImplicitNamespaceName => Syntax.ImplicitNamespaceName;
 
@@ -38,9 +38,13 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.CompilationUnit_LexicalScope, ReferenceEqualityComparer.Instance);
-    private ValueAttribute<DiagnosticCollection> diagnostics;
+    private DiagnosticCollection? diagnostics;
+    private bool diagnosticsCached;
+    private IFixedSet<SemanticNode>? diagnosticsContributors;
     public DiagnosticCollection Diagnostics
-        => diagnostics.TryGetValue(out var value) ? value : diagnostics.GetValue(GetDiagnostics);
+        => GrammarAttribute.IsCached(in diagnosticsCached) ? diagnostics!
+            : this.Aggregate(ref diagnosticsContributors, ref diagnosticsCached, ref diagnostics,
+                CollectContributors_Diagnostics, Collect_Diagnostics);
 
     public CompilationUnitNode(
         ICompilationUnitSyntax syntax,
@@ -65,16 +69,12 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => LexicalScope;
 
-    private DiagnosticCollection GetDiagnostics()
-    {
-        var diagnostics = new DiagnosticCollectionBuilder();
-        Contribute_Diagnostics(diagnostics);
-        return diagnostics.Build();
-    }
+    internal override AggregateAttributeNodeKind Diagnostics_NodeKind
+        => AggregateAttributeNodeKind.AttributeWithContributor;
 
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
-    {
-        DiagnosticsAspect.CompilationUnit_ContributeDiagnostics(this, diagnostics);
-        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
-    }
+    internal override void Contribute_This_Diagnostics(DiagnosticCollectionBuilder builder)
+        => DiagnosticsAspect.CompilationUnit_Contribute_This_Diagnostics(this, builder);
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
+        => diagnostics.Add(Diagnostics);
 }

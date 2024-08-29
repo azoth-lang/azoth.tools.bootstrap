@@ -17,7 +17,7 @@ internal sealed class PackageReferenceNode : ChildNode, IPackageReferenceNode
     private ValueAttribute<IPackageSymbolNode> symbolNode;
     public IPackageSymbolNode SymbolNode
         => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAspect.PackageReference_SymbolNode);
+            : symbolNode.GetValue(this, n => Child.Attach(this, SymbolNodeAspect.PackageReference_SymbolNode(n)));
 
     public PackageReferenceNode(IPackageReferenceSyntax syntax)
     {

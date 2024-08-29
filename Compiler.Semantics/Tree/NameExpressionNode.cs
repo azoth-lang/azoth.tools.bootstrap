@@ -32,11 +32,11 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 
     protected override void CollectControlFlowPrevious(
-        IControlFlowNode target,
+        IControlFlowNode before,
         Dictionary<IControlFlowNode, ControlFlowKind> previous)
     {
-        ControlFlowAspect.ControlFlow_ContributeControlFlowPrevious(this, target, previous);
-        base.CollectControlFlowPrevious(target, previous);
+        ControlFlowAspect.ControlFlow_ContributeControlFlowPrevious(this, before, previous);
+        base.CollectControlFlowPrevious(before, previous);
     }
 
     protected virtual ControlFlowSet ComputeControlFlowNext()
@@ -51,10 +51,12 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => false;
 
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ExpressionTypesAspect.Expression_ContributeDiagnostics(this, diagnostics);
-        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
+        base.Contribute_Diagnostics(diagnostics);
     }
 
     protected override IChildTreeNode Rewrite()

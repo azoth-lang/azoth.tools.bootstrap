@@ -51,10 +51,12 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
         Exit = Child.Attach(this, new ExitNode());
     }
 
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         TypeMemberDeclarationsAspect.MethodDefinition_ContributeDiagnostics(this, diagnostics);
-        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
+        base.Contribute_Diagnostics(diagnostics);
     }
 
     public IFlowState FlowStateBefore()

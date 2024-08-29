@@ -16,14 +16,13 @@ internal class IntrinsicsPackageReferenceNode : ChildNode, IPackageReferenceNode
     public IdentifierName AliasOrName => PackageSymbols.PackageSymbol.Name;
     public IPackageSymbols PackageSymbols => IntrinsicPackageSymbol.Instance;
     public bool IsTrusted => true;
-
-    private ValueAttribute<IPackageSymbolNode> symbolNode;
-    public IPackageSymbolNode SymbolNode
-        => symbolNode.TryGetValue(out var value) ? value
-            : symbolNode.GetValue(this, SymbolNodeAspect.PackageReference_SymbolNode);
+    public IPackageSymbolNode SymbolNode { get; }
 
     /// <remarks>Not a singleton, because the parent node needs attached for each tree.</remarks>
-    public IntrinsicsPackageReferenceNode() { }
+    public IntrinsicsPackageReferenceNode()
+    {
+        SymbolNode = Child.Attach(this, SymbolNodeAspect.PackageReference_SymbolNode(this));
+    }
 
     private class IntrinsicPackageSymbol : IPackageSymbols
     {

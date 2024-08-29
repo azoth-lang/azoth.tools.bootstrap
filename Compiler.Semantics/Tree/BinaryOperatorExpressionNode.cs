@@ -102,11 +102,10 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
-    {
-        ExpressionTypesAspect.BinaryOperatorExpression_ContributeDiagnostics(this, diagnostics);
-        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
-    }
+    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
+        => ExpressionTypesAspect.BinaryOperatorExpression_ContributeDiagnostics(this, diagnostics);
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.BinaryOperatorExpression_ControlFlowNext(this);

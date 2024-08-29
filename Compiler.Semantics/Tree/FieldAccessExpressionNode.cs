@@ -51,10 +51,12 @@ internal sealed class FieldAccessExpressionNode : ExpressionNode, IFieldAccessEx
         ReferencedDeclaration = referencedDeclaration;
     }
 
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ExpressionTypesAspect.FieldAccessExpression_ContributeDiagnostics(this, diagnostics);
-        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
+        base.Contribute_Diagnostics(diagnostics);
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()

@@ -401,42 +401,43 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(@"(bool inFinalTree) : base(inFinalTree) { }
 
     [DebuggerStepThrough]
-    protected sealed override SemanticNode PeekParent()
-        // Use volatile read to ensure order of operations as seen by other threads
-        => Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
+    protected sealed override SemanticNode? PeekParent()
+        // Use volatile read to ensure order of operations as seen by other threads. If parent is
+        // null, report an error if not in final tree. Root nodes are always in the final tree.
+        => Volatile.Read(in parent) ?? (InFinalTree ? null : throw Child.ParentMissing(this));
 
     private ");
             
-            #line 70 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 71 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
-            this.Write(@" GetParent(IInheritanceContext ctx)
+            this.Write(@"? GetParent(IInheritanceContext ctx)
     {
         // Use volatile read to ensure order of operations as seen by other threads
-        var node = Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
+        var node = Volatile.Read(in parent) ?? (InFinalTree ? null : throw Child.ParentMissing(this));
         ctx.AccessParentOf(this);
         return node;
     }
 
     void IChildTreeNode<");
             
-            #line 78 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 79 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(tree.RootSupertype)));
             
             #line default
             #line hidden
             this.Write(">.SetParent(");
             
-            #line 78 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 79 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(tree.RootSupertype)));
             
             #line default
             #line hidden
             this.Write(" newParent)\r\n    {\r\n        if (newParent is not ");
             
-            #line 80 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 81 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
@@ -444,7 +445,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(" newParentNode)\r\n            throw new ArgumentException($\"Parent must be a {name" +
                     "of(");
             
-            #line 81 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 82 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
@@ -460,22 +461,23 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
     /// </summary>
     protected virtual ");
             
-            #line 90 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 91 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
-            this.Write(" Previous(IInheritanceContext ctx)\r\n    {\r\n        ");
+            this.Write("? Previous(IInheritanceContext ctx)\r\n    {\r\n        ");
             
-            #line 92 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 93 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
-            this.Write("? previous = null;\r\n        var parent = GetParent(ctx);\r\n        foreach (var ch" +
-                    "ild in parent.Children().Cast<");
+            this.Write("? previous = null;\r\n        var parent = GetParent(ctx);\r\n        if (parent is n" +
+                    "ull)\r\n            return null;\r\n        foreach (var child in parent.Children()." +
+                    "Cast<");
             
-            #line 94 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 97 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
@@ -494,35 +496,35 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
     // TODO can this be more efficient?
     internal ");
             
-            #line 106 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 109 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write(" LastDescendant()\r\n        => ((");
             
-            #line 107 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 110 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write("?)Children().LastOrDefault())?.LastDescendant() ?? this;\r\n");
             
-            #line 108 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 111 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       if (tree.AllAttributeFamilies.Any()) { 
             
             #line default
             #line hidden
             this.Write("\r\n    protected int? IndexOfNode<T>(IEnumerable<T> nodes, ");
             
-            #line 110 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 113 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write(" node)\r\n        where T : ");
             
-            #line 111 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 114 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(tree.RootSupertype)));
             
             #line default
@@ -544,14 +546,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
 
     protected bool ContainsNode<T>(IEnumerable<T> nodes, ");
             
-            #line 126 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 129 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write(" node)\r\n        where T : ");
             
-            #line 127 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 130 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(tree.RootSupertype)));
             
             #line default
@@ -559,14 +561,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write("\r\n        => node is T value ? nodes.Contains(value) : false;\r\n\r\n    protected bo" +
                     "ol ContainsNode<T>(IFixedSet<T> nodes, ");
             
-            #line 130 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 133 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write(" node)\r\n        where T : ");
             
-            #line 131 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 134 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(tree.RootSupertype)));
             
             #line default
@@ -574,237 +576,252 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write("\r\n        => node is T value ? nodes.Contains(value) : false;\r\n\r\n    protected bo" +
                     "ol ContainsNode<T>(IReadOnlySet<T> nodes, ");
             
-            #line 134 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 137 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write(" node)\r\n        where T : ");
             
-            #line 135 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 138 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(tree.RootSupertype)));
             
             #line default
             #line hidden
             this.Write("\r\n        => node is T value ? nodes.Contains(value) : false;\r\n");
             
-            #line 137 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 140 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
             
-            #line 138 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 141 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       foreach (var attr in tree.AllAttributeFamilies) { 
             
             #line default
             #line hidden
             this.Write("\r\n");
             
-            #line 140 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 143 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           switch (attr) { 
             
             #line default
             #line hidden
             
-            #line 141 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 144 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
               case InheritedAttributeFamilyModel: 
             
             #line default
             #line hidden
             this.Write("    internal virtual ");
             
-            #line 142 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 145 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(attr.Type)));
             
             #line default
             #line hidden
             this.Write(" Inherited_");
             
-            #line 142 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 145 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 142 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 145 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write(" child, ");
             
-            #line 142 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 145 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
-            this.Write(" descendant, IInheritanceContext ctx)\r\n        // TODO does this need to throw an" +
-                    " exception for the root of the tree?\r\n        => GetParent(ctx).Inherited_");
-            
-            #line 144 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
-            
-            #line default
-            #line hidden
-            this.Write("(this, descendant, ctx);\r\n    protected ");
-            
-            #line 145 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(attr.Type)));
-            
-            #line default
-            #line hidden
-            this.Write(" Inherited_");
-            
-            #line 145 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
-            
-            #line default
-            #line hidden
-            this.Write("(IInheritanceContext ctx)\r\n        => GetParent(ctx).Inherited_");
+            this.Write(" descendant, IInheritanceContext ctx)\r\n        => (GetParent(ctx) ?? throw Child." +
+                    "InheritFailed(\"");
             
             #line 146 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
             
             #line default
             #line hidden
-            this.Write("(this, this, ctx);\r\n");
+            this.Write("\", child, descendant)).Inherited_");
+            
+            #line 146 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
+            
+            #line default
+            #line hidden
+            this.Write("(this, descendant, ctx);\r\n    protected ");
             
             #line 147 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(attr.Type)));
+            
+            #line default
+            #line hidden
+            this.Write(" Inherited_");
+            
+            #line 147 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
+            
+            #line default
+            #line hidden
+            this.Write("(IInheritanceContext ctx)\r\n        => GetParent(ctx)!.Inherited_");
+            
+            #line 148 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
+            
+            #line default
+            #line hidden
+            this.Write("(this, this, ctx);\r\n");
+            
+            #line 149 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
                   break;
             
             #line default
             #line hidden
             
-            #line 148 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 150 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
               case PreviousAttributeFamilyModel: 
             
             #line default
             #line hidden
             this.Write("    internal virtual ");
             
-            #line 149 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 151 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(attr.Type)));
             
             #line default
             #line hidden
             this.Write(" Previous_");
-            
-            #line 149 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
-            
-            #line default
-            #line hidden
-            this.Write("(");
-            
-            #line 149 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
-            
-            #line default
-            #line hidden
-            this.Write(" before, IInheritanceContext ctx)\r\n        // TODO does this need to throw an exc" +
-                    "eption for the root of the tree?\r\n        => Previous(ctx).Previous_");
             
             #line 151 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
             
             #line default
             #line hidden
-            this.Write("(this, ctx);\r\n    protected ");
+            this.Write("(");
+            
+            #line 151 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
+            
+            #line default
+            #line hidden
+            this.Write(" before, IInheritanceContext ctx)\r\n        => (Previous(ctx) ?? throw Child.Previ" +
+                    "ousFailed(\"");
             
             #line 152 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
+            
+            #line default
+            #line hidden
+            this.Write("\", before)).Previous_");
+            
+            #line 152 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
+            
+            #line default
+            #line hidden
+            this.Write("(this, ctx);\r\n    protected ");
+            
+            #line 153 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(attr.Type)));
             
             #line default
             #line hidden
             this.Write(" Previous_");
             
-            #line 152 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 153 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
             
             #line default
             #line hidden
-            this.Write("(IInheritanceContext ctx)\r\n        => Previous(ctx).Previous_");
+            this.Write("(IInheritanceContext ctx)\r\n        => Previous(ctx)!.Previous_");
             
-            #line 153 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 154 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
             
             #line default
             #line hidden
             this.Write("(this, ctx);\r\n");
             
-            #line 154 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 155 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
                   break;
             
             #line default
             #line hidden
             
-            #line 155 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 156 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
               case AggregateAttributeFamilyModel family: 
             
             #line default
             #line hidden
             this.Write("    internal virtual AggregateAttributeNodeKind ");
             
-            #line 156 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 157 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(family.Name));
             
             #line default
             #line hidden
             this.Write("_NodeKind => AggregateAttributeNodeKind.Neutral;\r\n    protected IFixedSet<");
             
-            #line 157 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 158 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write("> CollectContributors_");
             
-            #line 157 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 158 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(family.Name));
             
             #line default
             #line hidden
             this.Write("()\r\n    {\r\n        var contributors = new List<");
             
-            #line 159 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 160 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write(">();\r\n        foreach (var child in Children().Cast<");
             
-            #line 160 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 161 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write(">())\r\n            child.CollectContributors_");
             
-            #line 161 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 162 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(family.Name));
             
             #line default
             #line hidden
-            this.Write("(contributors);\r\n        return contributors.ToFixedSet();\r\n    }\r\n    internal v" +
-                    "oid CollectContributors_");
+            this.Write("(contributors);\r\n        return contributors.ToFixedSet();\r\n    }\r\n    // TODO re" +
+                    "move NodeKind and just have nodes override this method to add themselves etc.\r\n " +
+                    "   internal void CollectContributors_");
             
-            #line 164 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 166 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(family.Name));
             
             #line default
             #line hidden
             this.Write("(List<");
             
-            #line 164 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 166 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write("> contributors)\r\n    {\r\n        var kind = ");
             
-            #line 166 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 168 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(family.Name));
             
             #line default
@@ -813,365 +830,340 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
                     " contributors.Add(this);\r\n        if (!kind.SubtreeMayContribute())\r\n           " +
                     " return;\r\n        foreach (var child in Children().Cast<");
             
-            #line 171 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 173 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write(">())\r\n            child.CollectContributors_");
             
-            #line 172 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 174 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(family.Name));
             
             #line default
             #line hidden
             this.Write("(contributors);\r\n    }\r\n    protected ");
             
-            #line 174 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 176 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(family.Type)));
             
             #line default
             #line hidden
             this.Write(" Collect_");
             
-            #line 174 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 176 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(family.Name));
             
             #line default
             #line hidden
             this.Write("(IFixedSet<");
             
-            #line 174 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 176 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write("> contributors)\r\n    {\r\n        var builder = ");
             
-            #line 176 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 178 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(family.ConstructExpression));
             
             #line default
             #line hidden
-            this.Write(";\r\n        Contribute_");
-            
-            #line 177 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(family.Name));
-            
-            #line default
-            #line hidden
-            this.Write("(builder, false);\r\n        foreach (var contributor in contributors)\r\n           " +
-                    " contributor.Contribute_");
+            this.Write(";\r\n        Contribute_This_");
             
             #line 179 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(family.Name));
             
             #line default
             #line hidden
+            this.Write("(builder);\r\n        foreach (var contributor in contributors)\r\n            contri" +
+                    "butor.Contribute_");
+            
+            #line 181 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(family.Name));
+            
+            #line default
+            #line hidden
             this.Write("(builder);\r\n        return builder.");
             
-            #line 180 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 182 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(family.DoneMethod));
             
             #line default
             #line hidden
-            this.Write("();\r\n    }\r\n    internal virtual void Contribute_");
+            this.Write("();\r\n    }\r\n    internal virtual void Contribute_This_");
             
-            #line 182 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 184 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(family.Name));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 182 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 184 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(family.FromType)));
             
             #line default
             #line hidden
-            this.Write(" builder, bool contributeAttribute = true) { }\r\n");
+            this.Write(" builder) { }\r\n    internal virtual void Contribute_");
             
-            #line 183 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 185 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(family.Name));
+            
+            #line default
+            #line hidden
+            this.Write("(");
+            
+            #line 185 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(family.FromType)));
+            
+            #line default
+            #line hidden
+            this.Write(" builder) { }\r\n");
+            
+            #line 186 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
                   break;
             
             #line default
             #line hidden
             
-            #line 184 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 187 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           } 
             
             #line default
             #line hidden
             
-            #line 185 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 188 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
             this.Write("}\r\n\r\n");
             
-            #line 188 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 191 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
   } 
             
             #line default
             #line hidden
             
-            #line 189 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 192 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
   foreach(var node in tree.Nodes.Where(ShouldEmit.Class)) {
             
             #line default
             #line hidden
             this.Write("[GeneratedCode(\"AzothCompilerCodeGen\", null)]\r\nfile class ");
             
-            #line 191 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 194 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(node.Defines)));
             
             #line default
             #line hidden
             this.Write(" : ");
             
-            #line 191 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 194 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClass(tree)));
             
             #line default
             #line hidden
             
-            #line 191 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 194 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(node.Defines)));
             
             #line default
             #line hidden
             this.Write("\r\n{\r\n    private ");
             
-            #line 193 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 196 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(node.Defines)));
             
             #line default
             #line hidden
             this.Write(" Self { [Inline] get => this; }\r\n");
             
-            #line 194 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 197 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       if (node.IsSyncLockRequired) { 
             
             #line default
             #line hidden
             this.Write("    private AttributeLock syncLock;\r\n");
             
-            #line 196 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 199 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
             
-            #line 197 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 200 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       if (!node.ActualRewriteRules.IsEmpty) { 
             
             #line default
             #line hidden
             this.Write("    protected override bool MayHaveRewrite => true;\r\n");
             
-            #line 199 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 202 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
             this.Write("\r\n");
             
-            #line 201 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 204 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       foreach (var property in Build.PropertiesForClass(node)) { 
             
             #line default
             #line hidden
             
-            #line 202 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 205 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           if (property.IsChild && property.IsTemp) { 
             
             #line default
             #line hidden
             
-            #line 203 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 206 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
               if (property.IsCollection) { 
             
             #line default
             #line hidden
             this.Write("    private ");
             
-            #line 204 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 207 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.RewritableBackingType(property)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 204 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 207 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.VariableName(property)));
             
             #line default
             #line hidden
             this.Write(";\r\n    public ");
             
-            #line 205 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 208 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(property.Type)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 205 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 208 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.TempName));
             
             #line default
             #line hidden
             this.Write(" => ");
             
-            #line 205 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 208 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.VariableName(property)));
             
             #line default
             #line hidden
             this.Write(";\r\n    public ");
             
-            #line 206 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 209 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(property.FinalType)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 206 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 209 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
             
             #line default
             #line hidden
             this.Write(" => ");
             
-            #line 206 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 209 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.VariableName(property)));
             
             #line default
             #line hidden
             this.Write(".AsFinalType;\r\n");
             
-            #line 207 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 210 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
               } else { 
             
             #line default
             #line hidden
             this.Write("    public ");
             
-            #line 208 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 211 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(property.Type)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 208 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 211 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.TempName));
             
             #line default
             #line hidden
             this.Write(" { [DebuggerStepThrough] get; }\r\n    public ");
             
-            #line 209 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 212 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(property.FinalType)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 209 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 212 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
             
             #line default
             #line hidden
             this.Write(" => ");
             
-            #line 209 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 212 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.TempName));
             
             #line default
             #line hidden
             this.Write(" as ");
             
-            #line 209 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 212 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(property.FinalType.ToNonOptional())));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 210 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 213 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
               } 
             
             #line default
             #line hidden
             
-            #line 211 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 214 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           } else { 
             
             #line default
             #line hidden
             this.Write("    public ");
             
-            #line 212 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 215 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(property.Type)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 212 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 215 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
             
             #line default
             #line hidden
             this.Write(" { [DebuggerStepThrough] get; }\r\n");
             
-            #line 213 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 216 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           } 
             
             #line default
             #line hidden
-            
-            #line 214 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      } 
-            
-            #line default
-            #line hidden
-            
-            #line 215 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      foreach (var attr in node.ActualAttributes.OfType<ContextAttributeModel>()) { 
-            
-            #line default
-            #line hidden
-            this.Write("    public ");
-            
-            #line 216 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(attr.Type)));
-            
-            #line default
-            #line hidden
-            this.Write(" ");
-            
-            #line 216 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
-            
-            #line default
-            #line hidden
-            
-            #line 216 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Parameters(attr)));
-            
-            #line default
-            #line hidden
-            
-            #line 216 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Body(attr)));
-            
-            #line default
-            #line hidden
-            this.Write("\r\n");
             
             #line 217 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       } 
@@ -1180,7 +1172,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             #line hidden
             
             #line 218 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      foreach (var attr in node.ActualAttributes.OfType<AggregateAttributeModel>()) { 
+      foreach (var attr in node.ActualAttributes.OfType<ContextAttributeModel>()) { 
             
             #line default
             #line hidden
@@ -1219,45 +1211,84 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             #line hidden
             
             #line 221 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      foreach (var equation in node.ActualEquations) { 
+      foreach (var attr in node.ActualAttributes.OfType<AggregateAttributeModel>()) { 
+            
+            #line default
+            #line hidden
+            this.Write("    public ");
+            
+            #line 222 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(attr.Type)));
+            
+            #line default
+            #line hidden
+            this.Write(" ");
+            
+            #line 222 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
             
             #line default
             #line hidden
             
             #line 222 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Parameters(attr)));
+            
+            #line default
+            #line hidden
+            
+            #line 222 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Body(attr)));
+            
+            #line default
+            #line hidden
+            this.Write("\r\n");
+            
+            #line 223 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+      } 
+            
+            #line default
+            #line hidden
+            
+            #line 224 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+      foreach (var equation in node.ActualEquations) { 
+            
+            #line default
+            #line hidden
+            
+            #line 225 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           switch (equation) { 
             
             #line default
             #line hidden
             
-            #line 223 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 226 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
               case SynthesizedAttributeEquationModel eq when eq.Strategy == EvaluationStrategy.Eager: 
             
             #line default
             #line hidden
             this.Write("    public ");
             
-            #line 224 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 227 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(eq.Type)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 224 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 227 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(eq.Name));
             
             #line default
             #line hidden
             this.Write(" { [DebuggerStepThrough] get; }\r\n");
             
-            #line 225 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 228 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
                   break;
             
             #line default
             #line hidden
             
-            #line 226 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 229 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
               case SynthesizedAttributeEquationModel eq
                     when eq.Strategy == EvaluationStrategy.Lazy || eq.Strategy == EvaluationStrategy.Computed && eq.IsObjectMember(): 
             
@@ -1265,297 +1296,297 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             #line hidden
             this.Write("    public ");
             
-            #line 228 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 231 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Override(eq)));
             
             #line default
             #line hidden
             
-            #line 228 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 231 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(eq.Type)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 228 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 231 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(eq.Name));
             
             #line default
             #line hidden
             
-            #line 228 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 231 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ParametersAndBody(eq)));
             
             #line default
             #line hidden
             this.Write("\r\n");
             
-            #line 229 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 232 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
                   break;
             
             #line default
             #line hidden
             
-            #line 230 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 233 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           } 
             
             #line default
             #line hidden
             
-            #line 231 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 234 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
             this.Write("\r\n    public ");
             
-            #line 233 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 236 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ClassName(node.Defines)));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 233 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 236 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(string.Join(", ", Build.PropertiesForClass(node).Select(p => $"{Emit.Type(p.Type)} {Emit.VariableName(p)}"))));
             
             #line default
             #line hidden
             this.Write(")\r\n    {\r\n");
             
-            #line 235 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 238 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       foreach (var property in Build.PropertiesForClass(node)) { 
             
             #line default
             #line hidden
             
-            #line 236 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 239 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           if (property.IsChild && property.IsTemp && property.IsCollection) { 
             
             #line default
             #line hidden
             this.Write("        this.");
             
-            #line 237 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 240 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.VariableName(property)));
             
             #line default
             #line hidden
             this.Write(" = ");
             
-            #line 237 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 240 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.ChildAttach(property)));
             
             #line default
             #line hidden
             
-            #line 237 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 240 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.VariableName(property)));
             
             #line default
             #line hidden
             this.Write(");\r\n");
             
-            #line 238 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 241 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           } else { 
             
             #line default
             #line hidden
             this.Write("        ");
             
-            #line 239 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 242 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.TempName));
             
             #line default
             #line hidden
             this.Write(" = ");
             
-            #line 239 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 242 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.VariableName(property)));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 240 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 243 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           } 
             
             #line default
             #line hidden
-            
-            #line 241 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      } 
-            
-            #line default
-            #line hidden
-            
-            #line 242 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      foreach (var equation in node.ActualEquations.OfType<SynthesizedAttributeEquationModel>().Where(eq => eq.Strategy == EvaluationStrategy.Eager)) { 
-            
-            #line default
-            #line hidden
-            this.Write("        ");
-            
-            #line 243 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(equation.Name));
-            
-            #line default
-            #line hidden
-            this.Write(" = ");
-            
-            #line 243 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.EagerBody(equation)));
-            
-            #line default
-            #line hidden
-            this.Write(";\r\n");
             
             #line 244 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
-            this.Write("    }\r\n");
+            
+            #line 245 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+      foreach (var equation in node.ActualEquations.OfType<SynthesizedAttributeEquationModel>().Where(eq => eq.Strategy == EvaluationStrategy.Eager)) { 
+            
+            #line default
+            #line hidden
+            this.Write("        ");
             
             #line 246 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(equation.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" = ");
+            
+            #line 246 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.EagerBody(equation)));
+            
+            #line default
+            #line hidden
+            this.Write(";\r\n");
+            
+            #line 247 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+      } 
+            
+            #line default
+            #line hidden
+            this.Write("    }\r\n");
+            
+            #line 249 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       foreach (var group in node.InheritedAttributeEquationGroups) { 
             
             #line default
             #line hidden
             this.Write("\r\n    internal override ");
             
-            #line 248 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 251 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(group.Type)));
             
             #line default
             #line hidden
             this.Write(" Inherited_");
             
-            #line 248 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 251 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(group.Name));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 248 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 251 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write(" child, ");
             
-            #line 248 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 251 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.BaseClassName(tree)));
             
             #line default
             #line hidden
             this.Write(" descendant, IInheritanceContext ctx)\r\n    {\r\n");
             
-            #line 250 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 253 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           foreach (var eq in group.Equations) { 
             
             #line default
             #line hidden
             this.Write("        ");
             
-            #line 251 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 254 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Selector(eq)));
             
             #line default
             #line hidden
             this.Write("return ");
             
-            #line 251 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 254 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Body(eq)));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 252 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 255 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           } 
             
             #line default
             #line hidden
             
-            #line 253 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 256 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           if (!group.IsAllDescendants) { 
             
             #line default
             #line hidden
             this.Write("        return base.Inherited_");
             
-            #line 254 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 257 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(group.Name));
             
             #line default
             #line hidden
             this.Write("(child, descendant, ctx);\r\n");
             
-            #line 255 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 258 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           } 
             
             #line default
             #line hidden
             this.Write("    }\r\n");
             
-            #line 257 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 260 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
             
-            #line 258 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 261 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       if (!node.ActualRewriteRules.IsEmpty) { 
             
             #line default
             #line hidden
             this.Write("\r\n    protected override IChildTreeNode Rewrite()\r\n");
             
-            #line 261 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 264 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
           foreach (var rule in node.ActualRewriteRules) { 
             
             #line default
             #line hidden
             this.Write("        ");
             
-            #line 262 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 265 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.RuleJoin(node.ActualRewriteRules, rule)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 262 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 265 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.QualifiedRewriteRuleMethod(rule)));
             
             #line default
             #line hidden
             this.Write("(this)\r\n");
             
-            #line 263 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 266 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
             this.Write("        ?? base.Rewrite();\r\n");
             
-            #line 265 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 268 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       } 
             
             #line default
             #line hidden
             this.Write("}\r\n\r\n");
             
-            #line 268 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 271 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
   } 
             
             #line default
             #line hidden
             
-            #line 269 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 272 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
   } 
             
             #line default

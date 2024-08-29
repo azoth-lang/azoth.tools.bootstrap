@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
-internal class PackageSymbolNode : SemanticNode, IPackageSymbolNode
+internal class PackageSymbolNode : ChildNode, IPackageSymbolNode
 {
     public override ISyntax? Syntax => null;
     public PackageSymbol Symbol { get; }

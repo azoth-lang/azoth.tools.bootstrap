@@ -43,10 +43,10 @@ internal abstract class StatementNode : CodeNode, IStatementNode
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 
     protected override void CollectControlFlowPrevious(
-        IControlFlowNode target,
+        IControlFlowNode before,
         Dictionary<IControlFlowNode, ControlFlowKind> previous)
     {
-        ControlFlowAspect.ControlFlow_ContributeControlFlowPrevious(this, target, previous);
-        base.CollectControlFlowPrevious(target, previous);
+        ControlFlowAspect.ControlFlow_ContributeControlFlowPrevious(this, before, previous);
+        base.CollectControlFlowPrevious(before, previous);
     }
 }

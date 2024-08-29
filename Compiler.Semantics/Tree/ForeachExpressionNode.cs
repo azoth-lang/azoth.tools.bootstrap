@@ -177,11 +177,13 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         // Include the BindingValueId in the value id flow
         => BindingValueId;
 
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ForeachExpressionTypeAspect.ForeachExpression_ContributeDiagnostics(this, diagnostics);
         ShadowingAspect.VariableBinding_ContributeDiagnostics(this, diagnostics);
-        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
+        base.Contribute_Diagnostics(diagnostics);
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()

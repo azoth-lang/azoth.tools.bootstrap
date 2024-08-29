@@ -55,7 +55,8 @@ public partial interface ISemanticNode : ITreeNode
 [Closed(
     typeof(IPackageReferenceNode),
     typeof(ICodeNode),
-    typeof(IChildDeclarationNode))]
+    typeof(IChildDeclarationNode),
+    typeof(IPackageSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IChildNode : IChildTreeNode<ISemanticNode>, ISemanticNode
 {
@@ -3385,11 +3386,11 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
 
 // [Closed(typeof(PackageSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IPackageSymbolNode : IPackageDeclarationNode
+public partial interface IPackageSymbolNode : IPackageDeclarationNode, IChildNode
 {
 
-    public static IPackageSymbolNode Create(ISyntax? syntax, IdentifierName? aliasOrName, IdentifierName name, PackageSymbol symbol, IPackageFacetDeclarationNode mainFacet, IPackageFacetDeclarationNode testingFacet)
-        => new PackageSymbolNode(syntax, aliasOrName, name, symbol, mainFacet, testingFacet);
+    public static IPackageSymbolNode Create(ISyntax? syntax, IdentifierName? aliasOrName, IdentifierName name, PackageSymbol symbol, ISemanticNode parent, IPackageFacetDeclarationNode mainFacet, IPackageFacetDeclarationNode testingFacet)
+        => new PackageSymbolNode(syntax, aliasOrName, name, symbol, parent, mainFacet, testingFacet);
 }
 
 // [Closed(typeof(PackageFacetSymbolNode))]
@@ -3558,14 +3559,15 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected SemanticNode(bool inFinalTree) : base(inFinalTree) { }
 
     [DebuggerStepThrough]
-    protected sealed override SemanticNode PeekParent()
-        // Use volatile read to ensure order of operations as seen by other threads
-        => Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
+    protected sealed override SemanticNode? PeekParent()
+        // Use volatile read to ensure order of operations as seen by other threads. If parent is
+        // null, report an error if not in final tree. Root nodes are always in the final tree.
+        => Volatile.Read(in parent) ?? (InFinalTree ? null : throw Child.ParentMissing(this));
 
-    private SemanticNode GetParent(IInheritanceContext ctx)
+    private SemanticNode? GetParent(IInheritanceContext ctx)
     {
         // Use volatile read to ensure order of operations as seen by other threads
-        var node = Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
+        var node = Volatile.Read(in parent) ?? (InFinalTree ? null : throw Child.ParentMissing(this));
         ctx.AccessParentOf(this);
         return node;
     }
@@ -3582,10 +3584,12 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     /// <summary>
     /// The previous node to this one in a preorder traversal of the tree.
     /// </summary>
-    protected virtual SemanticNode Previous(IInheritanceContext ctx)
+    protected virtual SemanticNode? Previous(IInheritanceContext ctx)
     {
         SemanticNode? previous = null;
         var parent = GetParent(ctx);
+        if (parent is null)
+            return null;
         foreach (var child in parent.Children().Cast<SemanticNode>())
         {
             if (child == this)
@@ -3630,16 +3634,14 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
         => node is T value ? nodes.Contains(value) : false;
 
     internal virtual LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ContainingLexicalScope(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingLexicalScope", child, descendant)).Inherited_ContainingLexicalScope(this, descendant, ctx);
     protected LexicalScope Inherited_ContainingLexicalScope(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ContainingLexicalScope(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ContainingLexicalScope(this, this, ctx);
 
     internal virtual ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ContainingDeclaration(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingDeclaration", child, descendant)).Inherited_ContainingDeclaration(this, descendant, ctx);
     protected ISymbolDeclarationNode Inherited_ContainingDeclaration(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ContainingDeclaration(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ContainingDeclaration(this, this, ctx);
 
     internal virtual AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Neutral;
     protected IFixedSet<SemanticNode> CollectContributors_Diagnostics()
@@ -3649,6 +3651,7 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
             child.CollectContributors_Diagnostics(contributors);
         return contributors.ToFixedSet();
     }
+    // TODO remove NodeKind and just have nodes override this method to add themselves etc.
     internal void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         var kind = Diagnostics_NodeKind;
@@ -3662,150 +3665,128 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected DiagnosticCollection Collect_Diagnostics(IFixedSet<SemanticNode> contributors)
     {
         var builder = new DiagnosticCollectionBuilder();
-        Contribute_Diagnostics(builder, false);
+        Contribute_This_Diagnostics(builder);
         foreach (var contributor in contributors)
             contributor.Contribute_Diagnostics(builder);
         return builder.Build();
     }
-    internal virtual void Contribute_Diagnostics(DiagnosticCollectionBuilder builder, bool contributeAttribute = true) { }
+    internal virtual void Contribute_This_Diagnostics(DiagnosticCollectionBuilder builder) { }
+    internal virtual void Contribute_Diagnostics(DiagnosticCollectionBuilder builder) { }
 
     internal virtual IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ContainingDeclaredType(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingDeclaredType", child, descendant)).Inherited_ContainingDeclaredType(this, descendant, ctx);
     protected IDeclaredUserType Inherited_ContainingDeclaredType(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ContainingDeclaredType(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ContainingDeclaredType(this, this, ctx);
 
     internal virtual IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_Package(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("Package", child, descendant)).Inherited_Package(this, descendant, ctx);
     protected IPackageDeclarationNode Inherited_Package(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_Package(this, this, ctx);
+        => GetParent(ctx)!.Inherited_Package(this, this, ctx);
 
     internal virtual PackageNameScope Inherited_PackageNameScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_PackageNameScope(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("PackageNameScope", child, descendant)).Inherited_PackageNameScope(this, descendant, ctx);
     protected PackageNameScope Inherited_PackageNameScope(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_PackageNameScope(this, this, ctx);
+        => GetParent(ctx)!.Inherited_PackageNameScope(this, this, ctx);
 
     internal virtual CodeFile Inherited_File(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_File(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("File", child, descendant)).Inherited_File(this, descendant, ctx);
     protected CodeFile Inherited_File(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_File(this, this, ctx);
+        => GetParent(ctx)!.Inherited_File(this, this, ctx);
 
     internal virtual IPackageFacetDeclarationNode Inherited_Facet(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_Facet(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("Facet", child, descendant)).Inherited_Facet(this, descendant, ctx);
     protected IPackageFacetDeclarationNode Inherited_Facet(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_Facet(this, this, ctx);
+        => GetParent(ctx)!.Inherited_Facet(this, this, ctx);
 
     internal virtual IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_FlowStateBefore(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("FlowStateBefore", child, descendant)).Inherited_FlowStateBefore(this, descendant, ctx);
     protected IFlowState Inherited_FlowStateBefore(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_FlowStateBefore(this, this, ctx);
+        => GetParent(ctx)!.Inherited_FlowStateBefore(this, this, ctx);
 
     internal virtual ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ContainingTypeDefinition(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingTypeDefinition", child, descendant)).Inherited_ContainingTypeDefinition(this, descendant, ctx);
     protected ITypeDefinitionNode Inherited_ContainingTypeDefinition(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ContainingTypeDefinition(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ContainingTypeDefinition(this, this, ctx);
 
     internal virtual DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ExpectedType(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ExpectedType", child, descendant)).Inherited_ExpectedType(this, descendant, ctx);
     protected DataType? Inherited_ExpectedType(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ExpectedType(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ExpectedType(this, this, ctx);
 
     internal virtual IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ExpectedAntetype(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ExpectedAntetype", child, descendant)).Inherited_ExpectedAntetype(this, descendant, ctx);
     protected IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ExpectedAntetype(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ExpectedAntetype(this, this, ctx);
 
     internal virtual bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_IsAttributeType(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("IsAttributeType", child, descendant)).Inherited_IsAttributeType(this, descendant, ctx);
     protected bool Inherited_IsAttributeType(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_IsAttributeType(this, this, ctx);
+        => GetParent(ctx)!.Inherited_IsAttributeType(this, this, ctx);
 
     internal virtual Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_MethodSelfType(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("MethodSelfType", child, descendant)).Inherited_MethodSelfType(this, descendant, ctx);
     protected Pseudotype? Inherited_MethodSelfType(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_MethodSelfType(this, this, ctx);
+        => GetParent(ctx)!.Inherited_MethodSelfType(this, this, ctx);
 
     internal virtual IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ControlFlowEntry(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ControlFlowEntry", child, descendant)).Inherited_ControlFlowEntry(this, descendant, ctx);
     protected IEntryNode Inherited_ControlFlowEntry(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ControlFlowEntry(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ControlFlowEntry(this, this, ctx);
 
     internal virtual ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ControlFlowFollowing(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ControlFlowFollowing", child, descendant)).Inherited_ControlFlowFollowing(this, descendant, ctx);
     protected ControlFlowSet Inherited_ControlFlowFollowing(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ControlFlowFollowing(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ControlFlowFollowing(this, this, ctx);
 
     internal virtual FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_VariableBindingsMap(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("VariableBindingsMap", child, descendant)).Inherited_VariableBindingsMap(this, descendant, ctx);
     protected FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_VariableBindingsMap(this, this, ctx);
+        => GetParent(ctx)!.Inherited_VariableBindingsMap(this, this, ctx);
 
     internal virtual ValueId? Inherited_MatchReferentValueId(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_MatchReferentValueId(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("MatchReferentValueId", child, descendant)).Inherited_MatchReferentValueId(this, descendant, ctx);
     protected ValueId? Inherited_MatchReferentValueId(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_MatchReferentValueId(this, this, ctx);
+        => GetParent(ctx)!.Inherited_MatchReferentValueId(this, this, ctx);
 
     internal virtual IMaybeAntetype Inherited_ContextBindingAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ContextBindingAntetype(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ContextBindingAntetype", child, descendant)).Inherited_ContextBindingAntetype(this, descendant, ctx);
     protected IMaybeAntetype Inherited_ContextBindingAntetype(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ContextBindingAntetype(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ContextBindingAntetype(this, this, ctx);
 
     internal virtual DataType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ContextBindingType(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ContextBindingType", child, descendant)).Inherited_ContextBindingType(this, descendant, ctx);
     protected DataType Inherited_ContextBindingType(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ContextBindingType(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ContextBindingType(this, this, ctx);
 
     internal virtual bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ImplicitRecoveryAllowed(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ImplicitRecoveryAllowed", child, descendant)).Inherited_ImplicitRecoveryAllowed(this, descendant, ctx);
     protected bool Inherited_ImplicitRecoveryAllowed(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ImplicitRecoveryAllowed(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ImplicitRecoveryAllowed(this, this, ctx);
 
     internal virtual bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ShouldPrepareToReturn(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ShouldPrepareToReturn", child, descendant)).Inherited_ShouldPrepareToReturn(this, descendant, ctx);
     protected bool Inherited_ShouldPrepareToReturn(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ShouldPrepareToReturn(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ShouldPrepareToReturn(this, this, ctx);
 
     internal virtual IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ControlFlowExit(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ControlFlowExit", child, descendant)).Inherited_ControlFlowExit(this, descendant, ctx);
     protected IExitNode Inherited_ControlFlowExit(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ControlFlowExit(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ControlFlowExit(this, this, ctx);
 
     internal virtual DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_ExpectedReturnType(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ExpectedReturnType", child, descendant)).Inherited_ExpectedReturnType(this, descendant, ctx);
     protected DataType? Inherited_ExpectedReturnType(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_ExpectedReturnType(this, this, ctx);
+        => GetParent(ctx)!.Inherited_ExpectedReturnType(this, this, ctx);
 
     internal virtual ISymbolTree Inherited_SymbolTree(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => GetParent(ctx).Inherited_SymbolTree(this, descendant, ctx);
+        => (GetParent(ctx) ?? throw Child.InheritFailed("SymbolTree", child, descendant)).Inherited_SymbolTree(this, descendant, ctx);
     protected ISymbolTree Inherited_SymbolTree(IInheritanceContext ctx)
-        => GetParent(ctx).Inherited_SymbolTree(this, this, ctx);
+        => GetParent(ctx)!.Inherited_SymbolTree(this, this, ctx);
 
     internal virtual IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        // TODO does this need to throw an exception for the root of the tree?
-        => Previous(ctx).Previous_PreviousValueId(this, ctx);
+        => (Previous(ctx) ?? throw Child.PreviousFailed("PreviousValueId", before)).Previous_PreviousValueId(this, ctx);
     protected IPreviousValueId Previous_PreviousValueId(IInheritanceContext ctx)
-        => Previous(ctx).Previous_PreviousValueId(this, ctx);
+        => Previous(ctx)!.Previous_PreviousValueId(this, ctx);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10499,15 +10480,19 @@ file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
     public IdentifierName? AliasOrName { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public PackageSymbol Symbol { [DebuggerStepThrough] get; }
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public IPackageFacetDeclarationNode MainFacet { [DebuggerStepThrough] get; }
     public IPackageFacetDeclarationNode TestingFacet { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
 
-    public PackageSymbolNode(ISyntax? syntax, IdentifierName? aliasOrName, IdentifierName name, PackageSymbol symbol, IPackageFacetDeclarationNode mainFacet, IPackageFacetDeclarationNode testingFacet)
+    public PackageSymbolNode(ISyntax? syntax, IdentifierName? aliasOrName, IdentifierName name, PackageSymbol symbol, ISemanticNode parent, IPackageFacetDeclarationNode mainFacet, IPackageFacetDeclarationNode testingFacet)
     {
         Syntax = syntax;
         AliasOrName = aliasOrName;
         Name = name;
         Symbol = symbol;
+        Parent = parent;
         MainFacet = mainFacet;
         TestingFacet = testingFacet;
     }

@@ -45,10 +45,12 @@ internal sealed class AwaitExpressionNode : ExpressionNode, IAwaitExpressionNode
 
     public override ConditionalLexicalScope FlowLexicalScope() => TempExpression.FlowLexicalScope();
 
-    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override AggregateAttributeNodeKind Diagnostics_NodeKind => AggregateAttributeNodeKind.Contributor;
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ExpressionAntetypesAspect.AwaitExpression_ContributeDiagnostics(this, diagnostics);
-        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
+        base.Contribute_Diagnostics(diagnostics);
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()
