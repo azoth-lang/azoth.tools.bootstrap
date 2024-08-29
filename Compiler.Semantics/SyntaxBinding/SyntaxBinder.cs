@@ -40,7 +40,7 @@ internal static class SyntaxBinder
 
     #region Packages
     private static IPackageNode Package(IPackageSyntax syntax)
-        => new PackageNode(syntax, PackageReferences(syntax.References),
+        => IPackageNode.Create(syntax, PackageReferences(syntax.References),
             PackageFacet(syntax, syntax.CompilationUnits),
             PackageFacet(syntax, syntax.TestingCompilationUnits));
 
