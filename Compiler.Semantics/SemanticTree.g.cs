@@ -169,19 +169,53 @@ public partial interface IPackageNode : IPackageDeclarationNode
         => new PackageNode(syntax, references, mainFacet, testingFacet);
 }
 
-// [Closed(typeof(PackageReferenceNode))]
+[Closed(
+    typeof(IStandardPackageReferenceNode),
+    typeof(IIntrinsicsPackageReferenceNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageReferenceNode : IChildNode
 {
     new IPackageReferenceSyntax? Syntax { get; }
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IdentifierName AliasOrName { get; }
-    IPackageSymbols PackageSymbols { get; }
-    bool IsTrusted { get; }
     IPackageSymbolNode SymbolNode { get; }
+    IPackageSymbols PackageSymbols { get; }
+    IdentifierName AliasOrName { get; }
+    bool IsTrusted { get; }
+}
 
-    public static IPackageReferenceNode Create(ISemanticNode parent, IPackageReferenceSyntax? syntax, IdentifierName aliasOrName, IPackageSymbols packageSymbols, bool isTrusted)
-        => new PackageReferenceNode(parent, syntax, aliasOrName, packageSymbols, isTrusted);
+// [Closed(typeof(StandardPackageReferenceNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IStandardPackageReferenceNode : IPackageReferenceNode
+{
+    new IPackageReferenceSyntax Syntax { get; }
+    IPackageReferenceSyntax? IPackageReferenceNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    IPackageSymbols IPackageReferenceNode.PackageSymbols
+        => Syntax.Package;
+    IdentifierName IPackageReferenceNode.AliasOrName
+        => Syntax.AliasOrName;
+    bool IPackageReferenceNode.IsTrusted
+        => Syntax.IsTrusted;
+
+    public static IStandardPackageReferenceNode Create(ISemanticNode parent, IPackageReferenceSyntax syntax)
+        => new StandardPackageReferenceNode(parent, syntax);
+}
+
+// [Closed(typeof(IntrinsicsPackageReferenceNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IIntrinsicsPackageReferenceNode : IPackageReferenceNode
+{
+    IPackageSymbols IPackageReferenceNode.PackageSymbols
+        => IntrinsicPackageSymbol.Instance;
+    IdentifierName IPackageReferenceNode.AliasOrName
+        => PackageSymbols.PackageSymbol.Name;
+    bool IPackageReferenceNode.IsTrusted
+        => true;
+    IPackageReferenceSyntax? IPackageReferenceNode.Syntax
+        => null;
+
+    public static IIntrinsicsPackageReferenceNode Create(ISemanticNode parent)
+        => new IntrinsicsPackageReferenceNode(parent);
 }
 
 // [Closed(typeof(PackageFacetNode))]
@@ -3864,31 +3898,38 @@ file class PackageNode : SemanticNode, IPackageNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class PackageReferenceNode : SemanticNode, IPackageReferenceNode
+file class StandardPackageReferenceNode : SemanticNode, IStandardPackageReferenceNode
 {
-    private IPackageReferenceNode Self { [Inline] get => this; }
+    private IStandardPackageReferenceNode Self { [Inline] get => this; }
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
-    public IPackageReferenceSyntax? Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName AliasOrName { [DebuggerStepThrough] get; }
-    public IPackageSymbols PackageSymbols { [DebuggerStepThrough] get; }
-    public bool IsTrusted { [DebuggerStepThrough] get; }
+    public IPackageReferenceSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public IPackageSymbolNode SymbolNode
-        => GrammarAttribute.IsCached(in symbolNodeCached) ? symbolNode!
-            : this.Synthetic(ref symbolNodeCached, ref symbolNode,
-                n => Child.Attach(this, SymbolNodeAspect.PackageReference_SymbolNode(n)));
-    private IPackageSymbolNode? symbolNode;
-    private bool symbolNodeCached;
+    public IPackageSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
-    public PackageReferenceNode(ISemanticNode parent, IPackageReferenceSyntax? syntax, IdentifierName aliasOrName, IPackageSymbols packageSymbols, bool isTrusted)
+    public StandardPackageReferenceNode(ISemanticNode parent, IPackageReferenceSyntax syntax)
     {
         Parent = parent;
         Syntax = syntax;
-        AliasOrName = aliasOrName;
-        PackageSymbols = packageSymbols;
-        IsTrusted = isTrusted;
+        SymbolNode = SymbolNodeAspect.PackageReference_SymbolNode(this);
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class IntrinsicsPackageReferenceNode : SemanticNode, IIntrinsicsPackageReferenceNode
+{
+    private IIntrinsicsPackageReferenceNode Self { [Inline] get => this; }
+
+    public ISemanticNode Parent { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public IPackageSymbolNode SymbolNode { [DebuggerStepThrough] get; }
+
+    public IntrinsicsPackageReferenceNode(ISemanticNode parent)
+    {
+        Parent = parent;
+        SymbolNode = SymbolNodeAspect.PackageReference_SymbolNode(this);
     }
 }
 

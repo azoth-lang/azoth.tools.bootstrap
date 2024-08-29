@@ -24,7 +24,10 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.PrimitivesDeclarations)
                     yield return child;
                 yield break;
-            case IPackageReferenceNode n:
+            case IStandardPackageReferenceNode n:
+                yield return n.SymbolNode;
+                yield break;
+            case IIntrinsicsPackageReferenceNode n:
                 yield return n.SymbolNode;
                 yield break;
             case IPackageFacetNode n:

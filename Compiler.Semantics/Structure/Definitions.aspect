@@ -15,6 +15,13 @@
 ↑ Package.Name: `IdentifierName` => Syntax.Name;
 ↑ Package.EntryPoint: FunctionDefinition?;
 ↗↖ Package.Diagnostics;
+↑ PackageReference.AliasOrName: `IdentifierName`;
+↑ PackageReference.IsTrusted: `bool`;
+= StandardPackageReference.AliasOrName => Syntax.AliasOrName;
+= StandardPackageReference.IsTrusted => Syntax.IsTrusted;
+= IntrinsicsPackageReference.AliasOrName => PackageSymbols.PackageSymbol.Name;
+= IntrinsicsPackageReference.IsTrusted => true;
+= IntrinsicsPackageReference.Syntax => null;
 
 // ---------- Facets
 ↑ PackageFacet.Definitions: {PackageMemberDefinition};

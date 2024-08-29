@@ -49,8 +49,9 @@ VariableBinding <: LocalBinding, DataFlow;
 Package <: PackageDeclaration = Syntax:`IPackageSyntax` References:{PackageReference}
     MainFacet:PackageFacet TestingFacet:PackageFacet;
 
-PackageReference <: Child = Syntax:`IPackageReferenceSyntax`?
-    AliasOrName:`IdentifierName` PackageSymbols:`IPackageSymbols` IsTrusted:`bool`;
+PackageReference <: Child = Syntax:`IPackageReferenceSyntax`?;
+StandardPackageReference <: PackageReference = Syntax:`IPackageReferenceSyntax`;
+IntrinsicsPackageReference <: PackageReference;
 
 // ---------- Facets
 PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageSyntax`
