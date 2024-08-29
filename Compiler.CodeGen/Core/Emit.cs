@@ -105,6 +105,9 @@ internal static class Emit
     public static string VariableName(AttributeModel attribute)
         => attribute.Name.ToCamelCase();
 
+    public static string FieldReference(PropertyModel property)
+        => property.IsTemp && property.IsCollection ? $"this.{VariableName(property)}" : property.TempName;
+
     public static string RewritableBackingType(PropertyModel property)
     {
         switch (property.Type)

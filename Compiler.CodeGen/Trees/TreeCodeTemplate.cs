@@ -1345,14 +1345,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             #line hidden
             
             #line 232 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-          if (property.IsChild && property.IsTemp && property.IsCollection) { 
+          if (!tree.SimplifiedTree && property.IsChild) { 
             
             #line default
             #line hidden
-            this.Write("        this.");
+            this.Write("        ");
             
             #line 233 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.VariableName(property)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.FieldReference(property)));
             
             #line default
             #line hidden

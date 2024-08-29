@@ -229,10 +229,10 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
     public <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", Build.PropertiesForClass(node).Select(p => $"{Emit.Type(p.Type)} {Emit.VariableName(p)}")) #>)
     {
 <#      foreach (var property in Build.PropertiesForClass(node)) { #>
-<#          if (property.IsChild && property.IsTemp && property.IsCollection) { #>
-        this.<#= Emit.VariableName(property) #> = <#= Emit.ChildAttach(property) #><#= Emit.VariableName(property) #>);
+<#          if (!tree.SimplifiedTree && property.IsChild) { #>
+        <#= Emit.FieldReference(property) #> = <#= Emit.ChildAttach(property) #><#= Emit.VariableName(property) #>);
 <#          } else { #>
-        <#=property.TempName #> = <#=Emit.VariableName(property) #>;
+        <#= property.TempName #> = <#=Emit.VariableName(property) #>;
 <#          } #>
 <#      } #>
 <#      foreach (var equation in node.ActualEquations.OfType<SynthesizedAttributeEquationModel>().Where(eq => eq.Strategy == EvaluationStrategy.Eager)) { #>
