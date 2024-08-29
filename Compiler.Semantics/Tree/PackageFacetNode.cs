@@ -13,9 +13,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal class PackageFacetNode : ChildNode, IPackageFacetNode
 {
     public override IPackageSyntax Syntax { get; }
-    /// <remarks>Implements <see cref="IPackageFacetDeclarationNode.PackageAliasOrName"/> which
-    /// should be <see langword="null"/> for the current package.</remarks>
-    public IdentifierName? PackageAliasOrName => null;
     public IdentifierName PackageName => Package.Name;
     private ValueAttribute<INamespaceDefinitionNode> globalNamespace;
     public INamespaceDefinitionNode GlobalNamespace

@@ -7,7 +7,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
 internal sealed class PackageFacetSymbolNode : ChildSymbolNode, IPackageFacetSymbolNode
 {
-    public IdentifierName? PackageAliasOrName => Package.AliasOrName;
     public IdentifierName PackageName => Package.Name;
     public PackageSymbol PackageSymbol => Package.Symbol;
     public override PackageSymbol Symbol => PackageSymbol;

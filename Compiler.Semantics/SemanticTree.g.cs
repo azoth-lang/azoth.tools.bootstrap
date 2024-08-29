@@ -237,8 +237,8 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
     IFixedSet<IPackageMemberDefinitionNode> Definitions { get; }
 
-    public static IPackageFacetNode Create(IdentifierName? packageAliasOrName, PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IEnumerable<ICompilationUnitNode> compilationUnits)
-        => new PackageFacetNode(packageAliasOrName, symbol, syntax, packageName, packageSymbol, compilationUnits);
+    public static IPackageFacetNode Create(PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IEnumerable<ICompilationUnitNode> compilationUnits)
+        => new PackageFacetNode(symbol, syntax, packageName, packageSymbol, compilationUnits);
 }
 
 [Closed(
@@ -3092,7 +3092,6 @@ public partial interface IPackageMemberDeclarationNode : INamespaceMemberDeclara
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageFacetDeclarationNode : IChildDeclarationNode, ISymbolDeclarationNode
 {
-    IdentifierName? PackageAliasOrName { get; }
     IdentifierName PackageName { get; }
     new PackageSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
@@ -3448,8 +3447,8 @@ public partial interface IPackageFacetSymbolNode : IPackageFacetDeclarationNode
 {
     FixedSymbolTree SymbolTree { get; }
 
-    public static IPackageFacetSymbolNode Create(ISyntax? syntax, IdentifierName? packageAliasOrName, IdentifierName packageName, PackageSymbol symbol, INamespaceDeclarationNode globalNamespace, FixedSymbolTree symbolTree)
-        => new PackageFacetSymbolNode(syntax, packageAliasOrName, packageName, symbol, globalNamespace, symbolTree);
+    public static IPackageFacetSymbolNode Create(ISyntax? syntax, IdentifierName packageName, PackageSymbol symbol, INamespaceDeclarationNode globalNamespace, FixedSymbolTree symbolTree)
+        => new PackageFacetSymbolNode(syntax, packageName, symbol, globalNamespace, symbolTree);
 }
 
 // [Closed(typeof(NamespaceSymbolNode))]
@@ -3948,7 +3947,6 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
 {
     private IPackageFacetNode Self { [Inline] get => this; }
 
-    public IdentifierName? PackageAliasOrName { [DebuggerStepThrough] get; }
     public PackageSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName PackageName { [DebuggerStepThrough] get; }
@@ -3975,9 +3973,8 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     private IFixedSet<IPackageMemberDefinitionNode>? definitions;
     private bool definitionsCached;
 
-    public PackageFacetNode(IdentifierName? packageAliasOrName, PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IEnumerable<ICompilationUnitNode> compilationUnits)
+    public PackageFacetNode(PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IEnumerable<ICompilationUnitNode> compilationUnits)
     {
-        PackageAliasOrName = packageAliasOrName;
         Symbol = symbol;
         Syntax = syntax;
         PackageName = packageName;
@@ -10343,7 +10340,6 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
     private IPackageFacetSymbolNode Self { [Inline] get => this; }
 
     public ISyntax? Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName? PackageAliasOrName { [DebuggerStepThrough] get; }
     public IdentifierName PackageName { [DebuggerStepThrough] get; }
     public PackageSymbol Symbol { [DebuggerStepThrough] get; }
     public INamespaceDeclarationNode GlobalNamespace { [DebuggerStepThrough] get; }
@@ -10351,10 +10347,9 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
 
-    public PackageFacetSymbolNode(ISyntax? syntax, IdentifierName? packageAliasOrName, IdentifierName packageName, PackageSymbol symbol, INamespaceDeclarationNode globalNamespace, FixedSymbolTree symbolTree)
+    public PackageFacetSymbolNode(ISyntax? syntax, IdentifierName packageName, PackageSymbol symbol, INamespaceDeclarationNode globalNamespace, FixedSymbolTree symbolTree)
     {
         Syntax = syntax;
-        PackageAliasOrName = packageAliasOrName;
         PackageName = packageName;
         Symbol = symbol;
         GlobalNamespace = Child.Attach(this, globalNamespace);
