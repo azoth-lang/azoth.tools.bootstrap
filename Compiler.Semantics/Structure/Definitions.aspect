@@ -25,8 +25,6 @@
 
 // ---------- Facets
 ↑ PackageFacet.Definitions: {PackageMemberDefinition};
-// "Rename" the "Symbol" attribute to "PackageSymbol"
-↑ PackageFacet.Symbol: `PackageSymbol` => PackageSymbol;
 
 // ---------- Code Files
 ↗↖ CompilationUnit.Diagnostics;

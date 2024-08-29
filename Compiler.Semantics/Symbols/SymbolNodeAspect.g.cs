@@ -18,6 +18,8 @@ internal static partial class SymbolNodeAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial INamespaceDeclarationNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FixedDictionary<IdentifierName, IPackageDeclarationNode> Package_PackageDeclarations(IPackageNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial INamespaceDefinitionNode PackageFacet_GlobalNamespace(IPackageFacetNode node);

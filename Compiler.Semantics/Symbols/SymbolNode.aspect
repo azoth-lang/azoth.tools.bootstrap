@@ -49,6 +49,7 @@
 
 // ---------- Facets
 = PackageFacetSymbol.*.**.SymbolTree => Self.SymbolTree;
+= eager PackageFacetSymbol.GlobalNamespace;
 
 // ---------- Type Declarations
 ↓ UserTypeSymbol.SymbolTree(): `ISymbolTree`;

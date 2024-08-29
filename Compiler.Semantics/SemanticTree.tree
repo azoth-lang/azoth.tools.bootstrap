@@ -54,9 +54,7 @@ StandardPackageReference <: PackageReference = Syntax:`IPackageReferenceSyntax`;
 IntrinsicsPackageReference <: PackageReference;
 
 // ---------- Facets
-PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageSyntax`
-    PackageName:`IdentifierName` PackageSymbol:`PackageSymbol`
-    CompilationUnits:{CompilationUnit};
+PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageSyntax` CompilationUnits:{CompilationUnit};
 
 // TODO rename to FacetMemberDefinition
 PackageMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefinition
@@ -470,9 +468,7 @@ PackageMemberDeclaration <: NamespaceMemberDeclaration;
 
 // ---------- Facets
 /// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
-PackageFacetDeclaration <: ChildDeclaration, SymbolDeclaration
-    = PackageName:`IdentifierName`
-    Symbol:`PackageSymbol` GlobalNamespace:NamespaceDeclaration;
+PackageFacetDeclaration <: ChildDeclaration, SymbolDeclaration;
 
 PackageFacetChildDeclaration <: ChildDeclaration = Name:`StandardName`?;
 
@@ -540,7 +536,7 @@ PackageSymbol <: PackageDeclaration, Child = MainFacet:PackageFacetDeclaration T
 
 // ---------- Facets
 // Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
-PackageFacetSymbol <: PackageFacetDeclaration = GlobalNamespace:NamespaceDeclaration SymbolTree:`FixedSymbolTree`;
+PackageFacetSymbol <: PackageFacetDeclaration = SymbolTree:`FixedSymbolTree`;
 
 // ---------- Namespace Declarations
 NamespaceSymbol <: NamespaceDeclaration = Members:NamespaceMemberDeclaration*;

@@ -196,4 +196,9 @@ internal static partial class SymbolNodeAspect
     private static IFieldSymbolNode FieldSymbol(FieldSymbol sym)
         => new FieldSymbolNode(sym);
     #endregion
+
+    #region Symbol Nodes
+    public static partial INamespaceDeclarationNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node)
+        => new NamespaceSymbolNode(node.SymbolTree.Package);
+    #endregion
 }
