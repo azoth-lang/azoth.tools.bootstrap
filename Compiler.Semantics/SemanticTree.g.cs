@@ -306,7 +306,7 @@ public partial interface IExecutableDefinitionNode : IDefinitionNode
 {
     IEntryNode Entry { get; }
     IExitNode Exit { get; }
-    FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { get; }
+    FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { get; }
     ValueIdScope ValueIdScope { get; }
 }
 
@@ -424,7 +424,7 @@ public partial interface IFunctionDefinitionNode : IPackageMemberDefinitionNode,
     FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
 
-    public static IFunctionDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFunctionDefinitionSyntax syntax, NamespaceSymbol containingSymbol, IEnumerable<IAttributeNode> attributes, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
+    public static IFunctionDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFunctionDefinitionSyntax syntax, NamespaceSymbol containingSymbol, IEnumerable<IAttributeNode> attributes, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
         => new FunctionDefinitionNode(parent, accessModifier, variableBindingsMap, syntax, containingSymbol, attributes, name, parameters, @return, entry, body, exit, type);
 }
 
@@ -688,7 +688,7 @@ public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefiniti
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
 
-    public static IStandardMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public static IStandardMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
         => new StandardMethodDefinitionNode(parent, accessModifier, containingSymbol, kind, name, variableBindingsMap, arity, methodGroupType, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
@@ -706,7 +706,7 @@ public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinition
     new ITypeNode Return { get; }
     ITypeNode? IMethodDefinitionNode.Return => Return;
 
-    public static IGetterMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public static IGetterMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
         => new GetterMethodDefinitionNode(parent, accessModifier, containingSymbol, kind, name, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
@@ -722,7 +722,7 @@ public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinition
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
 
-    public static ISetterMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public static ISetterMethodDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
         => new SetterMethodDefinitionNode(parent, accessModifier, containingSymbol, kind, name, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
@@ -749,7 +749,7 @@ public partial interface IConstructorDefinitionNode : IConcreteInvocableDefiniti
 public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinitionNode
 {
 
-    public static IDefaultConstructorDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    public static IDefaultConstructorDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
         => new DefaultConstructorDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, syntax, name, parameters, entry, body, exit);
 }
 
@@ -767,7 +767,7 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static ISourceConstructorDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    public static ISourceConstructorDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
         => new SourceConstructorDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, name, syntax, selfParameter, parameters, entry, body, exit);
 }
 
@@ -794,7 +794,7 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
 public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinitionNode
 {
 
-    public static IDefaultInitializerDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    public static IDefaultInitializerDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
         => new DefaultInitializerDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, syntax, name, parameters, entry, body, exit);
 }
 
@@ -812,7 +812,7 @@ public partial interface ISourceInitializerDefinitionNode : IInitializerDefiniti
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static ISourceInitializerDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    public static ISourceInitializerDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
         => new SourceInitializerDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, name, syntax, selfParameter, parameters, entry, body, exit);
 }
 
@@ -847,7 +847,7 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
 
-    public static IFieldDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
+    public static IFieldDefinitionNode Create(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
         => new FieldDefinitionNode(parent, accessModifier, containingSymbol, isLentBinding, variableBindingsMap, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, entry, initializer, currentInitializer, exit);
 }
 
@@ -876,7 +876,7 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionIn
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 
-    public static IAssociatedFunctionDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public static IAssociatedFunctionDefinitionNode Create(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
         => new AssociatedFunctionDefinitionNode(parent, containingSymbol, variableBindingsMap, accessModifier, syntax, name, parameters, @return, type, entry, body, exit);
 }
 
@@ -4149,7 +4149,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IFunctionDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public NamespaceSymbol ContainingSymbol { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
@@ -4197,7 +4197,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public FunctionDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFunctionDefinitionSyntax syntax, NamespaceSymbol containingSymbol, IEnumerable<IAttributeNode> attributes, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
+    public FunctionDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFunctionDefinitionSyntax syntax, NamespaceSymbol containingSymbol, IEnumerable<IAttributeNode> attributes, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
     {
         Parent = parent;
         AccessModifier = accessModifier;
@@ -4699,7 +4699,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public int Arity { [DebuggerStepThrough] get; }
     public FunctionType MethodGroupType { [DebuggerStepThrough] get; }
     public IStandardMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -4746,7 +4746,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public StandardMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public StandardMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
         Parent = parent;
         AccessModifier = accessModifier;
@@ -4781,7 +4781,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IGetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -4826,7 +4826,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public GetterMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public GetterMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
         Parent = parent;
         AccessModifier = accessModifier;
@@ -4859,7 +4859,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public ISetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -4904,7 +4904,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public SetterMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public SetterMethodDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
         Parent = parent;
         AccessModifier = accessModifier;
@@ -4934,7 +4934,7 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IConstructorDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
@@ -4979,7 +4979,7 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public DefaultConstructorDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    public DefaultConstructorDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
     {
         Parent = parent;
         ContainingSymbol = containingSymbol;
@@ -5001,7 +5001,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IConstructorDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -5047,7 +5047,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public SourceConstructorDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    public SourceConstructorDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
     {
         Parent = parent;
         ContainingSymbol = containingSymbol;
@@ -5070,7 +5070,7 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IInitializerDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
@@ -5115,7 +5115,7 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public DefaultInitializerDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    public DefaultInitializerDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
     {
         Parent = parent;
         ContainingSymbol = containingSymbol;
@@ -5137,7 +5137,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IInitializerDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -5183,7 +5183,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public SourceInitializerDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    public SourceInitializerDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
     {
         Parent = parent;
         ContainingSymbol = containingSymbol;
@@ -5209,7 +5209,7 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IFieldDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -5258,7 +5258,7 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     private FieldSymbol? symbol;
     private bool symbolCached;
 
-    public FieldDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
+    public FieldDefinitionNode(ISemanticNode parent, AccessModifier accessModifier, UserTypeSymbol containingSymbol, bool isLentBinding, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
     {
         Parent = parent;
         AccessModifier = accessModifier;
@@ -5285,7 +5285,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public UserTypeSymbol ContainingSymbol { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode,int> VariableBindingsMap { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IAssociatedFunctionDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -5332,7 +5332,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public AssociatedFunctionDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode,int> variableBindingsMap, AccessModifier accessModifier, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public AssociatedFunctionDefinitionNode(ISemanticNode parent, UserTypeSymbol containingSymbol, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
         Parent = parent;
         ContainingSymbol = containingSymbol;

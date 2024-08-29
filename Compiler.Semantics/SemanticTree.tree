@@ -74,7 +74,7 @@ UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
 Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? ContainingSymbol:`Symbol`;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol`;
 ExecutableDefinition <: Definition = Entry Exit
-    VariableBindingsMap:`FixedDictionary<IVariableBindingNode,int>`;
+    VariableBindingsMap:`FixedDictionary<IVariableBindingNode, int>`;
 ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition
     = Parameters:ConstructorOrInitializerParameter* Body?;
 ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition

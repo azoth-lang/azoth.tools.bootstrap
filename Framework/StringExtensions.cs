@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -93,14 +94,18 @@ public static partial class StringExtensions
     }
 
     /// <summary>
-    /// If the string is null or empty, returns an empty list. Otherwise, splits the string by the given separators.
+    /// If the string is empty, returns an empty list. Otherwise, splits the string by the
+    /// given separators.
     /// </summary>
     public static IFixedList<string> SplitOrEmpty(this string value, params char[] separators)
-    {
-        if (string.IsNullOrEmpty(value))
-            return FixedList.Empty<string>();
-        return value.Split(separators).ToFixedList();
-    }
+        => value.Split(separators, StringSplitOptions.RemoveEmptyEntries).ToFixedList();
+
+    /// <summary>
+    /// If the string is empty, returns an empty list. Otherwise, splits the string at whitespace.
+    /// Empty entries are removed and whitespace is trimmed.
+    /// </summary>
+    public static IFixedList<string> SplitWhitespaceOrEmpty(this string value)
+        => value.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToFixedList();
 
     public static int? IndexOfWhitespace(this string value)
     {

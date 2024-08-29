@@ -71,7 +71,27 @@ internal static class TreeParser
     }
 
     public static IEnumerable<string> SplitProperties(string definition)
-        => definition.SplitOrEmpty(' ').Where(v => !string.IsNullOrWhiteSpace(v));
+    {
+        var last = 0;
+        while (last < definition.Length)
+        {
+            var nextWhitespace = definition.IndexOfWhitespace(last) ?? definition.Length;
+            var nextBacktick = definition.IndexOf('`', last);
+            if (nextBacktick < 0) nextBacktick = definition.Length;
+
+            if (nextBacktick < nextWhitespace)
+            {
+                var nextBacktickEnd = definition.IndexOf('`', nextBacktick + 1);
+                if (nextBacktickEnd < 0) nextBacktickEnd = definition.Length;
+                nextWhitespace = definition.IndexOfWhitespace(nextBacktickEnd) ?? definition.Length;
+            }
+
+            if (last < nextWhitespace)
+                yield return definition[last..nextWhitespace];
+
+            last = nextWhitespace + 1;
+        }
+    }
 
     private static (bool isTemp, SymbolSyntax Defines, IEnumerable<SymbolSyntax> Supertypes) ParseDeclaration(
         string declaration)
