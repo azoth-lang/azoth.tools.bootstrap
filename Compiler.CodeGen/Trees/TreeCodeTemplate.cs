@@ -401,7 +401,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(@"(bool inFinalTree) : base(inFinalTree) { }
 
     [DebuggerStepThrough]
-    protected sealed override ITreeNode PeekParent()
+    protected sealed override SemanticNode PeekParent()
         // Use volatile read to ensure order of operations as seen by other threads
         => Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
 

@@ -63,7 +63,7 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
     protected <#= Emit.BaseClassName(tree) #>(bool inFinalTree) : base(inFinalTree) { }
 
     [DebuggerStepThrough]
-    protected sealed override ITreeNode PeekParent()
+    protected sealed override SemanticNode PeekParent()
         // Use volatile read to ensure order of operations as seen by other threads
         => Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
 
