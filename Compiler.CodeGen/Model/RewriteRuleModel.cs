@@ -34,9 +34,8 @@ public sealed class RewriteRuleModel
     private SymbolTypeModel ComputeRewriteToType()
     {
         var fromType = Node.DefinesType;
-        var rewriteToTypes = Aspect.Tree.Nodes.SelectMany(n => n.DeclaredProperties)
-                                   .Where(p => p.IsChild)
-                                   .Select(p => p.Type.ReferencedNode()!.DefinesType)
+        var rewriteToTypes = Aspect.Tree.Nodes.SelectMany(n => n.TreeChildNodes)
+                                   .Select(n => n.DefinesType)
                                    .Where(fromType.IsSubtypeOf)
                                    .MostSpecificTypes()
                                    .ToFixedSet();

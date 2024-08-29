@@ -28,6 +28,8 @@ public class TreeNodeModel
     /// The directly declared supertypes of this node.
     /// </summary>
     public IFixedSet<Symbol> Supertypes { get; }
+
+    #region Inheritance Relationships
     private readonly Lazy<IFixedSet<TreeNodeModel>> supertypeNodes;
     /// <summary>
     /// The tree nodes corresponding to the directly declared supertypes of this node.
@@ -75,7 +77,9 @@ public class TreeNodeModel
     /// non-temp node type below this.</remarks>
     public TreeNodeModel? FinalNode => finalNodeType.Value;
     private readonly Lazy<TreeNodeModel?> finalNodeType;
+    #endregion
 
+    #region Attributes
     /// <summary>
     /// The properties declared for the node in the definition file.
     /// </summary>
@@ -85,8 +89,20 @@ public class TreeNodeModel
     /// Attributes (including properties) declared against this node in both the tree and aspect
     /// definition files.
     /// </summary>
-    public IEnumerable<AttributeModel> DeclaredAttributes => declaredAttributes.Value;
+    public IFixedList<AttributeModel> DeclaredAttributes => declaredAttributes.Value;
     private readonly Lazy<IFixedList<AttributeModel>> declaredAttributes;
+
+    /// <summary>
+    /// The nodes that are declared as children of this node in the tree. This is NOT inheritance.
+    /// This is based on child attributes.
+    /// </summary>
+    public IFixedSet<TreeNodeModel> TreeChildNodes => treeChildNodes.Value;
+    private readonly Lazy<IFixedSet<TreeNodeModel>> treeChildNodes;
+
+    /// <summary>
+    /// Whether this node can be the root of a tree.
+    /// </summary>
+    public bool IsRoot => !Tree.TreeChildNodes.Contains(this);
 
     /// <summary>
     /// Attributes that are implicitly declared on the node because multiple supertypes define the
@@ -133,7 +149,9 @@ public class TreeNodeModel
     private readonly Lazy<IFixedList<AttributeModel>> actualAttributes;
 
     public IEnumerable<PropertyModel> ActualProperties => ActualAttributes.OfType<PropertyModel>();
+    #endregion
 
+    #region Equations
     /// <summary>
     /// Equations declared against this specific node in the definition files.
     /// </summary>
@@ -158,7 +176,9 @@ public class TreeNodeModel
     public IFixedSet<InheritedAttributeEquationGroupModel> InheritedAttributeEquationGroups
         => inheritedAttributeEquationGroups.Value;
     private readonly Lazy<IFixedSet<InheritedAttributeEquationGroupModel>> inheritedAttributeEquationGroups;
+    #endregion
 
+    #region Rewrite Rules
     public IFixedList<RewriteRuleModel> DeclaredRewriteRules => declaredRewriteRules.Value;
     private readonly Lazy<IFixedList<RewriteRuleModel>> declaredRewriteRules;
 
@@ -167,6 +187,7 @@ public class TreeNodeModel
 
     public IFixedList<RewriteRuleModel> ActualRewriteRules => actualRewriteRules.Value;
     private readonly Lazy<IFixedList<RewriteRuleModel>> actualRewriteRules;
+    #endregion
 
     public TreeNodeModel(TreeModel tree, TreeNodeSyntax syntax)
     {
@@ -182,7 +203,7 @@ public class TreeNodeModel
         isSyncLockRequired = new(() => ActualAttributes.Any(a => a.IsSyncLockRequired)
                                        || ActualEquations.Any(eq => eq.IsSyncLockRequired));
 
-        // Inheritance relationships
+        // Inheritance Relationships
         supertypeNodes = new(() => Supertypes.OfType<InternalSymbol>().Select(s => s.ReferencedNode)
                                              .EliminateRedundantRules().ToFixedSet());
         ancestorNodes = new(() => SupertypeNodes.Concat(SupertypeNodes.SelectMany(p => p.AncestorNodes)).ToFixedSet());
@@ -200,6 +221,9 @@ public class TreeNodeModel
         // Attributes
         DeclaredProperties = syntax.DeclaredProperties.Select(p => new PropertyModel(this, p)).ToFixedList();
         declaredAttributes = new(() => DeclaredProperties.Concat<AttributeModel>(Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.NodeSymbol == Defines)).ToFixedList());
+        treeChildNodes = new(() => DeclaredAttributes.Where(p => p.IsChild)
+                                                     .Select(a => a.Type.ReferencedNode()!)
+                                                     .ToFixedSet());
         allInheritedAttributes = new(()
             => SupertypeNodes.SelectMany(r => r.AllAttributes).Distinct().ToFixedList());
         allAttributes = new(() => AllDeclaredAttributes.Concat(AllInheritedAttributes).ToFixedList());
@@ -250,7 +274,7 @@ public class TreeNodeModel
                               .GroupBy(e => e.Name, (_, eqs) => new InheritedAttributeEquationGroupModel(this, eqs))
                               .ToFixedSet());
 
-        // Rewrite rules
+        // Rewrite Rules
         declaredRewriteRules = new(() => Tree.Aspects.SelectMany(a => a.RewriteRules).Where(r => r.Node == this).ToFixedList());
         inheritedRewriteRules = new(() => SupertypeNodes.SelectMany(r => r.InheritedRewriteRules).Distinct().ToFixedList());
         actualRewriteRules = new(() => DeclaredRewriteRules.Concat(InheritedRewriteRules).ToFixedList());
@@ -324,7 +348,7 @@ public class TreeNodeModel
         if (TryAllOfType<SynthesizedAttributeModel>(attributes, out var synthesized))
             return SynthesizedAttributeModel.TryMerge(this, synthesized);
         if (TryAllOfType<InheritedAttributeModel>(attributes, out var inherited))
-            return InheritedAttributeModel.TryMerge(this, inherited);
+            return ContextAttributeModel.TryMerge(this, inherited);
         return null;
     }
 

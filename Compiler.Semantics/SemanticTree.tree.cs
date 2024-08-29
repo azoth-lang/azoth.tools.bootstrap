@@ -3836,6 +3836,7 @@ file class PackageNode : SemanticNode, IPackageNode
     private bool primitivesDeclarationsCached;
 
     public PackageNode(IPackageSyntax syntax, IEnumerable<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet)
+        : base(true)
     {
         Syntax = syntax;
         References = ChildSet.Attach(this, references);
@@ -3876,7 +3877,7 @@ file class PackageReferenceNode : SemanticNode, IPackageReferenceNode
     public IPackageSymbolNode SymbolNode
         => GrammarAttribute.IsCached(in symbolNodeCached) ? symbolNode!
             : this.Synthetic(ref symbolNodeCached, ref symbolNode,
-                SymbolNodeAspect.PackageReference_SymbolNode);
+                n => Child.Attach(this, SymbolNodeAspect.PackageReference_SymbolNode(n)));
     private IPackageSymbolNode? symbolNode;
     private bool symbolNodeCached;
 

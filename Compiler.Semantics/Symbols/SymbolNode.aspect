@@ -7,7 +7,7 @@
 
 // ---------- Packages
 ↑ Package.PackageDeclarations: `FixedDictionary<IdentifierName, IPackageDeclarationNode>`;
-↑ PackageReference.SymbolNode: PackageSymbol;
+↑ child PackageReference.SymbolNode: PackageSymbol;
 
 // ---------- Facets
 ↑ PackageFacet.GlobalNamespace: NamespaceDefinition;

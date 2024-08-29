@@ -227,6 +227,9 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#      } #>
 
     public <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", Build.PropertiesForClass(node).Select(p => $"{Emit.ParameterType(p.Type)} {Emit.VariableName(p)}")) #>)
+<#     if (!tree.SimplifiedTree && node.IsRoot) { #>
+        : base(true)
+<#     } #>
     {
 <#      foreach (var property in Build.PropertiesForClass(node)) { #>
 <#          if (!tree.SimplifiedTree && property.IsChild) { #>

@@ -25,6 +25,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IPackageReferenceNode n:
+                yield return n.SymbolNode;
                 yield break;
             case IPackageFacetNode n:
                 foreach (var child in n.CompilationUnits)
