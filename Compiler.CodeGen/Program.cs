@@ -80,7 +80,7 @@ public static class Program
     {
         try
         {
-            var treeOutputPath = Path.ChangeExtension(treePath, ".tree.cs");
+            var treeOutputPath = Path.ChangeExtension(treePath, ".g.cs");
             var childrenOutputPath = Path.ChangeExtension(treePath, ".children.cs");
             Console.WriteLine($"Tree Input:  {treePath}");
             Console.WriteLine($"Tree Output: {treeOutputPath}");

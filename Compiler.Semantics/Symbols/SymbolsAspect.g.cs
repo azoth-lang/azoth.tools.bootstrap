@@ -4,8 +4,8 @@ using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
-// ReSharper disable PartialTypeWithSinglePart
 #nullable enable
+// ReSharper disable PartialTypeWithSinglePart
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class SymbolsAspect

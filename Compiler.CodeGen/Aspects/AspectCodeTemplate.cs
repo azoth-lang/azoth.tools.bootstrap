@@ -57,7 +57,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Aspects
             
             #line default
             #line hidden
-            this.Write(";\r\n\r\n// ReSharper disable PartialTypeWithSinglePart\r\n#nullable enable\r\n\r\n[Generat" +
+            this.Write(";\r\n\r\n#nullable enable\r\n// ReSharper disable PartialTypeWithSinglePart\r\n\r\n[Generat" +
                     "edCode(\"AzothCompilerCodeGen\", null)]\r\ninternal static partial class ");
             
             #line 18 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"

@@ -16,6 +16,7 @@ using InlineMethod;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
+#nullable enable
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable RedundantTypeDeclarationBody
 // ReSharper disable ReturnTypeCanBeNotNullable

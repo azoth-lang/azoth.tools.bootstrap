@@ -11,8 +11,8 @@ using <#=usingNamespace #>;
 
 namespace <#=aspect.Namespace #>;
 
-// ReSharper disable PartialTypeWithSinglePart
 #nullable enable
+// ReSharper disable PartialTypeWithSinglePart
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class <#= aspect.Name #>

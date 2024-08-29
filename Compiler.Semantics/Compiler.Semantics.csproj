@@ -44,7 +44,7 @@
     <Exec Command="$(SolutionDir)Compiler.CodeGen\$(OutDir)\CompilerCodeGen.exe &quot;$(ProjectDir)SemanticTree.tree&quot; &quot;$(ProjectDir)LexicalScopes\LexicalScoping.aspect&quot; &quot;$(ProjectDir)Structure\Inheritance.aspect&quot; &quot;$(ProjectDir)Types\ValueIds.aspect&quot; &quot;$(ProjectDir)Types\ExpressionTypes.aspect&quot; &quot;$(ProjectDir)ControlFlow\ControlFlow.aspect&quot; &quot;$(ProjectDir)Antetypes\NameBindingAntetypes.aspect&quot; &quot;$(ProjectDir)Types\NameBindingTypes.aspect&quot; &quot;$(ProjectDir)Types\TypeMemberDeclarations.aspect&quot; &quot;$(ProjectDir)NameBinding\NameLookup.aspect&quot; &quot;$(ProjectDir)Structure\Context.aspect&quot; &quot;$(ProjectDir)Symbols\SymbolNode.aspect&quot; &quot;$(ProjectDir)Structure\Members.aspect&quot; &quot;$(ProjectDir)Antetypes\OverloadResolution.aspect&quot; &quot;$(ProjectDir)Structure\Definitions.aspect&quot; &quot;$(ProjectDir)Symbols\Symbols.aspect&quot; &quot;$(ProjectDir)Declarations\Declarations.aspect&quot; &quot;$(ProjectDir)Structure\BuiltIns.aspect&quot; &quot;$(ProjectDir)Types\ContainingDeclaredType.aspect&quot; &quot;$(ProjectDir)Types\TypeExpressions.aspect&quot; &quot;$(ProjectDir)Antetypes\ExpressionAntetypes.aspect&quot;" />
   </Target>
   <ItemGroup>
-    <Compile Update="SemanticTree.tree.cs">
+    <Compile Update="SemanticTree.g.cs">
       <DependentUpon>SemanticTree.tree</DependentUpon>
     </Compile>
     <Compile Update="SemanticTree.children.cs">
