@@ -48,7 +48,7 @@ internal static class SyntaxBinder
         => new PackageFacetNode(syntax, CompilationUnits(compilationUnits));
 
     private static IEnumerable<IStandardPackageReferenceNode> PackageReferences(IEnumerable<IPackageReferenceSyntax> syntax)
-        => syntax.Select(syn => new StandardPackageReferenceNode(syn));
+        => syntax.Select(IStandardPackageReferenceNode.Create);
     #endregion
 
     #region Code Files

@@ -3972,7 +3972,7 @@ file class StandardPackageReferenceNode : SemanticNode, IStandardPackageReferenc
     public StandardPackageReferenceNode(IPackageReferenceSyntax syntax)
     {
         Syntax = syntax;
-        SymbolNode = SymbolNodeAspect.PackageReference_SymbolNode(this);
+        SymbolNode = Child.Attach(this, SymbolNodeAspect.PackageReference_SymbolNode(this));
     }
 }
 
@@ -3987,7 +3987,7 @@ file class IntrinsicsPackageReferenceNode : SemanticNode, IIntrinsicsPackageRefe
 
     public IntrinsicsPackageReferenceNode()
     {
-        SymbolNode = SymbolNodeAspect.PackageReference_SymbolNode(this);
+        SymbolNode = Child.Attach(this, SymbolNodeAspect.PackageReference_SymbolNode(this));
     }
 }
 

@@ -360,7 +360,11 @@ internal static class Emit
                                               + " implemented. They should emit a protected method to the interface and call that"
                                               + " from the constructor.");
 
-        return $"{equation.Aspect.Name}.{equation.NodeSymbol}_{equation.Name}(this)";
+        var body = $"{equation.Aspect.Name}.{equation.NodeSymbol}_{equation.Name}(this)";
+        if (equation.Attribute.IsChild)
+            return $"{ChildAttach(equation)}{body})";
+
+        return body;
     }
 
     public static string Selector(InheritedAttributeEquationModel equation)
