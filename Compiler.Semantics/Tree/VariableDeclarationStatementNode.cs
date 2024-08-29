@@ -126,13 +126,13 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentInitializer)
             // The expected type for the initializer is the binding type since it needs to have any
             // Capability declared on the variable applied.
             return BindingType;
-        return base.InheritedExpectedType(child, descendant, ctx);
+        return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

@@ -30,7 +30,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     private bool expectedTypeCached;
     public DataType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
-            : this.Inherited(ref expectedTypeCached, ref expectedType, InheritedExpectedType);
+            : this.Inherited(ref expectedTypeCached, ref expectedType, Inherited_ExpectedType);
     // TODO make this abstract once all expressions have type implemented
     public virtual DataType Type
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Type)} not implemented.");
@@ -71,7 +71,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
         => null;
 
     // TODO remove once all nodes properly provide the expected type
-    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => null;
 
     protected override void CollectControlFlowPrevious(IControlFlowNode target, Dictionary<IControlFlowNode, ControlFlowKind> previous)

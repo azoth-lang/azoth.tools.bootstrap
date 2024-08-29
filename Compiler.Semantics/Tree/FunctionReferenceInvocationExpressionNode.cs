@@ -100,12 +100,12 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant is IAmbiguousExpressionNode ambiguousExpression
             && CurrentArguments.IndexOf(ambiguousExpression) is int index)
             return FunctionType.Parameters[index].Type;
-        return base.InheritedExpectedType(child, descendant, ctx);
+        return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)

@@ -3,18 +3,23 @@
 
 // ↓ ↑ ⮡ ✎
 
+// ---------- Function Parts
+↓ ExpressionBody.ExpectedType: `DataType`?;
+
 // ---------- Parameters
 ↓ Parameter.FlowStateBefore(): `IFlowState`;
 
 // ---------- Statements
+↓ ResultStatement.ExpectedType:`DataType`?;
 ↓ VariableDeclarationStatement.FlowStateBefore(): `IFlowState`;
 
 // ---------- Patterns
 ↓ BindingPattern.FlowStateBefore(): `IFlowState`;
 
 // ---------- Expressions
+↓ Expression.ExpectedType:`DataType`?;
 /// <summary>
-/// Whether an implicit recovery (i.e. move or freeze) is allowed to covert this expression to
+/// Whether an implicit recovery (i.e. move or freeze) is allowed to convert this expression to
 /// the expected type.
 /// </summary>
 ↓ Expression.ImplicitRecoveryAllowed(): `bool`;

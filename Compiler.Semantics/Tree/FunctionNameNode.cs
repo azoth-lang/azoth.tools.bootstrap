@@ -56,6 +56,6 @@ internal sealed class FunctionNameNode : NameExpressionNode, IFunctionNameNode
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => null;
 
-    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => null;
 }

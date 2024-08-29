@@ -35,7 +35,7 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
     private bool expectedTypeCached;
     public DataType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
-            : this.Inherited(ref expectedTypeCached, ref expectedType, InheritedExpectedType);
+            : this.Inherited(ref expectedTypeCached, ref expectedType, Inherited_ExpectedType);
     private DataType? type;
     private bool typeCached;
     public DataType Type
@@ -65,9 +65,9 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentExpression) return ExpectedType;
-        return base.InheritedExpectedType(child, descendant, ctx);
+        return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 }

@@ -125,14 +125,14 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == MethodGroup.CurrentContext)
             return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
         if (descendant is IAmbiguousExpressionNode ambiguousExpression
             && CurrentArguments.IndexOf(ambiguousExpression) is int index)
             return ContextualizedOverload?.ParameterTypes[index].Type;
-        return base.InheritedExpectedType(child, descendant, ctx);
+        return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)

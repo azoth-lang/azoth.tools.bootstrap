@@ -208,7 +208,7 @@ FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyn
 // ---------- Function Parts
 Body <: BodyOrBlock = FlowStateAfter:`IFlowState`;
 BlockBody <: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
-ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement ExpectedType:`DataType`?;
+ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax` NamedAntetype:`IMaybeAntetype` NamedType:`DataType`;
@@ -242,8 +242,7 @@ DataFlow <: ControlFlow = DataFlowPrevious:`IFixedSet<IDataFlowNode>`
 Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?
     ResultType:`DataType`? FlowStateAfter:`IFlowState`;
 ResultStatement <: Statement, BlockOrResult = Syntax:`IResultStatementSyntax`
-    Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
-    ExpectedType:`DataType`?;
+    Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`;
 BodyStatement <: Statement = Syntax:`IBodyStatementSyntax`;
 VariableDeclarationStatement <: BodyStatement, VariableBinding = Syntax:`IVariableDeclarationStatementSyntax`
     IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type?
@@ -264,8 +263,7 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 temp AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
 temp AmbiguousAssignableExpression <: AmbiguousExpression = Syntax:`IAssignableExpressionSyntax`;
 Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`
-    Antetype:`IMaybeExpressionAntetype`
-    ExpectedType:`DataType`? Type:`DataType` FlowStateAfter:`IFlowState`;
+    Antetype:`IMaybeExpressionAntetype` Type:`DataType` FlowStateAfter:`IFlowState`;
 AssignableExpression <: Expression, AmbiguousAssignableExpression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*
     Antetype:`IMaybeAntetype`;

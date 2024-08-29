@@ -83,8 +83,8 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_ExpectedAntetype), child, descendant);
 
-    internal virtual DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedExpectedType), child, descendant);
+    internal virtual DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_ExpectedType), child, descendant);
 
     internal virtual DataType? Inherited_ExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_ExpectedReturnType), child, descendant);

@@ -4,10 +4,10 @@
 // ↓ ↑ ⮡ ✎
 
 // ---------- Function Parts
-↓ ExpressionBody.ExpectedAntetype:`IMaybeExpressionAntetype`?;
+↓ ExpressionBody.ExpectedAntetype: `IMaybeExpressionAntetype`?;
 
 // ---------- Statements
-↓ ResultStatement.ExpectedAntetype:`IMaybeExpressionAntetype`?;
+↓ ResultStatement.ExpectedAntetype: `IMaybeExpressionAntetype`?;
 
 // ---------- Expressions
-↓ Expression.ExpectedAntetype:`IMaybeExpressionAntetype`?;
+↓ Expression.ExpectedAntetype: `IMaybeExpressionAntetype`?;

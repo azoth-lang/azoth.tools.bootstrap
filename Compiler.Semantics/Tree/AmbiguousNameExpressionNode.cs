@@ -24,7 +24,7 @@ internal abstract class AmbiguousNameExpressionNode : AmbiguousExpressionNode, I
     private bool expectedTypeCached;
     public DataType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
-            : this.Inherited(ref expectedTypeCached, ref expectedType, InheritedExpectedType);
+            : this.Inherited(ref expectedTypeCached, ref expectedType, Inherited_ExpectedType);
     // TODO make this abstract once all expressions have type implemented (also, not all names should have types)
     public virtual DataType Type
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Type)} not implemented.");

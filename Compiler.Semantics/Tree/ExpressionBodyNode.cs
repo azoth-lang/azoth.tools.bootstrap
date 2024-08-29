@@ -22,7 +22,7 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
     private bool expectedTypeCached;
     public DataType? ExpectedType
         => GrammarAttribute.IsCached(in expectedTypeCached) ? expectedType
-            : this.Inherited(ref expectedTypeCached, ref expectedType, InheritedExpectedType);
+            : this.Inherited(ref expectedTypeCached, ref expectedType, Inherited_ExpectedType);
     private readonly IFixedList<IStatementNode> statements;
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements => statements;
     public IFlowState FlowStateAfter => throw new NotImplementedException();
@@ -50,11 +50,11 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == ResultStatement)
             return ExpectedType;
-        return base.InheritedExpectedType(child, descendant, ctx);
+        return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
