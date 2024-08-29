@@ -41,7 +41,7 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
         this.expression = Child.Create(this, expression);
     }
 
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentExpression)
             // No expected antetype for the expression (not broadcast)
@@ -49,7 +49,7 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentExpression)
             // No expected type for the expression (not broadcast)
@@ -57,10 +57,10 @@ internal sealed class ExpressionStatementNode : StatementNode, IExpressionStatem
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
-    internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         // By default, implicit recovery is not allowed
         => false;
 
-    internal override bool Inherited_ShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => false;
 }

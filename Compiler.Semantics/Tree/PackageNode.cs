@@ -65,10 +65,10 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
         TestingFacet = Child.Attach(this, testingFacet);
     }
 
-    internal override IPackageDeclarationNode Inherited_Package(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => this;
 
-    internal override PackageNameScope Inherited_PackageNameScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override PackageNameScope Inherited_PackageNameScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == MainFacet)
             return LexicalScopingAspect.Package_MainFacet_PackageNameScope(this);

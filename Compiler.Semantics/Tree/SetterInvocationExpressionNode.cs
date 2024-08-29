@@ -76,8 +76,8 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     }
 
     internal override IFlowState Inherited_FlowStateBefore(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child == CurrentValue) return Context.FlowStateAfter;
@@ -87,13 +87,13 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.SetterInvocationExpression_ControlFlowNext(this);
 
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child == Context) return ControlFlowSet.CreateNormal(Value);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentContext)
             return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype();
@@ -102,7 +102,7 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentContext)
             return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();

@@ -36,11 +36,11 @@ internal sealed class UnresolvedInvocationExpressionNode : AmbiguousExpressionNo
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
-    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child == TempExpression)
             return ContainingLexicalScope;
-        if (TempArguments.IndexOf(child) is int argumentIndex)
+        if (TempArguments.IndexOf((IChildNode)child) is int argumentIndex)
         {
             if (argumentIndex == 0)
                 return TempExpression.FlowLexicalScope().True;
@@ -50,19 +50,19 @@ internal sealed class UnresolvedInvocationExpressionNode : AmbiguousExpressionNo
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentExpression) return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentExpression) return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
-    protected override IChildNode Rewrite()
+    protected override IChildTreeNode Rewrite()
         => OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionGroupNameExpression(this)
         ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_MethodGroupNameExpression(this)
         ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(this)

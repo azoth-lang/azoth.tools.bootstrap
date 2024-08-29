@@ -41,7 +41,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
         Pattern = Child.Attach(this, pattern);
     }
 
-    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child == Pattern)
             return TempReferent.FlowLexicalScope().True;
@@ -50,28 +50,28 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
 
     public override ConditionalLexicalScope FlowLexicalScope() => Pattern.FlowLexicalScope();
 
-    internal override IMaybeAntetype Inherited_ContextBindingAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeAntetype Inherited_ContextBindingAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == Pattern)
             return NameBindingAntetypesAspect.PatternMatchExpression_Pattern_ContextBindingAntetype_(this);
         return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
     }
 
-    internal override DataType Inherited_ContextBindingType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == Pattern)
             return NameBindingTypesAspect.PatternMatchExpression_Pattern_ContextBindingType(this);
         return base.Inherited_ContextBindingType(child, descendant, ctx);
     }
 
-    internal override IFlowState Inherited_FlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child == Pattern)
             return Referent?.FlowStateAfter ?? IFlowState.Empty;
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override ValueId? Inherited_MatchReferentValueId(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ValueId? Inherited_MatchReferentValueId(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child == Pattern)
             return Referent?.ValueId;
@@ -81,7 +81,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.PatternMatchExpression_ControlFlowNext(this);
 
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child == CurrentReferent) return ControlFlowSet.CreateNormal(Pattern);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);

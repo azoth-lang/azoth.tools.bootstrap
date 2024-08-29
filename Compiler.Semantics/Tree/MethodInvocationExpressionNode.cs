@@ -72,8 +72,8 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     }
 
     internal override IFlowState Inherited_FlowStateBefore(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
@@ -90,8 +90,8 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         => ControlFlowAspect.MethodInvocationExpression_ControlFlowNext(this);
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child == MethodGroup)
@@ -105,7 +105,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         // TODO this is a hack that is working only because method group nodes aren't getting the default expression Inherited_ImplicitRecoveryAllowed applied
         if (child == MethodGroup && descendant == MethodGroup.CurrentContext)
@@ -113,7 +113,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == MethodGroup.CurrentContext)
             // TODO it would be better if this didn't depend on types, but only on antetypes
@@ -125,7 +125,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == MethodGroup.CurrentContext)
             return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();

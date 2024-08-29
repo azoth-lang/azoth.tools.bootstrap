@@ -33,7 +33,7 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
-    protected override IChildNode Rewrite()
+    protected override IChildTreeNode Rewrite()
         => BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_FunctionOrMethodGroupNameContext(this)
         ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_NamespaceNameContext(this)
         ?? BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_TypeNameExpressionContext(this)
@@ -46,10 +46,10 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
     public PackageNameScope PackageNameScope()
         => Inherited_PackageNameScope(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => null;
 
-    internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         // By default, implicit recovery is not allowed
         => false;
 }

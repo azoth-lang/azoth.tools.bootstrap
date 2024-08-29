@@ -52,17 +52,17 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
         Definitions = ChildList.Attach(this, declarations);
     }
 
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return SymbolNodeAspect.CompilationUnit_Children_ContainingDeclaration(this);
         return base.Inherited_ContainingDeclaration(child, descendant, ctx);
     }
 
-    internal override CodeFile Inherited_File(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override CodeFile Inherited_File(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => ContextAspect.CompilationUnit_Children_Broadcast_File(this);
 
-    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => LexicalScope;
 
     private DiagnosticCollection GetDiagnostics()

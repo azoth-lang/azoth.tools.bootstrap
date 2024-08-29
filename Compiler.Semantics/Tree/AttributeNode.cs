@@ -22,7 +22,7 @@ internal sealed class AttributeNode : CodeNode, IAttributeNode
         TypeName = Child.Attach(this, typeName);
     }
 
-    internal override bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == TypeName)
             return true;

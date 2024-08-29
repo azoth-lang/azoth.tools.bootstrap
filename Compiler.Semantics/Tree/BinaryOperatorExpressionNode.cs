@@ -75,7 +75,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     public override ConditionalLexicalScope FlowLexicalScope()
         => LexicalScopingAspect.BinaryOperatorExpression_FlowLexicalScope(this);
 
-    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child == CurrentLeftOperand)
             return ContainingLexicalScope;
@@ -85,8 +85,8 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     }
 
     internal override IFlowState Inherited_FlowStateBefore(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child == CurrentRightOperand)
@@ -94,7 +94,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentLeftOperand || descendant == CurrentRightOperand)
             return NumericOperatorCommonAntetype;
@@ -112,8 +112,8 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         => ControlFlowAspect.BinaryOperatorExpression_ControlFlowNext(this);
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child == CurrentLeftOperand) return ControlFlowSet.CreateNormal(RightOperand);

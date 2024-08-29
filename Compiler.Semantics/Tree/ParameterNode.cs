@@ -32,6 +32,6 @@ internal abstract class ParameterNode : CodeNode, IParameterNode
     public IPreviousValueId PreviousValueId()
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override IPreviousValueId Previous_PreviousValueId(IChildNode before, IInheritanceContext ctx)
+    internal override IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => BindingValueId;
 }

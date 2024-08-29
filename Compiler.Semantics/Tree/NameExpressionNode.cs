@@ -48,7 +48,7 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
     public bool ShouldPrepareToReturn()
         => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override bool Inherited_ShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => false;
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
@@ -57,7 +57,7 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
         base.CollectDiagnostics(diagnostics);
     }
 
-    protected override IChildNode Rewrite()
+    protected override IChildTreeNode Rewrite()
         => ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)

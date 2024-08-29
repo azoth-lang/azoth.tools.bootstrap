@@ -22,25 +22,16 @@ internal class DefaultInitializerDefinitionNode : InitializerDefinitionNode, IDe
     public DefaultInitializerDefinitionNode()
         : base(FixedList.Empty<IConstructorOrInitializerParameterNode>()) { }
 
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(
-        IChildNode child,
-        IChildNode descendant,
-        IInheritanceContext ctx)
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == Entry)
             return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override IEntryNode Inherited_ControlFlowEntry(
-        IChildNode child,
-        IChildNode descendant,
-        IInheritanceContext ctx)
+    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => Entry;
 
-    internal override IExitNode Inherited_ControlFlowExit(
-        IChildNode child,
-        IChildNode descendant,
-        IInheritanceContext ctx)
+    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => Exit;
 }

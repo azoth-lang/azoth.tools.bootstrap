@@ -40,21 +40,21 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
         Body = Child.Attach(this, body);
     }
 
-    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child == Body) return LexicalScope;
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
         => VariableBindingsMap;
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (descendant == Entry)
@@ -64,14 +64,14 @@ internal sealed class GetterMethodDefinitionNode : MethodDefinitionNode, IGetter
     }
 
     internal override IEntryNode Inherited_ControlFlowEntry(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
         => Entry;
 
     internal override IExitNode Inherited_ControlFlowExit(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
         => Exit;
 }

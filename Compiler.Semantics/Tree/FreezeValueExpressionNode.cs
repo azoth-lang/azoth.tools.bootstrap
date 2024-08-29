@@ -49,7 +49,7 @@ internal sealed class FreezeValueExpressionNode : ExpressionNode, IFreezeValueEx
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.FreezeExpression_ControlFlowNext(this);
 
-    internal override bool Inherited_ShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentReferent && IsImplicit)
             // Pass along should prepare to return to the referent if this is an implicit freeze.

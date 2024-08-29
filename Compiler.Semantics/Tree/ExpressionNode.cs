@@ -64,14 +64,14 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     public bool ShouldPrepareToReturn()
         => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override IPreviousValueId Previous_PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
+    internal override IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx) => ValueId;
 
     // TODO remove once all nodes properly provide the expected antetype
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => null;
 
     // TODO remove once all nodes properly provide the expected type
-    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => null;
 
     protected override void CollectControlFlowPrevious(IControlFlowNode target, Dictionary<IControlFlowNode, ControlFlowKind> previous)
@@ -83,11 +83,11 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     protected virtual ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.Expression_ControlFlowNext(this);
 
-    internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         // By default, implicit recovery is not allowed
         => false;
 
-    internal override bool Inherited_ShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => false;
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
@@ -96,7 +96,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
         base.CollectDiagnostics(diagnostics);
     }
 
-    protected override IChildNode Rewrite()
+    protected override IChildTreeNode Rewrite()
         => ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)

@@ -67,7 +67,7 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
         // Use volatile read to ensure order of operations as seen by other threads
         => Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
 
-    protected <#= Emit.BaseClassName(tree) #> GetParent(IInheritanceContext ctx)
+    private <#= Emit.BaseClassName(tree) #> GetParent(IInheritanceContext ctx)
     {
         // Use volatile read to ensure order of operations as seen by other threads
         var node = Volatile.Read(in parent) ?? throw Child.ParentMissing(this);

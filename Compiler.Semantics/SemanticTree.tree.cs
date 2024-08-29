@@ -3562,7 +3562,7 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
         // Use volatile read to ensure order of operations as seen by other threads
         => Volatile.Read(in parent) ?? throw Child.ParentMissing(this);
 
-    protected SemanticNode GetParent(IInheritanceContext ctx)
+    private SemanticNode GetParent(IInheritanceContext ctx)
     {
         // Use volatile read to ensure order of operations as seen by other threads
         var node = Volatile.Read(in parent) ?? throw Child.ParentMissing(this);

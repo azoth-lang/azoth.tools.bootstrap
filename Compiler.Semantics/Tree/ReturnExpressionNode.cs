@@ -41,13 +41,13 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
         this.value = Child.Create(this, value);
     }
 
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentValue) return ExpectedReturnType?.ToAntetype();
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentValue) return ExpectedReturnType;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -64,8 +64,8 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
         => ControlFlowAspect.ReturnExpression_ControlFlowNext(this);
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child == CurrentValue) return ControlFlowSet.CreateNormal(ControlFlowExit());
@@ -75,13 +75,13 @@ internal sealed class ReturnExpressionNode : ExpressionNode, IReturnExpressionNo
     public IExitNode ControlFlowExit()
         => Inherited_ControlFlowExit(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentValue) return true;
         return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
     }
 
-    internal override bool Inherited_ShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentValue) return true;
         return false;

@@ -60,17 +60,17 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
     public IFlowState FlowStateBefore()
         => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore((IConcreteInvocableDefinitionNode)this);
 
-    internal override IPreviousValueId Previous_PreviousValueId(IChildNode before, IInheritanceContext ctx)
+    internal override IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => ValueIdsAspect.InvocableDefinition_PreviousValueId(this);
 
     internal override IFlowState Inherited_FlowStateBefore(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child == Body)
             return Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
-        if (Parameters.IndexOf(child) is int index)
+        if (Parameters.IndexOf((IChildNode)child) is int index)
         {
             if (index == 0)
                 return SelfParameter.FlowStateAfter;
@@ -82,7 +82,7 @@ internal abstract class MethodDefinitionNode : TypeMemberDefinitionNode, IMethod
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal sealed override DataType? Inherited_ExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal sealed override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child == Body) return Return?.NamedType ?? DataType.Void;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);

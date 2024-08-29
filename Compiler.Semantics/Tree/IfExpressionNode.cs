@@ -63,7 +63,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         this.elseClause = Child.Create(this, elseClause);
     }
 
-    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child == ThenBlock)
             return TempCondition.FlowLexicalScope().True;
@@ -73,8 +73,8 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     }
 
     internal override IFlowState Inherited_FlowStateBefore(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child == ThenBlock || child == ElseClause)
@@ -86,8 +86,8 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         => ControlFlowAspect.IfExpression_ControlFlowNext(this);
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child == CurrentCondition)
@@ -99,13 +99,13 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentCondition) return IAntetype.OptionalBool;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentCondition) return DataType.OptionalBool;
         return base.Inherited_ExpectedType(child, descendant, ctx);

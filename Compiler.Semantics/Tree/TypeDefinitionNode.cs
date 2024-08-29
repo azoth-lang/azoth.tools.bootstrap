@@ -71,25 +71,25 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         SupertypeNames = ChildList.Attach(this, supertypeNames);
     }
 
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => SymbolNodeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaration(this);
 
-    internal override IDeclaredUserType Inherited_ContainingDeclaredType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => ContainingDeclaredTypeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
 
-    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (GenericParameters.Contains(child))
+        if (GenericParameters.Contains((IChildNode)child))
             return ContainingLexicalScope;
-        if (((ITypeDefinitionNode)this).AllSupertypeNames.Contains(child))
+        if (((ITypeDefinitionNode)this).AllSupertypeNames.Contains((IChildNode)child))
             return LexicalScopingAspect.TypeDefinition_AllSupertypeNames_Broadcast_ContainingLexicalScope(this);
         return LexicalScopingAspect.TypeDefinition_Members_Broadcast_ContainingLexicalScope(this);
     }
 
-    internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => this;
 
-    internal override bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => false;
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)

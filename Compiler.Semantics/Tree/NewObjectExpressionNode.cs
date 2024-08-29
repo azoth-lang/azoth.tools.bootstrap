@@ -96,11 +96,11 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         base.CollectDiagnostics(diagnostics);
     }
 
-    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child == ConstructingType)
             return ContainingLexicalScope;
-        var argumentIndex = TempArguments.IndexOf(child)
+        var argumentIndex = TempArguments.IndexOf((IChildNode)child)
                             ?? throw new ArgumentException("Is not a child of this node.", nameof(child));
         if (argumentIndex == 0)
             return ContainingLexicalScope;
@@ -115,8 +115,8 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
     internal override IFlowState Inherited_FlowStateBefore(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
@@ -129,8 +129,8 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         => ControlFlowAspect.NewObjectExpression_ControlFlowNext(this);
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
@@ -139,7 +139,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant is IAmbiguousExpressionNode ambiguousExpression
             && CurrentArguments.IndexOf(ambiguousExpression) is int index)
@@ -148,7 +148,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant is IAmbiguousExpressionNode ambiguousExpression
             && CurrentArguments.IndexOf(ambiguousExpression) is int index)

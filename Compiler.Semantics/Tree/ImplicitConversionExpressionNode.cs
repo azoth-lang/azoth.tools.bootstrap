@@ -38,7 +38,7 @@ internal class ImplicitConversionExpressionNode : ExpressionNode, IImplicitConve
 
     public override ConditionalLexicalScope FlowLexicalScope() => Referent.FlowLexicalScope();
 
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentReferent)
             // No expected antetype for the referent. If one were given, it could cause another implicit conversion.
@@ -46,7 +46,7 @@ internal class ImplicitConversionExpressionNode : ExpressionNode, IImplicitConve
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentReferent)
             // No expected antetype for the referent. If one were given, it could cause another implicit conversion.

@@ -31,7 +31,7 @@ internal abstract class StatementNode : CodeNode, IStatementNode
     LexicalScope IStatementNode.ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => LexicalScope;
 
     public IPreviousValueId PreviousValueId()

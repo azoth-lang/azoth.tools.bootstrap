@@ -46,8 +46,8 @@ internal sealed class LoopExpressionNode : ExpressionNode, ILoopExpressionNode
         => ControlFlowAspect.LoopExpression_ControlFlowNext(this);
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child == CurrentBlock)

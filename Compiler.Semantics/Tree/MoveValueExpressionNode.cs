@@ -42,7 +42,7 @@ internal sealed class MoveValueExpressionNode : ExpressionNode, IMoveValueExpres
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.MoveExpression_ControlFlowNext(this);
 
-    internal override bool Inherited_ShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentReferent && IsImplicit)
             // Pass along should prepare to return to the referent if this is an implicit move.

@@ -25,7 +25,7 @@ internal sealed class AmbiguousFreezeExpressionNode : AmbiguousExpressionNode, I
 
     public override ConditionalLexicalScope FlowLexicalScope() => TempReferent.FlowLexicalScope();
 
-    protected override IChildNode Rewrite()
+    protected override IChildTreeNode Rewrite()
         => CapabilityExpressionsAspect.AmbiguousFreezeExpression_Rewrite_Variable(this)
         ?? CapabilityExpressionsAspect.AmbiguousFreezeExpression_Rewrite_Value(this)
         ?? base.Rewrite();

@@ -111,13 +111,13 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         this.initializer = Child.Create(this, initializer);
     }
 
-    internal override IPreviousValueId Previous_PreviousValueId(IChildNode before, IInheritanceContext ctx)
+    internal override IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => BindingValueId;
 
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentInitializer)
             // The expected antetype for the initializer is the binding antetype since it needs to
@@ -126,7 +126,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentInitializer)
             // The expected type for the initializer is the binding type since it needs to have any
@@ -135,7 +135,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
-    internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentInitializer)
             // TODO implicit recovery is allowed for initializers, but only if no variable will be affected
@@ -144,7 +144,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         return false;
     }
 
-    internal override bool Inherited_ShouldPrepareToReturn(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => false;
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)

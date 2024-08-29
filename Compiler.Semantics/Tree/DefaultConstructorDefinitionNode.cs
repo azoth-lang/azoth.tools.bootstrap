@@ -23,8 +23,8 @@ internal sealed class DefaultConstructorDefinitionNode : ConstructorDefinitionNo
     { }
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (descendant == Entry)
@@ -33,14 +33,14 @@ internal sealed class DefaultConstructorDefinitionNode : ConstructorDefinitionNo
     }
 
     internal override IEntryNode Inherited_ControlFlowEntry(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
         => Entry;
 
     internal override IExitNode Inherited_ControlFlowExit(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
         => Exit;
 }

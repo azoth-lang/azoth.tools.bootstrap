@@ -157,15 +157,15 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         this.block = Child.Create(this, block);
     }
 
-    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => child == Block ? LexicalScope : ContainingLexicalScope;
 
     public PackageNameScope PackageNameScope()
         => Inherited_PackageNameScope(GrammarAttribute.CurrentInheritanceContext());
 
     internal override IFlowState Inherited_FlowStateBefore(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child == Block)
@@ -173,7 +173,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Previous_PreviousValueId(IChildNode before, IInheritanceContext ctx)
+    internal override IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         // Include the BindingValueId in the value id flow
         => BindingValueId;
 
@@ -187,7 +187,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.ForeachExpression_ControlFlowNext(this);
 
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child == CurrentInExpression)
             return ControlFlowSet.CreateNormal(Block);

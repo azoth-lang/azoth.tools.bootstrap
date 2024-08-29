@@ -46,15 +46,15 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
 
     LexicalScope IBlockExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
 
-    internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, Statements.IndexOf(child)!.Value);
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        => LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, Statements.IndexOf((IChildNode)child)!.Value);
 
     internal override IFlowState Inherited_FlowStateBefore(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
-        if (Statements.IndexOf(child) is int index and > 0)
+        if (Statements.IndexOf((IChildNode)child) is int index and > 0)
             return Statements[index - 1].FlowStateAfter;
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
@@ -71,7 +71,7 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.BlockExpression_ControlFlowNext(this);
 
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child is IStatementNode statement && Statements.IndexOf(statement) is int index
                                               && index < Statements.Count - 1)

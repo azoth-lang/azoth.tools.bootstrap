@@ -62,7 +62,7 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
-    internal override IFlowState Inherited_FlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child is IAmbiguousExpressionNode ambiguousExpression
             && arguments.Current.IndexOf(ambiguousExpression) is int index and > 0)
@@ -75,8 +75,8 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
         => ControlFlowAspect.FunctionReferenceInvocation_ControlFlowNext(this);
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child == CurrentExpression)
@@ -92,7 +92,7 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant is IAmbiguousExpressionNode ambiguousExpression
             && CurrentArguments.IndexOf(ambiguousExpression) is int index)
@@ -100,7 +100,7 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant is IAmbiguousExpressionNode ambiguousExpression
             && CurrentArguments.IndexOf(ambiguousExpression) is int index)

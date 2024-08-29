@@ -55,18 +55,18 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
     public IFlowState FlowStateBefore()
         => TypeMemberDeclarationsAspect.ConcreteInvocable_FlowStateBefore(this);
 
-    internal override IPreviousValueId Previous_PreviousValueId(IChildNode before, IInheritanceContext ctx)
+    internal override IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => ValueIdsAspect.InvocableDefinition_PreviousValueId(this);
 
     internal override IFlowState Inherited_FlowStateBefore(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
     {
         if (child == Body)
             return Parameters.LastOrDefault()?.FlowStateAfter
                    ?? SelfParameter?.FlowStateAfter ?? FlowStateBefore();
-        if (Parameters.IndexOf(child) is int index)
+        if (Parameters.IndexOf((IChildNode)child) is int index)
         {
             if (index == 0)
                 return SelfParameter?.FlowStateAfter ?? FlowStateBefore();
@@ -78,15 +78,15 @@ internal abstract class ConstructorDefinitionNode : TypeMemberDefinitionNode, IC
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal sealed override DataType? Inherited_ExpectedReturnType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal sealed override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (child == Body) return DataType.Void;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(
-        IChildNode child,
-        IChildNode descendant,
+        SemanticNode child,
+        SemanticNode descendant,
         IInheritanceContext ctx)
         => VariableBindingsMap;
 }
