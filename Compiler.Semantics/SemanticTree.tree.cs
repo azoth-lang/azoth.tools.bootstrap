@@ -3856,6 +3856,9 @@ file class PackageNode : SemanticNode, IPackageNode
             return LexicalScopingAspect.Package_TestingFacet_PackageNameScope(this);
         return base.Inherited_PackageNameScope(child, descendant, ctx);
     }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+        => contributors.Add(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4003,6 +4006,9 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
             return SymbolNodeAspect.CompilationUnit_Children_ContainingDeclaration(this);
         return base.Inherited_ContainingDeclaration(child, descendant, ctx);
     }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+        => contributors.Add(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
