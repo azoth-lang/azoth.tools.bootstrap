@@ -51,16 +51,26 @@ internal static class Emit
     public static string TypeName(Symbol symbol)
         => symbol.FullName;
 
-    public static string Type(TypeModel type) => Type(type, TypeName);
-
-    private static string Type(TypeModel type, Func<Symbol, string> emitSymbol)
+    public static string Type(TypeModel type)
         => type switch
         {
-            SymbolTypeModel t => emitSymbol(t.Symbol),
-            ListTypeModel t => $"IFixedList<{Type(t.ElementType, emitSymbol)}>",
-            SetTypeModel t => $"IFixedSet<{Type(t.ElementType, emitSymbol)}>",
-            OptionalTypeModel t => $"{Type(t.UnderlyingType, emitSymbol)}?",
-            EnumerableTypeModel t => $"IEnumerable<{Type(t.ElementType, emitSymbol)}>",
+            SymbolTypeModel t => TypeName(t.Symbol),
+            ListTypeModel t => $"IFixedList<{Type(t.ElementType)}>",
+            SetTypeModel t => $"IFixedSet<{Type(t.ElementType)}>",
+            OptionalTypeModel t => $"{Type(t.UnderlyingType)}?",
+            EnumerableTypeModel t => $"IEnumerable<{Type(t.ElementType)}>",
+            _ => throw ExhaustiveMatch.Failed(type)
+        };
+
+    /// <summary>
+    /// The type of a parameter to the constructor for a property of this type.
+    /// </summary>
+    public static string ParameterType(TypeModel type)
+        => type switch
+        {
+            SymbolTypeModel t => TypeName(t.Symbol),
+            CollectionTypeModel t => $"IEnumerable<{Type(t.ElementType)}>",
+            OptionalTypeModel t => $"{ParameterType(t.UnderlyingType)}?",
             _ => throw ExhaustiveMatch.Failed(type)
         };
 
@@ -104,6 +114,19 @@ internal static class Emit
 
     public static string VariableName(AttributeModel attribute)
         => attribute.Name.ToCamelCase();
+
+    public static string ToCollection(PropertyModel property)
+    {
+        return property.Type switch
+        {
+            SetTypeModel _ => ".ToFixedSet()",
+            ListTypeModel _ => ".ToFixedList()",
+            EnumerableTypeModel _ => throw new NotImplementedException("Enumerable type not yet implemented."),
+            OptionalTypeModel _ => "",
+            SymbolTypeModel _ => "",
+            _ => throw ExhaustiveMatch.Failed(property.Type)
+        };
+    }
 
     public static string FieldReference(PropertyModel property)
         => property.IsTemp && property.IsCollection ? $"this.{VariableName(property)}" : property.TempName;

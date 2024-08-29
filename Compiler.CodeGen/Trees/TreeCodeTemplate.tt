@@ -11,7 +11,7 @@
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(tree,
     Build.Conditional(!tree.SimplifiedTree, "System", "System.Linq", "System.Threading", "Azoth.Tools.Bootstrap.Compiler.Core.Attributes"),
-    Build.Conditional(tree.GenerateClasses, "InlineMethod"),
+    Build.Conditional(tree.GenerateClasses, "InlineMethod", "System.Collections.Generic"),
     ["ExhaustiveMatching", "System.CodeDom.Compiler", "System.Diagnostics"])) { #>
 using <#=usingNamespace #>;
 <#  } #>
@@ -46,7 +46,7 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#      } #>
 <#      if (tree.GenerateClasses && !node.IsAbstract) { #>
 
-    public static <#= Emit.TypeName(node.Defines) #> Create(<#=string.Join(", ", Build.PropertiesForClass(node).Select(p => $"{Emit.Type(p.Type)} {Emit.VariableName(p)}")) #>)
+    public static <#= Emit.TypeName(node.Defines) #> Create(<#=string.Join(", ", Build.PropertiesForClass(node).Select(p => $"{Emit.ParameterType(p.Type)} {Emit.VariableName(p)}")) #>)
         => new <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", Build.PropertiesForClass(node).Select(p => Emit.VariableName(p))) #>);
 <#      } #>
 }
@@ -226,13 +226,13 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#          } #>
 <#      } #>
 
-    public <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", Build.PropertiesForClass(node).Select(p => $"{Emit.Type(p.Type)} {Emit.VariableName(p)}")) #>)
+    public <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", Build.PropertiesForClass(node).Select(p => $"{Emit.ParameterType(p.Type)} {Emit.VariableName(p)}")) #>)
     {
 <#      foreach (var property in Build.PropertiesForClass(node)) { #>
 <#          if (!tree.SimplifiedTree && property.IsChild) { #>
         <#= Emit.FieldReference(property) #> = <#= Emit.ChildAttach(property) #><#= Emit.VariableName(property) #>);
 <#          } else { #>
-        <#= property.TempName #> = <#=Emit.VariableName(property) #>;
+        <#= property.TempName #> = <#= Emit.VariableName(property) #><#= Emit.ToCollection(property) #>;
 <#          } #>
 <#      } #>
 <#      foreach (var equation in node.ActualEquations.OfType<SynthesizedAttributeEquationModel>().Where(eq => eq.Strategy == EvaluationStrategy.Eager)) { #>
