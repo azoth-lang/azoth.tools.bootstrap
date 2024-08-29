@@ -86,10 +86,10 @@ internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeD
         return LexicalScopingAspect.TypeDefinition_Members_Broadcast_ContainingLexicalScope(this);
     }
 
-    internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(IChildNode child, IChildNode descendant)
+    internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => this;
 
-    internal override bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant)
+    internal override bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => false;
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)

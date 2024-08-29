@@ -49,5 +49,6 @@ internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserT
         return ChildList.Attach(this, declarationNodes);
     }
 
-    public ISymbolTree SymbolTree() => Inherited_SymbolTree();
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 }

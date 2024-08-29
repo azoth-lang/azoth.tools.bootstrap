@@ -18,7 +18,7 @@ internal sealed class IdentifierTypeNameNode : TypeNameNode, IIdentifierTypeName
     private ValueAttribute<bool> attributeType;
     public bool IsAttributeType
         => attributeType.TryGetValue(out var value) ? value
-            : attributeType.GetValue(Inherited_IsAttributeType);
+            : attributeType.GetValue(() => Inherited_IsAttributeType(GrammarAttribute.CurrentInheritanceContext()));
     public override IdentifierName Name => Syntax.Name;
     private ITypeDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;

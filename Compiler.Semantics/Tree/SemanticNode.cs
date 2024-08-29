@@ -44,7 +44,7 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual CodeFile Inherited_File(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_File), child, descendant);
 
-    internal virtual PackageNameScope Inherited_PackageNameScope(IChildNode child, IChildNode descendant)
+    internal virtual PackageNameScope Inherited_PackageNameScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_PackageNameScope), child, descendant);
 
     internal virtual LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
@@ -56,25 +56,25 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual Pseudotype? Inherited_MethodSelfType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_MethodSelfType), child, descendant);
 
-    internal virtual ITypeDefinitionNode Inherited_ContainingTypeDefinition(IChildNode child, IChildNode descendant)
+    internal virtual ITypeDefinitionNode Inherited_ContainingTypeDefinition(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_ContainingTypeDefinition), child, descendant);
 
-    internal virtual bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant)
+    internal virtual bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_IsAttributeType), child, descendant);
 
-    internal virtual ISymbolTree Inherited_SymbolTree(IChildNode child, IChildNode descendant)
+    internal virtual ISymbolTree Inherited_SymbolTree(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_SymbolTree), child, descendant);
 
-    internal virtual IPackageFacetDeclarationNode Inherited_Facet(IChildNode child, IChildNode descendant)
+    internal virtual IPackageFacetDeclarationNode Inherited_Facet(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_Facet), child, descendant);
 
     internal virtual IFlowState Inherited_FlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_FlowStateBefore), child, descendant);
 
-    internal virtual IMaybeAntetype Inherited_ContextBindingAntetype(IChildNode child, IChildNode descendant)
+    internal virtual IMaybeAntetype Inherited_ContextBindingAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_ContextBindingAntetype), child, descendant);
 
-    internal virtual DataType Inherited_ContextBindingType(IChildNode child, IChildNode descendant)
+    internal virtual DataType Inherited_ContextBindingType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_ContextBindingType), child, descendant);
 
     internal virtual ValueId? Inherited_MatchReferentValueId(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

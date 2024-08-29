@@ -13,7 +13,7 @@ internal abstract class DefinitionNode : CodeNode, IDefinitionNode
     private ValueAttribute<IPackageFacetNode> facet;
     public abstract StandardName? Name { get; }
     public IPackageFacetNode Facet
-        => facet.TryGetValue(out var value) ? value : facet.GetValue(() => (IPackageFacetNode)Inherited_Facet());
+        => facet.TryGetValue(out var value) ? value : facet.GetValue(() => (IPackageFacetNode)Inherited_Facet(GrammarAttribute.CurrentInheritanceContext()));
     public virtual ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public virtual Symbol ContainingSymbol => ContainingDeclaration.Symbol;

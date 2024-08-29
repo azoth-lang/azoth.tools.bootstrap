@@ -108,7 +108,8 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         return TempArguments[argumentIndex - 1].FlowLexicalScope().True;
     }
 
-    public PackageNameScope PackageNameScope() => Inherited_PackageNameScope();
+    public PackageNameScope PackageNameScope()
+        => Inherited_PackageNameScope(GrammarAttribute.CurrentInheritanceContext());
 
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());

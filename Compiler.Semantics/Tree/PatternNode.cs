@@ -43,9 +43,11 @@ internal abstract class PatternNode : CodeNode, IPatternNode
     public IPreviousValueId PreviousValueId()
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    public IMaybeAntetype ContextBindingAntetype() => Inherited_ContextBindingAntetype();
+    public IMaybeAntetype ContextBindingAntetype()
+        => Inherited_ContextBindingAntetype(GrammarAttribute.CurrentInheritanceContext());
 
-    public DataType ContextBindingType() => Inherited_ContextBindingType();
+    public DataType ContextBindingType()
+        => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
 
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());

@@ -22,11 +22,11 @@ internal sealed class AttributeNode : CodeNode, IAttributeNode
         TypeName = Child.Attach(this, typeName);
     }
 
-    internal override bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant)
+    internal override bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == TypeName)
             return true;
-        return base.Inherited_IsAttributeType(child, descendant);
+        return base.Inherited_IsAttributeType(child, descendant, ctx);
     }
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)

@@ -12,7 +12,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class NamespaceDefinitionNode : ChildNode, INamespaceDefinitionNode
 {
     public override ISyntax? Syntax => null;
-    public IPackageFacetDeclarationNode Facet => Parent.Inherited_Facet(this, this);
+    public IPackageFacetDeclarationNode Facet
+        => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public IdentifierName Name => Symbol.Name;
     public NamespaceSymbol Symbol { get; }
     public IFixedList<INamespaceDefinitionNode> MemberNamespaces { get; }

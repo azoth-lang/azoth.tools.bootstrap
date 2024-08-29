@@ -21,7 +21,7 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     private ValueAttribute<IPackageFacetDeclarationNode> facet;
     public IPackageFacetDeclarationNode Facet
         => facet.TryGetValue(out var value) ? value
-            : facet.GetValue(Inherited_Facet);
+            : facet.GetValue(() => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext()));
     public TypeParameterIndependence Independence => Syntax.Independence;
     public TypeParameterVariance Variance => Syntax.Variance;
     private ValueAttribute<GenericParameter> parameter;

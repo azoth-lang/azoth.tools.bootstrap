@@ -19,7 +19,7 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
     private ValueAttribute<bool> attributeType;
     public bool IsAttributeType
         => attributeType.TryGetValue(out var value) ? value
-            : attributeType.GetValue(Inherited_IsAttributeType);
+            : attributeType.GetValue(() => Inherited_IsAttributeType(GrammarAttribute.CurrentInheritanceContext()));
     public override GenericName Name => Syntax.Name;
     public override TypeSymbol? ReferencedSymbol => SymbolsAspect.StandardTypeName_ReferencedSymbol(this);
     public IFixedList<ITypeNode> TypeArguments { get; }

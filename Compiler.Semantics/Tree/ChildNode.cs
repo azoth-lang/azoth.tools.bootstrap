@@ -113,10 +113,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected CodeFile Inherited_File(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_File(this, this, ctx);
 
-    internal override PackageNameScope Inherited_PackageNameScope(IChildNode child, IChildNode descendant)
-        => Parent.Inherited_PackageNameScope(this, descendant);
+    internal override PackageNameScope Inherited_PackageNameScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_PackageNameScope(this, descendant, ctx);
 
-    protected PackageNameScope Inherited_PackageNameScope() => Parent.Inherited_PackageNameScope(this, this);
+    protected PackageNameScope Inherited_PackageNameScope(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_PackageNameScope(this, this, ctx);
 
     internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => GetParent(ctx).Inherited_ContainingLexicalScope(this, descendant, ctx);
@@ -136,27 +137,29 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected Pseudotype? Inherited_MethodSelfType(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_MethodSelfType(this, this, ctx);
 
-    internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(IChildNode child, IChildNode descendant)
-        => Parent.Inherited_ContainingTypeDefinition(this, descendant);
+    internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ContainingTypeDefinition(this, descendant, ctx);
 
-    protected ITypeDefinitionNode Inherited_ContainingTypeDefinition()
-        => Parent.Inherited_ContainingTypeDefinition(this, this);
+    protected ITypeDefinitionNode Inherited_ContainingTypeDefinition(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ContainingTypeDefinition(this, this, ctx);
 
-    internal override bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant)
-        => Parent.Inherited_IsAttributeType(this, descendant);
+    internal override bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_IsAttributeType(this, descendant, ctx);
 
-    protected bool Inherited_IsAttributeType() => Parent.Inherited_IsAttributeType(this, this);
+    protected bool Inherited_IsAttributeType(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_IsAttributeType(this, this, ctx);
 
-    internal override IPackageFacetDeclarationNode Inherited_Facet(IChildNode child, IChildNode descendant)
-        => Parent.Inherited_Facet(this, descendant);
+    internal override IPackageFacetDeclarationNode Inherited_Facet(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_Facet(this, descendant, ctx);
 
-    protected IPackageFacetDeclarationNode Inherited_Facet() => Parent.Inherited_Facet(this, this);
+    protected IPackageFacetDeclarationNode Inherited_Facet(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_Facet(this, this, ctx);
 
-    internal override ISymbolTree Inherited_SymbolTree(IChildNode child, IChildNode descendant)
-        => Parent.Inherited_SymbolTree(this, descendant);
+    internal override ISymbolTree Inherited_SymbolTree(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_SymbolTree(this, descendant, ctx);
 
-    protected ISymbolTree Inherited_SymbolTree()
-        => Parent.Inherited_SymbolTree(this, this);
+    protected ISymbolTree Inherited_SymbolTree(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_SymbolTree(this, this, ctx);
 
     internal override IFlowState Inherited_FlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => GetParent(ctx).Inherited_FlowStateBefore(this, descendant, ctx);
@@ -164,17 +167,17 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected IFlowState Inherited_FlowStateBefore(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_FlowStateBefore(this, this, ctx);
 
-    internal override IMaybeAntetype Inherited_ContextBindingAntetype(IChildNode child, IChildNode descendant)
-        => Parent.Inherited_ContextBindingAntetype(this, descendant);
+    internal override IMaybeAntetype Inherited_ContextBindingAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ContextBindingAntetype(this, descendant, ctx);
 
-    protected IMaybeAntetype Inherited_ContextBindingAntetype()
-        => Parent.Inherited_ContextBindingAntetype(this, this);
+    protected IMaybeAntetype Inherited_ContextBindingAntetype(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ContextBindingAntetype(this, this, ctx);
 
-    internal override DataType Inherited_ContextBindingType(IChildNode child, IChildNode descendant)
-        => Parent.Inherited_ContextBindingType(this, descendant);
+    internal override DataType Inherited_ContextBindingType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ContextBindingType(this, descendant, ctx);
 
-    protected DataType Inherited_ContextBindingType()
-        => Parent.Inherited_ContextBindingType(this, this);
+    protected DataType Inherited_ContextBindingType(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ContextBindingType(this, this, ctx);
 
     internal override ValueId? Inherited_MatchReferentValueId(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => GetParent(ctx).Inherited_MatchReferentValueId(this, descendant, ctx);

@@ -32,7 +32,7 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
     private ValueAttribute<PackageNameScope> packageNameScope;
     public PackageNameScope PackageNameScope
         => packageNameScope.TryGetValue(out var value) ? value
-            : packageNameScope.GetValue(Inherited_PackageNameScope);
+            : packageNameScope.GetValue(() => Inherited_PackageNameScope(GrammarAttribute.CurrentInheritanceContext()));
 
     public PackageFacetNode(IPackageSyntax syntax, IEnumerable<ICompilationUnitNode> compilationUnits)
     {
@@ -46,9 +46,9 @@ internal class PackageFacetNode : ChildNode, IPackageFacetNode
     internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => PackageNameScope.PackageGlobalScope;
 
-    internal override IPackageFacetDeclarationNode Inherited_Facet(IChildNode child, IChildNode descendant)
+    internal override IPackageFacetDeclarationNode Inherited_Facet(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => this;
 
-    internal override PackageNameScope Inherited_PackageNameScope(IChildNode child, IChildNode descendant)
+    internal override PackageNameScope Inherited_PackageNameScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => PackageNameScope;
 }
