@@ -5,17 +5,18 @@
 // ↓ ↑ ⮡ ✎
 
 // ---------- Packages
-= Package.Symbol;
+↑ Package.Symbol: `PackageSymbol`;
 ↑ Package.PackageSymbols: `IPackageSymbols`;
 
 // ---------- Function Definition
 ↑ FunctionDefinition.Symbol:`FunctionSymbol`;
 
 // ---------- Type Definitions
+↑ TypeDefinition.Symbol: `UserTypeSymbol`;
 = TypeDefinition.Symbol;
 
 // ---------- Type Definition Parts
-= GenericParameter.Symbol;
+↑ GenericParameter.Symbol: `GenericParameterTypeSymbol`;
 
 // ---------- Member Definitions
 ↑ MethodDefinition.Symbol: `MethodSymbol`;

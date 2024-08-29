@@ -15,11 +15,10 @@ public sealed class SynthesizedAttributeEquationModel : SubtreeEquationModel
 
     public override SynthesizedAttributeEquationSyntax? Syntax { get; }
     /// <summary>
-    /// The <see cref="SynthesizedAttributeModel"/> or <see cref="PropertyModel"/> that this equation
-    /// provides a value for.
+    /// The <see cref="SynthesizedAttributeModel"/> that this equation provides a value for.
     /// </summary>
-    public override AttributeModel Attribute => attribute.Value;
-    private readonly Lazy<AttributeModel> attribute;
+    public override SynthesizedAttributeModel Attribute => attribute.Value;
+    private readonly Lazy<SynthesizedAttributeModel> attribute;
     public override EvaluationStrategy Strategy => strategy.Value;
     private readonly Lazy<EvaluationStrategy> strategy;
     public TypeModel? TypeOverride { get; }
@@ -53,23 +52,19 @@ public sealed class SynthesizedAttributeEquationModel : SubtreeEquationModel
     }
 
     /// <remarks>
-    /// 1. If the strategy is specified in the syntax, use it.
-    /// 2. If the expression is specified, use Computed.
+    /// 1. If the expression is specified, use Computed.
+    /// 2. If the strategy is specified in the syntax, use it.
     /// 3. Otherwise, use the strategy defined in the attribute.
     /// </remarks>
     private EvaluationStrategy ComputeStrategy()
     {
         if (IsMethod)
             return EvaluationStrategy.Computed;
-        var synthesizedAttribute = Attribute as SynthesizedAttributeModel;
-        var defaultStrategy = synthesizedAttribute?.Strategy ?? EvaluationStrategy.Lazy;
-        return Syntax!.Strategy.WithDefault(Expression, defaultStrategy);
+        return Syntax!.Strategy.WithDefault(Expression, Attribute.Strategy);
     }
 
-
-    private AttributeModel GetAttribute()
-        => (AttributeModel?)Aspect.Tree.AttributeFor<SynthesizedAttributeModel>(NodeSymbol, Name)
-           ?? Aspect.Tree.AttributeFor<PropertyModel>(NodeSymbol, Name)
+    private SynthesizedAttributeModel GetAttribute()
+        => Aspect.Tree.AttributeFor<SynthesizedAttributeModel>(NodeSymbol, Name)
            ?? throw new($"{NodeSymbol}.{Name} doesn't have a corresponding attribute.");
 
     public override string ToString()

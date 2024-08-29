@@ -226,14 +226,8 @@ public class TreeNodeModel
         treeChildNodes = new(() => DeclaredAttributes.Where(p => p.IsChild)
                                                      .Select(a => a.Type.ReferencedNode()!)
                                                      .ToFixedSet());
-        isRoot = new(() =>
-        {
-            if (Defines.ShortName == "Semantic")
-                Debugger.Break();
-
-            return !Tree.TreeChildNodes.Contains(this)
-                   && (!IsAbstract || DescendantNodes.Where(n => !n.IsAbstract).Any(n => n.IsRoot));
-        });
+        isRoot = new(() => !Tree.TreeChildNodes.Contains(this)
+                           && (!IsAbstract || DescendantNodes.Where(n => !n.IsAbstract).Any(n => n.IsRoot)));
         allInheritedAttributes = new(()
             => SupertypeNodes.SelectMany(r => r.AllAttributes).Distinct().ToFixedList());
         allAttributes = new(() => AllDeclaredAttributes.Concat(AllInheritedAttributes).ToFixedList());

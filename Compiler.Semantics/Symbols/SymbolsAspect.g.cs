@@ -11,19 +11,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 internal static partial class SymbolsAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial PackageSymbol Package_Symbol(IPackageNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial UserTypeSymbol TypeDefinition_Symbol(ITypeDefinitionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial MethodSymbol MethodDefinition_Symbol(IMethodDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial TypeSymbol? StandardTypeName_ReferencedSymbol(IStandardTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial PackageSymbol Package_Symbol(IPackageNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IPackageSymbols Package_PackageSymbols(IPackageNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FunctionSymbol FunctionDefinition_Symbol(IFunctionDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ConstructorSymbol DefaultConstructorDefinition_Symbol(IDefaultConstructorDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

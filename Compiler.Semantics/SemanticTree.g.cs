@@ -154,16 +154,20 @@ public partial interface IPackageNode : IPackageDeclarationNode
     new IPackageFacetNode TestingFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
     FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations { get; }
+    new IdentifierName? AliasOrName
+        => null;
+    IdentifierName? IPackageDeclarationNode.AliasOrName => AliasOrName;
     new IdentifierName Name
         => Syntax.Name;
     IdentifierName IPackageDeclarationNode.Name => Name;
     IFunctionDefinitionNode? EntryPoint { get; }
     DiagnosticCollection Diagnostics { get; }
+    new PackageSymbol Symbol { get; }
+    PackageSymbol IPackageDeclarationNode.Symbol => Symbol;
+    Symbol ISymbolDeclarationNode.Symbol => Symbol;
     IPackageSymbols PackageSymbols { get; }
     IPackageReferenceNode IntrinsicsReference { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
-    IdentifierName? IPackageDeclarationNode.AliasOrName
-        => null;
 
     public static IPackageNode Create(IPackageSyntax syntax, IEnumerable<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet)
         => new PackageNode(syntax, references, mainFacet, testingFacet);
@@ -205,14 +209,16 @@ public partial interface IStandardPackageReferenceNode : IPackageReferenceNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IIntrinsicsPackageReferenceNode : IPackageReferenceNode
 {
+    new IPackageReferenceSyntax? Syntax
+        => null;
+    IPackageReferenceSyntax? IPackageReferenceNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     IPackageSymbols IPackageReferenceNode.PackageSymbols
         => IntrinsicPackageSymbol.Instance;
     IdentifierName IPackageReferenceNode.AliasOrName
         => PackageSymbols.PackageSymbol.Name;
     bool IPackageReferenceNode.IsTrusted
         => true;
-    IPackageReferenceSyntax? IPackageReferenceNode.Syntax
-        => null;
 
     public static IIntrinsicsPackageReferenceNode Create()
         => new IntrinsicsPackageReferenceNode();
@@ -489,6 +495,10 @@ public partial interface ITypeDefinitionNode : IPackageMemberDefinitionNode, IAs
     LexicalScope SupertypesLexicalScope { get; }
     IEnumerable<IStandardTypeNameNode> AllSupertypeNames
         => SupertypeNames;
+    new UserTypeSymbol Symbol { get; }
+    Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    UserTypeSymbol IUserTypeDeclarationNode.Symbol => Symbol;
+    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     new AccessModifier AccessModifier { get; }
     AccessModifier IPackageMemberDefinitionNode.AccessModifier => AccessModifier;
     AccessModifier ITypeMemberDefinitionNode.AccessModifier => AccessModifier;
@@ -581,6 +591,10 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IUserTypeDeclarationNode ContainingDeclaration { get; }
+    new GenericParameterTypeSymbol Symbol { get; }
+    GenericParameterTypeSymbol IGenericParameterDeclarationNode.Symbol => Symbol;
+    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    Symbol ISymbolDeclarationNode.Symbol => Symbol;
     IDeclaredUserType ContainingDeclaredType { get; }
 
     public static IGenericParameterNode Create(IEnumerable<BareReferenceType> supertypes, IEnumerable<ITypeMemberDeclarationNode> inclusiveMembers, IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, GenericParameterType declaredType, UserTypeSymbol containingSymbol, IEnumerable<ITypeMemberDefinitionNode> members)
@@ -3833,12 +3847,6 @@ file class PackageNode : SemanticNode, IPackageNode
     private DiagnosticCollection? diagnostics;
     private bool diagnosticsCached;
     private IFixedSet<SemanticNode>? diagnosticsContributors;
-    public PackageSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.Package_Symbol);
-    private PackageSymbol? symbol;
-    private bool symbolCached;
     public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
         => GrammarAttribute.IsCached(in packageDeclarationsCached) ? packageDeclarations!
             : this.Synthetic(ref packageDeclarationsCached, ref packageDeclarations,
@@ -3851,6 +3859,12 @@ file class PackageNode : SemanticNode, IPackageNode
                 DefinitionsAspect.Package_EntryPoint);
     private IFunctionDefinitionNode? entryPoint;
     private bool entryPointCached;
+    public PackageSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.Package_Symbol);
+    private PackageSymbol? symbol;
+    private bool symbolCached;
     public IPackageSymbols PackageSymbols
         => GrammarAttribute.IsCached(in packageSymbolsCached) ? packageSymbols!
             : this.Synthetic(ref packageSymbolsCached, ref packageSymbols,
