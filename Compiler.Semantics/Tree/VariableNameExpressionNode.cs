@@ -53,11 +53,11 @@ internal sealed class VariableNameExpressionNode : NameExpressionNode, IVariable
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
-    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
+    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         DefiniteAssignmentAspect.VariableNameExpression_ContributeDiagnostics(this, diagnostics);
         SingleAssignmentAspect.VariableNameExpression_ContributeDiagnostics(this, diagnostics);
         ShadowingAspect.VariableNameExpression_ContributeDiagnostics(this, diagnostics);
-        base.CollectDiagnostics(diagnostics);
+        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
     }
 }

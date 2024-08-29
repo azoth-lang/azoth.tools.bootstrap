@@ -89,11 +89,11 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
-    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
+    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         OverloadResolutionAspect.NewObjectExpression_ContributeDiagnostics(this, diagnostics);
         ExpressionTypesAspect.NewObjectExpression_ContributeDiagnostics(this, diagnostics);
-        base.CollectDiagnostics(diagnostics);
+        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

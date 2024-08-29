@@ -41,10 +41,10 @@ internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
 
     public override ConditionalLexicalScope FlowLexicalScope() => TempReferent.FlowLexicalScope();
 
-    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
+    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         ExpressionTypesAspect.IdExpression_ContributeDiagnostics(this, diagnostics);
-        base.CollectDiagnostics(diagnostics);
+        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()

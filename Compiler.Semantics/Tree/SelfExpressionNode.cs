@@ -58,10 +58,10 @@ internal sealed class SelfExpressionNode : NameExpressionNode, ISelfExpressionNo
         Syntax = syntax;
     }
 
-    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
+    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         BindingNamesAspect.SelfExpression_ContributeDiagnostics(this, diagnostics);
-        base.CollectDiagnostics(diagnostics);
+        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
     }
 
     public IFlowState FlowStateBefore()

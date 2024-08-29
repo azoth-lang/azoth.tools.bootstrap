@@ -116,10 +116,10 @@ internal abstract class SemanticNode : ISemanticNode, IChildTreeNode
     internal virtual IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => throw Child.PreviousFailed(nameof(Previous_PreviousValueId), before);
 
-    protected virtual void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
+    protected virtual void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         foreach (var child in this.Children().Cast<SemanticNode>())
-            child.CollectDiagnostics(diagnostics);
+            child.Contribute_Diagnostics(diagnostics, contributeAttribute);
     }
 
     internal virtual ControlFlowSet CollectControlFlowPrevious(IControlFlowNode target, IInheritanceContext ctx)

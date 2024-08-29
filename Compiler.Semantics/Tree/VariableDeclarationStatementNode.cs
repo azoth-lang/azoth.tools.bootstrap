@@ -147,10 +147,10 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => false;
 
-    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
+    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         NameBindingAntetypesAspect.VariableDeclarationStatement_ContributeDiagnostics(this, diagnostics);
         ShadowingAspect.VariableBinding_ContributeDiagnostics(this, diagnostics);
-        base.CollectDiagnostics(diagnostics);
+        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
     }
 }

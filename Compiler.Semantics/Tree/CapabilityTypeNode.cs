@@ -32,9 +32,9 @@ internal sealed class CapabilityTypeNode : TypeNode, ICapabilityTypeNode
         Referent = Child.Attach(this, referent);
     }
 
-    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
+    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         TypeExpressionsAspect.CapabilityType_ContributeDiagnostics(this, diagnostics);
-        base.CollectDiagnostics(diagnostics);
+        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
     }
 }

@@ -135,10 +135,10 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
-    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
+    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         OverloadResolutionAspect.MethodInvocationExpression_ContributeDiagnostics(this, diagnostics);
         ExpressionTypesAspect.MethodInvocationExpression_ContributeDiagnostics(this, diagnostics);
-        base.CollectDiagnostics(diagnostics);
+        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
     }
 }

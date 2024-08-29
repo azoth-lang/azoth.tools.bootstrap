@@ -56,10 +56,10 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
         TypeNode = Child.Attach(this, type);
     }
 
-    protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)
+    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         TypeMemberDeclarationsAspect.NamedParameter_ContributeDiagnostics(this, diagnostics);
-        base.CollectDiagnostics(diagnostics);
+        base.Contribute_Diagnostics(diagnostics, contributeAttribute);
     }
 
     public ControlFlowSet ControlFlowFollowing()
