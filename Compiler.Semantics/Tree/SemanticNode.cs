@@ -62,8 +62,8 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant)
         => throw Child.InheritFailed(nameof(Inherited_IsAttributeType), child, descendant);
 
-    internal virtual ISymbolTree InheritedSymbolTree(IChildNode child, IChildNode descendant)
-        => throw Child.InheritFailed(nameof(InheritedSymbolTree), child, descendant);
+    internal virtual ISymbolTree Inherited_SymbolTree(IChildNode child, IChildNode descendant)
+        => throw Child.InheritFailed(nameof(Inherited_SymbolTree), child, descendant);
 
     internal virtual IPackageFacetDeclarationNode Inherited_Facet(IChildNode child, IChildNode descendant)
         => throw Child.InheritFailed(nameof(Inherited_Facet), child, descendant);

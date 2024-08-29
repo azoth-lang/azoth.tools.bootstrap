@@ -38,3 +38,13 @@
 ↑ StandardTypeName.ReferencedDeclaration: TypeDeclaration?;
 = StandardTypeName.ReferencedDeclaration;
 ↓ StandardTypeName.IsAttributeType:`bool`;
+
+// -------------------------------------------------------------------------------------------------
+// Symbol Nodes
+// -------------------------------------------------------------------------------------------------
+
+// ---------- Facets
+= PackageFacetSymbol.*.**.SymbolTree => Self.SymbolTree;
+
+// ---------- Type Declarations
+↓ UserTypeSymbol.SymbolTree(): `ISymbolTree`;

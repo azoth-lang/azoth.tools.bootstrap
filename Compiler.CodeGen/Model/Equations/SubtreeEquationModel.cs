@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 [Closed(typeof(SynthesizedAttributeEquationModel), typeof(IntertypeMethodEquationModel))]
 public abstract class SubtreeEquationModel : EquationModel
 {
-    public abstract AttributeModel Attribute { get; }
+    public abstract override AttributeModel Attribute { get; }
     public abstract EvaluationStrategy Strategy { get; }
     public abstract bool RequiresEmitOnNode { get; }
 

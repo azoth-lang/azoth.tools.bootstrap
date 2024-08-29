@@ -11,19 +11,18 @@ internal sealed class PackageFacetSymbolNode : ChildSymbolNode, IPackageFacetSym
     public IdentifierName PackageName => Package.Name;
     public PackageSymbol PackageSymbol => Package.Symbol;
     public override PackageSymbol Symbol => PackageSymbol;
-
-    private readonly FixedSymbolTree symbolTree;
+    public FixedSymbolTree SymbolTree { get; }
 
     public INamespaceDeclarationNode GlobalNamespace { get; }
 
     public PackageFacetSymbolNode(FixedSymbolTree symbolTree)
     {
-        this.symbolTree = symbolTree;
+        SymbolTree = symbolTree;
         GlobalNamespace = Child.Attach(this, new NamespaceSymbolNode(symbolTree.Package));
     }
 
-    internal override ISymbolTree InheritedSymbolTree(IChildNode child, IChildNode descendant)
-        => symbolTree;
+    internal override ISymbolTree Inherited_SymbolTree(IChildNode child, IChildNode descendant)
+        => SymbolTree;
 
     internal override IPackageFacetDeclarationNode Inherited_Facet(IChildNode child, IChildNode descendant)
         => this;

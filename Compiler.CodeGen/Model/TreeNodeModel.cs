@@ -277,7 +277,8 @@ public class TreeNodeModel
         => ActualAttributes.Where(p => p.Name == name);
 
     public EquationModel? EquationFor(AttributeModel attribute)
-        => ActualEquations.SingleOrDefault(e => e.Name == attribute.Name);
+        // Compare by attribute rather than name to avoid issues with inherited attribute equations
+        => ActualEquations.SingleOrDefault(eq => eq.Attribute == attribute);
 
     private static IEnumerable<T> MostSpecificMembers<T>(IEnumerable<T> attributes)
         where T : IMemberModel

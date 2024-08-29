@@ -4,12 +4,13 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
-internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserTypeDeclarationNode
+internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserTypeSymbolNode
 {
     public override StandardName Name => base.Name!;
     private ValueAttribute<IFixedList<IGenericParameterDeclarationNode>> genericParameters;
@@ -42,9 +43,11 @@ internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserT
 
     private IFixedList<IGenericParameterDeclarationNode> GetGenericParameters()
     {
-        var declarationNodes = InheritedSymbolTree().GetChildrenOf(Symbol)
+        var declarationNodes = SymbolTree().GetChildrenOf(Symbol)
             .OfType<GenericParameterTypeSymbol>().Select(SymbolNodeAspect.Symbol).WhereNotNull()
             .Cast<IGenericParameterDeclarationNode>();
         return ChildList.Attach(this, declarationNodes);
     }
+
+    public ISymbolTree SymbolTree() => Inherited_SymbolTree();
 }

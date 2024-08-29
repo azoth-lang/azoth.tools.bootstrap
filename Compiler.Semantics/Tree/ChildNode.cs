@@ -148,11 +148,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     protected IPackageFacetDeclarationNode Inherited_Facet() => Parent.Inherited_Facet(this, this);
 
-    internal override ISymbolTree InheritedSymbolTree(IChildNode child, IChildNode descendant)
-        => Parent.InheritedSymbolTree(this, descendant);
+    internal override ISymbolTree Inherited_SymbolTree(IChildNode child, IChildNode descendant)
+        => Parent.Inherited_SymbolTree(this, descendant);
 
-    protected ISymbolTree InheritedSymbolTree()
-        => Parent.InheritedSymbolTree(this, this);
+    protected ISymbolTree Inherited_SymbolTree()
+        => Parent.Inherited_SymbolTree(this, this);
 
     internal override IFlowState Inherited_FlowStateBefore(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => GetParent(ctx).Inherited_FlowStateBefore(this, descendant, ctx);

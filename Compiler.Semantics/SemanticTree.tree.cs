@@ -23,6 +23,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -3395,9 +3396,10 @@ public partial interface IPackageSymbolNode : IPackageDeclarationNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageFacetSymbolNode : IPackageFacetDeclarationNode
 {
+    FixedSymbolTree SymbolTree { get; }
 
-    public static IPackageFacetSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IdentifierName? packageAliasOrName, IdentifierName packageName, PackageSymbol symbol, INamespaceDeclarationNode globalNamespace)
-        => new PackageFacetSymbolNode(syntax, parent, packageAliasOrName, packageName, symbol, globalNamespace);
+    public static IPackageFacetSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IdentifierName? packageAliasOrName, IdentifierName packageName, PackageSymbol symbol, INamespaceDeclarationNode globalNamespace, FixedSymbolTree symbolTree)
+        => new PackageFacetSymbolNode(syntax, parent, packageAliasOrName, packageName, symbol, globalNamespace, symbolTree);
 }
 
 // [Closed(typeof(NamespaceSymbolNode))]
@@ -3433,6 +3435,7 @@ public partial interface IPrimitiveTypeSymbolNode : IPrimitiveTypeDeclarationNod
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUserTypeSymbolNode : IUserTypeDeclarationNode
 {
+    ISymbolTree SymbolTree();
 
     public static IUserTypeSymbolNode Create(ISyntax? syntax, ISemanticNode parent, IFixedSet<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IFixedSet<ITypeMemberDeclarationNode> inclusiveMembers, IFixedList<IGenericParameterDeclarationNode> genericParameters, IFixedSet<ITypeMemberDeclarationNode> members)
         => new UserTypeSymbolNode(syntax, parent, supertypes, name, symbol, inclusiveMembers, genericParameters, members);
@@ -3779,6 +3782,12 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
         => GetParent(ctx).Inherited_ExpectedReturnType(this, descendant, ctx);
     protected DataType? Inherited_ExpectedReturnType(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_ExpectedReturnType(this, this, ctx);
+
+    internal virtual ISymbolTree Inherited_SymbolTree(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_SymbolTree(this, descendant, ctx);
+    protected ISymbolTree Inherited_SymbolTree(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_SymbolTree(this, this, ctx);
 
     internal virtual IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         // TODO does this need to throw an exception for the root of the tree?
@@ -10068,10 +10077,11 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
     public IdentifierName PackageName { [DebuggerStepThrough] get; }
     public PackageSymbol Symbol { [DebuggerStepThrough] get; }
     public INamespaceDeclarationNode GlobalNamespace { [DebuggerStepThrough] get; }
+    public FixedSymbolTree SymbolTree { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
 
-    public PackageFacetSymbolNode(ISyntax? syntax, ISemanticNode parent, IdentifierName? packageAliasOrName, IdentifierName packageName, PackageSymbol symbol, INamespaceDeclarationNode globalNamespace)
+    public PackageFacetSymbolNode(ISyntax? syntax, ISemanticNode parent, IdentifierName? packageAliasOrName, IdentifierName packageName, PackageSymbol symbol, INamespaceDeclarationNode globalNamespace, FixedSymbolTree symbolTree)
     {
         Syntax = syntax;
         Parent = parent;
@@ -10079,11 +10089,17 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
         PackageName = packageName;
         Symbol = symbol;
         GlobalNamespace = globalNamespace;
+        SymbolTree = symbolTree;
     }
 
     internal override IPackageFacetDeclarationNode Inherited_Facet(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return this;
+    }
+
+    internal override ISymbolTree Inherited_SymbolTree(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Self.SymbolTree;
     }
 }
 
@@ -10207,6 +10223,8 @@ file class UserTypeSymbolNode : SemanticNode, IUserTypeSymbolNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
