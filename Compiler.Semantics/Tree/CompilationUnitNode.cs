@@ -59,7 +59,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
         return base.Inherited_ContainingDeclaration(child, descendant, ctx);
     }
 
-    internal override CodeFile Inherited_File(IChildNode child, IChildNode descendant)
+    internal override CodeFile Inherited_File(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => ContextAspect.CompilationUnit_Children_Broadcast_File(this);
 
     internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

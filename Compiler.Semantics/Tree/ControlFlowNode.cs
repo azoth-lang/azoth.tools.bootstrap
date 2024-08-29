@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
@@ -10,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal abstract class ControlFlowNode : ChildNode, IControlFlowNode
 {
     public sealed override ICodeSyntax? Syntax => null;
-    public CodeFile File => Inherited_File();
+    public CodeFile File => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public abstract ControlFlowSet ControlFlowNext { get; }
     private ControlFlowSet? controlFlowPrevious;
     private bool controlFlowPreviousCached;

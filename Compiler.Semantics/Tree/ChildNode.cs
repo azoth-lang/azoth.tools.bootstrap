@@ -18,6 +18,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class ChildNode : SemanticNode, IChildNode
 {
+    public IPackageDeclarationNode Package => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+
     private bool inFinalTree;
 
     /// <remarks>Volatile read not necessary because an out-of-order read is not an issue since it
@@ -51,8 +53,6 @@ internal abstract class ChildNode : SemanticNode, IChildNode
 
     // TODO this should only be available in the final tree
     ISemanticNode IChildNode.Parent => Parent;
-
-    public IPackageDeclarationNode Package => Parent.Inherited_Package(this, this);
 
     private protected ChildNode()
     {
@@ -101,13 +101,17 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected ISymbolDeclarationNode Inherited_ContainingDeclaration(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_ContainingDeclaration(this, this, ctx);
 
-    internal override IPackageDeclarationNode Inherited_Package(IChildNode child, IChildNode descendant)
-        => Parent.Inherited_Package(this, descendant);
+    internal override IPackageDeclarationNode Inherited_Package(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_Package(this, descendant, ctx);
 
-    internal override CodeFile Inherited_File(IChildNode child, IChildNode descendant)
-        => Parent.Inherited_File(this, descendant);
+    protected IPackageDeclarationNode Inherited_Package(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_Package(this, this, ctx);
 
-    protected CodeFile Inherited_File() => Parent.Inherited_File(this, this);
+    internal override CodeFile Inherited_File(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_File(this, descendant, ctx);
+
+    protected CodeFile Inherited_File(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_File(this, this, ctx);
 
     internal override PackageNameScope Inherited_PackageNameScope(IChildNode child, IChildNode descendant)
         => Parent.Inherited_PackageNameScope(this, descendant);

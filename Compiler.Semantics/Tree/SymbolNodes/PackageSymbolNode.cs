@@ -24,6 +24,6 @@ internal class PackageSymbolNode : SemanticNode, IPackageSymbolNode
         TestingFacet = Child.Attach(this, new PackageFacetSymbolNode(symbols.TestingSymbolTree));
     }
 
-    internal override IPackageDeclarationNode Inherited_Package(IChildNode child, IChildNode descendant)
+    internal override IPackageDeclarationNode Inherited_Package(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => this;
 }

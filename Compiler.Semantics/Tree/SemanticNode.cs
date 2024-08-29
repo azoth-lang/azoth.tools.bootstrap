@@ -38,10 +38,10 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual ISymbolDeclarationNode Inherited_ContainingDeclaration(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_ContainingDeclaration), child, descendant);
 
-    internal virtual IPackageDeclarationNode Inherited_Package(IChildNode child, IChildNode descendant)
+    internal virtual IPackageDeclarationNode Inherited_Package(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_Package), child, descendant);
 
-    internal virtual CodeFile Inherited_File(IChildNode child, IChildNode descendant)
+    internal virtual CodeFile Inherited_File(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_File), child, descendant);
 
     internal virtual PackageNameScope Inherited_PackageNameScope(IChildNode child, IChildNode descendant)

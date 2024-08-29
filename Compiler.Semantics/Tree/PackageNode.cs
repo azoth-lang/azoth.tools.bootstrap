@@ -65,7 +65,7 @@ internal sealed class PackageNode : SemanticNode, IPackageNode
         TestingFacet = Child.Attach(this, testingFacet);
     }
 
-    internal override IPackageDeclarationNode Inherited_Package(IChildNode child, IChildNode descendant)
+    internal override IPackageDeclarationNode Inherited_Package(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => this;
 
     internal override PackageNameScope Inherited_PackageNameScope(IChildNode child, IChildNode descendant)
