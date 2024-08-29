@@ -52,5 +52,5 @@ public sealed class PropertyModel : AttributeModel
         return Type.WithOptionalSymbol(Type.ReferencedNode()!.FinalNode!.Defines);
     }
 
-    public override string ToString() => $"{Node.Defines}.{Name}:{Type}";
+    public override string ToString() => $"{Node.Defines}.{Name}: {Type}";
 }

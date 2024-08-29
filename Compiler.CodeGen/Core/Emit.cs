@@ -163,6 +163,8 @@ internal static class Emit
             InheritedAttributeModel a => a.IsMethod ? "();" : " { get; }",
             PreviousAttributeModel a => a.IsMethod ? "();" : " { get; }",
             IntertypeMethodAttributeModel a => ParametersAndBody(a),
+            // TODO Parent should only be allowed on final nodes
+            ParentAttributeModel a => $" => ({Type(a.Type)})PeekParent()!;",
             _ => throw ExhaustiveMatch.Failed(attribute)
         };
 

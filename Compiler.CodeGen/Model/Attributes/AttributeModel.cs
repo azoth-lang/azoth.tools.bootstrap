@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 /// <summary>
 /// The semantic model for an attribute.
 /// </summary>
-[Closed(typeof(AspectAttributeModel), typeof(PropertyModel))]
+[Closed(typeof(AspectAttributeModel), typeof(PropertyModel), typeof(ParentAttributeModel))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class AttributeModel : IMemberModel
 {

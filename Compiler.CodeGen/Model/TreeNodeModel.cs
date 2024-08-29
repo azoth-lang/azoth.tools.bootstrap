@@ -105,9 +105,10 @@ public class TreeNodeModel
     public bool IsRoot => !Tree.TreeChildNodes.Contains(this);
 
     /// <summary>
-    /// Attributes that are implicitly declared on the node because multiple supertypes define the
-    /// same attribute with the same type.
+    /// Attributes that are implicitly declared on the node.
     /// </summary>
+    /// <remarks>This includes attributes declared because multiple supertypes define the
+    /// same attribute with the same type. It also includes the implicit parent attribute.</remarks>
     public IFixedList<AttributeModel> ImplicitlyDeclaredAttributes => implicitlyDeclaredAttributes.Value;
     private readonly Lazy<IFixedList<AttributeModel>> implicitlyDeclaredAttributes;
 
@@ -229,12 +230,7 @@ public class TreeNodeModel
         allAttributes = new(() => AllDeclaredAttributes.Concat(AllInheritedAttributes).ToFixedList());
         inheritedAttributes = new(()
             => MostSpecificMembers(SupertypeNodes.SelectMany(r => r.ActualAttributes).Distinct()).ToFixedList());
-        implicitlyDeclaredAttributes = new(()
-            => InheritedAttributes.AllExcept(DeclaredAttributes, AttributeModel.NameComparer)
-                                  .GroupBy(p => p.Name)
-                                  .Select(ImplicitlyDeclaredAttribute).WhereNotNull()
-                                  .Assert(p => p.IsDeclarationRequired, p => new($"Implicit attribute {p} no declared."))
-                                  .ToFixedList());
+        implicitlyDeclaredAttributes = new(ComputeImplicitlyDeclaredAttributes);
         attributesRequiringDeclaration = new(()
             => AllDeclaredAttributes.Where(p => p.IsDeclarationRequired).ToFixedList());
         actualAttributes = new(() =>
@@ -329,7 +325,25 @@ public class TreeNodeModel
         return mostSpecific;
     }
 
-    private AttributeModel? ImplicitlyDeclaredAttribute(IGrouping<string, AttributeModel> attributes)
+    private IFixedList<AttributeModel> ComputeImplicitlyDeclaredAttributes()
+        => ParentAttribute().ToFixedList().Concat(ImplicitlyDeclaredMergedAttributes().ToFixedList()).ToFixedList();
+
+    private IEnumerable<AttributeModel> ParentAttribute()
+    {
+        if (Tree.SimplifiedTree || IsRoot || Tree.RootSupertype is null)
+            yield break;
+
+        yield return new ParentAttributeModel(this, Tree.RootSupertype);
+    }
+
+    private IEnumerable<AttributeModel> ImplicitlyDeclaredMergedAttributes()
+        => InheritedAttributes.AllExcept(DeclaredAttributes, AttributeModel.NameComparer)
+                              .Where(a => a.Name != "Parent")
+                              .GroupBy(p => p.Name)
+                              .Select(ImplicitlyDeclaredMergedAttribute).WhereNotNull()
+                              .Assert(p => p.IsDeclarationRequired, p => new($"Implicit attribute {p} no declared."));
+
+    private AttributeModel? ImplicitlyDeclaredMergedAttribute(IGrouping<string, AttributeModel> attributes)
     {
         var name = attributes.Key;
         var (type, count) = attributes.CountBy(p => p.Type).TrySingle();
@@ -337,11 +351,11 @@ public class TreeNodeModel
         {
             0 => null, // Multiple types
             1 => null, // Single property that doesn't need to be redeclared
-            _ => ImplicitlyDeclaredAttribute(name, type, attributes.ToFixedList()),
+            _ => ImplicitlyDeclaredMergedAttribute(name, type, attributes.ToFixedList()),
         };
     }
 
-    private AttributeModel? ImplicitlyDeclaredAttribute(string name, TypeModel type, IReadOnlyCollection<AttributeModel> attributes)
+    private AttributeModel? ImplicitlyDeclaredMergedAttribute(string name, TypeModel type, IReadOnlyCollection<AttributeModel> attributes)
     {
         if (TryAllOfType<PropertyModel>(attributes, out _))
             return new PropertyModel(this, name, type);

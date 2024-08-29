@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
@@ -7,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 
 public sealed class SymbolTypeModel : NonOptionalTypeModel
 {
+    [return: NotNullIfNotNull(nameof(symbol))]
     public static SymbolTypeModel? Create(Symbol? symbol)
         => symbol is null ? null : new SymbolTypeModel(symbol);
 
