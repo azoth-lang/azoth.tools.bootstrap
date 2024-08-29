@@ -57,7 +57,7 @@ internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpr
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.ConversionExpression_ControlFlowNext(this);
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         ExpressionTypesAspect.ConversionExpression_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);

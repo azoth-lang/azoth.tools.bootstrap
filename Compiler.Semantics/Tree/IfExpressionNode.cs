@@ -111,7 +111,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         ExpressionTypesAspect.IfExpression_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);

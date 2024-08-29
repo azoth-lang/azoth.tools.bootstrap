@@ -116,7 +116,7 @@ internal abstract class SemanticNode : ISemanticNode, IChildTreeNode
     internal virtual IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => throw Child.PreviousFailed(nameof(Previous_PreviousValueId), before);
 
-    protected virtual void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal virtual void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         foreach (var child in this.Children().Cast<SemanticNode>())
             child.Contribute_Diagnostics(diagnostics, contributeAttribute);

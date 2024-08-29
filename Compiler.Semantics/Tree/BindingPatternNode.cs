@@ -89,7 +89,7 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         ShadowingAspect.VariableBinding_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);

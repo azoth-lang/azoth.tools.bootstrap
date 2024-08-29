@@ -36,7 +36,7 @@ internal sealed class AbstractMethodDefinitionNode : MethodDefinitionNode, IAbst
         Syntax = syntax;
     }
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         TypeModifiersAspect.AbstractMethodDeclaration_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);

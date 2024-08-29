@@ -56,7 +56,7 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
         TypeNode = Child.Attach(this, type);
     }
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         TypeMemberDeclarationsAspect.NamedParameter_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);

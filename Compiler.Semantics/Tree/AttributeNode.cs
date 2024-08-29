@@ -29,7 +29,7 @@ internal sealed class AttributeNode : CodeNode, IAttributeNode
         return base.Inherited_IsAttributeType(child, descendant, ctx);
     }
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         BindingNamesAspect.Attribute_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);

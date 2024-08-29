@@ -50,7 +50,7 @@ internal sealed class MoveValueExpressionNode : ExpressionNode, IMoveValueExpres
         return false;
     }
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         ExpressionTypesAspect.MoveValueExpression_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);

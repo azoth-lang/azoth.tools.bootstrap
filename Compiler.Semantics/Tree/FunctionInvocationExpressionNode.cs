@@ -87,7 +87,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         OverloadResolutionAspect.FunctionInvocationExpression_ContributeDiagnostics(this, diagnostics);
         ExpressionTypesAspect.FunctionInvocationExpression_ContributeDiagnostics(this, diagnostics);

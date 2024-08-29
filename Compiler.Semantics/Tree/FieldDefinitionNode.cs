@@ -76,7 +76,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
         Exit = Child.Attach(this, new ExitNode());
     }
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         TypeMemberDeclarationsAspect.FieldDefinition_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);

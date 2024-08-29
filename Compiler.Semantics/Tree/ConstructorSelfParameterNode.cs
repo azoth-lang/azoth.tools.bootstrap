@@ -23,7 +23,7 @@ internal sealed class ConstructorSelfParameterNode : SelfParameterNode, IConstru
         Capability = Child.Attach(this, capability);
     }
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         TypeMemberDeclarationsAspect.ConstructorSelfParameter_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);

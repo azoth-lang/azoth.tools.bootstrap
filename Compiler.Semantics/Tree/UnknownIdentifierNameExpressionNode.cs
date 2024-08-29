@@ -19,7 +19,7 @@ internal sealed class UnknownIdentifierNameExpressionNode : UnknownStandardNameE
         Syntax = syntax;
     }
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         BindingAmbiguousNamesAspect.UnknownIdentifierNameExpression_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);

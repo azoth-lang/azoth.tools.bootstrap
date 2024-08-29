@@ -72,7 +72,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
         return diagnostics.Build();
     }
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         DiagnosticsAspect.CompilationUnit_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);

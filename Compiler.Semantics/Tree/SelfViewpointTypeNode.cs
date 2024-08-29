@@ -39,7 +39,7 @@ internal sealed class SelfViewpointTypeNode : TypeNode, ISelfViewpointTypeNode
         Referent = Child.Attach(this, referent);
     }
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         TypeExpressionsAspect.SelfViewpointType_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);

@@ -50,7 +50,7 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
     public override ConditionalLexicalScope FlowLexicalScope()
         => LexicalScopingAspect.UnaryOperatorExpression_FlowLexicalScope(this);
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         ExpressionAntetypesAspect.UnaryOperatorExpression_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);

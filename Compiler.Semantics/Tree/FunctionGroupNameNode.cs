@@ -38,7 +38,7 @@ internal sealed class FunctionGroupNameNode : NameExpressionNode, IFunctionGroup
         => BindingAmbiguousNamesAspect.FunctionGroupName_Rewrite(this)
         ?? base.Rewrite();
 
-    protected override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics, bool contributeAttribute = true)
     {
         BindingAmbiguousNamesAspect.FunctionGroupName_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics, contributeAttribute);
