@@ -4,14 +4,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
-#region Facets
-public partial interface IPackageFacetNode
-{
-    // TODO some way to code gen this hiding
-    PackageSymbol IPackageFacetDeclarationNode.Symbol => PackageSymbol;
-}
-#endregion
-
 #region Capabilities
 public partial interface ICapabilityNode
 {

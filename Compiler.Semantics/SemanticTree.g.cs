@@ -236,9 +236,13 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     new INamespaceDefinitionNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
     IFixedSet<IPackageMemberDefinitionNode> Definitions { get; }
+    new PackageSymbol Symbol
+        => PackageSymbol;
+    PackageSymbol IPackageFacetDeclarationNode.Symbol => Symbol;
+    Symbol ISymbolDeclarationNode.Symbol => Symbol;
 
-    public static IPackageFacetNode Create(PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IEnumerable<ICompilationUnitNode> compilationUnits)
-        => new PackageFacetNode(symbol, syntax, packageName, packageSymbol, compilationUnits);
+    public static IPackageFacetNode Create(IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IEnumerable<ICompilationUnitNode> compilationUnits)
+        => new PackageFacetNode(syntax, packageName, packageSymbol, compilationUnits);
 }
 
 [Closed(
@@ -3947,7 +3951,6 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
 {
     private IPackageFacetNode Self { [Inline] get => this; }
 
-    public PackageSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName PackageName { [DebuggerStepThrough] get; }
     public PackageSymbol PackageSymbol { [DebuggerStepThrough] get; }
@@ -3973,9 +3976,8 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     private IFixedSet<IPackageMemberDefinitionNode>? definitions;
     private bool definitionsCached;
 
-    public PackageFacetNode(PackageSymbol symbol, IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IEnumerable<ICompilationUnitNode> compilationUnits)
+    public PackageFacetNode(IPackageSyntax syntax, IdentifierName packageName, PackageSymbol packageSymbol, IEnumerable<ICompilationUnitNode> compilationUnits)
     {
-        Symbol = symbol;
         Syntax = syntax;
         PackageName = packageName;
         PackageSymbol = packageSymbol;
