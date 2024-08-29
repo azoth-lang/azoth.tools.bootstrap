@@ -30,7 +30,7 @@
 // ---------- Parent
 Semantic <: `ITreeNode` = Syntax:`ISyntax`?;
 // Parent and Package types quoted so that is is not treated as a child node
-Child <: `IChildTreeNode<ISemanticNode>` = Parent:`ISemanticNode`;
+Child <: `IChildTreeNode<ISemanticNode>`;
 
 // ---------- Special Parts
 BodyOrBlock <: Code;

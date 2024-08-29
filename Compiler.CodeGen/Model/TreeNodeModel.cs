@@ -102,7 +102,8 @@ public class TreeNodeModel
     /// <summary>
     /// Whether this node can be the root of a tree.
     /// </summary>
-    public bool IsRoot => !Tree.TreeChildNodes.Contains(this);
+    public bool IsRoot => isRoot.Value;
+    private readonly Lazy<bool> isRoot;
 
     /// <summary>
     /// Attributes that are implicitly declared on the node.
@@ -225,6 +226,14 @@ public class TreeNodeModel
         treeChildNodes = new(() => DeclaredAttributes.Where(p => p.IsChild)
                                                      .Select(a => a.Type.ReferencedNode()!)
                                                      .ToFixedSet());
+        isRoot = new(() =>
+        {
+            if (Defines.ShortName == "Semantic")
+                Debugger.Break();
+
+            return !Tree.TreeChildNodes.Contains(this)
+                   && (!IsAbstract || DescendantNodes.Where(n => !n.IsAbstract).Any(n => n.IsRoot));
+        });
         allInheritedAttributes = new(()
             => SupertypeNodes.SelectMany(r => r.AllAttributes).Distinct().ToFixedList());
         allAttributes = new(() => AllDeclaredAttributes.Concat(AllInheritedAttributes).ToFixedList());

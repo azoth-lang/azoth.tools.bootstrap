@@ -61,8 +61,8 @@ public partial interface ISemanticNode : ITreeNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IChildNode : IChildTreeNode<ISemanticNode>, ISemanticNode
 {
-    ISemanticNode Parent { get; }
     IPackageDeclarationNode Package { get; }
+    ISemanticNode Parent => (ISemanticNode)PeekParent()!;
 }
 
 [Closed(
@@ -86,8 +86,6 @@ public partial interface IElseClauseNode : IControlFlowNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFlowState FlowStateAfter { get; }
     ValueId ValueId { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 [Closed(
@@ -183,8 +181,6 @@ public partial interface IPackageReferenceNode : IChildNode
     IPackageSymbols PackageSymbols { get; }
     IdentifierName AliasOrName { get; }
     bool IsTrusted { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 // [Closed(typeof(StandardPackageReferenceNode))]
@@ -247,8 +243,6 @@ public partial interface IPackageMemberDefinitionNode : INamespaceBlockMemberDef
 {
     IFixedList<IAttributeNode> Attributes { get; }
     AccessModifier AccessModifier { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 [Closed(
@@ -290,8 +284,6 @@ public partial interface ICompilationUnitNode : ICodeNode
     IPackageFacetNode ContainingDeclaration { get; }
     INamespaceDefinitionNode ImplicitNamespace { get; }
     DiagnosticCollection Diagnostics { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 
     public static ICompilationUnitNode Create(ICompilationUnitSyntax syntax, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, NamespaceSymbol implicitNamespaceSymbol, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> definitions)
         => new CompilationUnitNode(syntax, containingSymbol, implicitNamespaceName, implicitNamespaceSymbol, usingDirectives, definitions);
@@ -305,8 +297,6 @@ public partial interface IUsingDirectiveNode : ICodeNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     NamespaceName Name { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 
     public static IUsingDirectiveNode Create(IUsingDirectiveSyntax syntax, NamespaceName name)
         => new UsingDirectiveNode(syntax, name);
@@ -418,8 +408,6 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamespaceBlockMemberDefinitionNode : IDefinitionNode
 {
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 // [Closed(typeof(NamespaceDefinitionNode))]
@@ -501,8 +489,6 @@ public partial interface ITypeDefinitionNode : IPackageMemberDefinitionNode, IAs
     LexicalScope SupertypesLexicalScope { get; }
     IEnumerable<IStandardTypeNameNode> AllSupertypeNames
         => SupertypeNames;
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
     new AccessModifier AccessModifier { get; }
     AccessModifier IPackageMemberDefinitionNode.AccessModifier => AccessModifier;
     AccessModifier ITypeMemberDefinitionNode.AccessModifier => AccessModifier;
@@ -937,8 +923,6 @@ public partial interface IAttributeNode : ICodeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IStandardTypeNameNode TypeName { get; }
     ConstructorSymbol? ReferencedSymbol { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 
     public static IAttributeNode Create(IAttributeSyntax syntax, IStandardTypeNameNode typeName)
         => new AttributeNode(syntax, typeName);
@@ -954,8 +938,6 @@ public partial interface ICapabilityConstraintNode : ICodeNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityConstraint Constraint { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 // [Closed(typeof(CapabilitySetNode))]
@@ -1019,8 +1001,6 @@ public partial interface IConstructorOrInitializerParameterNode : IParameterNode
     new DataType BindingType { get; }
     Pseudotype IParameterNode.BindingType => BindingType;
     ParameterType ParameterType { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 // [Closed(typeof(NamedParameterNode))]
@@ -1093,8 +1073,6 @@ public partial interface IConstructorSelfParameterNode : ISelfParameterNode
     Pseudotype ISelfParameterNode.BindingType => BindingType;
     Pseudotype IParameterNode.BindingType => BindingType;
     Pseudotype IBindingNode.BindingType => BindingType;
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 
     public static IConstructorSelfParameterNode Create(IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
         => new ConstructorSelfParameterNode(name, unused, flowStateAfter, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType);
@@ -1114,8 +1092,6 @@ public partial interface IInitializerSelfParameterNode : ISelfParameterNode
     Pseudotype ISelfParameterNode.BindingType => BindingType;
     Pseudotype IParameterNode.BindingType => BindingType;
     Pseudotype IBindingNode.BindingType => BindingType;
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 
     public static IInitializerSelfParameterNode Create(IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
         => new InitializerSelfParameterNode(name, unused, flowStateAfter, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType);
@@ -1131,8 +1107,6 @@ public partial interface IMethodSelfParameterNode : ISelfParameterNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityConstraintNode Capability { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 
     public static IMethodSelfParameterNode Create(IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability)
         => new MethodSelfParameterNode(name, unused, flowStateAfter, parameterType, bindingAntetype, bindingType, syntax, isLentBinding, capability);
@@ -1163,8 +1137,6 @@ public partial interface IFieldParameterNode : IConstructorOrInitializerParamete
 public partial interface IBodyNode : IBodyOrBlockNode
 {
     IFlowState FlowStateAfter { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 // [Closed(typeof(BlockBodyNode))]
@@ -1212,8 +1184,6 @@ public partial interface ITypeNode : ICodeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IMaybeAntetype NamedAntetype { get; }
     DataType NamedType { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 [Closed(
@@ -1390,8 +1360,6 @@ public partial interface IParameterTypeNode : ICodeNode
     bool IsLent { get; }
     ITypeNode Referent { get; }
     ParameterType Parameter { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 
     public static IParameterTypeNode Create(IParameterTypeSyntax syntax, bool isLent, ITypeNode referent, ParameterType parameter)
         => new ParameterTypeNode(syntax, isLent, referent, parameter);
@@ -1460,8 +1428,6 @@ public partial interface IControlFlowNode : ICodeNode
 public partial interface IEntryNode : IDataFlowNode
 {
     FixedDictionary<IVariableBindingNode, int> VariableBindingsMap();
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 
     public static IEntryNode Create(ICodeSyntax? syntax, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
         => new EntryNode(syntax, controlFlowNext, controlFlowPrevious, dataFlowPrevious, definitelyAssigned, definitelyUnassigned);
@@ -1471,8 +1437,6 @@ public partial interface IEntryNode : IDataFlowNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExitNode : IDataFlowNode
 {
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 
     public static IExitNode Create(ICodeSyntax? syntax, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
         => new ExitNode(syntax, controlFlowNext, controlFlowPrevious, dataFlowPrevious, definitelyAssigned, definitelyUnassigned);
@@ -1508,8 +1472,6 @@ public partial interface IStatementNode : IControlFlowNode
         => ContainingLexicalScope();
     IPreviousValueId PreviousValueId();
     ValueId? ResultValueId { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 // [Closed(typeof(ResultStatementNode))]
@@ -1526,8 +1488,6 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
     IAmbiguousExpressionNode CurrentExpression { get; }
     DataType? ExpectedType { get; }
     IMaybeExpressionAntetype? ExpectedAntetype { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
     new IFlowState FlowStateAfter { get; }
     IFlowState IStatementNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
@@ -1614,8 +1574,6 @@ public partial interface IPatternNode : IControlFlowNode
     ValueId? MatchReferentValueId { get; }
     IMaybeAntetype ContextBindingAntetype();
     DataType ContextBindingType();
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 // [Closed(typeof(BindingContextPatternNode))]
@@ -1701,8 +1659,6 @@ public partial interface IAmbiguousExpressionNode : ICodeNode
     LexicalScope ContainingLexicalScope();
     IPreviousValueId PreviousValueId();
     ValueId ValueId { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 [Closed(
@@ -1783,8 +1739,6 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
     IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
     IMaybeAntetype IBlockOrResultNode.Antetype => Antetype;
     IFlowState FlowStateBefore();
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
     new LexicalScope ContainingLexicalScope();
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope();
     LexicalScope IBodyOrBlockNode.ContainingLexicalScope() => ContainingLexicalScope();
@@ -2072,8 +2026,6 @@ public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
     IExpressionNode? Condition { get; }
     IBlockOrResultNode ThenBlock { get; }
     IElseClauseNode? ElseClause { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
     new ValueId ValueId { get; }
     ValueId IAmbiguousExpressionNode.ValueId => ValueId;
     ValueId IElseClauseNode.ValueId => ValueId;
@@ -3131,8 +3083,6 @@ public partial interface IPackageFacetDeclarationNode : IChildDeclarationNode, I
     new PackageSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     INamespaceDeclarationNode GlobalNamespace { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 [Closed(
@@ -3178,8 +3128,6 @@ public partial interface INamespaceMemberDeclarationNode : IPackageFacetChildDec
     new StandardName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 [Closed(
@@ -3232,8 +3180,6 @@ public partial interface IUserTypeDeclarationNode : IPackageMemberDeclarationNod
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName { get; }
     FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName { get; }
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
     IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(StandardName named)
         => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(StandardName named)
@@ -3288,8 +3234,6 @@ public partial interface IGenericParameterDeclarationNode : ITypeDeclarationNode
     new GenericParameterTypeSymbol Symbol { get; }
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
     IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(StandardName named)
         => [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(StandardName named)
@@ -3305,8 +3249,6 @@ public partial interface IGenericParameterDeclarationNode : ITypeDeclarationNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeMemberDeclarationNode : IPackageFacetChildDeclarationNode, ISymbolDeclarationNode
 {
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 [Closed(
@@ -3475,16 +3417,12 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
     IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
     IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named);
     IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 }
 
 // [Closed(typeof(PackageSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageSymbolNode : IPackageDeclarationNode, IChildNode
 {
-    new ISemanticNode Parent => (ISemanticNode)PeekParent()!;
-    ISemanticNode IChildNode.Parent => Parent;
 
     public static IPackageSymbolNode Create(ISyntax? syntax, IdentifierName? aliasOrName, IdentifierName name, PackageSymbol symbol, IPackageFacetDeclarationNode mainFacet, IPackageFacetDeclarationNode testingFacet)
         => new PackageSymbolNode(syntax, aliasOrName, name, symbol, mainFacet, testingFacet);
