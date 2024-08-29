@@ -21,11 +21,15 @@
 ↑ NamespaceBlockDefinition.Definition: NamespaceDefinition;
 // = NamespaceBlockDefinition.*.**.ContainingDeclaration;
 
+// ---------- Function Definition
+= FunctionDefinition.*.**.IsAttributeType => false;
+
 // ---------- Type Definitions
 // = TypeDefinition.*.**.ContainingDeclaration;
+= TypeDefinition.*.**.IsAttributeType => false;
 
 // ---------- Attributes
-// = Attribute.TypeName.IsAttributeType => true;
+= Attribute.TypeName.IsAttributeType => true;
 
 // ---------- Parameters
 ↑ FieldParameter.ReferencedField: FieldDefinition?;
@@ -33,3 +37,4 @@
 // ---------- Types
 ↑ StandardTypeName.ReferencedDeclaration: TypeDeclaration?;
 = StandardTypeName.ReferencedDeclaration;
+↓ StandardTypeName.IsAttributeType:`bool`;

@@ -73,8 +73,8 @@ internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFun
         Exit = Child.Attach(this, new ExitNode());
     }
 
-    internal override bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
-        => SymbolNodeAspect.FunctionDefinition_Children_Broadcast_IsAttributeType(this);
+    internal override bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant)
+        => false;
 
     internal override LexicalScope Inherited_ContainingLexicalScope(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {

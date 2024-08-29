@@ -83,16 +83,8 @@ internal static partial class SymbolNodeAspect
     public static INamespaceDeclarationNode NamespaceBlockDefinition_Children_Broadcast_ContainingDeclaration(INamespaceBlockDefinitionNode node)
         => node.Definition;
 
-    public static bool Attribute_TypeName_IsAttributeType(IAttributeNode _) => true;
-
     public static IUserTypeDeclarationNode TypeDefinition_Children_Broadcast_ContainingDeclaration(ITypeDefinitionNode node)
         => node;
-
-    public static bool TypeDefinition_Children_Broadcast_IsAttributeType(ITypeDefinitionNode _)
-        => false;
-
-    public static bool FunctionDefinition_Children_Broadcast_IsAttributeType(IFunctionDefinitionNode _)
-        => false;
 
     public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)
     {

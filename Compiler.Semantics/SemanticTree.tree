@@ -215,7 +215,7 @@ Type <: Code = Syntax:`ITypeSyntax` NamedAntetype:`IMaybeAntetype` NamedType:`Da
 // TODO start from generalized names in syntax and rewrite to type names
 TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName`
     NamedBareType:`BareType`?;
-StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` IsAttributeType:`bool` Name:`StandardName`;
+StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` Name:`StandardName`;
 SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
 IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax` Name:`IdentifierName`;
 SpecialTypeName <: SimpleTypeName = Syntax:`ISpecialTypeNameSyntax` Name:`SpecialTypeName`;

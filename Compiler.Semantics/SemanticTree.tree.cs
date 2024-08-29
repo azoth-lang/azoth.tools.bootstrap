@@ -1177,10 +1177,10 @@ public partial interface IStandardTypeNameNode : ITypeNameNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    bool IsAttributeType { get; }
     new StandardName Name { get; }
     TypeName ITypeNameNode.Name => Name;
     ITypeDeclarationNode? ReferencedDeclaration { get; }
+    bool IsAttributeType { get; }
 }
 
 [Closed(
@@ -1211,8 +1211,8 @@ public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpl
     StandardName IStandardTypeNameNode.Name => Name;
     TypeName ITypeNameNode.Name => Name;
 
-    public static IIdentifierTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, IIdentifierTypeNameSyntax syntax, IdentifierName name)
-        => new IdentifierTypeNameNode(parent, namedAntetype, namedType, namedBareType, isAttributeType, syntax, name);
+    public static IIdentifierTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, IIdentifierTypeNameSyntax syntax, IdentifierName name)
+        => new IdentifierTypeNameNode(parent, namedAntetype, namedType, namedBareType, syntax, name);
 }
 
 // [Closed(typeof(SpecialTypeNameNode))]
@@ -1249,8 +1249,8 @@ public partial interface IGenericTypeNameNode : IStandardTypeNameNode
     TypeName ITypeNameNode.Name => Name;
     IFixedList<ITypeNode> TypeArguments { get; }
 
-    public static IGenericTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
-        => new GenericTypeNameNode(parent, namedAntetype, namedType, namedBareType, isAttributeType, syntax, name, typeArguments);
+    public static IGenericTypeNameNode Create(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
+        => new GenericTypeNameNode(parent, namedAntetype, namedType, namedBareType, syntax, name, typeArguments);
 }
 
 // [Closed(typeof(QualifiedTypeNameNode))]
@@ -3708,6 +3708,12 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected ITypeDefinitionNode Inherited_ContainingTypeDefinition(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_ContainingTypeDefinition(this, this, ctx);
 
+    internal virtual bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        // TODO does this need to throw an exception for the root of the tree?
+        => GetParent(ctx).Inherited_IsAttributeType(this, descendant, ctx);
+    protected bool Inherited_IsAttributeType(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_IsAttributeType(this, this, ctx);
+
     internal virtual Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         // TODO does this need to throw an exception for the root of the tree?
         => GetParent(ctx).Inherited_MethodSelfType(this, descendant, ctx);
@@ -4204,6 +4210,11 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         Exit = exit;
         Type = type;
     }
+
+    internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4310,6 +4321,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return this;
+    }
+
+    internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -4420,6 +4436,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         return this;
     }
 
+    internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return ContainingDeclaredTypeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
@@ -4522,6 +4543,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return this;
+    }
+
+    internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5345,6 +5371,13 @@ file class AttributeNode : SemanticNode, IAttributeNode
         Syntax = syntax;
         TypeName = typeName;
     }
+
+    internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.TypeName))
+            return true;
+        return base.Inherited_IsAttributeType(child, descendant, ctx);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5745,12 +5778,12 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
 file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
 {
     private IIdentifierTypeNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
-    public bool IsAttributeType { [DebuggerStepThrough] get; }
     public IIdentifierTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -5763,6 +5796,12 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public bool IsAttributeType
+        => GrammarAttribute.IsCached(in isAttributeTypeCached) ? isAttributeType
+            : this.Inherited(ref isAttributeTypeCached, ref isAttributeType, ref syncLock,
+                Inherited_IsAttributeType);
+    private bool isAttributeType;
+    private bool isAttributeTypeCached;
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
@@ -5776,13 +5815,12 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
 
-    public IdentifierTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, IIdentifierTypeNameSyntax syntax, IdentifierName name)
+    public IdentifierTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, IIdentifierTypeNameSyntax syntax, IdentifierName name)
     {
         Parent = parent;
         NamedAntetype = namedAntetype;
         NamedType = namedType;
         NamedBareType = namedBareType;
-        IsAttributeType = isAttributeType;
         Syntax = syntax;
         Name = name;
     }
@@ -5831,12 +5869,12 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
 file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
 {
     private IGenericTypeNameNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
     public ISemanticNode Parent { [DebuggerStepThrough] get; }
     public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
-    public bool IsAttributeType { [DebuggerStepThrough] get; }
     public IGenericTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public GenericName Name { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
@@ -5850,6 +5888,12 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public bool IsAttributeType
+        => GrammarAttribute.IsCached(in isAttributeTypeCached) ? isAttributeType
+            : this.Inherited(ref isAttributeTypeCached, ref isAttributeType, ref syncLock,
+                Inherited_IsAttributeType);
+    private bool isAttributeType;
+    private bool isAttributeTypeCached;
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
@@ -5863,13 +5907,12 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
 
-    public GenericTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, bool isAttributeType, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
+    public GenericTypeNameNode(ISemanticNode parent, IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, IGenericTypeNameSyntax syntax, GenericName name, IFixedList<ITypeNode> typeArguments)
     {
         Parent = parent;
         NamedAntetype = namedAntetype;
         NamedType = namedType;
         NamedBareType = namedBareType;
-        IsAttributeType = isAttributeType;
         Syntax = syntax;
         Name = name;
         TypeArguments = typeArguments;

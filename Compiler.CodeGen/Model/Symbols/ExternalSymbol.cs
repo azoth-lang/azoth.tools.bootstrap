@@ -9,7 +9,7 @@ public sealed class ExternalSymbol : Symbol
     public override string FullName { get; }
     public TypeDeclarationModel? TypeDeclaration => typeDeclaration.Value;
     private readonly Lazy<TypeDeclarationModel?> typeDeclaration;
-    public override bool IsValueType => TypeDeclaration?.IsValueType ?? false;
+    public override bool IsValueType => TypeDeclaration?.IsValueType ?? PrimitiveTypes.Contains(FullName);
 
     public ExternalSymbol(TreeModel tree, string fullName)
     {
@@ -35,4 +35,9 @@ public sealed class ExternalSymbol : Symbol
     #endregion
 
     public override string ToString() => $"`{FullName}`";
+
+    private static readonly IFixedSet<string> PrimitiveTypes = new HashSet<string>()
+    {
+        "bool","byte","sbyte","char","decimal","double","float","int","uint","long","ulong","short","ushort"
+    }.ToFixedSet();
 }

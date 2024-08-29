@@ -59,8 +59,8 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual ITypeDefinitionNode Inherited_ContainingTypeDefinition(IChildNode child, IChildNode descendant)
         => throw Child.InheritFailed(nameof(Inherited_ContainingTypeDefinition), child, descendant);
 
-    internal virtual bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
-        => throw Child.InheritFailed(nameof(InheritedIsAttributeType), child, descendant);
+    internal virtual bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant)
+        => throw Child.InheritFailed(nameof(Inherited_IsAttributeType), child, descendant);
 
     internal virtual ISymbolTree InheritedSymbolTree(IChildNode child, IChildNode descendant)
         => throw Child.InheritFailed(nameof(InheritedSymbolTree), child, descendant);

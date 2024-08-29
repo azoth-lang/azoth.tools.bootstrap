@@ -138,10 +138,10 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected ITypeDefinitionNode Inherited_ContainingTypeDefinition()
         => Parent.Inherited_ContainingTypeDefinition(this, this);
 
-    internal override bool InheritedIsAttributeType(IChildNode child, IChildNode descendant)
-        => Parent.InheritedIsAttributeType(this, descendant);
+    internal override bool Inherited_IsAttributeType(IChildNode child, IChildNode descendant)
+        => Parent.Inherited_IsAttributeType(this, descendant);
 
-    protected bool InheritedIsAttributeType() => Parent.InheritedIsAttributeType(this, this);
+    protected bool Inherited_IsAttributeType() => Parent.Inherited_IsAttributeType(this, this);
 
     internal override IPackageFacetDeclarationNode Inherited_Facet(IChildNode child, IChildNode descendant)
         => Parent.Inherited_Facet(this, descendant);
