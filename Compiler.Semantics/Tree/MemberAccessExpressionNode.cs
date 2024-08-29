@@ -45,7 +45,7 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
 
     public PackageNameScope PackageNameScope() => Inherited_PackageNameScope();
 
-    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => null;
 
     internal override bool Inherited_ImplicitRecoveryAllowed(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

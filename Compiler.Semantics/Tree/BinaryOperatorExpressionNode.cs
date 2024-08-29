@@ -94,12 +94,12 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentLeftOperand || descendant == CurrentRightOperand)
             return NumericOperatorCommonAntetype;
 
-        return base.InheritedExpectedAntetype(child, descendant, ctx);
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     protected override void CollectDiagnostics(DiagnosticCollectionBuilder diagnostics)

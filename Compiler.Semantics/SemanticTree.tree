@@ -208,8 +208,7 @@ FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyn
 // ---------- Function Parts
 Body <: BodyOrBlock = FlowStateAfter:`IFlowState`;
 BlockBody <: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
-ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement
-    ExpectedAntetype:`IMaybeExpressionAntetype`? ExpectedType:`DataType`?;
+ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement ExpectedType:`DataType`?;
 
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax` NamedAntetype:`IMaybeAntetype` NamedType:`DataType`;
@@ -244,7 +243,7 @@ Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntet
     ResultType:`DataType`? FlowStateAfter:`IFlowState`;
 ResultStatement <: Statement, BlockOrResult = Syntax:`IResultStatementSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`
-    ExpectedAntetype:`IMaybeExpressionAntetype`? ExpectedType:`DataType`?;
+    ExpectedType:`DataType`?;
 BodyStatement <: Statement = Syntax:`IBodyStatementSyntax`;
 VariableDeclarationStatement <: BodyStatement, VariableBinding = Syntax:`IVariableDeclarationStatementSyntax`
     IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type?
@@ -265,7 +264,7 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 temp AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
 temp AmbiguousAssignableExpression <: AmbiguousExpression = Syntax:`IAssignableExpressionSyntax`;
 Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`
-    ExpectedAntetype:`IMaybeExpressionAntetype`? Antetype:`IMaybeExpressionAntetype`
+    Antetype:`IMaybeExpressionAntetype`
     ExpectedType:`DataType`? Type:`DataType` FlowStateAfter:`IFlowState`;
 AssignableExpression <: Expression, AmbiguousAssignableExpression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*

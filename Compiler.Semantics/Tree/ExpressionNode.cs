@@ -22,7 +22,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     private bool expectedAntetypeCached;
     public IMaybeExpressionAntetype? ExpectedAntetype
         => GrammarAttribute.IsCached(in expectedAntetypeCached) ? expectedAntetype
-            : this.Inherited(ref expectedAntetypeCached, ref expectedAntetype, InheritedExpectedAntetype);
+            : this.Inherited(ref expectedAntetypeCached, ref expectedAntetype, Inherited_ExpectedAntetype);
     // TODO make this abstract once all expressions have type implemented
     public virtual IMaybeExpressionAntetype Antetype
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Antetype)} not implemented.");
@@ -67,7 +67,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     internal override IPreviousValueId Previous_PreviousValueId(IChildNode before, IInheritanceContext ctx) => ValueId;
 
     // TODO remove once all nodes properly provide the expected antetype
-    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => null;
 
     // TODO remove once all nodes properly provide the expected type

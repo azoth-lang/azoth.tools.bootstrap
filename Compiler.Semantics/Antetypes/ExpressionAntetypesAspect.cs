@@ -13,7 +13,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
-internal static class ExpressionAntetypesAspect
+internal static partial class ExpressionAntetypesAspect
 {
     public static IMaybeExpressionAntetype UnsafeExpression_Antetype(IUnsafeExpressionNode node)
         => node.Expression?.Antetype ?? IAntetype.Unknown;

@@ -54,10 +54,10 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == Body) return MethodGroupType.Return.Type.ToAntetype();
-        return base.InheritedExpectedAntetype(child, descendant, ctx);
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

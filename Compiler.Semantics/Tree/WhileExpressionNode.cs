@@ -83,10 +83,10 @@ internal sealed class WhileExpressionNode : ExpressionNode, IWhileExpressionNode
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentCondition) return IAntetype.OptionalBool;
-        return base.InheritedExpectedAntetype(child, descendant, ctx);
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

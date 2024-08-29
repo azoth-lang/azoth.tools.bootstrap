@@ -16,7 +16,7 @@ internal abstract class AmbiguousNameExpressionNode : AmbiguousExpressionNode, I
     private bool expectedAntetypeCached;
     public IMaybeExpressionAntetype? ExpectedAntetype
         => GrammarAttribute.IsCached(in expectedAntetypeCached) ? expectedAntetype
-            : this.Inherited(ref expectedAntetypeCached, ref expectedAntetype, InheritedExpectedAntetype);
+            : this.Inherited(ref expectedAntetypeCached, ref expectedAntetype, Inherited_ExpectedAntetype);
     // TODO make this abstract once all expressions have type implemented (also, not all names should have types)
     public virtual IMaybeExpressionAntetype Antetype
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(Antetype)} not implemented.");

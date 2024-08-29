@@ -80,8 +80,8 @@ internal abstract class SemanticNode : ISemanticNode
     internal virtual ValueId? Inherited_MatchReferentValueId(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(Inherited_ContextBindingType), child, descendant);
 
-    internal virtual IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => throw Child.InheritFailed(nameof(InheritedExpectedAntetype), child, descendant);
+    internal virtual IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => throw Child.InheritFailed(nameof(Inherited_ExpectedAntetype), child, descendant);
 
     internal virtual DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => throw Child.InheritFailed(nameof(InheritedExpectedType), child, descendant);

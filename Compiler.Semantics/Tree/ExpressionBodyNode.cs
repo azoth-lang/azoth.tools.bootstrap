@@ -17,7 +17,7 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
     private bool expectedAntetypeCached;
     public IMaybeExpressionAntetype? ExpectedAntetype
         => GrammarAttribute.IsCached(in expectedAntetypeCached) ? expectedAntetype
-            : this.Inherited(ref expectedAntetypeCached, ref expectedAntetype, InheritedExpectedAntetype);
+            : this.Inherited(ref expectedAntetypeCached, ref expectedAntetype, Inherited_ExpectedAntetype);
     private DataType? expectedType;
     private bool expectedTypeCached;
     public DataType? ExpectedType
@@ -43,11 +43,11 @@ internal sealed class ExpressionBodyNode : CodeNode, IExpressionBodyNode
         return LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, statementIndex);
     }
 
-    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == ResultStatement)
             return ExpectedAntetype;
-        return base.InheritedExpectedAntetype(child, descendant, ctx);
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

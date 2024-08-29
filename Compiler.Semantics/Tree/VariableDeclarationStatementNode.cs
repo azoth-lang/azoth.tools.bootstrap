@@ -117,13 +117,13 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentInitializer)
             // The expected antetype for the initializer is the binding antetype since it needs to
             // have any conversion (e.g. to non-const-value type) applied.
             return BindingAntetype;
-        return base.InheritedExpectedAntetype(child, descendant, ctx);
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

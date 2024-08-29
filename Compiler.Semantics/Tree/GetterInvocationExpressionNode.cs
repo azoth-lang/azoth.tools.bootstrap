@@ -68,12 +68,12 @@ internal sealed class GetterInvocationExpressionNode : ExpressionNode, IGetterIn
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.GetterInvocationExpression_ControlFlowNext(this);
 
-    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
     {
         if (descendant == CurrentContext)
             // TODO it would be better if this didn't depend on types, but only on antetypes
             return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype();
-        return base.InheritedExpectedAntetype(child, descendant, ctx);
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)

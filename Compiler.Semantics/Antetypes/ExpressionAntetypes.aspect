@@ -1,0 +1,13 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+◊name ExpressionAntetypesAspect;
+
+// ↓ ↑ ⮡ ✎
+
+// ---------- Function Parts
+↓ ExpressionBody.ExpectedAntetype:`IMaybeExpressionAntetype`?;
+
+// ---------- Statements
+↓ ResultStatement.ExpectedAntetype:`IMaybeExpressionAntetype`?;
+
+// ---------- Expressions
+↓ Expression.ExpectedAntetype:`IMaybeExpressionAntetype`?;

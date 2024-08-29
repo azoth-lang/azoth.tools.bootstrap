@@ -178,11 +178,11 @@ internal abstract class ChildNode : SemanticNode, IChildNode
     protected ValueId? Inherited_MatchReferentValueId(IInheritanceContext ctx)
         => GetParent(ctx).Inherited_MatchReferentValueId(this, this, ctx);
 
-    internal override IMaybeExpressionAntetype? InheritedExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
-        => GetParent(ctx).InheritedExpectedAntetype(this, descendant, ctx);
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ExpectedAntetype(this, descendant, ctx);
 
-    protected IMaybeExpressionAntetype? InheritedExpectedAntetype(IInheritanceContext ctx)
-        => GetParent(ctx).InheritedExpectedAntetype(this, this, ctx);
+    protected IMaybeExpressionAntetype? Inherited_ExpectedAntetype(IInheritanceContext ctx)
+        => GetParent(ctx).Inherited_ExpectedAntetype(this, this, ctx);
 
     internal override DataType? InheritedExpectedType(IChildNode child, IChildNode descendant, IInheritanceContext ctx)
         => GetParent(ctx).InheritedExpectedType(this, descendant, ctx);
