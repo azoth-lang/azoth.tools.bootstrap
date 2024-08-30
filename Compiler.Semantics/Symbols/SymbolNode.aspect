@@ -47,8 +47,11 @@
 // Symbol Nodes
 // -------------------------------------------------------------------------------------------------
 
+// ---------- Parent
+↑ ChildSymbol.Syntax: `ISyntax`? => null;
+
 // ---------- Facets
-= PackageFacetSymbol.*.**.SymbolTree => Self.SymbolTree;
+= PackageFacetSymbol.*.**.SymbolTree => SymbolTree;
 = eager PackageFacetSymbol.GlobalNamespace;
 
 // ---------- Type Declarations

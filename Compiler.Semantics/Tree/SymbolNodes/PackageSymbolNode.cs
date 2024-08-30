@@ -20,8 +20,8 @@ internal class PackageSymbolNode : ChildNode, IPackageSymbolNode
         var symbols = node.PackageSymbols;
         Symbol = symbols.PackageSymbol;
         AliasOrName = node.AliasOrName;
-        MainFacet = Child.Attach(this, new PackageFacetSymbolNode(symbols.SymbolTree));
-        TestingFacet = Child.Attach(this, new PackageFacetSymbolNode(symbols.TestingSymbolTree));
+        MainFacet = Child.Attach(this, IPackageFacetSymbolNode.Create(symbols.SymbolTree));
+        TestingFacet = Child.Attach(this, IPackageFacetSymbolNode.Create(symbols.TestingSymbolTree));
     }
 
     internal override IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

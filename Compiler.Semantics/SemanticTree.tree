@@ -531,35 +531,38 @@ TypeDeclaration <: NamedDeclaration, SymbolDeclaration
 // -------------------------------------------------------------------------------------------------
 // TODO move into separate aspect
 
+// ---------- Parent
+ChildSymbol <: Child;
+
 // ---------- Packages
-PackageSymbol <: PackageDeclaration, Child = MainFacet:PackageFacetDeclaration TestingFacet:PackageFacetDeclaration;
+PackageSymbol <: PackageDeclaration, ChildSymbol = MainFacet:PackageFacetDeclaration TestingFacet:PackageFacetDeclaration;
 
 // ---------- Facets
 // Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
-PackageFacetSymbol <: PackageFacetDeclaration = SymbolTree:`FixedSymbolTree`;
+PackageFacetSymbol <: PackageFacetDeclaration, ChildSymbol = SymbolTree:`FixedSymbolTree`;
 
 // ---------- Namespace Declarations
-NamespaceSymbol <: NamespaceDeclaration = Members:NamespaceMemberDeclaration*;
+NamespaceSymbol <: NamespaceDeclaration, ChildSymbol = Members:NamespaceMemberDeclaration*;
 
 // ---------- Function Declaration
-FunctionSymbol <: FunctionDeclaration;
+FunctionSymbol <: FunctionDeclaration, ChildSymbol;
 
 // ---------- Type Declarations
-PrimitiveTypeSymbol <: PrimitiveTypeDeclaration = Members:{TypeMemberDeclaration};
+PrimitiveTypeSymbol <: PrimitiveTypeDeclaration, ChildSymbol = Members:{TypeMemberDeclaration};
 UserTypeSymbol <: UserTypeDeclaration = GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
 ClassSymbol <: ClassDeclaration = GenericParameters:GenericParameterDeclaration* Members:{ClassMemberDeclaration};
 StructSymbol <: StructDeclaration = GenericParameters:GenericParameterDeclaration* Members:{StructMemberDeclaration};
 TraitSymbol <: TraitDeclaration = GenericParameters:GenericParameterDeclaration* Members:{TraitMemberDeclaration};
 
 // ---------- Type Declaration Parts
-GenericParameterSymbol <: GenericParameterDeclaration = Members:{TypeMemberDeclaration};
+GenericParameterSymbol <: GenericParameterDeclaration, ChildSymbol = Members:{TypeMemberDeclaration};
 
 // ---------- Member Declarations
-MethodSymbol <: MethodDeclaration;
+MethodSymbol <: MethodDeclaration, ChildSymbol;
 StandardMethodSymbol <: MethodSymbol, StandardMethodDeclaration;
 GetterMethodSymbol <: MethodSymbol, GetterMethodDeclaration;
 SetterMethodSymbol <: MethodSymbol, SetterMethodDeclaration;
-ConstructorSymbol <: ConstructorDeclaration;
-InitializerSymbol <: InitializerDeclaration;
-FieldSymbol <: FieldDeclaration;
-AssociatedFunctionSymbol <: AssociatedFunctionDeclaration;
+ConstructorSymbol <: ConstructorDeclaration, ChildSymbol;
+InitializerSymbol <: InitializerDeclaration, ChildSymbol;
+FieldSymbol <: FieldDeclaration, ChildSymbol;
+AssociatedFunctionSymbol <: AssociatedFunctionDeclaration, ChildSymbol;
