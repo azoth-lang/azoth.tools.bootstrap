@@ -53,7 +53,7 @@ internal static class SyntaxBinder
 
     #region Code Files
     private static IEnumerable<ICompilationUnitNode> CompilationUnits(IEnumerable<ICompilationUnitSyntax> syntax)
-        => syntax.Select(syn => new CompilationUnitNode(syn, UsingDirectives(syn.UsingDirectives),
+        => syntax.Select(syn => ICompilationUnitNode.Create(syn, UsingDirectives(syn.UsingDirectives),
             NamespaceMemberDefinitions(syn.Definitions)));
 
     private static IEnumerable<IUsingDirectiveNode> UsingDirectives(IEnumerable<IUsingDirectiveSyntax> syntax)

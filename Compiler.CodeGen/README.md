@@ -158,7 +158,7 @@ directly support cycles themselves.
 
 ### Collection Attributes
 
-May want to support both JastAdd style collection attributes and aggregating attributes.
+JastAdd style collection attributes.
 
 | Declaration                                                                                  | Meaning                                         |
 | -------------------------------------------------------------------------------------------- | ----------------------------------------------- |
