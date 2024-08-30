@@ -6,4 +6,7 @@ internal static partial class ContextAspect
 {
     public static partial CodeFile CompilationUnit_Children_Broadcast_File(ICompilationUnitNode node)
         => node.File;
+
+    public static partial INamespaceDefinitionNode NamespaceBlockDefinition_Children_ContainingDeclaration(INamespaceBlockDefinitionNode node)
+        => node.Definition;
 }

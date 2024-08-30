@@ -36,6 +36,8 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 
 // ---------- Namespace Definitions
 ↓ NamespaceBlockDefinition.ContainingLexicalScope: `NamespaceSearchScope`;
+↑ NamespaceBlockDefinition.LexicalScope: `NamespaceSearchScope`;
+= NamespaceBlockDefinition.*.**.ContainingLexicalScope => LexicalScope;
 
 // ---------- Type Definitions
 = TypeDefinition.AllSupertypeNames[*].**.ContainingLexicalScope;

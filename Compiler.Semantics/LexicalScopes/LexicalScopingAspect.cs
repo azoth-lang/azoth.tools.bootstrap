@@ -58,7 +58,7 @@ internal static partial class LexicalScopingAspect
         return new UsingDirectivesScope(containingScope, namespaceScopes);
     }
 
-    public static partial LexicalScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node)
+    public static partial NamespaceSearchScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node)
     {
         var containingLexicalScope = node.ContainingLexicalScope;
         if (node.IsGlobalQualified)

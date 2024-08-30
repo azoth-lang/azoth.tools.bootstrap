@@ -81,8 +81,7 @@ ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition
 
 // ---------- Namespace Definitions
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
-    UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*
-    Symbol:`NamespaceSymbol`;
+    UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*;
 NamespaceBlockMemberDefinition <: Definition;
 NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
     = MemberNamespaces:NamespaceDefinition* PackageMembers:`IPackageMemberDefinitionNode`*

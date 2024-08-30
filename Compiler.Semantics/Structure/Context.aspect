@@ -26,6 +26,7 @@
 
 // ---------- Namespace Definitions
 ↓ computed NamespaceBlockDefinition.ContainingDeclaration: NamespaceDefinition;
+= NamespaceBlockDefinition.*.ContainingDeclaration;
 
 // ---------- Function Definition
 ↓ computed FunctionDefinition.ContainingDeclaration: NamespaceDeclaration;

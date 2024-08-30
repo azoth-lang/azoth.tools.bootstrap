@@ -62,7 +62,7 @@ internal static class SyntaxBinder
 
     #region Namespace Declarations
     private static INamespaceBlockDefinitionNode NamespaceDefinition(INamespaceDefinitionSyntax syntax)
-        => new NamespaceBlockDefinitionNode(syntax, UsingDirectives(syntax.UsingDirectives),
+        => INamespaceBlockDefinitionNode.Create(syntax, UsingDirectives(syntax.UsingDirectives),
             NamespaceMemberDefinitions(syntax.Definitions));
 
     private static IEnumerable<INamespaceBlockMemberDefinitionNode> NamespaceMemberDefinitions(IEnumerable<INonMemberDefinitionSyntax> syntax)

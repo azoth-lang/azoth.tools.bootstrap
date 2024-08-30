@@ -12,4 +12,6 @@ internal static partial class ContextAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial CodeFile CompilationUnit_Children_Broadcast_File(ICompilationUnitNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial INamespaceDefinitionNode NamespaceBlockDefinition_Children_ContainingDeclaration(INamespaceBlockDefinitionNode node);
 }

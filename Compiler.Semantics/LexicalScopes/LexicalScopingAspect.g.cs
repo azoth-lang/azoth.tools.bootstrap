@@ -44,7 +44,7 @@ internal static partial class LexicalScopingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial NamespaceSearchScope CompilationUnit_LexicalScope(ICompilationUnitNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial LexicalScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node);
+    public static partial NamespaceSearchScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope FunctionDefinition_LexicalScope(IFunctionDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

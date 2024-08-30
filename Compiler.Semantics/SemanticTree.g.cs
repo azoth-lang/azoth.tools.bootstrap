@@ -399,9 +399,10 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionNode> Members { get; }
-    NamespaceSymbol Symbol { get; }
     new NamespaceSearchScope ContainingLexicalScope { get; }
     LexicalScope IDefinitionNode.ContainingLexicalScope => ContainingLexicalScope;
+    new NamespaceSearchScope LexicalScope { get; }
+    LexicalScope IDefinitionNode.LexicalScope => LexicalScope;
     new INamespaceDefinitionNode ContainingDeclaration { get; }
     ISymbolDeclarationNode IDefinitionNode.ContainingDeclaration => ContainingDeclaration;
     INamespaceDefinitionNode ContainingNamespace { get; }
@@ -413,11 +414,13 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
     new NamespaceSymbol ContainingSymbol
         => ContainingDeclaration.Symbol;
     Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
+    NamespaceSymbol Symbol
+        => Definition.Symbol;
     StandardName? IPackageFacetChildDeclarationNode.Name
         => DeclaredNames.Segments.LastOrDefault();
 
-    public static INamespaceBlockDefinitionNode Create(INamespaceDefinitionSyntax syntax, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> members, NamespaceSymbol symbol)
-        => new NamespaceBlockDefinitionNode(syntax, usingDirectives, members, symbol);
+    public static INamespaceBlockDefinitionNode Create(INamespaceDefinitionSyntax syntax, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> members)
+        => new NamespaceBlockDefinitionNode(syntax, usingDirectives, members);
 }
 
 [Closed(
@@ -4144,7 +4147,6 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
     public INamespaceDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IUsingDirectiveNode> UsingDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
-    public NamespaceSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -4163,11 +4165,11 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
     private bool containingLexicalScopeCached;
     public INamespaceDefinitionNode ContainingDeclaration
         => (INamespaceDefinitionNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public LexicalScope LexicalScope
+    public NamespaceSearchScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.NamespaceBlockDefinition_LexicalScope);
-    private LexicalScope? lexicalScope;
+    private NamespaceSearchScope? lexicalScope;
     private bool lexicalScopeCached;
     public INamespaceDefinitionNode ContainingNamespace
         => GrammarAttribute.IsCached(in containingNamespaceCached) ? containingNamespace!
@@ -4182,12 +4184,23 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
     private INamespaceDefinitionNode? definition;
     private bool definitionCached;
 
-    public NamespaceBlockDefinitionNode(INamespaceDefinitionSyntax syntax, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> members, NamespaceSymbol symbol)
+    public NamespaceBlockDefinitionNode(INamespaceDefinitionSyntax syntax, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> members)
     {
         Syntax = syntax;
         UsingDirectives = ChildList.Create(this, nameof(UsingDirectives), usingDirectives);
         Members = ChildList.Create(this, nameof(Members), members);
-        Symbol = symbol;
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<NamespaceSearchScope>(LexicalScope);
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return ContextAspect.NamespaceBlockDefinition_Children_ContainingDeclaration(this);
+        return base.Inherited_ContainingDeclaration(child, descendant, ctx);
     }
 }
 

@@ -80,9 +80,6 @@ internal static partial class SymbolNodeAspect
     public static partial INamespaceDefinitionNode NamespaceBlockDefinition_Definition(INamespaceBlockDefinitionNode node)
         => FindNamespace(node.ContainingNamespace, node.DeclaredNames);
 
-    public static INamespaceDeclarationNode NamespaceBlockDefinition_Children_Broadcast_ContainingDeclaration(INamespaceBlockDefinitionNode node)
-        => node.Definition;
-
     public static IUserTypeDeclarationNode TypeDefinition_Children_Broadcast_ContainingDeclaration(ITypeDefinitionNode node)
         => node;
 
