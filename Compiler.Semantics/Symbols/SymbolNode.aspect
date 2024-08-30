@@ -23,13 +23,11 @@
 // ---------- Namespace Definitions
 ↑ NamespaceBlockDefinition.ContainingNamespace: NamespaceDefinition;
 ↑ NamespaceBlockDefinition.Definition: NamespaceDefinition;
-// = NamespaceBlockDefinition.*.**.ContainingDeclaration;
 
 // ---------- Function Definition
 = FunctionDefinition.*.**.IsAttributeType => false;
 
 // ---------- Type Definitions
-// = TypeDefinition.*.**.ContainingDeclaration;
 = TypeDefinition.*.**.IsAttributeType => false;
 
 // ---------- Attributes

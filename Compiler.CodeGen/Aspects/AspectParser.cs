@@ -231,8 +231,9 @@ public static class AspectParser
         string? typeOverride,
         string? expression)
     {
-        var typeOverrideSyntax = ParseType(typeOverride);
-        return new(evaluationStrategy, node, name, isMethod, typeOverrideSyntax, expression);
+        if (typeOverride is not null)
+            throw new FormatException("Synthesized equations cannot have type overrides.");
+        return new(evaluationStrategy, node, name, isMethod, expression);
     }
 
     private static InheritedAttributeEquationSyntax ParseInheritedEquation(
@@ -262,9 +263,11 @@ public static class AspectParser
     {
         if (strategy is not null)
             throw new FormatException("Intertype method equations cannot have evaluation strategies.");
+        if (typeOverride is not null)
+            throw new FormatException("Intertype method equations cannot have an types overrides.");
         if (expression is null)
             throw new FormatException("Intertype method equations must have an expression.");
-        return new(node, name, parameters, ParseType(typeOverride), expression);
+        return new(node, name, parameters, expression);
     }
 
     private static AggregateAttributeEquationSyntax ParseAggregateEquation(
@@ -280,7 +283,7 @@ public static class AspectParser
         if (isMethod)
             throw new FormatException("Aggregate equations cannot be methods.");
         if (typeOverride is not null)
-            throw new FormatException("Aggregate equations cannot have an types.");
+            throw new FormatException("Aggregate equations cannot have an types overrides.");
         if (expression is not null)
             throw new FormatException("Aggregate equations cannot have an expression.");
 

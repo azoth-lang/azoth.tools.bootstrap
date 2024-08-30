@@ -14,7 +14,6 @@ internal class NamespaceBlockDefinitionNode : DefinitionNode, INamespaceBlockDef
 {
     public override INamespaceDefinitionSyntax Syntax { get; }
     public override IdentifierName? Name => DeclaredNames.Segments.LastOrDefault();
-    public bool IsGlobalQualified => Syntax.IsGlobalQualified;
     public NamespaceName DeclaredNames => Syntax.DeclaredNames;
     public override INamespaceDefinitionNode ContainingDeclaration => (INamespaceDefinitionNode)base.ContainingDeclaration;
     private ValueAttribute<INamespaceDefinitionNode> containingNamespace;

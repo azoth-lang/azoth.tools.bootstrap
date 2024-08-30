@@ -19,6 +19,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class AssociatedFunctionDefinitionNode : TypeMemberDefinitionNode, IAssociatedFunctionDefinitionNode
 {
     public override IAssociatedFunctionDefinitionSyntax Syntax { get; }
+    public override IUserTypeDeclarationNode ContainingDeclaration
+        => (IUserTypeDeclarationNode)base.ContainingDeclaration;
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public override IdentifierName Name => Syntax.Name;
     TypeName INamedDeclarationNode.Name => Name;

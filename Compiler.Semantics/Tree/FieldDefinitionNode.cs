@@ -21,6 +21,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefinitionNode
 {
     public override IFieldDefinitionSyntax Syntax { get; }
+    public override IUserTypeDeclarationNode ContainingDeclaration
+        => (IUserTypeDeclarationNode)base.ContainingDeclaration;
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     bool IBindingNode.IsLentBinding => false;
     public bool IsMutableBinding => Syntax.IsMutableBinding;

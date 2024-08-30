@@ -8,14 +8,28 @@
 ↑ Package.Symbol: `PackageSymbol`;
 ↑ Package.PackageSymbols: `IPackageSymbols`;
 
+// ---------- Code Files
+↑ CompilationUnit.ContainingSymbol: `PackageSymbol` => ContainingDeclaration.PackageSymbol;
+
+// ---------- Definitions
+↑ Definition.ContainingSymbol: `Symbol` => ContainingDeclaration.Symbol;
+
+// ---------- Namespace Definitions
+↑ NamespaceBlockDefinition.ContainingSymbol: `NamespaceSymbol` => ContainingDeclaration.Symbol;
+
 // ---------- Function Definition
+↑ FunctionDefinition.ContainingSymbol: `NamespaceSymbol` => ContainingDeclaration.Symbol;
 ↑ FunctionDefinition.Symbol:`FunctionSymbol`;
 
 // ---------- Type Definitions
 ↑ TypeDefinition.Symbol: `UserTypeSymbol`;
 = TypeDefinition.Symbol;
 
+// ---------- Type Member Definitions
+↑ AlwaysTypeMemberDefinition.ContainingSymbol: `UserTypeSymbol` => ContainingDeclaration.Symbol;
+
 // ---------- Type Definition Parts
+↑ GenericParameter.ContainingSymbol: `UserTypeSymbol` => ContainingDeclaration.Symbol;
 ↑ GenericParameter.Symbol: `GenericParameterTypeSymbol`;
 
 // ---------- Member Definitions
@@ -27,9 +41,9 @@
 ↑ AssociatedFunctionDefinition.Symbol: `FunctionSymbol`;
 
 // ---------- Attributes
-↑ Attribute.ReferencedSymbol:`ConstructorSymbol`?;
+↑ Attribute.ReferencedSymbol: `ConstructorSymbol`?;
 
 // ---------- Types
-↑ TypeName.ReferencedSymbol:`TypeSymbol`?;
+↑ TypeName.ReferencedSymbol: `TypeSymbol`?;
 = StandardTypeName.ReferencedSymbol;
-↑ SpecialTypeName.ReferencedSymbol:`TypeSymbol`;
+↑ SpecialTypeName.ReferencedSymbol: `TypeSymbol`;

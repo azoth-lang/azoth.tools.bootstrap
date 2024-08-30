@@ -13,8 +13,7 @@ public sealed class IntertypeMethodEquationModel : SubtreeEquationModel
     private readonly Lazy<IntertypeMethodAttributeModel> attribute;
     public override EvaluationStrategy Strategy => EvaluationStrategy.Computed;
     public string Parameters { get; }
-    public TypeModel? TypeOverride { get; }
-    public override TypeModel Type => TypeOverride ?? Attribute.Type;
+    public override TypeModel Type => Attribute.Type;
     public override bool RequiresEmitOnNode => Expression is not null;
 
     public IntertypeMethodEquationModel(AspectModel aspect, IntertypeMethodEquationSyntax syntax)
@@ -23,7 +22,6 @@ public sealed class IntertypeMethodEquationModel : SubtreeEquationModel
     {
         Syntax = syntax;
         Parameters = syntax.Parameters;
-        TypeOverride = TypeModel.CreateFromSyntax(Aspect.Tree, syntax.TypeOverride);
         attribute = new(GetAttribute<IntertypeMethodAttributeModel>);
     }
 

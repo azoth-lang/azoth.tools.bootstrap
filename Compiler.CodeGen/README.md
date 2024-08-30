@@ -48,12 +48,11 @@
 
 ### Intertype Declared Members
 
-| Declaration                                                                   | Meaning                                                                    |
-| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `+` *Node*.*Attribute*`(`*Params*`):` *Type*`;`<sup>1</sup>                   | Intertype method attribute, always computed                                |
-| `+` *Node*.*Attribute*`(`*Params*`):` *Type* `=>` *Expression*`;`<sup>1</sup> | Intertype method attribute with default inline expression, always computed |
-
-1. Not yet implemented.
+| Declaration                                                            | Meaning                                                                    |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `+` *Node*`.`*Attribute*`(`*Params*`):` *Type*`;`                      | Intertype method attribute, always computed                                |
+| `+` *Node*`.`*Attribute*`(`*Params*`):` *Type* `=>` *Expression*`;`    | Intertype method attribute with default inline expression, always computed |
+| `=` *Node*`.`*Attribute*`(`*Params*`):` *Type* (`=>` *Expression*)?`;` | Intertype method equation                                                  |
 
 ### Type Declarations
 
@@ -73,12 +72,12 @@ A `type` declaration is used to provide that.
 | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | `↑` `child`? (`eager`\|`lazy`\|`computed`)? *Node*`.`*Attribute*`:` *Type*`;`           | Synthesized attribute, defaults to lazy                                      |
 | `↑` `child`? (`eager`\|`computed`)? *Node*`.`*Attribute*`:` *Type* `=>` *Expression*`;` | Synthesized attribute with default inline expression, defaults to computed   |
-| `=` (`eager`\|`lazy`\|`computed`)? *Node*.*Attribute*(`:` *Type*)?`;`                   | Synthesized equation, defaults to attribute strategy                         |
-| `=` (`eager`\|`computed`)? *Node*.*Attribute*(`:` *Type*)? `=>` *Expression*`;`         | Synthesized equation with inline expression, defaults to computed            |
+| `=` (`eager`\|`lazy`\|`computed`)? *Node*.*Attribute*`;`                                | Synthesized equation, defaults to attribute strategy                         |
+| `=` (`eager`\|`computed`)? *Node*.*Attribute* `=>` *Expression*`;`                      | Synthesized equation with inline expression, defaults to computed            |
 | `↑` *Node*.*Attribute*`():` *Type*`;`                                                   | Synthesized method attribute, always computed                                |
 | `↑` *Node*.*Attribute*`():` *Type* `=>` *Expression*`;`                                 | Synthesized method attribute with default inline expression, always computed |
-| `=` *Node*.*Method*`()`(`:` *Type*)?`;`                                                 | Synthesized method equation, always computed                                 |
-| `=` *Node*.*Method*`()`(`:` *Type*)? `=>` *Expression*`;`                               | Synthesized method equation with inline expression, always computed          |
+| `=` *Node*.*Method*`();`                                                                | Synthesized method equation, always computed                                 |
+| `=` *Node*.*Method*`()` `=>` *Expression*`;`                                            | Synthesized method equation with inline expression, always computed          |
 
 ### Inherited Attributes
 

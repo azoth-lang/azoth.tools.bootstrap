@@ -21,8 +21,7 @@ public sealed class SynthesizedAttributeEquationModel : SubtreeEquationModel
     private readonly Lazy<SynthesizedAttributeModel> attribute;
     public override EvaluationStrategy Strategy => strategy.Value;
     private readonly Lazy<EvaluationStrategy> strategy;
-    public TypeModel? TypeOverride { get; }
-    public override TypeModel Type => TypeOverride ?? Attribute.Type;
+    public override TypeModel Type => Attribute.Type;
     public override bool IsSyncLockRequired
         => Strategy == EvaluationStrategy.Lazy && Type.IsValueType;
     public override bool RequiresEmitOnNode
@@ -39,7 +38,6 @@ public sealed class SynthesizedAttributeEquationModel : SubtreeEquationModel
 
         Syntax = syntax;
         strategy = new(ComputeStrategy);
-        TypeOverride = TypeModel.CreateFromSyntax(Aspect.Tree, syntax.TypeOverride);
         attribute = new(GetAttribute);
     }
 

@@ -16,6 +16,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal abstract class InitializerDefinitionNode : TypeMemberDefinitionNode, IInitializerDefinitionNode
 {
     public abstract override IInitializerDefinitionSyntax? Syntax { get; }
+    public override IUserTypeDeclarationNode ContainingDeclaration
+        => (IUserTypeDeclarationNode)base.ContainingDeclaration;
     public override UserTypeSymbol ContainingSymbol => (UserTypeSymbol)base.ContainingSymbol;
     public override IdentifierName? Name => Syntax?.Name;
     public abstract IInitializerSelfParameterNode? SelfParameter { get; }

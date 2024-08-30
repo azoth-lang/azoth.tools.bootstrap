@@ -29,7 +29,18 @@
 // ---------- Code Files
 ↗↖ CompilationUnit.Diagnostics;
 = CompilationUnit.↑.Diagnostics;
-↑ CompilationUnit.ContainingSymbol: `PackageSymbol` => ContainingDeclaration.PackageSymbol;
 ↑ CompilationUnit.ImplicitNamespaceName: `NamespaceName` => Syntax.ImplicitNamespaceName;
 ↑ CompilationUnit.ImplicitNamespaceSymbol: `NamespaceSymbol` => ImplicitNamespace.Symbol;
 ↑ UsingDirective.Name:`NamespaceName` => Syntax.Name;
+
+// ---------- Namespace Definitions
+↑ NamespaceBlockDefinition.DeclaredNames: `NamespaceName` => Syntax.DeclaredNames;
+↑ NamespaceBlockDefinition.IsGlobalQualified: `bool` => Syntax.IsGlobalQualified;
+= NamespaceBlockDefinition.Name => DeclaredNames.Segments.LastOrDefault();
+
+// -------------------------------------------------------------------------------------------------
+// Declarations
+// -------------------------------------------------------------------------------------------------
+
+// ---------- Facets
+↑ PackageFacetChildDeclaration.Name: `StandardName`?;

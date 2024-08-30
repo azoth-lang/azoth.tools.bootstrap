@@ -34,6 +34,9 @@
 = TypeDefinition.*.**.ContainingTypeDefinition => this;
 ↓ computed GenericParameter.ContainingDeclaration: UserTypeDeclaration;
 
+// ---------- Type Member Definitions
+↓ computed AlwaysTypeMemberDefinition.ContainingDeclaration: UserTypeDeclaration;
+
 // ---------- Parameters
 ↓ SelfParameter.ContainingTypeDefinition: TypeDefinition;
 ↓ FieldParameter.ContainingTypeDefinition: TypeDefinition;

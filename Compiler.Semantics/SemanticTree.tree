@@ -69,7 +69,7 @@ CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax`;
 
 // ---------- Definitions
-Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? ContainingSymbol:`Symbol`;
+Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`?;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol`;
 ExecutableDefinition <: Definition = Entry Exit
     VariableBindingsMap:`FixedDictionary<IVariableBindingNode, int>`;
@@ -81,9 +81,8 @@ ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition
 
 // ---------- Namespace Definitions
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
-    IsGlobalQualified:`bool` DeclaredNames:`NamespaceName`
     UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*
-    ContainingSymbol:`NamespaceSymbol` Symbol:`NamespaceSymbol`;
+    Symbol:`NamespaceSymbol`;
 NamespaceBlockMemberDefinition <: Definition;
 NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
     = MemberNamespaces:NamespaceDefinition* PackageMembers:`IPackageMemberDefinitionNode`*
@@ -92,7 +91,7 @@ NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 
 // ---------- Function Definition
 FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration, ConcreteFunctionInvocableDefinition
-    = Syntax:`IFunctionDefinitionSyntax` ContainingSymbol:`NamespaceSymbol`
+    = Syntax:`IFunctionDefinitionSyntax`
     Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
     Entry Body Exit Type:`FunctionType`;
 
@@ -125,14 +124,14 @@ TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSy
 GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParameterSyntax`
     Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`
     Parameter:`GenericParameter` DeclaredType:`GenericParameterType`
-    ContainingSymbol:`UserTypeSymbol` Members:{TypeMemberDefinition};
+    Members:{TypeMemberDefinition};
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
 TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberDefinitionSyntax`? AccessModifier:`AccessModifier`;
 ClassMemberDefinition <: TypeMemberDefinition, ClassMemberDeclaration;
 TraitMemberDefinition <: TypeMemberDefinition, TraitMemberDeclaration;
 StructMemberDefinition <: TypeMemberDefinition, StructMemberDeclaration;
-AlwaysTypeMemberDefinition <: TypeMemberDefinition = ContainingSymbol:`UserTypeSymbol`;
+AlwaysTypeMemberDefinition <: TypeMemberDefinition;
 AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, NamedDeclaration
     = Name:`StandardName`;
 
@@ -469,7 +468,7 @@ PackageMemberDeclaration <: NamespaceMemberDeclaration;
 /// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
 PackageFacetDeclaration <: ChildDeclaration, SymbolDeclaration;
 
-PackageFacetChildDeclaration <: ChildDeclaration = Name:`StandardName`?;
+PackageFacetChildDeclaration <: ChildDeclaration;
 
 // ---------- Namespace Declarations
 NamespaceDeclaration <: NamespaceMemberDeclaration = Name:`IdentifierName` Symbol:`NamespaceSymbol`
