@@ -45,7 +45,7 @@ internal static class SyntaxBinder
             PackageFacet(syntax, syntax.TestingCompilationUnits));
 
     private static IPackageFacetNode PackageFacet(IPackageSyntax syntax, IFixedSet<ICompilationUnitSyntax> compilationUnits)
-        => new PackageFacetNode(syntax, CompilationUnits(compilationUnits));
+        => IPackageFacetNode.Create(syntax, CompilationUnits(compilationUnits));
 
     private static IEnumerable<IStandardPackageReferenceNode> PackageReferences(IEnumerable<IPackageReferenceSyntax> syntax)
         => syntax.Select(IStandardPackageReferenceNode.Create);

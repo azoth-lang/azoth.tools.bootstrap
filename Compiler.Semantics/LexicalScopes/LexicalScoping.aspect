@@ -19,6 +19,8 @@
 
 // ---------- Facets
 ↓ PackageFacet.PackageNameScope: `PackageNameScope`;
+= PackageFacet.*.**.PackageNameScope => PackageNameScope;
+= PackageFacet.*.ContainingLexicalScope => PackageNameScope.PackageGlobalScope;
 
 // ---------- Code Files
 ↓ CompilationUnit.ContainingLexicalScope: `NamespaceScope`;

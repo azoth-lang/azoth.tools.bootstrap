@@ -3983,6 +3983,25 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     {
         return this;
     }
+
+    internal override PackageNameScope Inherited_PackageNameScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return PackageNameScope;
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return PackageNameScope.PackageGlobalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return this;
+        return base.Inherited_ContainingDeclaration(child, descendant, ctx);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]

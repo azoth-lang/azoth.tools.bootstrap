@@ -10,6 +10,9 @@
 // ---------- Parent
 ↓ computed Child.Package: PackageDeclaration;
 
+// ---------- Facets
+= PackageFacet.*.ContainingDeclaration => this;
+
 // ---------- Code Files
 ↓ computed Code.File: `CodeFile`;
 = CompilationUnit.*.**.File;
