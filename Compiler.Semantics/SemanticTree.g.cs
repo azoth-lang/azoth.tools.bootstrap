@@ -307,10 +307,11 @@ public partial interface IUsingDirectiveNode : ICodeNode
     new IUsingDirectiveSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    NamespaceName Name { get; }
+    NamespaceName Name
+        => Syntax.Name;
 
-    public static IUsingDirectiveNode Create(IUsingDirectiveSyntax syntax, NamespaceName name)
-        => new UsingDirectiveNode(syntax, name);
+    public static IUsingDirectiveNode Create(IUsingDirectiveSyntax syntax)
+        => new UsingDirectiveNode(syntax);
 }
 
 [Closed(
@@ -4113,16 +4114,14 @@ file class UsingDirectiveNode : SemanticNode, IUsingDirectiveNode
     private IUsingDirectiveNode Self { [Inline] get => this; }
 
     public IUsingDirectiveSyntax Syntax { [DebuggerStepThrough] get; }
-    public NamespaceName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public UsingDirectiveNode(IUsingDirectiveSyntax syntax, NamespaceName name)
+    public UsingDirectiveNode(IUsingDirectiveSyntax syntax)
     {
         Syntax = syntax;
-        Name = name;
     }
 }
 

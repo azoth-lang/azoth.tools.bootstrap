@@ -66,7 +66,7 @@ Code <: Child = Syntax:`ICodeSyntax`?;
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
     UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*;
 
-UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;
+UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax`;
 
 // ---------- Definitions
 Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`? ContainingSymbol:`Symbol`;

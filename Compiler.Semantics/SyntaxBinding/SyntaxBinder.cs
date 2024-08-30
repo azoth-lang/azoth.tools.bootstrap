@@ -57,7 +57,7 @@ internal static class SyntaxBinder
             NamespaceMemberDefinitions(syn.Definitions)));
 
     private static IEnumerable<IUsingDirectiveNode> UsingDirectives(IEnumerable<IUsingDirectiveSyntax> syntax)
-        => syntax.Select(syn => new UsingDirectiveNode(syn));
+        => syntax.Select(IUsingDirectiveNode.Create);
     #endregion
 
     #region Namespace Declarations
