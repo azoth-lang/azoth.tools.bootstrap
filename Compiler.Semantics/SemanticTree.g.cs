@@ -3937,6 +3937,9 @@ file class PackageNode : SemanticNode, IPackageNode
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
         => contributors.Add(this);
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+        => builder.Add(Diagnostics);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4094,6 +4097,14 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
         => contributors.Add(this);
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+        => builder.Add(Diagnostics);
+
+    internal override void Contribute_This_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        DefinitionsAspect.CompilationUnit_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]

@@ -68,7 +68,7 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
         => contributors.Add(this);
 
     internal override void Contribute_This_Diagnostics(DiagnosticCollectionBuilder builder)
-        => DefinitionsAspect.CompilationUnit_Contribute_This_Diagnostics(this, builder);
+        => DefinitionsAspect.CompilationUnit_Contribute_Diagnostics(this, builder);
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
         => builder.Add(Diagnostics);

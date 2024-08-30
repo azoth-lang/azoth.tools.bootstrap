@@ -28,6 +28,7 @@
 
 // ---------- Code Files
 ↗↖ CompilationUnit.Diagnostics;
+= CompilationUnit.↑.Diagnostics;
 ↑ CompilationUnit.ContainingSymbol: `PackageSymbol` => ContainingDeclaration.PackageSymbol;
 ↑ CompilationUnit.ImplicitNamespaceName: `NamespaceName` => Syntax.ImplicitNamespaceName;
 ↑ CompilationUnit.ImplicitNamespaceSymbol: `NamespaceSymbol` => ImplicitNamespace.Symbol;

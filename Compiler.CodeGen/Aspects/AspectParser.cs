@@ -210,6 +210,8 @@ public static class AspectParser
         }
         var name = segments[^1];
         segments = segments[..^1];
+        if (segments.Length == 1 && segments[0] == "↑")
+            return ParseAggregateEquation(evaluationStrategy, nodeSymbol, name, isMethod, typeOverride, expression);
         return ParseInheritedEquation(evaluationStrategy, nodeSymbol, segments, name, isMethod, typeOverride, expression);
     }
 
@@ -263,6 +265,26 @@ public static class AspectParser
         if (expression is null)
             throw new FormatException("Intertype method equations must have an expression.");
         return new(node, name, parameters, ParseType(typeOverride), expression);
+    }
+
+    private static AggregateAttributeEquationSyntax ParseAggregateEquation(
+        EvaluationStrategy? strategy,
+        SymbolSyntax node,
+        string name,
+        bool isMethod,
+        string? typeOverride,
+        string? expression)
+    {
+        if (strategy is not null)
+            throw new FormatException("Aggregate equations cannot have evaluation strategies.");
+        if (isMethod)
+            throw new FormatException("Aggregate equations cannot be methods.");
+        if (typeOverride is not null)
+            throw new FormatException("Aggregate equations cannot have an types.");
+        if (expression is not null)
+            throw new FormatException("Aggregate equations cannot have an expression.");
+
+        return new(node, name);
     }
 
     private static SelectorSyntax ParseSelector(string[] selector)

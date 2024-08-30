@@ -1,8 +1,10 @@
 using System;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
@@ -422,6 +424,22 @@ internal static class Emit
             return $", int {s.Variable}";
         return "";
     }
+
+    public static string ContributeMethodName(AggregateAttributeFamilyModel family, TreeNodeModel node)
+    {
+        var contributesToThis = node.ActualAttributes.OfType<AggregateAttributeModel>().Any(a => a.AttributeFamily == family);
+        var thisString = contributesToThis ? "This_" : "";
+        return $"Contribute_{thisString}{family.Name}";
+    }
+
+    public static string EquationMethod(AggregateAttributeEquationModel equation)
+        => $"{equation.NodeSymbol}_Contribute_{equation.Name}";
+
+    public static string QualifiedEquationMethod(AggregateAttributeEquationModel equation)
+        => $"{equation.Aspect.Name}.{EquationMethod(equation)}";
+
+    public static string EquationMethodExtraParams(AggregateAttributeEquationModel equation)
+        => $", {Type(equation.Attribute.FromType)} {equation.Name.ToCamelCase()}";
     #endregion
 
     #region Rewrite Rules

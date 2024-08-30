@@ -23,6 +23,6 @@ internal static partial class DefinitionsAspect
         // TODO compiler error on multiple main functions
         => node.MainFacet.Definitions.OfType<IFunctionDefinitionNode>().SingleOrDefault(f => f.Name == "main");
 
-    public static void CompilationUnit_Contribute_This_Diagnostics(ICompilationUnitNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void CompilationUnit_Contribute_Diagnostics(ICompilationUnitNode node, DiagnosticCollectionBuilder diagnostics)
         => diagnostics.Add(node.Syntax.Diagnostics);
 }

@@ -10,7 +10,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
 [Closed(
     typeof(SubtreeEquationModel),
-    typeof(InheritedAttributeEquationModel))]
+    typeof(InheritedAttributeEquationModel),
+    typeof(AggregateAttributeEquationModel))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class EquationModel : IMemberModel
 {
@@ -20,6 +21,7 @@ public abstract class EquationModel : IMemberModel
             SynthesizedAttributeEquationSyntax syn => new SynthesizedAttributeEquationModel(aspect, syn),
             InheritedAttributeEquationSyntax syn => new InheritedAttributeEquationModel(aspect, syn),
             IntertypeMethodEquationSyntax syn => new IntertypeMethodEquationModel(aspect, syn),
+            AggregateAttributeEquationSyntax syn => new AggregateAttributeEquationModel(aspect, syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 

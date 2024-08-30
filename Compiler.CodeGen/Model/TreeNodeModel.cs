@@ -396,10 +396,20 @@ public class TreeNodeModel
         var actualSynthesizedEquations = declaredSynthesizedEquations.Concat(
             InheritedEquations.OfType<SynthesizedAttributeEquationModel>()
                               .AllExcept(declaredSynthesizedEquations, SynthesizedAttributeEquationModel.NameComparer));
+
+
         // Inherited equations first because order within the node is important
-        var actualInheritedEquations = InheritedEquations.OfType<InheritedAttributeEquationModel>().Concat(
-             declaredEquations.OfType<InheritedAttributeEquationModel>());
-        return actualSynthesizedEquations.Concat<EquationModel>(actualInheritedEquations);
+        var actualInheritedEquations = InheritedEquations.OfType<InheritedAttributeEquationModel>()
+            .Concat(declaredEquations.OfType<InheritedAttributeEquationModel>());
+
+        // Again with aggregate equations both inherited and declared apply. Order less important,
+        // but it makes sense to run inherited ones first.
+        var actualAggregateEquations = InheritedEquations.OfType<AggregateAttributeEquationModel>()
+            .Concat(declaredEquations.OfType<AggregateAttributeEquationModel>());
+
+        return actualSynthesizedEquations
+               .Concat<EquationModel>(actualInheritedEquations)
+               .Concat(actualAggregateEquations);
     }
 
     private SynthesizedAttributeEquationModel ImplicitlyDeclaredEquation(SynthesizedAttributeModel attribute)

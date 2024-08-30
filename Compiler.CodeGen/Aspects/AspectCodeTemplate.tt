@@ -5,6 +5,7 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
+<#@ import namespace="ExhaustiveMatching" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(aspect, "System.CodeDom.Compiler", "System.Runtime.CompilerServices")) { #>
 using <#=usingNamespace #>;
 <#  } #>
@@ -26,6 +27,12 @@ internal static partial class <#= aspect.Name #>
 <#              case InheritedAttributeEquationModel eq: #>
     public static partial <#= Emit.Type(eq.Type) #> <#= Emit.EquationMethod(eq) #>(<#= Emit.TypeName(eq.Node.Defines) #> node<#= Emit.EquationMethodExtraParams(eq) #>);
 <#                  break;#>
+<#              case AggregateAttributeEquationModel eq: #>
+    public static partial void <#= Emit.EquationMethod(eq) #>(<#= Emit.TypeName(eq.Node.Defines) #> node<#= Emit.EquationMethodExtraParams(eq) #>);
+<#                  break;#>
+<#              case IntertypeMethodEquationModel _: /* do nothing */ break; #>
+<#              default: #>
+<#                  throw ExhaustiveMatch.Failed(equation); #>
 <#          } #>
 <#  } #>
 <#  foreach (var rule in aspect.RewriteRules) { #>

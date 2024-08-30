@@ -259,6 +259,20 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 
     internal override void CollectContributors_<#= attribute.Name #>(List<<#= Emit.BaseClassName(tree) #>> contributors)
         => contributors.Add(this);
+
+    internal override void Contribute_<#= attribute.Name #>(<#= Emit.Type(attribute.FromType) #> builder)
+        => builder.<#= attribute.AggregateMethod #>(<#= attribute.Name #>);
+<#      } #>
+<#      foreach (var family in tree.AllAttributeFamilies.OfType<AggregateAttributeFamilyModel>()) { #>
+<#          if (ShouldEmit.Override(family, node)) { #>
+
+    internal override void <#= Emit.ContributeMethodName(family, node) #>(<#= Emit.Type(family.FromType) #> builder)
+    {
+<#              foreach (var equation in node.ActualEquations.OfType<AggregateAttributeEquationModel>()) { #>
+        <#= Emit.QualifiedEquationMethod(equation) #>(this, builder);
+<#              } #>
+    }
+<#          } #>
 <#      } #>
 <#      if (!node.ActualRewriteRules.IsEmpty) { #>
 
