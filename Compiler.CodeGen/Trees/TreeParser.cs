@@ -44,7 +44,7 @@ internal static class TreeParser
     }
 
     private static (string Declaration, string? Definition) SplitDeclarationAndDefinition(string statement)
-        => OptionalSplitTwo(statement, "=", "Too many equal signs in: '{0}'");
+        => OptionalBisect(statement, "=", "Too many equal signs in: '{0}'");
 
     private static IEnumerable<PropertySyntax> ParseProperties(string? definition)
     {
@@ -57,7 +57,7 @@ internal static class TreeParser
 
     public static PropertySyntax ParseProperty(string property)
     {
-        var (name, type) = OptionalSplitTwo(property, ":", "Too many colons in binding: '{0}'");
+        var (name, type) = OptionalBisect(property, ":", "Too many colons in binding: '{0}'");
         TypeSyntax typeSyntax;
         if (type is null)
         {
@@ -96,7 +96,7 @@ internal static class TreeParser
     private static (bool isTemp, SymbolSyntax Defines, IEnumerable<SymbolSyntax> Supertypes) ParseDeclaration(
         string declaration)
     {
-        (declaration, var supertypes) = OptionalSplitTwo(declaration, "<:", "Too many `<:` in: '{0}'");
+        (declaration, var supertypes) = OptionalBisect(declaration, "<:", "Too many `<:` in: '{0}'");
         var (tempKeyword, defines) = OptionalSplitOffStart(declaration);
         bool isTemp = false;
         if (tempKeyword == "temp")
@@ -107,11 +107,5 @@ internal static class TreeParser
         var definesSymbol = ParseSymbol(defines);
         var supertypeSyntax = ParseSupertypes(supertypes);
         return (isTemp, definesSymbol, supertypeSyntax);
-    }
-
-    private static IEnumerable<SymbolSyntax> ParseSupertypes(string? supertypes)
-    {
-        if (supertypes is null) return [];
-        return SplitCommaSeparated(supertypes).Select(s => ParseSymbol(s));
     }
 }

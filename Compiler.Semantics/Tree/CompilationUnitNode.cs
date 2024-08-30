@@ -2,11 +2,9 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -20,24 +18,21 @@ internal sealed class CompilationUnitNode : CodeNode, ICompilationUnitNode
 
     public IPackageFacetNode ContainingDeclaration
         => (IPackageFacetNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public PackageSymbol ContainingSymbol => ContainingDeclaration.PackageSymbol;
-    public NamespaceName ImplicitNamespaceName => Syntax.ImplicitNamespaceName;
 
-    private ValueAttribute<INamespaceDefinitionNode> implicitNamespaceDeclaration;
+    private ValueAttribute<INamespaceDefinitionNode> implicitNamespace;
     public INamespaceDefinitionNode ImplicitNamespace
-        => implicitNamespaceDeclaration.TryGetValue(out var value) ? value
-            : implicitNamespaceDeclaration.GetValue(this, SymbolNodeAspect.CompilationUnit_ImplicitNamespace);
-    public NamespaceSymbol ImplicitNamespaceSymbol => ImplicitNamespace.Symbol;
+        => implicitNamespace.TryGetValue(out var value) ? value
+            : implicitNamespace.GetValue(this, SymbolNodeAspect.CompilationUnit_ImplicitNamespace);
     public IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
     public NamespaceScope ContainingLexicalScope
         => (NamespaceScope)Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    private LexicalScope? lexicalScope;
+    private NamespaceSearchScope? lexicalScope;
     private bool lexicalScopeCached;
-    public LexicalScope LexicalScope
+    public NamespaceSearchScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
-                LexicalScopingAspect.CompilationUnit_LexicalScope, ReferenceEqualityComparer.Instance);
+                LexicalScopingAspect.CompilationUnit_LexicalScope);
     private DiagnosticCollection? diagnostics;
     private bool diagnosticsCached;
     private IFixedSet<SemanticNode>? diagnosticsContributors;

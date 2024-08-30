@@ -54,7 +54,7 @@
         "RightTriangle", // `▷` U+25B7, `|>` U+007C, U+003E
     }.AsReadOnly();
 #>
-using Azoth.Tools.Bootstrap.Compiler.Core;
+using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Tokens;

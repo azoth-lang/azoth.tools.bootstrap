@@ -45,11 +45,16 @@ public sealed class SymbolTypeModel : NonOptionalTypeModel
             return IsSubtypeOf(optionalType.UnderlyingType);
         if (other is not SymbolTypeModel type) return false;
         if (Symbol.Equals(type.Symbol)) return true;
-        if (Symbol is not InternalSymbol symbol
-            || type.Symbol is not InternalSymbol otherSymbol) return false;
-        bool isSubtypeOf = symbol.ReferencedNode.AncestorNodes
-                                     .Contains(otherSymbol.ReferencedNode);
-        return isSubtypeOf;
+        switch ((Symbol, type.Symbol))
+        {
+            case (InternalSymbol symbol, InternalSymbol otherSymbol):
+                return symbol.ReferencedNode.AncestorNodes
+                    .Contains(otherSymbol.ReferencedNode);
+            case (ExternalSymbol symbol, ExternalSymbol otherSymbol):
+                return symbol.TypeDeclaration?.Supertypes.Contains(otherSymbol) ?? false;
+            default:
+                return false;
+        }
     }
 
     public override string ToString() => Symbol.ToString();

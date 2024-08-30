@@ -27,7 +27,7 @@ public class TreeNodeModel
     /// <summary>
     /// The directly declared supertypes of this node.
     /// </summary>
-    public IFixedSet<Symbol> Supertypes { get; }
+    public IFixedSet<Symbol> DeclaredSupertypes { get; }
 
     #region Inheritance Relationships
     private readonly Lazy<IFixedSet<TreeNodeModel>> supertypeNodes;
@@ -197,16 +197,16 @@ public class TreeNodeModel
         Syntax = syntax;
         Defines = Symbol.CreateInternalFromSyntax(tree, syntax.Defines);
         DefinesType = new SymbolTypeModel(Defines);
-        Supertypes = syntax.Supertypes.Select(s => Symbol.CreateFromSyntax(tree, s)).ToFixedSet();
+        DeclaredSupertypes = syntax.Supertypes.Select(s => Symbol.CreateFromSyntax(tree, s)).ToFixedSet();
         // Add root supertype if no supertypes are declared
-        if (Tree.RootSupertype is { } root && root != Defines && !Supertypes.Any(s => s is InternalSymbol))
-            Supertypes = Supertypes.Append(root).ToFixedSet();
+        if (Tree.RootSupertype is { } root && root != Defines && !DeclaredSupertypes.Any(s => s is InternalSymbol))
+            DeclaredSupertypes = DeclaredSupertypes.Append(root).ToFixedSet();
 
         isSyncLockRequired = new(() => ActualAttributes.Any(a => a.IsSyncLockRequired)
                                        || ActualEquations.Any(eq => eq.IsSyncLockRequired));
 
         // Inheritance Relationships
-        supertypeNodes = new(() => Supertypes.OfType<InternalSymbol>().Select(s => s.ReferencedNode)
+        supertypeNodes = new(() => DeclaredSupertypes.OfType<InternalSymbol>().Select(s => s.ReferencedNode)
                                              .EliminateRedundantRules().ToFixedSet());
         ancestorNodes = new(() => SupertypeNodes.Concat(SupertypeNodes.SelectMany(p => p.AncestorNodes)).ToFixedSet());
         childNodes = new(() => Tree.Nodes.Where(r => r.SupertypeNodes.Contains(this)).ToFixedSet());

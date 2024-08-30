@@ -11,10 +11,12 @@
 ↓ computed Child.Package: PackageDeclaration;
 
 // ---------- Facets
+= PackageFacet.*.**.Facet => this;
 = PackageFacet.*.ContainingDeclaration => this;
 
 // ---------- Code Files
 ↓ computed Code.File: `CodeFile`;
+↑ CompilationUnit.File: `CodeFile` => Syntax.File;
 = CompilationUnit.*.**.File;
 ↓ computed CompilationUnit.ContainingDeclaration: PackageFacet;
 
@@ -47,5 +49,11 @@
 = PackageDeclaration.*.**.Package => this;
 
 // ---------- Facets
-= PackageFacetDeclaration.*.**.Facet => this;
 ↓ computed PackageFacetChildDeclaration.Facet: PackageFacetDeclaration;
+
+// -------------------------------------------------------------------------------------------------
+// Symbol Nodes
+// -------------------------------------------------------------------------------------------------
+
+// ---------- Facets
+= PackageFacetSymbol.*.**.Facet => this;

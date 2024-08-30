@@ -58,11 +58,14 @@
 ### Type Declarations
 
 For inherited and previous attributes, the framework must treat value types differently. To do that
-it is necessary to declare which types are values types.
+it is necessary to declare which types are values types using a `struct` declaration. In other
+cases, the framework needs to know the relationships between types to select the most specific type.
+A `type` declaration is used to provide that.
 
-| Declaration                    | Meaning                                  |
-| ------------------------------ | ---------------------------------------- |
-| `struct` `` ` ``*Name*`` `; `` | Declares that the symbol is a value type |
+| Declaration                                                                       | Meaning                                                                |
+| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `struct` `` ` ``*Name*`` `; ``                                                    | Declares that the symbol is a value type                               |
+| `type` `` ` ``*Name*`` ` `` `<:` `` ` ``*Node*`` ` `` (`,` `` ` ``*Node*`` ` ``)* | Declared a reference type (i.e. class or interface) and its supertypes |
 
 ### Synthesized Attributes
 

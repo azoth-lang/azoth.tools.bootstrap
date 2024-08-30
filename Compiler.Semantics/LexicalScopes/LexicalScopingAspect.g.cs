@@ -42,7 +42,7 @@ internal static partial class LexicalScopingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ConditionalLexicalScope UnaryOperatorExpression_FlowLexicalScope(IUnaryOperatorExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial LexicalScope CompilationUnit_LexicalScope(ICompilationUnitNode node);
+    public static partial NamespaceSearchScope CompilationUnit_LexicalScope(ICompilationUnitNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial LexicalScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

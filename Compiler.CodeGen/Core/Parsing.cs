@@ -101,7 +101,7 @@ internal static class Parsing
     public static IEnumerable<string> SplitCommaSeparated(string supertypes)
         => supertypes.Split(',', StringSplitOptions.TrimEntries);
 
-    public static (string, string?) OptionalSplitTwo(string value, string separator, string errorMessage)
+    public static (string, string?) OptionalBisect(string value, string separator, string errorMessage)
     {
         var index = value.IndexOf(separator, StringComparison.InvariantCulture);
         if (index == -1) return (value, null);
@@ -224,5 +224,11 @@ internal static class Parsing
         var endsWith = value.StartsWith(prefix);
         if (endsWith) value = value[prefix.Length..].Trim();
         return endsWith;
+    }
+
+    public static IEnumerable<SymbolSyntax> ParseSupertypes(string? supertypes)
+    {
+        if (supertypes is null) return [];
+        return SplitCommaSeparated(supertypes).Select(s => ParseSymbol(s));
     }
 }

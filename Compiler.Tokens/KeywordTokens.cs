@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using ExhaustiveMatching;
 

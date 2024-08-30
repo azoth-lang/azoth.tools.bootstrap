@@ -39,7 +39,7 @@ internal static class Emit
 
     public static string BaseTypes(TreeNodeModel node)
     {
-        var supertypes = node.Supertypes.OfType<ExternalSymbol>().Select(p => p.FullName)
+        var supertypes = node.DeclaredSupertypes.OfType<ExternalSymbol>().Select(p => p.FullName)
                           .Concat(node.SupertypeNodes.Select(r => TypeName(r.Defines)))
                           .ToFixedList();
 
@@ -395,7 +395,11 @@ internal static class Emit
     public static string Body(InheritedAttributeEquationModel equation)
     {
         if (equation.Expression is not null)
-            return equation.Expression;
+        {
+            var typeMatchesReturnType = equation.Type == equation.AttributeFamily.Type;
+            return typeMatchesReturnType ? equation.Expression
+                : $"Is.OfType<{Type(equation.Type)}>({equation.Expression})";
+        }
 
         var parameters = equation.Selector is ChildAtVariableSelectorModel s ? $"(this, {s.Variable})" : "(this)";
         return $"{equation.Aspect.Name}." + EquationMethod(equation) + parameters;

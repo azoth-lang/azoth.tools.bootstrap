@@ -279,19 +279,25 @@ public partial interface ICompilationUnitNode : ICodeNode
     new ICompilationUnitSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    PackageSymbol ContainingSymbol { get; }
-    NamespaceName ImplicitNamespaceName { get; }
-    NamespaceSymbol ImplicitNamespaceSymbol { get; }
     IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
     NamespaceScope ContainingLexicalScope { get; }
-    LexicalScope LexicalScope { get; }
+    NamespaceSearchScope LexicalScope { get; }
+    new CodeFile File
+        => Syntax.File;
+    CodeFile ICodeNode.File => File;
     IPackageFacetNode ContainingDeclaration { get; }
     INamespaceDefinitionNode ImplicitNamespace { get; }
     DiagnosticCollection Diagnostics { get; }
+    PackageSymbol ContainingSymbol
+        => ContainingDeclaration.PackageSymbol;
+    NamespaceName ImplicitNamespaceName
+        => Syntax.ImplicitNamespaceName;
+    NamespaceSymbol ImplicitNamespaceSymbol
+        => ImplicitNamespace.Symbol;
 
-    public static ICompilationUnitNode Create(ICompilationUnitSyntax syntax, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, NamespaceSymbol implicitNamespaceSymbol, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> definitions)
-        => new CompilationUnitNode(syntax, containingSymbol, implicitNamespaceName, implicitNamespaceSymbol, usingDirectives, definitions);
+    public static ICompilationUnitNode Create(ICompilationUnitSyntax syntax, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> definitions)
+        => new CompilationUnitNode(syntax, usingDirectives, definitions);
 }
 
 // [Closed(typeof(UsingDirectiveNode))]
@@ -3999,11 +4005,6 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
         CompilationUnits = ChildSet.Attach(this, compilationUnits);
     }
 
-    internal override IPackageFacetDeclarationNode Inherited_Facet(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return this;
-    }
-
     internal override PackageNameScope Inherited_PackageNameScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return PackageNameScope;
@@ -4012,14 +4013,19 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
-            return PackageNameScope.PackageGlobalScope;
+            return Is.OfType<NamespaceScope>(PackageNameScope.PackageGlobalScope);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override IPackageFacetDeclarationNode Inherited_Facet(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IPackageFacetNode>(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
-            return this;
+            return Is.OfType<IPackageFacetNode>(this);
         return base.Inherited_ContainingDeclaration(child, descendant, ctx);
     }
 }
@@ -4030,15 +4036,10 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     private ICompilationUnitNode Self { [Inline] get => this; }
 
     public ICompilationUnitSyntax Syntax { [DebuggerStepThrough] get; }
-    public PackageSymbol ContainingSymbol { [DebuggerStepThrough] get; }
-    public NamespaceName ImplicitNamespaceName { [DebuggerStepThrough] get; }
-    public NamespaceSymbol ImplicitNamespaceSymbol { [DebuggerStepThrough] get; }
     public IFixedList<IUsingDirectiveNode> UsingDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public CodeFile File
-        => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public NamespaceScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -4054,11 +4055,11 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     private DiagnosticCollection? diagnostics;
     private bool diagnosticsCached;
     private IFixedSet<SemanticNode>? diagnosticsContributors;
-    public LexicalScope LexicalScope
+    public NamespaceSearchScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.CompilationUnit_LexicalScope);
-    private LexicalScope? lexicalScope;
+    private NamespaceSearchScope? lexicalScope;
     private bool lexicalScopeCached;
     public INamespaceDefinitionNode ImplicitNamespace
         => GrammarAttribute.IsCached(in implicitNamespaceCached) ? implicitNamespace!
@@ -4067,14 +4068,16 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     private INamespaceDefinitionNode? implicitNamespace;
     private bool implicitNamespaceCached;
 
-    public CompilationUnitNode(ICompilationUnitSyntax syntax, PackageSymbol containingSymbol, NamespaceName implicitNamespaceName, NamespaceSymbol implicitNamespaceSymbol, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> definitions)
+    public CompilationUnitNode(ICompilationUnitSyntax syntax, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> definitions)
     {
         Syntax = syntax;
-        ContainingSymbol = containingSymbol;
-        ImplicitNamespaceName = implicitNamespaceName;
-        ImplicitNamespaceSymbol = implicitNamespaceSymbol;
         UsingDirectives = ChildList.Create(this, nameof(UsingDirectives), usingDirectives);
         Definitions = ChildList.Create(this, nameof(Definitions), definitions);
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<NamespaceSearchScope>(LexicalScope);
     }
 
     internal override CodeFile Inherited_File(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

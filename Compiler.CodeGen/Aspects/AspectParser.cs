@@ -33,8 +33,8 @@ public static class AspectParser
         var rewriteRules = new List<RewriteRuleSyntax>();
         foreach (var statement in statements)
         {
-            if (statement.StartsWith("struct"))
-                typeDeclarations.Add(ParseStructDeclaration(statement));
+            if (statement.StartsWith("struct") || statement.StartsWith("type"))
+                typeDeclarations.Add(ParseTypeDeclaration(statement));
             else if (statement.StartsWith('↓') && statement.Contains("<:"))
                 attributeFamilies.Add(ParseInheritedAttributeFamily(statement));
             else if (statement.StartsWith("↗↖") && statement.Contains(':'))
@@ -49,13 +49,19 @@ public static class AspectParser
         return new(typeDeclarations, attributeFamilies, attributes, equations, rewriteRules);
     }
 
-    private static TypeDeclarationSyntax ParseStructDeclaration(string statement)
+    private static TypeDeclarationSyntax ParseTypeDeclaration(string statement)
     {
-        var (structKeyword, name) = Bisect(statement, "Should be exactly one space in: '{0}'");
-        if (structKeyword != "struct")
-            throw new FormatException($"Struct declarations does not start with 'struct': '{statement}'");
+        (var keyword, statement) = SplitOffStart(statement, "Missing whitespace in: '{0}'");
+        var isValueType = keyword switch
+        {
+            "struct" => true,
+            "type" => false,
+            _ => throw new FormatException($"Type declarations does not start with 'struct' or 'type': '{statement}'"),
+        };
+        var (name, supertypes) = OptionalBisect(statement, "<:", "Too many `<:` in: '{0}'");
         var nameSyntax = ParseSymbol(name);
-        return new(true, nameSyntax);
+        var supertypeSyntax = ParseSupertypes(supertypes);
+        return new(isValueType, nameSyntax, supertypeSyntax);
     }
 
     private static InheritedAttributeFamilySyntax ParseInheritedAttributeFamily(string statement)
@@ -110,7 +116,7 @@ public static class AspectParser
         if (!ParseOffStart(ref statement, "↑"))
             throw new ArgumentException("Not a synthesized attribute statement.", nameof(statement));
 
-        var (definition, defaultExpression) = OptionalSplitTwo(statement, "=>", "Too many `=>` in: '{0}'");
+        var (definition, defaultExpression) = OptionalBisect(statement, "=>", "Too many `=>` in: '{0}'");
         (definition, var type) = Bisect(definition, ":", "Should be exactly one `:` in: '{0}'");
         (var node, definition) = SplitOffStart(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var isChild = ParseIsChild(ref node);
@@ -157,7 +163,7 @@ public static class AspectParser
         if (!ParseOffStart(ref statement, "+"))
             throw new ArgumentException("Not an intertype method attribute statement.", nameof(statement));
 
-        var (definition, defaultExpression) = OptionalSplitTwo(statement, "=>", "Should be exactly one `=>` in: '{0}'");
+        var (definition, defaultExpression) = OptionalBisect(statement, "=>", "Should be exactly one `=>` in: '{0}'");
         (definition, var type) = Bisect(definition, ":", "Should be exactly one `:` in: '{0}'");
         (var node, definition) = SplitOffStart(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var parameters = ParseOffParameters(ref definition);
@@ -188,8 +194,8 @@ public static class AspectParser
     {
         if (!ParseOffStart(ref statement, "="))
             throw new ArgumentException("Not an equation.", nameof(statement));
-        var (definition, expression) = OptionalSplitTwo(statement, "=>", "Too many `=>` in: '{0}'");
-        (definition, var typeOverride) = OptionalSplitTwo(definition, ":", "Too many `:` in: '{0}'");
+        var (definition, expression) = OptionalBisect(statement, "=>", "Too many `=>` in: '{0}'");
+        (definition, var typeOverride) = OptionalBisect(definition, ":", "Too many `:` in: '{0}'");
         (var node, definition) = SplitOffStart(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
         var parameters = TryParseOffParameters(ref definition);
@@ -275,7 +281,7 @@ public static class AspectParser
             case 1 when selector[0] == "*":
                 return AllChildrenSelectorSyntax.Create(broadcast);
             case 1:
-                var (child, indexer) = OptionalSplitTwo(selector[0], "[", "Too many `[` in selector '{0}'");
+                var (child, indexer) = OptionalBisect(selector[0], "[", "Too many `[` in selector '{0}'");
                 if (indexer is null)
                     return new ChildSelectorSyntax(child, broadcast);
                 if (!ParseOffEnd(ref indexer, "]"))

@@ -63,8 +63,7 @@ PackageMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefini
 // ---------- Code Files
 Code <: Child = Syntax:`ICodeSyntax`?;
 
-CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax` ContainingSymbol:`PackageSymbol`
-    ImplicitNamespaceName:`NamespaceName` ImplicitNamespaceSymbol:`NamespaceSymbol`
+CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
     UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*;
 
 UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax` Name:`NamespaceName`;

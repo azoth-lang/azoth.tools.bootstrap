@@ -3,6 +3,9 @@
 
 // ↓ ↑ ⮡
 
+// Type relationship needed to determine most specific type for ContainingLexicalScope
+type `NamespaceSearchScope` <: `LexicalScope`;
+
 // Attribute supertype needed because of the conflict between CompilationUnit and others
 ↓ *.ContainingLexicalScope <: `LexicalScope`;
 
@@ -24,7 +27,8 @@
 
 // ---------- Code Files
 ↓ CompilationUnit.ContainingLexicalScope: `NamespaceScope`;
-↑ CompilationUnit.LexicalScope: `LexicalScope`;
+↑ CompilationUnit.LexicalScope: `NamespaceSearchScope`;
+= CompilationUnit.*.**.ContainingLexicalScope => LexicalScope;
 
 // ---------- Definitions
 ↓ Definition.ContainingLexicalScope: `LexicalScope`;

@@ -19,7 +19,7 @@ internal static partial class LexicalScopingAspect
                 .Concat(node.References.Select(r => r.SymbolNode.TestingFacet)),
             node.PrimitivesDeclarations);
 
-    public static partial LexicalScope CompilationUnit_LexicalScope(ICompilationUnitNode node)
+    public static partial NamespaceSearchScope CompilationUnit_LexicalScope(ICompilationUnitNode node)
         => BuildNamespaceScope(node.ContainingLexicalScope, node.ImplicitNamespaceName, node.UsingDirectives);
 
     private static NamespaceSearchScope BuildNamespaceScope(
