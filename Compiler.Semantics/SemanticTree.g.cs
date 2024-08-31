@@ -4381,6 +4381,9 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
             return Type.Return.Type.ToAntetype();
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4850,6 +4853,9 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4954,6 +4960,9 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     {
         return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5054,6 +5063,9 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     {
         return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5154,6 +5166,9 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     {
         return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5243,6 +5258,9 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5334,6 +5352,9 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5423,6 +5444,9 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5514,6 +5538,9 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5707,6 +5734,9 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]

@@ -255,6 +255,11 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#          } #>
     }
 <#      } #>
+<#      foreach (var eq in node.ActualEquations.OfType<PreviousAttributeEquationModel>()) { #>
+
+    internal override <#= Emit.Type(eq.Type) #> Next_<#= eq.Name #>(<#= Emit.BaseClassName(tree) #> before, IInheritanceContext ctx)
+        => <#= Emit.QualifiedEquationMethod(eq) #>(this);
+<#      } #>
 <#      foreach (var attribute in node.ActualAttributes.OfType<AggregateAttributeModel>()) { #>
 
     internal override void CollectContributors_<#= attribute.Name #>(List<<#= Emit.BaseClassName(tree) #>> contributors)

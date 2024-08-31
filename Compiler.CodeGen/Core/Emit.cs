@@ -428,6 +428,9 @@ internal static class Emit
         return "";
     }
 
+    public static string QualifiedEquationMethod(PreviousAttributeEquationModel equation)
+        => $"{equation.Aspect.Name}.{EquationMethod(equation)}";
+
     public static string EquationMethod(PreviousAttributeEquationModel equation)
         => $"{equation.NodeSymbol}_Next_{equation.Name}";
 
