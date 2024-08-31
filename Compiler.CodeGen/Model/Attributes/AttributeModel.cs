@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
@@ -17,13 +16,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class AttributeModel : IMemberModel
 {
-    public static IEqualityComparer<AttributeModel> NameAndTypeComparer { get; }
-        = EqualityComparer<AttributeModel>.Create((p1, p2) => p1?.Name == p2?.Name && p1?.Type == p2?.Type,
-            p => HashCode.Combine(p.Name, p.Type));
-
-    public static IEqualityComparer<AttributeModel> NameComparer { get; }
-        = EqualityComparer<AttributeModel>.Create((p1, p2) => p1?.Name == p2?.Name, p => HashCode.Combine(p.Name));
-
     public abstract AttributeSyntax? Syntax { get; }
     public abstract TreeNodeModel Node { get; }
     public abstract string Name { get; }

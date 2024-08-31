@@ -58,7 +58,7 @@ PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageSyntax` CompilationUni
 
 // TODO rename to FacetMemberDefinition
 PackageMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefinition
-    = Attributes:Attribute* AccessModifier:`AccessModifier`;
+    = Attributes:Attribute*;
 
 // ---------- Code Files
 Code <: Child = Syntax:`ICodeSyntax`?;
@@ -90,7 +90,7 @@ NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 // ---------- Function Definition
 FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration, ConcreteFunctionInvocableDefinition
     = Syntax:`IFunctionDefinitionSyntax`
-    Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
+    Attributes:Attribute* Parameters:NamedParameter* Return:Type?
     Entry Body Exit Type:`FunctionType`;
 
 // ---------- Type Definitions
@@ -125,7 +125,7 @@ GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParamete
     Members:{TypeMemberDefinition};
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
-TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberDefinitionSyntax`? AccessModifier:`AccessModifier`;
+TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberDefinitionSyntax`?;
 ClassMemberDefinition <: TypeMemberDefinition, ClassMemberDeclaration;
 TraitMemberDefinition <: TypeMemberDefinition, TraitMemberDeclaration;
 StructMemberDefinition <: TypeMemberDefinition, StructMemberDeclaration;

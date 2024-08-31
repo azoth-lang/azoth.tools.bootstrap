@@ -463,16 +463,17 @@ public partial interface IFunctionDefinitionNode : IPackageMemberDefinitionNode,
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new IdentifierName Name { get; }
-    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    StandardName INamespaceMemberDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
-    IdentifierName IConcreteFunctionInvocableDefinitionNode.Name => Name;
     new FunctionType Type { get; }
     FunctionType IFunctionLikeDeclarationNode.Type => Type;
     FunctionType IConcreteFunctionInvocableDefinitionNode.Type => Type;
     new INamespaceDeclarationNode ContainingDeclaration { get; }
     ISymbolDeclarationNode IDefinitionNode.ContainingDeclaration => ContainingDeclaration;
+    new IdentifierName Name
+        => Syntax.Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    StandardName INamespaceMemberDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
+    IdentifierName IConcreteFunctionInvocableDefinitionNode.Name => Name;
     new NamespaceSymbol ContainingSymbol
         => ContainingDeclaration.Symbol;
     Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
@@ -483,8 +484,8 @@ public partial interface IFunctionDefinitionNode : IPackageMemberDefinitionNode,
     FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
 
-    public static IFunctionDefinitionNode Create(AccessModifier accessModifier, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
-        => new FunctionDefinitionNode(accessModifier, variableBindingsMap, syntax, attributes, name, parameters, @return, entry, body, exit, type);
+    public static IFunctionDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
+        => new FunctionDefinitionNode(variableBindingsMap, syntax, attributes, parameters, @return, entry, body, exit, type);
 }
 
 [Closed(
@@ -546,8 +547,8 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     IEnumerable<IStandardTypeNameNode> ITypeDefinitionNode.AllSupertypeNames
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
 
-    public static IClassDefinitionNode Create(IEnumerable<IClassMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, AccessModifier accessModifier, IClassDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, bool isAbstract, IEnumerable<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IEnumerable<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IEnumerable<IClassMemberDefinitionNode> sourceMembers, IEnumerable<IClassMemberDefinitionNode> members, IDefaultConstructorDefinitionNode? defaultConstructor)
-        => new ClassDefinitionNode(inclusiveMembers, isConst, name, supertypes, accessModifier, syntax, attributes, isAbstract, genericParameters, baseTypeName, supertypeNames, declaredType, sourceMembers, members, defaultConstructor);
+    public static IClassDefinitionNode Create(IEnumerable<IClassMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, IClassDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, bool isAbstract, IEnumerable<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IEnumerable<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IEnumerable<IClassMemberDefinitionNode> sourceMembers, IEnumerable<IClassMemberDefinitionNode> members, IDefaultConstructorDefinitionNode? defaultConstructor)
+        => new ClassDefinitionNode(inclusiveMembers, isConst, name, supertypes, syntax, attributes, isAbstract, genericParameters, baseTypeName, supertypeNames, declaredType, sourceMembers, members, defaultConstructor);
 }
 
 // [Closed(typeof(StructDefinitionNode))]
@@ -569,8 +570,8 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     IFixedSet<IStructMemberDeclarationNode> IStructDeclarationNode.Members => Members;
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
 
-    public static IStructDefinitionNode Create(IEnumerable<IStructMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, AccessModifier accessModifier, IStructDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, StructType declaredType, IEnumerable<IStructMemberDefinitionNode> sourceMembers, IEnumerable<IStructMemberDefinitionNode> members, IDefaultInitializerDefinitionNode? defaultInitializer)
-        => new StructDefinitionNode(inclusiveMembers, isConst, name, supertypes, accessModifier, syntax, attributes, genericParameters, supertypeNames, declaredType, sourceMembers, members, defaultInitializer);
+    public static IStructDefinitionNode Create(IEnumerable<IStructMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, IStructDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, StructType declaredType, IEnumerable<IStructMemberDefinitionNode> sourceMembers, IEnumerable<IStructMemberDefinitionNode> members, IDefaultInitializerDefinitionNode? defaultInitializer)
+        => new StructDefinitionNode(inclusiveMembers, isConst, name, supertypes, syntax, attributes, genericParameters, supertypeNames, declaredType, sourceMembers, members, defaultInitializer);
 }
 
 // [Closed(typeof(TraitDefinitionNode))]
@@ -590,8 +591,8 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITraitMemberDeclarationNode> ITraitDeclarationNode.Members => Members;
 
-    public static ITraitDefinitionNode Create(IEnumerable<ITraitMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, AccessModifier accessModifier, ITraitDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IEnumerable<ITraitMemberDefinitionNode> members)
-        => new TraitDefinitionNode(inclusiveMembers, isConst, name, supertypes, accessModifier, syntax, attributes, genericParameters, supertypeNames, declaredType, members);
+    public static ITraitDefinitionNode Create(IEnumerable<ITraitMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, ITraitDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IEnumerable<ITraitMemberDefinitionNode> members)
+        => new TraitDefinitionNode(inclusiveMembers, isConst, name, supertypes, syntax, attributes, genericParameters, supertypeNames, declaredType, members);
 }
 
 // [Closed(typeof(GenericParameterNode))]
@@ -726,8 +727,8 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDeclaredUserType ContainingDeclaredType { get; }
 
-    public static IAbstractMethodDefinitionNode Create(AccessModifier accessModifier, MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
-        => new AbstractMethodDefinitionNode(accessModifier, kind, name, arity, methodGroupType, syntax, selfParameter, parameters, @return);
+    public static IAbstractMethodDefinitionNode Create(MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
+        => new AbstractMethodDefinitionNode(kind, name, arity, methodGroupType, syntax, selfParameter, parameters, @return);
 }
 
 [Closed(
@@ -759,8 +760,8 @@ public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefiniti
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
 
-    public static IStandardMethodDefinitionNode Create(AccessModifier accessModifier, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new StandardMethodDefinitionNode(accessModifier, kind, name, variableBindingsMap, arity, methodGroupType, syntax, selfParameter, parameters, @return, entry, body, exit);
+    public static IStandardMethodDefinitionNode Create(MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new StandardMethodDefinitionNode(kind, name, variableBindingsMap, arity, methodGroupType, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
 // [Closed(typeof(GetterMethodDefinitionNode))]
@@ -777,8 +778,8 @@ public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinition
     new ITypeNode Return { get; }
     ITypeNode? IMethodDefinitionNode.Return => Return;
 
-    public static IGetterMethodDefinitionNode Create(AccessModifier accessModifier, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new GetterMethodDefinitionNode(accessModifier, kind, name, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
+    public static IGetterMethodDefinitionNode Create(MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new GetterMethodDefinitionNode(kind, name, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
 // [Closed(typeof(SetterMethodDefinitionNode))]
@@ -793,8 +794,8 @@ public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinition
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
 
-    public static ISetterMethodDefinitionNode Create(AccessModifier accessModifier, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new SetterMethodDefinitionNode(accessModifier, kind, name, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
+    public static ISetterMethodDefinitionNode Create(MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new SetterMethodDefinitionNode(kind, name, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
 [Closed(
@@ -820,8 +821,8 @@ public partial interface IConstructorDefinitionNode : IConcreteInvocableDefiniti
 public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinitionNode
 {
 
-    public static IDefaultConstructorDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
-        => new DefaultConstructorDefinitionNode(variableBindingsMap, accessModifier, syntax, name, parameters, entry, body, exit);
+    public static IDefaultConstructorDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+        => new DefaultConstructorDefinitionNode(variableBindingsMap, syntax, name, parameters, entry, body, exit);
 }
 
 // [Closed(typeof(SourceConstructorDefinitionNode))]
@@ -838,8 +839,8 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static ISourceConstructorDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
-        => new SourceConstructorDefinitionNode(variableBindingsMap, accessModifier, name, syntax, selfParameter, parameters, entry, body, exit);
+    public static ISourceConstructorDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+        => new SourceConstructorDefinitionNode(variableBindingsMap, name, syntax, selfParameter, parameters, entry, body, exit);
 }
 
 [Closed(
@@ -865,8 +866,8 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
 public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinitionNode
 {
 
-    public static IDefaultInitializerDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
-        => new DefaultInitializerDefinitionNode(variableBindingsMap, accessModifier, syntax, name, parameters, entry, body, exit);
+    public static IDefaultInitializerDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+        => new DefaultInitializerDefinitionNode(variableBindingsMap, syntax, name, parameters, entry, body, exit);
 }
 
 // [Closed(typeof(SourceInitializerDefinitionNode))]
@@ -883,8 +884,8 @@ public partial interface ISourceInitializerDefinitionNode : IInitializerDefiniti
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static ISourceInitializerDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
-        => new SourceInitializerDefinitionNode(variableBindingsMap, accessModifier, name, syntax, selfParameter, parameters, entry, body, exit);
+    public static ISourceInitializerDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+        => new SourceInitializerDefinitionNode(variableBindingsMap, name, syntax, selfParameter, parameters, entry, body, exit);
 }
 
 // [Closed(typeof(FieldDefinitionNode))]
@@ -918,8 +919,8 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
 
-    public static IFieldDefinitionNode Create(AccessModifier accessModifier, bool isLentBinding, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
-        => new FieldDefinitionNode(accessModifier, isLentBinding, variableBindingsMap, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, entry, initializer, currentInitializer, exit);
+    public static IFieldDefinitionNode Create(bool isLentBinding, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
+        => new FieldDefinitionNode(isLentBinding, variableBindingsMap, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, entry, initializer, currentInitializer, exit);
 }
 
 // [Closed(typeof(AssociatedFunctionDefinitionNode))]
@@ -947,8 +948,8 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionIn
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 
-    public static IAssociatedFunctionDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new AssociatedFunctionDefinitionNode(variableBindingsMap, accessModifier, syntax, name, parameters, @return, type, entry, body, exit);
+    public static IAssociatedFunctionDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new AssociatedFunctionDefinitionNode(variableBindingsMap, syntax, name, parameters, @return, type, entry, body, exit);
 }
 
 // [Closed(typeof(AttributeNode))]
@@ -4253,12 +4254,11 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
 file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
 {
     private IFunctionDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IFunctionDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
     public IEntryNode Entry { [DebuggerStepThrough] get; }
@@ -4283,6 +4283,12 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     private bool facetCached;
     public INamespaceDeclarationNode ContainingDeclaration
         => (INamespaceDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.FunctionDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -4302,13 +4308,11 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public FunctionDefinitionNode(AccessModifier accessModifier, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
+    public FunctionDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
     {
-        AccessModifier = accessModifier;
         VariableBindingsMap = variableBindingsMap;
         Syntax = syntax;
         Attributes = ChildList.Create(this, nameof(Attributes), attributes);
-        Name = name;
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
         Return = Child.Attach(this, @return);
         Entry = Child.Attach(this, entry);
@@ -4327,12 +4331,12 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
 file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
 {
     private IClassDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
     public IFixedSet<IClassMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
     public bool IsConst { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
     public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IClassDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public bool IsAbstract { [DebuggerStepThrough] get; }
@@ -4379,6 +4383,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private UserTypeSymbol? symbol;
     private bool symbolCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -4392,13 +4402,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public ClassDefinitionNode(IEnumerable<IClassMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, AccessModifier accessModifier, IClassDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, bool isAbstract, IEnumerable<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IEnumerable<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IEnumerable<IClassMemberDefinitionNode> sourceMembers, IEnumerable<IClassMemberDefinitionNode> members, IDefaultConstructorDefinitionNode? defaultConstructor)
+    public ClassDefinitionNode(IEnumerable<IClassMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, IClassDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, bool isAbstract, IEnumerable<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IEnumerable<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IEnumerable<IClassMemberDefinitionNode> sourceMembers, IEnumerable<IClassMemberDefinitionNode> members, IDefaultConstructorDefinitionNode? defaultConstructor)
     {
         InclusiveMembers = inclusiveMembers.ToFixedSet();
         IsConst = isConst;
         Name = name;
         Supertypes = supertypes.ToFixedSet();
-        AccessModifier = accessModifier;
         Syntax = syntax;
         Attributes = ChildList.Create(this, nameof(Attributes), attributes);
         IsAbstract = isAbstract;
@@ -4440,12 +4449,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
 file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
 {
     private IStructDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
     public IFixedSet<IStructMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
     public bool IsConst { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
     public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IStructDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
@@ -4490,6 +4499,12 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private UserTypeSymbol? symbol;
     private bool symbolCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -4503,13 +4518,12 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public StructDefinitionNode(IEnumerable<IStructMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, AccessModifier accessModifier, IStructDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, StructType declaredType, IEnumerable<IStructMemberDefinitionNode> sourceMembers, IEnumerable<IStructMemberDefinitionNode> members, IDefaultInitializerDefinitionNode? defaultInitializer)
+    public StructDefinitionNode(IEnumerable<IStructMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, IStructDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, StructType declaredType, IEnumerable<IStructMemberDefinitionNode> sourceMembers, IEnumerable<IStructMemberDefinitionNode> members, IDefaultInitializerDefinitionNode? defaultInitializer)
     {
         InclusiveMembers = inclusiveMembers.ToFixedSet();
         IsConst = isConst;
         Name = name;
         Supertypes = supertypes.ToFixedSet();
-        AccessModifier = accessModifier;
         Syntax = syntax;
         Attributes = ChildList.Create(this, nameof(Attributes), attributes);
         GenericParameters = ChildList.Create(this, nameof(GenericParameters), genericParameters);
@@ -4549,12 +4563,12 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
 file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
 {
     private ITraitDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
     public IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
     public bool IsConst { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
     public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public ITraitDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
@@ -4597,6 +4611,12 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private UserTypeSymbol? symbol;
     private bool symbolCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -4610,13 +4630,12 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public TraitDefinitionNode(IEnumerable<ITraitMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, AccessModifier accessModifier, ITraitDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IEnumerable<ITraitMemberDefinitionNode> members)
+    public TraitDefinitionNode(IEnumerable<ITraitMemberDeclarationNode> inclusiveMembers, bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, ITraitDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IEnumerable<ITraitMemberDefinitionNode> members)
     {
         InclusiveMembers = inclusiveMembers.ToFixedSet();
         IsConst = isConst;
         Name = name;
         Supertypes = supertypes.ToFixedSet();
-        AccessModifier = accessModifier;
         Syntax = syntax;
         Attributes = ChildList.Create(this, nameof(Attributes), attributes);
         GenericParameters = ChildList.Create(this, nameof(GenericParameters), genericParameters);
@@ -4705,8 +4724,8 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
 file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitionNode
 {
     private IAbstractMethodDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public int Arity { [DebuggerStepThrough] get; }
@@ -4751,6 +4770,12 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
                 SymbolsAspect.MethodDefinition_Symbol);
     private MethodSymbol? symbol;
     private bool symbolCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -4758,9 +4783,8 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public AbstractMethodDefinitionNode(AccessModifier accessModifier, MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
+    public AbstractMethodDefinitionNode(MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
     {
-        AccessModifier = accessModifier;
         Kind = kind;
         Name = name;
         Arity = arity;
@@ -4776,8 +4800,8 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
 file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitionNode
 {
     private IStandardMethodDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
@@ -4820,6 +4844,12 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
                 SymbolsAspect.MethodDefinition_Symbol);
     private MethodSymbol? symbol;
     private bool symbolCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -4827,9 +4857,8 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public StandardMethodDefinitionNode(AccessModifier accessModifier, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public StandardMethodDefinitionNode(MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
-        AccessModifier = accessModifier;
         Kind = kind;
         Name = name;
         VariableBindingsMap = variableBindingsMap;
@@ -4854,8 +4883,8 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
 file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNode
 {
     private IGetterMethodDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
@@ -4896,6 +4925,12 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
                 SymbolsAspect.MethodDefinition_Symbol);
     private MethodSymbol? symbol;
     private bool symbolCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -4903,9 +4938,8 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public GetterMethodDefinitionNode(AccessModifier accessModifier, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public GetterMethodDefinitionNode(MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
-        AccessModifier = accessModifier;
         Kind = kind;
         Name = name;
         VariableBindingsMap = variableBindingsMap;
@@ -4928,8 +4962,8 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
 file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNode
 {
     private ISetterMethodDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
@@ -4970,6 +5004,12 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
                 SymbolsAspect.MethodDefinition_Symbol);
     private MethodSymbol? symbol;
     private bool symbolCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -4977,9 +5017,8 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public SetterMethodDefinitionNode(AccessModifier accessModifier, MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public SetterMethodDefinitionNode(MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
-        AccessModifier = accessModifier;
         Kind = kind;
         Name = name;
         VariableBindingsMap = variableBindingsMap;
@@ -5002,9 +5041,9 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
 file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorDefinitionNode
 {
     private IDefaultConstructorDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IConstructorDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -5047,11 +5086,16 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
 
-    public DefaultConstructorDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    public DefaultConstructorDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
     {
         VariableBindingsMap = variableBindingsMap;
-        AccessModifier = accessModifier;
         Syntax = syntax;
         Name = name;
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
@@ -5065,9 +5109,9 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
 file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDefinitionNode
 {
     private ISourceConstructorDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IConstructorDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IConstructorSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
@@ -5111,11 +5155,16 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
 
-    public SourceConstructorDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    public SourceConstructorDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
     {
         VariableBindingsMap = variableBindingsMap;
-        AccessModifier = accessModifier;
         Name = name;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
@@ -5130,9 +5179,9 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
 file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerDefinitionNode
 {
     private IDefaultInitializerDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IInitializerDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -5175,11 +5224,16 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
 
-    public DefaultInitializerDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    public DefaultInitializerDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
     {
         VariableBindingsMap = variableBindingsMap;
-        AccessModifier = accessModifier;
         Syntax = syntax;
         Name = name;
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
@@ -5193,9 +5247,9 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
 file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDefinitionNode
 {
     private ISourceInitializerDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IInitializerDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IInitializerSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
@@ -5239,11 +5293,16 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
 
-    public SourceInitializerDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    public SourceInitializerDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
     {
         VariableBindingsMap = variableBindingsMap;
-        AccessModifier = accessModifier;
         Name = name;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
@@ -5260,7 +5319,6 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     private IFieldDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IFieldDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -5310,10 +5368,15 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
                 SymbolsAspect.FieldDefinition_Symbol);
     private FieldSymbol? symbol;
     private bool symbolCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
 
-    public FieldDefinitionNode(AccessModifier accessModifier, bool isLentBinding, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
+    public FieldDefinitionNode(bool isLentBinding, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
     {
-        AccessModifier = accessModifier;
         IsLentBinding = isLentBinding;
         VariableBindingsMap = variableBindingsMap;
         Syntax = syntax;
@@ -5333,9 +5396,9 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
 file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionDefinitionNode
 {
     private IAssociatedFunctionDefinitionNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
-    public AccessModifier AccessModifier { [DebuggerStepThrough] get; }
     public IAssociatedFunctionDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -5380,11 +5443,16 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
 
-    public AssociatedFunctionDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, AccessModifier accessModifier, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public AssociatedFunctionDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
         VariableBindingsMap = variableBindingsMap;
-        AccessModifier = accessModifier;
         Syntax = syntax;
         Name = name;
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);

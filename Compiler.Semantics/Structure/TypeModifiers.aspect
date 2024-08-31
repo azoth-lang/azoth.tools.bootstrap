@@ -1,0 +1,20 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
+◊name TypeModifiersAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Syntax;
+
+// ↓ ↑ ⮡ ✎
+
+struct `AccessModifier`;
+
+// ---------- Facets
+↑ PackageMemberDefinition.AccessModifier: `AccessModifier`;
+
+// ---------- Function Definition
+= FunctionDefinition.AccessModifier;
+
+// ---------- Type Definitions
+= TypeDefinition.AccessModifier;
+
+// ---------- Type Member Definitions
+↑ TypeMemberDefinition.AccessModifier: `AccessModifier`;
+= TypeMemberDefinition.AccessModifier;

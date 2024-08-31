@@ -96,7 +96,7 @@ public sealed class TreeModel : IHasUsingNamespaces
     {
         var errors = ValidateRootSupertype();
         errors |= ValidateAmbiguousAttributes();
-        errors |= ValidateUndefinedAttributes();
+        errors |= ValidateAmbiguousEquations();
         errors |= ValidateInheritedEquationsProduceSingleType();
         errors |= ValidateFinalNodes();
         if (errors)
@@ -140,30 +140,31 @@ public sealed class TreeModel : IHasUsingNamespaces
     }
 
     private static IEnumerable<AttributeModel> DuplicateAttributes(TreeNodeModel node)
-        => node.ActualAttributes.Duplicates(AttributeModel.NameComparer);
+        => node.ActualAttributes.Duplicates<AttributeModel>(IMemberModel.NameComparer);
 
     /// <summary>
-    /// This checks that each attribute has a definition for each concrete node.
+    /// This checks that there are no equations that have conflicting definitions due to the
+    /// inheritance of equations from supertypes.
     /// </summary>
-    // TODO with implicitly declared equations, this check should never fail. However, something similar might be needed for other cases.
-    private bool ValidateUndefinedAttributes()
+    private bool ValidateAmbiguousEquations()
     {
         var errors = false;
-        foreach (var node in Nodes.Where(n => !n.IsAbstract))
-        {
-            var actualEquations = node.ActualEquations.Select(e => e.Name).ToFixedSet();
-            foreach (var synthesizedAttribute in AttributesRequiringEquations(node))
-                if (!actualEquations.Contains(synthesizedAttribute.Name))
-                {
-                    errors = true;
-                    Console.Error.WriteLine($"ERROR: Node '{node.Defines}' is missing an equation for attribute '{synthesizedAttribute.Name}'.");
-                }
-        }
+        foreach (var node in Nodes)
+            if (DuplicateEquations(node).Any())
+            {
+                errors = true;
+                var ambiguousNames = DuplicateEquations(node).Select(p => p.Name).ToList();
+                Console.Error.WriteLine(
+                    $"ERROR: Node '{node.Defines}' has ambiguous equations {string.Join(", ", ambiguousNames.Select(n => $"'{n}'"))}."
+                    + $" Definitions: {string.Join(", ", ambiguousNames.SelectMany(node.EquationsNamed).Select(n => $"'{n}'"))}");
+            }
+
         return errors;
     }
 
-    private static IEnumerable<SynthesizedAttributeModel> AttributesRequiringEquations(TreeNodeModel node)
-        => node.ActualAttributes.OfType<SynthesizedAttributeModel>().Where(a => a.DefaultExpression is null);
+    private static IEnumerable<SubtreeEquationModel> DuplicateEquations(TreeNodeModel node)
+        => node.ActualEquations.OfType<SubtreeEquationModel>()
+               .Duplicates<SubtreeEquationModel>(IMemberModel.NameComparer);
 
     private bool ValidateInheritedEquationsProduceSingleType()
     {

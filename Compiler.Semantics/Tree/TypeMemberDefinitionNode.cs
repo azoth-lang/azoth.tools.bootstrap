@@ -10,7 +10,7 @@ internal abstract class TypeMemberDefinitionNode : DefinitionNode, ITypeMemberDe
     private ValueAttribute<AccessModifier> accessModifier;
     public AccessModifier AccessModifier
         => accessModifier.TryGetValue(out var value) ? value
-            : accessModifier.GetValue(this, TypeModifiersAspect.TypeMemberDeclaration_AccessModifier);
+            : accessModifier.GetValue(this, TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => this;

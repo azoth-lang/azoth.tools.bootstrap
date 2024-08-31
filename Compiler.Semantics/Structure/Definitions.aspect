@@ -40,6 +40,9 @@
 ↑ NamespaceDefinition.Syntax: `ISyntax`? => null;
 ↑ eager NamespaceDefinition.Members: NamespaceMemberDefinition*;
 
+// ---------- Function Definition
+↑ FunctionDefinition.Name: `IdentifierName` => Syntax.Name;
+
 // -------------------------------------------------------------------------------------------------
 // Declarations
 // -------------------------------------------------------------------------------------------------

@@ -239,10 +239,10 @@ public class TreeNodeModel
         actualAttributes = new(() =>
         {
             var attributeLookup = AttributesRequiringDeclaration
-                                 .Concat(InheritedAttributes.AllExcept(AttributesRequiringDeclaration, AttributeModel.NameComparer))
+                                 .Concat(InheritedAttributes.AllExcept<AttributeModel>(AttributesRequiringDeclaration, IMemberModel.NameComparer))
                                  .ToLookup(p => p.Name);
             var attributeOrder = SupertypeNodes.SelectMany(s => s.ActualAttributes)
-                                               .Except(AllDeclaredAttributes, AttributeModel.NameComparer)
+                                               .Except(AllDeclaredAttributes, IMemberModel.NameComparer)
                                                .Concat(AllDeclaredAttributes);
             return attributeOrder.SelectMany(p => attributeLookup[p.Name]).ToFixedList();
         });
@@ -299,6 +299,9 @@ public class TreeNodeModel
     public IEnumerable<AttributeModel> AttributesNamed(string name)
         => ActualAttributes.Where(p => p.Name == name);
 
+    public IEnumerable<EquationModel> EquationsNamed(string name)
+        => ActualEquations.Where(p => p.Name == name);
+
     public EquationModel? EquationFor(AttributeModel attribute)
         // Compare by attribute rather than name to avoid issues with inherited attribute equations
         => ActualEquations.SingleOrDefault(eq => eq.Attribute == attribute);
@@ -340,7 +343,7 @@ public class TreeNodeModel
     }
 
     private IEnumerable<AttributeModel> ImplicitlyDeclaredMergedAttributes()
-        => InheritedAttributes.AllExcept(DeclaredAttributes, AttributeModel.NameComparer)
+        => InheritedAttributes.AllExcept<AttributeModel>(DeclaredAttributes, IMemberModel.NameComparer)
                               .Where(a => a.Name != "Parent")
                               .GroupBy(p => p.Name)
                               .Select(ImplicitlyDeclaredMergedAttribute).WhereNotNull()
