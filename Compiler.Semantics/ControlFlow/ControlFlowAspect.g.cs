@@ -9,4 +9,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class ControlFlowAspect
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IEntryNode ExecutableDefinition_Entry(IExecutableDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IExitNode ExecutableDefinition_Exit(IExecutableDefinitionNode node);
 }

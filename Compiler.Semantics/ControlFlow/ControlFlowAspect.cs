@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 
@@ -17,6 +18,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 /// flow graph, that indicates that whole expression is next.</para></remarks>
 internal static partial class ControlFlowAspect
 {
+    public static partial IEntryNode ExecutableDefinition_Entry(IExecutableDefinitionNode node)
+        => new EntryNode();
+
+    public static partial IExitNode ExecutableDefinition_Exit(IExecutableDefinitionNode node)
+        => new ExitNode();
+
     public static ControlFlowSet ConcreteInvocableDefinition_Entry_ControlFlowFollowing(IConcreteInvocableDefinitionNode node)
         => ControlFlowSet.CreateNormal(node.Body?.Statements.FirstOrDefault() ?? (IControlFlowNode)node.Exit);
 

@@ -4,7 +4,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
-[Closed(typeof(AspectAttributeSyntax), typeof(PropertySyntax))]
+[Closed(typeof(AspectAttributeSyntax), typeof(TreeAttributeSyntax))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class AttributeSyntax
 {

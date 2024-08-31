@@ -140,7 +140,7 @@ public sealed class TreeModel : IHasUsingNamespaces
     }
 
     private static IEnumerable<AttributeModel> DuplicateAttributes(TreeNodeModel node)
-        => node.ActualAttributes.Duplicates<AttributeModel>(IMemberModel.NameComparer);
+        => node.ActualAttributes.Duplicates<AttributeModel>(IMemberModel.NameIsPlaceholderComparer);
 
     /// <summary>
     /// This checks that there are no equations that have conflicting definitions due to the

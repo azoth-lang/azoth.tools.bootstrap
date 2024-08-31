@@ -70,7 +70,7 @@ UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax`;
 // ---------- Definitions
 Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`?;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol`;
-ExecutableDefinition <: Definition = Entry Exit;
+ExecutableDefinition <: Definition = /Entry/ /Exit/;
 ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition
     = Parameters:ConstructorOrInitializerParameter* Body?;
 ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition
@@ -89,7 +89,7 @@ NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 FunctionDefinition <: FacetMemberDefinition, FunctionDeclaration, ConcreteFunctionInvocableDefinition
     = Syntax:`IFunctionDefinitionSyntax`
     Attributes:Attribute* Parameters:NamedParameter* Return:Type?
-    Entry Body Exit Type:`FunctionType`;
+    /Entry/ Body /Exit/ Type:`FunctionType`;
 
 // ---------- Type Definitions
 TypeDefinition <: FacetMemberDefinition, AssociatedMemberDefinition, UserTypeDeclaration
@@ -140,36 +140,36 @@ AbstractMethodDefinition <: MethodDefinition, StandardMethodDeclaration = Syntax
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
 ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteInvocableDefinition
     = Syntax:`IConcreteMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
-    Entry Body Exit;
+    /Entry/ Body /Exit/;
 // TODO rename to Ordinary or Normal
 StandardMethodDefinition <: ConcreteMethodDefinition, StandardMethodDeclaration
     = Syntax:`IStandardMethodDefinitionSyntax`
     SelfParameter:MethodSelfParameter Parameters:NamedParameter*
-    Return:Type? Entry Body Exit;
+    Return:Type? /Entry/ Body /Exit/;
 GetterMethodDefinition <: ConcreteMethodDefinition, GetterMethodDeclaration = Syntax:`IGetterMethodDefinitionSyntax`
-    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type Entry Body Exit;
+    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type /Entry/ Body /Exit/;
 SetterMethodDefinition <: ConcreteMethodDefinition, SetterMethodDeclaration = Syntax:`ISetterMethodDefinitionSyntax`
-    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? Entry Body Exit;
+    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? /Entry/ Body /Exit/;
 ConstructorDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, ConstructorDeclaration
     = Syntax:`IConstructorDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*;
 DefaultConstructorDefinition <: ConstructorDefinition
-    = Parameters:ConstructorOrInitializerParameter* Entry Body? Exit;
+    = Parameters:ConstructorOrInitializerParameter* /Entry/ Body? /Exit/;
 SourceConstructorDefinition <: ConstructorDefinition
     = Syntax:`IConstructorDefinitionSyntax`
-    SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Entry Body:BlockBody Exit;
+    SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* /Entry/ Body:BlockBody /Exit/;
 InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, InitializerDeclaration
     = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*;
 DefaultInitializerDefinition <: InitializerDefinition
-    = Parameters:ConstructorOrInitializerParameter* Entry Body? Exit;
+    = Parameters:ConstructorOrInitializerParameter* /Entry/ Body? /Exit/;
 SourceInitializerDefinition <: InitializerDefinition
     = Syntax:`IInitializerDefinitionSyntax`
-    SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Entry Body:BlockBody Exit;
+    SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* /Entry/ Body:BlockBody /Exit/;
 FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, NamedBinding, FieldDeclaration, ExecutableDefinition
     = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type BindingAntetype:`IMaybeAntetype` BindingType:`DataType`
-    Entry Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`? Exit;
+    /Entry/ Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`? /Exit/;
 AssociatedFunctionDefinition <: ConcreteFunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
-    Type:`FunctionType` Entry Body Exit;
+    Type:`FunctionType` /Entry/ Body /Exit/;
 
 // ---------- Attributes
 Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName;

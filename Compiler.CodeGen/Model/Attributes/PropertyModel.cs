@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 /// The semantic model for a property attribute. That is an attribute that is defined as a property
 /// as part of the node definition.
 /// </summary>
-public sealed class PropertyModel : AttributeModel
+public sealed class PropertyModel : TreeAttributeModel
 {
     public override PropertySyntax? Syntax { get; }
 

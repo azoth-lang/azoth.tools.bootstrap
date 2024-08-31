@@ -28,7 +28,7 @@ namespace <#=tree.Namespace #>;
 <#=Emit.ClosedAttribute(node) #>[GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(node) #>
 {
-<#      foreach (var attribute in node.AttributesRequiringDeclaration) { #>
+<#      foreach (var attribute in node.AttributesRequiringDeclaration.ExceptPlaceholders()) { #>
 <#          switch (attribute) { #>
 <#              case PropertyModel prop when prop.IsChild && prop.IsTemp: #>
     <#= Emit.IsNew(prop) #><#= Emit.Type(prop.Type) #> <#= prop.TempName #> { get; }

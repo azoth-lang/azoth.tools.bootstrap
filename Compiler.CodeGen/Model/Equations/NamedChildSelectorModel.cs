@@ -23,7 +23,7 @@ public abstract class NamedChildSelectorModel : SelectorModel
 
     public sealed override IEnumerable<TreeNodeModel> SelectNodes(TreeNodeModel node)
     {
-        var attribute = node.ActualAttributes.Where(a => a.Name == Child).TrySingle();
+        var attribute = node.ActualAttributes.ExceptPlaceholders().Where(a => a.Name == Child).TrySingle();
         if (attribute is null)
             throw new FormatException($"Selector for child {Child} does not refer to a child or child alias attribute.");
         var referencedNode = attribute.Type.ReferencedNode();

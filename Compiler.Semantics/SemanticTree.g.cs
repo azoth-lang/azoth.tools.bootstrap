@@ -352,9 +352,9 @@ public partial interface IInvocableDefinitionNode : IDefinitionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExecutableDefinitionNode : IDefinitionNode
 {
+    ValueIdScope ValueIdScope { get; }
     IEntryNode Entry { get; }
     IExitNode Exit { get; }
-    ValueIdScope ValueIdScope { get; }
     FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { get; }
 }
 
@@ -485,8 +485,8 @@ public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, I
     FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
 
-    public static IFunctionDefinitionNode Create(IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
-        => new FunctionDefinitionNode(syntax, attributes, parameters, @return, entry, body, exit, type);
+    public static IFunctionDefinitionNode Create(IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body, FunctionType type)
+        => new FunctionDefinitionNode(syntax, attributes, parameters, @return, body, type);
 }
 
 [Closed(
@@ -761,8 +761,8 @@ public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefiniti
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
 
-    public static IStandardMethodDefinitionNode Create(MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new StandardMethodDefinitionNode(kind, name, arity, methodGroupType, syntax, selfParameter, parameters, @return, entry, body, exit);
+    public static IStandardMethodDefinitionNode Create(MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
+        => new StandardMethodDefinitionNode(kind, name, arity, methodGroupType, syntax, selfParameter, parameters, @return, body);
 }
 
 // [Closed(typeof(GetterMethodDefinitionNode))]
@@ -779,8 +779,8 @@ public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinition
     new ITypeNode Return { get; }
     ITypeNode? IMethodDefinitionNode.Return => Return;
 
-    public static IGetterMethodDefinitionNode Create(MethodKind kind, IdentifierName name, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new GetterMethodDefinitionNode(kind, name, syntax, selfParameter, parameters, @return, entry, body, exit);
+    public static IGetterMethodDefinitionNode Create(MethodKind kind, IdentifierName name, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IBodyNode body)
+        => new GetterMethodDefinitionNode(kind, name, syntax, selfParameter, parameters, @return, body);
 }
 
 // [Closed(typeof(SetterMethodDefinitionNode))]
@@ -795,8 +795,8 @@ public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinition
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
 
-    public static ISetterMethodDefinitionNode Create(MethodKind kind, IdentifierName name, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new SetterMethodDefinitionNode(kind, name, syntax, selfParameter, parameters, @return, entry, body, exit);
+    public static ISetterMethodDefinitionNode Create(MethodKind kind, IdentifierName name, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
+        => new SetterMethodDefinitionNode(kind, name, syntax, selfParameter, parameters, @return, body);
 }
 
 [Closed(
@@ -822,8 +822,8 @@ public partial interface IConstructorDefinitionNode : IConcreteInvocableDefiniti
 public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinitionNode
 {
 
-    public static IDefaultConstructorDefinitionNode Create(IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
-        => new DefaultConstructorDefinitionNode(syntax, name, parameters, entry, body, exit);
+    public static IDefaultConstructorDefinitionNode Create(IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBodyNode? body)
+        => new DefaultConstructorDefinitionNode(syntax, name, parameters, body);
 }
 
 // [Closed(typeof(SourceConstructorDefinitionNode))]
@@ -840,8 +840,8 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static ISourceConstructorDefinitionNode Create(IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
-        => new SourceConstructorDefinitionNode(name, syntax, selfParameter, parameters, entry, body, exit);
+    public static ISourceConstructorDefinitionNode Create(IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBlockBodyNode body)
+        => new SourceConstructorDefinitionNode(name, syntax, selfParameter, parameters, body);
 }
 
 [Closed(
@@ -867,8 +867,8 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
 public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinitionNode
 {
 
-    public static IDefaultInitializerDefinitionNode Create(IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
-        => new DefaultInitializerDefinitionNode(syntax, name, parameters, entry, body, exit);
+    public static IDefaultInitializerDefinitionNode Create(IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBodyNode? body)
+        => new DefaultInitializerDefinitionNode(syntax, name, parameters, body);
 }
 
 // [Closed(typeof(SourceInitializerDefinitionNode))]
@@ -885,8 +885,8 @@ public partial interface ISourceInitializerDefinitionNode : IInitializerDefiniti
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static ISourceInitializerDefinitionNode Create(IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
-        => new SourceInitializerDefinitionNode(name, syntax, selfParameter, parameters, entry, body, exit);
+    public static ISourceInitializerDefinitionNode Create(IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBlockBodyNode body)
+        => new SourceInitializerDefinitionNode(name, syntax, selfParameter, parameters, body);
 }
 
 // [Closed(typeof(FieldDefinitionNode))]
@@ -920,8 +920,8 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
 
-    public static IFieldDefinitionNode Create(bool isLentBinding, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
-        => new FieldDefinitionNode(isLentBinding, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, entry, initializer, currentInitializer, exit);
+    public static IFieldDefinitionNode Create(bool isLentBinding, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer)
+        => new FieldDefinitionNode(isLentBinding, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, initializer, currentInitializer);
 }
 
 // [Closed(typeof(AssociatedFunctionDefinitionNode))]
@@ -949,8 +949,8 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionIn
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 
-    public static IAssociatedFunctionDefinitionNode Create(IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new AssociatedFunctionDefinitionNode(syntax, name, parameters, @return, type, entry, body, exit);
+    public static IAssociatedFunctionDefinitionNode Create(IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IBodyNode body)
+        => new AssociatedFunctionDefinitionNode(syntax, name, parameters, @return, type, body);
 }
 
 // [Closed(typeof(AttributeNode))]
@@ -4261,9 +4261,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IBodyNode Body { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public FunctionType Type { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -4313,17 +4311,19 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public FunctionDefinitionNode(IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
+    public FunctionDefinitionNode(IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body, FunctionType type)
     {
         Syntax = syntax;
         Attributes = ChildList.Create(this, nameof(Attributes), attributes);
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
         Return = Child.Attach(this, @return);
-        Entry = Child.Attach(this, entry);
         Body = Child.Attach(this, body);
-        Exit = Child.Attach(this, exit);
         Type = type;
+        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
+        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -4815,9 +4815,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IBodyNode Body { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -4866,8 +4864,10 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
                 VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public StandardMethodDefinitionNode(MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public StandardMethodDefinitionNode(MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
     {
         Kind = kind;
         Name = name;
@@ -4877,9 +4877,9 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
         Return = Child.Attach(this, @return);
-        Entry = Child.Attach(this, entry);
         Body = Child.Attach(this, body);
-        Exit = Child.Attach(this, exit);
+        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
+        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -4900,9 +4900,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode Return { [DebuggerStepThrough] get; }
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IBodyNode Body { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -4951,8 +4949,10 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
                 VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public GetterMethodDefinitionNode(MethodKind kind, IdentifierName name, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public GetterMethodDefinitionNode(MethodKind kind, IdentifierName name, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IBodyNode body)
     {
         Kind = kind;
         Name = name;
@@ -4960,9 +4960,9 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
         Return = Child.Attach(this, @return);
-        Entry = Child.Attach(this, entry);
         Body = Child.Attach(this, body);
-        Exit = Child.Attach(this, exit);
+        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
+        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -4983,9 +4983,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IBodyNode Body { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -5034,8 +5032,10 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
                 VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public SetterMethodDefinitionNode(MethodKind kind, IdentifierName name, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public SetterMethodDefinitionNode(MethodKind kind, IdentifierName name, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
     {
         Kind = kind;
         Name = name;
@@ -5043,9 +5043,9 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
         Return = Child.Attach(this, @return);
-        Entry = Child.Attach(this, entry);
         Body = Child.Attach(this, body);
-        Exit = Child.Attach(this, exit);
+        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
+        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5063,9 +5063,7 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     public IConstructorDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IBodyNode? Body { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -5108,6 +5106,8 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -5115,14 +5115,14 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public DefaultConstructorDefinitionNode(IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    public DefaultConstructorDefinitionNode(IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBodyNode? body)
     {
         Syntax = syntax;
         Name = name;
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
-        Entry = Child.Attach(this, entry);
         Body = Child.Attach(this, body);
-        Exit = Child.Attach(this, exit);
+        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
+        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 }
 
@@ -5136,9 +5136,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     public IConstructorDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IConstructorSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IBlockBodyNode Body { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -5181,6 +5179,8 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -5188,15 +5188,15 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public SourceConstructorDefinitionNode(IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    public SourceConstructorDefinitionNode(IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBlockBodyNode body)
     {
         Name = name;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
-        Entry = Child.Attach(this, entry);
         Body = Child.Attach(this, body);
-        Exit = Child.Attach(this, exit);
+        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
+        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 }
 
@@ -5209,9 +5209,7 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     public IInitializerDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IBodyNode? Body { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -5254,6 +5252,8 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -5261,14 +5261,14 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public DefaultInitializerDefinitionNode(IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    public DefaultInitializerDefinitionNode(IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBodyNode? body)
     {
         Syntax = syntax;
         Name = name;
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
-        Entry = Child.Attach(this, entry);
         Body = Child.Attach(this, body);
-        Exit = Child.Attach(this, exit);
+        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
+        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 }
 
@@ -5282,9 +5282,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     public IInitializerDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IInitializerSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IBlockBodyNode Body { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -5327,6 +5325,8 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -5334,15 +5334,15 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public SourceInitializerDefinitionNode(IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    public SourceInitializerDefinitionNode(IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBlockBodyNode body)
     {
         Name = name;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
-        Entry = Child.Attach(this, entry);
         Body = Child.Attach(this, body);
-        Exit = Child.Attach(this, exit);
+        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
+        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 }
 
@@ -5359,11 +5359,9 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     public ITypeNode TypeNode { [DebuggerStepThrough] get; }
     public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
     public DataType BindingType { [DebuggerStepThrough] get; }
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IAmbiguousExpressionNode? TempInitializer { [DebuggerStepThrough] get; }
     public IExpressionNode? Initializer => TempInitializer as IExpressionNode;
     public IAmbiguousExpressionNode? CurrentInitializer { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -5412,8 +5410,10 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
                 TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
     private AccessModifier accessModifier;
     private bool accessModifierCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public FieldDefinitionNode(bool isLentBinding, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
+    public FieldDefinitionNode(bool isLentBinding, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer)
     {
         IsLentBinding = isLentBinding;
         Syntax = syntax;
@@ -5422,10 +5422,10 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
         TypeNode = Child.Attach(this, typeNode);
         BindingAntetype = bindingAntetype;
         BindingType = bindingType;
-        Entry = Child.Attach(this, entry);
         TempInitializer = Child.Attach(this, initializer);
         CurrentInitializer = currentInitializer;
-        Exit = Child.Attach(this, exit);
+        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
+        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5447,9 +5447,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
     public FunctionType Type { [DebuggerStepThrough] get; }
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IBodyNode Body { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -5492,6 +5490,8 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -5499,16 +5499,16 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public AssociatedFunctionDefinitionNode(IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public AssociatedFunctionDefinitionNode(IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IBodyNode body)
     {
         Syntax = syntax;
         Name = name;
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
         Return = Child.Attach(this, @return);
         Type = type;
-        Entry = Child.Attach(this, entry);
         Body = Child.Attach(this, body);
-        Exit = Child.Attach(this, exit);
+        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
+        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 }
 

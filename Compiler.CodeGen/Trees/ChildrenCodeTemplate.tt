@@ -26,7 +26,7 @@ public static class <#=Emit.TypeName(tree.RootSupertype)#>Extensions
                 throw ExhaustiveMatch.Failed(node);
 <#  foreach(var node in tree.Nodes.Where(r => !r.IsAbstract)) { #>
             case <#=Emit.TypeName(node.Defines) #> n:
-<#      foreach(var property in node.ActualAttributes.Where(p => p.IsChild)) { #>
+<#      foreach(var property in node.ActualAttributes.Where(p => p.IsChild).PreferPlaceholders()) { #>
 <#          if (property.Type is CollectionTypeModel) { #>
                 foreach (var child in n.<#=property.TempName #>)
                     yield return child;

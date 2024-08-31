@@ -12,13 +12,13 @@ public sealed class TreeNodeSyntax
     public bool IsTemp { get; }
     public SymbolSyntax Defines { get; }
     public IFixedSet<SymbolSyntax> Supertypes { get; }
-    public IFixedList<PropertySyntax> DeclaredProperties { get; }
+    public IFixedList<TreeAttributeSyntax> DeclaredAttributes { get; }
 
     public TreeNodeSyntax(
         bool isTemp,
         SymbolSyntax defines,
         IEnumerable<SymbolSyntax> supertypes,
-        IEnumerable<PropertySyntax> declaredProperties)
+        IEnumerable<TreeAttributeSyntax> declaredAttributes)
     {
         IsTemp = isTemp;
         Defines = defines;
@@ -26,15 +26,15 @@ public sealed class TreeNodeSyntax
         if (supertypesList.Duplicates().Any())
             throw new ArgumentException($"Node {defines} contains duplicate supertype definitions.");
         Supertypes = supertypesList.ToFixedSet();
-        DeclaredProperties = declaredProperties.ToFixedList();
-        if (DeclaredProperties.Select(p => p.Name).Distinct().Count() != DeclaredProperties.Count)
-            throw new ArgumentException($"Node {defines} contains duplicate property definitions.");
+        DeclaredAttributes = declaredAttributes.ToFixedList();
+        if (DeclaredAttributes.Select(p => p.Name).Distinct().Count() != DeclaredAttributes.Count)
+            throw new ArgumentException($"Node {defines} contains duplicate attribute definitions.");
     }
 
     public override string ToString()
     {
         var supertypes = Supertypes.Count == 0 ? "" : " <: " + string.Join(", ", Supertypes);
-        var properties = DeclaredProperties.Count == 0 ? "" : " = " + string.Join(", ", DeclaredProperties);
-        return $"{Defines}{supertypes}{properties};";
+        var attributes = DeclaredAttributes.Count == 0 ? "" : " = " + string.Join(", ", DeclaredAttributes);
+        return $"{Defines}{supertypes}{attributes};";
     }
 }

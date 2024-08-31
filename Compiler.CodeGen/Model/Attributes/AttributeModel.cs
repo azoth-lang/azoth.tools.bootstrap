@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 /// <summary>
 /// The semantic model for an attribute.
 /// </summary>
-[Closed(typeof(AspectAttributeModel), typeof(PropertyModel), typeof(ParentAttributeModel))]
+[Closed(typeof(AspectAttributeModel), typeof(TreeAttributeModel), typeof(ParentAttributeModel))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class AttributeModel : IMemberModel
 {
@@ -26,6 +26,7 @@ public abstract class AttributeModel : IMemberModel
     public abstract bool IsTemp { get; }
     public virtual bool IsSyncLockRequired => false;
 
+    public virtual bool IsPlaceholder => false;
     public abstract bool IsChild { get; }
 
     /// <summary>
@@ -58,6 +59,7 @@ public abstract class AttributeModel : IMemberModel
         isNewDefinition = new(() => Node.InheritedAttributesNamedSameAs(this).Any());
         isDeclarationRequired = new(() =>
         {
+            if (IsPlaceholder) return false; // Never declare placeholders
             var baseProperty = Node.InheritedAttributesNamedSameAs(this).TrySingle();
             return baseProperty is null // There were none or multiple, so it needs to be declared
                    || baseProperty.Type != Type

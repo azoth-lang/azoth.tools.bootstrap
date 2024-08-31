@@ -3,6 +3,12 @@
 
 // ↓ ↑ ⮡ ✎
 
+// ---------- Definitions
+↑ child eager ExecutableDefinition.Entry: Entry;
+= ExecutableDefinition.Entry;
+↑ child eager ExecutableDefinition.Exit: Exit;
+= ExecutableDefinition.Exit;
+
 // ---------- Control Flow
 ↓ ControlFlow.ControlFlowEntry(): Entry;
 

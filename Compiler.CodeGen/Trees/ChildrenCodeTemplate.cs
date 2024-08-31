@@ -79,7 +79,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(" n:\r\n");
             
             #line 29 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\ChildrenCodeTemplate.tt"
-      foreach(var property in node.ActualAttributes.Where(p => p.IsChild)) { 
+      foreach(var property in node.ActualAttributes.Where(p => p.IsChild).PreferPlaceholders()) { 
             
             #line default
             #line hidden

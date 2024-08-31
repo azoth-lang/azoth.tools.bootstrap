@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
@@ -39,20 +39,36 @@ internal static class TreeParser
     {
         var (declaration, definition) = SplitDeclarationAndDefinition(statement);
         var (isTemp, defines, supertypes) = ParseDeclaration(declaration);
-        var properties = ParseProperties(definition).ToFixedList();
-        return new(isTemp, defines, supertypes, properties);
+        var attributes = ParseTreeAttributes(definition).ToFixedList();
+        return new(isTemp, defines, supertypes, attributes);
     }
 
     private static (string Declaration, string? Definition) SplitDeclarationAndDefinition(string statement)
         => OptionalBisect(statement, "=", "Too many equal signs in: '{0}'");
 
-    private static IEnumerable<PropertySyntax> ParseProperties(string? definition)
+    private static IEnumerable<TreeAttributeSyntax> ParseTreeAttributes(string? definition)
     {
         if (definition is null) yield break;
 
-        var properties = SplitProperties(definition);
-        foreach (var property in properties)
-            yield return ParseProperty(property);
+        var attributes = SplitAttributes(definition);
+        foreach (var attribute in attributes)
+            yield return ParseTreeAttribute(attribute);
+    }
+
+    public static TreeAttributeSyntax ParseTreeAttribute(string attribute)
+    {
+        if (attribute.StartsWith('/') || attribute.EndsWith('/'))
+            return ParseChildPlaceholderSyntax(attribute);
+
+        return ParseProperty(attribute);
+    }
+
+    private static ChildPlaceholderSyntax ParseChildPlaceholderSyntax(string attribute)
+    {
+        if (!ParseOffStart(ref attribute, "/") || !ParseOffEnd(ref attribute, "/"))
+            throw new FormatException("Child placeholder must start and end with a forward slash: '{0}'");
+
+        return new(attribute);
     }
 
     public static PropertySyntax ParseProperty(string property)
@@ -70,7 +86,7 @@ internal static class TreeParser
         return new(name, typeSyntax);
     }
 
-    public static IEnumerable<string> SplitProperties(string definition)
+    private static IEnumerable<string> SplitAttributes(string definition)
     {
         var last = 0;
         while (last < definition.Length)

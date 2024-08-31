@@ -16,14 +16,15 @@
 | *Node* `=` *PropertyExp**`;`                           |         |
 | *Node* `<:` *Node* (`,` *Node*)* `=` *PropertyExp**`;` |         |
 
-| Property Expression | Meaning                                                        |
-| ------------------- | -------------------------------------------------------------- |
-| *Name*              | Property with the given name of a node type with the same name |
-| *Name*`*`           | List with given name and node type                             |
-| *Name*`*?`          | Optional list with given name and node type                    |
-| `{`*Name*`}`        | Set with given name and node type                              |
-| `{`*Name*`}?`       | Optional set with given name and node type                     |
-| *Name*`:`*TypeExp*  | Property with the given name and type (see Type Expressions)   |
+| Property Expression | Meaning                                                             |
+| ------------------- | ------------------------------------------------------------------- |
+| *Name*              | Property with the given name of a node type with the same name      |
+| *Name*`*`           | List with given name and node type                                  |
+| *Name*`*?`          | Optional list with given name and node type                         |
+| `{`*Name*`}`        | Set with given name and node type                                   |
+| `{`*Name*`}?`       | Optional set with given name and node type                          |
+| *Name*`:`*TypeExp*  | Property with the given name and type (see Type Expressions)        |
+| `/`*Name*`/`        | A placeholder for controlling the order of a non-terminal attribute |
 
 | Type Expression      | Meaning               |
 | -------------------- | --------------------- |
