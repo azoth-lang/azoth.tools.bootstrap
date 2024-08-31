@@ -1,7 +1,11 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name TypeMemberDeclarationsAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Types;
 
 // ↓ ↑ ⮡ ✎
+
+// ---------- Function Definition
+↑ FunctionDefinition.Type: `FunctionType`;
 
 // ---------- Control Flow Expressions
 ↓ ReturnExpression.ExpectedReturnType: `DataType`?;

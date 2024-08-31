@@ -191,7 +191,7 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#      if (node.IsSyncLockRequired) { #>
     private AttributeLock syncLock;
 <#      } #>
-<#      if (!node.ActualRewriteRules.IsEmpty) { #>
+<#      if (node.MayHaveRewrite) { #>
     protected override bool MayHaveRewrite => true;
 <#      } #>
 

@@ -978,7 +978,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             #line hidden
             
             #line 194 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-      if (!node.ActualRewriteRules.IsEmpty) { 
+      if (node.MayHaveRewrite) { 
             
             #line default
             #line hidden

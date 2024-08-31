@@ -14,6 +14,7 @@ public sealed class ParentAttributeModel : AttributeModel
     public override string Name => "Parent";
     public override SymbolTypeModel Type { get; }
     public override bool IsTemp => false;
+    public override bool MayHaveRewrites => false;
     public override bool IsChild => false;
     public override bool IsMethod => false;
 

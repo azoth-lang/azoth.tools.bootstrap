@@ -95,6 +95,8 @@ internal static class Emit
             case SetTypeModel:
                 return "ChildSet.Attach(this, ";
             case CollectionTypeModel:
+                if (!member.MayHaveRewrites)
+                    return "ChildList.Attach(this, ";
 
                 var childListClass = "ChildList";
                 if (member.IsTemp)
@@ -102,9 +104,9 @@ internal static class Emit
                     var finalElementType = ((CollectionTypeModel)member.FinalType).ElementType.ToNonOptional();
                     childListClass += $"<{Type(finalElementType)}>";
                 }
-
                 return $"{childListClass}.Create(this, nameof({member.Name}), ";
             default:
+                // TODO return member.MayHaveRewrites ? "Child.Create(this, " : "Child.Attach(this, ";
                 return "Child.Attach(this, ";
         }
     }

@@ -24,6 +24,7 @@ public abstract class AttributeModel : IMemberModel
     public abstract TypeModel Type { get; }
     public virtual TypeModel FinalType => Type;
     public abstract bool IsTemp { get; }
+    public abstract bool MayHaveRewrites { get; }
     public virtual bool IsSyncLockRequired => false;
 
     public virtual bool IsPlaceholder => false;

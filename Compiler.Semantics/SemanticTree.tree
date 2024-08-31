@@ -87,9 +87,7 @@ NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 
 // ---------- Function Definition
 FunctionDefinition <: FacetMemberDefinition, FunctionDeclaration, ConcreteFunctionInvocableDefinition
-    = Syntax:`IFunctionDefinitionSyntax`
-    Attributes:Attribute* Parameters:NamedParameter* Return:Type?
-    /Entry/ Body /Exit/ Type:`FunctionType`;
+    = Syntax:`IFunctionDefinitionSyntax` Attributes:Attribute* /Parameters/ /Return/ /Entry/ Body /Exit/;
 
 // ---------- Type Definitions
 TypeDefinition <: FacetMemberDefinition, AssociatedMemberDefinition, UserTypeDeclaration

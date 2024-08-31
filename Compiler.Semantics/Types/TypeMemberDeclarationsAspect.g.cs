@@ -1,5 +1,6 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -9,4 +10,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class TypeMemberDeclarationsAspect
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial FunctionType FunctionDefinition_Type(IFunctionDefinitionNode node);
 }

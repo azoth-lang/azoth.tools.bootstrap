@@ -23,6 +23,7 @@ public sealed class PropertyModel : TreeAttributeModel
     public override TypeModel Type { get; }
     public override bool IsChild => ReferencesNode;
     public override bool IsTemp => Type.ReferencedNode()?.IsTemp ?? false;
+    public override bool MayHaveRewrites => Type.ReferencedNode()?.MayHaveRewrite ?? false;
     public override TypeModel FinalType => finalType.Value;
     private readonly Lazy<TypeModel> finalType;
     public bool IsCollection => Type is CollectionTypeModel;

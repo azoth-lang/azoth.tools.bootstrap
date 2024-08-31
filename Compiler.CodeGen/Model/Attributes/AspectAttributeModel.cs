@@ -36,7 +36,8 @@ public abstract class AspectAttributeModel : AttributeModel
     private readonly Lazy<TreeNodeModel> node;
     public sealed override string Name { get; }
     public override bool IsMethod { get; }
-    public override bool IsTemp => false;
+    public override bool IsTemp => IsChild && (Type.ReferencedNode()?.IsTemp ?? false);
+    public override bool MayHaveRewrites => IsChild && (Type.ReferencedNode()?.MayHaveRewrite ?? false);
 
     protected AspectAttributeModel(AspectModel aspect, InternalSymbol nodeSymbol, string name, bool isMethod)
     {

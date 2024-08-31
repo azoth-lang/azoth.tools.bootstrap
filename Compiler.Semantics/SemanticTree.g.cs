@@ -485,8 +485,8 @@ public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, I
     FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
 
-    public static IFunctionDefinitionNode Create(IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body, FunctionType type)
-        => new FunctionDefinitionNode(syntax, attributes, parameters, @return, body, type);
+    public static IFunctionDefinitionNode Create(IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
+        => new FunctionDefinitionNode(syntax, attributes, parameters, @return, body);
 }
 
 [Closed(
@@ -4095,8 +4095,8 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     public CompilationUnitNode(ICompilationUnitSyntax syntax, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> definitions)
     {
         Syntax = syntax;
-        UsingDirectives = ChildList.Create(this, nameof(UsingDirectives), usingDirectives);
-        Definitions = ChildList.Create(this, nameof(Definitions), definitions);
+        UsingDirectives = ChildList.Attach(this, usingDirectives);
+        Definitions = ChildList.Attach(this, definitions);
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -4193,8 +4193,8 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
     public NamespaceBlockDefinitionNode(INamespaceDefinitionSyntax syntax, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> members)
     {
         Syntax = syntax;
-        UsingDirectives = ChildList.Create(this, nameof(UsingDirectives), usingDirectives);
-        Members = ChildList.Create(this, nameof(Members), members);
+        UsingDirectives = ChildList.Attach(this, usingDirectives);
+        Members = ChildList.Attach(this, members);
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -4245,7 +4245,7 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
     public NamespaceDefinitionNode(NamespaceSymbol symbol, IEnumerable<INamespaceDefinitionNode> memberNamespaces, IEnumerable<IFacetMemberDefinitionNode> packageMembers)
     {
         Symbol = symbol;
-        MemberNamespaces = ChildList.Create(this, nameof(MemberNamespaces), memberNamespaces);
+        MemberNamespaces = ChildList.Attach(this, memberNamespaces);
         PackageMembers = packageMembers.ToFixedList();
         Members = DefinitionsAspect.NamespaceDefinition_Members(this);
     }
@@ -4262,7 +4262,6 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
     public IBodyNode Body { [DebuggerStepThrough] get; }
-    public FunctionType Type { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -4293,6 +4292,12 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
                 LexicalScopingAspect.FunctionDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public FunctionType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                TypeMemberDeclarationsAspect.FunctionDefinition_Type);
+    private FunctionType? type;
+    private bool typeCached;
     public FunctionSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
             : this.Synthetic(ref symbolCached, ref symbol,
@@ -4314,14 +4319,13 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public FunctionDefinitionNode(IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body, FunctionType type)
+    public FunctionDefinitionNode(IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
     {
         Syntax = syntax;
-        Attributes = ChildList.Create(this, nameof(Attributes), attributes);
-        Parameters = ChildList.Create(this, nameof(Parameters), parameters);
+        Attributes = ChildList.Attach(this, attributes);
+        Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
         Body = Child.Attach(this, body);
-        Type = type;
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
@@ -4414,11 +4418,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         Name = name;
         Supertypes = supertypes.ToFixedSet();
         Syntax = syntax;
-        Attributes = ChildList.Create(this, nameof(Attributes), attributes);
+        Attributes = ChildList.Attach(this, attributes);
         IsAbstract = isAbstract;
-        GenericParameters = ChildList.Create(this, nameof(GenericParameters), genericParameters);
+        GenericParameters = ChildList.Attach(this, genericParameters);
         BaseTypeName = Child.Attach(this, baseTypeName);
-        SupertypeNames = ChildList.Create(this, nameof(SupertypeNames), supertypeNames);
+        SupertypeNames = ChildList.Attach(this, supertypeNames);
         DeclaredType = declaredType;
         SourceMembers = sourceMembers.ToFixedList();
         Members = ChildSet.Attach(this, members);
@@ -4530,9 +4534,9 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         Name = name;
         Supertypes = supertypes.ToFixedSet();
         Syntax = syntax;
-        Attributes = ChildList.Create(this, nameof(Attributes), attributes);
-        GenericParameters = ChildList.Create(this, nameof(GenericParameters), genericParameters);
-        SupertypeNames = ChildList.Create(this, nameof(SupertypeNames), supertypeNames);
+        Attributes = ChildList.Attach(this, attributes);
+        GenericParameters = ChildList.Attach(this, genericParameters);
+        SupertypeNames = ChildList.Attach(this, supertypeNames);
         DeclaredType = declaredType;
         SourceMembers = sourceMembers.ToFixedList();
         Members = ChildSet.Attach(this, members);
@@ -4642,9 +4646,9 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         Name = name;
         Supertypes = supertypes.ToFixedSet();
         Syntax = syntax;
-        Attributes = ChildList.Create(this, nameof(Attributes), attributes);
-        GenericParameters = ChildList.Create(this, nameof(GenericParameters), genericParameters);
-        SupertypeNames = ChildList.Create(this, nameof(SupertypeNames), supertypeNames);
+        Attributes = ChildList.Attach(this, attributes);
+        GenericParameters = ChildList.Attach(this, genericParameters);
+        SupertypeNames = ChildList.Attach(this, supertypeNames);
         DeclaredType = declaredType;
         Members = ChildSet.Attach(this, members);
     }
@@ -4796,7 +4800,7 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
         MethodGroupType = methodGroupType;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
-        Parameters = ChildList.Create(this, nameof(Parameters), parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
     }
 }
@@ -4875,7 +4879,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         MethodGroupType = methodGroupType;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
-        Parameters = ChildList.Create(this, nameof(Parameters), parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
@@ -4958,7 +4962,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         Name = name;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
-        Parameters = ChildList.Create(this, nameof(Parameters), parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
@@ -5041,7 +5045,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         Name = name;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
-        Parameters = ChildList.Create(this, nameof(Parameters), parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
@@ -5119,7 +5123,7 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     {
         Syntax = syntax;
         Name = name;
-        Parameters = ChildList.Create(this, nameof(Parameters), parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
@@ -5193,7 +5197,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         Name = name;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
-        Parameters = ChildList.Create(this, nameof(Parameters), parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
@@ -5265,7 +5269,7 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     {
         Syntax = syntax;
         Name = name;
-        Parameters = ChildList.Create(this, nameof(Parameters), parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
@@ -5339,7 +5343,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         Name = name;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
-        Parameters = ChildList.Create(this, nameof(Parameters), parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
@@ -5503,7 +5507,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     {
         Syntax = syntax;
         Name = name;
-        Parameters = ChildList.Create(this, nameof(Parameters), parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
         Type = type;
         Body = Child.Attach(this, body);
@@ -5875,7 +5879,7 @@ file class BlockBodyNode : SemanticNode, IBlockBodyNode
     {
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        Statements = ChildList.Create(this, nameof(Statements), statements);
+        Statements = ChildList.Attach(this, statements);
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6063,7 +6067,7 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
         NamedBareType = namedBareType;
         Syntax = syntax;
         Name = name;
-        TypeArguments = ChildList.Create(this, nameof(TypeArguments), typeArguments);
+        TypeArguments = ChildList.Attach(this, typeArguments);
     }
 }
 
@@ -6176,7 +6180,7 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
         NamedAntetype = namedAntetype;
         NamedType = namedType;
         Syntax = syntax;
-        Parameters = ChildList.Create(this, nameof(Parameters), parameters);
+        Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
     }
 }
@@ -6710,7 +6714,7 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
-        Statements = ChildList.Create(this, nameof(Statements), statements);
+        Statements = ChildList.Attach(this, statements);
         Antetype = antetype;
         Type = type;
         FlowStateAfter = flowStateAfter;
@@ -8718,7 +8722,7 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
         ReferencedDeclarations = referencedDeclarations.ToFixedList();
         Syntax = syntax;
         Name = name;
-        TypeArguments = ChildList.Create(this, nameof(TypeArguments), typeArguments);
+        TypeArguments = ChildList.Attach(this, typeArguments);
     }
 }
 
@@ -8755,7 +8759,7 @@ file class MemberAccessExpressionNode : SemanticNode, IMemberAccessExpressionNod
         Syntax = syntax;
         TempContext = Child.Attach(this, context);
         MemberName = memberName;
-        TypeArguments = ChildList.Create(this, nameof(TypeArguments), typeArguments);
+        TypeArguments = ChildList.Attach(this, typeArguments);
     }
 }
 
@@ -8980,7 +8984,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         Syntax = syntax;
         Context = Child.Attach(this, context);
         FunctionName = functionName;
-        TypeArguments = ChildList.Create(this, nameof(TypeArguments), typeArguments);
+        TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 }
@@ -9116,7 +9120,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
         Context = Child.Attach(this, context);
         CurrentContext = currentContext;
         MethodName = methodName;
-        TypeArguments = ChildList.Create(this, nameof(TypeArguments), typeArguments);
+        TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 }
@@ -9315,7 +9319,7 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
         NamedAntetype = namedAntetype;
         NamedBareType = namedBareType;
         Syntax = syntax;
-        TypeArguments = ChildList.Create(this, nameof(TypeArguments), typeArguments);
+        TypeArguments = ChildList.Attach(this, typeArguments);
     }
 }
 
@@ -9385,7 +9389,7 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
         NamedBareType = namedBareType;
         Syntax = syntax;
         Context = Child.Attach(this, context);
-        TypeArguments = ChildList.Create(this, nameof(TypeArguments), typeArguments);
+        TypeArguments = ChildList.Attach(this, typeArguments);
     }
 }
 
@@ -9769,7 +9773,7 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
         Syntax = syntax;
         Name = name;
-        TypeArguments = ChildList.Create(this, nameof(TypeArguments), typeArguments);
+        TypeArguments = ChildList.Attach(this, typeArguments);
     }
 }
 
@@ -9834,7 +9838,7 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
         Syntax = syntax;
         Context = Child.Attach(this, context);
         MemberName = memberName;
-        TypeArguments = ChildList.Create(this, nameof(TypeArguments), typeArguments);
+        TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedMembers = referencedMembers.ToFixedSet();
     }
 }
@@ -10547,7 +10551,7 @@ file class NamespaceSymbolNode : SemanticNode, INamespaceSymbolNode
     public NamespaceSymbolNode(NamespaceSymbol symbol, IEnumerable<INamespaceMemberDeclarationNode> members)
     {
         Symbol = symbol;
-        Members = ChildList.Create(this, nameof(Members), members);
+        Members = ChildList.Attach(this, members);
     }
 }
 
@@ -10645,7 +10649,7 @@ file class UserTypeSymbolNode : SemanticNode, IUserTypeSymbolNode
         Name = name;
         Symbol = symbol;
         InclusiveMembers = inclusiveMembers.ToFixedSet();
-        GenericParameters = ChildList.Create(this, nameof(GenericParameters), genericParameters);
+        GenericParameters = ChildList.Attach(this, genericParameters);
         Members = ChildSet.Attach(this, members);
     }
 }
@@ -10686,7 +10690,7 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
         Name = name;
         Symbol = symbol;
         InclusiveMembers = inclusiveMembers.ToFixedSet();
-        GenericParameters = ChildList.Create(this, nameof(GenericParameters), genericParameters);
+        GenericParameters = ChildList.Attach(this, genericParameters);
         Members = ChildSet.Attach(this, members);
     }
 }
@@ -10727,7 +10731,7 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
         Name = name;
         Symbol = symbol;
         InclusiveMembers = inclusiveMembers.ToFixedSet();
-        GenericParameters = ChildList.Create(this, nameof(GenericParameters), genericParameters);
+        GenericParameters = ChildList.Attach(this, genericParameters);
         Members = ChildSet.Attach(this, members);
     }
 }
@@ -10768,7 +10772,7 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
         Name = name;
         Symbol = symbol;
         InclusiveMembers = inclusiveMembers.ToFixedSet();
-        GenericParameters = ChildList.Create(this, nameof(GenericParameters), genericParameters);
+        GenericParameters = ChildList.Attach(this, genericParameters);
         Members = ChildSet.Attach(this, members);
     }
 }

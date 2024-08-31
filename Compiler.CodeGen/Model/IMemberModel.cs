@@ -23,5 +23,6 @@ public interface IMemberModel
     TypeModel Type { get; }
     TypeModel FinalType { get; }
     bool IsTemp { get; }
+    bool MayHaveRewrites { get; }
     bool IsPlaceholder { get; }
 }

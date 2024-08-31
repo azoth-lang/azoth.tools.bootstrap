@@ -17,7 +17,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class TypeMemberDeclarationsAspect
 {
-    public static FunctionType FunctionDefinition_Type(IFunctionDefinitionNode node)
+    public static partial FunctionType FunctionDefinition_Type(IFunctionDefinitionNode node)
         => FunctionType(node.Parameters, node.Return);
 
     private static FunctionType FunctionType(IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)

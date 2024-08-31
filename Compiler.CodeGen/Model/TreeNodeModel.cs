@@ -22,6 +22,12 @@ public class TreeNodeModel
     /// Whether this node type is temporary, meaning it should not be part of the final tree.
     /// </summary>
     public bool IsTemp => Syntax.IsTemp;
+
+    /// <summary>
+    /// Whether this node type may have rewrite rules.
+    /// </summary>
+    public bool MayHaveRewrite => mayHaveRewrite.Value;
+    private readonly Lazy<bool> mayHaveRewrite;
     public InternalSymbol Defines { get; }
     public SymbolTypeModel DefinesType { get; }
     /// <summary>
@@ -204,6 +210,8 @@ public class TreeNodeModel
 
         isSyncLockRequired = new(() => ActualAttributes.Any(a => a.IsSyncLockRequired)
                                        || ActualEquations.Any(eq => eq.IsSyncLockRequired));
+
+        mayHaveRewrite = new(() => !ActualRewriteRules.IsEmpty || DescendantNodes.Any(n => n.MayHaveRewrite));
 
         // Inheritance Relationships
         supertypeNodes = new(() => DeclaredSupertypes.OfType<InternalSymbol>().Select(s => s.ReferencedNode)

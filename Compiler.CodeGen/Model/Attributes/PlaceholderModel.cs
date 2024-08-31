@@ -15,6 +15,7 @@ public sealed class PlaceholderModel : TreeAttributeModel
     private readonly Lazy<AttributeModel> attribute;
     public override TypeModel Type => Attribute.Type;
     public override bool IsTemp => Attribute.IsTemp;
+    public override bool MayHaveRewrites => Attribute.MayHaveRewrites;
     public override bool IsPlaceholder => true;
     public override bool IsChild => Attribute.IsChild;
     public override bool IsMethod => Attribute.IsMethod;
