@@ -4330,6 +4330,23 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
+    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Entry;
+    }
+
+    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Exit;
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -4886,6 +4903,16 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
+    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Entry;
+    }
+
+    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Exit;
+    }
+
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
@@ -4967,6 +4994,16 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+    }
+
+    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Entry;
+    }
+
+    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Exit;
     }
 
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5052,6 +5089,16 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
+    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Entry;
+    }
+
+    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Exit;
+    }
+
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
@@ -5128,6 +5175,16 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
+
+    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Entry;
+    }
+
+    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Exit;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5202,6 +5259,16 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
+
+    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Entry;
+    }
+
+    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Exit;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5273,6 +5340,16 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+    }
+
+    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Entry;
+    }
+
+    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Exit;
     }
 }
 
@@ -5347,6 +5424,16 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+    }
+
+    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Entry;
+    }
+
+    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Exit;
     }
 }
 
@@ -5432,6 +5519,16 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
+    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Entry;
+    }
+
+    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Exit;
+    }
+
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -5513,6 +5610,16 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+    }
+
+    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Entry;
+    }
+
+    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Exit;
     }
 }
 

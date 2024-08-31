@@ -127,6 +127,7 @@ internal sealed class FunctionDefinitionNode : FacetMemberDefinitionNode, IFunct
         SemanticNode child,
         SemanticNode descendant,
         IInheritanceContext ctx)
+        // TODO really just for Entry
         => VariableBindingsMap;
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(

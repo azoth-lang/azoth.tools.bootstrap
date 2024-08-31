@@ -6,8 +6,10 @@
 // ---------- Definitions
 ↑ child eager ExecutableDefinition.Entry: Entry;
 = ExecutableDefinition.Entry;
+= ExecutableDefinition.*.**.ControlFlowEntry() => Entry;
 ↑ child eager ExecutableDefinition.Exit: Exit;
 = ExecutableDefinition.Exit;
+= ExecutableDefinition.*.**.ControlFlowExit() => Exit;
 
 // ---------- Control Flow
 ↓ ControlFlow.ControlFlowEntry(): Entry;
