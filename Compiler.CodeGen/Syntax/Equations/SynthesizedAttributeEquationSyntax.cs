@@ -1,3 +1,5 @@
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
+
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
 public sealed class SynthesizedAttributeEquationSyntax : EquationSyntax

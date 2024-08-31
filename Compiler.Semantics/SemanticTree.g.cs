@@ -4340,6 +4340,13 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         return Exit;
     }
 
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
+    }
+
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
@@ -4913,6 +4920,13 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         return Exit;
     }
 
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
+    }
+
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
@@ -5004,6 +5018,13 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return Exit;
+    }
+
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5099,6 +5120,13 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         return Exit;
     }
 
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
+    }
+
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
@@ -5185,6 +5213,13 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     {
         return Exit;
     }
+
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5269,6 +5304,13 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     {
         return Exit;
     }
+
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5350,6 +5392,13 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return Exit;
+    }
+
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 }
 
@@ -5434,6 +5483,13 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return Exit;
+    }
+
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 }
 
@@ -5620,6 +5676,13 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return Exit;
+    }
+
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 }
 

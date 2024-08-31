@@ -163,9 +163,9 @@ public sealed class TreeModel : IHasUsingNamespaces
         return errors;
     }
 
-    private static IEnumerable<SubtreeEquationModel> DuplicateEquations(TreeNodeModel node)
-        => node.ActualEquations.OfType<SubtreeEquationModel>()
-               .Duplicates<SubtreeEquationModel>(IMemberModel.NameComparer);
+    private static IEnumerable<SoleEquationModel> DuplicateEquations(TreeNodeModel node)
+        => node.ActualEquations.OfType<SoleEquationModel>()
+               .Duplicates<SoleEquationModel>(IMemberModel.NameComparer);
 
     private bool ValidateInheritedEquationsProduceSingleType()
     {

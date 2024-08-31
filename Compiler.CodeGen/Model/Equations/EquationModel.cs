@@ -9,9 +9,8 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
 [Closed(
-    typeof(SubtreeEquationModel),
-    typeof(InheritedAttributeEquationModel),
-    typeof(AggregateAttributeEquationModel))]
+    typeof(SoleEquationModel),
+    typeof(ContributorEquationModel))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class EquationModel : IMemberModel
 {

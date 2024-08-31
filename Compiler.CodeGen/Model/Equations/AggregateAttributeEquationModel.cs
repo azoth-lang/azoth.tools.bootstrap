@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
-public sealed class AggregateAttributeEquationModel : EquationModel
+public sealed class AggregateAttributeEquationModel : ContributorEquationModel
 {
     public override AggregateAttributeEquationSyntax Syntax { get; }
     public override AggregateAttributeModel Attribute => attribute.Value;

@@ -1,4 +1,4 @@
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;

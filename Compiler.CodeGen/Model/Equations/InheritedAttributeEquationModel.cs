@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations.Selectors;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
@@ -9,7 +10,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
-public sealed class InheritedAttributeEquationModel : EquationModel
+public sealed class InheritedAttributeEquationModel : ContributorEquationModel
 {
     public override InheritedAttributeEquationSyntax Syntax { get; }
     public InheritedAttributeFamilyModel AttributeFamily => attributeFamily.Value;

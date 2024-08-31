@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
@@ -7,12 +7,8 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
-public sealed class SynthesizedAttributeEquationModel : SubtreeEquationModel
+public sealed class SynthesizedAttributeEquationModel : SoleEquationModel
 {
-    public static IEqualityComparer<SynthesizedAttributeEquationModel> NameComparer { get; }
-        = EqualityComparer<SynthesizedAttributeEquationModel>.Create((a1, a2) => a1?.Name == a2?.Name,
-            a => HashCode.Combine(a.Name));
-
     public override SynthesizedAttributeEquationSyntax? Syntax { get; }
     /// <summary>
     /// The <see cref="SynthesizedAttributeModel"/> that this equation provides a value for.
@@ -21,6 +17,7 @@ public sealed class SynthesizedAttributeEquationModel : SubtreeEquationModel
     private readonly Lazy<SynthesizedAttributeModel> attribute;
     public override EvaluationStrategy Strategy => strategy.Value;
     private readonly Lazy<EvaluationStrategy> strategy;
+    public override string? Parameters => IsMethod ? "()" : null;
     public override TypeModel Type => Attribute.Type;
     public override bool IsSyncLockRequired
         => Strategy == EvaluationStrategy.Lazy && Type.IsValueType;
@@ -65,9 +62,5 @@ public sealed class SynthesizedAttributeEquationModel : SubtreeEquationModel
         => Aspect.Tree.AttributeFor<SynthesizedAttributeModel>(NodeSymbol, Name)
            ?? throw new($"{NodeSymbol}.{Name} doesn't have a corresponding attribute.");
 
-    public override string ToString()
-    {
-        var parameters = IsMethod ? "()" : "";
-        return $"= {NodeSymbol}.{Name}{parameters}";
-    }
+    public override string ToString() => $"= {NodeSymbol}.{Name}{Parameters ?? ""}";
 }

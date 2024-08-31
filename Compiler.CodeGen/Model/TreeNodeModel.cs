@@ -172,8 +172,8 @@ public class TreeNodeModel
     public IFixedList<EquationModel> AllDeclaredEquations => allDeclaredEquations.Value;
     private readonly Lazy<IFixedList<EquationModel>> allDeclaredEquations;
 
-    public IFixedList<SubtreeEquationModel> EquationsRequiringEmit => equationsRequiringEmit.Value;
-    private readonly Lazy<IFixedList<SubtreeEquationModel>> equationsRequiringEmit;
+    public IFixedList<SoleEquationModel> EquationsRequiringEmit => equationsRequiringEmit.Value;
+    private readonly Lazy<IFixedList<SoleEquationModel>> equationsRequiringEmit;
 
     public IFixedList<EquationModel> InheritedEquations => inheritedEquations.Value;
     private readonly Lazy<IFixedList<EquationModel>> inheritedEquations;
@@ -275,13 +275,12 @@ public class TreeNodeModel
             });
         allDeclaredEquations = new(() => DeclaredEquations.Concat(ImplicitlyDeclaredEquations).ToFixedList());
         equationsRequiringEmit = new(()
-            => AllDeclaredEquations.OfType<SubtreeEquationModel>()
+            => AllDeclaredEquations.OfType<SoleEquationModel>()
                                    .Where(eq => eq.RequiresEmitOnNode)
                                    .ExceptBy(AttributesRequiringDeclaration.Select(a => a.Name), eq => eq.Name)
                                    .ToFixedList());
+        inheritedEquations = new(ComputeInheritedEquations);
         actualEquations = new(() => ComputeActualEquations(AllDeclaredEquations).ToFixedList());
-        inheritedEquations = new(()
-            => MostSpecificMembers(SupertypeNodes.SelectMany(r => r.ActualEquations).Distinct()).ToFixedList());
         inheritedAttributeEquationGroups = new(()
             => ActualEquations.OfType<InheritedAttributeEquationModel>()
                               .GroupBy(e => e.Name, (_, eqs) => new InheritedAttributeEquationGroupModel(this, eqs))
@@ -406,27 +405,30 @@ public class TreeNodeModel
         where T : IMemberModel
         => self.Node.AncestorNodes.Contains(other.Node);
 
-    private IEnumerable<EquationModel> ComputeActualEquations(
-        IFixedList<EquationModel> declaredEquations)
+    private IFixedList<EquationModel> ComputeInheritedEquations()
     {
-        var declaredSynthesizedEquations = declaredEquations.OfType<SynthesizedAttributeEquationModel>().ToList();
-        var actualSynthesizedEquations = declaredSynthesizedEquations.Concat(
-            InheritedEquations.OfType<SynthesizedAttributeEquationModel>()
-                              .AllExcept(declaredSynthesizedEquations, SynthesizedAttributeEquationModel.NameComparer));
+        var inheritedEquations = SupertypeNodes.SelectMany(r => r.ActualEquations).Distinct().ToList();
+        // Sole equations need to take the mose specific ones. Contributor equations keep all.
+        return MostSpecificMembers(inheritedEquations.OfType<SoleEquationModel>())
+               .Concat<EquationModel>(inheritedEquations.OfType<ContributorEquationModel>()).ToFixedList();
+    }
 
+    private IEnumerable<EquationModel> ComputeActualEquations(IFixedList<EquationModel> declaredEquations)
+    {
+        // Sole equations are distinct by name and parameters per node.
+        var declaredSoleEquations = declaredEquations.OfType<SoleEquationModel>().ToList();
+        var inheritedSoleEquations = InheritedEquations
+                                     .OfType<SoleEquationModel>()
+                                     .AllExcept(declaredSoleEquations, SoleEquationModel.NameAndParametersComparer);
+        var actualSoleEquations = declaredSoleEquations.Concat(inheritedSoleEquations);
 
-        // Inherited equations first because order within the node is important
-        var actualInheritedEquations = InheritedEquations.OfType<InheritedAttributeEquationModel>()
-            .Concat(declaredEquations.OfType<InheritedAttributeEquationModel>());
+        // Contributor equations keep all inherited and declared equations.
+        // Inherited equations require that the inherited ones come before ones declared on this node.
+        var contributorEquations = InheritedEquations.OfType<ContributorEquationModel>()
+            .Concat(declaredEquations.OfType<ContributorEquationModel>());
 
-        // Again with aggregate equations both inherited and declared apply. Order less important,
-        // but it makes sense to run inherited ones first.
-        var actualAggregateEquations = InheritedEquations.OfType<AggregateAttributeEquationModel>()
-            .Concat(declaredEquations.OfType<AggregateAttributeEquationModel>());
-
-        return actualSynthesizedEquations
-               .Concat<EquationModel>(actualInheritedEquations)
-               .Concat(actualAggregateEquations);
+        return actualSoleEquations
+               .Concat<EquationModel>(contributorEquations);
     }
 
     private SynthesizedAttributeEquationModel ImplicitlyDeclaredEquation(SynthesizedAttributeModel attribute)

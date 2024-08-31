@@ -1,9 +1,9 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 

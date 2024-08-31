@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
 public enum EvaluationStrategy
 {

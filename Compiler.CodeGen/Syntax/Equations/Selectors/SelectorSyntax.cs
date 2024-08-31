@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations.Selectors;
 
 [Closed(
     typeof(AllChildrenSelectorSyntax),

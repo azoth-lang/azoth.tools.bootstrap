@@ -1,5 +1,5 @@
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 

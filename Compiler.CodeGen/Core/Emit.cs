@@ -7,9 +7,9 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations.Selectors;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -281,7 +281,7 @@ internal static class Emit
     public static string Override(SynthesizedAttributeEquationModel equation)
         => equation.IsObjectMember() ? "override " : "";
 
-    public static string ParametersAndBody(SubtreeEquationModel equation)
+    public static string ParametersAndBody(SoleEquationModel equation)
     {
         switch (equation.Strategy)
         {

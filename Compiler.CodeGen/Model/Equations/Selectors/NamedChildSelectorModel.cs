@@ -4,7 +4,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations.Selectors;
 
 [Closed(
     typeof(ChildSelectorModel),

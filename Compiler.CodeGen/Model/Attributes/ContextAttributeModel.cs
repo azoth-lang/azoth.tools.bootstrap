@@ -1,13 +1,17 @@
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 
+/// <summary>
+/// Context attributes are those that provide information about the context in which a node is
+/// defined.
+/// </summary>
 [Closed(typeof(InheritedAttributeModel), typeof(PreviousAttributeModel))]
 public abstract class ContextAttributeModel : AspectAttributeModel
 {

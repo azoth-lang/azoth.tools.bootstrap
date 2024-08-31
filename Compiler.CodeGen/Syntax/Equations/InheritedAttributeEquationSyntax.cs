@@ -1,3 +1,5 @@
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations.Selectors;
+
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
 public sealed class InheritedAttributeEquationSyntax : EquationSyntax

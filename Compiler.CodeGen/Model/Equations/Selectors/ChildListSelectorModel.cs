@@ -1,6 +1,6 @@
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations.Selectors;
 
-namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
+namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations.Selectors;
 
 public sealed class ChildListSelectorModel : NamedChildSelectorModel
 {

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations.Selectors;
 using Azoth.Tools.Bootstrap.Framework;
 using static Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Parsing;
 
