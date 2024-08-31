@@ -15,6 +15,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
+// TODO shouldn't this be renamed to TypeMemberDefinitionsAspect?
 internal static partial class TypeMemberDeclarationsAspect
 {
     public static partial FunctionType FunctionDefinition_Type(IFunctionDefinitionNode node)
@@ -224,7 +225,7 @@ internal static partial class TypeMemberDeclarationsAspect
         => FunctionType(node.Parameters, node.Return);
 
     // TODO maybe this should be initial flow state?
-    public static IFlowState ConcreteInvocable_FlowStateBefore(IConcreteInvocableDefinitionNode _)
+    public static partial IFlowState ConcreteInvocableDefinition_FlowStateBefore(IConcreteInvocableDefinitionNode node)
         => IFlowState.Empty;
 
     public static void NamedParameter_ContributeDiagnostics(INamedParameterNode node, DiagnosticCollectionBuilder diagnostics)

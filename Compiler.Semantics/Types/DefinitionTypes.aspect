@@ -4,7 +4,11 @@
 
 // ↓ ↑ ⮡ ✎
 
-↓ *.ContainingDeclaredType <: `IDeclaredUserType`;
+//↓ *.ContainingDeclaredType <: `IDeclaredUserType`;
+
+// ---------- Function Definition
+= FunctionDefinition.Body.ExpectedType => Type.Return.Type;
+= FunctionDefinition.Body.**.ExpectedReturnType => Type.Return.Type;
 
 // ---------- Type Definitions
 = TypeDefinition.*.**.ContainingDeclaredType;

@@ -367,6 +367,8 @@ public partial interface IExecutableDefinitionNode : IDefinitionNode
 public partial interface IConcreteInvocableDefinitionNode : IInvocableDefinitionNode, IExecutableDefinitionNode
 {
     IBodyNode? Body { get; }
+    IFlowState FlowStateBefore()
+        => TypeMemberDeclarationsAspect.ConcreteInvocableDefinition_FlowStateBefore(this);
     new ValueIdScope ValueIdScope { get; }
     ValueIdScope IInvocableDefinitionNode.ValueIdScope => ValueIdScope;
     ValueIdScope IExecutableDefinitionNode.ValueIdScope => ValueIdScope;
@@ -3764,11 +3766,6 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     internal virtual void Contribute_This_Diagnostics(DiagnosticCollectionBuilder builder) { }
     internal virtual void Contribute_Diagnostics(DiagnosticCollectionBuilder builder) { }
 
-    internal virtual IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingDeclaredType", child, descendant)).Inherited_ContainingDeclaredType(this, descendant, ctx);
-    protected IDeclaredUserType Inherited_ContainingDeclaredType(IInheritanceContext ctx)
-        => GetParent(ctx)!.Inherited_ContainingDeclaredType(this, this, ctx);
-
     internal virtual IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("Package", child, descendant)).Inherited_Package(this, descendant, ctx);
     protected IPackageDeclarationNode Inherited_Package(IInheritanceContext ctx)
@@ -3788,6 +3785,11 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
         => (GetParent(ctx) ?? throw Child.InheritFailed("Facet", child, descendant)).Inherited_Facet(this, descendant, ctx);
     protected IPackageFacetDeclarationNode Inherited_Facet(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_Facet(this, this, ctx);
+
+    internal virtual IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingDeclaredType", child, descendant)).Inherited_ContainingDeclaredType(this, descendant, ctx);
+    protected IDeclaredUserType Inherited_ContainingDeclaredType(IInheritanceContext ctx)
+        => GetParent(ctx)!.Inherited_ContainingDeclaredType(this, this, ctx);
 
     internal virtual IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("FlowStateBefore", child, descendant)).Inherited_FlowStateBefore(this, descendant, ctx);
@@ -4349,7 +4351,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(descendant, Self.Body))
+        if (ReferenceEquals(child, Self.Body))
             return LexicalScope;
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
@@ -4357,6 +4359,20 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
+    }
+
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Type.Return.Type;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Type.Return.Type;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

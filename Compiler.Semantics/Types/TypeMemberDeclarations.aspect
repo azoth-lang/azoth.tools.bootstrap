@@ -1,8 +1,12 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name TypeMemberDeclarationsAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
 
 // ↓ ↑ ⮡ ✎
+// ---------- Definitions
+↑ ConcreteInvocableDefinition.FlowStateBefore(): `IFlowState`;
+= ConcreteInvocableDefinition.FlowStateBefore();
 
 // ---------- Function Definition
 ↑ FunctionDefinition.Type: `FunctionType`;

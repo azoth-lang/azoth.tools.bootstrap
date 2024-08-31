@@ -49,6 +49,11 @@
 
 ### Intertype Declared Members
 
+**TODO:** There is a strange overlap between this and synthesized attributes that are methods. Maybe
+these should be combined/simplified somehow? Remember that there are also inherited attributes that
+are methods.
+
+
 | Declaration                                                            | Meaning                                                                    |
 | ---------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | `+` *Node*`.`*Attribute*`(`*Params*`):` *Type*`;`                      | Intertype method attribute, always computed                                |
