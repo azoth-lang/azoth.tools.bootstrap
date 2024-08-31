@@ -225,7 +225,7 @@ public class TreeNodeModel
         declaredAttributes = new(() => DeclaredTreeAttributes.Concat<AttributeModel>(Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.NodeSymbol == Defines)).ToFixedList());
         treeChildNodes = new(() =>
             // Skip placeholders, the other attributes will give the true children (avoid cyclic dependencies)
-            DeclaredAttributes.Where(p => p is not ChildPlaceholderModel && p.IsChild)
+            DeclaredAttributes.Where(p => !p.IsPlaceholder && p.IsChild)
                               .Select(a => a.Type.ReferencedNode()!)
                               .ToFixedSet());
         isRoot = new(() => !Tree.TreeChildNodes.Contains(this)
@@ -319,8 +319,8 @@ public class TreeNodeModel
     private static IEnumerable<T> MostSpecificMembers<T>(IGrouping<string, T> members)
         where T : IMemberModel
     {
-        var mostSpecific = new List<T>(members.Where(m => m is ChildPlaceholderModel));
-        foreach (var member in members.Where(m => m is not ChildPlaceholderModel))
+        var mostSpecific = new List<T>(members.Where(m => m.IsPlaceholder));
+        foreach (var member in members.Where(m => !m.IsPlaceholder))
         {
             for (var i = mostSpecific.Count - 1; i >= 0; i--)
             {
@@ -350,7 +350,7 @@ public class TreeNodeModel
 
     private IEnumerable<AttributeModel> ImplicitlyDeclaredMergedAttributes()
         => InheritedAttributes.AllExcept<AttributeModel>(DeclaredAttributes, IMemberModel.NameIsPlaceholderComparer)
-                              .Where(a => a is not (ParentAttributeModel or ChildPlaceholderModel))
+                              .Where(a => a is not (ParentAttributeModel or PlaceholderModel))
                               .GroupBy(p => p.Name)
                               .Select(ImplicitlyDeclaredMergedAttribute).WhereNotNull()
                               .Assert(p => p.IsDeclarationRequired, p => new($"Implicit attribute {p} no declared."));

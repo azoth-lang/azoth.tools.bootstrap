@@ -58,15 +58,15 @@ internal static class TreeParser
     public static TreeAttributeSyntax ParseTreeAttribute(string attribute)
     {
         if (attribute.StartsWith('/') || attribute.EndsWith('/'))
-            return ParseChildPlaceholderSyntax(attribute);
+            return ParsePlaceholderSyntax(attribute);
 
         return ParseProperty(attribute);
     }
 
-    private static ChildPlaceholderSyntax ParseChildPlaceholderSyntax(string attribute)
+    private static PlaceholderSyntax ParsePlaceholderSyntax(string attribute)
     {
         if (!ParseOffStart(ref attribute, "/") || !ParseOffEnd(ref attribute, "/"))
-            throw new FormatException("Child placeholder must start and end with a forward slash: '{0}'");
+            throw new FormatException("Placeholder must start and end with a forward slash: '{0}'");
 
         return new(attribute);
     }

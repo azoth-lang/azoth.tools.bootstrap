@@ -137,33 +137,30 @@ MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemb
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
 // TODO getters and setters can be abstract too
 AbstractMethodDefinition <: MethodDefinition, StandardMethodDeclaration = Syntax:`IAbstractMethodDefinitionSyntax`
-    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
+    /SelfParameter/ /Parameters/ /Return/;
 ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteInvocableDefinition
-    = Syntax:`IConcreteMethodDefinitionSyntax` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?
-    /Entry/ Body /Exit/;
+    = Syntax:`IConcreteMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
 // TODO rename to Ordinary or Normal
 StandardMethodDefinition <: ConcreteMethodDefinition, StandardMethodDeclaration
-    = Syntax:`IStandardMethodDefinitionSyntax`
-    SelfParameter:MethodSelfParameter Parameters:NamedParameter*
-    Return:Type? /Entry/ Body /Exit/;
-GetterMethodDefinition <: ConcreteMethodDefinition, GetterMethodDeclaration = Syntax:`IGetterMethodDefinitionSyntax`
-    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type /Entry/ Body /Exit/;
-SetterMethodDefinition <: ConcreteMethodDefinition, SetterMethodDeclaration = Syntax:`ISetterMethodDefinitionSyntax`
-    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type? /Entry/ Body /Exit/;
+    = Syntax:`IStandardMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
+GetterMethodDefinition <: ConcreteMethodDefinition, GetterMethodDeclaration
+    = Syntax:`IGetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ Return:Type /Entry/ Body /Exit/;
+SetterMethodDefinition <: ConcreteMethodDefinition, SetterMethodDeclaration
+    = Syntax:`ISetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
 ConstructorDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, ConstructorDeclaration
     = Syntax:`IConstructorDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*;
 DefaultConstructorDefinition <: ConstructorDefinition
-    = Parameters:ConstructorOrInitializerParameter* /Entry/ Body? /Exit/;
+    = /Parameters/ /Entry/ Body? /Exit/;
 SourceConstructorDefinition <: ConstructorDefinition
     = Syntax:`IConstructorDefinitionSyntax`
-    SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* /Entry/ Body:BlockBody /Exit/;
+    SelfParameter:ConstructorSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;
 InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, InitializerDeclaration
     = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*;
 DefaultInitializerDefinition <: InitializerDefinition
-    = Parameters:ConstructorOrInitializerParameter* /Entry/ Body? /Exit/;
+    = /Parameters/ /Entry/ Body? /Exit/;
 SourceInitializerDefinition <: InitializerDefinition
     = Syntax:`IInitializerDefinitionSyntax`
-    SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* /Entry/ Body:BlockBody /Exit/;
+    SelfParameter:InitializerSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;
 FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, NamedBinding, FieldDeclaration, ExecutableDefinition
     = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type BindingAntetype:`IMaybeAntetype` BindingType:`DataType`
     /Entry/ Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`? /Exit/;

@@ -99,6 +99,7 @@ public sealed class TreeModel : IHasUsingNamespaces
         errors |= ValidateAmbiguousEquations();
         errors |= ValidateInheritedEquationsProduceSingleType();
         errors |= ValidateFinalNodes();
+        errors |= ValidatePlaceholders();
         if (errors)
             throw new ValidationFailedException();
     }
@@ -191,6 +192,18 @@ public sealed class TreeModel : IHasUsingNamespaces
                 Console.Error.WriteLine($"ERROR: Node '{node.Defines}' is a temp node that must have"
                                         + $" a final node and doesn't. Candidates are: {string.Join(", ", node.CandidateFinalNodes)}");
             }
+        return errors;
+    }
+
+    private bool ValidatePlaceholders()
+    {
+        var errors = false;
+        var placeholders = Nodes.SelectMany(n => n.DeclaredTreeAttributes).OfType<PlaceholderModel>();
+        foreach (var placeholder in placeholders.Where(p => p is { IsChild: false, Attribute: not PropertyModel }))
+        {
+            errors = true;
+            Console.Error.WriteLine($"ERROR: Placeholder '{placeholder}' refers to non-child, non-property attribute {placeholder.Attribute}.");
+        }
         return errors;
     }
 }

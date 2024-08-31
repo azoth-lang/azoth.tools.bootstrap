@@ -167,7 +167,7 @@ internal static class Emit
             IntertypeMethodAttributeModel a => ParametersAndBody(a),
             // TODO Parent should only be allowed on final nodes
             ParentAttributeModel a => $" => ({Type(a.Type)})PeekParent()!;",
-            ChildPlaceholderModel _ => throw new NotSupportedException("Child placeholder should not be emitted."),
+            PlaceholderModel _ => throw new NotSupportedException("Placeholder should not be emitted."),
             _ => throw ExhaustiveMatch.Failed(attribute)
         };
 
