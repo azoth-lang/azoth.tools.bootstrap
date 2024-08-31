@@ -37,10 +37,9 @@ internal abstract class TypeDefinitionNode : FacetMemberDefinitionNode, ITypeDef
     public IFixedSet<BareReferenceType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
-                TypeDeclarationsAspect.TypeDefinition_Supertypes, FixedSet.EqualityComparer<BareType>());
+                TypeDefinitionsAspect.TypeDefinition_Supertypes);
     public abstract IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
-    //private MultiMapHashSet<StandardName, IAssociatedMemberDeclarationNode>? associatedMembersByName;
     public abstract IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
     private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
     private bool inclusiveInstanceMembersByNameCached;
@@ -100,7 +99,7 @@ internal abstract class TypeDefinitionNode : FacetMemberDefinitionNode, ITypeDef
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        TypeDeclarationsAspect.TypeDeclaration_ContributeDiagnostics(this, diagnostics);
+        TypeDefinitionsAspect.TypeDefinition_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

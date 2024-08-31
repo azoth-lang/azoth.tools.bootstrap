@@ -12,14 +12,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinitionNode
 {
     public override IClassDefinitionSyntax Syntax { get; }
-    public bool IsAbstract => Syntax.AbstractModifier is not null;
     public IStandardTypeNameNode? BaseTypeName { get; }
 
     private ObjectType? declaredType;
     private bool declaredTypeCached;
     public override ObjectType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
-            : this.Synthetic(ref declaredTypeCached, ref declaredType, TypeDeclarationsAspect.ClassDefinition_DeclaredType);
+            : this.Synthetic(ref declaredTypeCached, ref declaredType, TypeDefinitionsAspect.ClassDefinition_DeclaredType);
 
     public IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
     private ValueAttribute<IFixedSet<IClassMemberDefinitionNode>> members;
@@ -56,7 +55,7 @@ internal sealed class ClassDefinitionNode : TypeDefinitionNode, IClassDefinition
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        TypeDeclarationsAspect.ClassDeclaration_ContributeDiagnostics(this, diagnostics);
+        TypeDefinitionsAspect.ClassDefinition_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

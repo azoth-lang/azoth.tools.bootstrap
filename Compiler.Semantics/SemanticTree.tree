@@ -91,27 +91,20 @@ FunctionDefinition <: FacetMemberDefinition, FunctionDeclaration, ConcreteFuncti
 
 // ---------- Type Definitions
 TypeDefinition <: FacetMemberDefinition, AssociatedMemberDefinition, UserTypeDeclaration
-    = Syntax:`ITypeDefinitionSyntax` IsConst:`bool` Name:`StandardName`
-    DeclaredType:`IDeclaredUserType`
+    = Syntax:`ITypeDefinitionSyntax`
     GenericParameters:GenericParameter*
-    SupertypeNames:StandardTypeName* Supertypes:{`BareReferenceType`}
-    Members:{TypeMemberDefinition};
+    SupertypeNames:StandardTypeName*;
 ClassDefinition <: TypeDefinition, ClassDeclaration = Syntax:`IClassDefinitionSyntax`
-    Attributes:Attribute* IsAbstract:`bool` GenericParameters:GenericParameter*
+    Attributes:Attribute* GenericParameters:GenericParameter*
     BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName*
-    DeclaredType:`ObjectType`
-    SourceMembers:`IClassMemberDefinitionNode`* Members:{ClassMemberDefinition}
-    DefaultConstructor:DefaultConstructorDefinition?;
+    SourceMembers:ClassMemberDefinition*;
 StructDefinition <: TypeDefinition, StructDeclaration = Syntax:`IStructDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName*
-    DeclaredType:`StructType`
-    SourceMembers:`IStructMemberDefinitionNode`* Members:{StructMemberDefinition}
-    DefaultInitializer:DefaultInitializerDefinition?;
+    SourceMembers:StructMemberDefinition*;
 TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSyntax`
     Attributes:Attribute* GenericParameters:GenericParameter*
     SupertypeNames:StandardTypeName*
-    DeclaredType:`ObjectType`
     Members:{TraitMemberDefinition};
 
 // ---------- Type Definition Parts

@@ -27,7 +27,7 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     private ValueAttribute<GenericParameter> parameter;
     public GenericParameter Parameter
         => parameter.TryGetValue(out var value) ? value
-            : parameter.GetValue(this, TypeDeclarationsAspect.GenericParameter_Parameter);
+            : parameter.GetValue(this, TypeDefinitionsAspect.GenericParameter_Parameter);
     private IDeclaredUserType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
     public IDeclaredUserType ContainingDeclaredType
@@ -37,7 +37,7 @@ internal sealed class GenericParameterNode : CodeNode, IGenericParameterNode
     private ValueAttribute<GenericParameterType> declaredType;
     public GenericParameterType DeclaredType
         => declaredType.TryGetValue(out var value) ? value
-            : declaredType.GetValue(this, TypeDeclarationsAspect.GenericParameter_DeclaredType);
+            : declaredType.GetValue(this, TypeDefinitionsAspect.GenericParameter_DeclaredType);
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public UserTypeSymbol ContainingSymbol => ContainingDeclaration.Symbol;

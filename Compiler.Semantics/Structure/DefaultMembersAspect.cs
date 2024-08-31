@@ -5,9 +5,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
-internal static class DefaultMembersAspect
+internal static partial class DefaultMembersAspect
 {
-    public static IDefaultConstructorDefinitionNode? ClassDefinition_DefaultConstructor(IClassDefinitionNode node)
+    public static partial IDefaultConstructorDefinitionNode? ClassDefinition_DefaultConstructor(IClassDefinitionNode node)
     {
         if (node.SourceMembers.Any(m => m is IConstructorDefinitionNode))
             return null;
@@ -17,7 +17,7 @@ internal static class DefaultMembersAspect
 
     /// <remarks>This needs to be lazy computed because the
     /// <see cref="IClassDefinitionNode.DefaultConstructor"/> attribute must be computed.</remarks>
-    public static IFixedSet<IClassMemberDefinitionNode> ClassDefinition_Members(IClassDefinitionNode node)
+    public static partial IFixedSet<IClassMemberDefinitionNode> ClassDefinition_Members(IClassDefinitionNode node)
     {
         var members = node.SourceMembers.AsEnumerable();
 
@@ -28,7 +28,7 @@ internal static class DefaultMembersAspect
         return members.ToFixedSet();
     }
 
-    public static IDefaultInitializerDefinitionNode? StructDefinition_DefaultInitializer(IStructDefinitionNode node)
+    public static partial IDefaultInitializerDefinitionNode? StructDefinition_DefaultInitializer(IStructDefinitionNode node)
     {
         if (node.SourceMembers.Any(m => m is IInitializerDefinitionNode))
             return null;
@@ -36,7 +36,7 @@ internal static class DefaultMembersAspect
         return Child.Attach(node, new DefaultInitializerDefinitionNode());
     }
 
-    public static IFixedSet<IStructMemberDefinitionNode> StructDefinition_Members(IStructDefinitionNode node)
+    public static partial IFixedSet<IStructMemberDefinitionNode> StructDefinition_Members(IStructDefinitionNode node)
     {
         var members = node.SourceMembers.AsEnumerable();
 

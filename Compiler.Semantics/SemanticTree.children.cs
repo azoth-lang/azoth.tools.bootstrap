@@ -72,7 +72,7 @@ public static class ISemanticNodeExtensions
                     yield return n.BaseTypeName;
                 foreach (var child in n.SupertypeNames)
                     yield return child;
-                foreach (var child in n.Members)
+                foreach (var child in n.SourceMembers)
                     yield return child;
                 if (n.DefaultConstructor is not null)
                     yield return n.DefaultConstructor;
@@ -84,7 +84,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 foreach (var child in n.SupertypeNames)
                     yield return child;
-                foreach (var child in n.Members)
+                foreach (var child in n.SourceMembers)
                     yield return child;
                 if (n.DefaultInitializer is not null)
                     yield return n.DefaultInitializer;

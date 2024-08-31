@@ -43,6 +43,11 @@
 // ---------- Function Definition
 ↑ FunctionDefinition.Name: `IdentifierName` => Syntax.Name;
 
+// ---------- Type Definitions
+↑ TypeDefinition.IsConst: `bool` => Syntax.ConstModifier is not null;
+↑ TypeDefinition.Name:`StandardName` => Syntax.Name;
+↑ ClassDefinition.IsAbstract: `bool` => Syntax.AbstractModifier is not null;
+
 // -------------------------------------------------------------------------------------------------
 // Declarations
 // -------------------------------------------------------------------------------------------------

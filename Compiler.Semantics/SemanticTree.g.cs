@@ -503,25 +503,29 @@ public partial interface ITypeDefinitionNode : IFacetMemberDefinitionNode, IAsso
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    bool IsConst { get; }
-    new StandardName Name { get; }
+    new IFixedList<IGenericParameterNode> GenericParameters { get; }
+    IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
+    IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
+    LexicalScope SupertypesLexicalScope { get; }
+    IEnumerable<IStandardTypeNameNode> AllSupertypeNames
+        => SupertypeNames;
+    bool IsConst
+        => Syntax.ConstModifier is not null;
+    new StandardName Name
+        => Syntax.Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     StandardName INamespaceMemberDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
     StandardName IAssociatedMemberDefinitionNode.Name => Name;
-    IDeclaredUserType DeclaredType { get; }
-    new IFixedList<IGenericParameterNode> GenericParameters { get; }
-    IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
-    IFixedList<IStandardTypeNameNode> SupertypeNames { get; }
-    new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
-    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
-    LexicalScope SupertypesLexicalScope { get; }
-    IEnumerable<IStandardTypeNameNode> AllSupertypeNames
-        => SupertypeNames;
     new UserTypeSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     UserTypeSymbol IUserTypeDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    new IFixedSet<BareReferenceType> Supertypes { get; }
+    IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes => Supertypes;
+    IDeclaredUserType DeclaredType { get; }
+    new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     new AccessModifier AccessModifier { get; }
     AccessModifier IFacetMemberDefinitionNode.AccessModifier => AccessModifier;
     AccessModifier ITypeMemberDefinitionNode.AccessModifier => AccessModifier;
@@ -537,11 +541,12 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    bool IsAbstract { get; }
     IStandardTypeNameNode? BaseTypeName { get; }
+    IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
+    bool IsAbstract
+        => Syntax.AbstractModifier is not null;
     new ObjectType DeclaredType { get; }
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
-    IFixedList<IClassMemberDefinitionNode> SourceMembers { get; }
     new IFixedSet<IClassMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
@@ -550,8 +555,8 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     IEnumerable<IStandardTypeNameNode> ITypeDefinitionNode.AllSupertypeNames
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
 
-    public static IClassDefinitionNode Create(bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, IClassDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, bool isAbstract, IEnumerable<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IEnumerable<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IEnumerable<IClassMemberDefinitionNode> sourceMembers, IEnumerable<IClassMemberDefinitionNode> members, IDefaultConstructorDefinitionNode? defaultConstructor)
-        => new ClassDefinitionNode(isConst, name, supertypes, syntax, attributes, isAbstract, genericParameters, baseTypeName, supertypeNames, declaredType, sourceMembers, members, defaultConstructor);
+    public static IClassDefinitionNode Create(IClassDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IEnumerable<IStandardTypeNameNode> supertypeNames, IEnumerable<IClassMemberDefinitionNode> sourceMembers)
+        => new ClassDefinitionNode(syntax, attributes, genericParameters, baseTypeName, supertypeNames, sourceMembers);
 }
 
 // [Closed(typeof(StructDefinitionNode))]
@@ -564,17 +569,17 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    IFixedList<IStructMemberDefinitionNode> SourceMembers { get; }
     new StructType DeclaredType { get; }
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
-    IFixedList<IStructMemberDefinitionNode> SourceMembers { get; }
     new IFixedSet<IStructMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<IStructMemberDeclarationNode> IStructDeclarationNode.Members => Members;
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
 
-    public static IStructDefinitionNode Create(bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, IStructDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, StructType declaredType, IEnumerable<IStructMemberDefinitionNode> sourceMembers, IEnumerable<IStructMemberDefinitionNode> members, IDefaultInitializerDefinitionNode? defaultInitializer)
-        => new StructDefinitionNode(isConst, name, supertypes, syntax, attributes, genericParameters, supertypeNames, declaredType, sourceMembers, members, defaultInitializer);
+    public static IStructDefinitionNode Create(IStructDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, IEnumerable<IStructMemberDefinitionNode> sourceMembers)
+        => new StructDefinitionNode(syntax, attributes, genericParameters, supertypeNames, sourceMembers);
 }
 
 // [Closed(typeof(TraitDefinitionNode))]
@@ -587,15 +592,15 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    new ObjectType DeclaredType { get; }
-    IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
     new IFixedSet<ITraitMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITraitMemberDeclarationNode> ITraitDeclarationNode.Members => Members;
+    new ObjectType DeclaredType { get; }
+    IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
 
-    public static ITraitDefinitionNode Create(bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, ITraitDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IEnumerable<ITraitMemberDefinitionNode> members)
-        => new TraitDefinitionNode(isConst, name, supertypes, syntax, attributes, genericParameters, supertypeNames, declaredType, members);
+    public static ITraitDefinitionNode Create(ITraitDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, IEnumerable<ITraitMemberDefinitionNode> members)
+        => new TraitDefinitionNode(syntax, attributes, genericParameters, supertypeNames, members);
 }
 
 // [Closed(typeof(GenericParameterNode))]
@@ -4423,19 +4428,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     private IClassDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public bool IsConst { [DebuggerStepThrough] get; }
-    public StandardName Name { [DebuggerStepThrough] get; }
-    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
     public IClassDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
-    public bool IsAbstract { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
     public IStandardTypeNameNode? BaseTypeName { [DebuggerStepThrough] get; }
     public IFixedList<IStandardTypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
-    public ObjectType DeclaredType { [DebuggerStepThrough] get; }
     public IFixedList<IClassMemberDefinitionNode> SourceMembers { [DebuggerStepThrough] get; }
-    public IFixedSet<IClassMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
-    public IDefaultConstructorDefinitionNode? DefaultConstructor { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -4460,6 +4458,24 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 InheritanceAspect.ClassDefinition_InclusiveMembers);
     private IFixedSet<IClassMemberDeclarationNode>? inclusiveMembers;
     private bool inclusiveMembersCached;
+    public ObjectType DeclaredType
+        => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
+            : this.Synthetic(ref declaredTypeCached, ref declaredType,
+                TypeDefinitionsAspect.ClassDefinition_DeclaredType);
+    private ObjectType? declaredType;
+    private bool declaredTypeCached;
+    public IFixedSet<IClassMemberDefinitionNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                DefaultMembersAspect.ClassDefinition_Members);
+    private IFixedSet<IClassMemberDefinitionNode>? members;
+    private bool membersCached;
+    public IDefaultConstructorDefinitionNode? DefaultConstructor
+        => GrammarAttribute.IsCached(in defaultConstructorCached) ? defaultConstructor
+            : this.Synthetic(ref defaultConstructorCached, ref defaultConstructor,
+                n => Child.Attach(this, DefaultMembersAspect.ClassDefinition_DefaultConstructor(n)));
+    private IDefaultConstructorDefinitionNode? defaultConstructor;
+    private bool defaultConstructorCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -4484,6 +4500,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 TypeModifiersAspect.TypeDefinition_AccessModifier);
     private AccessModifier accessModifier;
     private bool accessModifierCached;
+    public IFixedSet<BareReferenceType> Supertypes
+        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes!
+            : this.Synthetic(ref supertypesCached, ref supertypes,
+                TypeDefinitionsAspect.TypeDefinition_Supertypes);
+    private IFixedSet<BareReferenceType>? supertypes;
+    private bool supertypesCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -4497,25 +4519,20 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public ClassDefinitionNode(bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, IClassDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, bool isAbstract, IEnumerable<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IEnumerable<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IEnumerable<IClassMemberDefinitionNode> sourceMembers, IEnumerable<IClassMemberDefinitionNode> members, IDefaultConstructorDefinitionNode? defaultConstructor)
+    public ClassDefinitionNode(IClassDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IEnumerable<IStandardTypeNameNode> supertypeNames, IEnumerable<IClassMemberDefinitionNode> sourceMembers)
     {
-        IsConst = isConst;
-        Name = name;
-        Supertypes = supertypes.ToFixedSet();
         Syntax = syntax;
         Attributes = ChildList.Attach(this, attributes);
-        IsAbstract = isAbstract;
         GenericParameters = ChildList.Attach(this, genericParameters);
         BaseTypeName = Child.Attach(this, baseTypeName);
         SupertypeNames = ChildList.Attach(this, supertypeNames);
-        DeclaredType = declaredType;
-        SourceMembers = sourceMembers.ToFixedList();
-        Members = ChildSet.Attach(this, members);
-        DefaultConstructor = Child.Attach(this, defaultConstructor);
+        SourceMembers = ChildList.Attach(this, sourceMembers);
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ContainsNode(Self.GenericParameters, child))
+            return ContainingLexicalScope;
         if (ContainsNode(Self.AllSupertypeNames, child))
             return LexicalScopingAspect.TypeDefinition_AllSupertypeNames_Broadcast_ContainingLexicalScope(this);
         if (ContainsNode(Self.Members, child))
@@ -4545,17 +4562,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     private IStructDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public bool IsConst { [DebuggerStepThrough] get; }
-    public StandardName Name { [DebuggerStepThrough] get; }
-    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
     public IStructDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<IStandardTypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
-    public StructType DeclaredType { [DebuggerStepThrough] get; }
     public IFixedList<IStructMemberDefinitionNode> SourceMembers { [DebuggerStepThrough] get; }
-    public IFixedSet<IStructMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
-    public IDefaultInitializerDefinitionNode? DefaultInitializer { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -4580,6 +4591,24 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 InheritanceAspect.StructDefinition_InclusiveMembers);
     private IFixedSet<IStructMemberDeclarationNode>? inclusiveMembers;
     private bool inclusiveMembersCached;
+    public StructType DeclaredType
+        => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
+            : this.Synthetic(ref declaredTypeCached, ref declaredType,
+                TypeDefinitionsAspect.StructDefinition_DeclaredType);
+    private StructType? declaredType;
+    private bool declaredTypeCached;
+    public IFixedSet<IStructMemberDefinitionNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                DefaultMembersAspect.StructDefinition_Members);
+    private IFixedSet<IStructMemberDefinitionNode>? members;
+    private bool membersCached;
+    public IDefaultInitializerDefinitionNode? DefaultInitializer
+        => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
+            : this.Synthetic(ref defaultInitializerCached, ref defaultInitializer,
+                n => Child.Attach(this, DefaultMembersAspect.StructDefinition_DefaultInitializer(n)));
+    private IDefaultInitializerDefinitionNode? defaultInitializer;
+    private bool defaultInitializerCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -4604,6 +4633,12 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 TypeModifiersAspect.TypeDefinition_AccessModifier);
     private AccessModifier accessModifier;
     private bool accessModifierCached;
+    public IFixedSet<BareReferenceType> Supertypes
+        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes!
+            : this.Synthetic(ref supertypesCached, ref supertypes,
+                TypeDefinitionsAspect.TypeDefinition_Supertypes);
+    private IFixedSet<BareReferenceType>? supertypes;
+    private bool supertypesCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -4617,23 +4652,19 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public StructDefinitionNode(bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, IStructDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, StructType declaredType, IEnumerable<IStructMemberDefinitionNode> sourceMembers, IEnumerable<IStructMemberDefinitionNode> members, IDefaultInitializerDefinitionNode? defaultInitializer)
+    public StructDefinitionNode(IStructDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, IEnumerable<IStructMemberDefinitionNode> sourceMembers)
     {
-        IsConst = isConst;
-        Name = name;
-        Supertypes = supertypes.ToFixedSet();
         Syntax = syntax;
         Attributes = ChildList.Attach(this, attributes);
         GenericParameters = ChildList.Attach(this, genericParameters);
         SupertypeNames = ChildList.Attach(this, supertypeNames);
-        DeclaredType = declaredType;
-        SourceMembers = sourceMembers.ToFixedList();
-        Members = ChildSet.Attach(this, members);
-        DefaultInitializer = Child.Attach(this, defaultInitializer);
+        SourceMembers = ChildList.Attach(this, sourceMembers);
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ContainsNode(Self.GenericParameters, child))
+            return ContainingLexicalScope;
         if (ContainsNode(Self.AllSupertypeNames, child))
             return LexicalScopingAspect.TypeDefinition_AllSupertypeNames_Broadcast_ContainingLexicalScope(this);
         if (ContainsNode(Self.Members, child))
@@ -4663,14 +4694,10 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     private ITraitDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public bool IsConst { [DebuggerStepThrough] get; }
-    public StandardName Name { [DebuggerStepThrough] get; }
-    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
     public ITraitDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterNode> GenericParameters { [DebuggerStepThrough] get; }
     public IFixedList<IStandardTypeNameNode> SupertypeNames { [DebuggerStepThrough] get; }
-    public ObjectType DeclaredType { [DebuggerStepThrough] get; }
     public IFixedSet<ITraitMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -4696,6 +4723,12 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 InheritanceAspect.TraitDefinition_InclusiveMembers);
     private IFixedSet<ITraitMemberDeclarationNode>? inclusiveMembers;
     private bool inclusiveMembersCached;
+    public ObjectType DeclaredType
+        => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
+            : this.Synthetic(ref declaredTypeCached, ref declaredType,
+                TypeDefinitionsAspect.TraitDefinition_DeclaredType);
+    private ObjectType? declaredType;
+    private bool declaredTypeCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -4720,6 +4753,12 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 TypeModifiersAspect.TypeDefinition_AccessModifier);
     private AccessModifier accessModifier;
     private bool accessModifierCached;
+    public IFixedSet<BareReferenceType> Supertypes
+        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes!
+            : this.Synthetic(ref supertypesCached, ref supertypes,
+                TypeDefinitionsAspect.TypeDefinition_Supertypes);
+    private IFixedSet<BareReferenceType>? supertypes;
+    private bool supertypesCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -4733,21 +4772,19 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public TraitDefinitionNode(bool isConst, StandardName name, IEnumerable<BareReferenceType> supertypes, ITraitDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, ObjectType declaredType, IEnumerable<ITraitMemberDefinitionNode> members)
+    public TraitDefinitionNode(ITraitDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, IEnumerable<ITraitMemberDefinitionNode> members)
     {
-        IsConst = isConst;
-        Name = name;
-        Supertypes = supertypes.ToFixedSet();
         Syntax = syntax;
         Attributes = ChildList.Attach(this, attributes);
         GenericParameters = ChildList.Attach(this, genericParameters);
         SupertypeNames = ChildList.Attach(this, supertypeNames);
-        DeclaredType = declaredType;
         Members = ChildSet.Attach(this, members);
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ContainsNode(Self.GenericParameters, child))
+            return ContainingLexicalScope;
         if (ContainsNode(Self.AllSupertypeNames, child))
             return LexicalScopingAspect.TypeDefinition_AllSupertypeNames_Broadcast_ContainingLexicalScope(this);
         if (ContainsNode(Self.Members, child))

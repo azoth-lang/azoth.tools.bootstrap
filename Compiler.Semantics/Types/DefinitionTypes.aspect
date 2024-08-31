@@ -18,9 +18,6 @@
 
 // ---------- Type Definitions
 = TypeDefinition.*.**.ContainingDeclaredType;
-// = ClassDefinition.*.**.ContainingDeclaredType;
-// = StructDefinition.*.**.ContainingDeclaredType;
-// = TraitDefinition.*.**.ContainingDeclaredType;
 
 // ---------- Type Definition Parts
 ↓ GenericParameter.ContainingDeclaredType: `IDeclaredUserType`;

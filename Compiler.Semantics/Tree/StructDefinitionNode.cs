@@ -15,7 +15,7 @@ internal sealed class StructDefinitionNode : TypeDefinitionNode, IStructDefiniti
     private bool declaredTypeCached;
     public override StructType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
-            : this.Synthetic(ref declaredTypeCached, ref declaredType, TypeDeclarationsAspect.StructDefinition_DeclaredType);
+            : this.Synthetic(ref declaredTypeCached, ref declaredType, TypeDefinitionsAspect.StructDefinition_DeclaredType);
 
     public IFixedList<IStructMemberDefinitionNode> SourceMembers { get; }
     private ValueAttribute<IFixedSet<IStructMemberDefinitionNode>> members;

@@ -11,9 +11,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-internal static class TypeDeclarationsAspect
+internal static partial class TypeDefinitionsAspect
 {
-    public static ObjectType ClassDefinition_DeclaredType(IClassDefinitionNode node)
+    public static partial ObjectType ClassDefinition_DeclaredType(IClassDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -23,7 +23,7 @@ internal static class TypeDeclarationsAspect
             GetGenericParameters(node), node.Supertypes);
     }
 
-    public static void ClassDeclaration_ContributeDiagnostics(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static void ClassDefinition_Contribute_Diagnostics(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         CheckBaseTypeMustBeAClass(node, diagnostics);
 
@@ -47,7 +47,7 @@ internal static class TypeDeclarationsAspect
             diagnostics.Add(TypeError.SupertypeMustMaintainIndependence(node.File, typeName.Syntax));
     }
 
-    public static StructType StructDefinition_DeclaredType(IStructDefinitionNode node)
+    public static partial StructType StructDefinition_DeclaredType(IStructDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -56,7 +56,7 @@ internal static class TypeDeclarationsAspect
             GetGenericParameters(node), node.Supertypes);
     }
 
-    public static ObjectType TraitDefinition_DeclaredType(ITraitDefinitionNode node)
+    public static partial ObjectType TraitDefinition_DeclaredType(ITraitDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
         NamespaceName containingNamespaceName = GetContainingNamespaceName(node);
@@ -83,7 +83,7 @@ internal static class TypeDeclarationsAspect
     public static GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
         => node.ContainingDeclaredType.GenericParameterTypes.Single(t => t.Parameter == node.Parameter);
 
-    public static IFixedSet<BareReferenceType> TypeDefinition_Supertypes(ITypeDefinitionNode node)
+    public static partial IFixedSet<BareReferenceType> TypeDefinition_Supertypes(ITypeDefinitionNode node)
     {
         // Note: Supertypes is a circular attribute that both declared types and symbols depend on.
         // While there are many ways to write this that will give the correct answer, care should be
@@ -134,7 +134,7 @@ internal static class TypeDeclarationsAspect
         }
     }
 
-    public static void TypeDeclaration_ContributeDiagnostics(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static void TypeDefinition_Contribute_Diagnostics(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         CheckSupertypesForCycle(node, diagnostics);
 

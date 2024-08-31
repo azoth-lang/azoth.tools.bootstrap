@@ -1,0 +1,12 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
+◊name DefaultMembersAspect;
+◊using Azoth.Tools.Bootstrap.Framework;
+
+// ↓ ↑ ⮡ ✎ ↗↖
+
+// ---------- Type Definitions
+↑ TypeDefinition.Members: {TypeMemberDefinition};
+↑ ClassDefinition.Members: {ClassMemberDefinition};
+↑ StructDefinition.Members: {StructMemberDefinition};
+↑ child ClassDefinition.DefaultConstructor:DefaultConstructorDefinition?;
+↑ child StructDefinition.DefaultInitializer:DefaultInitializerDefinition?;
