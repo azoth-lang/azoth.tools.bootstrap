@@ -64,7 +64,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
     public bool ShouldPrepareToReturn()
         => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
 
-    internal override IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx) => ValueId;
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx) => ValueId;
 
     // TODO remove once all nodes properly provide the expected antetype
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

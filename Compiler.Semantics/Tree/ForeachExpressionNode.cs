@@ -173,7 +173,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         // Include the BindingValueId in the value id flow
         => BindingValueId;
 

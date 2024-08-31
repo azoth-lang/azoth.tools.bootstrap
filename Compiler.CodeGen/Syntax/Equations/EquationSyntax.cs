@@ -6,6 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 [Closed(
     typeof(SynthesizedAttributeEquationSyntax),
     typeof(InheritedAttributeEquationSyntax),
+    typeof(PreviousAttributeEquationSyntax),
     typeof(IntertypeMethodEquationSyntax),
     typeof(AggregateAttributeEquationSyntax))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]

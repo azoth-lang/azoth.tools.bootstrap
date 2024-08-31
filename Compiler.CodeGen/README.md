@@ -119,18 +119,15 @@ for a node to provide the attribute value, nodes are searched in the reverse of 
 traversal. That is, for inherited attributes, values flow down the tree. For previous attributes,
 values flow down from the parent to the first child and then across to the next child.
 
-| Declaration                                                        | Meaning                                                       |
-| ------------------------------------------------------------------ | ------------------------------------------------------------- |
-| `⮡` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Previous attribute, defaults to lazy                          |
-| `=` *Node*`.⮡.`*Attribute*`;`                                      | Previous equation                                             |
-| `=` *Node*`.⮡.`*Attribute* `=>` *Expression*`;`                    | Previous equation with inline expression                      |
-| `⮡` *Node*.*Attribute*`():` *Type*`;`                              | Previous attribute method, always computed                    |
-| `=` *Node*`.⮡.`*Attribute*`();`                                    | Previous method equation                                      |
-| `=` *Node*`.⮡.`*Attribute*`()` `=>` *Expression*`;`                | Previous method equation with inline expression               |
-| `⮡` `*.`*Attribute* `<:` *Type*`;`<sup>1</sup>                     | A previous attribute family that specifies a common supertype |
-
-1. Not yet implemented. Only necessary when code generation is not able to determine the type and
-   gives an error.
+| Declaration                                                | Meaning                                                       |
+| ---------------------------------------------------------- | ------------------------------------------------------------- |
+| `⮡` `*.`*Attribute*`:` *Type*`;`                           | Previous attribute family                                     |
+| `⮡` (`lazy`\|`computed`)? `child`? *Node*`.`*Attribute*`;` | Previous attribute, defaults to lazy                          |
+| `=` *Node*`.⮡.`*Attribute*`;`                              | Previous equation                                             |
+| `=` *Node*`.⮡.`*Attribute* `=>` *Expression*`;`            | Previous equation with inline expression                      |
+| `⮡` *Node*`.`*Attribute*`();`                              | Previous attribute method, always computed                    |
+| `=` *Node*`.⮡.`*Attribute*`();`                            | Previous method equation                                      |
+| `=` *Node*`.⮡.`*Attribute*`()` `=>` *Expression*`;`        | Previous method equation with inline expression               |
 
 ### Circular Attributes
 

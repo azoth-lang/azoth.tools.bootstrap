@@ -384,7 +384,7 @@ internal static class Emit
             // TODO use Current child for all of these
             ChildSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, Self.{s.Child})"),
             ChildAtIndexSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, Self.{s.Child}[{s.Index}])"),
-            ChildAtVariableSelectorModel s => SelectorIf($"IndexOfNode(Self.{s.Child}, {ChildOrDescendant(s)}) is {{}} {s.Variable}"),
+            ChildAtVariableSelectorModel s => SelectorIf($"IndexOfNode(Self.{s.Child}, {ChildOrDescendant(s)}) is {{ }} {s.Variable}"),
             ChildListSelectorModel s => SelectorIf($"ContainsNode(Self.{s.Child}, {ChildOrDescendant(s)})"),
             _ => throw ExhaustiveMatch.Failed(selector)
         };
@@ -427,6 +427,9 @@ internal static class Emit
             return $", int {s.Variable}";
         return "";
     }
+
+    public static string EquationMethod(PreviousAttributeEquationModel equation)
+        => $"{equation.NodeSymbol}_Next_{equation.Name}";
 
     public static string ContributeMethodName(AggregateAttributeFamilyModel family, TreeNodeModel node)
     {

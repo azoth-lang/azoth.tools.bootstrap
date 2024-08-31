@@ -28,9 +28,10 @@ public sealed class InheritedAttributeModel : ContextAttributeModel, IContextAtt
 
     public override EvaluationStrategy Strategy { get; }
 
+    public override TypeModel Type { get; }
+
     public InheritedAttributeModel(AspectModel aspect, InheritedAttributeSyntax syntax)
-        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name,
-            syntax.IsMethod, TypeModel.CreateFromSyntax(aspect.Tree, syntax.Type))
+        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.IsMethod)
     {
         if (syntax.Strategy == EvaluationStrategy.Eager)
             throw new FormatException($"{syntax.Node}.{syntax.Name} inherited attributes cannot be eager.");
@@ -40,6 +41,7 @@ public sealed class InheritedAttributeModel : ContextAttributeModel, IContextAtt
         Syntax = syntax;
         Strategy = syntax.IsMethod ? EvaluationStrategy.Computed
             : syntax.Strategy ?? EvaluationStrategy.Lazy;
+        Type = TypeModel.CreateFromSyntax(aspect.Tree, syntax.Type);
         attributeFamily = new(ComputeAttributeFamily<InheritedAttributeFamilyModel>);
     }
     private InheritedAttributeModel(
@@ -49,9 +51,10 @@ public sealed class InheritedAttributeModel : ContextAttributeModel, IContextAtt
         string name,
         bool isMethod,
         TypeModel type)
-        : base(aspect, node, name, isMethod, type)
+        : base(aspect, node, name, isMethod)
     {
         Strategy = strategy;
+        Type = type;
         attributeFamily = new(ComputeAttributeFamily<InheritedAttributeFamilyModel>);
     }
 }

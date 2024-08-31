@@ -111,7 +111,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
         this.initializer = Child.Create(this, initializer);
     }
 
-    internal override IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => BindingValueId;
 
     public IFlowState FlowStateBefore()

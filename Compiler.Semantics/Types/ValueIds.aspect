@@ -7,6 +7,8 @@
 // Type Declarations
 struct `ValueId`;
 
+⮡ *.PreviousValueId: `IPreviousValueId`;
+
 // ---------- Special Parts
 ↑ ElseClause.ValueId: `ValueId`;
 
@@ -16,15 +18,16 @@ struct `ValueId`;
 // ---------- Definitions
 ↑ InvocableDefinition.ValueIdScope: `ValueIdScope`;
 = InvocableDefinition.ValueIdScope;
+= InvocableDefinition.⮡.PreviousValueId;
 ↑ ExecutableDefinition.ValueIdScope: `ValueIdScope`;
 
 // ---------- Parameters
-⮡ Parameter.PreviousValueId(): `IPreviousValueId`;
+⮡ Parameter.PreviousValueId();
 ↑ Parameter.BindingValueId: `ValueId`;
 = Parameter.BindingValueId;
 
 // ---------- Statements
-⮡ Statement.PreviousValueId(): `IPreviousValueId`;
+⮡ Statement.PreviousValueId();
 ↑ Statement.ResultValueId: `ValueId`?;
 = ResultStatement.ResultValueId => ValueId;
 = ResultStatement.ValueId => Expression?.ValueId ?? default;
@@ -32,10 +35,10 @@ struct `ValueId`;
 = ExpressionStatement.ResultValueId => null;
 
 // ---------- Patterns
-⮡ Pattern.PreviousValueId(): `IPreviousValueId`;
+⮡ Pattern.PreviousValueId();
 ↓ Pattern.MatchReferentValueId: `ValueId`?;
 
 // ---------- Expressions
-⮡ AmbiguousExpression.PreviousValueId(): `IPreviousValueId`;
+⮡ AmbiguousExpression.PreviousValueId();
 ↑ AmbiguousExpression.ValueId: `ValueId`;
 = AmbiguousExpression.ValueId;

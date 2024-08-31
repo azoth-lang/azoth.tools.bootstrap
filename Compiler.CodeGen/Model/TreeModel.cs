@@ -82,10 +82,7 @@ public sealed class TreeModel : IHasUsingNamespaces
         var implicitInheritedAttributeSupertypes = ComputeGroupedDeclaredAttributes<InheritedAttributeModel>()
                                                         .Where(g => !declaredAttributeSupertypes.Contains(g.Key))
                                                         .Select(attrs => new InheritedAttributeFamilyModel(this, attrs));
-        var implicitPreviousAttributeSupertypes = ComputeGroupedDeclaredAttributes<PreviousAttributeModel>()
-                                                        .Select(attrs => new PreviousAttributeFamilyModel(this, attrs));
-        return implicitInheritedAttributeSupertypes
-               .Concat<ContextAttributeFamilyModel>(implicitPreviousAttributeSupertypes).ToFixedSet();
+        return implicitInheritedAttributeSupertypes.ToFixedSet();
     }
 
     private IEnumerable<IGrouping<string, T>> ComputeGroupedDeclaredAttributes<T>()

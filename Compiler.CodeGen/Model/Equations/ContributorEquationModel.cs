@@ -9,7 +9,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 /// <remarks>The attribute being contributed to is often on another node, but doesn't have to be.
 /// Since these equations are contributors, multiple equations with the same name should be kept and
 /// inherited on nodes.</remarks>
-[Closed(typeof(InheritedAttributeEquationModel), typeof(AggregateAttributeEquationModel))]
+[Closed(
+    typeof(InheritedAttributeEquationModel),
+    typeof(PreviousAttributeEquationModel),
+    typeof(AggregateAttributeEquationModel))]
 public abstract class ContributorEquationModel : EquationModel
 {
     protected ContributorEquationModel(

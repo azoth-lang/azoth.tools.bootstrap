@@ -34,6 +34,6 @@ internal abstract class AmbiguousNameExpressionNode : AmbiguousExpressionNode, I
 
     private protected AmbiguousNameExpressionNode() { }
 
-    internal override IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => ValueId;
 }

@@ -4,7 +4,10 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeFamilies;
 
-[Closed(typeof(InheritedAttributeFamilySyntax), typeof(AggregateAttributeFamilySyntax))]
+[Closed(
+    typeof(InheritedAttributeFamilySyntax),
+    typeof(PreviousAttributeFamilySyntax),
+    typeof(AggregateAttributeFamilySyntax))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class AttributeFamilySyntax
 {

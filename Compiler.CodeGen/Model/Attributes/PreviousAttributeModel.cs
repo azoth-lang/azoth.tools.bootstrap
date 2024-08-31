@@ -14,9 +14,8 @@ public sealed class PreviousAttributeModel : ContextAttributeModel
         EvaluationStrategy strategy,
         TreeNodeModel node,
         string name,
-        bool isMethod,
-        TypeModel type)
-        => new PreviousAttributeModel(aspect, strategy, node, name, isMethod, type);
+        bool isMethod)
+        => new PreviousAttributeModel(aspect, strategy, node, name, isMethod);
 
     public override char Prefix => '⮡';
     public override string MethodPrefix => "Previous";
@@ -28,9 +27,10 @@ public sealed class PreviousAttributeModel : ContextAttributeModel
 
     public override EvaluationStrategy Strategy { get; }
 
+    public override TypeModel Type => AttributeFamily.Type;
+
     public PreviousAttributeModel(AspectModel aspect, PreviousAttributeSyntax syntax)
-        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.IsMethod,
-            TypeModel.CreateFromSyntax(aspect.Tree, syntax.Type))
+        : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, syntax.IsMethod)
     {
         if (syntax.Strategy == EvaluationStrategy.Eager)
             throw new FormatException($"{syntax.Node}.{syntax.Name} previous attributes cannot be eager.");
@@ -47,9 +47,8 @@ public sealed class PreviousAttributeModel : ContextAttributeModel
         EvaluationStrategy strategy,
         TreeNodeModel node,
         string name,
-        bool isMethod,
-        TypeModel type)
-        : base(aspect, node, name, isMethod, type)
+        bool isMethod)
+        : base(aspect, node, name, isMethod)
     {
         Strategy = strategy;
         attributeFamily = new(ComputeAttributeFamily<PreviousAttributeFamilyModel>);

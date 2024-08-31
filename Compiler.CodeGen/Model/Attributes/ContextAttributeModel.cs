@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -40,21 +39,17 @@ public abstract class ContextAttributeModel : AspectAttributeModel
 
     public abstract EvaluationStrategy Strategy { get; }
 
-    public override TypeModel Type { get; }
-
     public sealed override bool IsSyncLockRequired
         => Strategy == EvaluationStrategy.Lazy && Type.IsValueType;
 
-    protected ContextAttributeModel(AspectModel aspect, InternalSymbol nodeSymbol, string name, bool isMethod, TypeModel type)
+    protected ContextAttributeModel(AspectModel aspect, InternalSymbol nodeSymbol, string name, bool isMethod)
         : base(aspect, nodeSymbol, name, isMethod)
     {
-        Type = type;
     }
 
-    protected ContextAttributeModel(AspectModel aspect, TreeNodeModel node, string name, bool isMethod, TypeModel type)
+    protected ContextAttributeModel(AspectModel aspect, TreeNodeModel node, string name, bool isMethod)
         : base(aspect, node, name, isMethod)
     {
-        Type = type;
     }
 
     public sealed override string ToString()

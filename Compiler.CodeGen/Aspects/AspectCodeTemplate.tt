@@ -23,13 +23,16 @@ internal static partial class <#= aspect.Name #>
 <#          switch (equation) { #>
 <#              case SynthesizedAttributeEquationModel eq: #>
     public static partial <#= Emit.Type(eq.Type) #> <#= Emit.EquationMethod(eq) #>(<#= Emit.TypeName(eq.Node.Defines) #> node);
-<#                  break;#>
+<#                  break; #>
 <#              case InheritedAttributeEquationModel eq: #>
     public static partial <#= Emit.Type(eq.Type) #> <#= Emit.EquationMethod(eq) #>(<#= Emit.TypeName(eq.Node.Defines) #> node<#= Emit.EquationMethodExtraParams(eq) #>);
-<#                  break;#>
+<#                  break; #>
+<#              case PreviousAttributeEquationModel eq: #>
+    public static partial <#= Emit.Type(eq.Type) #> <#= Emit.EquationMethod(eq) #>(<#= Emit.TypeName(eq.Node.Defines) #> node);
+<#                  break; #>
 <#              case AggregateAttributeEquationModel eq: #>
     public static partial void <#= Emit.EquationMethod(eq) #>(<#= Emit.TypeName(eq.Node.Defines) #> node<#= Emit.EquationMethodExtraParams(eq) #>);
-<#                  break;#>
+<#                  break; #>
 <#              case IntertypeMethodEquationModel _: /* do nothing */ break; #>
 <#              default: #>
 <#                  throw ExhaustiveMatch.Failed(equation); #>

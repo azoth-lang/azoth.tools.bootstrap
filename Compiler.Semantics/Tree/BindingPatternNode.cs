@@ -83,7 +83,7 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
     public override ConditionalLexicalScope FlowLexicalScope()
         => LexicalScopingAspect.BindingPattern_FlowLexicalScope(this);
 
-    internal override IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => BindingValueId;
 
     public IFlowState FlowStateBefore()

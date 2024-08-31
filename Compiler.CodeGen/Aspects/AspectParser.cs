@@ -39,6 +39,8 @@ public static class AspectParser
                 typeDeclarations.Add(ParseTypeDeclaration(statement));
             else if (statement.StartsWith('↓') && statement.Contains("<:"))
                 attributeFamilies.Add(ParseInheritedAttributeFamily(statement));
+            else if (statement.StartsWith('⮡') && statement.Contains(":"))
+                attributeFamilies.Add(ParsePreviousAttributeFamily(statement));
             else if (statement.StartsWith("↗↖") && statement.Contains(':'))
                 attributeFamilies.Add(ParseAggregateAttributeFamily(statement));
             else if (statement.StartsWith('='))
@@ -69,9 +71,20 @@ public static class AspectParser
     private static InheritedAttributeFamilySyntax ParseInheritedAttributeFamily(string statement)
     {
         if (!ParseOffStart(ref statement, "↓"))
-            throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
+            throw new ArgumentException("Not an inherited attribute family statement.", nameof(statement));
 
         var (definition, type) = Bisect(statement, "<:", "Should be exactly one `<:` in: '{0}'");
+        string name = ParseAttributeFamily(definition);
+        var typeSyntax = ParseType(type);
+        return new(name, typeSyntax);
+    }
+
+    private static PreviousAttributeFamilySyntax ParsePreviousAttributeFamily(string statement)
+    {
+        if (!ParseOffStart(ref statement, "⮡"))
+            throw new ArgumentException("Not an previous attribute family statement.", nameof(statement));
+
+        var (definition, type) = Bisect(statement, ":", "Should be exactly one `:` in: '{0}'");
         string name = ParseAttributeFamily(definition);
         var typeSyntax = ParseType(type);
         return new(name, typeSyntax);
@@ -150,14 +163,16 @@ public static class AspectParser
         if (!ParseOffStart(ref statement, "⮡"))
             throw new ArgumentException("Not an inherited attribute statement.", nameof(statement));
 
-        var (definition, type) = Bisect(statement, ":", "Should be exactly one `:` in: '{0}'");
+        var (definition, type) = OptionalBisect(statement, ":", "Should be exactly one `:` in: '{0}'");
+        if (type is not null)
+            throw new FormatException($"Previous attributes cannot have type: {statement}");
         (var node, definition) = SplitOffStart(definition, ".", "Missing `.` between node and attribute in: '{0}'");
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
         var isMethod = ParseOffEnd(ref definition, "()");
         var name = definition;
         var typeSyntax = ParseType(type);
         var nodeSymbol = ParseSymbol(node);
-        return new(evaluationStrategy, nodeSymbol, name, isMethod, typeSyntax);
+        return new(evaluationStrategy, nodeSymbol, name, isMethod);
     }
 
     private static IntertypeMethodAttributeSyntax ParseIntertypeMethodAttribute(string statement)
@@ -212,8 +227,15 @@ public static class AspectParser
         }
         var name = segments[^1];
         segments = segments[..^1];
-        if (segments.Length == 1 && segments[0] == "↑")
-            return ParseAggregateEquation(evaluationStrategy, nodeSymbol, name, isMethod, typeOverride, expression);
+        if (segments.Length == 1)
+            switch (segments[0])
+            {
+                case "↑":
+                    return ParseAggregateEquation(evaluationStrategy, nodeSymbol, name, isMethod, typeOverride, expression);
+                case "⮡":
+                    return ParsePreviousEquation(evaluationStrategy, nodeSymbol, name, isMethod, typeOverride, expression);
+            }
+
         return ParseInheritedEquation(evaluationStrategy, nodeSymbol, segments, name, isMethod, typeOverride, expression);
     }
 
@@ -253,6 +275,21 @@ public static class AspectParser
             throw new FormatException("Inherited equations cannot have type overrides.");
         var selectorSyntax = ParseSelector(selector);
         return new(node, selectorSyntax, name, isMethod, expression);
+    }
+
+    private static PreviousAttributeEquationSyntax ParsePreviousEquation(
+        EvaluationStrategy? strategy,
+        SymbolSyntax node,
+        string name,
+        bool isMethod,
+        string? typeOverride,
+        string? expression)
+    {
+        if (strategy is not null)
+            throw new FormatException("Previous equations cannot have evaluation strategies.");
+        if (typeOverride is not null)
+            throw new FormatException("Previous equations cannot have type overrides.");
+        return new(node, name, isMethod, expression);
     }
 
     private static IntertypeMethodEquationSyntax ParseIntertypeMethodEquation(

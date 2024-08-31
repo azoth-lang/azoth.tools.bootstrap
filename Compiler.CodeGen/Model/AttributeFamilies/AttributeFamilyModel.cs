@@ -17,6 +17,7 @@ public abstract class AttributeFamilyModel
         return syntax switch
         {
             InheritedAttributeFamilySyntax syn => new InheritedAttributeFamilyModel(tree, syn),
+            PreviousAttributeFamilySyntax syn => new PreviousAttributeFamilyModel(tree, syn),
             AggregateAttributeFamilySyntax syn => new AggregateAttributeFamilyModel(tree, syn),
             _ => throw ExhaustiveMatch.Failed(syntax),
         };

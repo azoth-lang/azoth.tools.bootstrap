@@ -9,7 +9,7 @@ internal static partial class ValueIdsAspect
     public static partial ValueIdScope InvocableDefinition_ValueIdScope(IInvocableDefinitionNode node)
         => new ValueIdScope();
 
-    public static IPreviousValueId InvocableDefinition_PreviousValueId(IInvocableDefinitionNode node)
+    public static partial IPreviousValueId InvocableDefinition_Next_PreviousValueId(IInvocableDefinitionNode node)
         => new BeforeFirstValueId(node.ValueIdScope);
     #endregion
 

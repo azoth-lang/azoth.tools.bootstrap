@@ -149,10 +149,10 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
         => GetParent(ctx)!.Inherited_<#= attr.Name #>(this, this, ctx);
 <#                  break;#>
 <#              case PreviousAttributeFamilyModel: #>
-    internal virtual <#= Emit.Type(attr.Type) #> Previous_<#= attr.Name #>(<#= Emit.BaseClassName(tree) #> before, IInheritanceContext ctx)
-        => (Previous(ctx) ?? throw Child.PreviousFailed("<#= attr.Name #>", before)).Previous_<#= attr.Name #>(this, ctx);
+    internal virtual <#= Emit.Type(attr.Type) #> Next_<#= attr.Name #>(<#= Emit.BaseClassName(tree) #> before, IInheritanceContext ctx)
+        => (Previous(ctx) ?? throw Child.PreviousFailed("<#= attr.Name #>", before)).Next_<#= attr.Name #>(this, ctx);
     protected <#= Emit.Type(attr.Type) #> Previous_<#= attr.Name #>(IInheritanceContext ctx)
-        => Previous(ctx)!.Previous_<#= attr.Name #>(this, ctx);
+        => Previous(ctx)!.Next_<#= attr.Name #>(this, ctx);
 <#                  break;#>
 <#              case AggregateAttributeFamilyModel family: #>
     protected IFixedSet<<#= Emit.BaseClassName(tree) #>> CollectContributors_<#= family.Name #>()

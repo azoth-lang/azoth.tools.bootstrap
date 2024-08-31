@@ -3738,6 +3738,11 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected LexicalScope Inherited_ContainingLexicalScope(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContainingLexicalScope(this, this, ctx);
 
+    internal virtual IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => (Previous(ctx) ?? throw Child.PreviousFailed("PreviousValueId", before)).Next_PreviousValueId(this, ctx);
+    protected IPreviousValueId Previous_PreviousValueId(IInheritanceContext ctx)
+        => Previous(ctx)!.Next_PreviousValueId(this, ctx);
+
     internal virtual ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingDeclaration", child, descendant)).Inherited_ContainingDeclaration(this, descendant, ctx);
     protected ISymbolDeclarationNode Inherited_ContainingDeclaration(IInheritanceContext ctx)
@@ -3875,11 +3880,6 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
         => (GetParent(ctx) ?? throw Child.InheritFailed("SymbolTree", child, descendant)).Inherited_SymbolTree(this, descendant, ctx);
     protected ISymbolTree Inherited_SymbolTree(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_SymbolTree(this, this, ctx);
-
-    internal virtual IPreviousValueId Previous_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => (Previous(ctx) ?? throw Child.PreviousFailed("PreviousValueId", before)).Previous_PreviousValueId(this, ctx);
-    protected IPreviousValueId Previous_PreviousValueId(IInheritanceContext ctx)
-        => Previous(ctx)!.Previous_PreviousValueId(this, ctx);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -6077,7 +6077,7 @@ file class BlockBodyNode : SemanticNode, IBlockBodyNode
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (IndexOfNode(Self.Statements, child) is {} statementIndex)
+        if (IndexOfNode(Self.Statements, child) is { } statementIndex)
             return LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, statementIndex);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
@@ -6119,7 +6119,7 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (IndexOfNode(Self.Statements, child) is {} statementIndex)
+        if (IndexOfNode(Self.Statements, child) is { } statementIndex)
             return LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, statementIndex);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
@@ -6915,7 +6915,7 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (IndexOfNode(Self.Statements, child) is {} statementIndex)
+        if (IndexOfNode(Self.Statements, child) is { } statementIndex)
             return LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, statementIndex);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }

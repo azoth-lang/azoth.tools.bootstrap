@@ -1,50 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
-using Azoth.Tools.Bootstrap.Framework;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeFamilies;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 
 /// <summary>
-/// Provides a common supertype for all instances of a previous attribute.
+/// Provides the for all instances of a previous attribute.
 /// </summary>
-/// <remarks>Also acts as a collection of all instances of the attribute.</remarks>
 public sealed class PreviousAttributeFamilyModel : ContextAttributeFamilyModel
 {
-    public override string Name { get; }
-    public override TypeModel Type => type.Value;
-    private readonly Lazy<TypeModel> type;
-    public IFixedSet<PreviousAttributeModel> Instances => instances.Value;
-    private readonly Lazy<IFixedSet<PreviousAttributeModel>> instances;
+    public PreviousAttributeFamilySyntax Syntax { get; }
+    public override string Name => Syntax.Name;
+    public override TypeModel Type { get; }
 
-    public PreviousAttributeFamilyModel(TreeModel tree, IEnumerable<PreviousAttributeModel> instances)
+    public PreviousAttributeFamilyModel(TreeModel tree, PreviousAttributeFamilySyntax syntax)
         : base(tree)
     {
-        this.instances = new(instances.ToFixedSet());
-        if (Instances.IsEmpty)
-            throw new ArgumentException("At least one instance is required.", nameof(instances));
-        var representativeAttribute = Instances.First();
-        Name = representativeAttribute.Name;
-        if (Instances.Any(a => a.Name != Name))
-            throw new ArgumentException("All instances must have the same name.", nameof(instances));
-        type = new(ComputeType);
+        Syntax = syntax;
+        Type = TypeModel.CreateFromSyntax(tree, syntax.Type);
     }
 
-    private TypeModel ComputeType()
-    {
-        var supertypeAttributes = Instances.ToHashSet();
-        foreach (var attribute in Instances)
-            if (attribute.Node.InheritedAttributes.Any(a => a.Name == Name))
-                supertypeAttributes.Remove(attribute);
-
-        var types = supertypeAttributes.Select(a => a.Type).ToFixedSet();
-        if (types.Count > 1)
-            throw new FormatException($"Could not determine base type for inherited attribute {Name}."
-                                      + $" Candidates are {string.Join(",", types.Select(t => $"'{t}'"))}");
-        return types.Single();
-    }
-
-    public override string ToString() => $"⮡ *.{Name} <: {Type}";
+    public override string ToString() => $"⮡ *.{Name}: {Type}";
 }
