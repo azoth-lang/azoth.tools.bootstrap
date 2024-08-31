@@ -4,7 +4,13 @@
 
 // ↓ ↑ ⮡ ✎
 
-//↓ *.ContainingDeclaredType <: `IDeclaredUserType`;
+// ---------- Definitions
+= ConcreteInvocableDefinition.Body.**.FlowStateBefore()
+    => Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
+= ConcreteInvocableDefinition.Parameters[0].**.FlowStateBefore()
+    => Self.FlowStateBefore();
+= ConcreteInvocableDefinition.Parameters[index].**.FlowStateBefore()
+    => Parameters[index - 1].FlowStateAfter;
 
 // ---------- Function Definition
 = FunctionDefinition.Body.ExpectedType => Type.Return.Type;

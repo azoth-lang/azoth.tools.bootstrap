@@ -4349,6 +4349,26 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+        if (ReferenceEquals(child, Self.Body))
+            return ControlFlowSet.CreateNormal(Exit);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
+        if (ReferenceEquals(child, Self.Parameters[0]))
+            return Self.FlowStateBefore();
+        if (IndexOfNode(Self.Parameters, child) is { } index)
+            return Parameters[index - 1].FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
@@ -4956,6 +4976,26 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+        if (ReferenceEquals(child, Self.Body))
+            return ControlFlowSet.CreateNormal(Exit);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
+        if (ReferenceEquals(child, Self.Parameters[0]))
+            return Self.FlowStateBefore();
+        if (IndexOfNode(Self.Parameters, child) is { } index)
+            return Parameters[index - 1].FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
@@ -5057,6 +5097,26 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+        if (ReferenceEquals(child, Self.Body))
+            return ControlFlowSet.CreateNormal(Exit);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
+        if (ReferenceEquals(child, Self.Parameters[0]))
+            return Self.FlowStateBefore();
+        if (IndexOfNode(Self.Parameters, child) is { } index)
+            return Parameters[index - 1].FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5162,6 +5222,26 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+        if (ReferenceEquals(child, Self.Body))
+            return ControlFlowSet.CreateNormal(Exit);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
+        if (ReferenceEquals(child, Self.Parameters[0]))
+            return Self.FlowStateBefore();
+        if (IndexOfNode(Self.Parameters, child) is { } index)
+            return Parameters[index - 1].FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
@@ -5259,6 +5339,26 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+        if (ReferenceEquals(child, Self.Body))
+            return ControlFlowSet.CreateNormal(Exit);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
+        if (ReferenceEquals(child, Self.Parameters[0]))
+            return Self.FlowStateBefore();
+        if (IndexOfNode(Self.Parameters, child) is { } index)
+            return Parameters[index - 1].FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
@@ -5353,6 +5453,26 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+        if (ReferenceEquals(child, Self.Body))
+            return ControlFlowSet.CreateNormal(Exit);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
+        if (ReferenceEquals(child, Self.Parameters[0]))
+            return Self.FlowStateBefore();
+        if (IndexOfNode(Self.Parameters, child) is { } index)
+            return Parameters[index - 1].FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
@@ -5443,6 +5563,26 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+        if (ReferenceEquals(child, Self.Body))
+            return ControlFlowSet.CreateNormal(Exit);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
+        if (ReferenceEquals(child, Self.Parameters[0]))
+            return Self.FlowStateBefore();
+        if (IndexOfNode(Self.Parameters, child) is { } index)
+            return Parameters[index - 1].FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -5537,6 +5677,26 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+        if (ReferenceEquals(child, Self.Body))
+            return ControlFlowSet.CreateNormal(Exit);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
+        if (ReferenceEquals(child, Self.Parameters[0]))
+            return Self.FlowStateBefore();
+        if (IndexOfNode(Self.Parameters, child) is { } index)
+            return Parameters[index - 1].FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -5733,6 +5893,26 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+        if (ReferenceEquals(child, Self.Body))
+            return ControlFlowSet.CreateNormal(Exit);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
+        if (ReferenceEquals(child, Self.Parameters[0]))
+            return Self.FlowStateBefore();
+        if (IndexOfNode(Self.Parameters, child) is { } index)
+            return Parameters[index - 1].FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)

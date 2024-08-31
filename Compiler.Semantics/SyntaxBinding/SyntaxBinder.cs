@@ -80,7 +80,8 @@ internal static class SyntaxBinder
 
     #region Function Definition
     private static IFunctionDefinitionNode FunctionDefinition(IFunctionDefinitionSyntax syntax)
-        => new FunctionDefinitionNode(syntax, Attributes(syntax.Attributes), NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
+        => IFunctionDefinitionNode.Create(syntax, Attributes(syntax.Attributes),
+            NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
     #endregion
 
     #region Type Definitions

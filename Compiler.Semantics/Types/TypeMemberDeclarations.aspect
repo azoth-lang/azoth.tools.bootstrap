@@ -4,6 +4,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
 
 // ↓ ↑ ⮡ ✎
+
 // ---------- Definitions
 ↑ ConcreteInvocableDefinition.FlowStateBefore(): `IFlowState`;
 = ConcreteInvocableDefinition.FlowStateBefore();

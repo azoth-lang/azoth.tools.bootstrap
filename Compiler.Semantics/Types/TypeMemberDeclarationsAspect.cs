@@ -18,6 +18,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 // TODO shouldn't this be renamed to TypeMemberDefinitionsAspect?
 internal static partial class TypeMemberDeclarationsAspect
 {
+    // TODO move to DefinitionTypesAspect?
     public static partial FunctionType FunctionDefinition_Type(IFunctionDefinitionNode node)
         => FunctionType(node.Parameters, node.Return);
 

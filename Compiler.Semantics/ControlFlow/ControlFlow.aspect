@@ -10,6 +10,9 @@
 ↑ child eager ExecutableDefinition.Exit: Exit;
 = ExecutableDefinition.Exit;
 = ExecutableDefinition.*.**.ControlFlowExit() => Exit;
+= ConcreteInvocableDefinition.Entry.ControlFlowFollowing();
+= ConcreteInvocableDefinition.Body.**.ControlFlowFollowing()
+    => ControlFlowSet.CreateNormal(Exit);
 
 // ---------- Control Flow
 ↓ ControlFlow.ControlFlowEntry(): Entry;
