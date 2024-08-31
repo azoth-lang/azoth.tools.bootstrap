@@ -4358,6 +4358,13 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     {
         return false;
     }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Type.Return.Type.ToAntetype();
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4474,7 +4481,7 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
 
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return ContainingDeclaredTypeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
+        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
 }
 
@@ -4588,7 +4595,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
 
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return ContainingDeclaredTypeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
+        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
 }
 
@@ -4698,7 +4705,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
 
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return ContainingDeclaredTypeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
+        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
 }
 

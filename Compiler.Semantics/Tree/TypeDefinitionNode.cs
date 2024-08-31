@@ -75,7 +75,7 @@ internal abstract class TypeDefinitionNode : FacetMemberDefinitionNode, ITypeDef
         => SymbolNodeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaration(this);
 
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        => ContainingDeclaredTypeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
+        => DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {

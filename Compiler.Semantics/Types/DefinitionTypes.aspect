@@ -1,5 +1,5 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
-◊name ContainingDeclaredTypeAspect;
+◊name DefinitionTypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 // ↓ ↑ ⮡ ✎

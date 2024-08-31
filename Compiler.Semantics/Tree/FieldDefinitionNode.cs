@@ -34,7 +34,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public IMaybeAntetype BindingAntetype
         => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
             : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
-                DeclarationsAntetypesAspect.FieldDefinition_BindingAntetype);
+                DefinitionAntetypesAspect.FieldDefinition_BindingAntetype);
     private DataType? bindingType;
     private bool bindingTypeCached;
     public DataType BindingType

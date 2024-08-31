@@ -1,0 +1,8 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+◊name DefinitionAntetypesAspect;
+
+// ↓ ↑ ⮡ ✎
+
+// ---------- Function Definition
+// TODO it would be good to refactor to not depend on Type
+= FunctionDefinition.Body.ExpectedAntetype => Type.Return.Type.ToAntetype();
