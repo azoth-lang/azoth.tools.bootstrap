@@ -448,7 +448,7 @@ internal static class Emit
         => $"{equation.Aspect.Name}.{EquationMethod(equation)}";
 
     public static string EquationMethodExtraParams(AggregateAttributeEquationModel equation)
-        => $", {Type(equation.Attribute.FromType)} {equation.Name.ToCamelCase()}";
+        => $", {Type(equation.FromType)} {equation.Name.ToCamelCase()}";
     #endregion
 
     #region Rewrite Rules

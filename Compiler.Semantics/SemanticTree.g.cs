@@ -4554,6 +4554,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     {
         return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        TypeDefinitionsAspect.TypeDefinition_Contribute_Diagnostics(this, builder);
+        TypeDefinitionsAspect.ClassDefinition_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4686,6 +4692,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     {
         return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        TypeDefinitionsAspect.TypeDefinition_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4805,6 +4816,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        TypeDefinitionsAspect.TypeDefinition_Contribute_Diagnostics(this, builder);
     }
 }
 

@@ -91,12 +91,13 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     public void Validate()
     {
-        var errors = ValidateRootSupertype();
-        errors |= ValidateAmbiguousAttributes();
-        errors |= ValidateAmbiguousEquations();
+        var errors = ValidateAllInheritRootSupertype();
+        errors |= ValidateNoAmbiguousAttributes();
+        errors |= ValidateNoAmbiguousEquations();
         errors |= ValidateInheritedEquationsProduceSingleType();
-        errors |= ValidateFinalNodes();
-        errors |= ValidatePlaceholders();
+        errors |= ValidateTempNodesHaveFinalNodes();
+        errors |= ValidatePlaceholdersAreUniquelyFilled();
+        errors |= ValidateAggregateEquationsContribute();
         if (errors)
             throw new ValidationFailedException();
     }
@@ -104,7 +105,7 @@ public sealed class TreeModel : IHasUsingNamespaces
     /// <summary>
     /// Check that all nodes inherit from the root supertype.
     /// </summary>
-    private bool ValidateRootSupertype()
+    private bool ValidateAllInheritRootSupertype()
     {
         if (RootSupertype is null)
             // No root supertype, nothing to validate
@@ -123,7 +124,7 @@ public sealed class TreeModel : IHasUsingNamespaces
     /// This checks that there are no attributes that have conflicting definitions due to the
     /// inheritance of attributes from supertypes.
     /// </summary>
-    private bool ValidateAmbiguousAttributes()
+    private bool ValidateNoAmbiguousAttributes()
     {
         var errors = false;
         foreach (var node in Nodes)
@@ -144,7 +145,7 @@ public sealed class TreeModel : IHasUsingNamespaces
     /// This checks that there are no equations that have conflicting definitions due to the
     /// inheritance of equations from supertypes.
     /// </summary>
-    private bool ValidateAmbiguousEquations()
+    private bool ValidateNoAmbiguousEquations()
     {
         var errors = false;
         foreach (var node in Nodes)
@@ -176,7 +177,7 @@ public sealed class TreeModel : IHasUsingNamespaces
         return errors;
     }
 
-    private bool ValidateFinalNodes()
+    private bool ValidateTempNodesHaveFinalNodes()
     {
         var errors = false;
         // Only temp nodes used as child attribute types need a final type
@@ -192,7 +193,7 @@ public sealed class TreeModel : IHasUsingNamespaces
         return errors;
     }
 
-    private bool ValidatePlaceholders()
+    private bool ValidatePlaceholdersAreUniquelyFilled()
     {
         var errors = false;
         var placeholders = Nodes.SelectMany(n => n.DeclaredTreeAttributes).OfType<PlaceholderModel>();
@@ -200,6 +201,18 @@ public sealed class TreeModel : IHasUsingNamespaces
         {
             errors = true;
             Console.Error.WriteLine($"ERROR: Placeholder '{placeholder}' refers to non-child, non-property attribute {placeholder.Attribute}.");
+        }
+        return errors;
+    }
+
+    private bool ValidateAggregateEquationsContribute()
+    {
+        var errors = false;
+        var equations = Aspects.SelectMany(a => a.DeclaredEquations).OfType<AggregateAttributeEquationModel>();
+        foreach (var equation in equations.Where(eq => eq.Attributes.IsEmpty))
+        {
+            errors = true;
+            Console.Error.WriteLine($"ERROR: Equation '{equation}' does not contribute to any node.");
         }
         return errors;
     }

@@ -15,9 +15,6 @@ public sealed class InheritedAttributeEquationModel : ContributorEquationModel
     public override InheritedAttributeEquationSyntax Syntax { get; }
     public InheritedAttributeFamilyModel AttributeFamily => attributeFamily.Value;
     private readonly Lazy<InheritedAttributeFamilyModel> attributeFamily;
-    /// <remarks>Inherited attribute equations may not refer to a single attribute because they can
-    /// broadcast to multiple attributes.</remarks>
-    public override InheritedAttributeModel? Attribute => InheritedToAttributes.TrySingle();
     public SelectorModel Selector { get; }
     public bool IsAllDescendants => Selector.IsAllDescendants;
     public override TypeModel Type => InheritedToTypes.TrySingle() ?? AttributeFamily.Type;

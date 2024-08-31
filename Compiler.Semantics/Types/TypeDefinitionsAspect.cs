@@ -23,7 +23,7 @@ internal static partial class TypeDefinitionsAspect
             GetGenericParameters(node), node.Supertypes);
     }
 
-    public static void ClassDefinition_Contribute_Diagnostics(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void ClassDefinition_Contribute_Diagnostics(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         CheckBaseTypeMustBeAClass(node, diagnostics);
 
@@ -134,7 +134,7 @@ internal static partial class TypeDefinitionsAspect
         }
     }
 
-    public static void TypeDefinition_Contribute_Diagnostics(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void TypeDefinition_Contribute_Diagnostics(ITypeDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         CheckSupertypesForCycle(node, diagnostics);
 

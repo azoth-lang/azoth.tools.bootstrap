@@ -1,4 +1,8 @@
+using System;
+using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
@@ -22,4 +26,10 @@ public abstract class ContributorEquationModel : EquationModel
         bool isMethod,
         string? expression)
         : base(aspect, nodeSymbol, name, isMethod, expression) { }
+
+    protected T ComputeAttributeFamily<T>()
+        where T : AttributeFamilyModel
+        => Aspect.Tree.AllAttributeFamilies.OfType<T>()
+                 .Where(f => f.Name == Name).TrySingle()
+           ?? throw new FormatException($"No attribute family for attribute equation {this}");
 }

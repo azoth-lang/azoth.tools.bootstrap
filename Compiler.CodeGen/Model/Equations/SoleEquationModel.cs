@@ -19,7 +19,7 @@ public abstract class SoleEquationModel : EquationModel
         = EqualityComparer<SoleEquationModel>.Create((a1, a2) => a1?.Name == a2?.Name && a1?.Parameters == a2?.Parameters,
             a => HashCode.Combine(a.Name, a.Parameters));
 
-    public abstract override AttributeModel Attribute { get; }
+    public abstract AspectAttributeModel Attribute { get; }
     public abstract EvaluationStrategy Strategy { get; }
     public abstract string? Parameters { get; }
     public abstract bool RequiresEmitOnNode { get; }

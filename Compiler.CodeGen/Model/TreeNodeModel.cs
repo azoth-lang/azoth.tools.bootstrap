@@ -106,6 +106,13 @@ public class TreeNodeModel
     private readonly Lazy<IFixedSet<TreeNodeModel>> treeChildNodes;
 
     /// <summary>
+    /// The nodes that are parents of this node in the tree. This is NOT inheritance. This is based
+    /// child attributes.
+    /// </summary>
+    public IFixedSet<TreeNodeModel> TreeParentNodes => treeParentNodes.Value;
+    private readonly Lazy<IFixedSet<TreeNodeModel>> treeParentNodes;
+
+    /// <summary>
     /// Whether this node can be the root of a tree.
     /// </summary>
     public bool IsRoot => isRoot.Value;
@@ -236,6 +243,10 @@ public class TreeNodeModel
             DeclaredAttributes.Where(p => !p.IsPlaceholder && p.IsChild)
                               .Select(a => a.Type.ReferencedNode()!)
                               .ToFixedSet());
+        treeParentNodes = new(()
+            => Tree.Nodes.Where(n => n.TreeChildNodes
+                                      .SelectMany(child => child.DescendantNodes.Append(child))
+                                      .Contains(this)).ToFixedSet());
         isRoot = new(() => !Tree.TreeChildNodes.Contains(this)
                            && (!IsAbstract || DescendantNodes.Where(n => !n.IsAbstract).Any(n => n.IsRoot)));
         allInheritedAttributes = new(()
@@ -315,9 +326,9 @@ public class TreeNodeModel
     public IEnumerable<EquationModel> EquationsNamed(string name)
         => ActualEquations.Where(p => p.Name == name);
 
-    public EquationModel? EquationFor(AttributeModel attribute)
+    public SoleEquationModel? EquationFor(AttributeModel attribute)
         // Compare by attribute rather than name to avoid issues with inherited attribute equations
-        => ActualEquations.SingleOrDefault(eq => eq.Attribute == attribute);
+        => ActualEquations.OfType<SoleEquationModel>().SingleOrDefault(eq => eq.Attribute == attribute);
 
     private static IEnumerable<T> MostSpecificMembers<T>(IEnumerable<T> members)
         where T : IMemberModel

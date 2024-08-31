@@ -32,7 +32,6 @@ public abstract class EquationModel : IMemberModel
     private readonly Lazy<TreeNodeModel> node;
     public string Name { get; }
     public bool IsMethod { get; }
-    public abstract AttributeModel? Attribute { get; }
     public abstract TypeModel Type { get; }
     TypeModel IMemberModel.FinalType => Type;
     bool IMemberModel.IsTemp => false;
