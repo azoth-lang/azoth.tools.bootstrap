@@ -3,12 +3,12 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 
-internal static class VariablesAspect
+internal static partial class VariablesAspect
 {
-    public static FixedDictionary<IVariableBindingNode, int> ConcreteInvocableDefinition_VariableBindingsMap(IConcreteInvocableDefinitionNode node)
+    public static partial FixedDictionary<IVariableBindingNode, int> ConcreteInvocableDefinition_VariableBindingsMap(IConcreteInvocableDefinitionNode node)
         => VariableBindings(node.Body);
 
-    public static FixedDictionary<IVariableBindingNode, int> FieldDefinition_VariableBindingsMap(IFieldDefinitionNode node)
+    public static partial FixedDictionary<IVariableBindingNode, int> FieldDefinition_VariableBindingsMap(IFieldDefinitionNode node)
         => VariableBindings(node.TempInitializer);
 
     private static FixedDictionary<IVariableBindingNode, int> VariableBindings(IChildNode? node)

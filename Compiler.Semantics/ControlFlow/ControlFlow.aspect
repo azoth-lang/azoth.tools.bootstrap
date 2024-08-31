@@ -12,8 +12,5 @@
 /// <remarks>This is an inherited property.</remarks>
 ↓ ControlFlow.ControlFlowFollowing(): `ControlFlowSet`;
 
-// TODO move to variables aspect
-↓ Entry.VariableBindingsMap(): `FixedDictionary<IVariableBindingNode, int>`;
-
 // ---------- Control Flow Expressions
 ↓ ReturnExpression.ControlFlowExit(): Exit;

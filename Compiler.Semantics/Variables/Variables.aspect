@@ -1,0 +1,16 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
+◊name VariablesAspect;
+◊using Azoth.Tools.Bootstrap.Framework;
+
+// ↓ ↑ ⮡ ✎
+
+// ---------- Definitions
+↑ ExecutableDefinition.VariableBindingsMap: `FixedDictionary<IVariableBindingNode, int>`;
+= ExecutableDefinition.Entry.VariableBindingsMap() => VariableBindingsMap;
+= ConcreteInvocableDefinition.VariableBindingsMap;
+
+// ---------- Member Definitions
+= FieldDefinition.VariableBindingsMap;
+
+// ---------- Control Flow
+↓ Entry.VariableBindingsMap(): `FixedDictionary<IVariableBindingNode, int>`;

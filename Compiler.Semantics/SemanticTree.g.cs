@@ -22,6 +22,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
@@ -353,8 +354,8 @@ public partial interface IExecutableDefinitionNode : IDefinitionNode
 {
     IEntryNode Entry { get; }
     IExitNode Exit { get; }
-    FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { get; }
     ValueIdScope ValueIdScope { get; }
+    FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { get; }
 }
 
 [Closed(
@@ -484,8 +485,8 @@ public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, I
     FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
 
-    public static IFunctionDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
-        => new FunctionDefinitionNode(variableBindingsMap, syntax, attributes, parameters, @return, entry, body, exit, type);
+    public static IFunctionDefinitionNode Create(IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
+        => new FunctionDefinitionNode(syntax, attributes, parameters, @return, entry, body, exit, type);
 }
 
 [Closed(
@@ -760,8 +761,8 @@ public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefiniti
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
 
-    public static IStandardMethodDefinitionNode Create(MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new StandardMethodDefinitionNode(kind, name, variableBindingsMap, arity, methodGroupType, syntax, selfParameter, parameters, @return, entry, body, exit);
+    public static IStandardMethodDefinitionNode Create(MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new StandardMethodDefinitionNode(kind, name, arity, methodGroupType, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
 // [Closed(typeof(GetterMethodDefinitionNode))]
@@ -778,8 +779,8 @@ public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinition
     new ITypeNode Return { get; }
     ITypeNode? IMethodDefinitionNode.Return => Return;
 
-    public static IGetterMethodDefinitionNode Create(MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new GetterMethodDefinitionNode(kind, name, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
+    public static IGetterMethodDefinitionNode Create(MethodKind kind, IdentifierName name, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new GetterMethodDefinitionNode(kind, name, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
 // [Closed(typeof(SetterMethodDefinitionNode))]
@@ -794,8 +795,8 @@ public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinition
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
 
-    public static ISetterMethodDefinitionNode Create(MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new SetterMethodDefinitionNode(kind, name, variableBindingsMap, syntax, selfParameter, parameters, @return, entry, body, exit);
+    public static ISetterMethodDefinitionNode Create(MethodKind kind, IdentifierName name, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new SetterMethodDefinitionNode(kind, name, syntax, selfParameter, parameters, @return, entry, body, exit);
 }
 
 [Closed(
@@ -821,8 +822,8 @@ public partial interface IConstructorDefinitionNode : IConcreteInvocableDefiniti
 public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinitionNode
 {
 
-    public static IDefaultConstructorDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
-        => new DefaultConstructorDefinitionNode(variableBindingsMap, syntax, name, parameters, entry, body, exit);
+    public static IDefaultConstructorDefinitionNode Create(IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+        => new DefaultConstructorDefinitionNode(syntax, name, parameters, entry, body, exit);
 }
 
 // [Closed(typeof(SourceConstructorDefinitionNode))]
@@ -839,8 +840,8 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static ISourceConstructorDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
-        => new SourceConstructorDefinitionNode(variableBindingsMap, name, syntax, selfParameter, parameters, entry, body, exit);
+    public static ISourceConstructorDefinitionNode Create(IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+        => new SourceConstructorDefinitionNode(name, syntax, selfParameter, parameters, entry, body, exit);
 }
 
 [Closed(
@@ -866,8 +867,8 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
 public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinitionNode
 {
 
-    public static IDefaultInitializerDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
-        => new DefaultInitializerDefinitionNode(variableBindingsMap, syntax, name, parameters, entry, body, exit);
+    public static IDefaultInitializerDefinitionNode Create(IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+        => new DefaultInitializerDefinitionNode(syntax, name, parameters, entry, body, exit);
 }
 
 // [Closed(typeof(SourceInitializerDefinitionNode))]
@@ -884,8 +885,8 @@ public partial interface ISourceInitializerDefinitionNode : IInitializerDefiniti
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static ISourceInitializerDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
-        => new SourceInitializerDefinitionNode(variableBindingsMap, name, syntax, selfParameter, parameters, entry, body, exit);
+    public static ISourceInitializerDefinitionNode Create(IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+        => new SourceInitializerDefinitionNode(name, syntax, selfParameter, parameters, entry, body, exit);
 }
 
 // [Closed(typeof(FieldDefinitionNode))]
@@ -919,8 +920,8 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
 
-    public static IFieldDefinitionNode Create(bool isLentBinding, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
-        => new FieldDefinitionNode(isLentBinding, variableBindingsMap, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, entry, initializer, currentInitializer, exit);
+    public static IFieldDefinitionNode Create(bool isLentBinding, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
+        => new FieldDefinitionNode(isLentBinding, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, entry, initializer, currentInitializer, exit);
 }
 
 // [Closed(typeof(AssociatedFunctionDefinitionNode))]
@@ -948,8 +949,8 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionIn
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 
-    public static IAssociatedFunctionDefinitionNode Create(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
-        => new AssociatedFunctionDefinitionNode(variableBindingsMap, syntax, name, parameters, @return, type, entry, body, exit);
+    public static IAssociatedFunctionDefinitionNode Create(IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
+        => new AssociatedFunctionDefinitionNode(syntax, name, parameters, @return, type, entry, body, exit);
 }
 
 // [Closed(typeof(AttributeNode))]
@@ -4256,7 +4257,6 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     private IFunctionDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IFunctionDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IAttributeNode> Attributes { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -4301,6 +4301,12 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
                 SymbolsAspect.FunctionDefinition_Symbol);
     private FunctionSymbol? symbol;
     private bool symbolCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -4308,9 +4314,8 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public FunctionDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
+    public FunctionDefinitionNode(IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit, FunctionType type)
     {
-        VariableBindingsMap = variableBindingsMap;
         Syntax = syntax;
         Attributes = ChildList.Create(this, nameof(Attributes), attributes);
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
@@ -4804,7 +4809,6 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
 
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public int Arity { [DebuggerStepThrough] get; }
     public FunctionType MethodGroupType { [DebuggerStepThrough] get; }
     public IStandardMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -4856,12 +4860,17 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
 
-    public StandardMethodDefinitionNode(MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public StandardMethodDefinitionNode(MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
         Kind = kind;
         Name = name;
-        VariableBindingsMap = variableBindingsMap;
         Arity = arity;
         MethodGroupType = methodGroupType;
         Syntax = syntax;
@@ -4887,7 +4896,6 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
 
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IGetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -4937,12 +4945,17 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
 
-    public GetterMethodDefinitionNode(MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public GetterMethodDefinitionNode(MethodKind kind, IdentifierName name, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
         Kind = kind;
         Name = name;
-        VariableBindingsMap = variableBindingsMap;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
@@ -4966,7 +4979,6 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
 
     public MethodKind Kind { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public ISetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -5016,12 +5028,17 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
 
-    public SetterMethodDefinitionNode(MethodKind kind, IdentifierName name, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public SetterMethodDefinitionNode(MethodKind kind, IdentifierName name, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
         Kind = kind;
         Name = name;
-        VariableBindingsMap = variableBindingsMap;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
@@ -5043,7 +5060,6 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     private IDefaultConstructorDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IConstructorDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -5080,6 +5096,12 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
                 LexicalScopingAspect.ConstructorDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -5093,9 +5115,8 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public DefaultConstructorDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    public DefaultConstructorDefinitionNode(IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
     {
-        VariableBindingsMap = variableBindingsMap;
         Syntax = syntax;
         Name = name;
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
@@ -5111,7 +5132,6 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     private ISourceConstructorDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IConstructorDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IConstructorSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
@@ -5149,6 +5169,12 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
                 LexicalScopingAspect.ConstructorDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -5162,9 +5188,8 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public SourceConstructorDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    public SourceConstructorDefinitionNode(IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
     {
-        VariableBindingsMap = variableBindingsMap;
         Name = name;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
@@ -5181,7 +5206,6 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     private IDefaultInitializerDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IInitializerDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -5218,6 +5242,12 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
                 LexicalScopingAspect.InitializerDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -5231,9 +5261,8 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public DefaultInitializerDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
+    public DefaultInitializerDefinitionNode(IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBodyNode? body, IExitNode exit)
     {
-        VariableBindingsMap = variableBindingsMap;
         Syntax = syntax;
         Name = name;
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);
@@ -5249,7 +5278,6 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     private ISourceInitializerDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IInitializerDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IInitializerSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
@@ -5287,6 +5315,12 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
                 LexicalScopingAspect.InitializerDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -5300,9 +5334,8 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public SourceInitializerDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
+    public SourceInitializerDefinitionNode(IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IEntryNode entry, IBlockBodyNode body, IExitNode exit)
     {
-        VariableBindingsMap = variableBindingsMap;
         Name = name;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
@@ -5320,7 +5353,6 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     private AttributeLock syncLock;
 
     public bool IsLentBinding { [DebuggerStepThrough] get; }
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IFieldDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -5350,6 +5382,12 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.FieldDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
@@ -5375,10 +5413,9 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public FieldDefinitionNode(bool isLentBinding, FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
+    public FieldDefinitionNode(bool isLentBinding, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IEntryNode entry, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer, IExitNode exit)
     {
         IsLentBinding = isLentBinding;
-        VariableBindingsMap = variableBindingsMap;
         Syntax = syntax;
         IsMutableBinding = isMutableBinding;
         Name = name;
@@ -5390,6 +5427,13 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
         CurrentInitializer = currentInitializer;
         Exit = Child.Attach(this, exit);
     }
+
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5398,7 +5442,6 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     private IAssociatedFunctionDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap { [DebuggerStepThrough] get; }
     public IAssociatedFunctionDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -5437,6 +5480,12 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
                 SymbolsAspect.AssociatedFunctionDefinition_Symbol);
     private FunctionSymbol? symbol;
     private bool symbolCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -5450,9 +5499,8 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public AssociatedFunctionDefinitionNode(FixedDictionary<IVariableBindingNode, int> variableBindingsMap, IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
+    public AssociatedFunctionDefinitionNode(IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IEntryNode entry, IBodyNode body, IExitNode exit)
     {
-        VariableBindingsMap = variableBindingsMap;
         Syntax = syntax;
         Name = name;
         Parameters = ChildList.Create(this, nameof(Parameters), parameters);

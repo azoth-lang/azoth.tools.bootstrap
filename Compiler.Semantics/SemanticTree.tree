@@ -70,8 +70,7 @@ UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax`;
 // ---------- Definitions
 Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`?;
 InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol`;
-ExecutableDefinition <: Definition = Entry Exit
-    VariableBindingsMap:`FixedDictionary<IVariableBindingNode, int>`;
+ExecutableDefinition <: Definition = Entry Exit;
 ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition
     = Parameters:ConstructorOrInitializerParameter* Body?;
 ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition
