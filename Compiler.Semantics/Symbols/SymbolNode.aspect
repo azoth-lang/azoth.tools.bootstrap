@@ -52,5 +52,9 @@
 = PackageFacetSymbol.*.**.SymbolTree => SymbolTree;
 = eager PackageFacetSymbol.GlobalNamespace;
 
-// ---------- Type Declarations
+// ---------- Type Symbol Nodes
 ↓ UserTypeSymbol.SymbolTree(): `ISymbolTree`;
+// For now, the symbol tree already includes all inherited members.
+= ClassSymbol.InclusiveMembers => Members;
+= StructSymbol.InclusiveMembers => Members;
+= TraitSymbol.InclusiveMembers => Members;

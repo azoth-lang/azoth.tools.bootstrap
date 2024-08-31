@@ -449,11 +449,11 @@ InvocableDeclaration <: SymbolDeclaration, ChildDeclaration = Symbol:`InvocableS
 BindingDeclaration <: ChildDeclaration;
 NamedBindingDeclaration <: BindingDeclaration, NamedDeclaration = Name:`IdentifierName`;
 
-// ---------- Packages
+// ---------- Package Declarations
 PackageDeclaration <: SymbolDeclaration = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`
     MainFacet:PackageFacetDeclaration TestingFacet:PackageFacetDeclaration;
 
-// ---------- Facets
+// ---------- Facet Declarations
 /// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
 PackageFacetDeclaration <: ChildDeclaration, SymbolDeclaration;
 
@@ -475,10 +475,10 @@ FunctionDeclaration <: FacetMemberDeclaration, FunctionLikeDeclaration;
 // ---------- Type Declarations
 PrimitiveTypeDeclaration <: TypeDeclaration = Name:`SpecialTypeName` Members:{TypeMemberDeclaration};
 UserTypeDeclaration <: FacetMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
-    = Name:`StandardName` GenericParameters:GenericParameterDeclaration* Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration} InclusiveMembers:{`ITypeMemberDeclarationNode`};
-ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration} InclusiveMembers:{`IClassMemberDeclarationNode`};
-StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration} InclusiveMembers:{`IStructMemberDeclarationNode`};
-TraitDeclaration <: UserTypeDeclaration = Members:{TraitMemberDeclaration} InclusiveMembers:{`ITraitMemberDeclarationNode`};
+    = Name:`StandardName` GenericParameters:GenericParameterDeclaration* Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration};
+ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration};
+StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration};
+TraitDeclaration <: UserTypeDeclaration = Members:{TraitMemberDeclaration};
 
 // ---------- Type Declaration Parts
 GenericParameterDeclaration <: TypeDeclaration, AssociatedMemberDeclaration
@@ -523,30 +523,30 @@ TypeDeclaration <: NamedDeclaration, SymbolDeclaration
 // ---------- Parent
 ChildSymbol <: Child;
 
-// ---------- Packages
+// ---------- Package Symbol Nodes
 PackageSymbol <: PackageDeclaration, ChildSymbol = MainFacet:PackageFacetDeclaration TestingFacet:PackageFacetDeclaration;
 
-// ---------- Facets
+// ---------- Facet Symbol Nodes
 // Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
 PackageFacetSymbol <: PackageFacetDeclaration, ChildSymbol = SymbolTree:`FixedSymbolTree`;
 
-// ---------- Namespace Declarations
+// ---------- Namespace Symbol Nodes
 NamespaceSymbol <: NamespaceDeclaration, ChildSymbol = Members:NamespaceMemberDeclaration*;
 
-// ---------- Function Declaration
+// ---------- Function Symbol Nodes
 FunctionSymbol <: FunctionDeclaration, ChildSymbol;
 
-// ---------- Type Declarations
+// ---------- Type Symbol Nodes
 PrimitiveTypeSymbol <: PrimitiveTypeDeclaration, ChildSymbol = Members:{TypeMemberDeclaration};
 UserTypeSymbol <: UserTypeDeclaration = GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
-ClassSymbol <: ClassDeclaration = GenericParameters:GenericParameterDeclaration* Members:{ClassMemberDeclaration};
-StructSymbol <: StructDeclaration = GenericParameters:GenericParameterDeclaration* Members:{StructMemberDeclaration};
-TraitSymbol <: TraitDeclaration = GenericParameters:GenericParameterDeclaration* Members:{TraitMemberDeclaration};
+ClassSymbol <: UserTypeSymbol, ClassDeclaration = GenericParameters:GenericParameterDeclaration* Members:{ClassMemberDeclaration};
+StructSymbol <: UserTypeSymbol, StructDeclaration = GenericParameters:GenericParameterDeclaration* Members:{StructMemberDeclaration};
+TraitSymbol <: UserTypeSymbol, TraitDeclaration = GenericParameters:GenericParameterDeclaration* Members:{TraitMemberDeclaration};
 
 // ---------- Type Declaration Parts
 GenericParameterSymbol <: GenericParameterDeclaration, ChildSymbol = Members:{TypeMemberDeclaration};
 
-// ---------- Member Declarations
+// ---------- Member Symbol Nodes
 MethodSymbol <: MethodDeclaration, ChildSymbol;
 StandardMethodSymbol <: MethodSymbol, StandardMethodDeclaration;
 GetterMethodSymbol <: MethodSymbol, GetterMethodDeclaration;

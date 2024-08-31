@@ -8,16 +8,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal static partial class InheritanceAspect
 {
-    public static IFixedSet<IClassMemberDeclarationNode> ClassDefinition_InclusiveMembers(IClassDefinitionNode node)
-        // Explicit type argument requires because it is used as a filter and would otherwise be too specific
+    public static partial IFixedSet<IClassMemberDeclarationNode> ClassDefinition_InclusiveMembers(IClassDefinitionNode node)
+        // Explicit type argument required because it is used as a filter and would otherwise be too specific
         => InclusiveMembers<IClassMemberDeclarationNode>(node, node.Members);
 
-    public static IFixedSet<IStructMemberDeclarationNode> StructDefinition_InclusiveMembers(IStructDefinitionNode node)
-        // Explicit type argument requires because it is used as a filter and would otherwise be too specific
+    public static partial IFixedSet<IStructMemberDeclarationNode> StructDefinition_InclusiveMembers(IStructDefinitionNode node)
+        // Explicit type argument required because it is used as a filter and would otherwise be too specific
         => InclusiveMembers<IStructMemberDeclarationNode>(node, node.Members);
 
-    public static IFixedSet<ITraitMemberDeclarationNode> TraitDefinition_InclusiveMembers(ITraitDefinitionNode node)
-        // Explicit type argument requires because it is used as a filter and would otherwise be too specific
+    public static partial IFixedSet<ITraitMemberDeclarationNode> TraitDefinition_InclusiveMembers(ITraitDefinitionNode node)
+        // Explicit type argument required because it is used as a filter and would otherwise be too specific
         => InclusiveMembers<ITraitMemberDeclarationNode>(node, node.Members);
 
     private static IFixedSet<TMemberDeclaration> InclusiveMembers<TMemberDeclaration>(

@@ -4,9 +4,7 @@
 
 // ↓ ↑ ⮡ ✎
 
-// ---------- Packages
-
-// ---------- Facets
+// ---------- Facet Declarations
 ↑ PackageFacetDeclaration.PackageName: `IdentifierName` => Package.Name;
 ↑ PackageFacetDeclaration.PackageSymbol:`PackageSymbol` => Package.Symbol;
 // "Rename" the "Symbol" attribute to "PackageSymbol"
@@ -18,3 +16,10 @@
 ↑ NamespaceDeclaration.Members: NamespaceMemberDeclaration*;
 ↑ NamespaceDeclaration.NestedMembers: NamespaceMemberDeclaration*;
 = NamespaceDeclaration.NestedMembers;
+
+// ---------- Type Declarations
+/// Members including ones inherited from supertypes
+↑ UserTypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
+↑ ClassDeclaration.InclusiveMembers: {ClassMemberDeclaration};
+↑ StructDeclaration.InclusiveMembers: {StructMemberDeclaration};
+↑ TraitDeclaration.InclusiveMembers: {TraitMemberDeclaration};
