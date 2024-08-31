@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using DotNet.Collections.Generic;
 
@@ -44,6 +43,6 @@ internal class NamespaceDefinitionNodeBuilder
     private INamespaceDefinitionNode Build(NamespaceSymbol ns)
     {
         var children = childNamespaces[ns].Values.Select(Build);
-        return new NamespaceDefinitionNode(ns, children, childMembers[ns]);
+        return INamespaceDefinitionNode.Create(ns, children, childMembers[ns]);
     }
 }

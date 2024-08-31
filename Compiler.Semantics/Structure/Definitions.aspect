@@ -37,6 +37,8 @@
 ↑ NamespaceBlockDefinition.DeclaredNames: `NamespaceName` => Syntax.DeclaredNames;
 ↑ NamespaceBlockDefinition.IsGlobalQualified: `bool` => Syntax.IsGlobalQualified;
 = NamespaceBlockDefinition.Name => DeclaredNames.Segments.LastOrDefault();
+↑ NamespaceDefinition.Syntax: `ISyntax`? => null;
+↑ eager NamespaceDefinition.Members: NamespaceMemberDefinition*;
 
 // -------------------------------------------------------------------------------------------------
 // Declarations

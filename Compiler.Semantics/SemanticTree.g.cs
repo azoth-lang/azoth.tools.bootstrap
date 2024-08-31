@@ -437,11 +437,14 @@ public partial interface INamespaceDefinitionNode : INamespaceMemberDefinitionNo
 {
     IFixedList<INamespaceDefinitionNode> MemberNamespaces { get; }
     IFixedList<IPackageMemberDefinitionNode> PackageMembers { get; }
+    new ISyntax? Syntax
+        => null;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     new IFixedList<INamespaceMemberDefinitionNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> INamespaceDeclarationNode.Members => Members;
 
-    public static INamespaceDefinitionNode Create(ISyntax? syntax, NamespaceSymbol symbol, IdentifierName name, IEnumerable<INamespaceMemberDeclarationNode> nestedMembers, IEnumerable<INamespaceDefinitionNode> memberNamespaces, IEnumerable<IPackageMemberDefinitionNode> packageMembers, IEnumerable<INamespaceMemberDefinitionNode> members)
-        => new NamespaceDefinitionNode(syntax, symbol, name, nestedMembers, memberNamespaces, packageMembers, members);
+    public static INamespaceDefinitionNode Create(NamespaceSymbol symbol, IEnumerable<INamespaceDefinitionNode> memberNamespaces, IEnumerable<IPackageMemberDefinitionNode> packageMembers)
+        => new NamespaceDefinitionNode(symbol, memberNamespaces, packageMembers);
 }
 
 [Closed(
@@ -3139,20 +3142,21 @@ public partial interface IPackageFacetChildDeclarationNode : IChildDeclarationNo
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamespaceDeclarationNode : INamespaceMemberDeclarationNode
 {
-    new IdentifierName Name { get; }
-    StandardName INamespaceMemberDeclarationNode.Name => Name;
-    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
     new NamespaceSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
-    IFixedList<INamespaceMemberDeclarationNode> Members { get; }
-    IFixedList<INamespaceMemberDeclarationNode> NestedMembers { get; }
     FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> MembersByName { get; }
     FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> NestedMembersByName { get; }
     IEnumerable<INamespaceMemberDeclarationNode> MembersNamed(StandardName named)
         => MembersByName.GetValueOrDefault(named) ?? [];
     IEnumerable<INamespaceMemberDeclarationNode> NestedMembersNamed(StandardName named)
         => NestedMembersByName.GetValueOrDefault(named) ?? [];
+    new IdentifierName Name
+        => Symbol.Name;
+    StandardName INamespaceMemberDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
+    IFixedList<INamespaceMemberDeclarationNode> Members { get; }
+    IFixedList<INamespaceMemberDeclarationNode> NestedMembers { get; }
 }
 
 [Closed(
@@ -3502,8 +3506,8 @@ public partial interface INamespaceSymbolNode : INamespaceDeclarationNode, IChil
     new IFixedList<INamespaceMemberDeclarationNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> INamespaceDeclarationNode.Members => Members;
 
-    public static INamespaceSymbolNode Create(IdentifierName name, NamespaceSymbol symbol, IEnumerable<INamespaceMemberDeclarationNode> nestedMembers, IEnumerable<INamespaceMemberDeclarationNode> members)
-        => new NamespaceSymbolNode(name, symbol, nestedMembers, members);
+    public static INamespaceSymbolNode Create(NamespaceSymbol symbol, IEnumerable<INamespaceMemberDeclarationNode> members)
+        => new NamespaceSymbolNode(symbol, members);
 }
 
 // [Closed(typeof(FunctionSymbolNode))]
@@ -4209,17 +4213,14 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
 {
     private INamespaceDefinitionNode Self { [Inline] get => this; }
 
-    public ISyntax? Syntax { [DebuggerStepThrough] get; }
     public NamespaceSymbol Symbol { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
-    public IFixedList<INamespaceMemberDeclarationNode> NestedMembers { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceDefinitionNode> MemberNamespaces { [DebuggerStepThrough] get; }
     public IFixedList<IPackageMemberDefinitionNode> PackageMembers { [DebuggerStepThrough] get; }
-    public IFixedList<INamespaceMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public IFixedList<INamespaceMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
     public FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> MembersByName
         => GrammarAttribute.IsCached(in membersByNameCached) ? membersByName!
             : this.Synthetic(ref membersByNameCached, ref membersByName,
@@ -4232,16 +4233,19 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
                 NameLookupAspect.NamespaceDeclaration_NestedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? nestedMembersByName;
     private bool nestedMembersByNameCached;
+    public IFixedList<INamespaceMemberDeclarationNode> NestedMembers
+        => GrammarAttribute.IsCached(in nestedMembersCached) ? nestedMembers!
+            : this.Synthetic(ref nestedMembersCached, ref nestedMembers,
+                DeclarationsAspect.NamespaceDeclaration_NestedMembers);
+    private IFixedList<INamespaceMemberDeclarationNode>? nestedMembers;
+    private bool nestedMembersCached;
 
-    public NamespaceDefinitionNode(ISyntax? syntax, NamespaceSymbol symbol, IdentifierName name, IEnumerable<INamespaceMemberDeclarationNode> nestedMembers, IEnumerable<INamespaceDefinitionNode> memberNamespaces, IEnumerable<IPackageMemberDefinitionNode> packageMembers, IEnumerable<INamespaceMemberDefinitionNode> members)
+    public NamespaceDefinitionNode(NamespaceSymbol symbol, IEnumerable<INamespaceDefinitionNode> memberNamespaces, IEnumerable<IPackageMemberDefinitionNode> packageMembers)
     {
-        Syntax = syntax;
         Symbol = symbol;
-        Name = name;
-        NestedMembers = nestedMembers.ToFixedList();
         MemberNamespaces = ChildList.Create(this, nameof(MemberNamespaces), memberNamespaces);
         PackageMembers = packageMembers.ToFixedList();
-        Members = members.ToFixedList();
+        Members = DefinitionsAspect.NamespaceDefinition_Members(this);
     }
 }
 
@@ -10399,9 +10403,7 @@ file class NamespaceSymbolNode : SemanticNode, INamespaceSymbolNode
 {
     private INamespaceSymbolNode Self { [Inline] get => this; }
 
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public NamespaceSymbol Symbol { [DebuggerStepThrough] get; }
-    public IFixedList<INamespaceMemberDeclarationNode> NestedMembers { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceMemberDeclarationNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -10419,12 +10421,16 @@ file class NamespaceSymbolNode : SemanticNode, INamespaceSymbolNode
                 NameLookupAspect.NamespaceDeclaration_NestedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? nestedMembersByName;
     private bool nestedMembersByNameCached;
+    public IFixedList<INamespaceMemberDeclarationNode> NestedMembers
+        => GrammarAttribute.IsCached(in nestedMembersCached) ? nestedMembers!
+            : this.Synthetic(ref nestedMembersCached, ref nestedMembers,
+                DeclarationsAspect.NamespaceDeclaration_NestedMembers);
+    private IFixedList<INamespaceMemberDeclarationNode>? nestedMembers;
+    private bool nestedMembersCached;
 
-    public NamespaceSymbolNode(IdentifierName name, NamespaceSymbol symbol, IEnumerable<INamespaceMemberDeclarationNode> nestedMembers, IEnumerable<INamespaceMemberDeclarationNode> members)
+    public NamespaceSymbolNode(NamespaceSymbol symbol, IEnumerable<INamespaceMemberDeclarationNode> members)
     {
-        Name = name;
         Symbol = symbol;
-        NestedMembers = nestedMembers.ToFixedList();
         Members = ChildList.Create(this, nameof(Members), members);
     }
 }

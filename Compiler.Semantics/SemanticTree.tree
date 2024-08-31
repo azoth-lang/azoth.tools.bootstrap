@@ -84,8 +84,7 @@ NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceD
     UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*;
 NamespaceBlockMemberDefinition <: Definition;
 NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
-    = MemberNamespaces:NamespaceDefinition* PackageMembers:`IPackageMemberDefinitionNode`*
-    Members:`INamespaceMemberDefinitionNode`*;
+    = MemberNamespaces:NamespaceDefinition* PackageMembers:`IPackageMemberDefinitionNode`*;
 NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 
 // ---------- Function Definition
@@ -470,8 +469,7 @@ PackageFacetDeclaration <: ChildDeclaration, SymbolDeclaration;
 PackageFacetChildDeclaration <: ChildDeclaration;
 
 // ---------- Namespace Declarations
-NamespaceDeclaration <: NamespaceMemberDeclaration = Name:`IdentifierName` Symbol:`NamespaceSymbol`
-    Members:`INamespaceMemberDeclarationNode`* NestedMembers:`INamespaceMemberDeclarationNode`*;
+NamespaceDeclaration <: NamespaceMemberDeclaration = Symbol:`NamespaceSymbol`;
 NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, SymbolDeclaration
     = Name:`StandardName`;
 

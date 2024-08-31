@@ -1,5 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Declarations;
 ◊name DeclarationsAspect;
+◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ↑ ⮡ ✎
 
@@ -11,3 +12,9 @@
 // "Rename" the "Symbol" attribute to "PackageSymbol"
 ↑ PackageFacetDeclaration.Symbol: `PackageSymbol` => PackageSymbol;
 ↑ child PackageFacetDeclaration.GlobalNamespace:NamespaceDeclaration;
+
+// ---------- Namespace Declarations
+↑ NamespaceDeclaration.Name: `IdentifierName` => Symbol.Name;
+↑ NamespaceDeclaration.Members: NamespaceMemberDeclaration*;
+↑ NamespaceDeclaration.NestedMembers: NamespaceMemberDeclaration*;
+= NamespaceDeclaration.NestedMembers;

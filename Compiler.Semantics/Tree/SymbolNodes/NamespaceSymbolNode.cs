@@ -1,6 +1,7 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Declarations;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
@@ -26,7 +27,8 @@ internal class NamespaceSymbolNode : PackageFacetChildSymbolNode, INamespaceSymb
                 NameLookupAspect.NamespaceDeclaration_MembersByName);
     private ValueAttribute<IFixedList<INamespaceMemberDeclarationNode>> nestedMembers;
     public IFixedList<INamespaceMemberDeclarationNode> NestedMembers
-        => nestedMembers.TryGetValue(out var value) ? value : nestedMembers.GetValue(GetNestedMembers);
+        => nestedMembers.TryGetValue(out var value) ? value
+            : nestedMembers.GetValue(() => DeclarationsAspect.NamespaceDeclaration_NestedMembers(this));
     private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? nestedMembersByName;
     private bool nestedMembersByNameCached;
     public FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> NestedMembersByName
@@ -41,8 +43,4 @@ internal class NamespaceSymbolNode : PackageFacetChildSymbolNode, INamespaceSymb
 
     private new IFixedList<INamespaceMemberDeclarationNode> GetMembers()
         => ChildList.Attach(this, base.GetMembers().Cast<INamespaceMemberDeclarationNode>());
-
-    private IFixedList<INamespaceMemberDeclarationNode> GetNestedMembers()
-        => Members.OfType<INamespaceDeclarationNode>()
-                  .SelectMany(ns => ns.Members.Concat(ns.NestedMembers)).ToFixedList();
 }
