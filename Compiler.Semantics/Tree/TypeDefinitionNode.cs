@@ -15,7 +15,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal abstract class TypeDefinitionNode : PackageMemberDefinitionNode, ITypeDefinitionNode
+internal abstract class TypeDefinitionNode : FacetMemberDefinitionNode, ITypeDefinitionNode
 {
     public abstract override ITypeDefinitionSyntax Syntax { get; }
     public bool IsConst => Syntax.ConstModifier is not null;

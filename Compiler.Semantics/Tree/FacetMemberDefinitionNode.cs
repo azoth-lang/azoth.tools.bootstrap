@@ -7,7 +7,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal abstract class PackageMemberDefinitionNode : DefinitionNode, IPackageMemberDefinitionNode
+internal abstract class FacetMemberDefinitionNode : DefinitionNode, IFacetMemberDefinitionNode
 {
     TypeName INamedDeclarationNode.Name => Name;
     public IFixedList<IAttributeNode> Attributes { get; }
@@ -17,7 +17,7 @@ internal abstract class PackageMemberDefinitionNode : DefinitionNode, IPackageMe
             : accessModifier.GetValue(this, TypeModifiersAspect.PackageMemberDefinition_AccessModifier);
     public abstract override StandardName Name { get; }
 
-    private protected PackageMemberDefinitionNode(IEnumerable<IAttributeNode> attributes)
+    private protected FacetMemberDefinitionNode(IEnumerable<IAttributeNode> attributes)
     {
         Attributes = ChildList.Attach(this, attributes);
     }

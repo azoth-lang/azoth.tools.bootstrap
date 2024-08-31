@@ -56,8 +56,7 @@ IntrinsicsPackageReference <: PackageReference;
 // ---------- Facets
 PackageFacet <: PackageFacetDeclaration = Syntax:`IPackageSyntax` CompilationUnits:{CompilationUnit};
 
-// TODO rename to FacetMemberDefinition
-PackageMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefinition
+FacetMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefinition
     = Attributes:Attribute*;
 
 // ---------- Code Files
@@ -84,17 +83,17 @@ NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceD
     UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*;
 NamespaceBlockMemberDefinition <: Definition;
 NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
-    = MemberNamespaces:NamespaceDefinition* PackageMembers:`IPackageMemberDefinitionNode`*;
+    = MemberNamespaces:NamespaceDefinition* PackageMembers:`IFacetMemberDefinitionNode`*;
 NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 
 // ---------- Function Definition
-FunctionDefinition <: PackageMemberDefinition, FunctionDeclaration, ConcreteFunctionInvocableDefinition
+FunctionDefinition <: FacetMemberDefinition, FunctionDeclaration, ConcreteFunctionInvocableDefinition
     = Syntax:`IFunctionDefinitionSyntax`
     Attributes:Attribute* Parameters:NamedParameter* Return:Type?
     Entry Body Exit Type:`FunctionType`;
 
 // ---------- Type Definitions
-TypeDefinition <: PackageMemberDefinition, AssociatedMemberDefinition, UserTypeDeclaration
+TypeDefinition <: FacetMemberDefinition, AssociatedMemberDefinition, UserTypeDeclaration
     = Syntax:`ITypeDefinitionSyntax` IsConst:`bool` Name:`StandardName`
     DeclaredType:`IDeclaredUserType`
     GenericParameters:GenericParameter*
@@ -460,12 +459,13 @@ NamedBindingDeclaration <: BindingDeclaration, NamedDeclaration = Name:`Identifi
 PackageDeclaration <: SymbolDeclaration = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`
     MainFacet:PackageFacetDeclaration TestingFacet:PackageFacetDeclaration;
 
-PackageMemberDeclaration <: NamespaceMemberDeclaration;
-
 // ---------- Facets
 /// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
 PackageFacetDeclaration <: ChildDeclaration, SymbolDeclaration;
 
+FacetMemberDeclaration <: NamespaceMemberDeclaration;
+
+// Any child declaration node of a facet (not just members)
 PackageFacetChildDeclaration <: ChildDeclaration;
 
 // ---------- Namespace Declarations
@@ -476,11 +476,11 @@ NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, Sy
 // ---------- Function Declaration
 // TODO better name for this or perhaps just merge AssociatedFunctionDeclaration into FunctionDeclaration
 FunctionLikeDeclaration <: NamedDeclaration, InvocableDeclaration = Symbol:`FunctionSymbol` Type:`FunctionType`;
-FunctionDeclaration <: PackageMemberDeclaration, FunctionLikeDeclaration;
+FunctionDeclaration <: FacetMemberDeclaration, FunctionLikeDeclaration;
 
 // ---------- Type Declarations
 PrimitiveTypeDeclaration <: TypeDeclaration = Name:`SpecialTypeName` Members:{TypeMemberDeclaration};
-UserTypeDeclaration <: PackageMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
+UserTypeDeclaration <: FacetMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
     = Name:`StandardName` GenericParameters:GenericParameterDeclaration* Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration} InclusiveMembers:{`ITypeMemberDeclarationNode`};
 ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration} InclusiveMembers:{`IClassMemberDeclarationNode`};
 StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration} InclusiveMembers:{`IStructMemberDeclarationNode`};

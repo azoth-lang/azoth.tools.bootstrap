@@ -16,7 +16,7 @@ internal static partial class DefinitionsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFunctionDefinitionNode? Package_EntryPoint(IPackageNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<IPackageMemberDefinitionNode> PackageFacet_Definitions(IPackageFacetNode node);
+    public static partial IFixedSet<IFacetMemberDefinitionNode> PackageFacet_Definitions(IPackageFacetNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<INamespaceMemberDefinitionNode> NamespaceDefinition_Members(INamespaceDefinitionNode node);
 }

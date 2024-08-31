@@ -7,7 +7,7 @@
 struct `AccessModifier`;
 
 // ---------- Facets
-↑ PackageMemberDefinition.AccessModifier: `AccessModifier`;
+↑ FacetMemberDefinition.AccessModifier: `AccessModifier`;
 
 // ---------- Function Definition
 = FunctionDefinition.AccessModifier;

@@ -16,7 +16,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
-internal sealed class FunctionDefinitionNode : PackageMemberDefinitionNode, IFunctionDefinitionNode
+internal sealed class FunctionDefinitionNode : FacetMemberDefinitionNode, IFunctionDefinitionNode
 {
     public override IFunctionDefinitionSyntax Syntax { get; }
     public override IdentifierName Name => Syntax.Name;

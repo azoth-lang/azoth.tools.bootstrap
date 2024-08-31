@@ -13,11 +13,11 @@ internal static partial class DefinitionsAspect
         // TODO compiler error on multiple main functions
         => node.MainFacet.Definitions.OfType<IFunctionDefinitionNode>().SingleOrDefault(f => f.Name == "main");
 
-    public static partial IFixedSet<IPackageMemberDefinitionNode> PackageFacet_Definitions(IPackageFacetNode node)
+    public static partial IFixedSet<IFacetMemberDefinitionNode> PackageFacet_Definitions(IPackageFacetNode node)
     {
         return node.CompilationUnits.SelectMany(n => n.Definitions)
                    .SelectMany(n => MoreEnumerable.TraverseDepthFirst(n, NamespaceChildren))
-                   .OfType<IPackageMemberDefinitionNode>().ToFixedSet();
+                   .OfType<IFacetMemberDefinitionNode>().ToFixedSet();
 
         static IEnumerable<INamespaceBlockMemberDefinitionNode> NamespaceChildren(INamespaceBlockMemberDefinitionNode m)
             => (m as INamespaceBlockDefinitionNode)?.Members ?? Enumerable.Empty<INamespaceBlockMemberDefinitionNode>();

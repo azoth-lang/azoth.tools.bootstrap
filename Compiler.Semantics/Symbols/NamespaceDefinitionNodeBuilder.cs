@@ -10,13 +10,13 @@ internal class NamespaceDefinitionNodeBuilder
 {
     private readonly PackageSymbol packageSymbol;
     private readonly ConcurrentDictionary<NamespaceSymbol, ConcurrentDictionary<IdentifierName, NamespaceSymbol>> childNamespaces = new();
-    private readonly MultiMapHashSet<NamespaceSymbol, IPackageMemberDefinitionNode> childMembers = new();
+    private readonly MultiMapHashSet<NamespaceSymbol, IFacetMemberDefinitionNode> childMembers = [];
 
     public NamespaceDefinitionNodeBuilder(PackageSymbol packageSymbol)
     {
         this.packageSymbol = packageSymbol;
         childNamespaces.GetOrAdd(packageSymbol, new ConcurrentDictionary<IdentifierName, NamespaceSymbol>());
-        childMembers.Add(packageSymbol, new());
+        childMembers.Add(packageSymbol, []);
     }
 
     public NamespaceSymbol AddNamespace(NamespaceSymbol containingNamespace, NamespaceName ns)
@@ -28,14 +28,14 @@ internal class NamespaceDefinitionNodeBuilder
             current = lookup.GetOrAdd(name, n => new LocalNamespaceSymbol(current, n));
             // Make sure childMembers contains and entry to the namespace
             if (!childMembers.ContainsKey(current))
-                childMembers.Add(current, new());
+                childMembers.Add(current, []);
         }
         // Make childNamespaces contains an entry to the final namespace
         childNamespaces.GetOrAdd(current, _ => new());
         return current;
     }
 
-    public void Add(NamespaceSymbol namespaceSymbol, IPackageMemberDefinitionNode declarationNode)
+    public void Add(NamespaceSymbol namespaceSymbol, IFacetMemberDefinitionNode declarationNode)
         => childMembers.TryToAddMapping(namespaceSymbol, declarationNode);
 
     public INamespaceDefinitionNode Build() => Build(packageSymbol);

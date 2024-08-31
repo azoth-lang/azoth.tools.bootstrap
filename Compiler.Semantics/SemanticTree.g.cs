@@ -234,7 +234,7 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     PackageNameScope PackageNameScope { get; }
     new INamespaceDefinitionNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
-    IFixedSet<IPackageMemberDefinitionNode> Definitions { get; }
+    IFixedSet<IFacetMemberDefinitionNode> Definitions { get; }
 
     public static IPackageFacetNode Create(IPackageSyntax syntax, IEnumerable<ICompilationUnitNode> compilationUnits)
         => new PackageFacetNode(syntax, compilationUnits);
@@ -244,7 +244,7 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     typeof(IFunctionDefinitionNode),
     typeof(ITypeDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IPackageMemberDefinitionNode : INamespaceBlockMemberDefinitionNode, INamespaceMemberDefinitionNode
+public partial interface IFacetMemberDefinitionNode : INamespaceBlockMemberDefinitionNode, INamespaceMemberDefinitionNode
 {
     IFixedList<IAttributeNode> Attributes { get; }
     AccessModifier AccessModifier { get; }
@@ -424,7 +424,7 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
 }
 
 [Closed(
-    typeof(IPackageMemberDefinitionNode),
+    typeof(IFacetMemberDefinitionNode),
     typeof(INamespaceBlockDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamespaceBlockMemberDefinitionNode : IDefinitionNode
@@ -436,19 +436,19 @@ public partial interface INamespaceBlockMemberDefinitionNode : IDefinitionNode
 public partial interface INamespaceDefinitionNode : INamespaceMemberDefinitionNode, INamespaceDeclarationNode
 {
     IFixedList<INamespaceDefinitionNode> MemberNamespaces { get; }
-    IFixedList<IPackageMemberDefinitionNode> PackageMembers { get; }
+    IFixedList<IFacetMemberDefinitionNode> PackageMembers { get; }
     new ISyntax? Syntax
         => null;
     ISyntax? ISemanticNode.Syntax => Syntax;
     new IFixedList<INamespaceMemberDefinitionNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> INamespaceDeclarationNode.Members => Members;
 
-    public static INamespaceDefinitionNode Create(NamespaceSymbol symbol, IEnumerable<INamespaceDefinitionNode> memberNamespaces, IEnumerable<IPackageMemberDefinitionNode> packageMembers)
+    public static INamespaceDefinitionNode Create(NamespaceSymbol symbol, IEnumerable<INamespaceDefinitionNode> memberNamespaces, IEnumerable<IFacetMemberDefinitionNode> packageMembers)
         => new NamespaceDefinitionNode(symbol, memberNamespaces, packageMembers);
 }
 
 [Closed(
-    typeof(IPackageMemberDefinitionNode),
+    typeof(IFacetMemberDefinitionNode),
     typeof(INamespaceDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamespaceMemberDefinitionNode : INamespaceMemberDeclarationNode
@@ -457,7 +457,7 @@ public partial interface INamespaceMemberDefinitionNode : INamespaceMemberDeclar
 
 // [Closed(typeof(FunctionDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFunctionDefinitionNode : IPackageMemberDefinitionNode, IFunctionDeclarationNode, IConcreteFunctionInvocableDefinitionNode
+public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, IFunctionDeclarationNode, IConcreteFunctionInvocableDefinitionNode
 {
     new IFunctionDefinitionSyntax Syntax { get; }
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
@@ -493,7 +493,7 @@ public partial interface IFunctionDefinitionNode : IPackageMemberDefinitionNode,
     typeof(IStructDefinitionNode),
     typeof(ITraitDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ITypeDefinitionNode : IPackageMemberDefinitionNode, IAssociatedMemberDefinitionNode, IUserTypeDeclarationNode
+public partial interface ITypeDefinitionNode : IFacetMemberDefinitionNode, IAssociatedMemberDefinitionNode, IUserTypeDeclarationNode
 {
     new ITypeDefinitionSyntax Syntax { get; }
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
@@ -520,7 +520,7 @@ public partial interface ITypeDefinitionNode : IPackageMemberDefinitionNode, IAs
     UserTypeSymbol IUserTypeDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     new AccessModifier AccessModifier { get; }
-    AccessModifier IPackageMemberDefinitionNode.AccessModifier => AccessModifier;
+    AccessModifier IFacetMemberDefinitionNode.AccessModifier => AccessModifier;
     AccessModifier ITypeMemberDefinitionNode.AccessModifier => AccessModifier;
 }
 
@@ -3103,14 +3103,6 @@ public partial interface IPackageDeclarationNode : ISymbolDeclarationNode
 }
 
 [Closed(
-    typeof(IFunctionDeclarationNode),
-    typeof(IUserTypeDeclarationNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IPackageMemberDeclarationNode : INamespaceMemberDeclarationNode
-{
-}
-
-[Closed(
     typeof(IPackageFacetNode),
     typeof(IPackageFacetSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -3124,6 +3116,14 @@ public partial interface IPackageFacetDeclarationNode : IChildDeclarationNode, I
         => PackageSymbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     INamespaceDeclarationNode GlobalNamespace { get; }
+}
+
+[Closed(
+    typeof(IFunctionDeclarationNode),
+    typeof(IUserTypeDeclarationNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IFacetMemberDeclarationNode : INamespaceMemberDeclarationNode
+{
 }
 
 [Closed(
@@ -3162,7 +3162,7 @@ public partial interface INamespaceDeclarationNode : INamespaceMemberDeclaration
 
 [Closed(
     typeof(INamespaceMemberDefinitionNode),
-    typeof(IPackageMemberDeclarationNode),
+    typeof(IFacetMemberDeclarationNode),
     typeof(INamespaceDeclarationNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamespaceMemberDeclarationNode : IPackageFacetChildDeclarationNode, INamedDeclarationNode, ISymbolDeclarationNode
@@ -3188,7 +3188,7 @@ public partial interface IFunctionLikeDeclarationNode : INamedDeclarationNode, I
     typeof(IFunctionDefinitionNode),
     typeof(IFunctionSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFunctionDeclarationNode : IPackageMemberDeclarationNode, IFunctionLikeDeclarationNode
+public partial interface IFunctionDeclarationNode : IFacetMemberDeclarationNode, IFunctionLikeDeclarationNode
 {
 }
 
@@ -3214,7 +3214,7 @@ public partial interface IPrimitiveTypeDeclarationNode : ITypeDeclarationNode
     typeof(ITraitDeclarationNode),
     typeof(IUserTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUserTypeDeclarationNode : IPackageMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, ITypeDeclarationNode
+public partial interface IUserTypeDeclarationNode : IFacetMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, ITypeDeclarationNode
 {
     IFixedList<IGenericParameterDeclarationNode> GenericParameters { get; }
     new UserTypeSymbol Symbol { get; }
@@ -4015,11 +4015,11 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
                 SymbolNodeAspect.PackageFacet_GlobalNamespace);
     private INamespaceDefinitionNode? globalNamespace;
     private bool globalNamespaceCached;
-    public IFixedSet<IPackageMemberDefinitionNode> Definitions
+    public IFixedSet<IFacetMemberDefinitionNode> Definitions
         => GrammarAttribute.IsCached(in definitionsCached) ? definitions!
             : this.Synthetic(ref definitionsCached, ref definitions,
                 DefinitionsAspect.PackageFacet_Definitions);
-    private IFixedSet<IPackageMemberDefinitionNode>? definitions;
+    private IFixedSet<IFacetMemberDefinitionNode>? definitions;
     private bool definitionsCached;
 
     public PackageFacetNode(IPackageSyntax syntax, IEnumerable<ICompilationUnitNode> compilationUnits)
@@ -4216,7 +4216,7 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
 
     public NamespaceSymbol Symbol { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceDefinitionNode> MemberNamespaces { [DebuggerStepThrough] get; }
-    public IFixedList<IPackageMemberDefinitionNode> PackageMembers { [DebuggerStepThrough] get; }
+    public IFixedList<IFacetMemberDefinitionNode> PackageMembers { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -4241,7 +4241,7 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
     private IFixedList<INamespaceMemberDeclarationNode>? nestedMembers;
     private bool nestedMembersCached;
 
-    public NamespaceDefinitionNode(NamespaceSymbol symbol, IEnumerable<INamespaceDefinitionNode> memberNamespaces, IEnumerable<IPackageMemberDefinitionNode> packageMembers)
+    public NamespaceDefinitionNode(NamespaceSymbol symbol, IEnumerable<INamespaceDefinitionNode> memberNamespaces, IEnumerable<IFacetMemberDefinitionNode> packageMembers)
     {
         Symbol = symbol;
         MemberNamespaces = ChildList.Create(this, nameof(MemberNamespaces), memberNamespaces);

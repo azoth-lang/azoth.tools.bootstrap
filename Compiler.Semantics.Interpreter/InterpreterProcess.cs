@@ -102,11 +102,11 @@ public class InterpreterProcess
     private static IFixedList<IDefinitionNode> GetAllDefinitions(
         IPackageNode package,
         IEnumerable<IPackageNode> referencedPackages,
-        Func<IPackageNode, IEnumerable<IPackageMemberDefinitionNode>> getPackageMemberDefinitions)
+        Func<IPackageNode, IEnumerable<IFacetMemberDefinitionNode>> getPackageMemberDefinitions)
         => GetAllDefinitions(referencedPackages.Prepend(package).SelectMany(getPackageMemberDefinitions)).ToFixedList();
 
     private static IEnumerable<IDefinitionNode> GetAllDefinitions(
-        IEnumerable<IPackageMemberDefinitionNode> packageMemberDefinitions)
+        IEnumerable<IFacetMemberDefinitionNode> packageMemberDefinitions)
     {
         var definitions = new Queue<IDefinitionNode>();
         definitions.EnqueueRange(packageMemberDefinitions);

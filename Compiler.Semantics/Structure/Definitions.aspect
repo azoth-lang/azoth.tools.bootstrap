@@ -24,7 +24,7 @@
 ↑ IntrinsicsPackageReference.Syntax: `IPackageReferenceSyntax`? => null;
 
 // ---------- Facets
-↑ PackageFacet.Definitions: {PackageMemberDefinition};
+↑ PackageFacet.Definitions: {FacetMemberDefinition};
 
 // ---------- Code Files
 ↗↖ CompilationUnit.Diagnostics;
