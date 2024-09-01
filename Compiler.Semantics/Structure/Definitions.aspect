@@ -48,6 +48,11 @@
 ↑ TypeDefinition.Name:`StandardName` => Syntax.Name;
 ↑ ClassDefinition.IsAbstract: `bool` => Syntax.AbstractModifier is not null;
 
+// ---------- Type Definition Parts
+↑ GenericParameter.Name: `IdentifierName` => Syntax.Name;
+↑ GenericParameter.Independence: `TypeParameterIndependence` => Syntax.Independence;
+↑ GenericParameter.Variance: `TypeParameterVariance` => Syntax.Variance;
+
 // -------------------------------------------------------------------------------------------------
 // Declarations
 // -------------------------------------------------------------------------------------------------

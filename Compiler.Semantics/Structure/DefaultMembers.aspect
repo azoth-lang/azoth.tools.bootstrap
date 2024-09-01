@@ -10,3 +10,6 @@
 ↑ StructDefinition.Members: {StructMemberDefinition};
 ↑ child ClassDefinition.DefaultConstructor:DefaultConstructorDefinition?;
 ↑ child StructDefinition.DefaultInitializer:DefaultInitializerDefinition?;
+
+// ---------- Type Definition Parts
+↑ GenericParameter.Members: {TypeMemberDefinition} => [];

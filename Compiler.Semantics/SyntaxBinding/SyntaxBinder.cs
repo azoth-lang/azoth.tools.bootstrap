@@ -119,7 +119,7 @@ internal static class SyntaxBinder
         => syntax.Select(GenericParameter);
 
     private static IGenericParameterNode GenericParameter(IGenericParameterSyntax syntax)
-        => new GenericParameterNode(syntax, CapabilityConstraint(syntax.Constraint));
+        => IGenericParameterNode.Create(syntax, CapabilityConstraint(syntax.Constraint));
     #endregion
 
     #region Type Member Definitions

@@ -77,10 +77,10 @@ internal static partial class TypeDefinitionsAspect
     private static IFixedList<GenericParameter> GetGenericParameters(ITypeDefinitionNode node)
         => node.GenericParameters.Select(p => p.Parameter).ToFixedList();
 
-    public static GenericParameter GenericParameter_Parameter(IGenericParameterNode node)
+    public static partial GenericParameter GenericParameter_Parameter(IGenericParameterNode node)
         => new GenericParameter(node.Constraint.Constraint, node.Name, node.Independence, node.Variance);
 
-    public static GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
+    public static partial GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node)
         => node.ContainingDeclaredType.GenericParameterTypes.Single(t => t.Parameter == node.Parameter);
 
     public static partial IFixedSet<BareReferenceType> TypeDefinition_Supertypes(ITypeDefinitionNode node)

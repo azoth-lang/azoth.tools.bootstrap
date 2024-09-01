@@ -23,3 +23,8 @@
 ↑ ClassDeclaration.InclusiveMembers: {ClassMemberDeclaration};
 ↑ StructDeclaration.InclusiveMembers: {StructMemberDeclaration};
 ↑ TraitDeclaration.InclusiveMembers: {TraitMemberDeclaration};
+
+// ---------- Can be Referenced by Type Name
+↑ TypeDeclaration.Supertypes: {`BareReferenceType`};
+↑ TypeDeclaration.Members: {TypeMemberDeclaration};
+↑ TypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};

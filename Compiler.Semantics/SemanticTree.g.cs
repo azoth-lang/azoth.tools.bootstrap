@@ -524,6 +524,7 @@ public partial interface ITypeDefinitionNode : IFacetMemberDefinitionNode, IAsso
     IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes => Supertypes;
     IDeclaredUserType DeclaredType { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     new AccessModifier AccessModifier { get; }
     AccessModifier IFacetMemberDefinitionNode.AccessModifier => AccessModifier;
@@ -548,6 +549,7 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
     new IFixedSet<IClassMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
+    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<IClassMemberDeclarationNode> IClassDeclarationNode.Members => Members;
     IDefaultConstructorDefinitionNode? DefaultConstructor { get; }
@@ -573,6 +575,7 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
     new IFixedSet<IStructMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
+    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<IStructMemberDeclarationNode> IStructDeclarationNode.Members => Members;
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
@@ -593,6 +596,7 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     new IFixedSet<ITraitMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDefinitionNode> ITypeDefinitionNode.Members => Members;
+    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITraitMemberDeclarationNode> ITraitDeclarationNode.Members => Members;
     new ObjectType DeclaredType { get; }
@@ -610,14 +614,16 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityConstraintNode Constraint { get; }
-    TypeParameterIndependence Independence { get; }
-    TypeParameterVariance Variance { get; }
-    GenericParameter Parameter { get; }
-    GenericParameterType DeclaredType { get; }
-    new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
-    IFixedSet<ITypeMemberDeclarationNode> IGenericParameterDeclarationNode.Members => Members;
-    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IUserTypeDeclarationNode ContainingDeclaration { get; }
+    new IdentifierName Name
+        => Syntax.Name;
+    IdentifierName IGenericParameterDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    TypeParameterIndependence Independence
+        => Syntax.Independence;
+    TypeParameterVariance Variance
+        => Syntax.Variance;
     UserTypeSymbol ContainingSymbol
         => ContainingDeclaration.Symbol;
     new GenericParameterTypeSymbol Symbol { get; }
@@ -625,9 +631,19 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     IDeclaredUserType ContainingDeclaredType { get; }
+    GenericParameter Parameter { get; }
+    GenericParameterType DeclaredType { get; }
+    new IFixedSet<ITypeMemberDefinitionNode> Members
+        => [];
+    IFixedSet<ITypeMemberDeclarationNode> IGenericParameterDeclarationNode.Members => Members;
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
+        => [];
+    IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes
+        => [];
 
-    public static IGenericParameterNode Create(IEnumerable<BareReferenceType> supertypes, IEnumerable<ITypeMemberDeclarationNode> inclusiveMembers, IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, GenericParameterType declaredType, IEnumerable<ITypeMemberDefinitionNode> members)
-        => new GenericParameterNode(supertypes, inclusiveMembers, syntax, constraint, name, independence, variance, parameter, declaredType, members);
+    public static IGenericParameterNode Create(IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint)
+        => new GenericParameterNode(syntax, constraint);
 }
 
 [Closed(
@@ -3209,6 +3225,8 @@ public partial interface IPrimitiveTypeDeclarationNode : ITypeDeclarationNode
 {
     new SpecialTypeName Name { get; }
     TypeName INamedDeclarationNode.Name => Name;
+    new IFixedSet<ITypeMemberDeclarationNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName { get; }
     FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName { get; }
     IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(StandardName named)
@@ -3230,10 +3248,10 @@ public partial interface IUserTypeDeclarationNode : IFacetMemberDeclarationNode,
     new UserTypeSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    new IFixedSet<ITypeMemberDeclarationNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName { get; }
     FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName { get; }
-    new IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
-    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers => InclusiveMembers;
     IEnumerable<IInstanceMemberDeclarationNode> ITypeDeclarationNode.InclusiveInstanceMembersNamed(StandardName named)
         => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
     IEnumerable<IAssociatedMemberDeclarationNode> ITypeDeclarationNode.AssociatedMembersNamed(StandardName named)
@@ -3247,9 +3265,9 @@ public partial interface IUserTypeDeclarationNode : IFacetMemberDeclarationNode,
 public partial interface IClassDeclarationNode : IUserTypeDeclarationNode
 {
     new IFixedSet<IClassMemberDeclarationNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     new IFixedSet<IClassMemberDeclarationNode> InclusiveMembers { get; }
-    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.InclusiveMembers => InclusiveMembers;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers => InclusiveMembers;
 }
 
@@ -3260,9 +3278,9 @@ public partial interface IClassDeclarationNode : IUserTypeDeclarationNode
 public partial interface IStructDeclarationNode : IUserTypeDeclarationNode
 {
     new IFixedSet<IStructMemberDeclarationNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     new IFixedSet<IStructMemberDeclarationNode> InclusiveMembers { get; }
-    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.InclusiveMembers => InclusiveMembers;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers => InclusiveMembers;
 }
 
@@ -3273,9 +3291,9 @@ public partial interface IStructDeclarationNode : IUserTypeDeclarationNode
 public partial interface ITraitDeclarationNode : IUserTypeDeclarationNode
 {
     new IFixedSet<ITraitMemberDeclarationNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     new IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers { get; }
-    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.InclusiveMembers => InclusiveMembers;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers => InclusiveMembers;
 }
 
@@ -3476,11 +3494,11 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
 {
     new TypeSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named);
+    IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
     IFixedSet<BareReferenceType> Supertypes { get; }
     IFixedSet<ITypeMemberDeclarationNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
-    IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named);
-    IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
 }
 
 [Closed(
@@ -3555,10 +3573,15 @@ public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamesp
 public partial interface IPrimitiveTypeSymbolNode : IPrimitiveTypeDeclarationNode
 {
     new IFixedSet<ITypeMemberSymbolNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> IPrimitiveTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes
+        => Symbol.GetDeclaredType()?.Supertypes ?? [];
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
+        => Members;
 
-    public static IPrimitiveTypeSymbolNode Create(ISyntax? syntax, TypeSymbol symbol, IEnumerable<BareReferenceType> supertypes, IEnumerable<ITypeMemberDeclarationNode> inclusiveMembers, SpecialTypeName name, IEnumerable<ITypeMemberSymbolNode> members)
-        => new PrimitiveTypeSymbolNode(syntax, symbol, supertypes, inclusiveMembers, name, members);
+    public static IPrimitiveTypeSymbolNode Create(ISyntax? syntax, TypeSymbol symbol, SpecialTypeName name, IEnumerable<ITypeMemberSymbolNode> members)
+        => new PrimitiveTypeSymbolNode(syntax, symbol, name, members);
 }
 
 [Closed(
@@ -3571,8 +3594,11 @@ public partial interface IUserTypeSymbolNode : IUserTypeDeclarationNode, INamesp
     new IFixedList<IGenericParameterSymbolNode> GenericParameters { get; }
     IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
     new IFixedSet<ITypeMemberSymbolNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     ISymbolTree SymbolTree();
+    IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes
+        => Symbol.GetDeclaredType().Supertypes;
 }
 
 // [Closed(typeof(ClassSymbolNode))]
@@ -3581,13 +3607,14 @@ public partial interface IClassSymbolNode : IClassDeclarationNode, IUserTypeSymb
 {
     new IFixedSet<IClassMemberSymbolNode> Members { get; }
     IFixedSet<IClassMemberDeclarationNode> IClassDeclarationNode.Members => Members;
+    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> IUserTypeSymbolNode.Members => Members;
     IFixedSet<IClassMemberDeclarationNode> IClassDeclarationNode.InclusiveMembers
         => Members;
 
-    public static IClassSymbolNode Create(IEnumerable<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<IClassMemberSymbolNode> members)
-        => new ClassSymbolNode(supertypes, name, symbol, genericParameters, members);
+    public static IClassSymbolNode Create(StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<IClassMemberSymbolNode> members)
+        => new ClassSymbolNode(name, symbol, genericParameters, members);
 }
 
 // [Closed(typeof(StructSymbolNode))]
@@ -3596,13 +3623,14 @@ public partial interface IStructSymbolNode : IStructDeclarationNode, IUserTypeSy
 {
     new IFixedSet<IStructMemberSymbolNode> Members { get; }
     IFixedSet<IStructMemberDeclarationNode> IStructDeclarationNode.Members => Members;
+    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> IUserTypeSymbolNode.Members => Members;
     IFixedSet<IStructMemberDeclarationNode> IStructDeclarationNode.InclusiveMembers
         => Members;
 
-    public static IStructSymbolNode Create(IEnumerable<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<IStructMemberSymbolNode> members)
-        => new StructSymbolNode(supertypes, name, symbol, genericParameters, members);
+    public static IStructSymbolNode Create(StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<IStructMemberSymbolNode> members)
+        => new StructSymbolNode(name, symbol, genericParameters, members);
 }
 
 // [Closed(typeof(TraitSymbolNode))]
@@ -3611,13 +3639,14 @@ public partial interface ITraitSymbolNode : ITraitDeclarationNode, IUserTypeSymb
 {
     new IFixedSet<ITraitMemberSymbolNode> Members { get; }
     IFixedSet<ITraitMemberDeclarationNode> ITraitDeclarationNode.Members => Members;
+    IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> IUserTypeSymbolNode.Members => Members;
     IFixedSet<ITraitMemberDeclarationNode> ITraitDeclarationNode.InclusiveMembers
         => Members;
 
-    public static ITraitSymbolNode Create(IEnumerable<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<ITraitMemberSymbolNode> members)
-        => new TraitSymbolNode(supertypes, name, symbol, genericParameters, members);
+    public static ITraitSymbolNode Create(StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<ITraitMemberSymbolNode> members)
+        => new TraitSymbolNode(name, symbol, genericParameters, members);
 }
 
 // [Closed(typeof(GenericParameterSymbolNode))]
@@ -3627,9 +3656,13 @@ public partial interface IGenericParameterSymbolNode : IGenericParameterDeclarat
     new IFixedSet<ITypeMemberSymbolNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> IGenericParameterDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes
+        => Symbol.GetDeclaredType()?.Supertypes ?? [];
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
+        => [];
 
-    public static IGenericParameterSymbolNode Create(IEnumerable<BareReferenceType> supertypes, IEnumerable<ITypeMemberDeclarationNode> inclusiveMembers, IdentifierName name, GenericParameterTypeSymbol symbol, IEnumerable<ITypeMemberSymbolNode> members)
-        => new GenericParameterSymbolNode(supertypes, inclusiveMembers, name, symbol, members);
+    public static IGenericParameterSymbolNode Create(IdentifierName name, GenericParameterTypeSymbol symbol, IEnumerable<ITypeMemberSymbolNode> members)
+        => new GenericParameterSymbolNode(name, symbol, members);
 }
 
 [Closed(
@@ -4944,16 +4977,8 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
 {
     private IGenericParameterNode Self { [Inline] get => this; }
 
-    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
-    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
     public IGenericParameterSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityConstraintNode Constraint { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
-    public TypeParameterIndependence Independence { [DebuggerStepThrough] get; }
-    public TypeParameterVariance Variance { [DebuggerStepThrough] get; }
-    public GenericParameter Parameter { [DebuggerStepThrough] get; }
-    public GenericParameterType DeclaredType { [DebuggerStepThrough] get; }
-    public IFixedSet<ITypeMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -4974,19 +4999,23 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
                 SymbolsAspect.GenericParameter_Symbol);
     private GenericParameterTypeSymbol? symbol;
     private bool symbolCached;
+    public GenericParameter Parameter
+        => GrammarAttribute.IsCached(in parameterCached) ? parameter!
+            : this.Synthetic(ref parameterCached, ref parameter,
+                TypeDefinitionsAspect.GenericParameter_Parameter);
+    private GenericParameter? parameter;
+    private bool parameterCached;
+    public GenericParameterType DeclaredType
+        => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
+            : this.Synthetic(ref declaredTypeCached, ref declaredType,
+                TypeDefinitionsAspect.GenericParameter_DeclaredType);
+    private GenericParameterType? declaredType;
+    private bool declaredTypeCached;
 
-    public GenericParameterNode(IEnumerable<BareReferenceType> supertypes, IEnumerable<ITypeMemberDeclarationNode> inclusiveMembers, IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance, GenericParameter parameter, GenericParameterType declaredType, IEnumerable<ITypeMemberDefinitionNode> members)
+    public GenericParameterNode(IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint)
     {
-        Supertypes = supertypes.ToFixedSet();
-        InclusiveMembers = inclusiveMembers.ToFixedSet();
         Syntax = syntax;
         Constraint = Child.Attach(this, constraint);
-        Name = name;
-        Independence = independence;
-        Variance = variance;
-        Parameter = parameter;
-        DeclaredType = declaredType;
-        Members = members.ToFixedSet();
     }
 }
 
@@ -11177,8 +11206,6 @@ file class PrimitiveTypeSymbolNode : SemanticNode, IPrimitiveTypeSymbolNode
 
     public ISyntax? Syntax { [DebuggerStepThrough] get; }
     public TypeSymbol Symbol { [DebuggerStepThrough] get; }
-    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
-    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
     public SpecialTypeName Name { [DebuggerStepThrough] get; }
     public IFixedSet<ITypeMemberSymbolNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -11196,12 +11223,10 @@ file class PrimitiveTypeSymbolNode : SemanticNode, IPrimitiveTypeSymbolNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public PrimitiveTypeSymbolNode(ISyntax? syntax, TypeSymbol symbol, IEnumerable<BareReferenceType> supertypes, IEnumerable<ITypeMemberDeclarationNode> inclusiveMembers, SpecialTypeName name, IEnumerable<ITypeMemberSymbolNode> members)
+    public PrimitiveTypeSymbolNode(ISyntax? syntax, TypeSymbol symbol, SpecialTypeName name, IEnumerable<ITypeMemberSymbolNode> members)
     {
         Syntax = syntax;
         Symbol = symbol;
-        Supertypes = supertypes.ToFixedSet();
-        InclusiveMembers = inclusiveMembers.ToFixedSet();
         Name = name;
         Members = ChildSet.Attach(this, members);
     }
@@ -11212,7 +11237,6 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
 {
     private IClassSymbolNode Self { [Inline] get => this; }
 
-    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
     public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSymbolNode> GenericParameters { [DebuggerStepThrough] get; }
@@ -11236,9 +11260,8 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public ClassSymbolNode(IEnumerable<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<IClassMemberSymbolNode> members)
+    public ClassSymbolNode(StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<IClassMemberSymbolNode> members)
     {
-        Supertypes = supertypes.ToFixedSet();
         Name = name;
         Symbol = symbol;
         GenericParameters = ChildList.Attach(this, genericParameters);
@@ -11251,7 +11274,6 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
 {
     private IStructSymbolNode Self { [Inline] get => this; }
 
-    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
     public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSymbolNode> GenericParameters { [DebuggerStepThrough] get; }
@@ -11275,9 +11297,8 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public StructSymbolNode(IEnumerable<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<IStructMemberSymbolNode> members)
+    public StructSymbolNode(StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<IStructMemberSymbolNode> members)
     {
-        Supertypes = supertypes.ToFixedSet();
         Name = name;
         Symbol = symbol;
         GenericParameters = ChildList.Attach(this, genericParameters);
@@ -11290,7 +11311,6 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
 {
     private ITraitSymbolNode Self { [Inline] get => this; }
 
-    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
     public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public IFixedList<IGenericParameterSymbolNode> GenericParameters { [DebuggerStepThrough] get; }
@@ -11314,9 +11334,8 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public TraitSymbolNode(IEnumerable<BareReferenceType> supertypes, StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<ITraitMemberSymbolNode> members)
+    public TraitSymbolNode(StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<ITraitMemberSymbolNode> members)
     {
-        Supertypes = supertypes.ToFixedSet();
         Name = name;
         Symbol = symbol;
         GenericParameters = ChildList.Attach(this, genericParameters);
@@ -11329,8 +11348,6 @@ file class GenericParameterSymbolNode : SemanticNode, IGenericParameterSymbolNod
 {
     private IGenericParameterSymbolNode Self { [Inline] get => this; }
 
-    public IFixedSet<BareReferenceType> Supertypes { [DebuggerStepThrough] get; }
-    public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public GenericParameterTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public IFixedSet<ITypeMemberSymbolNode> Members { [DebuggerStepThrough] get; }
@@ -11339,10 +11356,8 @@ file class GenericParameterSymbolNode : SemanticNode, IGenericParameterSymbolNod
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
-    public GenericParameterSymbolNode(IEnumerable<BareReferenceType> supertypes, IEnumerable<ITypeMemberDeclarationNode> inclusiveMembers, IdentifierName name, GenericParameterTypeSymbol symbol, IEnumerable<ITypeMemberSymbolNode> members)
+    public GenericParameterSymbolNode(IdentifierName name, GenericParameterTypeSymbol symbol, IEnumerable<ITypeMemberSymbolNode> members)
     {
-        Supertypes = supertypes.ToFixedSet();
-        InclusiveMembers = inclusiveMembers.ToFixedSet();
         Name = name;
         Symbol = symbol;
         Members = members.ToFixedSet();

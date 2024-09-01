@@ -11,3 +11,6 @@
 = ClassDefinition.InclusiveMembers;
 = StructDefinition.InclusiveMembers;
 = TraitDefinition.InclusiveMembers;
+
+// ---------- Type Definition Parts
+= GenericParameter.InclusiveMembers => [];

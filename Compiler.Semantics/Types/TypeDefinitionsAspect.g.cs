@@ -1,6 +1,7 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
@@ -25,4 +26,8 @@ internal static partial class TypeDefinitionsAspect
     public static partial StructType StructDefinition_DeclaredType(IStructDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ObjectType TraitDefinition_DeclaredType(ITraitDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial GenericParameter GenericParameter_Parameter(IGenericParameterNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial GenericParameterType GenericParameter_DeclaredType(IGenericParameterNode node);
 }

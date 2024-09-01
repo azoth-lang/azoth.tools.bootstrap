@@ -5,7 +5,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
-using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
@@ -19,8 +18,6 @@ internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserT
             : genericParameters.GetValue(GetGenericParameters);
 
     public override UserTypeSymbol Symbol { get; }
-    public IFixedSet<BareReferenceType> Supertypes
-        => Symbol.GetDeclaredType().Supertypes;
     public abstract IFixedSet<ITypeMemberSymbolNode> Members { get; }
     public abstract IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
     private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;

@@ -55,8 +55,16 @@
 = eager PackageFacetSymbol.GlobalNamespace;
 
 // ---------- Type Symbol Nodes
+= PrimitiveTypeSymbol.Supertypes => Symbol.GetDeclaredType()?.Supertypes ?? [];
+// For now, the symbol tree already includes all inherited members.
+= PrimitiveTypeSymbol.InclusiveMembers => Members;
 ↓ UserTypeSymbol.SymbolTree(): `ISymbolTree`;
+= UserTypeSymbol.Supertypes => Symbol.GetDeclaredType().Supertypes;
 // For now, the symbol tree already includes all inherited members.
 = ClassSymbol.InclusiveMembers => Members;
 = StructSymbol.InclusiveMembers => Members;
 = TraitSymbol.InclusiveMembers => Members;
+
+// ---------- Type Declaration Parts
+= GenericParameterSymbol.Supertypes => Symbol.GetDeclaredType()?.Supertypes ?? [];
+= GenericParameterSymbol.InclusiveMembers => [];

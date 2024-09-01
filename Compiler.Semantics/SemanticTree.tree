@@ -108,10 +108,8 @@ TraitDefinition <: TypeDefinition, TraitDeclaration = Syntax:`ITraitDefinitionSy
     Members:{TraitMemberDefinition};
 
 // ---------- Type Definition Parts
-GenericParameter <: Code, GenericParameterDeclaration = Syntax:`IGenericParameterSyntax`
-    Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`
-    Parameter:`GenericParameter` DeclaredType:`GenericParameterType`
-    Members:{`ITypeMemberDefinitionNode`};
+GenericParameter <: Code, GenericParameterDeclaration
+    = Syntax:`IGenericParameterSyntax` Constraint:CapabilityConstraint;
 
 // ---------- Type Member Definitions (i.e. definitions that can be contained in a type)
 TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberDefinitionSyntax`?;
@@ -504,9 +502,7 @@ AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclar
     = Name:`StandardName`;
 
 // ---------- Can be Referenced by Type Name
-TypeDeclaration <: NamedDeclaration, SymbolDeclaration
-    = Symbol:`TypeSymbol` Supertypes:{`BareReferenceType`}
-    Members:{TypeMemberDeclaration} InclusiveMembers:{`ITypeMemberDeclarationNode`};
+TypeDeclaration <: NamedDeclaration, SymbolDeclaration = Symbol:`TypeSymbol`;
 
 // -------------------------------------------------------------------------------------------------
 // Symbol Nodes
