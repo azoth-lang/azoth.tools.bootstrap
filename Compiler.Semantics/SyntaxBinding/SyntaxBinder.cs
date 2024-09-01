@@ -95,16 +95,19 @@ internal static class SyntaxBinder
         };
 
     private static IClassDefinitionNode ClassDefinition(IClassDefinitionSyntax syntax)
-        => new ClassDefinitionNode(syntax, GenericParameters(syntax.GenericParameters),
+        // TODO support attributes on class
+        => IClassDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
             StandardTypeName(syntax.BaseTypeName), SupertypeNames(syntax.SupertypeNames),
             ClassMemberDefinitions(syntax.Members));
 
     private static IStructDefinitionNode StructDefinition(IStructDefinitionSyntax syntax)
-        => new StructDefinitionNode(syntax, GenericParameters(syntax.GenericParameters),
+        // TODO support attributes on struct
+        => IStructDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
             SupertypeNames(syntax.SupertypeNames), StructMemberDefinitions(syntax.Members));
 
     private static ITraitDefinitionNode TraitDefinition(ITraitDefinitionSyntax syntax)
-        => new TraitDefinitionNode(syntax, GenericParameters(syntax.GenericParameters),
+        // TODO support attributes on trait
+        => ITraitDefinitionNode.Create(syntax, [], GenericParameters(syntax.GenericParameters),
             SupertypeNames(syntax.SupertypeNames), TraitMemberDefinitions(syntax.Members));
 
     private static IEnumerable<IStandardTypeNameNode> SupertypeNames(IEnumerable<IStandardTypeNameSyntax> syntax)
