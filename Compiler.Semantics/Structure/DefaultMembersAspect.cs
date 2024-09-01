@@ -12,7 +12,7 @@ internal static partial class DefaultMembersAspect
         if (node.SourceMembers.Any(m => m is IConstructorDefinitionNode))
             return null;
 
-        return Child.Attach(node, new DefaultConstructorDefinitionNode());
+        return Child.Attach(node, IDefaultConstructorDefinitionNode.Create());
     }
 
     /// <remarks>This needs to be lazy computed because the

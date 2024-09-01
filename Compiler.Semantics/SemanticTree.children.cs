@@ -139,11 +139,7 @@ public static class ISemanticNodeExtensions
                 yield return n.Exit;
                 yield break;
             case IDefaultConstructorDefinitionNode n:
-                foreach (var child in n.Parameters)
-                    yield return child;
                 yield return n.Entry;
-                if (n.Body is not null)
-                    yield return n.Body;
                 yield return n.Exit;
                 yield break;
             case ISourceConstructorDefinitionNode n:

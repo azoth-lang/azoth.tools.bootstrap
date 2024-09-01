@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -149,6 +149,15 @@ internal static class Emit
             default:
                 throw new NotImplementedException($"Rewritable backing type not yet implemented for {property.Type}.");
         }
+    }
+
+    public static string Parameters(IEnumerable<PropertyModel> properties)
+    {
+        var parameters = string.Join($",{Environment.NewLine}        ",
+            properties.Select(p => $"{ParameterType(p.Type)} {VariableName(p)}"));
+        if (string.IsNullOrWhiteSpace(parameters))
+            return "";
+        return $"{Environment.NewLine}        " + parameters;
     }
 
     public static string Parameters(AttributeModel attribute)

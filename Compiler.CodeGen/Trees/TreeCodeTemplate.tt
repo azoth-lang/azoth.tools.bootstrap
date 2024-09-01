@@ -47,8 +47,7 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#      } #>
 <#      if (tree.GenerateClasses && !node.IsAbstract) { #>
 
-    public static <#= Emit.TypeName(node.Defines) #> Create(
-        <#=string.Join($",{Environment.NewLine}        ", Build.PropertiesForClass(node).Select(p => $"{Emit.ParameterType(p.Type)} {Emit.VariableName(p)}")) #>)
+    public static <#= Emit.TypeName(node.Defines) #> Create(<#= Emit.Parameters(Build.PropertiesForClass(node)) #>)
         => new <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", Build.PropertiesForClass(node).Select(p => Emit.VariableName(p))) #>);
 <#      } #>
 }
@@ -228,8 +227,7 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#          } #>
 <#      } #>
 
-    public <#= Emit.ClassName(node.Defines) #>(
-        <#=string.Join($",{Environment.NewLine}        ", Build.PropertiesForClass(node).Select(p => $"{Emit.ParameterType(p.Type)} {Emit.VariableName(p)}")) #>)
+    public <#= Emit.ClassName(node.Defines) #>(<#= Emit.Parameters(Build.PropertiesForClass(node)) #>)
 <#     if (!tree.SimplifiedTree && node.IsRoot) { #>
         : base(true)
 <#     } #>

@@ -225,8 +225,7 @@ public partial interface IIntrinsicsPackageReferenceNode : IPackageReferenceNode
     bool IPackageReferenceNode.IsTrusted
         => true;
 
-    public static IIntrinsicsPackageReferenceNode Create(
-        )
+    public static IIntrinsicsPackageReferenceNode Create()
         => new IntrinsicsPackageReferenceNode();
 }
 
@@ -922,13 +921,26 @@ public partial interface IConstructorDefinitionNode : IConcreteInvocableDefiniti
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinitionNode
 {
+    new IConstructorDefinitionSyntax? Syntax
+        => null;
+    IConstructorDefinitionSyntax? IConstructorDefinitionNode.Syntax => Syntax;
+    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
+    ICodeSyntax? ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    new IdentifierName? Name
+        => null;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    IdentifierName? IConstructorDeclarationNode.Name => Name;
+    new IFixedList<IConstructorOrInitializerParameterNode> Parameters
+        => FixedList.Empty<IConstructorOrInitializerParameterNode>();
+    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
+    new IBodyNode? Body
+        => null;
+    IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static IDefaultConstructorDefinitionNode Create(
-        IConstructorDefinitionSyntax? syntax,
-        IdentifierName? name,
-        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
-        IBodyNode? body)
-        => new DefaultConstructorDefinitionNode(syntax, name, parameters, body);
+    public static IDefaultConstructorDefinitionNode Create()
+        => new DefaultConstructorDefinitionNode();
 }
 
 // [Closed(typeof(SourceConstructorDefinitionNode))]
@@ -4999,8 +5011,7 @@ file class IntrinsicsPackageReferenceNode : SemanticNode, IIntrinsicsPackageRefe
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
-    public IntrinsicsPackageReferenceNode(
-        )
+    public IntrinsicsPackageReferenceNode()
     {
         SymbolNode = Child.Attach(this, SymbolNodeAspect.PackageReference_SymbolNode(this));
     }
@@ -6507,10 +6518,6 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     private IDefaultConstructorDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public IConstructorDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName? Name { [DebuggerStepThrough] get; }
-    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
-    public IBodyNode? Body { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -6562,16 +6569,8 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public DefaultConstructorDefinitionNode(
-        IConstructorDefinitionSyntax? syntax,
-        IdentifierName? name,
-        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
-        IBodyNode? body)
+    public DefaultConstructorDefinitionNode()
     {
-        Syntax = syntax;
-        Name = name;
-        Parameters = ChildList.Attach(this, parameters);
-        Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
