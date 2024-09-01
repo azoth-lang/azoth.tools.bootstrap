@@ -4643,7 +4643,10 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
-        => contributors.Add(this);
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
@@ -4789,7 +4792,10 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
-        => contributors.Add(this);
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
@@ -4922,7 +4928,10 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
-        => contributors.Add(this);
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {

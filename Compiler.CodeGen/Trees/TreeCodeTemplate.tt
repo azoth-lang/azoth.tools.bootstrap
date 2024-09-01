@@ -269,8 +269,15 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#          if (ShouldEmit.CollectContributors(family, node)) { #>
 
     internal override void CollectContributors_<#= family.Name #>(List<<#= Emit.BaseClassName(tree) #>> contributors)
+<#              if (ShouldEmit.CollectContributorsFromChildren(family, node)) { #>
+    {
+        contributors.Add(this);
+        base.CollectContributors_<#= family.Name #>(contributors);
+    }
+<#              } else { #>
         => contributors.Add(this);
 <#              } #>
+<#          } #>
 <#          if (ShouldEmit.OverrideContribute(family, node)) { #>
 
     internal override void <#= Emit.ContributeMethodName(family, node) #>(<#= Emit.Type(family.FromType) #> builder)
