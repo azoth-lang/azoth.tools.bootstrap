@@ -17,7 +17,7 @@ public abstract class EquationModel : IMemberModel
     public static EquationModel Create(AspectModel aspect, EquationSyntax syntax)
         => syntax switch
         {
-            SynthesizedAttributeEquationSyntax syn => new SynthesizedAttributeEquationModel(aspect, syn),
+            LocalAttributeEquationSyntax syn => new LocalAttributeEquationModel(aspect, syn),
             InheritedAttributeEquationSyntax syn => new InheritedAttributeEquationModel(aspect, syn),
             PreviousAttributeEquationSyntax syn => new PreviousAttributeEquationModel(aspect, syn),
             IntertypeMethodEquationSyntax syn => new IntertypeMethodEquationModel(aspect, syn),

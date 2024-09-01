@@ -20,8 +20,8 @@ public sealed class AspectModel : IHasUsingNamespaces
     public IFixedSet<AttributeFamilyModel> DeclaredAttributeKins { get; }
     public IFixedList<AspectAttributeModel> Attributes { get; }
     public IFixedList<EquationModel> DeclaredEquations { get; }
-    public IFixedList<SynthesizedAttributeEquationModel> ImplicitlyDeclaredEquations => implicitlyDeclaredEquations.Value;
-    private readonly Lazy<IFixedList<SynthesizedAttributeEquationModel>> implicitlyDeclaredEquations;
+    public IFixedList<LocalAttributeEquationModel> ImplicitlyDeclaredEquations => implicitlyDeclaredEquations.Value;
+    private readonly Lazy<IFixedList<LocalAttributeEquationModel>> implicitlyDeclaredEquations;
     public IEnumerable<EquationModel> AllDeclaredEquations => DeclaredEquations.Concat(ImplicitlyDeclaredEquations);
     public IFixedList<RewriteRuleModel> RewriteRules { get; }
 
@@ -37,6 +37,6 @@ public sealed class AspectModel : IHasUsingNamespaces
         RewriteRules = syntax.RewriteRules.Select(r => new RewriteRuleModel(this, r)).ToFixedList();
     }
 
-    private IEnumerable<SynthesizedAttributeEquationModel> ComputeImplicitlyDeclaredEquations()
+    private IEnumerable<LocalAttributeEquationModel> ComputeImplicitlyDeclaredEquations()
         => Tree.Nodes.SelectMany(n => n.ImplicitlyDeclaredEquations.Where(e => e.Aspect == this));
 }

@@ -279,7 +279,7 @@ internal static class Emit
         return equation.IsMethod ? "()" : "";
     }
 
-    public static string Override(SynthesizedAttributeEquationModel equation)
+    public static string Override(LocalAttributeEquationModel equation)
         => equation.IsObjectMember() ? "override " : "";
 
     public static string ParametersAndBody(SoleEquationModel equation)
@@ -297,22 +297,52 @@ internal static class Emit
                 builder.AppendLine();
                 var value = equation.Name.ToCamelCase();
                 var cached = equation.Name.ToCamelCase() + "Cached";
-                var isValueType = equation.Type.IsValueType;
-                var notNull = equation.Type is OptionalTypeModel || isValueType ? "" : "!";
-                // Remove any optional type that might be on it and then ensure there is one optional type
-                var fieldType = !isValueType ? equation.Type.ToOptional() : equation.Type;
-                var syncLock = isValueType ? " ref syncLock," : "";
                 var isChild = equation.Attribute.IsChild;
                 var attachStart = isChild ? $"n => {ChildAttach(equation)}" : "";
                 var attachEnd = isChild ? "(n))" : "";
-                builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
-                builder.AppendLine($"            : this.Synthetic(ref {cached}, ref {value},{syncLock}");
-                builder.Append("                ");
-                builder.Append(attachStart);
-                AppendQualifiedEquationMethod(equation, builder);
-                builder.Append(attachEnd);
-                builder.AppendLine(");");
-                builder.AppendLine($"    private {Type(fieldType)} {value};");
+                if (equation.Attribute is CircularAttributeModel attr)
+                {
+                    // Circular attribute
+                    builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}.UnsafeValue");
+                    builder.AppendLine($"            : this.Circular(ref {cached}, ref {value},");
+                    builder.Append("                ");
+                    AppendQualifiedEquationMethod(equation, builder);
+                    if (attr.InitialExpression is null)
+                    {
+                        builder.AppendLine(",");
+                        builder.Append("                ");
+                        builder.Append(equation.Aspect.Name);
+                        builder.Append('.');
+                        builder.Append(equation.NodeSymbol);
+                        builder.Append('_');
+                        builder.Append(equation.Name);
+                        builder.Append("_Initial");
+                    }
+                    builder.AppendLine(");");
+                    builder.Append($"    private Circular<{Type(equation.Type)}> {value}");
+                    if (attr.InitialExpression is null)
+                        builder.AppendLine(" = Circular.Unset;");
+                    else
+                        builder.AppendLine($" = new({attr.InitialExpression});");
+                }
+                else
+                {
+                    // Non-circular attribute
+                    var isValueType = equation.Type.IsValueType;
+                    // Remove any optional type that might be on it and then ensure there is one optional type
+                    var fieldType = !isValueType ? equation.Type.ToOptional() : equation.Type;
+                    var syncLock = isValueType ? " ref syncLock," : "";
+                    var notNull = equation.Type is OptionalTypeModel || isValueType ? "" : "!";
+                    builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
+                    builder.AppendLine($"            : this.Synthetic(ref {cached}, ref {value},{syncLock}");
+                    builder.Append("                ");
+                    builder.Append(attachStart);
+                    AppendQualifiedEquationMethod(equation, builder);
+                    builder.Append(attachEnd);
+                    builder.AppendLine(");");
+                    builder.AppendLine($"    private {Type(fieldType)} {value};");
+                }
+
                 builder.Append($"    private bool {cached};");
                 return builder.ToString();
             }
@@ -344,7 +374,7 @@ internal static class Emit
         AppendEquationMethod(equation, builder);
     }
 
-    public static string EquationMethod(SynthesizedAttributeEquationModel equation)
+    public static string EquationMethod(LocalAttributeEquationModel equation)
     {
         var builder = new StringBuilder();
         AppendEquationMethod(equation, builder);
@@ -358,7 +388,7 @@ internal static class Emit
         builder.Append(equation.Name);
     }
 
-    public static string EagerBody(SynthesizedAttributeEquationModel equation)
+    public static string EagerBody(LocalAttributeEquationModel equation)
     {
         Requires.That(equation.Strategy == EvaluationStrategy.Eager, nameof(equation), "Must be an eager equation.");
         if (equation.Expression is not null)

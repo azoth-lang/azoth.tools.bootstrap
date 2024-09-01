@@ -4,17 +4,18 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
+using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 
-public sealed class SynthesizedAttributeEquationModel : SoleEquationModel
+public sealed class LocalAttributeEquationModel : SoleEquationModel
 {
-    public override SynthesizedAttributeEquationSyntax? Syntax { get; }
+    public override LocalAttributeEquationSyntax? Syntax { get; }
     /// <summary>
-    /// The <see cref="SynthesizedAttributeModel"/> that this equation provides a value for.
+    /// The attribute that this equation provides a value for.
     /// </summary>
-    public override SynthesizedAttributeModel Attribute => attribute.Value;
-    private readonly Lazy<SynthesizedAttributeModel> attribute;
+    public override LocalAttributeModel Attribute => attribute.Value;
+    private readonly Lazy<LocalAttributeModel> attribute;
     public override EvaluationStrategy Strategy => strategy.Value;
     private readonly Lazy<EvaluationStrategy> strategy;
     public override string? Parameters => IsMethod ? "()" : null;
@@ -24,7 +25,7 @@ public sealed class SynthesizedAttributeEquationModel : SoleEquationModel
     public override bool RequiresEmitOnNode
         => Strategy == EvaluationStrategy.Computed && !this.IsObjectMember();
 
-    public SynthesizedAttributeEquationModel(AspectModel aspect, SynthesizedAttributeEquationSyntax syntax)
+    public LocalAttributeEquationModel(AspectModel aspect, LocalAttributeEquationSyntax syntax)
         : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name,
             syntax.IsMethod, syntax.Expression)
     {
@@ -38,7 +39,7 @@ public sealed class SynthesizedAttributeEquationModel : SoleEquationModel
         attribute = new(GetAttribute);
     }
 
-    public SynthesizedAttributeEquationModel(TreeNodeModel node, SynthesizedAttributeModel attribute)
+    public LocalAttributeEquationModel(TreeNodeModel node, SynthesizedAttributeModel attribute)
         : base(attribute.Aspect, node.Defines, attribute.Name, attribute.IsMethod, attribute.DefaultExpression)
     {
         strategy = new(attribute.Strategy);
@@ -53,13 +54,21 @@ public sealed class SynthesizedAttributeEquationModel : SoleEquationModel
     /// </remarks>
     private EvaluationStrategy ComputeStrategy()
     {
-        if (IsMethod)
-            return EvaluationStrategy.Computed;
-        return Syntax!.Strategy.WithDefault(Expression, Attribute.Strategy);
+        switch (Attribute)
+        {
+            case CircularAttributeModel _:
+                return EvaluationStrategy.Lazy;
+            case SynthesizedAttributeModel attr:
+                if (IsMethod)
+                    return EvaluationStrategy.Computed;
+                return Syntax!.Strategy.WithDefault(Expression, attr.Strategy);
+            default:
+                throw ExhaustiveMatch.Failed(Attribute);
+        }
     }
 
-    private SynthesizedAttributeModel GetAttribute()
-        => Aspect.Tree.AttributeFor<SynthesizedAttributeModel>(NodeSymbol, Name)
+    private LocalAttributeModel GetAttribute()
+        => Aspect.Tree.AttributeFor<LocalAttributeModel>(NodeSymbol, Name)
            ?? throw new($"{NodeSymbol}.{Name} doesn't have a corresponding attribute.");
 
     public override string ToString() => $"= {NodeSymbol}.{Name}{Parameters ?? ""}";

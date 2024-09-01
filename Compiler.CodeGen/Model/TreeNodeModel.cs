@@ -173,8 +173,8 @@ public class TreeNodeModel
     public IFixedList<EquationModel> DeclaredEquations => declaredEquations.Value;
     private readonly Lazy<IFixedList<EquationModel>> declaredEquations;
 
-    public IFixedList<SynthesizedAttributeEquationModel> ImplicitlyDeclaredEquations => implicitlyDeclaredEquations.Value;
-    private readonly Lazy<IFixedList<SynthesizedAttributeEquationModel>> implicitlyDeclaredEquations;
+    public IFixedList<LocalAttributeEquationModel> ImplicitlyDeclaredEquations => implicitlyDeclaredEquations.Value;
+    private readonly Lazy<IFixedList<LocalAttributeEquationModel>> implicitlyDeclaredEquations;
 
     public IFixedList<EquationModel> AllDeclaredEquations => allDeclaredEquations.Value;
     private readonly Lazy<IFixedList<EquationModel>> allDeclaredEquations;
@@ -276,9 +276,9 @@ public class TreeNodeModel
         declaredEquations = new(() => Tree.Aspects.SelectMany(a => a.DeclaredEquations).Where(e => e.NodeSymbol == Defines).ToFixedList());
         implicitlyDeclaredEquations = new(() =>
             {
-                if (IsAbstract) return FixedList.Empty<SynthesizedAttributeEquationModel>();
+                if (IsAbstract) return FixedList.Empty<LocalAttributeEquationModel>();
                 var actualEquationsNames = ComputeActualEquations(DeclaredEquations)
-                                           .OfType<SynthesizedAttributeEquationModel>()
+                                           .OfType<LocalAttributeEquationModel>()
                                            .Select(eq => eq.Name).ToFixedSet();
                 return ActualAttributes.OfType<SynthesizedAttributeModel>()
                                        .Where(a => a.DefaultExpression is null && !actualEquationsNames.Contains(a.Name))
@@ -442,7 +442,7 @@ public class TreeNodeModel
                .Concat<EquationModel>(contributorEquations);
     }
 
-    private SynthesizedAttributeEquationModel ImplicitlyDeclaredEquation(SynthesizedAttributeModel attribute)
+    private LocalAttributeEquationModel ImplicitlyDeclaredEquation(SynthesizedAttributeModel attribute)
         => new(this, attribute);
 
     public override string ToString() => Defines.ToString();

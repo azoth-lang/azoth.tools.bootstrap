@@ -217,10 +217,10 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#      } #>
 <#      foreach (var equation in node.ActualEquations) { #>
 <#          switch (equation) { #>
-<#              case SynthesizedAttributeEquationModel eq when eq.Strategy == EvaluationStrategy.Eager: #>
+<#              case LocalAttributeEquationModel eq when eq.Strategy == EvaluationStrategy.Eager: #>
     public <#= Emit.Type(eq.Type) #> <#= eq.Name #> { [DebuggerStepThrough] get; }
 <#                  break;#>
-<#              case SynthesizedAttributeEquationModel eq
+<#              case LocalAttributeEquationModel eq
                     when eq.Strategy == EvaluationStrategy.Lazy || eq.Strategy == EvaluationStrategy.Computed && eq.IsObjectMember(): #>
     public <#= Emit.Override(eq) #><#= Emit.Type(eq.Type) #> <#= eq.Name #><#= Emit.ParametersAndBody(eq) #>
 <#                  break;#>
@@ -239,7 +239,7 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
         <#= property.TempName #> = <#= Emit.VariableName(property) #><#= Emit.ToCollection(property) #>;
 <#          } #>
 <#      } #>
-<#      foreach (var equation in node.ActualEquations.OfType<SynthesizedAttributeEquationModel>().Where(eq => eq.Strategy == EvaluationStrategy.Eager)) { #>
+<#      foreach (var equation in node.ActualEquations.OfType<LocalAttributeEquationModel>().Where(eq => eq.Strategy == EvaluationStrategy.Eager)) { #>
         <#= equation.Name #> = <#= Emit.EagerBody(equation) #>;
 <#      } #>
     }

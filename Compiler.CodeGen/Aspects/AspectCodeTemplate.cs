@@ -82,7 +82,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Aspects
             #line hidden
             
             #line 24 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
-              case SynthesizedAttributeEquationModel eq: 
+              case LocalAttributeEquationModel eq: 
             
             #line default
             #line hidden

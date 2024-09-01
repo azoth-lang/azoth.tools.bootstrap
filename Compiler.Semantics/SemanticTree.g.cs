@@ -4583,10 +4583,10 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     private AccessModifier accessModifier;
     private bool accessModifierCached;
     public IFixedSet<BareReferenceType> Supertypes
-        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes!
-            : this.Synthetic(ref supertypesCached, ref supertypes,
+        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
+            : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private IFixedSet<BareReferenceType>? supertypes;
+    private Circular<IFixedSet<BareReferenceType>> supertypes = new([]);
     private bool supertypesCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
@@ -4733,10 +4733,10 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     private AccessModifier accessModifier;
     private bool accessModifierCached;
     public IFixedSet<BareReferenceType> Supertypes
-        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes!
-            : this.Synthetic(ref supertypesCached, ref supertypes,
+        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
+            : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private IFixedSet<BareReferenceType>? supertypes;
+    private Circular<IFixedSet<BareReferenceType>> supertypes = new([]);
     private bool supertypesCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
@@ -4869,10 +4869,10 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     private AccessModifier accessModifier;
     private bool accessModifierCached;
     public IFixedSet<BareReferenceType> Supertypes
-        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes!
-            : this.Synthetic(ref supertypesCached, ref supertypes,
+        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
+            : this.Circular(ref supertypesCached, ref supertypes,
                 TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private IFixedSet<BareReferenceType>? supertypes;
+    private Circular<IFixedSet<BareReferenceType>> supertypes = new([]);
     private bool supertypesCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!

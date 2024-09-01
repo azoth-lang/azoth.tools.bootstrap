@@ -21,7 +21,7 @@ internal static partial class <#= aspect.Name #>
 <#  foreach (var equation in aspect.AllDeclaredEquations.Where(eq => ShouldEmit.EquationPartialImplementation(eq))) { #>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 <#          switch (equation) { #>
-<#              case SynthesizedAttributeEquationModel eq: #>
+<#              case LocalAttributeEquationModel eq: #>
     public static partial <#= Emit.Type(eq.Type) #> <#= Emit.EquationMethod(eq) #>(<#= Emit.TypeName(eq.Node.Defines) #> node);
 <#                  break; #>
 <#              case InheritedAttributeEquationModel eq: #>

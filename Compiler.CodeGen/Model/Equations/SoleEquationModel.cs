@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 /// </summary>
 /// <remarks>These equations are distinct by name (and parameters) per node and as such, there
 /// should only be one of these on a given node.</remarks>
-[Closed(typeof(SynthesizedAttributeEquationModel), typeof(IntertypeMethodEquationModel))]
+[Closed(typeof(LocalAttributeEquationModel), typeof(IntertypeMethodEquationModel))]
 public abstract class SoleEquationModel : EquationModel
 {
     public static IEqualityComparer<SoleEquationModel> NameAndParametersComparer { get; }

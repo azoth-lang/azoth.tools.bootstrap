@@ -4,7 +4,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
 [Closed(
-    typeof(SynthesizedAttributeEquationSyntax),
+    typeof(LocalAttributeEquationSyntax),
     typeof(InheritedAttributeEquationSyntax),
     typeof(PreviousAttributeEquationSyntax),
     typeof(IntertypeMethodEquationSyntax),

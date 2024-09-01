@@ -8,7 +8,7 @@
 // ↓ ↑ ⮡ ✎
 
 // ---------- Type Definitions
-↑ TypeDefinition.Supertypes: {`BareReferenceType`};
+⟳ TypeDefinition.Supertypes: {`BareReferenceType`} initial => [];
 = TypeDefinition.Supertypes;
 = TypeDefinition.↑.Diagnostics;
 ↑ TypeDefinition.DeclaredType:`IDeclaredUserType`;

@@ -242,7 +242,7 @@ public static class AspectParser
         {
             if (isMethod && parameters!.Length > 0)
                 return ParseIntertypeMethodEquation(evaluationStrategy, nodeSymbol, definition, parameters, typeOverride, expression);
-            return ParseSynthesizedEquation(evaluationStrategy, nodeSymbol, definition, isMethod, typeOverride, expression);
+            return ParseLocalEquation(evaluationStrategy, nodeSymbol, definition, isMethod, typeOverride, expression);
         }
         var name = segments[^1];
         segments = segments[..^1];
@@ -266,7 +266,7 @@ public static class AspectParser
         return parameters;
     }
 
-    private static SynthesizedAttributeEquationSyntax ParseSynthesizedEquation(
+    private static LocalAttributeEquationSyntax ParseLocalEquation(
         EvaluationStrategy? evaluationStrategy,
         SymbolSyntax node,
         string name,
@@ -275,7 +275,7 @@ public static class AspectParser
         string? expression)
     {
         if (typeOverride is not null)
-            throw new FormatException("Synthesized equations cannot have type overrides.");
+            throw new FormatException("Local attribute equations cannot have type overrides.");
         return new(evaluationStrategy, node, name, isMethod, expression);
     }
 

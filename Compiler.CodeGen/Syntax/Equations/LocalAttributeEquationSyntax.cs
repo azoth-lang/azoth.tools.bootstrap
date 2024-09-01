@@ -2,11 +2,11 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 
-public sealed class SynthesizedAttributeEquationSyntax : EquationSyntax
+public sealed class LocalAttributeEquationSyntax : EquationSyntax
 {
     public EvaluationStrategy? Strategy { get; }
 
-    public SynthesizedAttributeEquationSyntax(
+    public LocalAttributeEquationSyntax(
         EvaluationStrategy? strategy,
         SymbolSyntax node,
         string name,

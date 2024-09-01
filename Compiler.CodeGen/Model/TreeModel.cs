@@ -98,6 +98,8 @@ public sealed class TreeModel : IHasUsingNamespaces
         errors |= ValidateTempNodesHaveFinalNodes();
         errors |= ValidatePlaceholdersAreUniquelyFilled();
         errors |= ValidateAggregateEquationsContribute();
+        errors |= ValidateLocalAttributeEquations();
+        errors |= ValidateCircularAttributeEquations();
         if (errors)
             throw new ValidationFailedException();
     }
@@ -214,6 +216,35 @@ public sealed class TreeModel : IHasUsingNamespaces
             errors = true;
             Console.Error.WriteLine($"ERROR: Equation '{equation}' does not contribute to any node.");
         }
+        return errors;
+    }
+
+    private bool ValidateLocalAttributeEquations()
+    {
+        var errors = false;
+        var equations = Aspects.SelectMany(a => a.DeclaredEquations).OfType<LocalAttributeEquationModel>();
+        foreach (var equation in equations)
+            if (equation.IsMethod != equation.Attribute.IsMethod)
+            {
+                errors = true;
+                Console.Error.WriteLine($"ERROR: Equation '{equation}' method state doesn't match attribute {equation.Attribute}.");
+            }
+
+        return errors;
+    }
+
+    private bool ValidateCircularAttributeEquations()
+    {
+        var errors = false;
+        var equations = Aspects.SelectMany(a => a.DeclaredEquations)
+                               .OfType<LocalAttributeEquationModel>()
+                               .Where(a => a.Attribute is CircularAttributeModel);
+        foreach (var equation in equations)
+            if (equation.Syntax?.Strategy is not null)
+            {
+                errors = true;
+                Console.Error.WriteLine($"ERROR: Cannot specify strategy for '{equation}' because it is for a circular attribute.");
+            }
         return errors;
     }
 }
