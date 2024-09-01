@@ -330,6 +330,7 @@ public static class GrammarAttribute
         T Compute() => collect(actualContributors);
     }
 
+    // Not null inference is wrong here. This can be null because another thread could null it out.
     private static IFixedSet<T>? GetContributors<T>(
         ref IFixedSet<T>? contributors,
         Func<IFixedSet<T>> collectContributors,
@@ -340,11 +341,12 @@ public static class GrammarAttribute
         if (actualContributors is null)
         {
             actualContributors = collectContributors();
-            var previousValue = Interlocked.CompareExchange(ref contributors, actualContributors, InProgressFixedSet<T>.Instance);
+            // Null inference is wrong here. This can be null because another thread could null it out.
+            IFixedSet<T>? previousValue = Interlocked.CompareExchange(ref contributors, actualContributors, InProgressFixedSet<T>.Instance);
             if (!ReferenceEquals(previousValue, InProgressFixedSet<T>.Instance))
                 actualContributors = previousValue;
         }
-        else if (actualContributors == InProgressFixedSet<T>.Instance)
+        else if (ReferenceEquals(actualContributors, InProgressFixedSet<T>.Instance))
             throw new InvalidOperationException($"Circular dependency in collecting contributors for aggregate attribute '{attributeName}'.");
         return actualContributors;
     }

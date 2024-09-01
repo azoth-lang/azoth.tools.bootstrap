@@ -4056,11 +4056,11 @@ file class PackageNode : SemanticNode, IPackageNode
         return base.Inherited_PackageNameScope(child, descendant, ctx);
     }
 
-    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
-        => contributors.Add(this);
-
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
         => builder.Add(Diagnostics);
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+        => contributors.Add(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -4216,11 +4216,11 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
         return base.Inherited_ContainingDeclaration(child, descendant, ctx);
     }
 
-    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
-        => contributors.Add(this);
-
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
         => builder.Add(Diagnostics);
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+        => contributors.Add(this);
 
     internal override void Contribute_This_Diagnostics(DiagnosticCollectionBuilder builder)
     {
@@ -4642,6 +4642,9 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
 
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+        => contributors.Add(this);
+
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         TypeDefinitionsAspect.TypeDefinition_Contribute_Diagnostics(this, builder);
@@ -4785,6 +4788,9 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
 
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+        => contributors.Add(this);
+
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         TypeDefinitionsAspect.TypeDefinition_Contribute_Diagnostics(this, builder);
@@ -4914,6 +4920,9 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     {
         return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+        => contributors.Add(this);
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
