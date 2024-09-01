@@ -145,8 +145,7 @@ SourceConstructorDefinition <: ConstructorDefinition
     SelfParameter:ConstructorSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;
 InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, InitializerDeclaration
     = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*;
-DefaultInitializerDefinition <: InitializerDefinition
-    = /Parameters/ /Entry/ Body? /Exit/;
+DefaultInitializerDefinition <: InitializerDefinition;
 SourceInitializerDefinition <: InitializerDefinition
     = Syntax:`IInitializerDefinitionSyntax`
     SelfParameter:InitializerSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;

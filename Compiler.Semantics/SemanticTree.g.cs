@@ -976,6 +976,10 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    new IdentifierName? Name
+        => Syntax?.Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    IdentifierName? IInitializerDeclarationNode.Name => Name;
     new InitializerSymbol Symbol { get; }
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
@@ -986,13 +990,22 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinitionNode
 {
+    new IInitializerDefinitionSyntax? Syntax
+        => null;
+    IInitializerDefinitionSyntax? IInitializerDefinitionNode.Syntax => Syntax;
+    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
+    ICodeSyntax? ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
+    new IFixedList<IConstructorOrInitializerParameterNode> Parameters
+        => FixedList.Empty<IConstructorOrInitializerParameterNode>();
+    IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
+    new IBodyNode? Body
+        => null;
+    IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static IDefaultInitializerDefinitionNode Create(
-        IInitializerDefinitionSyntax? syntax,
-        IdentifierName? name,
-        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
-        IBodyNode? body)
-        => new DefaultInitializerDefinitionNode(syntax, name, parameters, body);
+    public static IDefaultInitializerDefinitionNode Create()
+        => new DefaultInitializerDefinitionNode();
 }
 
 // [Closed(typeof(SourceInitializerDefinitionNode))]
@@ -1010,12 +1023,11 @@ public partial interface ISourceInitializerDefinitionNode : IInitializerDefiniti
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
     public static ISourceInitializerDefinitionNode Create(
-        IdentifierName? name,
         IInitializerDefinitionSyntax syntax,
         IInitializerSelfParameterNode selfParameter,
         IEnumerable<IConstructorOrInitializerParameterNode> parameters,
         IBlockBodyNode body)
-        => new SourceInitializerDefinitionNode(name, syntax, selfParameter, parameters, body);
+        => new SourceInitializerDefinitionNode(syntax, selfParameter, parameters, body);
 }
 
 // [Closed(typeof(FieldDefinitionNode))]
@@ -6754,10 +6766,6 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     private IDefaultInitializerDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public IInitializerDefinitionSyntax? Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName? Name { [DebuggerStepThrough] get; }
-    public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
-    public IBodyNode? Body { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -6809,16 +6817,8 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public DefaultInitializerDefinitionNode(
-        IInitializerDefinitionSyntax? syntax,
-        IdentifierName? name,
-        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
-        IBodyNode? body)
+    public DefaultInitializerDefinitionNode()
     {
-        Syntax = syntax;
-        Name = name;
-        Parameters = ChildList.Attach(this, parameters);
-        Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
@@ -6866,7 +6866,6 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     private ISourceInitializerDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public IdentifierName? Name { [DebuggerStepThrough] get; }
     public IInitializerDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IInitializerSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<IConstructorOrInitializerParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -6923,13 +6922,11 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     private bool accessModifierCached;
 
     public SourceInitializerDefinitionNode(
-        IdentifierName? name,
         IInitializerDefinitionSyntax syntax,
         IInitializerSelfParameterNode selfParameter,
         IEnumerable<IConstructorOrInitializerParameterNode> parameters,
         IBlockBodyNode body)
     {
-        Name = name;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
@@ -6969,6 +6966,26 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.SelfParameter))
+            return Self.FlowStateBefore();
+        if (0 < Self.Parameters.Count && ReferenceEquals(child, Self.Parameters[0]))
+            return SelfParameter.FlowStateAfter;
+        if (IndexOfNode(Self.Parameters, child) is { } index)
+            return Parameters[index - 1].FlowStateAfter;
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return DataType.Void;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)

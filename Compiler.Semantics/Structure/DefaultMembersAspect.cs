@@ -1,6 +1,5 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
@@ -33,7 +32,7 @@ internal static partial class DefaultMembersAspect
         if (node.SourceMembers.Any(m => m is IInitializerDefinitionNode))
             return null;
 
-        return Child.Attach(node, new DefaultInitializerDefinitionNode());
+        return Child.Attach(node, IDefaultInitializerDefinitionNode.Create());
     }
 
     public static partial IFixedSet<IStructMemberDefinitionNode> StructDefinition_Members(IStructDefinitionNode node)

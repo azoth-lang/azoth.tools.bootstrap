@@ -67,6 +67,11 @@
 ↑ DefaultConstructorDefinition.Parameters: ConstructorOrInitializerParameter*
     => FixedList.Empty<IConstructorOrInitializerParameterNode>();
 ↑ DefaultConstructorDefinition.Body: Body? => null;
+↑ InitializerDefinition.Name: `IdentifierName`? => Syntax?.Name;
+↑ DefaultInitializerDefinition.Syntax: `IInitializerDefinitionSyntax`? => null;
+↑ DefaultInitializerDefinition.Parameters: ConstructorOrInitializerParameter*
+    => FixedList.Empty<IConstructorOrInitializerParameterNode>();
+↑ DefaultInitializerDefinition.Body: Body? => null;
 
 // -------------------------------------------------------------------------------------------------
 // Declarations
