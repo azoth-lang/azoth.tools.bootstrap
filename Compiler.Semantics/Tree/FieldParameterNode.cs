@@ -35,11 +35,11 @@ internal sealed class FieldParameterNode : ParameterNode, IFieldParameterNode
     private bool bindingTypeCached;
     public override DataType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : this.Synthetic(ref bindingTypeCached, ref bindingType, TypeMemberDeclarationsAspect.FieldParameter_BindingType);
+            : this.Synthetic(ref bindingTypeCached, ref bindingType, NameBindingTypesAspect.FieldParameter_BindingType);
     private ValueAttribute<ParameterType> parameterType;
     public ParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value
-            : parameterType.GetValue(this, TypeMemberDeclarationsAspect.FieldParameter_ParameterType);
+            : parameterType.GetValue(this, NameBindingTypesAspect.FieldParameter_ParameterType);
 
     public override IFlowState FlowStateAfter => FlowStateBefore();
 

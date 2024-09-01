@@ -1,25 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
-using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
-using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 // TODO shouldn't this be renamed to TypeMemberDefinitionsAspect?
 internal static partial class TypeMemberDeclarationsAspect
 {
-    // TODO move to DefinitionTypesAspect?
-    public static partial FunctionType FunctionDefinition_Type(IFunctionDefinitionNode node)
+    // TODO maybe this should be moved to definition types aspect?
+    public static partial FunctionType ConcreteFunctionInvocableDefinition_Type(IConcreteFunctionInvocableDefinitionNode node)
         => FunctionType(node.Parameters, node.Return);
 
     private static FunctionType FunctionType(IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
@@ -56,138 +51,16 @@ internal static partial class TypeMemberDeclarationsAspect
             diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(node.File, node.Return!.Syntax, returnType));
     }
 
-    public static DataType NamedParameter_BindingType(INamedParameterNode node)
-        => node.TypeNode.NamedType;
-
-    public static ParameterType NamedParameter_ParameterType(INamedParameterNode node)
-    {
-        bool isLent = node.IsLentBinding && node.BindingType.CanBeLent();
-        return new(isLent, node.BindingType);
-    }
-
-    public static SelfParameterType SelfParameter_ParameterType(ISelfParameterNode node)
-    {
-        bool isLent = node.IsLentBinding && node.BindingType.CanBeLent();
-        return new(isLent, node.BindingType);
-    }
-
-    public static Pseudotype MethodSelfParameter_BindingType(IMethodSelfParameterNode node)
-    {
-        var declaredType = node.ContainingDeclaredType;
-        var genericParameterTypes = declaredType.GenericParameterTypes;
-        var capability = node.Capability;
-        // TODO shouldn't their be an overload of .With() that takes an ICapabilityConstraint (e.g. `capability.Constraint`)
-        return capability switch
-        {
-            ICapabilityNode n => declaredType.With(n.Capability, genericParameterTypes),
-            ICapabilitySetNode n => declaredType.With(n.Constraint, genericParameterTypes),
-            _ => throw ExhaustiveMatch.Failed(capability)
-        };
-    }
-
-    public static void MethodSelfParameter_ContributeDiagnostics(IMethodSelfParameterNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        CheckTypeCannotBeLent(node, diagnostics);
-
-        CheckConstClassSelfParameterCannotHaveCapability(node, diagnostics);
-    }
-
-    private static void CheckTypeCannotBeLent(IMethodSelfParameterNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        var isLent = node.IsLentBinding;
-        var selfType = ((IParameterNode)node).BindingType;
-        if (isLent && !selfType.CanBeLent())
-            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, selfType));
-    }
-
-    private static void CheckConstClassSelfParameterCannotHaveCapability(
-        IMethodSelfParameterNode node,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        var inConstClass = node.ContainingDeclaredType.IsDeclaredConst;
-        var selfParameterType = node.ParameterType;
-        var selfType = selfParameterType.Type;
-        if (inConstClass
-            && ((selfType is CapabilityType { Capability: var selfCapability }
-                 && selfCapability != Capability.Constant
-                 && selfCapability != Capability.Identity)
-                || selfType is CapabilityTypeConstraint))
-            diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(node.File, node.Syntax));
-    }
-
-    public static CapabilityType ConstructorSelfParameter_BindingType(IConstructorSelfParameterNode node)
-    {
-        var declaredType = node.ContainingDeclaredType;
-        var capability = node.Syntax.Capability.Declared.ToSelfParameterCapability();
-        return declaredType.With(capability, declaredType.GenericParameterTypes);
-    }
-
-    public static void ConstructorSelfParameter_ContributeDiagnostics(
-        IConstructorSelfParameterNode node,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.IsLentBinding)
-            diagnostics.Add(OtherSemanticError.LentConstructorOrInitializerSelf(node.File, node.Syntax));
-
-        CheckInvalidConstructorSelfParameterCapability(node.Capability.Syntax, node.File, diagnostics);
-    }
-
-    internal static DataType FieldParameter_BindingType(IFieldParameterNode node)
-        => node.ReferencedField?.BindingType ?? DataType.Unknown;
-
-    public static ParameterType FieldParameter_ParameterType(IFieldParameterNode node)
-        => new ParameterType(false, node.BindingType);
-
-    public static CapabilityType InitializerSelfParameter_BindingType(IInitializerSelfParameterNode node)
-    {
-        var declaredType = node.ContainingDeclaredType;
-        var capability = node.Syntax.Capability.Declared.ToSelfParameterCapability();
-        return declaredType.With(capability, declaredType.GenericParameterTypes);
-    }
-
-    public static void InitializerSelfParameter_ContributeDiagnostics(
-        IInitializerSelfParameterNode node,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.IsLentBinding)
-            diagnostics.Add(OtherSemanticError.LentConstructorOrInitializerSelf(node.File, node.Syntax));
-
-        CheckInvalidConstructorSelfParameterCapability(node.Capability.Syntax, node.File, diagnostics);
-    }
-
-    private static void CheckInvalidConstructorSelfParameterCapability(
-        ICapabilitySyntax capabilitySyntax,
-        CodeFile file,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        var declaredCapability = capabilitySyntax.Declared;
-        switch (declaredCapability)
-        {
-            case DeclaredCapability.Read:
-            case DeclaredCapability.Mutable:
-                break;
-            case DeclaredCapability.Isolated:
-            case DeclaredCapability.TemporarilyIsolated:
-            case DeclaredCapability.Constant:
-            case DeclaredCapability.TemporarilyConstant:
-            case DeclaredCapability.Identity:
-
-                diagnostics.Add(TypeError.InvalidConstructorSelfParameterCapability(file, capabilitySyntax));
-                break;
-            default:
-                throw ExhaustiveMatch.Failed(declaredCapability);
-        }
-    }
-
-    public static partial DataType FieldDefinition_BindingType(IFieldDefinitionNode node)
-        => node.TypeNode.NamedType;
-
     public static partial void FieldDefinition_Contribute_Diagnostics(IFieldDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         CheckFieldIsVarianceSafe(node, diagnostics);
 
         CheckFieldMaintainsIndependence(node, diagnostics);
     }
+
+    // TODO maybe this should be initial flow state?
+    public static partial IFlowState ConcreteInvocableDefinition_FlowStateBefore(IConcreteInvocableDefinitionNode node)
+        => IFlowState.Empty;
 
     private static void CheckFieldIsVarianceSafe(IFieldDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
@@ -221,19 +94,5 @@ internal static partial class TypeMemberDeclarationsAspect
         // Fields must also maintain the independence of independent type parameters
         if (!type.FieldMaintainsIndependence())
             diagnostics.Add(TypeError.FieldMustMaintainIndependence(node.File, node.Syntax, type));
-    }
-
-    public static FunctionType AssociatedFunctionDefinition_Type(IAssociatedFunctionDefinitionNode node)
-        => FunctionType(node.Parameters, node.Return);
-
-    // TODO maybe this should be initial flow state?
-    public static partial IFlowState ConcreteInvocableDefinition_FlowStateBefore(IConcreteInvocableDefinitionNode node)
-        => IFlowState.Empty;
-
-    public static void NamedParameter_ContributeDiagnostics(INamedParameterNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        var type = node.BindingType;
-        if (node.IsLentBinding && !type.CanBeLent())
-            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, type));
     }
 }

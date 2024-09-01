@@ -104,9 +104,9 @@ public partial interface IBlockOrResultNode : IElseClauseNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 {
+    ValueId BindingValueId { get; }
     IMaybeAntetype BindingAntetype { get; }
     Pseudotype BindingType { get; }
-    ValueId BindingValueId { get; }
     bool IsLentBinding { get; }
 }
 
@@ -116,9 +116,9 @@ public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamedBindingNode : IBindingNode, INamedBindingDeclarationNode
 {
+    LexicalScope ContainingLexicalScope { get; }
     new DataType BindingType { get; }
     Pseudotype IBindingNode.BindingType => BindingType;
-    LexicalScope ContainingLexicalScope { get; }
     bool IsMutableBinding { get; }
 }
 
@@ -387,19 +387,18 @@ public partial interface IConcreteInvocableDefinitionNode : IInvocableDefinition
     typeof(IFunctionDefinitionNode),
     typeof(IAssociatedFunctionDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConcreteFunctionInvocableDefinitionNode : IConcreteInvocableDefinitionNode
+public partial interface IConcreteFunctionInvocableDefinitionNode : IConcreteInvocableDefinitionNode, IFunctionInvocableDeclarationNode
 {
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     new IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
     new IBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
-    FunctionType Type { get; }
-    new FunctionSymbol Symbol { get; }
-    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
-    Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    new FunctionType Type { get; }
+    FunctionType IFunctionInvocableDeclarationNode.Type => Type;
 }
 
 // [Closed(typeof(NamespaceBlockDefinitionNode))]
@@ -482,9 +481,6 @@ public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, I
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new FunctionType Type { get; }
-    FunctionType IFunctionLikeDeclarationNode.Type => Type;
-    FunctionType IConcreteFunctionInvocableDefinitionNode.Type => Type;
     new INamespaceDeclarationNode ContainingDeclaration { get; }
     ISymbolDeclarationNode IDefinitionNode.ContainingDeclaration => ContainingDeclaration;
     new IdentifierName Name
@@ -498,9 +494,8 @@ public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, I
     Symbol IDefinitionNode.ContainingSymbol => ContainingSymbol;
     new FunctionSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
-    FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
+    FunctionSymbol IFunctionInvocableDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
-    FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
 
     public static IFunctionDefinitionNode Create(
         IFunctionDefinitionSyntax syntax,
@@ -1059,8 +1054,6 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     new FieldSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FieldSymbol IFieldDeclarationNode.Symbol => Symbol;
-    new IMaybeAntetype BindingAntetype { get; }
-    IMaybeAntetype IBindingNode.BindingAntetype => BindingAntetype;
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
     bool IBindingNode.IsLentBinding
@@ -1085,29 +1078,24 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionIn
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    new IdentifierName Name { get; }
+    new IdentifierName Name
+        => Syntax.Name;
     IdentifierName IConcreteFunctionInvocableDefinitionNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    StandardName IAssociatedMemberDefinitionNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
+    StandardName IAssociatedMemberDefinitionNode.Name => Name;
     StandardName IAssociatedFunctionDeclarationNode.Name => Name;
-    new FunctionType Type { get; }
-    FunctionType IConcreteFunctionInvocableDefinitionNode.Type => Type;
-    FunctionType IFunctionLikeDeclarationNode.Type => Type;
     new FunctionSymbol Symbol { get; }
-    FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
-    FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
+    FunctionSymbol IFunctionInvocableDeclarationNode.Symbol => Symbol;
 
     public static IAssociatedFunctionDefinitionNode Create(
         IAssociatedFunctionDefinitionSyntax syntax,
-        IdentifierName name,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
-        FunctionType type,
         IBodyNode body)
-        => new AssociatedFunctionDefinitionNode(syntax, name, parameters, @return, type, body);
+        => new AssociatedFunctionDefinitionNode(syntax, parameters, @return, body);
 }
 
 // [Closed(typeof(AttributeNode))]
@@ -1183,12 +1171,12 @@ public partial interface IParameterNode : ICodeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IdentifierName? Name { get; }
     bool Unused { get; }
-    IMaybeAntetype BindingAntetype { get; }
-    Pseudotype BindingType { get; }
     IFlowState FlowStateAfter { get; }
     IPreviousValueId PreviousValueId();
     ValueId BindingValueId { get; }
     IFlowState FlowStateBefore();
+    IMaybeAntetype BindingAntetype { get; }
+    Pseudotype BindingType { get; }
 }
 
 [Closed(
@@ -1201,9 +1189,9 @@ public partial interface IConstructorOrInitializerParameterNode : IParameterNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    ParameterType ParameterType { get; }
     new DataType BindingType { get; }
     Pseudotype IParameterNode.BindingType => BindingType;
-    ParameterType ParameterType { get; }
 }
 
 // [Closed(typeof(NamedParameterNode))]
@@ -1225,12 +1213,12 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     IdentifierName INamedBindingDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
     ITypeNode TypeNode { get; }
-    new IMaybeAntetype BindingAntetype { get; }
-    IMaybeAntetype IParameterNode.BindingAntetype => BindingAntetype;
-    IMaybeAntetype IBindingNode.BindingAntetype => BindingAntetype;
     new ValueId BindingValueId { get; }
     ValueId IParameterNode.BindingValueId => BindingValueId;
     ValueId IBindingNode.BindingValueId => BindingValueId;
+    new IMaybeAntetype BindingAntetype { get; }
+    IMaybeAntetype IParameterNode.BindingAntetype => BindingAntetype;
+    IMaybeAntetype IBindingNode.BindingAntetype => BindingAntetype;
     new DataType BindingType { get; }
     DataType IConstructorOrInitializerParameterNode.BindingType => BindingType;
     Pseudotype IParameterNode.BindingType => BindingType;
@@ -1245,10 +1233,8 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
         bool isMutableBinding,
         bool isLentBinding,
         IdentifierName name,
-        ITypeNode typeNode,
-        IMaybeAntetype bindingAntetype,
-        DataType bindingType)
-        => new NamedParameterNode(unused, flowStateAfter, parameterType, syntax, isMutableBinding, isLentBinding, name, typeNode, bindingAntetype, bindingType);
+        ITypeNode typeNode)
+        => new NamedParameterNode(unused, flowStateAfter, parameterType, syntax, isMutableBinding, isLentBinding, name, typeNode);
 }
 
 [Closed(
@@ -1267,15 +1253,15 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     SelfParameterType ParameterType { get; }
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IDeclaredUserType ContainingDeclaredType { get; }
+    new ValueId BindingValueId { get; }
+    ValueId IParameterNode.BindingValueId => BindingValueId;
+    ValueId IBindingNode.BindingValueId => BindingValueId;
     new IMaybeAntetype BindingAntetype { get; }
     IMaybeAntetype IParameterNode.BindingAntetype => BindingAntetype;
     IMaybeAntetype IBindingNode.BindingAntetype => BindingAntetype;
     new Pseudotype BindingType { get; }
     Pseudotype IParameterNode.BindingType => BindingType;
     Pseudotype IBindingNode.BindingType => BindingType;
-    new ValueId BindingValueId { get; }
-    ValueId IParameterNode.BindingValueId => BindingValueId;
-    ValueId IBindingNode.BindingValueId => BindingValueId;
 }
 
 // [Closed(typeof(ConstructorSelfParameterNode))]
@@ -1298,12 +1284,10 @@ public partial interface IConstructorSelfParameterNode : ISelfParameterNode
         bool unused,
         IFlowState flowStateAfter,
         SelfParameterType parameterType,
-        IMaybeAntetype bindingAntetype,
         IConstructorSelfParameterSyntax syntax,
         bool isLentBinding,
-        ICapabilityNode capability,
-        CapabilityType bindingType)
-        => new ConstructorSelfParameterNode(name, unused, flowStateAfter, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType);
+        ICapabilityNode capability)
+        => new ConstructorSelfParameterNode(name, unused, flowStateAfter, parameterType, syntax, isLentBinding, capability);
 }
 
 // [Closed(typeof(InitializerSelfParameterNode))]
@@ -1326,12 +1310,10 @@ public partial interface IInitializerSelfParameterNode : ISelfParameterNode
         bool unused,
         IFlowState flowStateAfter,
         SelfParameterType parameterType,
-        IMaybeAntetype bindingAntetype,
         IInitializerSelfParameterSyntax syntax,
         bool isLentBinding,
-        ICapabilityNode capability,
-        CapabilityType bindingType)
-        => new InitializerSelfParameterNode(name, unused, flowStateAfter, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType);
+        ICapabilityNode capability)
+        => new InitializerSelfParameterNode(name, unused, flowStateAfter, parameterType, syntax, isLentBinding, capability);
 }
 
 // [Closed(typeof(MethodSelfParameterNode))]
@@ -1350,12 +1332,10 @@ public partial interface IMethodSelfParameterNode : ISelfParameterNode
         bool unused,
         IFlowState flowStateAfter,
         SelfParameterType parameterType,
-        IMaybeAntetype bindingAntetype,
-        Pseudotype bindingType,
         IMethodSelfParameterSyntax syntax,
         bool isLentBinding,
         ICapabilityConstraintNode capability)
-        => new MethodSelfParameterNode(name, unused, flowStateAfter, parameterType, bindingAntetype, bindingType, syntax, isLentBinding, capability);
+        => new MethodSelfParameterNode(name, unused, flowStateAfter, parameterType, syntax, isLentBinding, capability);
 }
 
 // [Closed(typeof(FieldParameterNode))]
@@ -1374,13 +1354,11 @@ public partial interface IFieldParameterNode : IConstructorOrInitializerParamete
 
     public static IFieldParameterNode Create(
         bool unused,
-        IMaybeAntetype bindingAntetype,
         IFlowState flowStateAfter,
-        DataType bindingType,
         ParameterType parameterType,
         IFieldParameterSyntax syntax,
         IdentifierName name)
-        => new FieldParameterNode(unused, bindingAntetype, flowStateAfter, bindingType, parameterType, syntax, name);
+        => new FieldParameterNode(unused, flowStateAfter, parameterType, syntax, name);
 }
 
 [Closed(
@@ -1879,8 +1857,6 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
         IMaybeAntetype? resultAntetype,
         DataType? resultType,
         IFlowState flowStateAfter,
-        IMaybeAntetype bindingAntetype,
-        DataType bindingType,
         IFixedSet<IDataFlowNode> dataFlowPrevious,
         BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
@@ -1889,7 +1865,7 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
         ITypeNode? type,
         IAmbiguousExpressionNode? initializer,
         IAmbiguousExpressionNode? currentInitializer)
-        => new VariableDeclarationStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, capability, type, initializer, currentInitializer);
+        => new VariableDeclarationStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, capability, type, initializer, currentInitializer);
 }
 
 // [Closed(typeof(ExpressionStatementNode))]
@@ -1998,14 +1974,12 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
         ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IFlowState flowStateAfter,
-        IMaybeAntetype bindingAntetype,
-        DataType bindingType,
         IFixedSet<IDataFlowNode> dataFlowPrevious,
         BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IBindingPatternSyntax syntax,
         IdentifierName name)
-        => new BindingPatternNode(controlFlowNext, controlFlowPrevious, flowStateAfter, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, name);
+        => new BindingPatternNode(controlFlowNext, controlFlowPrevious, flowStateAfter, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, name);
 }
 
 // [Closed(typeof(OptionalPatternNode))]
@@ -2643,8 +2617,6 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
         IMaybeExpressionAntetype antetype,
         DataType type,
         IFlowState flowStateAfter,
-        IMaybeAntetype bindingAntetype,
-        DataType bindingType,
         IFixedSet<IDataFlowNode> dataFlowPrevious,
         BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
@@ -2663,7 +2635,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
         IMaybeAntetype iteratedAntetype,
         DataType iteratedType,
         IFlowState flowStateBeforeBlock)
-        => new ForeachExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, variableName, inExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, iteratorType, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype, iteratedType, flowStateBeforeBlock);
+        => new ForeachExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, variableName, inExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, iteratorType, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype, iteratedType, flowStateBeforeBlock);
 }
 
 // [Closed(typeof(BreakExpressionNode))]
@@ -2783,8 +2755,8 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
     IFunctionGroupNameNode FunctionGroup { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
-    IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { get; }
-    IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
+    IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations { get; }
+    IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState FlowStateBefore();
 
@@ -2799,8 +2771,8 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
         IInvocationExpressionSyntax syntax,
         IFunctionGroupNameNode functionGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IFunctionLikeDeclarationNode> compatibleDeclarations,
-        IFunctionLikeDeclarationNode? referencedDeclaration,
+        IEnumerable<IFunctionInvocableDeclarationNode> compatibleDeclarations,
+        IFunctionInvocableDeclarationNode? referencedDeclaration,
         ContextualizedOverload? contextualizedOverload)
         => new FunctionInvocationExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, tempAllArguments, allArguments, syntax, functionGroup, arguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
 }
@@ -3236,7 +3208,7 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
     INameExpressionNode? Context { get; }
     StandardName FunctionName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
-    IFixedSet<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }
+    IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
 
     public static IFunctionGroupNameNode Create(
         ControlFlowSet controlFlowNext,
@@ -3248,7 +3220,7 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
         INameExpressionNode? context,
         StandardName functionName,
         IEnumerable<ITypeNode> typeArguments,
-        IEnumerable<IFunctionLikeDeclarationNode> referencedDeclarations)
+        IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
         => new FunctionGroupNameNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, context, functionName, typeArguments, referencedDeclarations);
 }
 
@@ -3259,7 +3231,7 @@ public partial interface IFunctionNameNode : INameExpressionNode
     IFunctionGroupNameNode FunctionGroup { get; }
     StandardName FunctionName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
-    IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
+    IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
     IFlowState FlowStateBefore();
 
     public static IFunctionNameNode Create(
@@ -3272,7 +3244,7 @@ public partial interface IFunctionNameNode : INameExpressionNode
         IFunctionGroupNameNode functionGroup,
         StandardName functionName,
         IEnumerable<ITypeNode> typeArguments,
-        IFunctionLikeDeclarationNode? referencedDeclaration)
+        IFunctionInvocableDeclarationNode? referencedDeclaration)
         => new FunctionNameNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, functionGroup, functionName, typeArguments, referencedDeclaration);
 }
 
@@ -3914,11 +3886,10 @@ public partial interface IChildDeclarationNode : IDeclarationNode, IChildNode
 
 [Closed(
     typeof(IAssociatedMemberDefinitionNode),
+    typeof(IFunctionInvocableDeclarationNode),
     typeof(INamedBindingDeclarationNode),
     typeof(INamespaceMemberDeclarationNode),
-    typeof(IFunctionLikeDeclarationNode),
     typeof(IMethodDeclarationNode),
-    typeof(IFieldDeclarationNode),
     typeof(ITypeDeclarationNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamedDeclarationNode : IChildDeclarationNode
@@ -3943,7 +3914,7 @@ public partial interface ISymbolDeclarationNode : IDeclarationNode
 
 [Closed(
     typeof(IInvocableDefinitionNode),
-    typeof(IFunctionLikeDeclarationNode),
+    typeof(IFunctionInvocableDeclarationNode),
     typeof(IMethodDeclarationNode),
     typeof(IConstructorDeclarationNode),
     typeof(IInitializerDeclarationNode))]
@@ -3955,6 +3926,19 @@ public partial interface IInvocableDeclarationNode : ISymbolDeclarationNode, ICh
 }
 
 [Closed(
+    typeof(IConcreteFunctionInvocableDefinitionNode),
+    typeof(IFunctionDeclarationNode),
+    typeof(IAssociatedFunctionDeclarationNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IFunctionInvocableDeclarationNode : INamedDeclarationNode, IInvocableDeclarationNode
+{
+    new FunctionSymbol Symbol { get; }
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
+    Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    FunctionType Type { get; }
+}
+
+[Closed(
     typeof(IBindingNode),
     typeof(INamedBindingDeclarationNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -3963,7 +3947,8 @@ public partial interface IBindingDeclarationNode : IChildDeclarationNode
 }
 
 [Closed(
-    typeof(INamedBindingNode))]
+    typeof(INamedBindingNode),
+    typeof(IFieldDeclarationNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamedBindingDeclarationNode : IBindingDeclarationNode, INamedDeclarationNode
 {
@@ -4057,22 +4042,10 @@ public partial interface INamespaceMemberDeclarationNode : IPackageFacetChildDec
 }
 
 [Closed(
-    typeof(IFunctionDeclarationNode),
-    typeof(IAssociatedFunctionDeclarationNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFunctionLikeDeclarationNode : INamedDeclarationNode, IInvocableDeclarationNode
-{
-    new FunctionSymbol Symbol { get; }
-    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
-    Symbol ISymbolDeclarationNode.Symbol => Symbol;
-    FunctionType Type { get; }
-}
-
-[Closed(
     typeof(IFunctionDefinitionNode),
     typeof(IFunctionSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFunctionDeclarationNode : IFacetMemberDeclarationNode, IFunctionLikeDeclarationNode
+public partial interface IFunctionDeclarationNode : IFacetMemberDeclarationNode, IFunctionInvocableDeclarationNode
 {
 }
 
@@ -4322,21 +4295,22 @@ public partial interface IInitializerDeclarationNode : IAssociatedMemberDeclarat
     typeof(IFieldDefinitionNode),
     typeof(IFieldSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFieldDeclarationNode : INamedDeclarationNode, IClassMemberDeclarationNode, IStructMemberDeclarationNode, IInstanceMemberDeclarationNode
+public partial interface IFieldDeclarationNode : IClassMemberDeclarationNode, IStructMemberDeclarationNode, IInstanceMemberDeclarationNode, INamedBindingDeclarationNode
 {
     new IdentifierName Name { get; }
-    TypeName INamedDeclarationNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    DataType BindingType { get; }
+    IdentifierName INamedBindingDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     new FieldSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    DataType BindingType { get; }
 }
 
 [Closed(
     typeof(IAssociatedFunctionDefinitionNode),
     typeof(IAssociatedFunctionSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAssociatedFunctionDeclarationNode : IAssociatedMemberDeclarationNode, IFunctionLikeDeclarationNode
+public partial interface IAssociatedFunctionDeclarationNode : IAssociatedMemberDeclarationNode, IFunctionInvocableDeclarationNode
 {
     new StandardName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
@@ -4674,13 +4648,14 @@ public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, I
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFieldSymbolNode : IFieldDeclarationNode, IClassMemberSymbolNode, IStructMemberSymbolNode
 {
+    DataType IFieldDeclarationNode.BindingType
+        => Symbol.Type;
 
     public static IFieldSymbolNode Create(
         ISyntax? syntax,
         IdentifierName name,
-        DataType bindingType,
         FieldSymbol symbol)
-        => new FieldSymbolNode(syntax, name, bindingType, symbol);
+        => new FieldSymbolNode(syntax, name, symbol);
 }
 
 // [Closed(typeof(AssociatedFunctionSymbolNode))]
@@ -5357,18 +5332,18 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
                 LexicalScopingAspect.FunctionDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public FunctionType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                TypeMemberDeclarationsAspect.FunctionDefinition_Type);
-    private FunctionType? type;
-    private bool typeCached;
     public FunctionSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
             : this.Synthetic(ref symbolCached, ref symbol,
                 SymbolsAspect.FunctionDefinition_Symbol);
     private FunctionSymbol? symbol;
     private bool symbolCached;
+    public FunctionType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                TypeMemberDeclarationsAspect.ConcreteFunctionInvocableDefinition_Type);
+    private FunctionType? type;
+    private bool typeCached;
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
@@ -7052,6 +7027,12 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
                 VariablesAspect.FieldDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
+    public IMaybeAntetype BindingAntetype
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                DefinitionAntetypesAspect.FieldDefinition_BindingAntetype);
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
@@ -7067,7 +7048,7 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     public DataType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
-                TypeMemberDeclarationsAspect.FieldDefinition_BindingType);
+                NameBindingTypesAspect.FieldDefinition_BindingType);
     private DataType? bindingType;
     private bool bindingTypeCached;
     public FieldSymbol Symbol
@@ -7076,12 +7057,6 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
                 SymbolsAspect.FieldDefinition_Symbol);
     private FieldSymbol? symbol;
     private bool symbolCached;
-    public IMaybeAntetype BindingAntetype
-        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
-            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
-                DefinitionAntetypesAspect.FieldDefinition_BindingAntetype);
-    private IMaybeAntetype? bindingAntetype;
-    private bool bindingAntetypeCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -7157,10 +7132,8 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     private AttributeLock syncLock;
 
     public IAssociatedFunctionDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode? Return { [DebuggerStepThrough] get; }
-    public FunctionType Type { [DebuggerStepThrough] get; }
     public IBodyNode Body { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -7192,6 +7165,12 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
                 SymbolsAspect.AssociatedFunctionDefinition_Symbol);
     private FunctionSymbol? symbol;
     private bool symbolCached;
+    public FunctionType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                TypeMemberDeclarationsAspect.ConcreteFunctionInvocableDefinition_Type);
+    private FunctionType? type;
+    private bool typeCached;
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
@@ -7215,17 +7194,13 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
 
     public AssociatedFunctionDefinitionNode(
         IAssociatedFunctionDefinitionSyntax syntax,
-        IdentifierName name,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode? @return,
-        FunctionType type,
         IBodyNode body)
     {
         Syntax = syntax;
-        Name = name;
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
-        Type = type;
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
@@ -7262,6 +7237,38 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (0 < Self.Parameters.Count && ReferenceEquals(child, Self.Parameters[0]))
+            return Self.FlowStateBefore();
+        if (IndexOfNode(Self.Parameters, child) is { } index)
+            return Parameters[index - 1].FlowStateAfter;
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Type.Return.Type;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Type.Return.Type;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Type.Return.Type.ToAntetype();
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -7361,8 +7368,6 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
     public bool IsLentBinding { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public ITypeNode TypeNode { [DebuggerStepThrough] get; }
-    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
-    public DataType BindingType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -7377,6 +7382,18 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public IMaybeAntetype BindingAntetype
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                NameBindingAntetypesAspect.NamedParameter_BindingAntetype);
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
+    public DataType BindingType
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                NameBindingTypesAspect.NamedParameter_BindingType);
+    private DataType? bindingType;
+    private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
@@ -7392,9 +7409,7 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
         bool isMutableBinding,
         bool isLentBinding,
         IdentifierName name,
-        ITypeNode typeNode,
-        IMaybeAntetype bindingAntetype,
-        DataType bindingType)
+        ITypeNode typeNode)
     {
         Unused = unused;
         FlowStateAfter = flowStateAfter;
@@ -7404,8 +7419,6 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
         IsLentBinding = isLentBinding;
         Name = name;
         TypeNode = Child.Attach(this, typeNode);
-        BindingAntetype = bindingAntetype;
-        BindingType = bindingType;
     }
 }
 
@@ -7419,11 +7432,9 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
     public bool Unused { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public SelfParameterType ParameterType { [DebuggerStepThrough] get; }
-    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
     public IConstructorSelfParameterSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
     public ICapabilityNode Capability { [DebuggerStepThrough] get; }
-    public CapabilityType BindingType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -7444,6 +7455,18 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
                 Inherited_ContainingDeclaredType);
     private IDeclaredUserType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
+    public CapabilityType BindingType
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                NameBindingTypesAspect.ConstructorSelfParameter_BindingType);
+    private CapabilityType? bindingType;
+    private bool bindingTypeCached;
+    public IMaybeAntetype BindingAntetype
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                NameBindingAntetypesAspect.SelfParameter_BindingAntetype);
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
@@ -7456,21 +7479,17 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
         bool unused,
         IFlowState flowStateAfter,
         SelfParameterType parameterType,
-        IMaybeAntetype bindingAntetype,
         IConstructorSelfParameterSyntax syntax,
         bool isLentBinding,
-        ICapabilityNode capability,
-        CapabilityType bindingType)
+        ICapabilityNode capability)
     {
         Name = name;
         Unused = unused;
         FlowStateAfter = flowStateAfter;
         ParameterType = parameterType;
-        BindingAntetype = bindingAntetype;
         Syntax = syntax;
         IsLentBinding = isLentBinding;
         Capability = Child.Attach(this, capability);
-        BindingType = bindingType;
     }
 }
 
@@ -7484,11 +7503,9 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
     public bool Unused { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public SelfParameterType ParameterType { [DebuggerStepThrough] get; }
-    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
     public IInitializerSelfParameterSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
     public ICapabilityNode Capability { [DebuggerStepThrough] get; }
-    public CapabilityType BindingType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -7509,6 +7526,18 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
                 Inherited_ContainingDeclaredType);
     private IDeclaredUserType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
+    public CapabilityType BindingType
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                NameBindingTypesAspect.InitializerSelfParameter_BindingType);
+    private CapabilityType? bindingType;
+    private bool bindingTypeCached;
+    public IMaybeAntetype BindingAntetype
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                NameBindingAntetypesAspect.SelfParameter_BindingAntetype);
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
@@ -7521,21 +7550,17 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
         bool unused,
         IFlowState flowStateAfter,
         SelfParameterType parameterType,
-        IMaybeAntetype bindingAntetype,
         IInitializerSelfParameterSyntax syntax,
         bool isLentBinding,
-        ICapabilityNode capability,
-        CapabilityType bindingType)
+        ICapabilityNode capability)
     {
         Name = name;
         Unused = unused;
         FlowStateAfter = flowStateAfter;
         ParameterType = parameterType;
-        BindingAntetype = bindingAntetype;
         Syntax = syntax;
         IsLentBinding = isLentBinding;
         Capability = Child.Attach(this, capability);
-        BindingType = bindingType;
     }
 }
 
@@ -7549,8 +7574,6 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
     public bool Unused { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public SelfParameterType ParameterType { [DebuggerStepThrough] get; }
-    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
-    public Pseudotype BindingType { [DebuggerStepThrough] get; }
     public IMethodSelfParameterSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
     public ICapabilityConstraintNode Capability { [DebuggerStepThrough] get; }
@@ -7574,6 +7597,18 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
                 Inherited_ContainingDeclaredType);
     private IDeclaredUserType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
+    public Pseudotype BindingType
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                NameBindingTypesAspect.MethodSelfParameter_BindingType);
+    private Pseudotype? bindingType;
+    private bool bindingTypeCached;
+    public IMaybeAntetype BindingAntetype
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                NameBindingAntetypesAspect.SelfParameter_BindingAntetype);
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
@@ -7586,8 +7621,6 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
         bool unused,
         IFlowState flowStateAfter,
         SelfParameterType parameterType,
-        IMaybeAntetype bindingAntetype,
-        Pseudotype bindingType,
         IMethodSelfParameterSyntax syntax,
         bool isLentBinding,
         ICapabilityConstraintNode capability)
@@ -7596,8 +7629,6 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
         Unused = unused;
         FlowStateAfter = flowStateAfter;
         ParameterType = parameterType;
-        BindingAntetype = bindingAntetype;
-        BindingType = bindingType;
         Syntax = syntax;
         IsLentBinding = isLentBinding;
         Capability = Child.Attach(this, capability);
@@ -7611,9 +7642,7 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
     private AttributeLock syncLock;
 
     public bool Unused { [DebuggerStepThrough] get; }
-    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public DataType BindingType { [DebuggerStepThrough] get; }
     public ParameterType ParameterType { [DebuggerStepThrough] get; }
     public IFieldParameterSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -7631,6 +7660,18 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
                 Inherited_ContainingTypeDefinition);
     private ITypeDefinitionNode? containingTypeDefinition;
     private bool containingTypeDefinitionCached;
+    public IMaybeAntetype BindingAntetype
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                NameBindingAntetypesAspect.FieldParameter_BindingAntetype);
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
+    public DataType BindingType
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                NameBindingTypesAspect.FieldParameter_BindingType);
+    private DataType? bindingType;
+    private bool bindingTypeCached;
     public IFieldDefinitionNode? ReferencedField
         => GrammarAttribute.IsCached(in referencedFieldCached) ? referencedField
             : this.Synthetic(ref referencedFieldCached, ref referencedField,
@@ -7646,17 +7687,13 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
 
     public FieldParameterNode(
         bool unused,
-        IMaybeAntetype bindingAntetype,
         IFlowState flowStateAfter,
-        DataType bindingType,
         ParameterType parameterType,
         IFieldParameterSyntax syntax,
         IdentifierName name)
     {
         Unused = unused;
-        BindingAntetype = bindingAntetype;
         FlowStateAfter = flowStateAfter;
-        BindingType = bindingType;
         ParameterType = parameterType;
         Syntax = syntax;
         Name = name;
@@ -8274,8 +8311,6 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     public IMaybeAntetype? ResultAntetype { [DebuggerStepThrough] get; }
     public DataType? ResultType { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
-    public DataType BindingType { [DebuggerStepThrough] get; }
     public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
@@ -8309,6 +8344,18 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
                 ValueIdsAspect.VariableDeclarationStatement_BindingValueId);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
+    public IMaybeAntetype BindingAntetype
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                NameBindingAntetypesAspect.VariableDeclarationStatement_BindingAntetype);
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
+    public DataType BindingType
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                NameBindingTypesAspect.VariableDeclarationStatement_BindingType);
+    private DataType? bindingType;
+    private bool bindingTypeCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -8322,8 +8369,6 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         IMaybeAntetype? resultAntetype,
         DataType? resultType,
         IFlowState flowStateAfter,
-        IMaybeAntetype bindingAntetype,
-        DataType bindingType,
         IFixedSet<IDataFlowNode> dataFlowPrevious,
         BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
@@ -8338,8 +8383,6 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         ResultAntetype = resultAntetype;
         ResultType = resultType;
         FlowStateAfter = flowStateAfter;
-        BindingAntetype = bindingAntetype;
-        BindingType = bindingType;
         DataFlowPrevious = dataFlowPrevious;
         DefinitelyAssigned = definitelyAssigned;
         DefinitelyUnassigned = definitelyUnassigned;
@@ -8461,8 +8504,6 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
-    public DataType BindingType { [DebuggerStepThrough] get; }
     public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
@@ -8502,13 +8543,23 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
                 ValueIdsAspect.BindingPattern_BindingValueId);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
+    public IMaybeAntetype BindingAntetype
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                NameBindingAntetypesAspect.BindingPattern_BindingAntetype);
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
+    public DataType BindingType
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                NameBindingTypesAspect.BindingPattern_BindingType);
+    private DataType? bindingType;
+    private bool bindingTypeCached;
 
     public BindingPatternNode(
         ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IFlowState flowStateAfter,
-        IMaybeAntetype bindingAntetype,
-        DataType bindingType,
         IFixedSet<IDataFlowNode> dataFlowPrevious,
         BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
@@ -8518,8 +8569,6 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         FlowStateAfter = flowStateAfter;
-        BindingAntetype = bindingAntetype;
-        BindingType = bindingType;
         DataFlowPrevious = dataFlowPrevious;
         DefinitelyAssigned = definitelyAssigned;
         DefinitelyUnassigned = definitelyUnassigned;
@@ -9855,8 +9904,6 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
-    public DataType BindingType { [DebuggerStepThrough] get; }
     public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
@@ -9916,6 +9963,18 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 ValueIdsAspect.ForeachExpression_BindingValueId);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
+    public IMaybeAntetype BindingAntetype
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                NameBindingAntetypesAspect.ForeachExpression_BindingAntetype);
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
+    public DataType BindingType
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                NameBindingTypesAspect.ForeachExpression_BindingType);
+    private DataType? bindingType;
+    private bool bindingTypeCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -9935,8 +9994,6 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         IMaybeExpressionAntetype antetype,
         DataType type,
         IFlowState flowStateAfter,
-        IMaybeAntetype bindingAntetype,
-        DataType bindingType,
         IFixedSet<IDataFlowNode> dataFlowPrevious,
         BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
@@ -9961,8 +10018,6 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         Antetype = antetype;
         Type = type;
         FlowStateAfter = flowStateAfter;
-        BindingAntetype = bindingAntetype;
-        BindingType = bindingType;
         DataFlowPrevious = dataFlowPrevious;
         DefinitelyAssigned = definitelyAssigned;
         DefinitelyUnassigned = definitelyUnassigned;
@@ -10267,8 +10322,8 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
-    public IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
-    public IFunctionLikeDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
+    public IFunctionInvocableDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
     public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -10318,8 +10373,8 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         IInvocationExpressionSyntax syntax,
         IFunctionGroupNameNode functionGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IFunctionLikeDeclarationNode> compatibleDeclarations,
-        IFunctionLikeDeclarationNode? referencedDeclaration,
+        IEnumerable<IFunctionInvocableDeclarationNode> compatibleDeclarations,
+        IFunctionInvocableDeclarationNode? referencedDeclaration,
         ContextualizedOverload? contextualizedOverload)
     {
         ControlFlowNext = controlFlowNext;
@@ -11166,7 +11221,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     public INameExpressionNode? Context { [DebuggerStepThrough] get; }
     public StandardName FunctionName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
-    public IFixedSet<IFunctionLikeDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
+    public IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -11212,7 +11267,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         INameExpressionNode? context,
         StandardName functionName,
         IEnumerable<ITypeNode> typeArguments,
-        IEnumerable<IFunctionLikeDeclarationNode> referencedDeclarations)
+        IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -11242,7 +11297,7 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     public IFunctionGroupNameNode FunctionGroup { [DebuggerStepThrough] get; }
     public StandardName FunctionName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
-    public IFunctionLikeDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
+    public IFunctionInvocableDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -11290,7 +11345,7 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
         IFunctionGroupNameNode functionGroup,
         StandardName functionName,
         IEnumerable<ITypeNode> typeArguments,
-        IFunctionLikeDeclarationNode? referencedDeclaration)
+        IFunctionInvocableDeclarationNode? referencedDeclaration)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -13333,7 +13388,6 @@ file class FieldSymbolNode : SemanticNode, IFieldSymbolNode
 
     public ISyntax? Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
-    public DataType BindingType { [DebuggerStepThrough] get; }
     public FieldSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -13343,12 +13397,10 @@ file class FieldSymbolNode : SemanticNode, IFieldSymbolNode
     public FieldSymbolNode(
         ISyntax? syntax,
         IdentifierName name,
-        DataType bindingType,
         FieldSymbol symbol)
     {
         Syntax = syntax;
         Name = name;
-        BindingType = bindingType;
         Symbol = symbol;
     }
 }

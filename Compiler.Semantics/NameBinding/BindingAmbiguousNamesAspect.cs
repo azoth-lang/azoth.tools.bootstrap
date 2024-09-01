@@ -20,7 +20,7 @@ internal static class BindingAmbiguousNamesAspect
         if (node.ReferencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
             return new UnqualifiedNamespaceNameNode(node.Syntax, referencedNamespaces);
 
-        if (node.ReferencedDeclarations.TryAllOfType<IFunctionLikeDeclarationNode>(out var referencedFunctions))
+        if (node.ReferencedDeclarations.TryAllOfType<IFunctionInvocableDeclarationNode>(out var referencedFunctions))
             return new FunctionGroupNameNode(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(), referencedFunctions);
 
         if (node.ReferencedDeclarations.TrySingle() is not null and var referencedDeclaration)

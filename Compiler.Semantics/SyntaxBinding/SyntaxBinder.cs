@@ -209,7 +209,8 @@ internal static class SyntaxBinder
     private static IFieldDefinitionNode FieldDefinition(IFieldDefinitionSyntax syntax)
         => new FieldDefinitionNode(syntax, Type(syntax.Type), Expression(syntax.Initializer));
     private static IAssociatedFunctionDefinitionNode AssociatedFunctionDefinition(IAssociatedFunctionDefinitionSyntax syntax)
-        => new AssociatedFunctionDefinitionNode(syntax, NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
+        => IAssociatedFunctionDefinitionNode.Create(syntax, NamedParameters(syntax.Parameters),
+            Type(syntax.Return?.Type), Body(syntax.Body));
     #endregion
 
     #region Attributes

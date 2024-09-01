@@ -16,14 +16,14 @@ internal sealed class FunctionGroupNameNode : NameExpressionNode, IFunctionGroup
     public INameExpressionNode? Context { get; }
     public StandardName FunctionName { get; }
     public IFixedList<ITypeNode> TypeArguments { get; }
-    public IFixedSet<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }
+    public IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
 
     public FunctionGroupNameNode(
         INameExpressionSyntax syntax,
         INameExpressionNode? context,
         StandardName functionName,
         IEnumerable<ITypeNode> typeArguments,
-        IEnumerable<IFunctionLikeDeclarationNode> referencedDeclarations)
+        IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
         Context = Child.Attach(this, context);

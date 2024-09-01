@@ -16,7 +16,7 @@ internal sealed class ConstructorSelfParameterNode : SelfParameterNode, IConstru
     private ValueAttribute<CapabilityType> bindingType;
     public override CapabilityType BindingType
         => bindingType.TryGetValue(out var value) ? value
-            : bindingType.GetValue(this, TypeMemberDeclarationsAspect.ConstructorSelfParameter_BindingType);
+            : bindingType.GetValue(this, NameBindingTypesAspect.ConstructorSelfParameter_BindingType);
 
     public ConstructorSelfParameterNode(IConstructorSelfParameterSyntax syntax, ICapabilityNode capability)
     {
@@ -32,7 +32,7 @@ internal sealed class ConstructorSelfParameterNode : SelfParameterNode, IConstru
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        TypeMemberDeclarationsAspect.ConstructorSelfParameter_ContributeDiagnostics(this, diagnostics);
+        NameBindingTypesAspect.ConstructorSelfParameter_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

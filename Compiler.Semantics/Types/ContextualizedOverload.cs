@@ -9,8 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 public sealed class ContextualizedOverload
 {
-    public static ContextualizedOverload Create(
-        IFunctionLikeDeclarationNode function)
+    public static ContextualizedOverload Create(IFunctionInvocableDeclarationNode function)
     {
         var symbol = function.Symbol;
         var parameterTypes = symbol.Parameters;

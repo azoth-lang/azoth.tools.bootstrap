@@ -1,7 +1,22 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name NameBindingTypesAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Types;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 // ↓ ↑ ⮡ ✎
+
+// ---------- Bindings
+↑ Binding.BindingType: `Pseudotype`;
+↑ NamedBinding.BindingType: `DataType`;
+
+// ---------- Member Definitions
+↑ FieldDefinition.BindingType: `DataType`;
+
+// ---------- Parameters
+↑ Parameter.BindingType: `Pseudotype`;
+↑ ConstructorOrInitializerParameter.BindingType: `DataType`;
+↑ ConstructorSelfParameter.BindingType: `CapabilityType`;
+↑ InitializerSelfParameter.BindingType: `CapabilityType`;
 
 // ---------- Patterns
 ↓ Pattern.ContextBindingType(): `DataType`;

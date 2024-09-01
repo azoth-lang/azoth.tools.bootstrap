@@ -17,7 +17,7 @@ internal sealed class MethodSelfParameterNode : SelfParameterNode, IMethodSelfPa
     private bool bindingTypeCached;
     public override Pseudotype BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : this.Synthetic(ref bindingTypeCached, ref bindingType, TypeMemberDeclarationsAspect.MethodSelfParameter_BindingType);
+            : this.Synthetic(ref bindingTypeCached, ref bindingType, NameBindingTypesAspect.MethodSelfParameter_BindingType);
 
     public MethodSelfParameterNode(IMethodSelfParameterSyntax syntax, ICapabilityConstraintNode capability)
     {
@@ -33,7 +33,7 @@ internal sealed class MethodSelfParameterNode : SelfParameterNode, IMethodSelfPa
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        TypeMemberDeclarationsAspect.MethodSelfParameter_ContributeDiagnostics(this, diagnostics);
+        NameBindingTypesAspect.MethodSelfParameter_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

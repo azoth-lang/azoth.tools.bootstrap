@@ -48,8 +48,8 @@ internal sealed class AntetypeContextualizedOverload<TDeclaration>
 
 internal static class AntetypeContextualizedOverload
 {
-    public static AntetypeContextualizedOverload<IFunctionLikeDeclarationNode> Create(
-        IFunctionLikeDeclarationNode function)
+    public static AntetypeContextualizedOverload<IFunctionInvocableDeclarationNode> Create(
+        IFunctionInvocableDeclarationNode function)
     {
         var symbol = function.Symbol;
         var parameterAntetypes = symbol.Parameters.Select(p => p.Type.ToAntetype().ToNonConstValueType())

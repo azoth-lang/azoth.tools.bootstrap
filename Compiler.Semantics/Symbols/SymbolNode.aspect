@@ -70,3 +70,4 @@
 // ---------- Member Symbol Nodes
 = StandardMethodSymbol.Arity => Symbol.Arity;
 = StandardMethodSymbol.MethodGroupType => Symbol.MethodGroupType;
+= FieldSymbol.BindingType => Symbol.Type;

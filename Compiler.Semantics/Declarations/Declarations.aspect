@@ -32,6 +32,7 @@
 // ---------- Member Declarations
 ↑ StandardMethodDeclaration.Arity: `int`;
 ↑ StandardMethodDeclaration.MethodGroupType: `FunctionType`;
+↑ FieldDeclaration.BindingType: `DataType`;
 
 // ---------- Can be Referenced by Type Name
 ↑ TypeDeclaration.Supertypes: {`BareReferenceType`};

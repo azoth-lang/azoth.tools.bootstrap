@@ -16,7 +16,7 @@ internal sealed class InitializerSelfParameterNode : SelfParameterNode, IInitial
     private ValueAttribute<CapabilityType> bindingType;
     public override CapabilityType BindingType
         => bindingType.TryGetValue(out var value) ? value
-            : bindingType.GetValue(this, TypeMemberDeclarationsAspect.InitializerSelfParameter_BindingType);
+            : bindingType.GetValue(this, NameBindingTypesAspect.InitializerSelfParameter_BindingType);
 
     public InitializerSelfParameterNode(IInitializerSelfParameterSyntax syntax, ICapabilityNode capability)
     {
@@ -32,7 +32,7 @@ internal sealed class InitializerSelfParameterNode : SelfParameterNode, IInitial
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        TypeMemberDeclarationsAspect.InitializerSelfParameter_ContributeDiagnostics(this, diagnostics);
+        NameBindingTypesAspect.InitializerSelfParameter_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

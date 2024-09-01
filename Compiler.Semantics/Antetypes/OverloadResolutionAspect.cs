@@ -17,7 +17,7 @@ internal static partial class OverloadResolutionAspect
         return new FunctionInvocationExpressionNode(node.Syntax, function, node.CurrentArguments);
     }
 
-    public static IFixedSet<IFunctionLikeDeclarationNode> FunctionInvocationExpression_CompatibleDeclarations(
+    public static IFixedSet<IFunctionInvocableDeclarationNode> FunctionInvocationExpression_CompatibleDeclarations(
         IFunctionInvocationExpressionNode node)
     {
         var arguments = node.Arguments.Select(AntetypeIfKnown);
@@ -28,7 +28,7 @@ internal static partial class OverloadResolutionAspect
                    .Select(o => o.Declaration).ToFixedSet();
     }
 
-    public static IFunctionLikeDeclarationNode? FunctionInvocationExpression_ReferencedDeclaration(
+    public static IFunctionInvocableDeclarationNode? FunctionInvocationExpression_ReferencedDeclaration(
         IFunctionInvocationExpressionNode node)
         => node.CompatibleDeclarations.TrySingle();
 

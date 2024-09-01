@@ -4,6 +4,9 @@
 
 // ↓ ↑ ⮡ ✎
 
+// ---------- Definitions
+↑ ConcreteFunctionInvocableDefinition.Type: `FunctionType`;
+
 // ---------- Function Definition
 = FunctionDefinition.Parameters[0].**.FlowStateBefore()
     => Self.FlowStateBefore();

@@ -1,7 +1,15 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 ◊name NameBindingAntetypesAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 // ↓ ↑ ⮡ ✎
+
+// ---------- Bindings
+↑ Binding.BindingAntetype: `IMaybeAntetype`;
+
+// ---------- Parameters
+↑ Parameter.BindingAntetype: `IMaybeAntetype`;
+= SelfParameter.BindingAntetype;
 
 // ---------- Patterns
 ↓ Pattern.ContextBindingAntetype(): `IMaybeAntetype`;

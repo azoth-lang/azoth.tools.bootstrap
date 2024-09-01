@@ -6,10 +6,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
 internal static partial class NameBindingAntetypesAspect
 {
-    public static IMaybeAntetype FieldParameter_BindingAntetype(IFieldParameterNode node)
+    public static partial IMaybeAntetype FieldParameter_BindingAntetype(IFieldParameterNode node)
         => node.ReferencedField?.BindingAntetype ?? IAntetype.Unknown;
 
-    public static IMaybeAntetype SelfParameter_BindingAntetype(ISelfParameterNode node)
+    public static partial IMaybeAntetype SelfParameter_BindingAntetype(ISelfParameterNode node)
     {
         var containingDeclaredAntetype = node.ContainingTypeDefinition.DeclaredType.ToAntetype();
         return containingDeclaredAntetype.With(containingDeclaredAntetype.GenericParameterAntetypes);
@@ -30,10 +30,10 @@ internal static partial class NameBindingAntetypesAspect
         return inheritedBindingAntetype;
     }
 
-    public static IMaybeAntetype BindingPattern_BindingAntetype(IBindingPatternNode node)
+    public static partial IMaybeAntetype BindingPattern_BindingAntetype(IBindingPatternNode node)
         => node.ContextBindingAntetype();
 
-    public static IMaybeAntetype VariableDeclarationStatement_BindingAntetype(IVariableDeclarationStatementNode node)
+    public static partial IMaybeAntetype VariableDeclarationStatement_BindingAntetype(IVariableDeclarationStatementNode node)
         => node.Type?.NamedAntetype ?? node.Initializer?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
     public static void VariableDeclarationStatement_ContributeDiagnostics(
@@ -45,12 +45,12 @@ internal static partial class NameBindingAntetypesAspect
                 "Inference of local variable types not implemented"));
     }
 
-    public static IMaybeAntetype ForeachExpression_BindingAntetype(IForeachExpressionNode node)
+    public static partial IMaybeAntetype ForeachExpression_BindingAntetype(IForeachExpressionNode node)
         => node.DeclaredType?.NamedAntetype ?? node.IteratedAntetype;
 
     public static IMaybeAntetype NewObjectExpression_ConstructingAntetype(INewObjectExpressionNode node)
         => node.ConstructingType.NamedAntetype;
 
-    public static IMaybeAntetype NamedParameter_BindingAntetype(INamedParameterNode node)
+    public static partial IMaybeAntetype NamedParameter_BindingAntetype(INamedParameterNode node)
         => node.TypeNode.NamedAntetype;
 }

@@ -78,6 +78,7 @@
 = FieldDefinition.IsLentBinding => false;
 = FieldDefinition.IsMutableBinding => Syntax.IsMutableBinding;
 ↑ FieldDefinition.Name: `IdentifierName` => Syntax.Name;
+↑ AssociatedFunctionDefinition.Name:`IdentifierName` => Syntax.Name;
 
 // ---------- Statements
 = VariableDeclarationStatement.IsLentBinding => false;

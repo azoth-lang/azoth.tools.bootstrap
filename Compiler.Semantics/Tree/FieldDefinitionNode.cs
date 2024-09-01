@@ -40,7 +40,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
     public DataType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
-                TypeMemberDeclarationsAspect.FieldDefinition_BindingType);
+                NameBindingTypesAspect.FieldDefinition_BindingType);
     public override LexicalScope LexicalScope => throw new NotImplementedException();
     private FieldSymbol? symbol;
     private bool symbolCached;

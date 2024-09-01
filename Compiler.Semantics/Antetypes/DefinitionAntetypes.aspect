@@ -10,4 +10,6 @@
 
 // ---------- Member Definitions
 = StandardMethodDefinition.Body.ExpectedAntetype => Self.MethodGroupType.Return.Type.ToAntetype();
-↑ FieldDefinition.BindingAntetype: `IMaybeAntetype`;
+= FieldDefinition.BindingAntetype;
+// TODO it would be good to refactor to not depend on Type
+= AssociatedFunctionDefinition.Body.ExpectedAntetype => Type.Return.Type.ToAntetype();

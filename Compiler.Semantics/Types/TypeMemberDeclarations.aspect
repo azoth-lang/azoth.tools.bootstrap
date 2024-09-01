@@ -9,13 +9,12 @@
 // ---------- Definitions
 ↑ ConcreteInvocableDefinition.FlowStateBefore(): `IFlowState`;
 = ConcreteInvocableDefinition.FlowStateBefore();
-
-// ---------- Function Definition
-↑ FunctionDefinition.Type: `FunctionType`;
+= ConcreteFunctionInvocableDefinition.Type;
 
 // ---------- Member Definitions
 = MethodDefinition.↑.Diagnostics;
 = AbstractMethodDefinition.MethodGroupType => Symbol.MethodGroupType;
+
 = ConcreteMethodDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
 = ConcreteMethodDefinition.Parameters[0].**.FlowStateBefore()
     => SelfParameter.FlowStateAfter;
@@ -24,6 +23,7 @@
 = ConcreteMethodDefinition.Body.**.FlowStateBefore()
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
 = ConcreteMethodDefinition.Body.**.ExpectedReturnType => Return?.NamedType ?? DataType.Void;
+
 = StandardMethodDefinition.MethodGroupType => Symbol.MethodGroupType;
 = StandardMethodDefinition.Body.**.ExpectedType => Self.MethodGroupType.Return.Type;
 
@@ -45,10 +45,18 @@
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
 = SourceInitializerDefinition.Body.**.ExpectedReturnType => DataType.Void;
 
-↑ FieldDefinition.BindingType: `DataType`;
 = FieldDefinition.↑.Diagnostics;
 // Null is the signal that this is a field initializer and not a method body
 = FieldDefinition.Initializer.**.ExpectedReturnType => null;
+
+= AssociatedFunctionDefinition.Parameters[0].**.FlowStateBefore()
+    => Self.FlowStateBefore();
+= AssociatedFunctionDefinition.Parameters[index].**.FlowStateBefore()
+    => Parameters[index - 1].FlowStateAfter;
+= AssociatedFunctionDefinition.Body.**.FlowStateBefore()
+    => Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
+= AssociatedFunctionDefinition.Body.ExpectedType => Type.Return.Type;
+= AssociatedFunctionDefinition.Body.**.ExpectedReturnType => Type.Return.Type;
 
 // ---------- Control Flow Expressions
 ↓ ReturnExpression.ExpectedReturnType: `DataType`?;

@@ -20,7 +20,7 @@ internal sealed class FunctionNameNode : NameExpressionNode, IFunctionNameNode
             : this.RewritableChild(ref functionGroupCached, ref functionGroup);
     public StandardName FunctionName => FunctionGroup.FunctionName;
     public IFixedList<ITypeNode> TypeArguments => FunctionGroup.TypeArguments;
-    public IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
+    public IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
@@ -43,7 +43,7 @@ internal sealed class FunctionNameNode : NameExpressionNode, IFunctionNameNode
     public FunctionNameNode(
         INameExpressionSyntax syntax,
         IFunctionGroupNameNode functionGroup,
-        IFunctionLikeDeclarationNode? referencedDeclaration)
+        IFunctionInvocableDeclarationNode? referencedDeclaration)
     {
         Syntax = syntax;
         this.functionGroup = Child.Create(this, functionGroup);

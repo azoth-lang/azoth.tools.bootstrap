@@ -38,8 +38,8 @@ ElseClause <: ControlFlow = Syntax:`ICodeSyntax` FlowStateAfter:`IFlowState`;
 BlockOrResult <: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings
-Binding <: Code, BindingDeclaration = BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
-NamedBinding <: Binding, NamedBindingDeclaration = BindingType:`DataType`;
+Binding <: Code, BindingDeclaration;
+NamedBinding <: Binding, NamedBindingDeclaration;
 LocalBinding <: NamedBinding = Syntax:`ILocalBindingSyntax`;
 VariableBinding <: LocalBinding, DataFlow;
 
@@ -72,9 +72,8 @@ InvocableDefinition <: Definition, InvocableDeclaration
 ExecutableDefinition <: Definition, SymbolDeclaration = /Entry/ /Exit/;
 ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition
     = Parameters:ConstructorOrInitializerParameter* Body?;
-ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition
-    = Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body
-    Type:`FunctionType` Symbol:`FunctionSymbol`;
+ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition, FunctionInvocableDeclaration
+    = Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body Symbol:`FunctionSymbol`;
 
 // ---------- Namespace Definitions
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
@@ -151,8 +150,7 @@ FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemb
     = Syntax:`IFieldDefinitionSyntax` TypeNode:Type
     /Entry/ Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`? /Exit/;
 AssociatedFunctionDefinition <: ConcreteFunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
-    = Syntax:`IAssociatedFunctionDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
-    Type:`FunctionType` /Entry/ Body /Exit/;
+    = Syntax:`IAssociatedFunctionDefinitionSyntax` /Parameters/ /Return/ /Entry/ /Body/ /Exit/;
 
 // ---------- Attributes
 Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName;
@@ -164,19 +162,19 @@ Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capa
 
 // ---------- Parameters
 Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
-    BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype` FlowStateAfter:`IFlowState`;
+    FlowStateAfter:`IFlowState`;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`
-    BindingType:`DataType` ParameterType:`ParameterType`;
+    ParameterType:`ParameterType`;
 NamedParameter <: ConstructorOrInitializerParameter, LocalBinding = Syntax:`INamedParameterSyntax`
     IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName`
     TypeNode:Type;
 SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool`
     ParameterType:`SelfParameterType`;
 ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax`
-    IsLentBinding:`bool` Capability BindingType:`CapabilityType`;
+    IsLentBinding:`bool` Capability;
 InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax`
-    IsLentBinding:`bool` Capability BindingType:`CapabilityType`;
+    IsLentBinding:`bool` Capability;
 MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool`
     Capability:CapabilityConstraint ;
 FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`;
@@ -306,7 +304,7 @@ InvocationExpression <: Expression =
     TempAllArguments:`IEnumerable<IAmbiguousExpressionNode>` AllArguments:`IEnumerable<IExpressionNode?>`;
 FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
-    CompatibleDeclarations:{`IFunctionLikeDeclarationNode`} ReferencedDeclaration:`IFunctionLikeDeclarationNode`?
+    CompatibleDeclarations:{`IFunctionInvocableDeclarationNode`} ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
 MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     MethodGroup:MethodGroupName Arguments:AmbiguousExpression* CurrentArguments:`IAmbiguousExpressionNode`*
@@ -356,9 +354,9 @@ NamespaceName <: NameExpression = Type:`UnknownType` ReferencedDeclarations:`INa
 UnqualifiedNamespaceName <: NamespaceName = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 QualifiedNamespaceName <: NamespaceName = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName Name:`IdentifierName`;
 FunctionGroupName <: NameExpression = Context:NameExpression? FunctionName:`StandardName` TypeArguments:Type*
-    ReferencedDeclarations:{`IFunctionLikeDeclarationNode`};
+    ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 FunctionName <: NameExpression = FunctionGroup:FunctionGroupName FunctionName:`StandardName` TypeArguments:`ITypeNode`*
-    ReferencedDeclaration:`IFunctionLikeDeclarationNode`?;
+    ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
 MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression CurrentContext:`IExpressionNode` MethodName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IStandardMethodDeclarationNode`};
@@ -431,6 +429,8 @@ ChildDeclaration <: Declaration, Child;
 NamedDeclaration <: ChildDeclaration;
 SymbolDeclaration <: Declaration = Symbol:`Symbol`;
 InvocableDeclaration <: SymbolDeclaration, ChildDeclaration = Symbol:`InvocableSymbol`;
+FunctionInvocableDeclaration <: NamedDeclaration, InvocableDeclaration
+    = Symbol:`FunctionSymbol` Type:`FunctionType`;
 
 // ---------- Bindings
 BindingDeclaration <: ChildDeclaration;
@@ -457,9 +457,7 @@ NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, Sy
     = Name:`StandardName`;
 
 // ---------- Function Declaration
-// TODO better name for this or perhaps just merge AssociatedFunctionDeclaration into FunctionDeclaration
-FunctionLikeDeclaration <: NamedDeclaration, InvocableDeclaration = Symbol:`FunctionSymbol` Type:`FunctionType`;
-FunctionDeclaration <: FacetMemberDeclaration, FunctionLikeDeclaration;
+FunctionDeclaration <: FacetMemberDeclaration, FunctionInvocableDeclaration;
 
 // ---------- Type Declarations
 PrimitiveTypeDeclaration <: TypeDeclaration = Name:`SpecialTypeName` Members:{TypeMemberDeclaration};
@@ -492,9 +490,9 @@ ConstructorDeclaration <: ClassMemberDeclaration, AssociatedMemberDeclaration, I
     = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
 InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration
     = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
-FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration
-    = Name:`IdentifierName` BindingType:`DataType` Symbol:`FieldSymbol`;
-AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionLikeDeclaration, InvocableDeclaration
+FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration, NamedBindingDeclaration
+    = Name:`IdentifierName` Symbol:`FieldSymbol`;
+AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableDeclaration, InvocableDeclaration
     = Name:`StandardName`;
 
 // ---------- Can be Referenced by Type Name

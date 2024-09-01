@@ -27,16 +27,16 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => TempArguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IEnumerable<IExpressionNode?> AllArguments => Arguments;
-    private IFixedSet<IFunctionLikeDeclarationNode>? compatibleDeclarations;
+    private IFixedSet<IFunctionInvocableDeclarationNode>? compatibleDeclarations;
     private bool compatibleDeclarationsCached;
-    public IFixedSet<IFunctionLikeDeclarationNode> CompatibleDeclarations
+    public IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations
         => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
             : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
                 OverloadResolutionAspect.FunctionInvocationExpression_CompatibleDeclarations,
                 FixedSet.ObjectEqualityComparer);
-    private IFunctionLikeDeclarationNode? referencedDeclaration;
+    private IFunctionInvocableDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
-    public IFunctionLikeDeclarationNode? ReferencedDeclaration
+    public IFunctionInvocableDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
                 OverloadResolutionAspect.FunctionInvocationExpression_ReferencedDeclaration,

@@ -32,7 +32,8 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     private bool bindingTypeCached;
     public override DataType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : this.Synthetic(ref bindingTypeCached, ref bindingType, TypeMemberDeclarationsAspect.NamedParameter_BindingType);
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                NameBindingTypesAspect.NamedParameter_BindingType);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
     public LexicalScope ContainingLexicalScope
@@ -42,7 +43,7 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
     private ValueAttribute<ParameterType> parameterType;
     public ParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value
-            : parameterType.GetValue(this, TypeMemberDeclarationsAspect.NamedParameter_ParameterType);
+            : parameterType.GetValue(this, NameBindingTypesAspect.NamedParameter_ParameterType);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter
@@ -64,7 +65,7 @@ internal sealed class NamedParameterNode : ParameterNode, INamedParameterNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        TypeMemberDeclarationsAspect.NamedParameter_ContributeDiagnostics(this, diagnostics);
+        NameBindingTypesAspect.NamedParameter_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

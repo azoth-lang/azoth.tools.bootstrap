@@ -32,7 +32,7 @@ internal abstract class SelfParameterNode : ParameterNode, ISelfParameterNode
     private ValueAttribute<SelfParameterType> parameterType;
     public SelfParameterType ParameterType
         => parameterType.TryGetValue(out var value) ? value
-            : parameterType.GetValue(this, TypeMemberDeclarationsAspect.SelfParameter_ParameterType);
+            : parameterType.GetValue(this, NameBindingTypesAspect.SelfParameter_ParameterType);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter
