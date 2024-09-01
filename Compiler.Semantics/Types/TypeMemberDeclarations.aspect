@@ -12,5 +12,9 @@
 // ---------- Function Definition
 ↑ FunctionDefinition.Type: `FunctionType`;
 
+// ---------- Member Definitions
+= AbstractMethodDefinition.MethodGroupType => Symbol.MethodGroupType;
+= StandardMethodDefinition.MethodGroupType => Symbol.MethodGroupType;
+
 // ---------- Control Flow Expressions
 ↓ ReturnExpression.ExpectedReturnType: `DataType`?;

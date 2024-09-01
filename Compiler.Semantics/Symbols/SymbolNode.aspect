@@ -68,3 +68,7 @@
 // ---------- Type Declaration Parts
 = GenericParameterSymbol.Supertypes => Symbol.GetDeclaredType()?.Supertypes ?? [];
 = GenericParameterSymbol.InclusiveMembers => [];
+
+// ---------- Member Symbol Nodes
+= StandardMethodSymbol.Arity => Symbol.Arity;
+= StandardMethodSymbol.MethodGroupType => Symbol.MethodGroupType;

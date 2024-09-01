@@ -25,8 +25,9 @@ internal static partial class TypeModifiersAspect
     private static AccessModifier EntityDeclarationAccessModifier(IEntityDefinitionSyntax entityDefinitionSyntax)
         => entityDefinitionSyntax.AccessModifier?.ToAccessModifier() ?? AccessModifier.Private;
 
-    public static void AbstractMethodDeclaration_ContributeDiagnostics(IAbstractMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void AbstractMethodDefinition_Contribute_Diagnostics(IAbstractMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
+        // TODO this would be better handled on the class node
         var concreteClass = !node.ContainingDeclaredType.IsAbstract;
         if (concreteClass)
             diagnostics.Add(OtherSemanticError.AbstractMethodNotInAbstractClass(node.File, node.Syntax.Span, node.Name));

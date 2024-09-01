@@ -1,5 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 ◊name TypeModifiersAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Syntax;
 
 // ↓ ↑ ⮡ ✎
@@ -18,3 +19,6 @@ struct `AccessModifier`;
 // ---------- Type Member Definitions
 ↑ TypeMemberDefinition.AccessModifier: `AccessModifier`;
 = TypeMemberDefinition.AccessModifier;
+
+// ---------- Member Definitions
+= AbstractMethodDefinition.↑.Diagnostics;

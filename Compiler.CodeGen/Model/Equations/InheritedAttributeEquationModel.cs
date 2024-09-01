@@ -47,9 +47,6 @@ public sealed class InheritedAttributeEquationModel : ContributorEquationModel
 
     private IFixedSet<InheritedAttributeModel> ComputeInheritedToAttributes()
     {
-        if (NodeSymbol.ShortName == "PackageFacetSymbol" && Name == "Facet")
-            Debugger.Break();
-
         var inheritedToNodes = new HashSet<TreeNodeModel>();
         foreach (var childAttribute in Node.ActualAttributes.Where(a => a.IsChild && Selector.MatchesChild(a)))
         {

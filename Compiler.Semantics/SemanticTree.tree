@@ -122,11 +122,11 @@ AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, Stru
 
 // ---------- Member Definitions
 MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition, MethodDeclaration
-    = Syntax:`IMethodDefinitionSyntax` Kind:`MethodKind` Name:`IdentifierName`
+    = Syntax:`IMethodDefinitionSyntax`
     SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
 // TODO getters and setters can be abstract too
-AbstractMethodDefinition <: MethodDefinition, StandardMethodDeclaration = Syntax:`IAbstractMethodDefinitionSyntax`
-    /SelfParameter/ /Parameters/ /Return/;
+AbstractMethodDefinition <: MethodDefinition, StandardMethodDeclaration
+    = Syntax:`IAbstractMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/;
 ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteInvocableDefinition
     = Syntax:`IConcreteMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
 // TODO rename to Ordinary or Normal
@@ -488,7 +488,7 @@ InstanceMemberDeclaration <: TypeMemberDeclaration;
 // ---------- Member Declarations
 MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration, InvocableDeclaration
     = Name:`IdentifierName` Symbol:`MethodSymbol`;
-StandardMethodDeclaration <: MethodDeclaration = Arity:`int` MethodGroupType:`FunctionType`;
+StandardMethodDeclaration <: MethodDeclaration;
 PropertyAccessorDeclaration <: MethodDeclaration;
 GetterMethodDeclaration <: PropertyAccessorDeclaration;
 SetterMethodDeclaration <: PropertyAccessorDeclaration;
@@ -544,7 +544,6 @@ ClassMemberSymbol <: ClassMemberDeclaration, TypeMemberSymbol;
 TraitMemberSymbol <: TraitMemberDeclaration, TypeMemberSymbol;
 StructMemberSymbol <: StructMemberDeclaration, TypeMemberSymbol;
 AssociatedMemberSymbol <: AssociatedMemberDeclaration, ClassMemberSymbol, TraitMemberSymbol, StructMemberSymbol;
-// InstanceMemberDeclaration <: InstanceMemberDeclaration, TypeMemberDeclaration;
 
 // ---------- Member Symbol Nodes
 MethodSymbol <: MethodDeclaration, ClassMemberSymbol, TraitMemberSymbol, StructMemberSymbol;

@@ -727,11 +727,16 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    MethodKind Kind { get; }
     IMethodSelfParameterNode SelfParameter { get; }
     new IFixedList<INamedParameterNode> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
+    new IdentifierName Name
+        => Syntax.Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    IdentifierName IMethodDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
+    MethodKind Kind { get; }
     new MethodSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
@@ -750,9 +755,15 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IDeclaredUserType ContainingDeclaredType { get; }
+    FunctionType IStandardMethodDeclarationNode.MethodGroupType
+        => Symbol.MethodGroupType;
+    MethodKind IMethodDefinitionNode.Kind
+        => MethodKind.Standard;
+    int IStandardMethodDeclarationNode.Arity
+        => Parameters.Count;
 
-    public static IAbstractMethodDefinitionNode Create(MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
-        => new AbstractMethodDefinitionNode(kind, name, arity, methodGroupType, syntax, selfParameter, parameters, @return);
+    public static IAbstractMethodDefinitionNode Create(IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
+        => new AbstractMethodDefinitionNode(syntax, selfParameter, parameters, @return);
 }
 
 [Closed(
@@ -783,9 +794,15 @@ public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefiniti
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    FunctionType IStandardMethodDeclarationNode.MethodGroupType
+        => Symbol.MethodGroupType;
+    MethodKind IMethodDefinitionNode.Kind
+        => MethodKind.Standard;
+    int IStandardMethodDeclarationNode.Arity
+        => Parameters.Count;
 
-    public static IStandardMethodDefinitionNode Create(MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
-        => new StandardMethodDefinitionNode(kind, name, arity, methodGroupType, syntax, selfParameter, parameters, @return, body);
+    public static IStandardMethodDefinitionNode Create(IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
+        => new StandardMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
 }
 
 // [Closed(typeof(GetterMethodDefinitionNode))]
@@ -801,9 +818,11 @@ public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinition
     ISyntax? ISemanticNode.Syntax => Syntax;
     new ITypeNode Return { get; }
     ITypeNode? IMethodDefinitionNode.Return => Return;
+    MethodKind IMethodDefinitionNode.Kind
+        => MethodKind.Getter;
 
-    public static IGetterMethodDefinitionNode Create(MethodKind kind, IdentifierName name, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IBodyNode body)
-        => new GetterMethodDefinitionNode(kind, name, syntax, selfParameter, parameters, @return, body);
+    public static IGetterMethodDefinitionNode Create(IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IBodyNode body)
+        => new GetterMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
 }
 
 // [Closed(typeof(SetterMethodDefinitionNode))]
@@ -817,9 +836,11 @@ public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinition
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    MethodKind IMethodDefinitionNode.Kind
+        => MethodKind.Setter;
 
-    public static ISetterMethodDefinitionNode Create(MethodKind kind, IdentifierName name, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
-        => new SetterMethodDefinitionNode(kind, name, syntax, selfParameter, parameters, @return, body);
+    public static ISetterMethodDefinitionNode Create(ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
+        => new SetterMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
 }
 
 [Closed(
@@ -3722,9 +3743,13 @@ public partial interface IMethodSymbolNode : IMethodDeclarationNode, IClassMembe
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IStandardMethodSymbolNode : IStandardMethodDeclarationNode, IMethodSymbolNode
 {
+    int IStandardMethodDeclarationNode.Arity
+        => Symbol.Arity;
+    FunctionType IStandardMethodDeclarationNode.MethodGroupType
+        => Symbol.MethodGroupType;
 
-    public static IStandardMethodSymbolNode Create(ISyntax? syntax, IdentifierName name, MethodSymbol symbol, int arity, FunctionType methodGroupType)
-        => new StandardMethodSymbolNode(syntax, name, symbol, arity, methodGroupType);
+    public static IStandardMethodSymbolNode Create(ISyntax? syntax, IdentifierName name, MethodSymbol symbol)
+        => new StandardMethodSymbolNode(syntax, name, symbol);
 }
 
 // [Closed(typeof(GetterMethodSymbolNode))]
@@ -5025,10 +5050,6 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
     private IAbstractMethodDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public MethodKind Kind { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
-    public int Arity { [DebuggerStepThrough] get; }
-    public FunctionType MethodGroupType { [DebuggerStepThrough] get; }
     public IAbstractMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -5082,12 +5103,8 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public AbstractMethodDefinitionNode(MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
+    public AbstractMethodDefinitionNode(IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
     {
-        Kind = kind;
-        Name = name;
-        Arity = arity;
-        MethodGroupType = methodGroupType;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
@@ -5096,6 +5113,17 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        TypeModifiersAspect.AbstractMethodDefinition_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5104,10 +5132,6 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     private IStandardMethodDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public MethodKind Kind { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
-    public int Arity { [DebuggerStepThrough] get; }
-    public FunctionType MethodGroupType { [DebuggerStepThrough] get; }
     public IStandardMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -5164,12 +5188,8 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public StandardMethodDefinitionNode(MethodKind kind, IdentifierName name, int arity, FunctionType methodGroupType, IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
+    public StandardMethodDefinitionNode(IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
     {
-        Kind = kind;
-        Name = name;
-        Arity = arity;
-        MethodGroupType = methodGroupType;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
@@ -5231,8 +5251,6 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     private IGetterMethodDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public MethodKind Kind { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public IGetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -5289,10 +5307,8 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public GetterMethodDefinitionNode(MethodKind kind, IdentifierName name, IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IBodyNode body)
+    public GetterMethodDefinitionNode(IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IBodyNode body)
     {
-        Kind = kind;
-        Name = name;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
@@ -5354,8 +5370,6 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     private ISetterMethodDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public MethodKind Kind { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public ISetterMethodDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
@@ -5412,10 +5426,8 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public SetterMethodDefinitionNode(MethodKind kind, IdentifierName name, ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
+    public SetterMethodDefinitionNode(ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
     {
-        Kind = kind;
-        Name = name;
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
@@ -11372,20 +11384,16 @@ file class StandardMethodSymbolNode : SemanticNode, IStandardMethodSymbolNode
     public ISyntax? Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public MethodSymbol Symbol { [DebuggerStepThrough] get; }
-    public int Arity { [DebuggerStepThrough] get; }
-    public FunctionType MethodGroupType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
-    public StandardMethodSymbolNode(ISyntax? syntax, IdentifierName name, MethodSymbol symbol, int arity, FunctionType methodGroupType)
+    public StandardMethodSymbolNode(ISyntax? syntax, IdentifierName name, MethodSymbol symbol)
     {
         Syntax = syntax;
         Name = name;
         Symbol = symbol;
-        Arity = arity;
-        MethodGroupType = methodGroupType;
     }
 }
 

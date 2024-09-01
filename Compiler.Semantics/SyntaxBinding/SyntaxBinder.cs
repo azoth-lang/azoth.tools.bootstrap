@@ -174,8 +174,8 @@ internal static class SyntaxBinder
         };
 
     private static IAbstractMethodDefinitionNode AbstractMethodDefinition(IAbstractMethodDefinitionSyntax syntax)
-        => new AbstractMethodDefinitionNode(syntax, MethodSelfParameter(syntax.SelfParameter),
-                       NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
+        => IAbstractMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
+            NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
 
     private static IConcreteMethodDefinitionNode ConcreteMethodDefinition(IConcreteMethodDefinitionSyntax syntax)
         => syntax switch

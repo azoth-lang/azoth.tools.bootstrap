@@ -53,6 +53,16 @@
 ↑ GenericParameter.Independence: `TypeParameterIndependence` => Syntax.Independence;
 ↑ GenericParameter.Variance: `TypeParameterVariance` => Syntax.Variance;
 
+// ---------- Member Definitions
+↑ MethodDefinition.Name:`IdentifierName` => Syntax.Name;
+↑ MethodDefinition.Kind: `MethodKind`;
+= AbstractMethodDefinition.Kind => MethodKind.Standard;
+= AbstractMethodDefinition.Arity => Parameters.Count;
+= StandardMethodDefinition.Kind => MethodKind.Standard;
+= StandardMethodDefinition.Arity => Parameters.Count;
+= GetterMethodDefinition.Kind => MethodKind.Getter;
+= SetterMethodDefinition.Kind => MethodKind.Setter;
+
 // -------------------------------------------------------------------------------------------------
 // Declarations
 // -------------------------------------------------------------------------------------------------

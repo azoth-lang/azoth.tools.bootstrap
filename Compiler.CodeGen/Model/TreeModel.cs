@@ -69,8 +69,8 @@ public sealed class TreeModel : IHasUsingNamespaces
     public T? AttributeFor<T>(InternalSymbol nodeSymbol, string name)
         where T : AttributeModel
     {
-        var node = NodeFor(nodeSymbol.ShortName)!;
-        var attribute = node.ActualAttributes.OfType<T>().FirstOrDefault(a => a.Name == name);
+        var node = NodeFor(nodeSymbol.ShortName); // If the node doesn't exist it will be null
+        var attribute = node?.ActualAttributes.OfType<T>().FirstOrDefault(a => a.Name == name);
         return attribute;
     }
 

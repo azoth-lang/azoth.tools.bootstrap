@@ -17,8 +17,6 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
 {
     public override IStandardMethodDefinitionSyntax Syntax { get; }
     public override MethodKind Kind => MethodKind.Standard;
-    public int Arity => Parameters.Count;
-    public FunctionType MethodGroupType => Symbol.MethodGroupType;
     public override IBodyNode Body { get; }
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
@@ -56,13 +54,15 @@ internal sealed class StandardMethodDefinitionNode : MethodDefinitionNode, IStan
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (descendant == Body) return MethodGroupType.Return.Type.ToAntetype();
+        if (descendant == Body)
+            return ((IStandardMethodDefinitionNode)this).MethodGroupType.Return.Type.ToAntetype();
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (descendant == Body) return MethodGroupType.Return.Type;
+        if (descendant == Body)
+            return ((IStandardMethodDefinitionNode)this).MethodGroupType.Return.Type;
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 

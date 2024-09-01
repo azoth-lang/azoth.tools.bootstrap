@@ -24,6 +24,10 @@
 ↑ StructDeclaration.InclusiveMembers: {StructMemberDeclaration};
 ↑ TraitDeclaration.InclusiveMembers: {TraitMemberDeclaration};
 
+// ---------- Member Declarations
+↑ StandardMethodDeclaration.Arity: `int`;
+↑ StandardMethodDeclaration.MethodGroupType: `FunctionType`;
+
 // ---------- Can be Referenced by Type Name
 ↑ TypeDeclaration.Supertypes: {`BareReferenceType`};
 ↑ TypeDeclaration.Members: {TypeMemberDeclaration};
