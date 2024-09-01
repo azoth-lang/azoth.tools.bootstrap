@@ -191,10 +191,12 @@ internal static class SyntaxBinder
             NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
 
     private static IGetterMethodDefinitionNode GetterMethodDefinition(IGetterMethodDefinitionSyntax syntax)
-        => new GetterMethodDefinitionNode(syntax, MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters), Type(syntax.Return.Type), Body(syntax.Body));
+        => IGetterMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
+            NamedParameters(syntax.Parameters), Type(syntax.Return.Type), Body(syntax.Body));
 
     private static ISetterMethodDefinitionNode SetterMethodDefinition(ISetterMethodDefinitionSyntax syntax)
-        => new SetterMethodDefinitionNode(syntax, MethodSelfParameter(syntax.SelfParameter), NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
+        => ISetterMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
+            NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
 
     private static IConstructorDefinitionNode ConstructorDefinition(IConstructorDefinitionSyntax syntax)
         => new SourceConstructorDefinitionNode(syntax, ConstructorSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
