@@ -3,32 +3,29 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
-public sealed class SynthesizedAttributeSyntax : AspectAttributeSyntax
+public sealed class CircularAttributeSyntax : AspectAttributeSyntax
 {
     public override TypeSyntax Type { get; }
     public string? DefaultExpression { get; }
+    public string? InitialExpression { get; }
 
-    public SynthesizedAttributeSyntax(
-        bool isChild,
-        EvaluationStrategy? strategy,
+    public CircularAttributeSyntax(
         SymbolSyntax node,
-        string name,
-        bool isMethod,
         TypeSyntax type,
-        string? defaultExpression)
-        : base(isChild, strategy, node, name, isMethod)
+        string name,
+        string? defaultExpression,
+        string? initialExpression)
+        : base(false, EvaluationStrategy.Lazy, node, name, false)
     {
         Type = type;
         DefaultExpression = defaultExpression;
+        InitialExpression = initialExpression;
     }
 
     public override string ToString()
     {
-        var strategy = Strategy.ToSourceString();
-        if (strategy.Length > 0)
-            strategy += " ";
-        var parameters = IsMethod ? "()" : "";
         var defaultExpression = DefaultExpression is not null ? $" => {DefaultExpression}" : "";
-        return $"↑ {strategy}{Node}.{Name}{parameters}: {Type}{defaultExpression};";
+        var initialExpression = InitialExpression is not null ? $" initial => {InitialExpression}" : "";
+        return $"⟳ {Node}.{Name}: {Type}{defaultExpression}{initialExpression}";
     }
 }

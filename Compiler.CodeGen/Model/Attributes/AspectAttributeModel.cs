@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 /// The semantic model for an attribute declared in an aspect separate from a node
 /// </summary>
 [Closed(
-    typeof(SynthesizedAttributeModel),
+    typeof(LocalAttributeModel),
     typeof(ContextAttributeModel),
     typeof(IntertypeMethodAttributeModel),
     typeof(AggregateAttributeModel))]
@@ -21,6 +21,7 @@ public abstract class AspectAttributeModel : AttributeModel
         => syntax switch
         {
             SynthesizedAttributeSyntax syn => new SynthesizedAttributeModel(aspect, syn),
+            CircularAttributeSyntax syn => new CircularAttributeModel(aspect, syn),
             InheritedAttributeSyntax syn => new InheritedAttributeModel(aspect, syn),
             PreviousAttributeSyntax syn => new PreviousAttributeModel(aspect, syn),
             IntertypeMethodAttributeSyntax syn => new IntertypeMethodAttributeModel(aspect, syn),

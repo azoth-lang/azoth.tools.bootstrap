@@ -12,6 +12,7 @@ internal static class BareTypeAspect
     public static BareType? IdentifierTypeName_NamedBareType(IIdentifierTypeNameNode node)
         => BuildBareType(node.ReferencedSymbol, FixedList.Empty<DataType>());
 
+    // TODO this should avoid using symbols and use referenced declarations instead
     private static BareType? BuildBareType(TypeSymbol? symbol, IFixedList<DataType> typeArguments)
     {
         // Empty and generic parameter types don't have a declared or bare type. Note: the number

@@ -26,14 +26,14 @@
 | *Name*`:`*TypeExp*  | Property with the given name and type (see Type Expressions)   |
 | `/`*Name*`/`        | A placeholder for controlling the order of a attributes        |
 
-| Type Expression      | Meaning               |
-| -------------------- | --------------------- |
-| *Node*               | A node type           |
-| `` ` ``*Type*`` ` `` | A C# type             |
-| *BasicType*`*`       | List of type          |
-| *BasicType*`*?`      | Optional list of type |
-| `{`*BasicType*`}`    | Set of type           |
-| `{`*BasicType*`}?`   | Optional set of type  |
+| Type Expression            | Meaning              |
+| -------------------------- | -------------------- |
+| *Node*                     | A node type          |
+| `` ` ``*Type*`` ` ``       | A C# type expression |
+| *TypeExp*`?`               | Optional  type       |
+| *TypeExp*`*`               | List of type         |
+| `{`*TypeExp*`}`            | Set of type          |
+| `IEnumerable<`*TypeExp*`>` | Enumerable of type   |
 
 ### The Default Node
 
@@ -52,7 +52,6 @@
 **TODO:** There is a strange overlap between this and synthesized attributes that are methods. Maybe
 these should be combined/simplified somehow? Remember that there are also inherited attributes that
 are methods.
-
 
 | Declaration                                                            | Meaning                                                                    |
 | ---------------------------------------------------------------------- | -------------------------------------------------------------------------- |
@@ -80,10 +79,10 @@ A `type` declaration is used to provide that.
 | `↑` `child`? (`eager`\|`computed`)? *Node*`.`*Attribute*`:` *Type* `=>` *Expression*`;` | Synthesized attribute with default inline expression, defaults to computed   |
 | `=` (`eager`\|`lazy`\|`computed`)? *Node*.*Attribute*`;`                                | Synthesized equation, defaults to attribute strategy                         |
 | `=` (`eager`\|`computed`)? *Node*.*Attribute* `=>` *Expression*`;`                      | Synthesized equation with inline expression, defaults to computed            |
-| `↑` *Node*.*Attribute*`():` *Type*`;`                                                   | Synthesized method attribute, always computed                                |
-| `↑` *Node*.*Attribute*`():` *Type* `=>` *Expression*`;`                                 | Synthesized method attribute with default inline expression, always computed |
-| `=` *Node*.*Method*`();`                                                                | Synthesized method equation, always computed                                 |
-| `=` *Node*.*Method*`()` `=>` *Expression*`;`                                            | Synthesized method equation with inline expression, always computed          |
+| `↑` *Node*`.`*Attribute*`():` *Type*`;`                                                 | Synthesized method attribute, always computed                                |
+| `↑` *Node*`.`*Attribute*`():` *Type* `=>` *Expression*`;`                               | Synthesized method attribute with default inline expression, always computed |
+| `=` *Node*`.`*Method*`();`                                                              | Synthesized method equation, always computed                                 |
+| `=` *Node*`.`*Method*`()` `=>` *Expression*`;`                                          | Synthesized method equation with inline expression, always computed          |
 
 ### Inherited Attributes
 
@@ -92,7 +91,7 @@ A `type` declaration is used to provide that.
 | `↓` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Inherited attribute, defaults to lazy                           |
 | `=` *Node*`.`*Selector*`.`*Attribute*`;`                           | Inherited equation                                              |
 | `=` *Node*`.`*Selector*`.`*Attribute* `=>` *Expression*`;`         | Inherited equation with inline expression                       |
-| `↓` *Node*.*Attribute*`():` *Type*`;`                              | Inherited attribute method, always computed                     |
+| `↓` *Node*`.`*Attribute*`():` *Type*`;`                            | Inherited attribute method, always computed                     |
 | `=` *Node*`.`*Selector*`.`*Attribute*`();`                         | Inherited method equation                                       |
 | `=` *Node*`.`*Selector*`.`*Attribute*`()` `=>` *Expression*`;`     | Inherited method equation with inline expression                |
 | `↓` `*.`*Attribute* `<:` *Type*`;`<sup>1</sup>                     | An inherited attribute family that specifies a common supertype |
@@ -119,19 +118,27 @@ for a node to provide the attribute value, nodes are searched in the reverse of 
 traversal. That is, for inherited attributes, values flow down the tree. For previous attributes,
 values flow down from the parent to the first child and then across to the next child.
 
-| Declaration                                                | Meaning                                                       |
-| ---------------------------------------------------------- | ------------------------------------------------------------- |
-| `⮡` `*.`*Attribute*`:` *Type*`;`                           | Previous attribute family                                     |
-| `⮡` (`lazy`\|`computed`)? `child`? *Node*`.`*Attribute*`;` | Previous attribute, defaults to lazy                          |
-| `=` *Node*`.⮡.`*Attribute*`;`                              | Previous equation                                             |
-| `=` *Node*`.⮡.`*Attribute* `=>` *Expression*`;`            | Previous equation with inline expression                      |
-| `⮡` *Node*`.`*Attribute*`();`                              | Previous attribute method, always computed                    |
-| `=` *Node*`.⮡.`*Attribute*`();`                            | Previous method equation                                      |
-| `=` *Node*`.⮡.`*Attribute*`()` `=>` *Expression*`;`        | Previous method equation with inline expression               |
+| Declaration                                                | Meaning                                         |
+| ---------------------------------------------------------- | ----------------------------------------------- |
+| `⮡` `*.`*Attribute*`:` *Type*`;`                           | Previous attribute family                       |
+| `⮡` (`lazy`\|`computed`)? `child`? *Node*`.`*Attribute*`;` | Previous attribute, defaults to lazy            |
+| `=` *Node*`.⮡.`*Attribute*`;`                              | Previous equation                               |
+| `=` *Node*`.⮡.`*Attribute* `=>` *Expression*`;`            | Previous equation with inline expression        |
+| `⮡` *Node*`.`*Attribute*`();`                              | Previous attribute method, always computed      |
+| `=` *Node*`.⮡.`*Attribute*`();`                            | Previous method equation                        |
+| `=` *Node*`.⮡.`*Attribute*`()` `=>` *Expression*`;`        | Previous method equation with inline expression |
 
 ### Circular Attributes
 
-`⟳` *Node*`.`*Attribute*`:` *Type*`;`
+Circular attributes are always lazy (even when inline expressions are used).
+
+| Declaration                                                                               | Meaning                                  |
+| ----------------------------------------------------------------------------------------- | ---------------------------------------- |
+| `⟳` *Node*`.`*Attribute*`:` *Type* (`=>` *Expression*)? (`initial` `=>` *Expression*)?`;` | Circular attribute                       |
+| `=` *Node*`.`*Attribute*`;`                                                               | Circular equation                        |
+| `=` *Node*`.`*Attribute* `=>` *Expression*`;`                                             | Circular equation with inline expression |
+
+↻ ▶️ ⭲ ↷ ⌱ ↻ ⓘ ○→ ⭘→ ◯→ ⤸
 
 ### Aggregate Attributes
 

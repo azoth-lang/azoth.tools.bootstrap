@@ -164,6 +164,7 @@ internal static class Emit
             PropertyModel _ => " { get; }",
             AggregateAttributeModel _ => " { get; }",
             SynthesizedAttributeModel a => ParametersAndBody(a),
+            CircularAttributeModel _ => " { get; }",
             InheritedAttributeModel a => a.IsMethod ? "();" : " { get; }",
             PreviousAttributeModel a => a.IsMethod ? "();" : " { get; }",
             IntertypeMethodAttributeModel a => ParametersAndBody(a),

@@ -119,6 +119,7 @@ public static class AspectParser
         => statement[0] switch
         {
             '↑' => ParseSynthesizedAttribute(statement),
+            '⟳' => ParseCircularAttribute(statement),
             '↓' => ParseInheritedAttribute(statement),
             '⮡' => ParsePreviousAttribute(statement),
             '+' => ParseIntertypeMethodAttribute(statement),
@@ -142,6 +143,24 @@ public static class AspectParser
         var nodeSymbol = ParseSymbol(node);
         return new(isChild, evaluationStrategy, nodeSymbol, name, isMethod, typeSyntax, defaultExpression);
     }
+
+    private static CircularAttributeSyntax ParseCircularAttribute(string statement)
+    {
+        if (!ParseOffStart(ref statement, "⟳"))
+            throw new ArgumentException("Not a circular attribute statement.", nameof(statement));
+
+        var (definition, initialExpression) = OptionalBisect(statement, "initial", "Too many `initial` in: '{0}'");
+        if (initialExpression is not null)
+            if (!ParseOffStart(ref initialExpression, "=>"))
+                throw new FormatException("Initial expression must start with `=>`.");
+        (definition, var defaultExpression) = OptionalBisect(definition, "=>", "Too many `=>` in: '{0}'");
+        (definition, var type) = Bisect(definition, ":", "Should be exactly one `:` in: '{0}'");
+        var (node, name) = SplitOffStart(definition, ".", "Missing `.` between node and attribute in: '{0}'");
+        var typeSyntax = ParseType(type);
+        var nodeSymbol = ParseSymbol(node);
+        return new(nodeSymbol, typeSyntax, name, defaultExpression, initialExpression);
+    }
+
 
     private static InheritedAttributeSyntax ParseInheritedAttribute(string statement)
     {

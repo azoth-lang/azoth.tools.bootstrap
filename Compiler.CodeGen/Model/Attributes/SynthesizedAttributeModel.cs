@@ -8,7 +8,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 
-public sealed class SynthesizedAttributeModel : AspectAttributeModel
+public sealed class SynthesizedAttributeModel : LocalAttributeModel
 {
     public static SynthesizedAttributeModel? TryMerge(TreeNodeModel node, IEnumerable<SynthesizedAttributeModel> attributes)
     {
@@ -75,6 +75,6 @@ public sealed class SynthesizedAttributeModel : AspectAttributeModel
         var strategy = Strategy.ToSourceString();
         var parameters = IsMethod ? "()" : "";
         var defaultExpression = DefaultExpression is not null ? $" => {DefaultExpression}" : "";
-        return $"↑ {strategy} {Node.Defines}.{Name}{parameters}: {Type}{defaultExpression};";
+        return $"↑ {strategy} {NodeSymbol}.{Name}{parameters}: {Type}{defaultExpression};";
     }
 }

@@ -5,6 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 
 [Closed(
     typeof(SynthesizedAttributeSyntax),
+    typeof(CircularAttributeSyntax),
     typeof(InheritedAttributeSyntax),
     typeof(PreviousAttributeSyntax),
     typeof(IntertypeMethodAttributeSyntax),
