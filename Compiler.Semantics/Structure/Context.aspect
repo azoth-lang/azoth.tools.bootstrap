@@ -39,6 +39,7 @@
 
 // ---------- Type Member Definitions
 = ConcreteMethodDefinition.*.**.ContainingDeclaration => this;
+= SourceConstructorDefinition.*.**.ContainingDeclaration => this;
 ↓ computed AlwaysTypeMemberDefinition.ContainingDeclaration: UserTypeDeclaration;
 
 // ---------- Parameters

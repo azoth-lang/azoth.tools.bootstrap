@@ -138,7 +138,7 @@ GetterMethodDefinition <: ConcreteMethodDefinition, GetterMethodDeclaration
 SetterMethodDefinition <: ConcreteMethodDefinition, SetterMethodDeclaration
     = Syntax:`ISetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
 ConstructorDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, ConstructorDeclaration
-    = Syntax:`IConstructorDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*;
+    = Syntax:`IConstructorDefinitionSyntax`? Parameters:ConstructorOrInitializerParameter*;
 DefaultConstructorDefinition <: ConstructorDefinition;
 SourceConstructorDefinition <: ConstructorDefinition
     = Syntax:`IConstructorDefinitionSyntax`

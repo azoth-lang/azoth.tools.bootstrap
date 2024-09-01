@@ -62,8 +62,8 @@
 = StandardMethodDefinition.Arity => Parameters.Count;
 = GetterMethodDefinition.Kind => MethodKind.Getter;
 = SetterMethodDefinition.Kind => MethodKind.Setter;
+↑ ConstructorDefinition.Name: `IdentifierName`? => Syntax?.Name;
 ↑ DefaultConstructorDefinition.Syntax: `IConstructorDefinitionSyntax`? => null;
-↑ DefaultConstructorDefinition.Name: `IdentifierName`? => null;
 ↑ DefaultConstructorDefinition.Parameters: ConstructorOrInitializerParameter*
     => FixedList.Empty<IConstructorOrInitializerParameterNode>();
 ↑ DefaultConstructorDefinition.Body: Body? => null;
