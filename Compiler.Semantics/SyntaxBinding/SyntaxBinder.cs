@@ -203,7 +203,8 @@ internal static class SyntaxBinder
             ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
 
     private static IInitializerDefinitionNode InitializerDefinition(IInitializerDefinitionSyntax syntax)
-        => new SourceInitializerDefinitionNode(syntax, InitializerSelfParameter(syntax.SelfParameter), ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
+        => ISourceInitializerDefinitionNode.Create(syntax, InitializerSelfParameter(syntax.SelfParameter),
+            ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
 
     private static IFieldDefinitionNode FieldDefinition(IFieldDefinitionSyntax syntax)
         => new FieldDefinitionNode(syntax, Type(syntax.Type), Expression(syntax.Initializer));

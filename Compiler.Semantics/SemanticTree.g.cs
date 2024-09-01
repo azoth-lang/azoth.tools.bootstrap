@@ -6988,6 +6988,11 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IExecutableDefinitionNode>(this);
+    }
+
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
