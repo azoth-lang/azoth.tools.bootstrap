@@ -16,8 +16,8 @@ internal class NamespaceSymbolNode : PackageFacetChildSymbolNode, INamespaceSymb
     TypeName INamedDeclarationNode.Name => Name;
     StandardName INamespaceMemberDeclarationNode.Name => Name;
 
-    private ValueAttribute<IFixedList<INamespaceMemberDeclarationNode>> members;
-    public IFixedList<INamespaceMemberDeclarationNode> Members
+    private ValueAttribute<IFixedList<INamespaceMemberSymbolNode>> members;
+    public IFixedList<INamespaceMemberSymbolNode> Members
         => members.TryGetValue(out var value) ? value : members.GetValue(GetMembers);
     private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? membersByName;
     private bool membersByNameCached;
@@ -41,6 +41,6 @@ internal class NamespaceSymbolNode : PackageFacetChildSymbolNode, INamespaceSymb
         Symbol = symbol;
     }
 
-    private new IFixedList<INamespaceMemberDeclarationNode> GetMembers()
-        => ChildList.Attach(this, base.GetMembers().Cast<INamespaceMemberDeclarationNode>());
+    private new IFixedList<INamespaceMemberSymbolNode> GetMembers()
+        => ChildList.Attach(this, base.GetMembers().Cast<INamespaceMemberSymbolNode>());
 }

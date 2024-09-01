@@ -8,8 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
 internal sealed class StructSymbolNode : UserTypeSymbolNode, IStructSymbolNode
 {
-    private ValueAttribute<IFixedSet<IStructMemberDeclarationNode>> members;
-    public override IFixedSet<IStructMemberDeclarationNode> Members
+    private ValueAttribute<IFixedSet<IStructMemberSymbolNode>> members;
+    public override IFixedSet<IStructMemberSymbolNode> Members
         => members.TryGetValue(out var value) ? value
             : members.GetValue(GetMembers);
     public override IFixedSet<IStructMemberDeclarationNode> InclusiveMembers
@@ -22,6 +22,6 @@ internal sealed class StructSymbolNode : UserTypeSymbolNode, IStructSymbolNode
         Requires.That(symbol.DeclaresType is StructType, nameof(symbol), "Symbol must be for a struct type.");
     }
 
-    private new IFixedSet<IStructMemberDeclarationNode> GetMembers()
-        => ChildSet.Attach(this, base.GetMembers().OfType<IStructMemberDeclarationNode>());
+    private new IFixedSet<IStructMemberSymbolNode> GetMembers()
+        => ChildSet.Attach(this, base.GetMembers().OfType<IStructMemberSymbolNode>());
 }

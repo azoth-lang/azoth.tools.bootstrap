@@ -80,7 +80,7 @@ internal static partial class SymbolNodeAspect
     public static partial INamespaceDefinitionNode NamespaceBlockDefinition_Definition(INamespaceBlockDefinitionNode node)
         => FindNamespace(node.ContainingNamespace, node.DeclaredNames);
 
-    public static IUserTypeDeclarationNode TypeDefinition_Children_Broadcast_ContainingDeclaration(ITypeDefinitionNode node)
+    public static partial IUserTypeDeclarationNode TypeDefinition_Children_Broadcast_ContainingDeclaration(ITypeDefinitionNode node)
         => node;
 
     public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)
@@ -195,7 +195,7 @@ internal static partial class SymbolNodeAspect
     #endregion
 
     #region Symbol Nodes
-    public static partial INamespaceDeclarationNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node)
+    public static partial INamespaceSymbolNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node)
         => new NamespaceSymbolNode(node.SymbolTree.Package);
     #endregion
 }

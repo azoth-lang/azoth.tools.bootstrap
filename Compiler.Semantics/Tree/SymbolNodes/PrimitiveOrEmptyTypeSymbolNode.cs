@@ -16,8 +16,8 @@ internal abstract class PrimitiveOrEmptyTypeSymbolNode : ChildSymbolNode, IPrimi
     public abstract override TypeSymbol Symbol { get; }
     public IFixedSet<BareReferenceType> Supertypes
         => Symbol.GetDeclaredType()?.Supertypes ?? [];
-    private ValueAttribute<IFixedSet<ITypeMemberDeclarationNode>> members;
-    public IFixedSet<ITypeMemberDeclarationNode> Members
+    private ValueAttribute<IFixedSet<ITypeMemberSymbolNode>> members;
+    public IFixedSet<ITypeMemberSymbolNode> Members
         => members.TryGetValue(out var value) ? value : members.GetValue(GetMembers);
     public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers
         // For now, the symbol tree already includes all inherited members.
@@ -40,6 +40,6 @@ internal abstract class PrimitiveOrEmptyTypeSymbolNode : ChildSymbolNode, IPrimi
     {
     }
 
-    private new IFixedSet<ITypeMemberDeclarationNode> GetMembers()
-        => ChildSet.Attach(this, GetMembers(Primitive.SymbolTree).OfType<ITypeMemberDeclarationNode>());
+    private new IFixedSet<ITypeMemberSymbolNode> GetMembers()
+        => ChildSet.Attach(this, GetMembers(Primitive.SymbolTree).OfType<ITypeMemberSymbolNode>());
 }

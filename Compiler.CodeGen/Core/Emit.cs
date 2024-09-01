@@ -379,7 +379,7 @@ internal static class Emit
         => selector switch
         {
             AllChildrenSelectorModel s
-                => s.Broadcast ? "" // If broadcast, always matches, no condition needed
+                => s.IsBroadcast ? "" // If broadcast, always matches, no condition needed
                     : SelectorIf("ReferenceEquals(child, descendant)"),
             // TODO use Current child for all of these
             ChildSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, Self.{s.Child})"),
@@ -395,7 +395,7 @@ internal static class Emit
     private static string ChildOrDescendant(SelectorModel selector)
         // Broadcast matches the child because it applies to all descendants under that child.
         // Whereas non-broadcast matches the descendant because the descendant must be a child.
-        => selector.Broadcast ? "child" : "descendant";
+        => selector.IsBroadcast ? "child" : "descendant";
 
     public static string Body(InheritedAttributeEquationModel equation)
     {
@@ -419,7 +419,7 @@ internal static class Emit
             ChildAtVariableSelectorModel s => s.Child,
             ChildListSelectorModel s => s.Child,
             _ => throw ExhaustiveMatch.Failed(equation.Selector)
-        } + (equation.Selector.Broadcast ? "_Broadcast" : "") + $"_{equation.Name}";
+        } + (equation.Selector.IsBroadcast ? "_Broadcast" : "") + $"_{equation.Name}";
 
     public static string EquationMethodExtraParams(InheritedAttributeEquationModel equation)
     {

@@ -29,6 +29,7 @@
 
 // ---------- Type Definitions
 = TypeDefinition.*.**.IsAttributeType => false;
+= TypeDefinition.*.**.ContainingDeclaration;
 
 // ---------- Attributes
 = Attribute.TypeName.IsAttributeType => true;
@@ -50,6 +51,7 @@
 
 // ---------- Facets
 = PackageFacetSymbol.*.**.SymbolTree => SymbolTree;
+↑ child PackageFacetSymbol.GlobalNamespace: NamespaceSymbol;
 = eager PackageFacetSymbol.GlobalNamespace;
 
 // ---------- Type Symbol Nodes

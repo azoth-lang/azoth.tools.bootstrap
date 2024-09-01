@@ -12,7 +12,7 @@ internal sealed class GenericParameterSymbolNode : PackageFacetChildSymbolNode, 
     TypeName INamedDeclarationNode.Name => Name;
     public IFixedSet<BareReferenceType> Supertypes
         => Symbol.GetDeclaredType()?.Supertypes ?? [];
-    public IFixedSet<ITypeMemberDeclarationNode> Members => [];
+    public IFixedSet<ITypeMemberSymbolNode> Members => [];
     public IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers => [];
 
     public GenericParameterSymbolNode(GenericParameterTypeSymbol symbol)

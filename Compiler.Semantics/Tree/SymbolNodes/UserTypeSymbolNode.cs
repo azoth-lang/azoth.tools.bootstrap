@@ -13,15 +13,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserTypeSymbolNode
 {
     public override StandardName Name => base.Name!;
-    private ValueAttribute<IFixedList<IGenericParameterDeclarationNode>> genericParameters;
-    public IFixedList<IGenericParameterDeclarationNode> GenericParameters
+    private ValueAttribute<IFixedList<IGenericParameterSymbolNode>> genericParameters;
+    public IFixedList<IGenericParameterSymbolNode> GenericParameters
         => genericParameters.TryGetValue(out var value) ? value
             : genericParameters.GetValue(GetGenericParameters);
 
     public override UserTypeSymbol Symbol { get; }
     public IFixedSet<BareReferenceType> Supertypes
         => Symbol.GetDeclaredType().Supertypes;
-    public abstract IFixedSet<ITypeMemberDeclarationNode> Members { get; }
+    public abstract IFixedSet<ITypeMemberSymbolNode> Members { get; }
     public abstract IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
     private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
     private bool inclusiveInstanceMembersByNameCached;
@@ -41,11 +41,11 @@ internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserT
         Symbol = symbol;
     }
 
-    private IFixedList<IGenericParameterDeclarationNode> GetGenericParameters()
+    private IFixedList<IGenericParameterSymbolNode> GetGenericParameters()
     {
         var declarationNodes = SymbolTree().GetChildrenOf(Symbol)
             .OfType<GenericParameterTypeSymbol>().Select(SymbolNodeAspect.Symbol).WhereNotNull()
-            .Cast<IGenericParameterDeclarationNode>();
+            .Cast<IGenericParameterSymbolNode>();
         return ChildList.Attach(this, declarationNodes);
     }
 

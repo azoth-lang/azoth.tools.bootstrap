@@ -8,8 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 
 internal sealed class TraitSymbolNode : UserTypeSymbolNode, ITraitSymbolNode
 {
-    private ValueAttribute<IFixedSet<ITraitMemberDeclarationNode>> members;
-    public override IFixedSet<ITraitMemberDeclarationNode> Members
+    private ValueAttribute<IFixedSet<ITraitMemberSymbolNode>> members;
+    public override IFixedSet<ITraitMemberSymbolNode> Members
         => members.TryGetValue(out var value) ? value
             : members.GetValue(GetMembers);
     public override IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers
@@ -23,6 +23,6 @@ internal sealed class TraitSymbolNode : UserTypeSymbolNode, ITraitSymbolNode
             "Symbol must be for an trait type.");
     }
 
-    private new IFixedSet<ITraitMemberDeclarationNode> GetMembers()
-        => ChildSet.Attach(this, base.GetMembers().OfType<ITraitMemberDeclarationNode>());
+    private new IFixedSet<ITraitMemberSymbolNode> GetMembers()
+        => ChildSet.Attach(this, base.GetMembers().OfType<ITraitMemberSymbolNode>());
 }

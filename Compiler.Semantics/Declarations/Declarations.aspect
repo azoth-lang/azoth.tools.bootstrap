@@ -9,7 +9,7 @@
 ↑ PackageFacetDeclaration.PackageSymbol:`PackageSymbol` => Package.Symbol;
 // "Rename" the "Symbol" attribute to "PackageSymbol"
 ↑ PackageFacetDeclaration.Symbol: `PackageSymbol` => PackageSymbol;
-↑ child PackageFacetDeclaration.GlobalNamespace:NamespaceDeclaration;
+↑ child PackageFacetDeclaration.GlobalNamespace: NamespaceDeclaration;
 
 // ---------- Namespace Declarations
 ↑ NamespaceDeclaration.Name: `IdentifierName` => Symbol.Name;

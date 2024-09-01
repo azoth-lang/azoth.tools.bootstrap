@@ -12,8 +12,8 @@ internal class PackageSymbolNode : ChildNode, IPackageSymbolNode
     public IdentifierName AliasOrName { get; }
     public IdentifierName Name => Symbol.Name;
 
-    public IPackageFacetDeclarationNode MainFacet { get; }
-    public IPackageFacetDeclarationNode TestingFacet { get; }
+    public IPackageFacetSymbolNode MainFacet { get; }
+    public IPackageFacetSymbolNode TestingFacet { get; }
 
     public PackageSymbolNode(IPackageReferenceNode node)
     {

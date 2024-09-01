@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations.Selectors;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations.Selectors;
@@ -13,7 +12,7 @@ public sealed class AllChildrenSelectorModel : SelectorModel
     public static AllChildrenSelectorModel BroadcastInstance { get; } = new(AllChildrenSelectorSyntax.BroadcastInstance);
 
     public override AllChildrenSelectorSyntax Syntax { get; }
-    public override bool IsAllDescendants => Broadcast;
+    public override bool IsAllDescendants => IsBroadcast;
 
     private AllChildrenSelectorModel(AllChildrenSelectorSyntax syntax)
         : base(syntax.Broadcast)
@@ -21,11 +20,7 @@ public sealed class AllChildrenSelectorModel : SelectorModel
         Syntax = syntax;
     }
 
-    public override IEnumerable<TreeNodeModel> SelectNodes(TreeNodeModel node)
-        => BroadcastedToNodes(AllTreeChildNodes(ConcreteSubtypes(node)));
-
-    private static IEnumerable<TreeNodeModel> AllTreeChildNodes(IEnumerable<TreeNodeModel> nodes)
-        => nodes.SelectMany(AllTreeChildNodes);
+    public override bool MatchesChild(AttributeModel attribute) => attribute.IsChild;
 
     protected override string ToChildSelectorString() => "*";
 }

@@ -15,4 +15,16 @@ internal static class TreeNodeModelExtensions
         var supertypeRules = nodeSet.SelectMany(r => r.SupertypeNodes).ToFixedSet();
         return nodeSet.Except(supertypeRules);
     }
+
+    /// <summary>
+    /// All concrete subtypes of the given node (including the node itself if it is concrete).
+    /// </summary>
+    public static IEnumerable<TreeNodeModel> ConcreteSubtypes(this TreeNodeModel node)
+        => node.DescendantNodes.Prepend(node).Where(n => !n.IsAbstract);
+
+    /// <summary>
+    /// All concrete subtypes of the given nodes (including the nodes themselves if they are concrete).
+    /// </summary>
+    public static IEnumerable<TreeNodeModel> ConcreteSubtypes(this IEnumerable<TreeNodeModel> nodes)
+        => nodes.SelectMany(ConcreteSubtypes);
 }

@@ -101,8 +101,6 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IGenericParameterNode n:
                 yield return n.Constraint;
-                foreach (var child in n.Members)
-                    yield return child;
                 yield break;
             case IAbstractMethodDefinitionNode n:
                 yield return n.SelfParameter;
@@ -525,8 +523,6 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IGenericParameterSymbolNode n:
-                foreach (var child in n.Members)
-                    yield return child;
                 yield break;
             case IStandardMethodSymbolNode n:
                 yield break;
