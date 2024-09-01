@@ -169,7 +169,11 @@ public partial interface IPackageNode : IPackageDeclarationNode
     IPackageReferenceNode IntrinsicsReference { get; }
     IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations { get; }
 
-    public static IPackageNode Create(IPackageSyntax syntax, IEnumerable<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet)
+    public static IPackageNode Create(
+        IPackageSyntax syntax,
+        IEnumerable<IPackageReferenceNode> references,
+        IPackageFacetNode mainFacet,
+        IPackageFacetNode testingFacet)
         => new PackageNode(syntax, references, mainFacet, testingFacet);
 }
 
@@ -201,7 +205,8 @@ public partial interface IStandardPackageReferenceNode : IPackageReferenceNode
     bool IPackageReferenceNode.IsTrusted
         => Syntax.IsTrusted;
 
-    public static IStandardPackageReferenceNode Create(IPackageReferenceSyntax syntax)
+    public static IStandardPackageReferenceNode Create(
+        IPackageReferenceSyntax syntax)
         => new StandardPackageReferenceNode(syntax);
 }
 
@@ -220,7 +225,8 @@ public partial interface IIntrinsicsPackageReferenceNode : IPackageReferenceNode
     bool IPackageReferenceNode.IsTrusted
         => true;
 
-    public static IIntrinsicsPackageReferenceNode Create()
+    public static IIntrinsicsPackageReferenceNode Create(
+        )
         => new IntrinsicsPackageReferenceNode();
 }
 
@@ -236,7 +242,9 @@ public partial interface IPackageFacetNode : IPackageFacetDeclarationNode
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
     IFixedSet<IFacetMemberDefinitionNode> Definitions { get; }
 
-    public static IPackageFacetNode Create(IPackageSyntax syntax, IEnumerable<ICompilationUnitNode> compilationUnits)
+    public static IPackageFacetNode Create(
+        IPackageSyntax syntax,
+        IEnumerable<ICompilationUnitNode> compilationUnits)
         => new PackageFacetNode(syntax, compilationUnits);
 }
 
@@ -296,7 +304,10 @@ public partial interface ICompilationUnitNode : ICodeNode
     PackageSymbol ContainingSymbol
         => ContainingDeclaration.PackageSymbol;
 
-    public static ICompilationUnitNode Create(ICompilationUnitSyntax syntax, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> definitions)
+    public static ICompilationUnitNode Create(
+        ICompilationUnitSyntax syntax,
+        IEnumerable<IUsingDirectiveNode> usingDirectives,
+        IEnumerable<INamespaceBlockMemberDefinitionNode> definitions)
         => new CompilationUnitNode(syntax, usingDirectives, definitions);
 }
 
@@ -310,7 +321,8 @@ public partial interface IUsingDirectiveNode : ICodeNode
     NamespaceName Name
         => Syntax.Name;
 
-    public static IUsingDirectiveNode Create(IUsingDirectiveSyntax syntax)
+    public static IUsingDirectiveNode Create(
+        IUsingDirectiveSyntax syntax)
         => new UsingDirectiveNode(syntax);
 }
 
@@ -421,7 +433,10 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
     StandardName? IPackageFacetChildDeclarationNode.Name
         => DeclaredNames.Segments.LastOrDefault();
 
-    public static INamespaceBlockDefinitionNode Create(INamespaceDefinitionSyntax syntax, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> members)
+    public static INamespaceBlockDefinitionNode Create(
+        INamespaceDefinitionSyntax syntax,
+        IEnumerable<IUsingDirectiveNode> usingDirectives,
+        IEnumerable<INamespaceBlockMemberDefinitionNode> members)
         => new NamespaceBlockDefinitionNode(syntax, usingDirectives, members);
 }
 
@@ -445,7 +460,10 @@ public partial interface INamespaceDefinitionNode : INamespaceMemberDefinitionNo
     new IFixedList<INamespaceMemberDefinitionNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> INamespaceDeclarationNode.Members => Members;
 
-    public static INamespaceDefinitionNode Create(NamespaceSymbol symbol, IEnumerable<INamespaceDefinitionNode> memberNamespaces, IEnumerable<IFacetMemberDefinitionNode> packageMembers)
+    public static INamespaceDefinitionNode Create(
+        NamespaceSymbol symbol,
+        IEnumerable<INamespaceDefinitionNode> memberNamespaces,
+        IEnumerable<IFacetMemberDefinitionNode> packageMembers)
         => new NamespaceDefinitionNode(symbol, memberNamespaces, packageMembers);
 }
 
@@ -486,7 +504,12 @@ public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, I
     FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
     InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
 
-    public static IFunctionDefinitionNode Create(IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
+    public static IFunctionDefinitionNode Create(
+        IFunctionDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode? @return,
+        IBodyNode body)
         => new FunctionDefinitionNode(syntax, attributes, parameters, @return, body);
 }
 
@@ -556,7 +579,13 @@ public partial interface IClassDefinitionNode : ITypeDefinitionNode, IClassDecla
     IEnumerable<IStandardTypeNameNode> ITypeDefinitionNode.AllSupertypeNames
         => BaseTypeName is null ? SupertypeNames : SupertypeNames.Prepend(BaseTypeName);
 
-    public static IClassDefinitionNode Create(IClassDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IEnumerable<IStandardTypeNameNode> supertypeNames, IEnumerable<IClassMemberDefinitionNode> sourceMembers)
+    public static IClassDefinitionNode Create(
+        IClassDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
+        IEnumerable<IGenericParameterNode> genericParameters,
+        IStandardTypeNameNode? baseTypeName,
+        IEnumerable<IStandardTypeNameNode> supertypeNames,
+        IEnumerable<IClassMemberDefinitionNode> sourceMembers)
         => new ClassDefinitionNode(syntax, attributes, genericParameters, baseTypeName, supertypeNames, sourceMembers);
 }
 
@@ -580,7 +609,12 @@ public partial interface IStructDefinitionNode : ITypeDefinitionNode, IStructDec
     IFixedSet<IStructMemberDeclarationNode> IStructDeclarationNode.Members => Members;
     IDefaultInitializerDefinitionNode? DefaultInitializer { get; }
 
-    public static IStructDefinitionNode Create(IStructDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, IEnumerable<IStructMemberDefinitionNode> sourceMembers)
+    public static IStructDefinitionNode Create(
+        IStructDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
+        IEnumerable<IGenericParameterNode> genericParameters,
+        IEnumerable<IStandardTypeNameNode> supertypeNames,
+        IEnumerable<IStructMemberDefinitionNode> sourceMembers)
         => new StructDefinitionNode(syntax, attributes, genericParameters, supertypeNames, sourceMembers);
 }
 
@@ -602,7 +636,12 @@ public partial interface ITraitDefinitionNode : ITypeDefinitionNode, ITraitDecla
     new ObjectType DeclaredType { get; }
     IDeclaredUserType ITypeDefinitionNode.DeclaredType => DeclaredType;
 
-    public static ITraitDefinitionNode Create(ITraitDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, IEnumerable<ITraitMemberDefinitionNode> members)
+    public static ITraitDefinitionNode Create(
+        ITraitDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
+        IEnumerable<IGenericParameterNode> genericParameters,
+        IEnumerable<IStandardTypeNameNode> supertypeNames,
+        IEnumerable<ITraitMemberDefinitionNode> members)
         => new TraitDefinitionNode(syntax, attributes, genericParameters, supertypeNames, members);
 }
 
@@ -642,7 +681,9 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes
         => [];
 
-    public static IGenericParameterNode Create(IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint)
+    public static IGenericParameterNode Create(
+        IGenericParameterSyntax syntax,
+        ICapabilityConstraintNode constraint)
         => new GenericParameterNode(syntax, constraint);
 }
 
@@ -762,7 +803,11 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
     int IStandardMethodDeclarationNode.Arity
         => Parameters.Count;
 
-    public static IAbstractMethodDefinitionNode Create(IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
+    public static IAbstractMethodDefinitionNode Create(
+        IAbstractMethodDefinitionSyntax syntax,
+        IMethodSelfParameterNode selfParameter,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode? @return)
         => new AbstractMethodDefinitionNode(syntax, selfParameter, parameters, @return);
 }
 
@@ -801,7 +846,12 @@ public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefiniti
     int IStandardMethodDeclarationNode.Arity
         => Parameters.Count;
 
-    public static IStandardMethodDefinitionNode Create(IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
+    public static IStandardMethodDefinitionNode Create(
+        IStandardMethodDefinitionSyntax syntax,
+        IMethodSelfParameterNode selfParameter,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode? @return,
+        IBodyNode body)
         => new StandardMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
 }
 
@@ -821,7 +871,12 @@ public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinition
     MethodKind IMethodDefinitionNode.Kind
         => MethodKind.Getter;
 
-    public static IGetterMethodDefinitionNode Create(IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IBodyNode body)
+    public static IGetterMethodDefinitionNode Create(
+        IGetterMethodDefinitionSyntax syntax,
+        IMethodSelfParameterNode selfParameter,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode @return,
+        IBodyNode body)
         => new GetterMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
 }
 
@@ -839,7 +894,12 @@ public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinition
     MethodKind IMethodDefinitionNode.Kind
         => MethodKind.Setter;
 
-    public static ISetterMethodDefinitionNode Create(ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
+    public static ISetterMethodDefinitionNode Create(
+        ISetterMethodDefinitionSyntax syntax,
+        IMethodSelfParameterNode selfParameter,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode? @return,
+        IBodyNode body)
         => new SetterMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
 }
 
@@ -866,7 +926,11 @@ public partial interface IConstructorDefinitionNode : IConcreteInvocableDefiniti
 public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinitionNode
 {
 
-    public static IDefaultConstructorDefinitionNode Create(IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBodyNode? body)
+    public static IDefaultConstructorDefinitionNode Create(
+        IConstructorDefinitionSyntax? syntax,
+        IdentifierName? name,
+        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IBodyNode? body)
         => new DefaultConstructorDefinitionNode(syntax, name, parameters, body);
 }
 
@@ -884,7 +948,12 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static ISourceConstructorDefinitionNode Create(IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBlockBodyNode body)
+    public static ISourceConstructorDefinitionNode Create(
+        IdentifierName? name,
+        IConstructorDefinitionSyntax syntax,
+        IConstructorSelfParameterNode selfParameter,
+        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IBlockBodyNode body)
         => new SourceConstructorDefinitionNode(name, syntax, selfParameter, parameters, body);
 }
 
@@ -911,7 +980,11 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
 public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinitionNode
 {
 
-    public static IDefaultInitializerDefinitionNode Create(IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBodyNode? body)
+    public static IDefaultInitializerDefinitionNode Create(
+        IInitializerDefinitionSyntax? syntax,
+        IdentifierName? name,
+        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IBodyNode? body)
         => new DefaultInitializerDefinitionNode(syntax, name, parameters, body);
 }
 
@@ -929,7 +1002,12 @@ public partial interface ISourceInitializerDefinitionNode : IInitializerDefiniti
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
 
-    public static ISourceInitializerDefinitionNode Create(IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBlockBodyNode body)
+    public static ISourceInitializerDefinitionNode Create(
+        IdentifierName? name,
+        IInitializerDefinitionSyntax syntax,
+        IInitializerSelfParameterNode selfParameter,
+        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IBlockBodyNode body)
         => new SourceInitializerDefinitionNode(name, syntax, selfParameter, parameters, body);
 }
 
@@ -964,7 +1042,16 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
 
-    public static IFieldDefinitionNode Create(bool isLentBinding, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer)
+    public static IFieldDefinitionNode Create(
+        bool isLentBinding,
+        IFieldDefinitionSyntax syntax,
+        bool isMutableBinding,
+        IdentifierName name,
+        ITypeNode typeNode,
+        IMaybeAntetype bindingAntetype,
+        DataType bindingType,
+        IAmbiguousExpressionNode? initializer,
+        IAmbiguousExpressionNode? currentInitializer)
         => new FieldDefinitionNode(isLentBinding, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, initializer, currentInitializer);
 }
 
@@ -993,7 +1080,13 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionIn
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 
-    public static IAssociatedFunctionDefinitionNode Create(IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IBodyNode body)
+    public static IAssociatedFunctionDefinitionNode Create(
+        IAssociatedFunctionDefinitionSyntax syntax,
+        IdentifierName name,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode? @return,
+        FunctionType type,
+        IBodyNode body)
         => new AssociatedFunctionDefinitionNode(syntax, name, parameters, @return, type, body);
 }
 
@@ -1007,7 +1100,9 @@ public partial interface IAttributeNode : ICodeNode
     IStandardTypeNameNode TypeName { get; }
     ConstructorSymbol? ReferencedSymbol { get; }
 
-    public static IAttributeNode Create(IAttributeSyntax syntax, IStandardTypeNameNode typeName)
+    public static IAttributeNode Create(
+        IAttributeSyntax syntax,
+        IStandardTypeNameNode typeName)
         => new AttributeNode(syntax, typeName);
 }
 
@@ -1034,7 +1129,9 @@ public partial interface ICapabilitySetNode : ICapabilityConstraintNode
     new CapabilitySet Constraint { get; }
     ICapabilityConstraint ICapabilityConstraintNode.Constraint => Constraint;
 
-    public static ICapabilitySetNode Create(ICapabilitySetSyntax syntax, CapabilitySet constraint)
+    public static ICapabilitySetNode Create(
+        ICapabilitySetSyntax syntax,
+        CapabilitySet constraint)
         => new CapabilitySetNode(syntax, constraint);
 }
 
@@ -1048,7 +1145,10 @@ public partial interface ICapabilityNode : ICapabilityConstraintNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     Capability Capability { get; }
 
-    public static ICapabilityNode Create(ICapabilityConstraint constraint, ICapabilitySyntax syntax, Capability capability)
+    public static ICapabilityNode Create(
+        ICapabilityConstraint constraint,
+        ICapabilitySyntax syntax,
+        Capability capability)
         => new CapabilityNode(constraint, syntax, capability);
 }
 
@@ -1113,7 +1213,17 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     DataType INamedBindingNode.BindingType => BindingType;
     Pseudotype IBindingNode.BindingType => BindingType;
 
-    public static INamedParameterNode Create(bool unused, IFlowState flowStateAfter, ParameterType parameterType, INamedParameterSyntax syntax, bool isMutableBinding, bool isLentBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType)
+    public static INamedParameterNode Create(
+        bool unused,
+        IFlowState flowStateAfter,
+        ParameterType parameterType,
+        INamedParameterSyntax syntax,
+        bool isMutableBinding,
+        bool isLentBinding,
+        IdentifierName name,
+        ITypeNode typeNode,
+        IMaybeAntetype bindingAntetype,
+        DataType bindingType)
         => new NamedParameterNode(unused, flowStateAfter, parameterType, syntax, isMutableBinding, isLentBinding, name, typeNode, bindingAntetype, bindingType);
 }
 
@@ -1157,7 +1267,16 @@ public partial interface IConstructorSelfParameterNode : ISelfParameterNode
     Pseudotype IParameterNode.BindingType => BindingType;
     Pseudotype IBindingNode.BindingType => BindingType;
 
-    public static IConstructorSelfParameterNode Create(IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
+    public static IConstructorSelfParameterNode Create(
+        IdentifierName? name,
+        bool unused,
+        IFlowState flowStateAfter,
+        SelfParameterType parameterType,
+        IMaybeAntetype bindingAntetype,
+        IConstructorSelfParameterSyntax syntax,
+        bool isLentBinding,
+        ICapabilityNode capability,
+        CapabilityType bindingType)
         => new ConstructorSelfParameterNode(name, unused, flowStateAfter, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType);
 }
 
@@ -1176,7 +1295,16 @@ public partial interface IInitializerSelfParameterNode : ISelfParameterNode
     Pseudotype IParameterNode.BindingType => BindingType;
     Pseudotype IBindingNode.BindingType => BindingType;
 
-    public static IInitializerSelfParameterNode Create(IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
+    public static IInitializerSelfParameterNode Create(
+        IdentifierName? name,
+        bool unused,
+        IFlowState flowStateAfter,
+        SelfParameterType parameterType,
+        IMaybeAntetype bindingAntetype,
+        IInitializerSelfParameterSyntax syntax,
+        bool isLentBinding,
+        ICapabilityNode capability,
+        CapabilityType bindingType)
         => new InitializerSelfParameterNode(name, unused, flowStateAfter, parameterType, bindingAntetype, syntax, isLentBinding, capability, bindingType);
 }
 
@@ -1191,7 +1319,16 @@ public partial interface IMethodSelfParameterNode : ISelfParameterNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityConstraintNode Capability { get; }
 
-    public static IMethodSelfParameterNode Create(IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability)
+    public static IMethodSelfParameterNode Create(
+        IdentifierName? name,
+        bool unused,
+        IFlowState flowStateAfter,
+        SelfParameterType parameterType,
+        IMaybeAntetype bindingAntetype,
+        Pseudotype bindingType,
+        IMethodSelfParameterSyntax syntax,
+        bool isLentBinding,
+        ICapabilityConstraintNode capability)
         => new MethodSelfParameterNode(name, unused, flowStateAfter, parameterType, bindingAntetype, bindingType, syntax, isLentBinding, capability);
 }
 
@@ -1209,7 +1346,14 @@ public partial interface IFieldParameterNode : IConstructorOrInitializerParamete
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IFieldDefinitionNode? ReferencedField { get; }
 
-    public static IFieldParameterNode Create(bool unused, IMaybeAntetype bindingAntetype, IFlowState flowStateAfter, DataType bindingType, ParameterType parameterType, IFieldParameterSyntax syntax, IdentifierName name)
+    public static IFieldParameterNode Create(
+        bool unused,
+        IMaybeAntetype bindingAntetype,
+        IFlowState flowStateAfter,
+        DataType bindingType,
+        ParameterType parameterType,
+        IFieldParameterSyntax syntax,
+        IdentifierName name)
         => new FieldParameterNode(unused, bindingAntetype, flowStateAfter, bindingType, parameterType, syntax, name);
 }
 
@@ -1232,7 +1376,10 @@ public partial interface IBlockBodyNode : IBodyNode
     new IFixedList<IBodyStatementNode> Statements { get; }
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements => Statements;
 
-    public static IBlockBodyNode Create(IFlowState flowStateAfter, IBlockBodySyntax syntax, IEnumerable<IBodyStatementNode> statements)
+    public static IBlockBodyNode Create(
+        IFlowState flowStateAfter,
+        IBlockBodySyntax syntax,
+        IEnumerable<IBodyStatementNode> statements)
         => new BlockBodyNode(flowStateAfter, syntax, statements);
 }
 
@@ -1249,7 +1396,10 @@ public partial interface IExpressionBodyNode : IBodyNode
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements
         => FixedList.Create(ResultStatement);
 
-    public static IExpressionBodyNode Create(IFlowState flowStateAfter, IExpressionBodySyntax syntax, IResultStatementNode resultStatement)
+    public static IExpressionBodyNode Create(
+        IFlowState flowStateAfter,
+        IExpressionBodySyntax syntax,
+        IResultStatementNode resultStatement)
         => new ExpressionBodyNode(flowStateAfter, syntax, resultStatement);
 }
 
@@ -1331,7 +1481,12 @@ public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpl
     StandardName IStandardTypeNameNode.Name => Name;
     TypeName ITypeNameNode.Name => Name;
 
-    public static IIdentifierTypeNameNode Create(IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, IIdentifierTypeNameSyntax syntax, IdentifierName name)
+    public static IIdentifierTypeNameNode Create(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        BareType? namedBareType,
+        IIdentifierTypeNameSyntax syntax,
+        IdentifierName name)
         => new IdentifierTypeNameNode(namedAntetype, namedType, namedBareType, syntax, name);
 }
 
@@ -1350,7 +1505,12 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
     new TypeSymbol ReferencedSymbol { get; }
     TypeSymbol? ITypeNameNode.ReferencedSymbol => ReferencedSymbol;
 
-    public static ISpecialTypeNameNode Create(IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, ISpecialTypeNameSyntax syntax, SpecialTypeName name)
+    public static ISpecialTypeNameNode Create(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        BareType? namedBareType,
+        ISpecialTypeNameSyntax syntax,
+        SpecialTypeName name)
         => new SpecialTypeNameNode(namedAntetype, namedType, namedBareType, syntax, name);
 }
 
@@ -1369,7 +1529,13 @@ public partial interface IGenericTypeNameNode : IStandardTypeNameNode
     TypeName ITypeNameNode.Name => Name;
     IFixedList<ITypeNode> TypeArguments { get; }
 
-    public static IGenericTypeNameNode Create(IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, IGenericTypeNameSyntax syntax, GenericName name, IEnumerable<ITypeNode> typeArguments)
+    public static IGenericTypeNameNode Create(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        BareType? namedBareType,
+        IGenericTypeNameSyntax syntax,
+        GenericName name,
+        IEnumerable<ITypeNode> typeArguments)
         => new GenericTypeNameNode(namedAntetype, namedType, namedBareType, syntax, name, typeArguments);
 }
 
@@ -1385,7 +1551,14 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
     ITypeNameNode Context { get; }
     IStandardTypeNameNode QualifiedName { get; }
 
-    public static IQualifiedTypeNameNode Create(IMaybeAntetype namedAntetype, DataType namedType, TypeName name, BareType? namedBareType, IQualifiedTypeNameSyntax syntax, ITypeNameNode context, IStandardTypeNameNode qualifiedName)
+    public static IQualifiedTypeNameNode Create(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        TypeName name,
+        BareType? namedBareType,
+        IQualifiedTypeNameSyntax syntax,
+        ITypeNameNode context,
+        IStandardTypeNameNode qualifiedName)
         => new QualifiedTypeNameNode(namedAntetype, namedType, name, namedBareType, syntax, context, qualifiedName);
 }
 
@@ -1399,7 +1572,11 @@ public partial interface IOptionalTypeNode : ITypeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeNode Referent { get; }
 
-    public static IOptionalTypeNode Create(IMaybeAntetype namedAntetype, DataType namedType, IOptionalTypeSyntax syntax, ITypeNode referent)
+    public static IOptionalTypeNode Create(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        IOptionalTypeSyntax syntax,
+        ITypeNode referent)
         => new OptionalTypeNode(namedAntetype, namedType, syntax, referent);
 }
 
@@ -1414,7 +1591,12 @@ public partial interface ICapabilityTypeNode : ITypeNode
     ICapabilityNode Capability { get; }
     ITypeNode Referent { get; }
 
-    public static ICapabilityTypeNode Create(IMaybeAntetype namedAntetype, DataType namedType, ICapabilityTypeSyntax syntax, ICapabilityNode capability, ITypeNode referent)
+    public static ICapabilityTypeNode Create(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        ICapabilityTypeSyntax syntax,
+        ICapabilityNode capability,
+        ITypeNode referent)
         => new CapabilityTypeNode(namedAntetype, namedType, syntax, capability, referent);
 }
 
@@ -1429,7 +1611,12 @@ public partial interface IFunctionTypeNode : ITypeNode
     IFixedList<IParameterTypeNode> Parameters { get; }
     ITypeNode Return { get; }
 
-    public static IFunctionTypeNode Create(IMaybeAntetype namedAntetype, DataType namedType, IFunctionTypeSyntax syntax, IEnumerable<IParameterTypeNode> parameters, ITypeNode @return)
+    public static IFunctionTypeNode Create(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        IFunctionTypeSyntax syntax,
+        IEnumerable<IParameterTypeNode> parameters,
+        ITypeNode @return)
         => new FunctionTypeNode(namedAntetype, namedType, syntax, parameters, @return);
 }
 
@@ -1444,7 +1631,11 @@ public partial interface IParameterTypeNode : ICodeNode
     ITypeNode Referent { get; }
     ParameterType Parameter { get; }
 
-    public static IParameterTypeNode Create(IParameterTypeSyntax syntax, bool isLent, ITypeNode referent, ParameterType parameter)
+    public static IParameterTypeNode Create(
+        IParameterTypeSyntax syntax,
+        bool isLent,
+        ITypeNode referent,
+        ParameterType parameter)
         => new ParameterTypeNode(syntax, isLent, referent, parameter);
 }
 
@@ -1472,7 +1663,12 @@ public partial interface ICapabilityViewpointTypeNode : IViewpointTypeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityNode Capability { get; }
 
-    public static ICapabilityViewpointTypeNode Create(IMaybeAntetype namedAntetype, DataType namedType, ICapabilityViewpointTypeSyntax syntax, ICapabilityNode capability, ITypeNode referent)
+    public static ICapabilityViewpointTypeNode Create(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        ICapabilityViewpointTypeSyntax syntax,
+        ICapabilityNode capability,
+        ITypeNode referent)
         => new CapabilityViewpointTypeNode(namedAntetype, namedType, syntax, capability, referent);
 }
 
@@ -1487,7 +1683,11 @@ public partial interface ISelfViewpointTypeNode : IViewpointTypeNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     Pseudotype? MethodSelfType { get; }
 
-    public static ISelfViewpointTypeNode Create(IMaybeAntetype namedAntetype, DataType namedType, ISelfViewpointTypeSyntax syntax, ITypeNode referent)
+    public static ISelfViewpointTypeNode Create(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        ISelfViewpointTypeSyntax syntax,
+        ITypeNode referent)
         => new SelfViewpointTypeNode(namedAntetype, namedType, syntax, referent);
 }
 
@@ -1512,7 +1712,13 @@ public partial interface IEntryNode : IDataFlowNode
 {
     FixedDictionary<IVariableBindingNode, int> VariableBindingsMap();
 
-    public static IEntryNode Create(ICodeSyntax? syntax, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
+    public static IEntryNode Create(
+        ICodeSyntax? syntax,
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IFixedSet<IDataFlowNode> dataFlowPrevious,
+        BindingFlags<IVariableBindingNode> definitelyAssigned,
+        BindingFlags<IVariableBindingNode> definitelyUnassigned)
         => new EntryNode(syntax, controlFlowNext, controlFlowPrevious, dataFlowPrevious, definitelyAssigned, definitelyUnassigned);
 }
 
@@ -1521,7 +1727,13 @@ public partial interface IEntryNode : IDataFlowNode
 public partial interface IExitNode : IDataFlowNode
 {
 
-    public static IExitNode Create(ICodeSyntax? syntax, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
+    public static IExitNode Create(
+        ICodeSyntax? syntax,
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IFixedSet<IDataFlowNode> dataFlowPrevious,
+        BindingFlags<IVariableBindingNode> definitelyAssigned,
+        BindingFlags<IVariableBindingNode> definitelyUnassigned)
         => new ExitNode(syntax, controlFlowNext, controlFlowPrevious, dataFlowPrevious, definitelyAssigned, definitelyUnassigned);
 }
 
@@ -1579,7 +1791,17 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
     ValueId IElseClauseNode.ValueId
         => Expression?.ValueId ?? default;
 
-    public static IResultStatementNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IMaybeAntetype antetype, DataType type, IResultStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IFlowState flowStateAfter)
+    public static IResultStatementNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeAntetype? resultAntetype,
+        DataType? resultType,
+        IMaybeAntetype antetype,
+        DataType type,
+        IResultStatementSyntax syntax,
+        IAmbiguousExpressionNode expression,
+        IAmbiguousExpressionNode currentExpression,
+        IFlowState flowStateAfter)
         => new ResultStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, antetype, type, syntax, expression, currentExpression, flowStateAfter);
 }
 
@@ -1619,7 +1841,25 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     ValueId? IStatementNode.ResultValueId
         => null;
 
-    public static IVariableDeclarationStatementNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IVariableDeclarationStatementSyntax syntax, bool isMutableBinding, IdentifierName name, ICapabilityNode? capability, ITypeNode? type, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer)
+    public static IVariableDeclarationStatementNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeAntetype? resultAntetype,
+        DataType? resultType,
+        IFlowState flowStateAfter,
+        bool isLentBinding,
+        IMaybeAntetype bindingAntetype,
+        DataType bindingType,
+        IFixedSet<IDataFlowNode> dataFlowPrevious,
+        BindingFlags<IVariableBindingNode> definitelyAssigned,
+        BindingFlags<IVariableBindingNode> definitelyUnassigned,
+        IVariableDeclarationStatementSyntax syntax,
+        bool isMutableBinding,
+        IdentifierName name,
+        ICapabilityNode? capability,
+        ITypeNode? type,
+        IAmbiguousExpressionNode? initializer,
+        IAmbiguousExpressionNode? currentInitializer)
         => new VariableDeclarationStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, isLentBinding, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, name, capability, type, initializer, currentInitializer);
 }
 
@@ -1638,7 +1878,15 @@ public partial interface IExpressionStatementNode : IBodyStatementNode
     ValueId? IStatementNode.ResultValueId
         => null;
 
-    public static IExpressionStatementNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, IExpressionStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression)
+    public static IExpressionStatementNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeAntetype? resultAntetype,
+        DataType? resultType,
+        IFlowState flowStateAfter,
+        IExpressionStatementSyntax syntax,
+        IAmbiguousExpressionNode expression,
+        IAmbiguousExpressionNode currentExpression)
         => new ExpressionStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, syntax, expression, currentExpression);
 }
 
@@ -1673,7 +1921,14 @@ public partial interface IBindingContextPatternNode : IPatternNode
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => Pattern.FlowLexicalScope();
 
-    public static IBindingContextPatternNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFlowState flowStateAfter, IBindingContextPatternSyntax syntax, bool isMutableBinding, IPatternNode pattern, ITypeNode? type)
+    public static IBindingContextPatternNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IFlowState flowStateAfter,
+        IBindingContextPatternSyntax syntax,
+        bool isMutableBinding,
+        IPatternNode pattern,
+        ITypeNode? type)
         => new BindingContextPatternNode(controlFlowNext, controlFlowPrevious, flowStateAfter, syntax, isMutableBinding, pattern, type);
 }
 
@@ -1703,7 +1958,19 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => LexicalScopingAspect.BindingPattern_FlowLexicalScope(this);
 
-    public static IBindingPatternNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IBindingPatternSyntax syntax, bool isMutableBinding, IdentifierName name)
+    public static IBindingPatternNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IFlowState flowStateAfter,
+        bool isLentBinding,
+        IMaybeAntetype bindingAntetype,
+        DataType bindingType,
+        IFixedSet<IDataFlowNode> dataFlowPrevious,
+        BindingFlags<IVariableBindingNode> definitelyAssigned,
+        BindingFlags<IVariableBindingNode> definitelyUnassigned,
+        IBindingPatternSyntax syntax,
+        bool isMutableBinding,
+        IdentifierName name)
         => new BindingPatternNode(controlFlowNext, controlFlowPrevious, flowStateAfter, isLentBinding, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, name);
 }
 
@@ -1720,7 +1987,12 @@ public partial interface IOptionalPatternNode : IOptionalOrBindingPatternNode
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => Pattern.FlowLexicalScope();
 
-    public static IOptionalPatternNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFlowState flowStateAfter, IOptionalPatternSyntax syntax, IOptionalOrBindingPatternNode pattern)
+    public static IOptionalPatternNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IFlowState flowStateAfter,
+        IOptionalPatternSyntax syntax,
+        IOptionalOrBindingPatternNode pattern)
         => new OptionalPatternNode(controlFlowNext, controlFlowPrevious, flowStateAfter, syntax, pattern);
 }
 
@@ -1835,7 +2107,14 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
 
-    public static IBlockExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IBlockExpressionSyntax syntax, IEnumerable<IStatementNode> statements, IMaybeAntetype antetype, DataType type, IFlowState flowStateAfter)
+    public static IBlockExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IBlockExpressionSyntax syntax,
+        IEnumerable<IStatementNode> statements,
+        IMaybeAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter)
         => new BlockExpressionNode(controlFlowNext, controlFlowPrevious, syntax, statements, antetype, type, flowStateAfter);
 }
 
@@ -1859,7 +2138,23 @@ public partial interface INewObjectExpressionNode : IInvocationExpressionNode
     PackageNameScope PackageNameScope();
     IFlowState FlowStateBefore();
 
-    public static INewObjectExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, INewObjectExpressionSyntax syntax, ITypeNameNode constructingType, IdentifierName? constructorName, IEnumerable<IAmbiguousExpressionNode> arguments, IMaybeAntetype constructingAntetype, IEnumerable<IConstructorDeclarationNode> referencedConstructors, IEnumerable<IConstructorDeclarationNode> compatibleConstructors, IConstructorDeclarationNode? referencedConstructor, ContextualizedOverload? contextualizedOverload)
+    public static INewObjectExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        INewObjectExpressionSyntax syntax,
+        ITypeNameNode constructingType,
+        IdentifierName? constructorName,
+        IEnumerable<IAmbiguousExpressionNode> arguments,
+        IMaybeAntetype constructingAntetype,
+        IEnumerable<IConstructorDeclarationNode> referencedConstructors,
+        IEnumerable<IConstructorDeclarationNode> compatibleConstructors,
+        IConstructorDeclarationNode? referencedConstructor,
+        ContextualizedOverload? contextualizedOverload)
         => new NewObjectExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, tempAllArguments, allArguments, syntax, constructingType, constructorName, arguments, constructingAntetype, referencedConstructors, compatibleConstructors, referencedConstructor, contextualizedOverload);
 }
 
@@ -1874,7 +2169,14 @@ public partial interface IUnsafeExpressionNode : IExpressionNode
     IAmbiguousExpressionNode TempExpression { get; }
     IExpressionNode? Expression { get; }
 
-    public static IUnsafeExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IUnsafeExpressionSyntax syntax, IAmbiguousExpressionNode expression)
+    public static IUnsafeExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IUnsafeExpressionSyntax syntax,
+        IAmbiguousExpressionNode expression)
         => new UnsafeExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, expression);
 }
 
@@ -1917,7 +2219,14 @@ public partial interface IBoolLiteralExpressionNode : ILiteralExpressionNode
     new BoolConstValueType Type { get; }
     DataType IExpressionNode.Type => Type;
 
-    public static IBoolLiteralExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, IBoolLiteralExpressionSyntax syntax, bool value, BoolConstValueType type)
+    public static IBoolLiteralExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        IBoolLiteralExpressionSyntax syntax,
+        bool value,
+        BoolConstValueType type)
         => new BoolLiteralExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, syntax, value, type);
 }
 
@@ -1934,7 +2243,14 @@ public partial interface IIntegerLiteralExpressionNode : ILiteralExpressionNode
     new IntegerConstValueType Type { get; }
     DataType IExpressionNode.Type => Type;
 
-    public static IIntegerLiteralExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, IIntegerLiteralExpressionSyntax syntax, BigInteger value, IntegerConstValueType type)
+    public static IIntegerLiteralExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        IIntegerLiteralExpressionSyntax syntax,
+        BigInteger value,
+        IntegerConstValueType type)
         => new IntegerLiteralExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, syntax, value, type);
 }
 
@@ -1950,7 +2266,13 @@ public partial interface INoneLiteralExpressionNode : ILiteralExpressionNode
     new OptionalType Type { get; }
     DataType IExpressionNode.Type => Type;
 
-    public static INoneLiteralExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, INoneLiteralExpressionSyntax syntax, OptionalType type)
+    public static INoneLiteralExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        INoneLiteralExpressionSyntax syntax,
+        OptionalType type)
         => new NoneLiteralExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, syntax, type);
 }
 
@@ -1967,7 +2289,14 @@ public partial interface IStringLiteralExpressionNode : ILiteralExpressionNode
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
 
-    public static IStringLiteralExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, IStringLiteralExpressionSyntax syntax, string value, DataType type)
+    public static IStringLiteralExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        IStringLiteralExpressionSyntax syntax,
+        string value,
+        DataType type)
         => new StringLiteralExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, syntax, value, type);
 }
 
@@ -1989,7 +2318,21 @@ public partial interface IAssignmentExpressionNode : IExpressionNode, IDataFlowN
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.AssignmentExpression_FlowLexicalScope(this);
 
-    public static IAssignmentExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IAssignmentExpressionSyntax syntax, IAmbiguousAssignableExpressionNode leftOperand, IAmbiguousAssignableExpressionNode currentLeftOperand, AssignmentOperator @operator, IAmbiguousExpressionNode rightOperand, IAmbiguousExpressionNode currentRightOperand)
+    public static IAssignmentExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IFixedSet<IDataFlowNode> dataFlowPrevious,
+        BindingFlags<IVariableBindingNode> definitelyAssigned,
+        BindingFlags<IVariableBindingNode> definitelyUnassigned,
+        IAssignmentExpressionSyntax syntax,
+        IAmbiguousAssignableExpressionNode leftOperand,
+        IAmbiguousAssignableExpressionNode currentLeftOperand,
+        AssignmentOperator @operator,
+        IAmbiguousExpressionNode rightOperand,
+        IAmbiguousExpressionNode currentRightOperand)
         => new AssignmentExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, leftOperand, currentLeftOperand, @operator, rightOperand, currentRightOperand);
 }
 
@@ -2012,7 +2355,17 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.BinaryOperatorExpression_FlowLexicalScope(this);
 
-    public static IBinaryOperatorExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IBinaryOperatorExpressionSyntax syntax, IAmbiguousExpressionNode leftOperand, BinaryOperator @operator, IAmbiguousExpressionNode rightOperand, IAntetype? numericOperatorCommonAntetype)
+    public static IBinaryOperatorExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IBinaryOperatorExpressionSyntax syntax,
+        IAmbiguousExpressionNode leftOperand,
+        BinaryOperator @operator,
+        IAmbiguousExpressionNode rightOperand,
+        IAntetype? numericOperatorCommonAntetype)
         => new BinaryOperatorExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, leftOperand, @operator, rightOperand, numericOperatorCommonAntetype);
 }
 
@@ -2031,7 +2384,16 @@ public partial interface IUnaryOperatorExpressionNode : IExpressionNode
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.UnaryOperatorExpression_FlowLexicalScope(this);
 
-    public static IUnaryOperatorExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IUnaryOperatorExpressionSyntax syntax, UnaryOperatorFixity fixity, UnaryOperator @operator, IAmbiguousExpressionNode operand)
+    public static IUnaryOperatorExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IUnaryOperatorExpressionSyntax syntax,
+        UnaryOperatorFixity fixity,
+        UnaryOperator @operator,
+        IAmbiguousExpressionNode operand)
         => new UnaryOperatorExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, fixity, @operator, operand);
 }
 
@@ -2046,7 +2408,14 @@ public partial interface IIdExpressionNode : IExpressionNode
     IAmbiguousExpressionNode TempReferent { get; }
     IExpressionNode? Referent { get; }
 
-    public static IIdExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IIdExpressionSyntax syntax, IAmbiguousExpressionNode referent)
+    public static IIdExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IIdExpressionSyntax syntax,
+        IAmbiguousExpressionNode referent)
         => new IdExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, referent);
 }
 
@@ -2063,7 +2432,16 @@ public partial interface IConversionExpressionNode : IExpressionNode
     ConversionOperator Operator { get; }
     ITypeNode ConvertToType { get; }
 
-    public static IConversionExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IConversionExpressionSyntax syntax, IAmbiguousExpressionNode referent, ConversionOperator @operator, ITypeNode convertToType)
+    public static IConversionExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IConversionExpressionSyntax syntax,
+        IAmbiguousExpressionNode referent,
+        ConversionOperator @operator,
+        ITypeNode convertToType)
         => new ConversionExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, referent, @operator, convertToType);
 }
 
@@ -2076,7 +2454,15 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
     new SimpleAntetype Antetype { get; }
     IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
 
-    public static IImplicitConversionExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, DataType type, IFlowState flowStateAfter, IExpressionNode referent, IExpressionNode currentReferent, SimpleAntetype antetype)
+    public static IImplicitConversionExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        DataType type,
+        IFlowState flowStateAfter,
+        IExpressionNode referent,
+        IExpressionNode currentReferent,
+        SimpleAntetype antetype)
         => new ImplicitConversionExpressionNode(controlFlowNext, controlFlowPrevious, syntax, type, flowStateAfter, referent, currentReferent, antetype);
 }
 
@@ -2092,7 +2478,15 @@ public partial interface IPatternMatchExpressionNode : IExpressionNode
     IExpressionNode? Referent { get; }
     IPatternNode Pattern { get; }
 
-    public static IPatternMatchExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IPatternMatchExpressionSyntax syntax, IAmbiguousExpressionNode referent, IPatternNode pattern)
+    public static IPatternMatchExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IPatternMatchExpressionSyntax syntax,
+        IAmbiguousExpressionNode referent,
+        IPatternNode pattern)
         => new PatternMatchExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, referent, pattern);
 }
 
@@ -2116,7 +2510,16 @@ public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
 
-    public static IIfExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IIfExpressionSyntax syntax, IAmbiguousExpressionNode condition, IBlockOrResultNode thenBlock, IElseClauseNode? elseClause, IFlowState flowStateAfter)
+    public static IIfExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IIfExpressionSyntax syntax,
+        IAmbiguousExpressionNode condition,
+        IBlockOrResultNode thenBlock,
+        IElseClauseNode? elseClause,
+        IFlowState flowStateAfter)
         => new IfExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, syntax, condition, thenBlock, elseClause, flowStateAfter);
 }
 
@@ -2130,7 +2533,14 @@ public partial interface ILoopExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IBlockExpressionNode Block { get; }
 
-    public static ILoopExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, ILoopExpressionSyntax syntax, IBlockExpressionNode block)
+    public static ILoopExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        ILoopExpressionSyntax syntax,
+        IBlockExpressionNode block)
         => new LoopExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, block);
 }
 
@@ -2146,7 +2556,15 @@ public partial interface IWhileExpressionNode : IExpressionNode
     IExpressionNode? Condition { get; }
     IBlockExpressionNode Block { get; }
 
-    public static IWhileExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IWhileExpressionSyntax syntax, IAmbiguousExpressionNode condition, IBlockExpressionNode block)
+    public static IWhileExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IWhileExpressionSyntax syntax,
+        IAmbiguousExpressionNode condition,
+        IBlockExpressionNode block)
         => new WhileExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, condition, block);
 }
 
@@ -2179,7 +2597,34 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope LexicalScope { get; }
 
-    public static IForeachExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, IdentifierName name, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IForeachExpressionSyntax syntax, bool isMutableBinding, IdentifierName variableName, IAmbiguousExpressionNode inExpression, ITypeNode? declaredType, IBlockExpressionNode block, ITypeDeclarationNode? referencedIterableDeclaration, IStandardMethodDeclarationNode? referencedIterateMethod, IMaybeExpressionAntetype iteratorAntetype, DataType iteratorType, ITypeDeclarationNode? referencedIteratorDeclaration, IStandardMethodDeclarationNode? referencedNextMethod, IMaybeAntetype iteratedAntetype, DataType iteratedType, IFlowState flowStateBeforeBlock)
+    public static IForeachExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        bool isLentBinding,
+        IMaybeAntetype bindingAntetype,
+        IdentifierName name,
+        DataType bindingType,
+        IFixedSet<IDataFlowNode> dataFlowPrevious,
+        BindingFlags<IVariableBindingNode> definitelyAssigned,
+        BindingFlags<IVariableBindingNode> definitelyUnassigned,
+        IForeachExpressionSyntax syntax,
+        bool isMutableBinding,
+        IdentifierName variableName,
+        IAmbiguousExpressionNode inExpression,
+        ITypeNode? declaredType,
+        IBlockExpressionNode block,
+        ITypeDeclarationNode? referencedIterableDeclaration,
+        IStandardMethodDeclarationNode? referencedIterateMethod,
+        IMaybeExpressionAntetype iteratorAntetype,
+        DataType iteratorType,
+        ITypeDeclarationNode? referencedIteratorDeclaration,
+        IStandardMethodDeclarationNode? referencedNextMethod,
+        IMaybeAntetype iteratedAntetype,
+        DataType iteratedType,
+        IFlowState flowStateBeforeBlock)
         => new ForeachExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, isLentBinding, bindingAntetype, name, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, variableName, inExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, iteratorType, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype, iteratedType, flowStateBeforeBlock);
 }
 
@@ -2194,7 +2639,14 @@ public partial interface IBreakExpressionNode : INeverTypedExpressionNode
     IAmbiguousExpressionNode? TempValue { get; }
     IExpressionNode? Value { get; }
 
-    public static IBreakExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, NeverType type, IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? value)
+    public static IBreakExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        NeverType type,
+        IBreakExpressionSyntax syntax,
+        IAmbiguousExpressionNode? value)
         => new BreakExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, type, syntax, value);
 }
 
@@ -2207,7 +2659,13 @@ public partial interface INextExpressionNode : INeverTypedExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
 
-    public static INextExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, NeverType type, INextExpressionSyntax syntax)
+    public static INextExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        NeverType type,
+        INextExpressionSyntax syntax)
         => new NextExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, type, syntax);
 }
 
@@ -2225,7 +2683,15 @@ public partial interface IReturnExpressionNode : INeverTypedExpressionNode
     IExitNode ControlFlowExit();
     DataType? ExpectedReturnType { get; }
 
-    public static IReturnExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, NeverType type, IReturnExpressionSyntax syntax, IAmbiguousExpressionNode? value, IAmbiguousExpressionNode? currentValue)
+    public static IReturnExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        NeverType type,
+        IReturnExpressionSyntax syntax,
+        IAmbiguousExpressionNode? value,
+        IAmbiguousExpressionNode? currentValue)
         => new ReturnExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, type, syntax, value, currentValue);
 }
 
@@ -2244,7 +2710,12 @@ public partial interface IUnresolvedInvocationExpressionNode : IAmbiguousExpress
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
 
-    public static IUnresolvedInvocationExpressionNode Create(IInvocationExpressionSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IEnumerable<IAmbiguousExpressionNode> arguments, IEnumerable<IAmbiguousExpressionNode> currentArguments)
+    public static IUnresolvedInvocationExpressionNode Create(
+        IInvocationExpressionSyntax syntax,
+        IAmbiguousExpressionNode expression,
+        IAmbiguousExpressionNode currentExpression,
+        IEnumerable<IAmbiguousExpressionNode> arguments,
+        IEnumerable<IAmbiguousExpressionNode> currentArguments)
         => new UnresolvedInvocationExpressionNode(syntax, expression, currentExpression, arguments, currentArguments);
 }
 
@@ -2279,7 +2750,20 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
     ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState FlowStateBefore();
 
-    public static IFunctionInvocationExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, IInvocationExpressionSyntax syntax, IFunctionGroupNameNode functionGroup, IEnumerable<IAmbiguousExpressionNode> arguments, IEnumerable<IFunctionLikeDeclarationNode> compatibleDeclarations, IFunctionLikeDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public static IFunctionInvocationExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        IInvocationExpressionSyntax syntax,
+        IFunctionGroupNameNode functionGroup,
+        IEnumerable<IAmbiguousExpressionNode> arguments,
+        IEnumerable<IFunctionLikeDeclarationNode> compatibleDeclarations,
+        IFunctionLikeDeclarationNode? referencedDeclaration,
+        ContextualizedOverload? contextualizedOverload)
         => new FunctionInvocationExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, tempAllArguments, allArguments, syntax, functionGroup, arguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
 }
 
@@ -2299,7 +2783,21 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
 
-    public static IMethodInvocationExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, IInvocationExpressionSyntax syntax, IMethodGroupNameNode methodGroup, IEnumerable<IAmbiguousExpressionNode> arguments, IEnumerable<IAmbiguousExpressionNode> currentArguments, IEnumerable<IStandardMethodDeclarationNode> compatibleDeclarations, IStandardMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public static IMethodInvocationExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        IInvocationExpressionSyntax syntax,
+        IMethodGroupNameNode methodGroup,
+        IEnumerable<IAmbiguousExpressionNode> arguments,
+        IEnumerable<IAmbiguousExpressionNode> currentArguments,
+        IEnumerable<IStandardMethodDeclarationNode> compatibleDeclarations,
+        IStandardMethodDeclarationNode? referencedDeclaration,
+        ContextualizedOverload? contextualizedOverload)
         => new MethodInvocationExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, tempAllArguments, allArguments, syntax, methodGroup, arguments, currentArguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
 }
 
@@ -2317,7 +2815,20 @@ public partial interface IGetterInvocationExpressionNode : IInvocationExpression
     IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
 
-    public static IGetterInvocationExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, IGetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public static IGetterInvocationExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        IMemberAccessExpressionSyntax syntax,
+        IExpressionNode context,
+        StandardName propertyName,
+        IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors,
+        IGetterMethodDeclarationNode? referencedDeclaration,
+        ContextualizedOverload? contextualizedOverload)
         => new GetterInvocationExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, tempAllArguments, allArguments, syntax, context, propertyName, referencedPropertyAccessors, referencedDeclaration, contextualizedOverload);
 }
 
@@ -2337,7 +2848,21 @@ public partial interface ISetterInvocationExpressionNode : IInvocationExpression
     ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
 
-    public static ISetterInvocationExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, IAssignmentExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IAmbiguousExpressionNode value, IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, ISetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public static ISetterInvocationExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        IAssignmentExpressionSyntax syntax,
+        IExpressionNode context,
+        StandardName propertyName,
+        IAmbiguousExpressionNode value,
+        IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors,
+        ISetterMethodDeclarationNode? referencedDeclaration,
+        ContextualizedOverload? contextualizedOverload)
         => new SetterInvocationExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, tempAllArguments, allArguments, syntax, context, propertyName, value, referencedPropertyAccessors, referencedDeclaration, contextualizedOverload);
 }
 
@@ -2355,7 +2880,19 @@ public partial interface IFunctionReferenceInvocationExpressionNode : IInvocatio
     FunctionAntetype FunctionAntetype { get; }
     FunctionType FunctionType { get; }
 
-    public static IFunctionReferenceInvocationExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, IInvocationExpressionSyntax syntax, IExpressionNode expression, IEnumerable<IAmbiguousExpressionNode> arguments, FunctionAntetype functionAntetype, FunctionType functionType)
+    public static IFunctionReferenceInvocationExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        IInvocationExpressionSyntax syntax,
+        IExpressionNode expression,
+        IEnumerable<IAmbiguousExpressionNode> arguments,
+        FunctionAntetype functionAntetype,
+        FunctionType functionType)
         => new FunctionReferenceInvocationExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, tempAllArguments, allArguments, syntax, expression, arguments, functionAntetype, functionType);
 }
 
@@ -2375,7 +2912,20 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
     ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState FlowStateBefore();
 
-    public static IInitializerInvocationExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, IInvocationExpressionSyntax syntax, IInitializerGroupNameNode initializerGroup, IEnumerable<IAmbiguousExpressionNode> arguments, IEnumerable<IInitializerDeclarationNode> compatibleDeclarations, IInitializerDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public static IInitializerInvocationExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        IInvocationExpressionSyntax syntax,
+        IInitializerGroupNameNode initializerGroup,
+        IEnumerable<IAmbiguousExpressionNode> arguments,
+        IEnumerable<IInitializerDeclarationNode> compatibleDeclarations,
+        IInitializerDeclarationNode? referencedDeclaration,
+        ContextualizedOverload? contextualizedOverload)
         => new InitializerInvocationExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, tempAllArguments, allArguments, syntax, initializerGroup, arguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
 }
 
@@ -2392,7 +2942,15 @@ public partial interface IUnknownInvocationExpressionNode : IExpressionNode
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
 
-    public static IUnknownInvocationExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IInvocationExpressionSyntax syntax, IAmbiguousExpressionNode expression, IEnumerable<IAmbiguousExpressionNode> arguments)
+    public static IUnknownInvocationExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IInvocationExpressionSyntax syntax,
+        IAmbiguousExpressionNode expression,
+        IEnumerable<IAmbiguousExpressionNode> arguments)
         => new UnknownInvocationExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, expression, arguments);
 }
 
@@ -2463,7 +3021,10 @@ public partial interface IIdentifierNameExpressionNode : IStandardNameExpression
     new IdentifierName Name { get; }
     StandardName IStandardNameExpressionNode.Name => Name;
 
-    public static IIdentifierNameExpressionNode Create(IEnumerable<IDeclarationNode> referencedDeclarations, IIdentifierNameExpressionSyntax syntax, IdentifierName name)
+    public static IIdentifierNameExpressionNode Create(
+        IEnumerable<IDeclarationNode> referencedDeclarations,
+        IIdentifierNameExpressionSyntax syntax,
+        IdentifierName name)
         => new IdentifierNameExpressionNode(referencedDeclarations, syntax, name);
 }
 
@@ -2481,7 +3042,11 @@ public partial interface IGenericNameExpressionNode : IStandardNameExpressionNod
     StandardName IStandardNameExpressionNode.Name => Name;
     IFixedList<ITypeNode> TypeArguments { get; }
 
-    public static IGenericNameExpressionNode Create(IEnumerable<IDeclarationNode> referencedDeclarations, IGenericNameExpressionSyntax syntax, GenericName name, IEnumerable<ITypeNode> typeArguments)
+    public static IGenericNameExpressionNode Create(
+        IEnumerable<IDeclarationNode> referencedDeclarations,
+        IGenericNameExpressionSyntax syntax,
+        GenericName name,
+        IEnumerable<ITypeNode> typeArguments)
         => new GenericNameExpressionNode(referencedDeclarations, syntax, name, typeArguments);
 }
 
@@ -2501,7 +3066,11 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameNode, IAmbi
     IFixedList<ITypeNode> TypeArguments { get; }
     PackageNameScope PackageNameScope();
 
-    public static IMemberAccessExpressionNode Create(IMemberAccessExpressionSyntax syntax, IAmbiguousExpressionNode context, StandardName memberName, IEnumerable<ITypeNode> typeArguments)
+    public static IMemberAccessExpressionNode Create(
+        IMemberAccessExpressionSyntax syntax,
+        IAmbiguousExpressionNode context,
+        StandardName memberName,
+        IEnumerable<ITypeNode> typeArguments)
         => new MemberAccessExpressionNode(syntax, context, memberName, typeArguments);
 }
 
@@ -2519,7 +3088,11 @@ public partial interface IPropertyNameNode : IAmbiguousNameNode, IAmbiguousAssig
     StandardName PropertyName { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
 
-    public static IPropertyNameNode Create(IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors)
+    public static IPropertyNameNode Create(
+        IMemberAccessExpressionSyntax syntax,
+        IExpressionNode context,
+        StandardName propertyName,
+        IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors)
         => new PropertyNameNode(syntax, context, propertyName, referencedPropertyAccessors);
 }
 
@@ -2581,7 +3154,15 @@ public partial interface IUnqualifiedNamespaceNameNode : INamespaceNameNode
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IdentifierName Name { get; }
 
-    public static IUnqualifiedNamespaceNameNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, UnknownType type, IEnumerable<INamespaceDeclarationNode> referencedDeclarations, IIdentifierNameExpressionSyntax syntax, IdentifierName name)
+    public static IUnqualifiedNamespaceNameNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        UnknownType type,
+        IEnumerable<INamespaceDeclarationNode> referencedDeclarations,
+        IIdentifierNameExpressionSyntax syntax,
+        IdentifierName name)
         => new UnqualifiedNamespaceNameNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, type, referencedDeclarations, syntax, name);
 }
 
@@ -2597,7 +3178,16 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
     INamespaceNameNode Context { get; }
     IdentifierName Name { get; }
 
-    public static IQualifiedNamespaceNameNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, UnknownType type, IEnumerable<INamespaceDeclarationNode> referencedDeclarations, IMemberAccessExpressionSyntax syntax, INamespaceNameNode context, IdentifierName name)
+    public static IQualifiedNamespaceNameNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        UnknownType type,
+        IEnumerable<INamespaceDeclarationNode> referencedDeclarations,
+        IMemberAccessExpressionSyntax syntax,
+        INamespaceNameNode context,
+        IdentifierName name)
         => new QualifiedNamespaceNameNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, type, referencedDeclarations, syntax, context, name);
 }
 
@@ -2610,7 +3200,17 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IFunctionLikeDeclarationNode> ReferencedDeclarations { get; }
 
-    public static IFunctionGroupNameNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, INameExpressionSyntax syntax, INameExpressionNode? context, StandardName functionName, IEnumerable<ITypeNode> typeArguments, IEnumerable<IFunctionLikeDeclarationNode> referencedDeclarations)
+    public static IFunctionGroupNameNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        INameExpressionSyntax syntax,
+        INameExpressionNode? context,
+        StandardName functionName,
+        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<IFunctionLikeDeclarationNode> referencedDeclarations)
         => new FunctionGroupNameNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, context, functionName, typeArguments, referencedDeclarations);
 }
 
@@ -2624,7 +3224,17 @@ public partial interface IFunctionNameNode : INameExpressionNode
     IFunctionLikeDeclarationNode? ReferencedDeclaration { get; }
     IFlowState FlowStateBefore();
 
-    public static IFunctionNameNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, INameExpressionSyntax syntax, IFunctionGroupNameNode functionGroup, StandardName functionName, IEnumerable<ITypeNode> typeArguments, IFunctionLikeDeclarationNode? referencedDeclaration)
+    public static IFunctionNameNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        INameExpressionSyntax syntax,
+        IFunctionGroupNameNode functionGroup,
+        StandardName functionName,
+        IEnumerable<ITypeNode> typeArguments,
+        IFunctionLikeDeclarationNode? referencedDeclaration)
         => new FunctionNameNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, functionGroup, functionName, typeArguments, referencedDeclaration);
 }
 
@@ -2643,7 +3253,18 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
 
-    public static IMethodGroupNameNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IMemberAccessExpressionSyntax syntax, IExpressionNode context, IExpressionNode currentContext, StandardName methodName, IEnumerable<ITypeNode> typeArguments, IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations)
+    public static IMethodGroupNameNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IMemberAccessExpressionSyntax syntax,
+        IExpressionNode context,
+        IExpressionNode currentContext,
+        StandardName methodName,
+        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations)
         => new MethodGroupNameNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, context, currentContext, methodName, typeArguments, referencedDeclarations);
 }
 
@@ -2661,7 +3282,16 @@ public partial interface IFieldAccessExpressionNode : INameExpressionNode, IAssi
     IdentifierName FieldName { get; }
     IFieldDeclarationNode ReferencedDeclaration { get; }
 
-    public static IFieldAccessExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IMemberAccessExpressionSyntax syntax, IExpressionNode context, IdentifierName fieldName, IFieldDeclarationNode referencedDeclaration)
+    public static IFieldAccessExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IMemberAccessExpressionSyntax syntax,
+        IExpressionNode context,
+        IdentifierName fieldName,
+        IFieldDeclarationNode referencedDeclaration)
         => new FieldAccessExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, context, fieldName, referencedDeclaration);
 }
 
@@ -2682,7 +3312,16 @@ public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressi
     IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
     IFlowState FlowStateBefore();
 
-    public static IVariableNameExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IIdentifierNameExpressionSyntax syntax, IdentifierName name, ILocalBindingNode referencedDefinition, IFixedSet<IDataFlowNode> dataFlowPrevious)
+    public static IVariableNameExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IIdentifierNameExpressionSyntax syntax,
+        IdentifierName name,
+        ILocalBindingNode referencedDefinition,
+        IFixedSet<IDataFlowNode> dataFlowPrevious)
         => new VariableNameExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, name, referencedDefinition, dataFlowPrevious);
 }
 
@@ -2709,7 +3348,18 @@ public partial interface IStandardTypeNameExpressionNode : ITypeNameExpressionNo
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
 
-    public static IStandardTypeNameExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, StandardName name, ITypeDeclarationNode referencedDeclaration, IMaybeAntetype namedAntetype, BareType? namedBareType, IStandardNameExpressionSyntax syntax, IEnumerable<ITypeNode> typeArguments)
+    public static IStandardTypeNameExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        StandardName name,
+        ITypeDeclarationNode referencedDeclaration,
+        IMaybeAntetype namedAntetype,
+        BareType? namedBareType,
+        IStandardNameExpressionSyntax syntax,
+        IEnumerable<ITypeNode> typeArguments)
         => new StandardTypeNameExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, name, referencedDeclaration, namedAntetype, namedBareType, syntax, typeArguments);
 }
 
@@ -2724,7 +3374,19 @@ public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionN
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     INamespaceNameNode Context { get; }
 
-    public static IQualifiedTypeNameExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, StandardName name, ITypeDeclarationNode referencedDeclaration, IMaybeAntetype namedAntetype, BareType? namedBareType, IMemberAccessExpressionSyntax syntax, INamespaceNameNode context, IEnumerable<ITypeNode> typeArguments)
+    public static IQualifiedTypeNameExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        StandardName name,
+        ITypeDeclarationNode referencedDeclaration,
+        IMaybeAntetype namedAntetype,
+        BareType? namedBareType,
+        IMemberAccessExpressionSyntax syntax,
+        INamespaceNameNode context,
+        IEnumerable<ITypeNode> typeArguments)
         => new QualifiedTypeNameExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, name, referencedDeclaration, namedAntetype, namedBareType, syntax, context, typeArguments);
 }
 
@@ -2737,7 +3399,17 @@ public partial interface IInitializerGroupNameNode : INameExpressionNode
     IMaybeAntetype InitializingAntetype { get; }
     IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { get; }
 
-    public static IInitializerGroupNameNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, INameExpressionSyntax syntax, ITypeNameExpressionNode context, StandardName? initializerName, IMaybeAntetype initializingAntetype, IEnumerable<IInitializerDeclarationNode> referencedDeclarations)
+    public static IInitializerGroupNameNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        INameExpressionSyntax syntax,
+        ITypeNameExpressionNode context,
+        StandardName? initializerName,
+        IMaybeAntetype initializingAntetype,
+        IEnumerable<IInitializerDeclarationNode> referencedDeclarations)
         => new InitializerGroupNameNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, context, initializerName, initializingAntetype, referencedDeclarations);
 }
 
@@ -2755,7 +3427,15 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     new UnknownType Type { get; }
     DataType IExpressionNode.Type => Type;
 
-    public static ISpecialTypeNameExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, ISpecialTypeNameExpressionSyntax syntax, SpecialTypeName name, TypeSymbol referencedSymbol, UnknownType type)
+    public static ISpecialTypeNameExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        ISpecialTypeNameExpressionSyntax syntax,
+        SpecialTypeName name,
+        TypeSymbol referencedSymbol,
+        UnknownType type)
         => new SpecialTypeNameExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, syntax, name, referencedSymbol, type);
 }
 
@@ -2790,7 +3470,16 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
     IFlowState FlowStateBefore();
     IExecutableDefinitionNode ContainingDeclaration { get; }
 
-    public static ISelfExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, ISelfExpressionSyntax syntax, bool isImplicit, Pseudotype pseudotype, ISelfParameterNode? referencedDefinition)
+    public static ISelfExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        ISelfExpressionSyntax syntax,
+        bool isImplicit,
+        Pseudotype pseudotype,
+        ISelfParameterNode? referencedDefinition)
         => new SelfExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, isImplicit, pseudotype, referencedDefinition);
 }
 
@@ -2808,7 +3497,13 @@ public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode,
     new UnknownType Type { get; }
     DataType IExpressionNode.Type => Type;
 
-    public static IMissingNameExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, IMissingNameSyntax syntax, UnknownType type)
+    public static IMissingNameExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        IMissingNameSyntax syntax,
+        UnknownType type)
         => new MissingNameExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, syntax, type);
 }
 
@@ -2852,7 +3547,15 @@ public partial interface IUnknownIdentifierNameExpressionNode : IUnknownStandard
     new IdentifierName Name { get; }
     StandardName IUnknownStandardNameExpressionNode.Name => Name;
 
-    public static IUnknownIdentifierNameExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, UnknownType type, IEnumerable<IDeclarationNode> referencedDeclarations, IIdentifierNameExpressionSyntax syntax, IdentifierName name)
+    public static IUnknownIdentifierNameExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        UnknownType type,
+        IEnumerable<IDeclarationNode> referencedDeclarations,
+        IIdentifierNameExpressionSyntax syntax,
+        IdentifierName name)
         => new UnknownIdentifierNameExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, type, referencedDeclarations, syntax, name);
 }
 
@@ -2870,7 +3573,16 @@ public partial interface IUnknownGenericNameExpressionNode : IUnknownStandardNam
     StandardName IUnknownStandardNameExpressionNode.Name => Name;
     IFixedList<ITypeNode> TypeArguments { get; }
 
-    public static IUnknownGenericNameExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, UnknownType type, IEnumerable<IDeclarationNode> referencedDeclarations, IGenericNameExpressionSyntax syntax, GenericName name, IEnumerable<ITypeNode> typeArguments)
+    public static IUnknownGenericNameExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        UnknownType type,
+        IEnumerable<IDeclarationNode> referencedDeclarations,
+        IGenericNameExpressionSyntax syntax,
+        GenericName name,
+        IEnumerable<ITypeNode> typeArguments)
         => new UnknownGenericNameExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, type, referencedDeclarations, syntax, name, typeArguments);
 }
 
@@ -2889,7 +3601,17 @@ public partial interface IUnknownMemberAccessExpressionNode : IUnknownNameExpres
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IDeclarationNode> ReferencedMembers { get; }
 
-    public static IUnknownMemberAccessExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, UnknownType type, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName memberName, IEnumerable<ITypeNode> typeArguments, IEnumerable<IDeclarationNode> referencedMembers)
+    public static IUnknownMemberAccessExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        UnknownType type,
+        IMemberAccessExpressionSyntax syntax,
+        IExpressionNode context,
+        StandardName memberName,
+        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<IDeclarationNode> referencedMembers)
         => new UnknownMemberAccessExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, type, syntax, context, memberName, typeArguments, referencedMembers);
 }
 
@@ -2904,7 +3626,9 @@ public partial interface IAmbiguousMoveExpressionNode : IAmbiguousExpressionNode
     IUnresolvedSimpleNameNode TempReferent { get; }
     ISimpleNameExpressionNode? Referent { get; }
 
-    public static IAmbiguousMoveExpressionNode Create(IMoveExpressionSyntax syntax, IUnresolvedSimpleNameNode referent)
+    public static IAmbiguousMoveExpressionNode Create(
+        IMoveExpressionSyntax syntax,
+        IUnresolvedSimpleNameNode referent)
         => new AmbiguousMoveExpressionNode(syntax, referent);
 }
 
@@ -2933,7 +3657,15 @@ public partial interface IMoveVariableExpressionNode : IMoveExpressionNode
     new ILocalBindingNameExpressionNode Referent { get; }
     IExpressionNode IMoveExpressionNode.Referent => Referent;
 
-    public static IMoveVariableExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, bool isImplicit, ILocalBindingNameExpressionNode referent)
+    public static IMoveVariableExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        bool isImplicit,
+        ILocalBindingNameExpressionNode referent)
         => new MoveVariableExpressionNode(controlFlowNext, controlFlowPrevious, syntax, antetype, type, flowStateAfter, isImplicit, referent);
 }
 
@@ -2942,7 +3674,15 @@ public partial interface IMoveVariableExpressionNode : IMoveExpressionNode
 public partial interface IMoveValueExpressionNode : IMoveExpressionNode
 {
 
-    public static IMoveValueExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, bool isImplicit, IExpressionNode referent)
+    public static IMoveValueExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        bool isImplicit,
+        IExpressionNode referent)
         => new MoveValueExpressionNode(controlFlowNext, controlFlowPrevious, syntax, antetype, type, flowStateAfter, isImplicit, referent);
 }
 
@@ -2952,7 +3692,14 @@ public partial interface IImplicitTempMoveExpressionNode : IExpressionNode
 {
     IExpressionNode Referent { get; }
 
-    public static IImplicitTempMoveExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IExpressionNode referent)
+    public static IImplicitTempMoveExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IExpressionNode referent)
         => new ImplicitTempMoveExpressionNode(controlFlowNext, controlFlowPrevious, syntax, antetype, type, flowStateAfter, referent);
 }
 
@@ -2967,7 +3714,9 @@ public partial interface IAmbiguousFreezeExpressionNode : IAmbiguousExpressionNo
     IUnresolvedSimpleNameNode TempReferent { get; }
     ISimpleNameExpressionNode? Referent { get; }
 
-    public static IAmbiguousFreezeExpressionNode Create(IFreezeExpressionSyntax syntax, IUnresolvedSimpleNameNode referent)
+    public static IAmbiguousFreezeExpressionNode Create(
+        IFreezeExpressionSyntax syntax,
+        IUnresolvedSimpleNameNode referent)
         => new AmbiguousFreezeExpressionNode(syntax, referent);
 }
 
@@ -2988,7 +3737,16 @@ public partial interface IFreezeVariableExpressionNode : IFreezeExpressionNode
     new ILocalBindingNameExpressionNode Referent { get; }
     IExpressionNode IFreezeExpressionNode.Referent => Referent;
 
-    public static IFreezeVariableExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, bool isImplicit, bool isTemporary, ILocalBindingNameExpressionNode referent)
+    public static IFreezeVariableExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        bool isImplicit,
+        bool isTemporary,
+        ILocalBindingNameExpressionNode referent)
         => new FreezeVariableExpressionNode(controlFlowNext, controlFlowPrevious, syntax, antetype, type, flowStateAfter, isImplicit, isTemporary, referent);
 }
 
@@ -2997,7 +3755,16 @@ public partial interface IFreezeVariableExpressionNode : IFreezeExpressionNode
 public partial interface IFreezeValueExpressionNode : IFreezeExpressionNode
 {
 
-    public static IFreezeValueExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, bool isImplicit, bool isTemporary, IExpressionNode referent)
+    public static IFreezeValueExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        bool isImplicit,
+        bool isTemporary,
+        IExpressionNode referent)
         => new FreezeValueExpressionNode(controlFlowNext, controlFlowPrevious, syntax, antetype, type, flowStateAfter, isImplicit, isTemporary, referent);
 }
 
@@ -3008,7 +3775,15 @@ public partial interface IPrepareToReturnExpressionNode : IExpressionNode
     IExpressionNode Value { get; }
     IExpressionNode CurrentValue { get; }
 
-    public static IPrepareToReturnExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IExpressionNode value, IExpressionNode currentValue)
+    public static IPrepareToReturnExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IExpressionNode value,
+        IExpressionNode currentValue)
         => new PrepareToReturnExpressionNode(controlFlowNext, controlFlowPrevious, syntax, antetype, type, flowStateAfter, value, currentValue);
 }
 
@@ -3022,7 +3797,14 @@ public partial interface IAsyncBlockExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IBlockExpressionNode Block { get; }
 
-    public static IAsyncBlockExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IAsyncBlockExpressionSyntax syntax, IBlockExpressionNode block)
+    public static IAsyncBlockExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IAsyncBlockExpressionSyntax syntax,
+        IBlockExpressionNode block)
         => new AsyncBlockExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, block);
 }
 
@@ -3038,7 +3820,15 @@ public partial interface IAsyncStartExpressionNode : IExpressionNode
     IAmbiguousExpressionNode TempExpression { get; }
     IExpressionNode? Expression { get; }
 
-    public static IAsyncStartExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IAsyncStartExpressionSyntax syntax, bool scheduled, IAmbiguousExpressionNode expression)
+    public static IAsyncStartExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IAsyncStartExpressionSyntax syntax,
+        bool scheduled,
+        IAmbiguousExpressionNode expression)
         => new AsyncStartExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, scheduled, expression);
 }
 
@@ -3053,7 +3843,14 @@ public partial interface IAwaitExpressionNode : IExpressionNode
     IAmbiguousExpressionNode TempExpression { get; }
     IExpressionNode? Expression { get; }
 
-    public static IAwaitExpressionNode Create(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IAwaitExpressionSyntax syntax, IAmbiguousExpressionNode expression)
+    public static IAwaitExpressionNode Create(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IAwaitExpressionSyntax syntax,
+        IAmbiguousExpressionNode expression)
         => new AwaitExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, expression);
 }
 
@@ -3544,7 +4341,12 @@ public partial interface IPackageSymbolNode : IPackageDeclarationNode, IChildSym
     new IPackageFacetSymbolNode TestingFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
 
-    public static IPackageSymbolNode Create(IdentifierName? aliasOrName, IdentifierName name, PackageSymbol symbol, IPackageFacetSymbolNode mainFacet, IPackageFacetSymbolNode testingFacet)
+    public static IPackageSymbolNode Create(
+        IdentifierName? aliasOrName,
+        IdentifierName name,
+        PackageSymbol symbol,
+        IPackageFacetSymbolNode mainFacet,
+        IPackageFacetSymbolNode testingFacet)
         => new PackageSymbolNode(aliasOrName, name, symbol, mainFacet, testingFacet);
 }
 
@@ -3556,7 +4358,8 @@ public partial interface IPackageFacetSymbolNode : IPackageFacetDeclarationNode,
     new INamespaceSymbolNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
 
-    public static IPackageFacetSymbolNode Create(FixedSymbolTree symbolTree)
+    public static IPackageFacetSymbolNode Create(
+        FixedSymbolTree symbolTree)
         => new PackageFacetSymbolNode(symbolTree);
 }
 
@@ -3567,7 +4370,9 @@ public partial interface INamespaceSymbolNode : INamespaceDeclarationNode, IName
     new IFixedList<INamespaceMemberSymbolNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> INamespaceDeclarationNode.Members => Members;
 
-    public static INamespaceSymbolNode Create(NamespaceSymbol symbol, IEnumerable<INamespaceMemberSymbolNode> members)
+    public static INamespaceSymbolNode Create(
+        NamespaceSymbol symbol,
+        IEnumerable<INamespaceMemberSymbolNode> members)
         => new NamespaceSymbolNode(symbol, members);
 }
 
@@ -3585,7 +4390,10 @@ public partial interface INamespaceMemberSymbolNode : INamespaceMemberDeclaratio
 public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamespaceMemberSymbolNode
 {
 
-    public static IFunctionSymbolNode Create(FunctionSymbol symbol, StandardName name, FunctionType type)
+    public static IFunctionSymbolNode Create(
+        FunctionSymbol symbol,
+        StandardName name,
+        FunctionType type)
         => new FunctionSymbolNode(symbol, name, type);
 }
 
@@ -3601,7 +4409,11 @@ public partial interface IPrimitiveTypeSymbolNode : IPrimitiveTypeDeclarationNod
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => Members;
 
-    public static IPrimitiveTypeSymbolNode Create(ISyntax? syntax, TypeSymbol symbol, SpecialTypeName name, IEnumerable<ITypeMemberSymbolNode> members)
+    public static IPrimitiveTypeSymbolNode Create(
+        ISyntax? syntax,
+        TypeSymbol symbol,
+        SpecialTypeName name,
+        IEnumerable<ITypeMemberSymbolNode> members)
         => new PrimitiveTypeSymbolNode(syntax, symbol, name, members);
 }
 
@@ -3634,7 +4446,11 @@ public partial interface IClassSymbolNode : IClassDeclarationNode, IUserTypeSymb
     IFixedSet<IClassMemberDeclarationNode> IClassDeclarationNode.InclusiveMembers
         => Members;
 
-    public static IClassSymbolNode Create(StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<IClassMemberSymbolNode> members)
+    public static IClassSymbolNode Create(
+        StandardName name,
+        UserTypeSymbol symbol,
+        IEnumerable<IGenericParameterSymbolNode> genericParameters,
+        IEnumerable<IClassMemberSymbolNode> members)
         => new ClassSymbolNode(name, symbol, genericParameters, members);
 }
 
@@ -3650,7 +4466,11 @@ public partial interface IStructSymbolNode : IStructDeclarationNode, IUserTypeSy
     IFixedSet<IStructMemberDeclarationNode> IStructDeclarationNode.InclusiveMembers
         => Members;
 
-    public static IStructSymbolNode Create(StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<IStructMemberSymbolNode> members)
+    public static IStructSymbolNode Create(
+        StandardName name,
+        UserTypeSymbol symbol,
+        IEnumerable<IGenericParameterSymbolNode> genericParameters,
+        IEnumerable<IStructMemberSymbolNode> members)
         => new StructSymbolNode(name, symbol, genericParameters, members);
 }
 
@@ -3666,7 +4486,11 @@ public partial interface ITraitSymbolNode : ITraitDeclarationNode, IUserTypeSymb
     IFixedSet<ITraitMemberDeclarationNode> ITraitDeclarationNode.InclusiveMembers
         => Members;
 
-    public static ITraitSymbolNode Create(StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<ITraitMemberSymbolNode> members)
+    public static ITraitSymbolNode Create(
+        StandardName name,
+        UserTypeSymbol symbol,
+        IEnumerable<IGenericParameterSymbolNode> genericParameters,
+        IEnumerable<ITraitMemberSymbolNode> members)
         => new TraitSymbolNode(name, symbol, genericParameters, members);
 }
 
@@ -3682,7 +4506,10 @@ public partial interface IGenericParameterSymbolNode : IGenericParameterDeclarat
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => [];
 
-    public static IGenericParameterSymbolNode Create(IdentifierName name, GenericParameterTypeSymbol symbol, IEnumerable<ITypeMemberSymbolNode> members)
+    public static IGenericParameterSymbolNode Create(
+        IdentifierName name,
+        GenericParameterTypeSymbol symbol,
+        IEnumerable<ITypeMemberSymbolNode> members)
         => new GenericParameterSymbolNode(name, symbol, members);
 }
 
@@ -3748,7 +4575,10 @@ public partial interface IStandardMethodSymbolNode : IStandardMethodDeclarationN
     FunctionType IStandardMethodDeclarationNode.MethodGroupType
         => Symbol.MethodGroupType;
 
-    public static IStandardMethodSymbolNode Create(ISyntax? syntax, IdentifierName name, MethodSymbol symbol)
+    public static IStandardMethodSymbolNode Create(
+        ISyntax? syntax,
+        IdentifierName name,
+        MethodSymbol symbol)
         => new StandardMethodSymbolNode(syntax, name, symbol);
 }
 
@@ -3757,7 +4587,10 @@ public partial interface IStandardMethodSymbolNode : IStandardMethodDeclarationN
 public partial interface IGetterMethodSymbolNode : IGetterMethodDeclarationNode, IMethodSymbolNode
 {
 
-    public static IGetterMethodSymbolNode Create(ISyntax? syntax, IdentifierName name, MethodSymbol symbol)
+    public static IGetterMethodSymbolNode Create(
+        ISyntax? syntax,
+        IdentifierName name,
+        MethodSymbol symbol)
         => new GetterMethodSymbolNode(syntax, name, symbol);
 }
 
@@ -3766,7 +4599,10 @@ public partial interface IGetterMethodSymbolNode : IGetterMethodDeclarationNode,
 public partial interface ISetterMethodSymbolNode : ISetterMethodDeclarationNode, IMethodSymbolNode
 {
 
-    public static ISetterMethodSymbolNode Create(ISyntax? syntax, IdentifierName name, MethodSymbol symbol)
+    public static ISetterMethodSymbolNode Create(
+        ISyntax? syntax,
+        IdentifierName name,
+        MethodSymbol symbol)
         => new SetterMethodSymbolNode(syntax, name, symbol);
 }
 
@@ -3775,7 +4611,10 @@ public partial interface ISetterMethodSymbolNode : ISetterMethodDeclarationNode,
 public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, IClassMemberSymbolNode
 {
 
-    public static IConstructorSymbolNode Create(ISyntax? syntax, IdentifierName? name, ConstructorSymbol symbol)
+    public static IConstructorSymbolNode Create(
+        ISyntax? syntax,
+        IdentifierName? name,
+        ConstructorSymbol symbol)
         => new ConstructorSymbolNode(syntax, name, symbol);
 }
 
@@ -3784,7 +4623,10 @@ public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, I
 public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, IStructMemberSymbolNode
 {
 
-    public static IInitializerSymbolNode Create(ISyntax? syntax, IdentifierName? name, InitializerSymbol symbol)
+    public static IInitializerSymbolNode Create(
+        ISyntax? syntax,
+        IdentifierName? name,
+        InitializerSymbol symbol)
         => new InitializerSymbolNode(syntax, name, symbol);
 }
 
@@ -3793,7 +4635,11 @@ public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, I
 public partial interface IFieldSymbolNode : IFieldDeclarationNode, IClassMemberSymbolNode, IStructMemberSymbolNode
 {
 
-    public static IFieldSymbolNode Create(ISyntax? syntax, IdentifierName name, DataType bindingType, FieldSymbol symbol)
+    public static IFieldSymbolNode Create(
+        ISyntax? syntax,
+        IdentifierName name,
+        DataType bindingType,
+        FieldSymbol symbol)
         => new FieldSymbolNode(syntax, name, bindingType, symbol);
 }
 
@@ -3802,7 +4648,11 @@ public partial interface IFieldSymbolNode : IFieldDeclarationNode, IClassMemberS
 public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDeclarationNode, IAssociatedMemberSymbolNode
 {
 
-    public static IAssociatedFunctionSymbolNode Create(ISyntax? syntax, FunctionSymbol symbol, FunctionType type, StandardName name)
+    public static IAssociatedFunctionSymbolNode Create(
+        ISyntax? syntax,
+        FunctionSymbol symbol,
+        FunctionType type,
+        StandardName name)
         => new AssociatedFunctionSymbolNode(syntax, symbol, type, name);
 }
 
@@ -4091,7 +4941,11 @@ file class PackageNode : SemanticNode, IPackageNode
     private IFixedSet<ITypeDeclarationNode>? primitivesDeclarations;
     private bool primitivesDeclarationsCached;
 
-    public PackageNode(IPackageSyntax syntax, IEnumerable<IPackageReferenceNode> references, IPackageFacetNode mainFacet, IPackageFacetNode testingFacet)
+    public PackageNode(
+        IPackageSyntax syntax,
+        IEnumerable<IPackageReferenceNode> references,
+        IPackageFacetNode mainFacet,
+        IPackageFacetNode testingFacet)
         : base(true)
     {
         Syntax = syntax;
@@ -4131,7 +4985,8 @@ file class StandardPackageReferenceNode : SemanticNode, IStandardPackageReferenc
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
-    public StandardPackageReferenceNode(IPackageReferenceSyntax syntax)
+    public StandardPackageReferenceNode(
+        IPackageReferenceSyntax syntax)
     {
         Syntax = syntax;
         SymbolNode = Child.Attach(this, SymbolNodeAspect.PackageReference_SymbolNode(this));
@@ -4147,7 +5002,8 @@ file class IntrinsicsPackageReferenceNode : SemanticNode, IIntrinsicsPackageRefe
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
-    public IntrinsicsPackageReferenceNode()
+    public IntrinsicsPackageReferenceNode(
+        )
     {
         SymbolNode = Child.Attach(this, SymbolNodeAspect.PackageReference_SymbolNode(this));
     }
@@ -4181,7 +5037,9 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     private IFixedSet<IFacetMemberDefinitionNode>? definitions;
     private bool definitionsCached;
 
-    public PackageFacetNode(IPackageSyntax syntax, IEnumerable<ICompilationUnitNode> compilationUnits)
+    public PackageFacetNode(
+        IPackageSyntax syntax,
+        IEnumerable<ICompilationUnitNode> compilationUnits)
     {
         Syntax = syntax;
         CompilationUnits = ChildSet.Attach(this, compilationUnits);
@@ -4250,7 +5108,10 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     private INamespaceDefinitionNode? implicitNamespace;
     private bool implicitNamespaceCached;
 
-    public CompilationUnitNode(ICompilationUnitSyntax syntax, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> definitions)
+    public CompilationUnitNode(
+        ICompilationUnitSyntax syntax,
+        IEnumerable<IUsingDirectiveNode> usingDirectives,
+        IEnumerable<INamespaceBlockMemberDefinitionNode> definitions)
     {
         Syntax = syntax;
         UsingDirectives = ChildList.Attach(this, usingDirectives);
@@ -4297,7 +5158,8 @@ file class UsingDirectiveNode : SemanticNode, IUsingDirectiveNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public UsingDirectiveNode(IUsingDirectiveSyntax syntax)
+    public UsingDirectiveNode(
+        IUsingDirectiveSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -4348,7 +5210,10 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
     private INamespaceDefinitionNode? definition;
     private bool definitionCached;
 
-    public NamespaceBlockDefinitionNode(INamespaceDefinitionSyntax syntax, IEnumerable<IUsingDirectiveNode> usingDirectives, IEnumerable<INamespaceBlockMemberDefinitionNode> members)
+    public NamespaceBlockDefinitionNode(
+        INamespaceDefinitionSyntax syntax,
+        IEnumerable<IUsingDirectiveNode> usingDirectives,
+        IEnumerable<INamespaceBlockMemberDefinitionNode> members)
     {
         Syntax = syntax;
         UsingDirectives = ChildList.Attach(this, usingDirectives);
@@ -4400,7 +5265,10 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
     private IFixedList<INamespaceMemberDeclarationNode>? nestedMembers;
     private bool nestedMembersCached;
 
-    public NamespaceDefinitionNode(NamespaceSymbol symbol, IEnumerable<INamespaceDefinitionNode> memberNamespaces, IEnumerable<IFacetMemberDefinitionNode> packageMembers)
+    public NamespaceDefinitionNode(
+        NamespaceSymbol symbol,
+        IEnumerable<INamespaceDefinitionNode> memberNamespaces,
+        IEnumerable<IFacetMemberDefinitionNode> packageMembers)
     {
         Symbol = symbol;
         MemberNamespaces = ChildList.Attach(this, memberNamespaces);
@@ -4477,7 +5345,12 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public FunctionDefinitionNode(IFunctionDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
+    public FunctionDefinitionNode(
+        IFunctionDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode? @return,
+        IBodyNode body)
     {
         Syntax = syntax;
         Attributes = ChildList.Attach(this, attributes);
@@ -4659,7 +5532,13 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public ClassDefinitionNode(IClassDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IStandardTypeNameNode? baseTypeName, IEnumerable<IStandardTypeNameNode> supertypeNames, IEnumerable<IClassMemberDefinitionNode> sourceMembers)
+    public ClassDefinitionNode(
+        IClassDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
+        IEnumerable<IGenericParameterNode> genericParameters,
+        IStandardTypeNameNode? baseTypeName,
+        IEnumerable<IStandardTypeNameNode> supertypeNames,
+        IEnumerable<IClassMemberDefinitionNode> sourceMembers)
     {
         Syntax = syntax;
         Attributes = ChildList.Attach(this, attributes);
@@ -4809,7 +5688,12 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public StructDefinitionNode(IStructDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, IEnumerable<IStructMemberDefinitionNode> sourceMembers)
+    public StructDefinitionNode(
+        IStructDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
+        IEnumerable<IGenericParameterNode> genericParameters,
+        IEnumerable<IStandardTypeNameNode> supertypeNames,
+        IEnumerable<IStructMemberDefinitionNode> sourceMembers)
     {
         Syntax = syntax;
         Attributes = ChildList.Attach(this, attributes);
@@ -4945,7 +5829,12 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public TraitDefinitionNode(ITraitDefinitionSyntax syntax, IEnumerable<IAttributeNode> attributes, IEnumerable<IGenericParameterNode> genericParameters, IEnumerable<IStandardTypeNameNode> supertypeNames, IEnumerable<ITraitMemberDefinitionNode> members)
+    public TraitDefinitionNode(
+        ITraitDefinitionSyntax syntax,
+        IEnumerable<IAttributeNode> attributes,
+        IEnumerable<IGenericParameterNode> genericParameters,
+        IEnumerable<IStandardTypeNameNode> supertypeNames,
+        IEnumerable<ITraitMemberDefinitionNode> members)
     {
         Syntax = syntax;
         Attributes = ChildList.Attach(this, attributes);
@@ -5037,7 +5926,9 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
     private GenericParameterType? declaredType;
     private bool declaredTypeCached;
 
-    public GenericParameterNode(IGenericParameterSyntax syntax, ICapabilityConstraintNode constraint)
+    public GenericParameterNode(
+        IGenericParameterSyntax syntax,
+        ICapabilityConstraintNode constraint)
     {
         Syntax = syntax;
         Constraint = Child.Attach(this, constraint);
@@ -5103,7 +5994,11 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
 
-    public AbstractMethodDefinitionNode(IAbstractMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
+    public AbstractMethodDefinitionNode(
+        IAbstractMethodDefinitionSyntax syntax,
+        IMethodSelfParameterNode selfParameter,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode? @return)
     {
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
@@ -5188,7 +6083,12 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public StandardMethodDefinitionNode(IStandardMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
+    public StandardMethodDefinitionNode(
+        IStandardMethodDefinitionSyntax syntax,
+        IMethodSelfParameterNode selfParameter,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode? @return,
+        IBodyNode body)
     {
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
@@ -5307,7 +6207,12 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public GetterMethodDefinitionNode(IGetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode @return, IBodyNode body)
+    public GetterMethodDefinitionNode(
+        IGetterMethodDefinitionSyntax syntax,
+        IMethodSelfParameterNode selfParameter,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode @return,
+        IBodyNode body)
     {
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
@@ -5426,7 +6331,12 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public SetterMethodDefinitionNode(ISetterMethodDefinitionSyntax syntax, IMethodSelfParameterNode selfParameter, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, IBodyNode body)
+    public SetterMethodDefinitionNode(
+        ISetterMethodDefinitionSyntax syntax,
+        IMethodSelfParameterNode selfParameter,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode? @return,
+        IBodyNode body)
     {
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
@@ -5544,7 +6454,11 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public DefaultConstructorDefinitionNode(IConstructorDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBodyNode? body)
+    public DefaultConstructorDefinitionNode(
+        IConstructorDefinitionSyntax? syntax,
+        IdentifierName? name,
+        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IBodyNode? body)
     {
         Syntax = syntax;
         Name = name;
@@ -5657,7 +6571,12 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public SourceConstructorDefinitionNode(IdentifierName? name, IConstructorDefinitionSyntax syntax, IConstructorSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBlockBodyNode body)
+    public SourceConstructorDefinitionNode(
+        IdentifierName? name,
+        IConstructorDefinitionSyntax syntax,
+        IConstructorSelfParameterNode selfParameter,
+        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IBlockBodyNode body)
     {
         Name = name;
         Syntax = syntax;
@@ -5770,7 +6689,11 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public DefaultInitializerDefinitionNode(IInitializerDefinitionSyntax? syntax, IdentifierName? name, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBodyNode? body)
+    public DefaultInitializerDefinitionNode(
+        IInitializerDefinitionSyntax? syntax,
+        IdentifierName? name,
+        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IBodyNode? body)
     {
         Syntax = syntax;
         Name = name;
@@ -5883,7 +6806,12 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public SourceInitializerDefinitionNode(IdentifierName? name, IInitializerDefinitionSyntax syntax, IInitializerSelfParameterNode selfParameter, IEnumerable<IConstructorOrInitializerParameterNode> parameters, IBlockBodyNode body)
+    public SourceInitializerDefinitionNode(
+        IdentifierName? name,
+        IInitializerDefinitionSyntax syntax,
+        IInitializerSelfParameterNode selfParameter,
+        IEnumerable<IConstructorOrInitializerParameterNode> parameters,
+        IBlockBodyNode body)
     {
         Name = name;
         Syntax = syntax;
@@ -6002,7 +6930,16 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
 
-    public FieldDefinitionNode(bool isLentBinding, IFieldDefinitionSyntax syntax, bool isMutableBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer)
+    public FieldDefinitionNode(
+        bool isLentBinding,
+        IFieldDefinitionSyntax syntax,
+        bool isMutableBinding,
+        IdentifierName name,
+        ITypeNode typeNode,
+        IMaybeAntetype bindingAntetype,
+        DataType bindingType,
+        IAmbiguousExpressionNode? initializer,
+        IAmbiguousExpressionNode? currentInitializer)
     {
         IsLentBinding = isLentBinding;
         Syntax = syntax;
@@ -6098,7 +7035,13 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     private AccessModifier accessModifier;
     private bool accessModifierCached;
 
-    public AssociatedFunctionDefinitionNode(IAssociatedFunctionDefinitionSyntax syntax, IdentifierName name, IEnumerable<INamedParameterNode> parameters, ITypeNode? @return, FunctionType type, IBodyNode body)
+    public AssociatedFunctionDefinitionNode(
+        IAssociatedFunctionDefinitionSyntax syntax,
+        IdentifierName name,
+        IEnumerable<INamedParameterNode> parameters,
+        ITypeNode? @return,
+        FunctionType type,
+        IBodyNode body)
     {
         Syntax = syntax;
         Name = name;
@@ -6169,7 +7112,9 @@ file class AttributeNode : SemanticNode, IAttributeNode
     private ConstructorSymbol? referencedSymbol;
     private bool referencedSymbolCached;
 
-    public AttributeNode(IAttributeSyntax syntax, IStandardTypeNameNode typeName)
+    public AttributeNode(
+        IAttributeSyntax syntax,
+        IStandardTypeNameNode typeName)
     {
         Syntax = syntax;
         TypeName = Child.Attach(this, typeName);
@@ -6195,7 +7140,9 @@ file class CapabilitySetNode : SemanticNode, ICapabilitySetNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public CapabilitySetNode(ICapabilitySetSyntax syntax, CapabilitySet constraint)
+    public CapabilitySetNode(
+        ICapabilitySetSyntax syntax,
+        CapabilitySet constraint)
     {
         Syntax = syntax;
         Constraint = constraint;
@@ -6215,7 +7162,10 @@ file class CapabilityNode : SemanticNode, ICapabilityNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public CapabilityNode(ICapabilityConstraint constraint, ICapabilitySyntax syntax, Capability capability)
+    public CapabilityNode(
+        ICapabilityConstraint constraint,
+        ICapabilitySyntax syntax,
+        Capability capability)
     {
         Constraint = constraint;
         Syntax = syntax;
@@ -6260,7 +7210,17 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public NamedParameterNode(bool unused, IFlowState flowStateAfter, ParameterType parameterType, INamedParameterSyntax syntax, bool isMutableBinding, bool isLentBinding, IdentifierName name, ITypeNode typeNode, IMaybeAntetype bindingAntetype, DataType bindingType)
+    public NamedParameterNode(
+        bool unused,
+        IFlowState flowStateAfter,
+        ParameterType parameterType,
+        INamedParameterSyntax syntax,
+        bool isMutableBinding,
+        bool isLentBinding,
+        IdentifierName name,
+        ITypeNode typeNode,
+        IMaybeAntetype bindingAntetype,
+        DataType bindingType)
     {
         Unused = unused;
         FlowStateAfter = flowStateAfter;
@@ -6317,7 +7277,16 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public ConstructorSelfParameterNode(IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IConstructorSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
+    public ConstructorSelfParameterNode(
+        IdentifierName? name,
+        bool unused,
+        IFlowState flowStateAfter,
+        SelfParameterType parameterType,
+        IMaybeAntetype bindingAntetype,
+        IConstructorSelfParameterSyntax syntax,
+        bool isLentBinding,
+        ICapabilityNode capability,
+        CapabilityType bindingType)
     {
         Name = name;
         Unused = unused;
@@ -6373,7 +7342,16 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public InitializerSelfParameterNode(IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, IInitializerSelfParameterSyntax syntax, bool isLentBinding, ICapabilityNode capability, CapabilityType bindingType)
+    public InitializerSelfParameterNode(
+        IdentifierName? name,
+        bool unused,
+        IFlowState flowStateAfter,
+        SelfParameterType parameterType,
+        IMaybeAntetype bindingAntetype,
+        IInitializerSelfParameterSyntax syntax,
+        bool isLentBinding,
+        ICapabilityNode capability,
+        CapabilityType bindingType)
     {
         Name = name;
         Unused = unused;
@@ -6429,7 +7407,16 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public MethodSelfParameterNode(IdentifierName? name, bool unused, IFlowState flowStateAfter, SelfParameterType parameterType, IMaybeAntetype bindingAntetype, Pseudotype bindingType, IMethodSelfParameterSyntax syntax, bool isLentBinding, ICapabilityConstraintNode capability)
+    public MethodSelfParameterNode(
+        IdentifierName? name,
+        bool unused,
+        IFlowState flowStateAfter,
+        SelfParameterType parameterType,
+        IMaybeAntetype bindingAntetype,
+        Pseudotype bindingType,
+        IMethodSelfParameterSyntax syntax,
+        bool isLentBinding,
+        ICapabilityConstraintNode capability)
     {
         Name = name;
         Unused = unused;
@@ -6483,7 +7470,14 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public FieldParameterNode(bool unused, IMaybeAntetype bindingAntetype, IFlowState flowStateAfter, DataType bindingType, ParameterType parameterType, IFieldParameterSyntax syntax, IdentifierName name)
+    public FieldParameterNode(
+        bool unused,
+        IMaybeAntetype bindingAntetype,
+        IFlowState flowStateAfter,
+        DataType bindingType,
+        ParameterType parameterType,
+        IFieldParameterSyntax syntax,
+        IdentifierName name)
     {
         Unused = unused;
         BindingAntetype = bindingAntetype;
@@ -6510,7 +7504,10 @@ file class BlockBodyNode : SemanticNode, IBlockBodyNode
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
 
-    public BlockBodyNode(IFlowState flowStateAfter, IBlockBodySyntax syntax, IEnumerable<IBodyStatementNode> statements)
+    public BlockBodyNode(
+        IFlowState flowStateAfter,
+        IBlockBodySyntax syntax,
+        IEnumerable<IBodyStatementNode> statements)
     {
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
@@ -6552,7 +7549,10 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
 
-    public ExpressionBodyNode(IFlowState flowStateAfter, IExpressionBodySyntax syntax, IResultStatementNode resultStatement)
+    public ExpressionBodyNode(
+        IFlowState flowStateAfter,
+        IExpressionBodySyntax syntax,
+        IResultStatementNode resultStatement)
     {
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
@@ -6607,7 +7607,12 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
 
-    public IdentifierTypeNameNode(IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, IIdentifierTypeNameSyntax syntax, IdentifierName name)
+    public IdentifierTypeNameNode(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        BareType? namedBareType,
+        IIdentifierTypeNameSyntax syntax,
+        IdentifierName name)
     {
         NamedAntetype = namedAntetype;
         NamedType = namedType;
@@ -6644,7 +7649,12 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
 
-    public SpecialTypeNameNode(IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, ISpecialTypeNameSyntax syntax, SpecialTypeName name)
+    public SpecialTypeNameNode(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        BareType? namedBareType,
+        ISpecialTypeNameSyntax syntax,
+        SpecialTypeName name)
     {
         NamedAntetype = namedAntetype;
         NamedType = namedType;
@@ -6695,7 +7705,13 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
 
-    public GenericTypeNameNode(IMaybeAntetype namedAntetype, DataType namedType, BareType? namedBareType, IGenericTypeNameSyntax syntax, GenericName name, IEnumerable<ITypeNode> typeArguments)
+    public GenericTypeNameNode(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        BareType? namedBareType,
+        IGenericTypeNameSyntax syntax,
+        GenericName name,
+        IEnumerable<ITypeNode> typeArguments)
     {
         NamedAntetype = namedAntetype;
         NamedType = namedType;
@@ -6735,7 +7751,14 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
 
-    public QualifiedTypeNameNode(IMaybeAntetype namedAntetype, DataType namedType, TypeName name, BareType? namedBareType, IQualifiedTypeNameSyntax syntax, ITypeNameNode context, IStandardTypeNameNode qualifiedName)
+    public QualifiedTypeNameNode(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        TypeName name,
+        BareType? namedBareType,
+        IQualifiedTypeNameSyntax syntax,
+        ITypeNameNode context,
+        IStandardTypeNameNode qualifiedName)
     {
         NamedAntetype = namedAntetype;
         NamedType = namedType;
@@ -6761,7 +7784,11 @@ file class OptionalTypeNode : SemanticNode, IOptionalTypeNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public OptionalTypeNode(IMaybeAntetype namedAntetype, DataType namedType, IOptionalTypeSyntax syntax, ITypeNode referent)
+    public OptionalTypeNode(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        IOptionalTypeSyntax syntax,
+        ITypeNode referent)
     {
         NamedAntetype = namedAntetype;
         NamedType = namedType;
@@ -6785,7 +7812,12 @@ file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public CapabilityTypeNode(IMaybeAntetype namedAntetype, DataType namedType, ICapabilityTypeSyntax syntax, ICapabilityNode capability, ITypeNode referent)
+    public CapabilityTypeNode(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        ICapabilityTypeSyntax syntax,
+        ICapabilityNode capability,
+        ITypeNode referent)
     {
         NamedAntetype = namedAntetype;
         NamedType = namedType;
@@ -6810,7 +7842,12 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public FunctionTypeNode(IMaybeAntetype namedAntetype, DataType namedType, IFunctionTypeSyntax syntax, IEnumerable<IParameterTypeNode> parameters, ITypeNode @return)
+    public FunctionTypeNode(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        IFunctionTypeSyntax syntax,
+        IEnumerable<IParameterTypeNode> parameters,
+        ITypeNode @return)
     {
         NamedAntetype = namedAntetype;
         NamedType = namedType;
@@ -6834,7 +7871,11 @@ file class ParameterTypeNode : SemanticNode, IParameterTypeNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public ParameterTypeNode(IParameterTypeSyntax syntax, bool isLent, ITypeNode referent, ParameterType parameter)
+    public ParameterTypeNode(
+        IParameterTypeSyntax syntax,
+        bool isLent,
+        ITypeNode referent,
+        ParameterType parameter)
     {
         Syntax = syntax;
         IsLent = isLent;
@@ -6858,7 +7899,12 @@ file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeN
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public CapabilityViewpointTypeNode(IMaybeAntetype namedAntetype, DataType namedType, ICapabilityViewpointTypeSyntax syntax, ICapabilityNode capability, ITypeNode referent)
+    public CapabilityViewpointTypeNode(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        ICapabilityViewpointTypeSyntax syntax,
+        ICapabilityNode capability,
+        ITypeNode referent)
     {
         NamedAntetype = namedAntetype;
         NamedType = namedType;
@@ -6888,7 +7934,11 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
     private Pseudotype? methodSelfType;
     private bool methodSelfTypeCached;
 
-    public SelfViewpointTypeNode(IMaybeAntetype namedAntetype, DataType namedType, ISelfViewpointTypeSyntax syntax, ITypeNode referent)
+    public SelfViewpointTypeNode(
+        IMaybeAntetype namedAntetype,
+        DataType namedType,
+        ISelfViewpointTypeSyntax syntax,
+        ITypeNode referent)
     {
         NamedAntetype = namedAntetype;
         NamedType = namedType;
@@ -6919,7 +7969,13 @@ file class EntryNode : SemanticNode, IEntryNode
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap()
         => Inherited_VariableBindingsMap(GrammarAttribute.CurrentInheritanceContext());
 
-    public EntryNode(ICodeSyntax? syntax, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
+    public EntryNode(
+        ICodeSyntax? syntax,
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IFixedSet<IDataFlowNode> dataFlowPrevious,
+        BindingFlags<IVariableBindingNode> definitelyAssigned,
+        BindingFlags<IVariableBindingNode> definitelyUnassigned)
     {
         Syntax = syntax;
         ControlFlowNext = controlFlowNext;
@@ -6950,7 +8006,13 @@ file class ExitNode : SemanticNode, IExitNode
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
 
-    public ExitNode(ICodeSyntax? syntax, ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned)
+    public ExitNode(
+        ICodeSyntax? syntax,
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IFixedSet<IDataFlowNode> dataFlowPrevious,
+        BindingFlags<IVariableBindingNode> definitelyAssigned,
+        BindingFlags<IVariableBindingNode> definitelyUnassigned)
     {
         Syntax = syntax;
         ControlFlowNext = controlFlowNext;
@@ -7002,7 +8064,17 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
 
-    public ResultStatementNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IMaybeAntetype antetype, DataType type, IResultStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IFlowState flowStateAfter)
+    public ResultStatementNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeAntetype? resultAntetype,
+        DataType? resultType,
+        IMaybeAntetype antetype,
+        DataType type,
+        IResultStatementSyntax syntax,
+        IAmbiguousExpressionNode expression,
+        IAmbiguousExpressionNode currentExpression,
+        IFlowState flowStateAfter)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7073,7 +8145,25 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
 
-    public VariableDeclarationStatementNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IVariableDeclarationStatementSyntax syntax, bool isMutableBinding, IdentifierName name, ICapabilityNode? capability, ITypeNode? type, IAmbiguousExpressionNode? initializer, IAmbiguousExpressionNode? currentInitializer)
+    public VariableDeclarationStatementNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeAntetype? resultAntetype,
+        DataType? resultType,
+        IFlowState flowStateAfter,
+        bool isLentBinding,
+        IMaybeAntetype bindingAntetype,
+        DataType bindingType,
+        IFixedSet<IDataFlowNode> dataFlowPrevious,
+        BindingFlags<IVariableBindingNode> definitelyAssigned,
+        BindingFlags<IVariableBindingNode> definitelyUnassigned,
+        IVariableDeclarationStatementSyntax syntax,
+        bool isMutableBinding,
+        IdentifierName name,
+        ICapabilityNode? capability,
+        ITypeNode? type,
+        IAmbiguousExpressionNode? initializer,
+        IAmbiguousExpressionNode? currentInitializer)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7123,7 +8213,15 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
     public IPreviousValueId PreviousValueId()
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
-    public ExpressionStatementNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeAntetype? resultAntetype, DataType? resultType, IFlowState flowStateAfter, IExpressionStatementSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression)
+    public ExpressionStatementNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeAntetype? resultAntetype,
+        DataType? resultType,
+        IFlowState flowStateAfter,
+        IExpressionStatementSyntax syntax,
+        IAmbiguousExpressionNode expression,
+        IAmbiguousExpressionNode currentExpression)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7170,7 +8268,14 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
     public DataType ContextBindingType()
         => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
 
-    public BindingContextPatternNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFlowState flowStateAfter, IBindingContextPatternSyntax syntax, bool isMutableBinding, IPatternNode pattern, ITypeNode? type)
+    public BindingContextPatternNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IFlowState flowStateAfter,
+        IBindingContextPatternSyntax syntax,
+        bool isMutableBinding,
+        IPatternNode pattern,
+        ITypeNode? type)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7235,7 +8340,19 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public BindingPatternNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IBindingPatternSyntax syntax, bool isMutableBinding, IdentifierName name)
+    public BindingPatternNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IFlowState flowStateAfter,
+        bool isLentBinding,
+        IMaybeAntetype bindingAntetype,
+        DataType bindingType,
+        IFixedSet<IDataFlowNode> dataFlowPrevious,
+        BindingFlags<IVariableBindingNode> definitelyAssigned,
+        BindingFlags<IVariableBindingNode> definitelyUnassigned,
+        IBindingPatternSyntax syntax,
+        bool isMutableBinding,
+        IdentifierName name)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7284,7 +8401,12 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
     public DataType ContextBindingType()
         => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
 
-    public OptionalPatternNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IFlowState flowStateAfter, IOptionalPatternSyntax syntax, IOptionalOrBindingPatternNode pattern)
+    public OptionalPatternNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IFlowState flowStateAfter,
+        IOptionalPatternSyntax syntax,
+        IOptionalOrBindingPatternNode pattern)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7344,7 +8466,14 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public BlockExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IBlockExpressionSyntax syntax, IEnumerable<IStatementNode> statements, IMaybeAntetype antetype, DataType type, IFlowState flowStateAfter)
+    public BlockExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IBlockExpressionSyntax syntax,
+        IEnumerable<IStatementNode> statements,
+        IMaybeAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7426,7 +8555,23 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public NewObjectExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, INewObjectExpressionSyntax syntax, ITypeNameNode constructingType, IdentifierName? constructorName, IEnumerable<IAmbiguousExpressionNode> arguments, IMaybeAntetype constructingAntetype, IEnumerable<IConstructorDeclarationNode> referencedConstructors, IEnumerable<IConstructorDeclarationNode> compatibleConstructors, IConstructorDeclarationNode? referencedConstructor, ContextualizedOverload? contextualizedOverload)
+    public NewObjectExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        INewObjectExpressionSyntax syntax,
+        ITypeNameNode constructingType,
+        IdentifierName? constructorName,
+        IEnumerable<IAmbiguousExpressionNode> arguments,
+        IMaybeAntetype constructingAntetype,
+        IEnumerable<IConstructorDeclarationNode> referencedConstructors,
+        IEnumerable<IConstructorDeclarationNode> compatibleConstructors,
+        IConstructorDeclarationNode? referencedConstructor,
+        ContextualizedOverload? contextualizedOverload)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7496,7 +8641,14 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnsafeExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IUnsafeExpressionSyntax syntax, IAmbiguousExpressionNode expression)
+    public UnsafeExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IUnsafeExpressionSyntax syntax,
+        IAmbiguousExpressionNode expression)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7558,7 +8710,14 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public BoolLiteralExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, IBoolLiteralExpressionSyntax syntax, bool value, BoolConstValueType type)
+    public BoolLiteralExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        IBoolLiteralExpressionSyntax syntax,
+        bool value,
+        BoolConstValueType type)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7620,7 +8779,14 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
     private ValueId valueId;
     private bool valueIdCached;
 
-    public IntegerLiteralExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, IIntegerLiteralExpressionSyntax syntax, BigInteger value, IntegerConstValueType type)
+    public IntegerLiteralExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        IIntegerLiteralExpressionSyntax syntax,
+        BigInteger value,
+        IntegerConstValueType type)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7681,7 +8847,13 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public NoneLiteralExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, INoneLiteralExpressionSyntax syntax, OptionalType type)
+    public NoneLiteralExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        INoneLiteralExpressionSyntax syntax,
+        OptionalType type)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7746,7 +8918,14 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
     private ValueId valueId;
     private bool valueIdCached;
 
-    public StringLiteralExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, IStringLiteralExpressionSyntax syntax, string value, DataType type)
+    public StringLiteralExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        IStringLiteralExpressionSyntax syntax,
+        string value,
+        DataType type)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7815,7 +8994,21 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public AssignmentExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IAssignmentExpressionSyntax syntax, IAmbiguousAssignableExpressionNode leftOperand, IAmbiguousAssignableExpressionNode currentLeftOperand, AssignmentOperator @operator, IAmbiguousExpressionNode rightOperand, IAmbiguousExpressionNode currentRightOperand)
+    public AssignmentExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IFixedSet<IDataFlowNode> dataFlowPrevious,
+        BindingFlags<IVariableBindingNode> definitelyAssigned,
+        BindingFlags<IVariableBindingNode> definitelyUnassigned,
+        IAssignmentExpressionSyntax syntax,
+        IAmbiguousAssignableExpressionNode leftOperand,
+        IAmbiguousAssignableExpressionNode currentLeftOperand,
+        AssignmentOperator @operator,
+        IAmbiguousExpressionNode rightOperand,
+        IAmbiguousExpressionNode currentRightOperand)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7891,7 +9084,17 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     private ValueId valueId;
     private bool valueIdCached;
 
-    public BinaryOperatorExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IBinaryOperatorExpressionSyntax syntax, IAmbiguousExpressionNode leftOperand, BinaryOperator @operator, IAmbiguousExpressionNode rightOperand, IAntetype? numericOperatorCommonAntetype)
+    public BinaryOperatorExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IBinaryOperatorExpressionSyntax syntax,
+        IAmbiguousExpressionNode leftOperand,
+        BinaryOperator @operator,
+        IAmbiguousExpressionNode rightOperand,
+        IAntetype? numericOperatorCommonAntetype)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -7964,7 +9167,16 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnaryOperatorExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IUnaryOperatorExpressionSyntax syntax, UnaryOperatorFixity fixity, UnaryOperator @operator, IAmbiguousExpressionNode operand)
+    public UnaryOperatorExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IUnaryOperatorExpressionSyntax syntax,
+        UnaryOperatorFixity fixity,
+        UnaryOperator @operator,
+        IAmbiguousExpressionNode operand)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8027,7 +9239,14 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public IdExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IIdExpressionSyntax syntax, IAmbiguousExpressionNode referent)
+    public IdExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IIdExpressionSyntax syntax,
+        IAmbiguousExpressionNode referent)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8090,7 +9309,16 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public ConversionExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IConversionExpressionSyntax syntax, IAmbiguousExpressionNode referent, ConversionOperator @operator, ITypeNode convertToType)
+    public ConversionExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IConversionExpressionSyntax syntax,
+        IAmbiguousExpressionNode referent,
+        ConversionOperator @operator,
+        ITypeNode convertToType)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8153,7 +9381,15 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
     private ValueId valueId;
     private bool valueIdCached;
 
-    public ImplicitConversionExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, DataType type, IFlowState flowStateAfter, IExpressionNode referent, IExpressionNode currentReferent, SimpleAntetype antetype)
+    public ImplicitConversionExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        DataType type,
+        IFlowState flowStateAfter,
+        IExpressionNode referent,
+        IExpressionNode currentReferent,
+        SimpleAntetype antetype)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8216,7 +9452,15 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
     private ValueId valueId;
     private bool valueIdCached;
 
-    public PatternMatchExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IPatternMatchExpressionSyntax syntax, IAmbiguousExpressionNode referent, IPatternNode pattern)
+    public PatternMatchExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IPatternMatchExpressionSyntax syntax,
+        IAmbiguousExpressionNode referent,
+        IPatternNode pattern)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8280,7 +9524,16 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public IfExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IIfExpressionSyntax syntax, IAmbiguousExpressionNode condition, IBlockOrResultNode thenBlock, IElseClauseNode? elseClause, IFlowState flowStateAfter)
+    public IfExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IIfExpressionSyntax syntax,
+        IAmbiguousExpressionNode condition,
+        IBlockOrResultNode thenBlock,
+        IElseClauseNode? elseClause,
+        IFlowState flowStateAfter)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8342,7 +9595,14 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public LoopExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, ILoopExpressionSyntax syntax, IBlockExpressionNode block)
+    public LoopExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        ILoopExpressionSyntax syntax,
+        IBlockExpressionNode block)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8404,7 +9664,15 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public WhileExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IWhileExpressionSyntax syntax, IAmbiguousExpressionNode condition, IBlockExpressionNode block)
+    public WhileExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IWhileExpressionSyntax syntax,
+        IAmbiguousExpressionNode condition,
+        IBlockExpressionNode block)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8504,7 +9772,34 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public ForeachExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, bool isLentBinding, IMaybeAntetype bindingAntetype, IdentifierName name, DataType bindingType, IFixedSet<IDataFlowNode> dataFlowPrevious, BindingFlags<IVariableBindingNode> definitelyAssigned, BindingFlags<IVariableBindingNode> definitelyUnassigned, IForeachExpressionSyntax syntax, bool isMutableBinding, IdentifierName variableName, IAmbiguousExpressionNode inExpression, ITypeNode? declaredType, IBlockExpressionNode block, ITypeDeclarationNode? referencedIterableDeclaration, IStandardMethodDeclarationNode? referencedIterateMethod, IMaybeExpressionAntetype iteratorAntetype, DataType iteratorType, ITypeDeclarationNode? referencedIteratorDeclaration, IStandardMethodDeclarationNode? referencedNextMethod, IMaybeAntetype iteratedAntetype, DataType iteratedType, IFlowState flowStateBeforeBlock)
+    public ForeachExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        bool isLentBinding,
+        IMaybeAntetype bindingAntetype,
+        IdentifierName name,
+        DataType bindingType,
+        IFixedSet<IDataFlowNode> dataFlowPrevious,
+        BindingFlags<IVariableBindingNode> definitelyAssigned,
+        BindingFlags<IVariableBindingNode> definitelyUnassigned,
+        IForeachExpressionSyntax syntax,
+        bool isMutableBinding,
+        IdentifierName variableName,
+        IAmbiguousExpressionNode inExpression,
+        ITypeNode? declaredType,
+        IBlockExpressionNode block,
+        ITypeDeclarationNode? referencedIterableDeclaration,
+        IStandardMethodDeclarationNode? referencedIterateMethod,
+        IMaybeExpressionAntetype iteratorAntetype,
+        DataType iteratorType,
+        ITypeDeclarationNode? referencedIteratorDeclaration,
+        IStandardMethodDeclarationNode? referencedNextMethod,
+        IMaybeAntetype iteratedAntetype,
+        DataType iteratedType,
+        IFlowState flowStateBeforeBlock)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8585,7 +9880,14 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public BreakExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, NeverType type, IBreakExpressionSyntax syntax, IAmbiguousExpressionNode? value)
+    public BreakExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        NeverType type,
+        IBreakExpressionSyntax syntax,
+        IAmbiguousExpressionNode? value)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8644,7 +9946,13 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public NextExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, NeverType type, INextExpressionSyntax syntax)
+    public NextExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        NeverType type,
+        INextExpressionSyntax syntax)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8713,7 +10021,15 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public ReturnExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, NeverType type, IReturnExpressionSyntax syntax, IAmbiguousExpressionNode? value, IAmbiguousExpressionNode? currentValue)
+    public ReturnExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        NeverType type,
+        IReturnExpressionSyntax syntax,
+        IAmbiguousExpressionNode? value,
+        IAmbiguousExpressionNode? currentValue)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8756,7 +10072,12 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnresolvedInvocationExpressionNode(IInvocationExpressionSyntax syntax, IAmbiguousExpressionNode expression, IAmbiguousExpressionNode currentExpression, IEnumerable<IAmbiguousExpressionNode> arguments, IEnumerable<IAmbiguousExpressionNode> currentArguments)
+    public UnresolvedInvocationExpressionNode(
+        IInvocationExpressionSyntax syntax,
+        IAmbiguousExpressionNode expression,
+        IAmbiguousExpressionNode currentExpression,
+        IEnumerable<IAmbiguousExpressionNode> arguments,
+        IEnumerable<IAmbiguousExpressionNode> currentArguments)
     {
         Syntax = syntax;
         TempExpression = Child.Attach(this, expression);
@@ -8833,7 +10154,20 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     private ValueId valueId;
     private bool valueIdCached;
 
-    public FunctionInvocationExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, IInvocationExpressionSyntax syntax, IFunctionGroupNameNode functionGroup, IEnumerable<IAmbiguousExpressionNode> arguments, IEnumerable<IFunctionLikeDeclarationNode> compatibleDeclarations, IFunctionLikeDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public FunctionInvocationExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        IInvocationExpressionSyntax syntax,
+        IFunctionGroupNameNode functionGroup,
+        IEnumerable<IAmbiguousExpressionNode> arguments,
+        IEnumerable<IFunctionLikeDeclarationNode> compatibleDeclarations,
+        IFunctionLikeDeclarationNode? referencedDeclaration,
+        ContextualizedOverload? contextualizedOverload)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8908,7 +10242,21 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     private ValueId valueId;
     private bool valueIdCached;
 
-    public MethodInvocationExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, IInvocationExpressionSyntax syntax, IMethodGroupNameNode methodGroup, IEnumerable<IAmbiguousExpressionNode> arguments, IEnumerable<IAmbiguousExpressionNode> currentArguments, IEnumerable<IStandardMethodDeclarationNode> compatibleDeclarations, IStandardMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public MethodInvocationExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        IInvocationExpressionSyntax syntax,
+        IMethodGroupNameNode methodGroup,
+        IEnumerable<IAmbiguousExpressionNode> arguments,
+        IEnumerable<IAmbiguousExpressionNode> currentArguments,
+        IEnumerable<IStandardMethodDeclarationNode> compatibleDeclarations,
+        IStandardMethodDeclarationNode? referencedDeclaration,
+        ContextualizedOverload? contextualizedOverload)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8981,7 +10329,20 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     private ValueId valueId;
     private bool valueIdCached;
 
-    public GetterInvocationExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, IGetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public GetterInvocationExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        IMemberAccessExpressionSyntax syntax,
+        IExpressionNode context,
+        StandardName propertyName,
+        IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors,
+        IGetterMethodDeclarationNode? referencedDeclaration,
+        ContextualizedOverload? contextualizedOverload)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9055,7 +10416,21 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     private ValueId valueId;
     private bool valueIdCached;
 
-    public SetterInvocationExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, IAssignmentExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IAmbiguousExpressionNode value, IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors, ISetterMethodDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public SetterInvocationExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        IAssignmentExpressionSyntax syntax,
+        IExpressionNode context,
+        StandardName propertyName,
+        IAmbiguousExpressionNode value,
+        IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors,
+        ISetterMethodDeclarationNode? referencedDeclaration,
+        ContextualizedOverload? contextualizedOverload)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9129,7 +10504,19 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     private ValueId valueId;
     private bool valueIdCached;
 
-    public FunctionReferenceInvocationExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, IInvocationExpressionSyntax syntax, IExpressionNode expression, IEnumerable<IAmbiguousExpressionNode> arguments, FunctionAntetype functionAntetype, FunctionType functionType)
+    public FunctionReferenceInvocationExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        IInvocationExpressionSyntax syntax,
+        IExpressionNode expression,
+        IEnumerable<IAmbiguousExpressionNode> arguments,
+        FunctionAntetype functionAntetype,
+        FunctionType functionType)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9204,7 +10591,20 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     private ValueId valueId;
     private bool valueIdCached;
 
-    public InitializerInvocationExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IEnumerable<IAmbiguousExpressionNode> tempAllArguments, IEnumerable<IExpressionNode?> allArguments, IInvocationExpressionSyntax syntax, IInitializerGroupNameNode initializerGroup, IEnumerable<IAmbiguousExpressionNode> arguments, IEnumerable<IInitializerDeclarationNode> compatibleDeclarations, IInitializerDeclarationNode? referencedDeclaration, ContextualizedOverload? contextualizedOverload)
+    public InitializerInvocationExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
+        IEnumerable<IExpressionNode?> allArguments,
+        IInvocationExpressionSyntax syntax,
+        IInitializerGroupNameNode initializerGroup,
+        IEnumerable<IAmbiguousExpressionNode> arguments,
+        IEnumerable<IInitializerDeclarationNode> compatibleDeclarations,
+        IInitializerDeclarationNode? referencedDeclaration,
+        ContextualizedOverload? contextualizedOverload)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9274,7 +10674,15 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnknownInvocationExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IInvocationExpressionSyntax syntax, IAmbiguousExpressionNode expression, IEnumerable<IAmbiguousExpressionNode> arguments)
+    public UnknownInvocationExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IInvocationExpressionSyntax syntax,
+        IAmbiguousExpressionNode expression,
+        IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9315,7 +10723,10 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
     private ValueId valueId;
     private bool valueIdCached;
 
-    public IdentifierNameExpressionNode(IEnumerable<IDeclarationNode> referencedDeclarations, IIdentifierNameExpressionSyntax syntax, IdentifierName name)
+    public IdentifierNameExpressionNode(
+        IEnumerable<IDeclarationNode> referencedDeclarations,
+        IIdentifierNameExpressionSyntax syntax,
+        IdentifierName name)
     {
         ReferencedDeclarations = referencedDeclarations.ToFixedList();
         Syntax = syntax;
@@ -9352,7 +10763,11 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public GenericNameExpressionNode(IEnumerable<IDeclarationNode> referencedDeclarations, IGenericNameExpressionSyntax syntax, GenericName name, IEnumerable<ITypeNode> typeArguments)
+    public GenericNameExpressionNode(
+        IEnumerable<IDeclarationNode> referencedDeclarations,
+        IGenericNameExpressionSyntax syntax,
+        GenericName name,
+        IEnumerable<ITypeNode> typeArguments)
     {
         ReferencedDeclarations = referencedDeclarations.ToFixedList();
         Syntax = syntax;
@@ -9389,7 +10804,11 @@ file class MemberAccessExpressionNode : SemanticNode, IMemberAccessExpressionNod
     private ValueId valueId;
     private bool valueIdCached;
 
-    public MemberAccessExpressionNode(IMemberAccessExpressionSyntax syntax, IAmbiguousExpressionNode context, StandardName memberName, IEnumerable<ITypeNode> typeArguments)
+    public MemberAccessExpressionNode(
+        IMemberAccessExpressionSyntax syntax,
+        IAmbiguousExpressionNode context,
+        StandardName memberName,
+        IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
         TempContext = Child.Attach(this, context);
@@ -9423,7 +10842,11 @@ file class PropertyNameNode : SemanticNode, IPropertyNameNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public PropertyNameNode(IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName propertyName, IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors)
+    public PropertyNameNode(
+        IMemberAccessExpressionSyntax syntax,
+        IExpressionNode context,
+        StandardName propertyName,
+        IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors)
     {
         Syntax = syntax;
         Context = Child.Attach(this, context);
@@ -9481,7 +10904,15 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnqualifiedNamespaceNameNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, UnknownType type, IEnumerable<INamespaceDeclarationNode> referencedDeclarations, IIdentifierNameExpressionSyntax syntax, IdentifierName name)
+    public UnqualifiedNamespaceNameNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        UnknownType type,
+        IEnumerable<INamespaceDeclarationNode> referencedDeclarations,
+        IIdentifierNameExpressionSyntax syntax,
+        IdentifierName name)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9544,7 +10975,16 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
     private ValueId valueId;
     private bool valueIdCached;
 
-    public QualifiedNamespaceNameNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, UnknownType type, IEnumerable<INamespaceDeclarationNode> referencedDeclarations, IMemberAccessExpressionSyntax syntax, INamespaceNameNode context, IdentifierName name)
+    public QualifiedNamespaceNameNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        UnknownType type,
+        IEnumerable<INamespaceDeclarationNode> referencedDeclarations,
+        IMemberAccessExpressionSyntax syntax,
+        INamespaceNameNode context,
+        IdentifierName name)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9609,7 +11049,17 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public FunctionGroupNameNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, INameExpressionSyntax syntax, INameExpressionNode? context, StandardName functionName, IEnumerable<ITypeNode> typeArguments, IEnumerable<IFunctionLikeDeclarationNode> referencedDeclarations)
+    public FunctionGroupNameNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        INameExpressionSyntax syntax,
+        INameExpressionNode? context,
+        StandardName functionName,
+        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<IFunctionLikeDeclarationNode> referencedDeclarations)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9677,7 +11127,17 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public FunctionNameNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, INameExpressionSyntax syntax, IFunctionGroupNameNode functionGroup, StandardName functionName, IEnumerable<ITypeNode> typeArguments, IFunctionLikeDeclarationNode? referencedDeclaration)
+    public FunctionNameNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        INameExpressionSyntax syntax,
+        IFunctionGroupNameNode functionGroup,
+        StandardName functionName,
+        IEnumerable<ITypeNode> typeArguments,
+        IFunctionLikeDeclarationNode? referencedDeclaration)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9744,7 +11204,18 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public MethodGroupNameNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IMemberAccessExpressionSyntax syntax, IExpressionNode context, IExpressionNode currentContext, StandardName methodName, IEnumerable<ITypeNode> typeArguments, IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations)
+    public MethodGroupNameNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IMemberAccessExpressionSyntax syntax,
+        IExpressionNode context,
+        IExpressionNode currentContext,
+        StandardName methodName,
+        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9810,7 +11281,16 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public FieldAccessExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IMemberAccessExpressionSyntax syntax, IExpressionNode context, IdentifierName fieldName, IFieldDeclarationNode referencedDeclaration)
+    public FieldAccessExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IMemberAccessExpressionSyntax syntax,
+        IExpressionNode context,
+        IdentifierName fieldName,
+        IFieldDeclarationNode referencedDeclaration)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9876,7 +11356,16 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
     private ValueId valueId;
     private bool valueIdCached;
 
-    public VariableNameExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IIdentifierNameExpressionSyntax syntax, IdentifierName name, ILocalBindingNode referencedDefinition, IFixedSet<IDataFlowNode> dataFlowPrevious)
+    public VariableNameExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IIdentifierNameExpressionSyntax syntax,
+        IdentifierName name,
+        ILocalBindingNode referencedDefinition,
+        IFixedSet<IDataFlowNode> dataFlowPrevious)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9942,7 +11431,18 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
     private ValueId valueId;
     private bool valueIdCached;
 
-    public StandardTypeNameExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, StandardName name, ITypeDeclarationNode referencedDeclaration, IMaybeAntetype namedAntetype, BareType? namedBareType, IStandardNameExpressionSyntax syntax, IEnumerable<ITypeNode> typeArguments)
+    public StandardTypeNameExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        StandardName name,
+        ITypeDeclarationNode referencedDeclaration,
+        IMaybeAntetype namedAntetype,
+        BareType? namedBareType,
+        IStandardNameExpressionSyntax syntax,
+        IEnumerable<ITypeNode> typeArguments)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10011,7 +11511,19 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     private ValueId valueId;
     private bool valueIdCached;
 
-    public QualifiedTypeNameExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, StandardName name, ITypeDeclarationNode referencedDeclaration, IMaybeAntetype namedAntetype, BareType? namedBareType, IMemberAccessExpressionSyntax syntax, INamespaceNameNode context, IEnumerable<ITypeNode> typeArguments)
+    public QualifiedTypeNameExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        StandardName name,
+        ITypeDeclarationNode referencedDeclaration,
+        IMaybeAntetype namedAntetype,
+        BareType? namedBareType,
+        IMemberAccessExpressionSyntax syntax,
+        INamespaceNameNode context,
+        IEnumerable<ITypeNode> typeArguments)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10079,7 +11591,17 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public InitializerGroupNameNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, INameExpressionSyntax syntax, ITypeNameExpressionNode context, StandardName? initializerName, IMaybeAntetype initializingAntetype, IEnumerable<IInitializerDeclarationNode> referencedDeclarations)
+    public InitializerGroupNameNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        INameExpressionSyntax syntax,
+        ITypeNameExpressionNode context,
+        StandardName? initializerName,
+        IMaybeAntetype initializingAntetype,
+        IEnumerable<IInitializerDeclarationNode> referencedDeclarations)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10143,7 +11665,15 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
     private ValueId valueId;
     private bool valueIdCached;
 
-    public SpecialTypeNameExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, ISpecialTypeNameExpressionSyntax syntax, SpecialTypeName name, TypeSymbol referencedSymbol, UnknownType type)
+    public SpecialTypeNameExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        ISpecialTypeNameExpressionSyntax syntax,
+        SpecialTypeName name,
+        TypeSymbol referencedSymbol,
+        UnknownType type)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10214,7 +11744,16 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public SelfExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, ISelfExpressionSyntax syntax, bool isImplicit, Pseudotype pseudotype, ISelfParameterNode? referencedDefinition)
+    public SelfExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        ISelfExpressionSyntax syntax,
+        bool isImplicit,
+        Pseudotype pseudotype,
+        ISelfParameterNode? referencedDefinition)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10275,7 +11814,13 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public MissingNameExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, IMissingNameSyntax syntax, UnknownType type)
+    public MissingNameExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        IMissingNameSyntax syntax,
+        UnknownType type)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10335,7 +11880,15 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnknownIdentifierNameExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, UnknownType type, IEnumerable<IDeclarationNode> referencedDeclarations, IIdentifierNameExpressionSyntax syntax, IdentifierName name)
+    public UnknownIdentifierNameExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        UnknownType type,
+        IEnumerable<IDeclarationNode> referencedDeclarations,
+        IIdentifierNameExpressionSyntax syntax,
+        IdentifierName name)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10398,7 +11951,16 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnknownGenericNameExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, UnknownType type, IEnumerable<IDeclarationNode> referencedDeclarations, IGenericNameExpressionSyntax syntax, GenericName name, IEnumerable<ITypeNode> typeArguments)
+    public UnknownGenericNameExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        UnknownType type,
+        IEnumerable<IDeclarationNode> referencedDeclarations,
+        IGenericNameExpressionSyntax syntax,
+        GenericName name,
+        IEnumerable<ITypeNode> typeArguments)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10463,7 +12025,17 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnknownMemberAccessExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, IFlowState flowStateAfter, UnknownType type, IMemberAccessExpressionSyntax syntax, IExpressionNode context, StandardName memberName, IEnumerable<ITypeNode> typeArguments, IEnumerable<IDeclarationNode> referencedMembers)
+    public UnknownMemberAccessExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        IFlowState flowStateAfter,
+        UnknownType type,
+        IMemberAccessExpressionSyntax syntax,
+        IExpressionNode context,
+        StandardName memberName,
+        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<IDeclarationNode> referencedMembers)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10502,7 +12074,9 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
     private ValueId valueId;
     private bool valueIdCached;
 
-    public AmbiguousMoveExpressionNode(IMoveExpressionSyntax syntax, IUnresolvedSimpleNameNode referent)
+    public AmbiguousMoveExpressionNode(
+        IMoveExpressionSyntax syntax,
+        IUnresolvedSimpleNameNode referent)
     {
         Syntax = syntax;
         TempReferent = Child.Attach(this, referent);
@@ -10558,7 +12132,15 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
     private ValueId valueId;
     private bool valueIdCached;
 
-    public MoveVariableExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, bool isImplicit, ILocalBindingNameExpressionNode referent)
+    public MoveVariableExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        bool isImplicit,
+        ILocalBindingNameExpressionNode referent)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10620,7 +12202,15 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public MoveValueExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, bool isImplicit, IExpressionNode referent)
+    public MoveValueExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        bool isImplicit,
+        IExpressionNode referent)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10681,7 +12271,14 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
     private ValueId valueId;
     private bool valueIdCached;
 
-    public ImplicitTempMoveExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IExpressionNode referent)
+    public ImplicitTempMoveExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IExpressionNode referent)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10717,7 +12314,9 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
     private ValueId valueId;
     private bool valueIdCached;
 
-    public AmbiguousFreezeExpressionNode(IFreezeExpressionSyntax syntax, IUnresolvedSimpleNameNode referent)
+    public AmbiguousFreezeExpressionNode(
+        IFreezeExpressionSyntax syntax,
+        IUnresolvedSimpleNameNode referent)
     {
         Syntax = syntax;
         TempReferent = Child.Attach(this, referent);
@@ -10774,7 +12373,16 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
     private ValueId valueId;
     private bool valueIdCached;
 
-    public FreezeVariableExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, bool isImplicit, bool isTemporary, ILocalBindingNameExpressionNode referent)
+    public FreezeVariableExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        bool isImplicit,
+        bool isTemporary,
+        ILocalBindingNameExpressionNode referent)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10838,7 +12446,16 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public FreezeValueExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, bool isImplicit, bool isTemporary, IExpressionNode referent)
+    public FreezeValueExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        bool isImplicit,
+        bool isTemporary,
+        IExpressionNode referent)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10901,7 +12518,15 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
     private ValueId valueId;
     private bool valueIdCached;
 
-    public PrepareToReturnExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IExpressionSyntax syntax, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IExpressionNode value, IExpressionNode currentValue)
+    public PrepareToReturnExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IExpressionSyntax syntax,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IExpressionNode value,
+        IExpressionNode currentValue)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10962,7 +12587,14 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public AsyncBlockExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IAsyncBlockExpressionSyntax syntax, IBlockExpressionNode block)
+    public AsyncBlockExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IAsyncBlockExpressionSyntax syntax,
+        IBlockExpressionNode block)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -11024,7 +12656,15 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public AsyncStartExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IAsyncStartExpressionSyntax syntax, bool scheduled, IAmbiguousExpressionNode expression)
+    public AsyncStartExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IAsyncStartExpressionSyntax syntax,
+        bool scheduled,
+        IAmbiguousExpressionNode expression)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -11086,7 +12726,14 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public AwaitExpressionNode(ControlFlowSet controlFlowNext, ControlFlowSet controlFlowPrevious, IMaybeExpressionAntetype antetype, DataType type, IFlowState flowStateAfter, IAwaitExpressionSyntax syntax, IAmbiguousExpressionNode expression)
+    public AwaitExpressionNode(
+        ControlFlowSet controlFlowNext,
+        ControlFlowSet controlFlowPrevious,
+        IMaybeExpressionAntetype antetype,
+        DataType type,
+        IFlowState flowStateAfter,
+        IAwaitExpressionSyntax syntax,
+        IAmbiguousExpressionNode expression)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -11111,7 +12758,12 @@ file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
 
-    public PackageSymbolNode(IdentifierName? aliasOrName, IdentifierName name, PackageSymbol symbol, IPackageFacetSymbolNode mainFacet, IPackageFacetSymbolNode testingFacet)
+    public PackageSymbolNode(
+        IdentifierName? aliasOrName,
+        IdentifierName name,
+        PackageSymbol symbol,
+        IPackageFacetSymbolNode mainFacet,
+        IPackageFacetSymbolNode testingFacet)
     {
         AliasOrName = aliasOrName;
         Name = name;
@@ -11136,7 +12788,8 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public INamespaceSymbolNode GlobalNamespace { [DebuggerStepThrough] get; }
 
-    public PackageFacetSymbolNode(FixedSymbolTree symbolTree)
+    public PackageFacetSymbolNode(
+        FixedSymbolTree symbolTree)
     {
         SymbolTree = symbolTree;
         GlobalNamespace = Child.Attach(this, SymbolNodeAspect.PackageFacetSymbol_GlobalNamespace(this));
@@ -11183,7 +12836,9 @@ file class NamespaceSymbolNode : SemanticNode, INamespaceSymbolNode
     private IFixedList<INamespaceMemberDeclarationNode>? nestedMembers;
     private bool nestedMembersCached;
 
-    public NamespaceSymbolNode(NamespaceSymbol symbol, IEnumerable<INamespaceMemberSymbolNode> members)
+    public NamespaceSymbolNode(
+        NamespaceSymbol symbol,
+        IEnumerable<INamespaceMemberSymbolNode> members)
     {
         Symbol = symbol;
         Members = ChildList.Attach(this, members);
@@ -11203,7 +12858,10 @@ file class FunctionSymbolNode : SemanticNode, IFunctionSymbolNode
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
-    public FunctionSymbolNode(FunctionSymbol symbol, StandardName name, FunctionType type)
+    public FunctionSymbolNode(
+        FunctionSymbol symbol,
+        StandardName name,
+        FunctionType type)
     {
         Symbol = symbol;
         Name = name;
@@ -11235,7 +12893,11 @@ file class PrimitiveTypeSymbolNode : SemanticNode, IPrimitiveTypeSymbolNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public PrimitiveTypeSymbolNode(ISyntax? syntax, TypeSymbol symbol, SpecialTypeName name, IEnumerable<ITypeMemberSymbolNode> members)
+    public PrimitiveTypeSymbolNode(
+        ISyntax? syntax,
+        TypeSymbol symbol,
+        SpecialTypeName name,
+        IEnumerable<ITypeMemberSymbolNode> members)
     {
         Syntax = syntax;
         Symbol = symbol;
@@ -11272,7 +12934,11 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public ClassSymbolNode(StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<IClassMemberSymbolNode> members)
+    public ClassSymbolNode(
+        StandardName name,
+        UserTypeSymbol symbol,
+        IEnumerable<IGenericParameterSymbolNode> genericParameters,
+        IEnumerable<IClassMemberSymbolNode> members)
     {
         Name = name;
         Symbol = symbol;
@@ -11309,7 +12975,11 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public StructSymbolNode(StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<IStructMemberSymbolNode> members)
+    public StructSymbolNode(
+        StandardName name,
+        UserTypeSymbol symbol,
+        IEnumerable<IGenericParameterSymbolNode> genericParameters,
+        IEnumerable<IStructMemberSymbolNode> members)
     {
         Name = name;
         Symbol = symbol;
@@ -11346,7 +13016,11 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public TraitSymbolNode(StandardName name, UserTypeSymbol symbol, IEnumerable<IGenericParameterSymbolNode> genericParameters, IEnumerable<ITraitMemberSymbolNode> members)
+    public TraitSymbolNode(
+        StandardName name,
+        UserTypeSymbol symbol,
+        IEnumerable<IGenericParameterSymbolNode> genericParameters,
+        IEnumerable<ITraitMemberSymbolNode> members)
     {
         Name = name;
         Symbol = symbol;
@@ -11368,7 +13042,10 @@ file class GenericParameterSymbolNode : SemanticNode, IGenericParameterSymbolNod
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
-    public GenericParameterSymbolNode(IdentifierName name, GenericParameterTypeSymbol symbol, IEnumerable<ITypeMemberSymbolNode> members)
+    public GenericParameterSymbolNode(
+        IdentifierName name,
+        GenericParameterTypeSymbol symbol,
+        IEnumerable<ITypeMemberSymbolNode> members)
     {
         Name = name;
         Symbol = symbol;
@@ -11389,7 +13066,10 @@ file class StandardMethodSymbolNode : SemanticNode, IStandardMethodSymbolNode
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
-    public StandardMethodSymbolNode(ISyntax? syntax, IdentifierName name, MethodSymbol symbol)
+    public StandardMethodSymbolNode(
+        ISyntax? syntax,
+        IdentifierName name,
+        MethodSymbol symbol)
     {
         Syntax = syntax;
         Name = name;
@@ -11410,7 +13090,10 @@ file class GetterMethodSymbolNode : SemanticNode, IGetterMethodSymbolNode
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
-    public GetterMethodSymbolNode(ISyntax? syntax, IdentifierName name, MethodSymbol symbol)
+    public GetterMethodSymbolNode(
+        ISyntax? syntax,
+        IdentifierName name,
+        MethodSymbol symbol)
     {
         Syntax = syntax;
         Name = name;
@@ -11431,7 +13114,10 @@ file class SetterMethodSymbolNode : SemanticNode, ISetterMethodSymbolNode
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
-    public SetterMethodSymbolNode(ISyntax? syntax, IdentifierName name, MethodSymbol symbol)
+    public SetterMethodSymbolNode(
+        ISyntax? syntax,
+        IdentifierName name,
+        MethodSymbol symbol)
     {
         Syntax = syntax;
         Name = name;
@@ -11452,7 +13138,10 @@ file class ConstructorSymbolNode : SemanticNode, IConstructorSymbolNode
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
-    public ConstructorSymbolNode(ISyntax? syntax, IdentifierName? name, ConstructorSymbol symbol)
+    public ConstructorSymbolNode(
+        ISyntax? syntax,
+        IdentifierName? name,
+        ConstructorSymbol symbol)
     {
         Syntax = syntax;
         Name = name;
@@ -11473,7 +13162,10 @@ file class InitializerSymbolNode : SemanticNode, IInitializerSymbolNode
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
-    public InitializerSymbolNode(ISyntax? syntax, IdentifierName? name, InitializerSymbol symbol)
+    public InitializerSymbolNode(
+        ISyntax? syntax,
+        IdentifierName? name,
+        InitializerSymbol symbol)
     {
         Syntax = syntax;
         Name = name;
@@ -11495,7 +13187,11 @@ file class FieldSymbolNode : SemanticNode, IFieldSymbolNode
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
-    public FieldSymbolNode(ISyntax? syntax, IdentifierName name, DataType bindingType, FieldSymbol symbol)
+    public FieldSymbolNode(
+        ISyntax? syntax,
+        IdentifierName name,
+        DataType bindingType,
+        FieldSymbol symbol)
     {
         Syntax = syntax;
         Name = name;
@@ -11518,7 +13214,11 @@ file class AssociatedFunctionSymbolNode : SemanticNode, IAssociatedFunctionSymbo
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
-    public AssociatedFunctionSymbolNode(ISyntax? syntax, FunctionSymbol symbol, FunctionType type, StandardName name)
+    public AssociatedFunctionSymbolNode(
+        ISyntax? syntax,
+        FunctionSymbol symbol,
+        FunctionType type,
+        StandardName name)
     {
         Syntax = syntax;
         Symbol = symbol;

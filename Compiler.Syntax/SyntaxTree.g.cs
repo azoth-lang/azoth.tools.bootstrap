@@ -66,7 +66,13 @@ public partial interface ICompilationUnitSyntax : ICodeSyntax
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
 
-    public static ICompilationUnitSyntax Create(TextSpan span, CodeFile file, NamespaceName implicitNamespaceName, DiagnosticCollection diagnostics, IEnumerable<IUsingDirectiveSyntax> usingDirectives, IEnumerable<INonMemberDefinitionSyntax> definitions)
+    public static ICompilationUnitSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        NamespaceName implicitNamespaceName,
+        DiagnosticCollection diagnostics,
+        IEnumerable<IUsingDirectiveSyntax> usingDirectives,
+        IEnumerable<INonMemberDefinitionSyntax> definitions)
         => new CompilationUnitSyntax(span, file, implicitNamespaceName, diagnostics, usingDirectives, definitions);
 }
 
@@ -76,7 +82,9 @@ public partial interface IUsingDirectiveSyntax : ICodeSyntax
 {
     NamespaceName Name { get; }
 
-    public static IUsingDirectiveSyntax Create(TextSpan span, NamespaceName name)
+    public static IUsingDirectiveSyntax Create(
+        TextSpan span,
+        NamespaceName name)
         => new UsingDirectiveSyntax(span, name);
 }
 
@@ -135,7 +143,11 @@ public partial interface IPackageSyntax : ISyntax
     IFixedSet<IPackageReferenceSyntax> References { get; }
     DiagnosticCollection Diagnostics { get; }
 
-    public static IPackageSyntax Create(IdentifierName name, IEnumerable<ICompilationUnitSyntax> compilationUnits, IEnumerable<ICompilationUnitSyntax> testingCompilationUnits, IEnumerable<IPackageReferenceSyntax> references)
+    public static IPackageSyntax Create(
+        IdentifierName name,
+        IEnumerable<ICompilationUnitSyntax> compilationUnits,
+        IEnumerable<ICompilationUnitSyntax> testingCompilationUnits,
+        IEnumerable<IPackageReferenceSyntax> references)
         => new PackageSyntax(name, compilationUnits, testingCompilationUnits, references);
 }
 
@@ -147,7 +159,10 @@ public partial interface IPackageReferenceSyntax : ISyntax
     IPackageSymbols Package { get; }
     bool IsTrusted { get; }
 
-    public static IPackageReferenceSyntax Create(IdentifierName aliasOrName, IPackageSymbols package, bool isTrusted)
+    public static IPackageReferenceSyntax Create(
+        IdentifierName aliasOrName,
+        IPackageSymbols package,
+        bool isTrusted)
         => new PackageReferenceSyntax(aliasOrName, package, isTrusted);
 }
 
@@ -210,7 +225,15 @@ public partial interface INamespaceDefinitionSyntax : INonMemberDefinitionSyntax
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
 
-    public static INamespaceDefinitionSyntax Create(TextSpan span, CodeFile file, TypeName? name, TextSpan nameSpan, bool isGlobalQualified, NamespaceName declaredNames, IEnumerable<IUsingDirectiveSyntax> usingDirectives, IEnumerable<INonMemberDefinitionSyntax> definitions)
+    public static INamespaceDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TypeName? name,
+        TextSpan nameSpan,
+        bool isGlobalQualified,
+        NamespaceName declaredNames,
+        IEnumerable<IUsingDirectiveSyntax> usingDirectives,
+        IEnumerable<INonMemberDefinitionSyntax> definitions)
         => new NamespaceDefinitionSyntax(span, file, name, nameSpan, isGlobalQualified, declaredNames, usingDirectives, definitions);
 }
 
@@ -225,7 +248,16 @@ public partial interface IFunctionDefinitionSyntax : IConcreteInvocableDefinitio
     IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
 
-    public static IFunctionDefinitionSyntax Create(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IEnumerable<IAttributeSyntax> attributes, IdentifierName name, IEnumerable<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body)
+    public static IFunctionDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IEnumerable<IAttributeSyntax> attributes,
+        IdentifierName name,
+        IEnumerable<INamedParameterSyntax> parameters,
+        IReturnSyntax? @return,
+        IBodySyntax body)
         => new FunctionDefinitionSyntax(span, file, nameSpan, accessModifier, attributes, name, parameters, @return, body);
 }
 
@@ -254,7 +286,19 @@ public partial interface IClassDefinitionSyntax : ITypeDefinitionSyntax
     new IFixedList<IClassMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 
-    public static IClassDefinitionSyntax Create(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IAbstractKeywordToken? abstractModifier, IEnumerable<IGenericParameterSyntax> genericParameters, IStandardTypeNameSyntax? baseTypeName, IEnumerable<IStandardTypeNameSyntax> supertypeNames, IEnumerable<IClassMemberDefinitionSyntax> members)
+    public static IClassDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IConstKeywordToken? constModifier,
+        IMoveKeywordToken? moveModifier,
+        StandardName name,
+        IAbstractKeywordToken? abstractModifier,
+        IEnumerable<IGenericParameterSyntax> genericParameters,
+        IStandardTypeNameSyntax? baseTypeName,
+        IEnumerable<IStandardTypeNameSyntax> supertypeNames,
+        IEnumerable<IClassMemberDefinitionSyntax> members)
         => new ClassDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, abstractModifier, genericParameters, baseTypeName, supertypeNames, members);
 }
 
@@ -265,7 +309,17 @@ public partial interface IStructDefinitionSyntax : ITypeDefinitionSyntax
     new IFixedList<IStructMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 
-    public static IStructDefinitionSyntax Create(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IEnumerable<IGenericParameterSyntax> genericParameters, IEnumerable<IStandardTypeNameSyntax> supertypeNames, IEnumerable<IStructMemberDefinitionSyntax> members)
+    public static IStructDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IConstKeywordToken? constModifier,
+        IMoveKeywordToken? moveModifier,
+        StandardName name,
+        IEnumerable<IGenericParameterSyntax> genericParameters,
+        IEnumerable<IStandardTypeNameSyntax> supertypeNames,
+        IEnumerable<IStructMemberDefinitionSyntax> members)
         => new StructDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
 }
 
@@ -276,7 +330,17 @@ public partial interface ITraitDefinitionSyntax : ITypeDefinitionSyntax
     new IFixedList<ITraitMemberDefinitionSyntax> Members { get; }
     IFixedList<ITypeMemberDefinitionSyntax> ITypeDefinitionSyntax.Members => Members;
 
-    public static ITraitDefinitionSyntax Create(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IEnumerable<IGenericParameterSyntax> genericParameters, IEnumerable<IStandardTypeNameSyntax> supertypeNames, IEnumerable<ITraitMemberDefinitionSyntax> members)
+    public static ITraitDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IConstKeywordToken? constModifier,
+        IMoveKeywordToken? moveModifier,
+        StandardName name,
+        IEnumerable<IGenericParameterSyntax> genericParameters,
+        IEnumerable<IStandardTypeNameSyntax> supertypeNames,
+        IEnumerable<ITraitMemberDefinitionSyntax> members)
         => new TraitDefinitionSyntax(span, file, nameSpan, accessModifier, constModifier, moveModifier, name, genericParameters, supertypeNames, members);
 }
 
@@ -289,7 +353,12 @@ public partial interface IGenericParameterSyntax : ICodeSyntax
     TypeParameterIndependence Independence { get; }
     TypeParameterVariance Variance { get; }
 
-    public static IGenericParameterSyntax Create(TextSpan span, ICapabilityConstraintSyntax constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance)
+    public static IGenericParameterSyntax Create(
+        TextSpan span,
+        ICapabilityConstraintSyntax constraint,
+        IdentifierName name,
+        TypeParameterIndependence independence,
+        TypeParameterVariance variance)
         => new GenericParameterSyntax(span, constraint, name, independence, variance);
 }
 
@@ -352,7 +421,15 @@ public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax,
 public partial interface IAbstractMethodDefinitionSyntax : IMethodDefinitionSyntax
 {
 
-    public static IAbstractMethodDefinitionSyntax Create(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IMethodSelfParameterSyntax selfParameter, IEnumerable<INamedParameterSyntax> parameters, IReturnSyntax? @return)
+    public static IAbstractMethodDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName name,
+        IMethodSelfParameterSyntax selfParameter,
+        IEnumerable<INamedParameterSyntax> parameters,
+        IReturnSyntax? @return)
         => new AbstractMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, @return);
 }
 
@@ -370,7 +447,16 @@ public partial interface IConcreteMethodDefinitionSyntax : IMethodDefinitionSynt
 public partial interface IStandardMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
 
-    public static IStandardMethodDefinitionSyntax Create(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IMethodSelfParameterSyntax selfParameter, IEnumerable<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body)
+    public static IStandardMethodDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName name,
+        IMethodSelfParameterSyntax selfParameter,
+        IEnumerable<INamedParameterSyntax> parameters,
+        IReturnSyntax? @return,
+        IBodySyntax body)
         => new StandardMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, @return, body);
 }
 
@@ -381,7 +467,16 @@ public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefiniti
     new IReturnSyntax Return { get; }
     IReturnSyntax? IMethodDefinitionSyntax.Return => Return;
 
-    public static IGetterMethodDefinitionSyntax Create(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IMethodSelfParameterSyntax selfParameter, IEnumerable<INamedParameterSyntax> parameters, IReturnSyntax @return, IBodySyntax body)
+    public static IGetterMethodDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName name,
+        IMethodSelfParameterSyntax selfParameter,
+        IEnumerable<INamedParameterSyntax> parameters,
+        IReturnSyntax @return,
+        IBodySyntax body)
         => new GetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, @return, body);
 }
 
@@ -390,7 +485,16 @@ public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefiniti
 public partial interface ISetterMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
 
-    public static ISetterMethodDefinitionSyntax Create(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IMethodSelfParameterSyntax selfParameter, IEnumerable<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body)
+    public static ISetterMethodDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName name,
+        IMethodSelfParameterSyntax selfParameter,
+        IEnumerable<INamedParameterSyntax> parameters,
+        IReturnSyntax? @return,
+        IBodySyntax body)
         => new SetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, @return, body);
 }
 
@@ -404,7 +508,15 @@ public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefini
     new IBlockBodySyntax Body { get; }
     IBodySyntax IConcreteInvocableDefinitionSyntax.Body => Body;
 
-    public static IConstructorDefinitionSyntax Create(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName? name, IConstructorSelfParameterSyntax selfParameter, IEnumerable<IConstructorOrInitializerParameterSyntax> parameters, IBlockBodySyntax body)
+    public static IConstructorDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName? name,
+        IConstructorSelfParameterSyntax selfParameter,
+        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
+        IBlockBodySyntax body)
         => new ConstructorDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, body);
 }
 
@@ -418,7 +530,15 @@ public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefini
     new IBlockBodySyntax Body { get; }
     IBodySyntax IConcreteInvocableDefinitionSyntax.Body => Body;
 
-    public static IInitializerDefinitionSyntax Create(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName? name, IInitializerSelfParameterSyntax selfParameter, IEnumerable<IConstructorOrInitializerParameterSyntax> parameters, IBlockBodySyntax body)
+    public static IInitializerDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName? name,
+        IInitializerSelfParameterSyntax selfParameter,
+        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
+        IBlockBodySyntax body)
         => new InitializerDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, body);
 }
 
@@ -431,7 +551,15 @@ public partial interface IFieldDefinitionSyntax : IClassMemberDefinitionSyntax, 
     ITypeSyntax Type { get; }
     IExpressionSyntax? Initializer { get; }
 
-    public static IFieldDefinitionSyntax Create(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, bool isMutableBinding, IdentifierName name, ITypeSyntax type, IExpressionSyntax? initializer)
+    public static IFieldDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        bool isMutableBinding,
+        IdentifierName name,
+        ITypeSyntax type,
+        IExpressionSyntax? initializer)
         => new FieldDefinitionSyntax(span, file, nameSpan, accessModifier, isMutableBinding, name, type, initializer);
 }
 
@@ -445,7 +573,15 @@ public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefin
     IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
 
-    public static IAssociatedFunctionDefinitionSyntax Create(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IEnumerable<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body)
+    public static IAssociatedFunctionDefinitionSyntax Create(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName name,
+        IEnumerable<INamedParameterSyntax> parameters,
+        IReturnSyntax? @return,
+        IBodySyntax body)
         => new AssociatedFunctionDefinitionSyntax(span, file, nameSpan, accessModifier, name, parameters, @return, body);
 }
 
@@ -455,7 +591,9 @@ public partial interface IAttributeSyntax : ICodeSyntax
 {
     IStandardTypeNameSyntax TypeName { get; }
 
-    public static IAttributeSyntax Create(TextSpan span, IStandardTypeNameSyntax typeName)
+    public static IAttributeSyntax Create(
+        TextSpan span,
+        IStandardTypeNameSyntax typeName)
         => new AttributeSyntax(span, typeName);
 }
 
@@ -475,7 +613,9 @@ public partial interface ICapabilitySetSyntax : ICapabilityConstraintSyntax
     new CapabilitySet Constraint { get; }
     ICapabilityConstraint ICapabilityConstraintSyntax.Constraint => Constraint;
 
-    public static ICapabilitySetSyntax Create(TextSpan span, CapabilitySet constraint)
+    public static ICapabilitySetSyntax Create(
+        TextSpan span,
+        CapabilitySet constraint)
         => new CapabilitySetSyntax(span, constraint);
 }
 
@@ -487,7 +627,12 @@ public partial interface ICapabilitySyntax : ICapabilityConstraintSyntax
     DeclaredCapability Declared { get; }
     Capability Capability { get; }
 
-    public static ICapabilitySyntax Create(TextSpan span, ICapabilityConstraint constraint, IEnumerable<ICapabilityToken> tokens, DeclaredCapability declared, Capability capability)
+    public static ICapabilitySyntax Create(
+        TextSpan span,
+        ICapabilityConstraint constraint,
+        IEnumerable<ICapabilityToken> tokens,
+        DeclaredCapability declared,
+        Capability capability)
         => new CapabilitySyntax(span, constraint, tokens, declared, capability);
 }
 
@@ -518,7 +663,14 @@ public partial interface INamedParameterSyntax : IConstructorOrInitializerParame
     ITypeSyntax Type { get; }
     IExpressionSyntax? DefaultValue { get; }
 
-    public static INamedParameterSyntax Create(TextSpan span, TextSpan nameSpan, bool isMutableBinding, bool isLentBinding, IdentifierName name, ITypeSyntax type, IExpressionSyntax? defaultValue)
+    public static INamedParameterSyntax Create(
+        TextSpan span,
+        TextSpan nameSpan,
+        bool isMutableBinding,
+        bool isLentBinding,
+        IdentifierName name,
+        ITypeSyntax type,
+        IExpressionSyntax? defaultValue)
         => new NamedParameterSyntax(span, nameSpan, isMutableBinding, isLentBinding, name, type, defaultValue);
 }
 
@@ -540,7 +692,11 @@ public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
     new ICapabilitySyntax Capability { get; }
     ICapabilityConstraintSyntax ISelfParameterSyntax.Capability => Capability;
 
-    public static IConstructorSelfParameterSyntax Create(TextSpan span, IdentifierName? name, bool isLentBinding, ICapabilitySyntax capability)
+    public static IConstructorSelfParameterSyntax Create(
+        TextSpan span,
+        IdentifierName? name,
+        bool isLentBinding,
+        ICapabilitySyntax capability)
         => new ConstructorSelfParameterSyntax(span, name, isLentBinding, capability);
 }
 
@@ -551,7 +707,11 @@ public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
     new ICapabilitySyntax Capability { get; }
     ICapabilityConstraintSyntax ISelfParameterSyntax.Capability => Capability;
 
-    public static IInitializerSelfParameterSyntax Create(TextSpan span, IdentifierName? name, bool isLentBinding, ICapabilitySyntax capability)
+    public static IInitializerSelfParameterSyntax Create(
+        TextSpan span,
+        IdentifierName? name,
+        bool isLentBinding,
+        ICapabilitySyntax capability)
         => new InitializerSelfParameterSyntax(span, name, isLentBinding, capability);
 }
 
@@ -560,7 +720,11 @@ public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
 public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
 {
 
-    public static IMethodSelfParameterSyntax Create(TextSpan span, IdentifierName? name, bool isLentBinding, ICapabilityConstraintSyntax capability)
+    public static IMethodSelfParameterSyntax Create(
+        TextSpan span,
+        IdentifierName? name,
+        bool isLentBinding,
+        ICapabilityConstraintSyntax capability)
         => new MethodSelfParameterSyntax(span, name, isLentBinding, capability);
 }
 
@@ -572,7 +736,10 @@ public partial interface IFieldParameterSyntax : IConstructorOrInitializerParame
     IdentifierName? IParameterSyntax.Name => Name;
     IExpressionSyntax? DefaultValue { get; }
 
-    public static IFieldParameterSyntax Create(TextSpan span, IdentifierName name, IExpressionSyntax? defaultValue)
+    public static IFieldParameterSyntax Create(
+        TextSpan span,
+        IdentifierName name,
+        IExpressionSyntax? defaultValue)
         => new FieldParameterSyntax(span, name, defaultValue);
 }
 
@@ -582,7 +749,9 @@ public partial interface IReturnSyntax : ICodeSyntax
 {
     ITypeSyntax Type { get; }
 
-    public static IReturnSyntax Create(TextSpan span, ITypeSyntax type)
+    public static IReturnSyntax Create(
+        TextSpan span,
+        ITypeSyntax type)
         => new ReturnSyntax(span, type);
 }
 
@@ -601,7 +770,9 @@ public partial interface IBlockBodySyntax : IBodySyntax
     new IFixedList<IBodyStatementSyntax> Statements { get; }
     IFixedList<IStatementSyntax> IBodyOrBlockSyntax.Statements => Statements;
 
-    public static IBlockBodySyntax Create(TextSpan span, IEnumerable<IBodyStatementSyntax> statements)
+    public static IBlockBodySyntax Create(
+        TextSpan span,
+        IEnumerable<IBodyStatementSyntax> statements)
         => new BlockBodySyntax(span, statements);
 }
 
@@ -611,7 +782,10 @@ public partial interface IExpressionBodySyntax : IBodySyntax
 {
     IResultStatementSyntax ResultStatement { get; }
 
-    public static IExpressionBodySyntax Create(TextSpan span, IResultStatementSyntax resultStatement, IEnumerable<IStatementSyntax> statements)
+    public static IExpressionBodySyntax Create(
+        TextSpan span,
+        IResultStatementSyntax resultStatement,
+        IEnumerable<IStatementSyntax> statements)
         => new ExpressionBodySyntax(span, resultStatement, statements);
 }
 
@@ -662,7 +836,9 @@ public partial interface IIdentifierTypeNameSyntax : IStandardTypeNameSyntax, IS
     StandardName IStandardTypeNameSyntax.Name => Name;
     TypeName ITypeNameSyntax.Name => Name;
 
-    public static IIdentifierTypeNameSyntax Create(TextSpan span, IdentifierName name)
+    public static IIdentifierTypeNameSyntax Create(
+        TextSpan span,
+        IdentifierName name)
         => new IdentifierTypeNameSyntax(span, name);
 }
 
@@ -673,7 +849,9 @@ public partial interface ISpecialTypeNameSyntax : ISimpleTypeNameSyntax
     new SpecialTypeName Name { get; }
     TypeName ITypeNameSyntax.Name => Name;
 
-    public static ISpecialTypeNameSyntax Create(TextSpan span, SpecialTypeName name)
+    public static ISpecialTypeNameSyntax Create(
+        TextSpan span,
+        SpecialTypeName name)
         => new SpecialTypeNameSyntax(span, name);
 }
 
@@ -686,7 +864,10 @@ public partial interface IGenericTypeNameSyntax : IStandardTypeNameSyntax
     TypeName ITypeNameSyntax.Name => Name;
     IFixedList<ITypeSyntax> TypeArguments { get; }
 
-    public static IGenericTypeNameSyntax Create(TextSpan span, GenericName name, IEnumerable<ITypeSyntax> typeArguments)
+    public static IGenericTypeNameSyntax Create(
+        TextSpan span,
+        GenericName name,
+        IEnumerable<ITypeSyntax> typeArguments)
         => new GenericTypeNameSyntax(span, name, typeArguments);
 }
 
@@ -697,7 +878,11 @@ public partial interface IQualifiedTypeNameSyntax : ITypeNameSyntax
     ITypeNameSyntax Context { get; }
     IStandardTypeNameSyntax QualifiedName { get; }
 
-    public static IQualifiedTypeNameSyntax Create(TextSpan span, TypeName name, ITypeNameSyntax context, IStandardTypeNameSyntax qualifiedName)
+    public static IQualifiedTypeNameSyntax Create(
+        TextSpan span,
+        TypeName name,
+        ITypeNameSyntax context,
+        IStandardTypeNameSyntax qualifiedName)
         => new QualifiedTypeNameSyntax(span, name, context, qualifiedName);
 }
 
@@ -707,7 +892,9 @@ public partial interface IOptionalTypeSyntax : ITypeSyntax
 {
     ITypeSyntax Referent { get; }
 
-    public static IOptionalTypeSyntax Create(TextSpan span, ITypeSyntax referent)
+    public static IOptionalTypeSyntax Create(
+        TextSpan span,
+        ITypeSyntax referent)
         => new OptionalTypeSyntax(span, referent);
 }
 
@@ -718,7 +905,10 @@ public partial interface ICapabilityTypeSyntax : ITypeSyntax
     ICapabilitySyntax Capability { get; }
     ITypeSyntax Referent { get; }
 
-    public static ICapabilityTypeSyntax Create(TextSpan span, ICapabilitySyntax capability, ITypeSyntax referent)
+    public static ICapabilityTypeSyntax Create(
+        TextSpan span,
+        ICapabilitySyntax capability,
+        ITypeSyntax referent)
         => new CapabilityTypeSyntax(span, capability, referent);
 }
 
@@ -729,7 +919,10 @@ public partial interface IFunctionTypeSyntax : ITypeSyntax
     IFixedList<IParameterTypeSyntax> Parameters { get; }
     IReturnTypeSyntax Return { get; }
 
-    public static IFunctionTypeSyntax Create(TextSpan span, IEnumerable<IParameterTypeSyntax> parameters, IReturnTypeSyntax @return)
+    public static IFunctionTypeSyntax Create(
+        TextSpan span,
+        IEnumerable<IParameterTypeSyntax> parameters,
+        IReturnTypeSyntax @return)
         => new FunctionTypeSyntax(span, parameters, @return);
 }
 
@@ -740,7 +933,10 @@ public partial interface IParameterTypeSyntax : ICodeSyntax
     bool IsLent { get; }
     ITypeSyntax Referent { get; }
 
-    public static IParameterTypeSyntax Create(TextSpan span, bool isLent, ITypeSyntax referent)
+    public static IParameterTypeSyntax Create(
+        TextSpan span,
+        bool isLent,
+        ITypeSyntax referent)
         => new ParameterTypeSyntax(span, isLent, referent);
 }
 
@@ -750,7 +946,9 @@ public partial interface IReturnTypeSyntax : ICodeSyntax
 {
     ITypeSyntax Referent { get; }
 
-    public static IReturnTypeSyntax Create(TextSpan span, ITypeSyntax referent)
+    public static IReturnTypeSyntax Create(
+        TextSpan span,
+        ITypeSyntax referent)
         => new ReturnTypeSyntax(span, referent);
 }
 
@@ -769,7 +967,10 @@ public partial interface ICapabilityViewpointTypeSyntax : IViewpointTypeSyntax
 {
     ICapabilitySyntax Capability { get; }
 
-    public static ICapabilityViewpointTypeSyntax Create(TextSpan span, ICapabilitySyntax capability, ITypeSyntax referent)
+    public static ICapabilityViewpointTypeSyntax Create(
+        TextSpan span,
+        ICapabilitySyntax capability,
+        ITypeSyntax referent)
         => new CapabilityViewpointTypeSyntax(span, capability, referent);
 }
 
@@ -778,7 +979,9 @@ public partial interface ICapabilityViewpointTypeSyntax : IViewpointTypeSyntax
 public partial interface ISelfViewpointTypeSyntax : IViewpointTypeSyntax
 {
 
-    public static ISelfViewpointTypeSyntax Create(TextSpan span, ITypeSyntax referent)
+    public static ISelfViewpointTypeSyntax Create(
+        TextSpan span,
+        ITypeSyntax referent)
         => new SelfViewpointTypeSyntax(span, referent);
 }
 
@@ -796,7 +999,9 @@ public partial interface IResultStatementSyntax : IStatementSyntax, IBlockOrResu
 {
     IExpressionSyntax Expression { get; }
 
-    public static IResultStatementSyntax Create(TextSpan span, IExpressionSyntax expression)
+    public static IResultStatementSyntax Create(
+        TextSpan span,
+        IExpressionSyntax expression)
         => new ResultStatementSyntax(span, expression);
 }
 
@@ -817,7 +1022,14 @@ public partial interface IVariableDeclarationStatementSyntax : IBodyStatementSyn
     ITypeSyntax? Type { get; }
     IExpressionSyntax? Initializer { get; }
 
-    public static IVariableDeclarationStatementSyntax Create(TextSpan span, bool isMutableBinding, TextSpan nameSpan, IdentifierName name, ICapabilitySyntax? capability, ITypeSyntax? type, IExpressionSyntax? initializer)
+    public static IVariableDeclarationStatementSyntax Create(
+        TextSpan span,
+        bool isMutableBinding,
+        TextSpan nameSpan,
+        IdentifierName name,
+        ICapabilitySyntax? capability,
+        ITypeSyntax? type,
+        IExpressionSyntax? initializer)
         => new VariableDeclarationStatementSyntax(span, isMutableBinding, nameSpan, name, capability, type, initializer);
 }
 
@@ -827,7 +1039,9 @@ public partial interface IExpressionStatementSyntax : IBodyStatementSyntax
 {
     IExpressionSyntax Expression { get; }
 
-    public static IExpressionStatementSyntax Create(TextSpan span, IExpressionSyntax expression)
+    public static IExpressionStatementSyntax Create(
+        TextSpan span,
+        IExpressionSyntax expression)
         => new ExpressionStatementSyntax(span, expression);
 }
 
@@ -847,7 +1061,11 @@ public partial interface IBindingContextPatternSyntax : IPatternSyntax
     IPatternSyntax Pattern { get; }
     ITypeSyntax? Type { get; }
 
-    public static IBindingContextPatternSyntax Create(TextSpan span, bool isMutableBinding, IPatternSyntax pattern, ITypeSyntax? type)
+    public static IBindingContextPatternSyntax Create(
+        TextSpan span,
+        bool isMutableBinding,
+        IPatternSyntax pattern,
+        ITypeSyntax? type)
         => new BindingContextPatternSyntax(span, isMutableBinding, pattern, type);
 }
 
@@ -865,7 +1083,11 @@ public partial interface IBindingPatternSyntax : IOptionalOrBindingPatternSyntax
 {
     IdentifierName Name { get; }
 
-    public static IBindingPatternSyntax Create(TextSpan span, bool isMutableBinding, TextSpan nameSpan, IdentifierName name)
+    public static IBindingPatternSyntax Create(
+        TextSpan span,
+        bool isMutableBinding,
+        TextSpan nameSpan,
+        IdentifierName name)
         => new BindingPatternSyntax(span, isMutableBinding, nameSpan, name);
 }
 
@@ -875,7 +1097,9 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
 {
     IOptionalOrBindingPatternSyntax Pattern { get; }
 
-    public static IOptionalPatternSyntax Create(TextSpan span, IOptionalOrBindingPatternSyntax pattern)
+    public static IOptionalPatternSyntax Create(
+        TextSpan span,
+        IOptionalOrBindingPatternSyntax pattern)
         => new OptionalPatternSyntax(span, pattern);
 }
 
@@ -929,7 +1153,9 @@ public partial interface IBlockExpressionSyntax : IExpressionSyntax, IBlockOrRes
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
-    public static IBlockExpressionSyntax Create(TextSpan span, IEnumerable<IStatementSyntax> statements)
+    public static IBlockExpressionSyntax Create(
+        TextSpan span,
+        IEnumerable<IStatementSyntax> statements)
         => new BlockExpressionSyntax(span, statements);
 }
 
@@ -944,7 +1170,12 @@ public partial interface INewObjectExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
 
-    public static INewObjectExpressionSyntax Create(TextSpan span, ITypeNameSyntax type, IdentifierName? constructorName, TextSpan? constructorNameSpan, IEnumerable<IExpressionSyntax> arguments)
+    public static INewObjectExpressionSyntax Create(
+        TextSpan span,
+        ITypeNameSyntax type,
+        IdentifierName? constructorName,
+        TextSpan? constructorNameSpan,
+        IEnumerable<IExpressionSyntax> arguments)
         => new NewObjectExpressionSyntax(span, type, constructorName, constructorNameSpan, arguments);
 }
 
@@ -956,7 +1187,9 @@ public partial interface IUnsafeExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
-    public static IUnsafeExpressionSyntax Create(TextSpan span, IExpressionSyntax expression)
+    public static IUnsafeExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax expression)
         => new UnsafeExpressionSyntax(span, expression);
 }
 
@@ -978,7 +1211,9 @@ public partial interface IBoolLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
     bool Value { get; }
 
-    public static IBoolLiteralExpressionSyntax Create(TextSpan span, bool value)
+    public static IBoolLiteralExpressionSyntax Create(
+        TextSpan span,
+        bool value)
         => new BoolLiteralExpressionSyntax(span, value);
 }
 
@@ -988,7 +1223,9 @@ public partial interface IIntegerLiteralExpressionSyntax : ILiteralExpressionSyn
 {
     BigInteger Value { get; }
 
-    public static IIntegerLiteralExpressionSyntax Create(TextSpan span, BigInteger value)
+    public static IIntegerLiteralExpressionSyntax Create(
+        TextSpan span,
+        BigInteger value)
         => new IntegerLiteralExpressionSyntax(span, value);
 }
 
@@ -997,7 +1234,8 @@ public partial interface IIntegerLiteralExpressionSyntax : ILiteralExpressionSyn
 public partial interface INoneLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
 
-    public static INoneLiteralExpressionSyntax Create(TextSpan span)
+    public static INoneLiteralExpressionSyntax Create(
+        TextSpan span)
         => new NoneLiteralExpressionSyntax(span);
 }
 
@@ -1007,7 +1245,9 @@ public partial interface IStringLiteralExpressionSyntax : ILiteralExpressionSynt
 {
     string Value { get; }
 
-    public static IStringLiteralExpressionSyntax Create(TextSpan span, string value)
+    public static IStringLiteralExpressionSyntax Create(
+        TextSpan span,
+        string value)
         => new StringLiteralExpressionSyntax(span, value);
 }
 
@@ -1021,7 +1261,11 @@ public partial interface IAssignmentExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Assignment;
 
-    public static IAssignmentExpressionSyntax Create(TextSpan span, IAssignableExpressionSyntax leftOperand, AssignmentOperator @operator, IExpressionSyntax rightOperand)
+    public static IAssignmentExpressionSyntax Create(
+        TextSpan span,
+        IAssignableExpressionSyntax leftOperand,
+        AssignmentOperator @operator,
+        IExpressionSyntax rightOperand)
         => new AssignmentExpressionSyntax(span, leftOperand, @operator, rightOperand);
 }
 
@@ -1035,7 +1279,11 @@ public partial interface IBinaryOperatorExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => Operator.Precedence();
 
-    public static IBinaryOperatorExpressionSyntax Create(TextSpan span, IExpressionSyntax leftOperand, BinaryOperator @operator, IExpressionSyntax rightOperand)
+    public static IBinaryOperatorExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax leftOperand,
+        BinaryOperator @operator,
+        IExpressionSyntax rightOperand)
         => new BinaryOperatorExpressionSyntax(span, leftOperand, @operator, rightOperand);
 }
 
@@ -1049,7 +1297,11 @@ public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Unary;
 
-    public static IUnaryOperatorExpressionSyntax Create(TextSpan span, UnaryOperatorFixity fixity, UnaryOperator @operator, IExpressionSyntax operand)
+    public static IUnaryOperatorExpressionSyntax Create(
+        TextSpan span,
+        UnaryOperatorFixity fixity,
+        UnaryOperator @operator,
+        IExpressionSyntax operand)
         => new UnaryOperatorExpressionSyntax(span, fixity, @operator, operand);
 }
 
@@ -1061,7 +1313,9 @@ public partial interface IIdExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
 
-    public static IIdExpressionSyntax Create(TextSpan span, IExpressionSyntax referent)
+    public static IIdExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax referent)
         => new IdExpressionSyntax(span, referent);
 }
 
@@ -1075,7 +1329,11 @@ public partial interface IConversionExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Conversion;
 
-    public static IConversionExpressionSyntax Create(TextSpan span, IExpressionSyntax referent, ConversionOperator @operator, ITypeSyntax convertToType)
+    public static IConversionExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax referent,
+        ConversionOperator @operator,
+        ITypeSyntax convertToType)
         => new ConversionExpressionSyntax(span, referent, @operator, convertToType);
 }
 
@@ -1088,7 +1346,10 @@ public partial interface IPatternMatchExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Conversion;
 
-    public static IPatternMatchExpressionSyntax Create(TextSpan span, IExpressionSyntax referent, IPatternSyntax pattern)
+    public static IPatternMatchExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax referent,
+        IPatternSyntax pattern)
         => new PatternMatchExpressionSyntax(span, referent, pattern);
 }
 
@@ -1102,7 +1363,11 @@ public partial interface IIfExpressionSyntax : IExpressionSyntax, IElseClauseSyn
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
 
-    public static IIfExpressionSyntax Create(TextSpan span, IExpressionSyntax condition, IBlockOrResultSyntax thenBlock, IElseClauseSyntax? elseClause)
+    public static IIfExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax condition,
+        IBlockOrResultSyntax thenBlock,
+        IElseClauseSyntax? elseClause)
         => new IfExpressionSyntax(span, condition, thenBlock, elseClause);
 }
 
@@ -1114,7 +1379,9 @@ public partial interface ILoopExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
-    public static ILoopExpressionSyntax Create(TextSpan span, IBlockExpressionSyntax block)
+    public static ILoopExpressionSyntax Create(
+        TextSpan span,
+        IBlockExpressionSyntax block)
         => new LoopExpressionSyntax(span, block);
 }
 
@@ -1127,7 +1394,10 @@ public partial interface IWhileExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
 
-    public static IWhileExpressionSyntax Create(TextSpan span, IExpressionSyntax condition, IBlockExpressionSyntax block)
+    public static IWhileExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax condition,
+        IBlockExpressionSyntax block)
         => new WhileExpressionSyntax(span, condition, block);
 }
 
@@ -1142,7 +1412,14 @@ public partial interface IForeachExpressionSyntax : IExpressionSyntax, ILocalBin
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
 
-    public static IForeachExpressionSyntax Create(TextSpan span, bool isMutableBinding, TextSpan nameSpan, IdentifierName variableName, IExpressionSyntax inExpression, ITypeSyntax? type, IBlockExpressionSyntax block)
+    public static IForeachExpressionSyntax Create(
+        TextSpan span,
+        bool isMutableBinding,
+        TextSpan nameSpan,
+        IdentifierName variableName,
+        IExpressionSyntax inExpression,
+        ITypeSyntax? type,
+        IBlockExpressionSyntax block)
         => new ForeachExpressionSyntax(span, isMutableBinding, nameSpan, variableName, inExpression, type, block);
 }
 
@@ -1154,7 +1431,9 @@ public partial interface IBreakExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => Value is not null ? OperatorPrecedence.Min : OperatorPrecedence.Primary;
 
-    public static IBreakExpressionSyntax Create(TextSpan span, IExpressionSyntax? value)
+    public static IBreakExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax? value)
         => new BreakExpressionSyntax(span, value);
 }
 
@@ -1165,7 +1444,8 @@ public partial interface INextExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
-    public static INextExpressionSyntax Create(TextSpan span)
+    public static INextExpressionSyntax Create(
+        TextSpan span)
         => new NextExpressionSyntax(span);
 }
 
@@ -1177,7 +1457,9 @@ public partial interface IReturnExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
 
-    public static IReturnExpressionSyntax Create(TextSpan span, IExpressionSyntax? value)
+    public static IReturnExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax? value)
         => new ReturnExpressionSyntax(span, value);
 }
 
@@ -1190,7 +1472,10 @@ public partial interface IInvocationExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
-    public static IInvocationExpressionSyntax Create(TextSpan span, IExpressionSyntax expression, IEnumerable<IExpressionSyntax> arguments)
+    public static IInvocationExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax expression,
+        IEnumerable<IExpressionSyntax> arguments)
         => new InvocationExpressionSyntax(span, expression, arguments);
 }
 
@@ -1232,7 +1517,9 @@ public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressi
     new IdentifierName Name { get; }
     StandardName IStandardNameExpressionSyntax.Name => Name;
 
-    public static IIdentifierNameExpressionSyntax Create(TextSpan span, IdentifierName name)
+    public static IIdentifierNameExpressionSyntax Create(
+        TextSpan span,
+        IdentifierName name)
         => new IdentifierNameExpressionSyntax(span, name);
 }
 
@@ -1242,7 +1529,9 @@ public partial interface ISpecialTypeNameExpressionSyntax : INameExpressionSynta
 {
     SpecialTypeName Name { get; }
 
-    public static ISpecialTypeNameExpressionSyntax Create(TextSpan span, SpecialTypeName name)
+    public static ISpecialTypeNameExpressionSyntax Create(
+        TextSpan span,
+        SpecialTypeName name)
         => new SpecialTypeNameExpressionSyntax(span, name);
 }
 
@@ -1254,7 +1543,10 @@ public partial interface IGenericNameExpressionSyntax : IStandardNameExpressionS
     StandardName IStandardNameExpressionSyntax.Name => Name;
     IFixedList<ITypeSyntax> TypeArguments { get; }
 
-    public static IGenericNameExpressionSyntax Create(TextSpan span, GenericName name, IEnumerable<ITypeSyntax> typeArguments)
+    public static IGenericNameExpressionSyntax Create(
+        TextSpan span,
+        GenericName name,
+        IEnumerable<ITypeSyntax> typeArguments)
         => new GenericNameExpressionSyntax(span, name, typeArguments);
 }
 
@@ -1271,7 +1563,9 @@ public partial interface ISelfExpressionSyntax : INameExpressionSyntax, IInstanc
 {
     bool IsImplicit { get; }
 
-    public static ISelfExpressionSyntax Create(TextSpan span, bool isImplicit)
+    public static ISelfExpressionSyntax Create(
+        TextSpan span,
+        bool isImplicit)
         => new SelfExpressionSyntax(span, isImplicit);
 }
 
@@ -1284,7 +1578,12 @@ public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, 
     IFixedList<ITypeSyntax> TypeArguments { get; }
     TextSpan MemberNameSpan { get; }
 
-    public static IMemberAccessExpressionSyntax Create(TextSpan span, IExpressionSyntax context, StandardName memberName, IEnumerable<ITypeSyntax> typeArguments, TextSpan memberNameSpan)
+    public static IMemberAccessExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax context,
+        StandardName memberName,
+        IEnumerable<ITypeSyntax> typeArguments,
+        TextSpan memberNameSpan)
         => new MemberAccessExpressionSyntax(span, context, memberName, typeArguments, memberNameSpan);
 }
 
@@ -1293,7 +1592,8 @@ public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, 
 public partial interface IMissingNameSyntax : ISimpleNameSyntax, IAssignableExpressionSyntax
 {
 
-    public static IMissingNameSyntax Create(TextSpan span)
+    public static IMissingNameSyntax Create(
+        TextSpan span)
         => new MissingNameSyntax(span);
 }
 
@@ -1305,7 +1605,9 @@ public partial interface IMoveExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
 
-    public static IMoveExpressionSyntax Create(TextSpan span, ISimpleNameSyntax referent)
+    public static IMoveExpressionSyntax Create(
+        TextSpan span,
+        ISimpleNameSyntax referent)
         => new MoveExpressionSyntax(span, referent);
 }
 
@@ -1317,7 +1619,9 @@ public partial interface IFreezeExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
 
-    public static IFreezeExpressionSyntax Create(TextSpan span, ISimpleNameSyntax referent)
+    public static IFreezeExpressionSyntax Create(
+        TextSpan span,
+        ISimpleNameSyntax referent)
         => new FreezeExpressionSyntax(span, referent);
 }
 
@@ -1329,7 +1633,9 @@ public partial interface IAsyncBlockExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
-    public static IAsyncBlockExpressionSyntax Create(TextSpan span, IBlockExpressionSyntax block)
+    public static IAsyncBlockExpressionSyntax Create(
+        TextSpan span,
+        IBlockExpressionSyntax block)
         => new AsyncBlockExpressionSyntax(span, block);
 }
 
@@ -1342,7 +1648,10 @@ public partial interface IAsyncStartExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Min;
 
-    public static IAsyncStartExpressionSyntax Create(TextSpan span, bool scheduled, IExpressionSyntax expression)
+    public static IAsyncStartExpressionSyntax Create(
+        TextSpan span,
+        bool scheduled,
+        IExpressionSyntax expression)
         => new AsyncStartExpressionSyntax(span, scheduled, expression);
 }
 
@@ -1354,7 +1663,9 @@ public partial interface IAwaitExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Unary;
 
-    public static IAwaitExpressionSyntax Create(TextSpan span, IExpressionSyntax expression)
+    public static IAwaitExpressionSyntax Create(
+        TextSpan span,
+        IExpressionSyntax expression)
         => new AwaitExpressionSyntax(span, expression);
 }
 
@@ -1372,7 +1683,13 @@ file class CompilationUnitSyntax : ICompilationUnitSyntax
     public override string ToString()
         => FormattingAspect.CompilationUnit_ToString(this);
 
-    public CompilationUnitSyntax(TextSpan span, CodeFile file, NamespaceName implicitNamespaceName, DiagnosticCollection diagnostics, IEnumerable<IUsingDirectiveSyntax> usingDirectives, IEnumerable<INonMemberDefinitionSyntax> definitions)
+    public CompilationUnitSyntax(
+        TextSpan span,
+        CodeFile file,
+        NamespaceName implicitNamespaceName,
+        DiagnosticCollection diagnostics,
+        IEnumerable<IUsingDirectiveSyntax> usingDirectives,
+        IEnumerable<INonMemberDefinitionSyntax> definitions)
     {
         Span = span;
         File = file;
@@ -1393,7 +1710,9 @@ file class UsingDirectiveSyntax : IUsingDirectiveSyntax
     public override string ToString()
         => FormattingAspect.UsingDirective_ToString(this);
 
-    public UsingDirectiveSyntax(TextSpan span, NamespaceName name)
+    public UsingDirectiveSyntax(
+        TextSpan span,
+        NamespaceName name)
     {
         Span = span;
         Name = name;
@@ -1413,7 +1732,11 @@ file class PackageSyntax : IPackageSyntax
         => FormattingAspect.Package_ToString(this);
     public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
 
-    public PackageSyntax(IdentifierName name, IEnumerable<ICompilationUnitSyntax> compilationUnits, IEnumerable<ICompilationUnitSyntax> testingCompilationUnits, IEnumerable<IPackageReferenceSyntax> references)
+    public PackageSyntax(
+        IdentifierName name,
+        IEnumerable<ICompilationUnitSyntax> compilationUnits,
+        IEnumerable<ICompilationUnitSyntax> testingCompilationUnits,
+        IEnumerable<IPackageReferenceSyntax> references)
     {
         Name = name;
         CompilationUnits = compilationUnits.ToFixedSet();
@@ -1434,7 +1757,10 @@ file class PackageReferenceSyntax : IPackageReferenceSyntax
     public override string ToString()
         => FormattingAspect.PackageReference_ToString(this);
 
-    public PackageReferenceSyntax(IdentifierName aliasOrName, IPackageSymbols package, bool isTrusted)
+    public PackageReferenceSyntax(
+        IdentifierName aliasOrName,
+        IPackageSymbols package,
+        bool isTrusted)
     {
         AliasOrName = aliasOrName;
         Package = package;
@@ -1458,7 +1784,15 @@ file class NamespaceDefinitionSyntax : INamespaceDefinitionSyntax
     public override string ToString()
         => FormattingAspect.NamespaceDefinition_ToString(this);
 
-    public NamespaceDefinitionSyntax(TextSpan span, CodeFile file, TypeName? name, TextSpan nameSpan, bool isGlobalQualified, NamespaceName declaredNames, IEnumerable<IUsingDirectiveSyntax> usingDirectives, IEnumerable<INonMemberDefinitionSyntax> definitions)
+    public NamespaceDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TypeName? name,
+        TextSpan nameSpan,
+        bool isGlobalQualified,
+        NamespaceName declaredNames,
+        IEnumerable<IUsingDirectiveSyntax> usingDirectives,
+        IEnumerable<INonMemberDefinitionSyntax> definitions)
     {
         Span = span;
         File = file;
@@ -1488,7 +1822,16 @@ file class FunctionDefinitionSyntax : IFunctionDefinitionSyntax
     public override string ToString()
         => FormattingAspect.FunctionDefinition_ToString(this);
 
-    public FunctionDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IEnumerable<IAttributeSyntax> attributes, IdentifierName name, IEnumerable<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body)
+    public FunctionDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IEnumerable<IAttributeSyntax> attributes,
+        IdentifierName name,
+        IEnumerable<INamedParameterSyntax> parameters,
+        IReturnSyntax? @return,
+        IBodySyntax body)
     {
         Span = span;
         File = file;
@@ -1522,7 +1865,19 @@ file class ClassDefinitionSyntax : IClassDefinitionSyntax
     public override string ToString()
         => FormattingAspect.ClassDefinition_ToString(this);
 
-    public ClassDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IAbstractKeywordToken? abstractModifier, IEnumerable<IGenericParameterSyntax> genericParameters, IStandardTypeNameSyntax? baseTypeName, IEnumerable<IStandardTypeNameSyntax> supertypeNames, IEnumerable<IClassMemberDefinitionSyntax> members)
+    public ClassDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IConstKeywordToken? constModifier,
+        IMoveKeywordToken? moveModifier,
+        StandardName name,
+        IAbstractKeywordToken? abstractModifier,
+        IEnumerable<IGenericParameterSyntax> genericParameters,
+        IStandardTypeNameSyntax? baseTypeName,
+        IEnumerable<IStandardTypeNameSyntax> supertypeNames,
+        IEnumerable<IClassMemberDefinitionSyntax> members)
     {
         Span = span;
         File = file;
@@ -1557,7 +1912,17 @@ file class StructDefinitionSyntax : IStructDefinitionSyntax
     public override string ToString()
         => FormattingAspect.StructDefinition_ToString(this);
 
-    public StructDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IEnumerable<IGenericParameterSyntax> genericParameters, IEnumerable<IStandardTypeNameSyntax> supertypeNames, IEnumerable<IStructMemberDefinitionSyntax> members)
+    public StructDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IConstKeywordToken? constModifier,
+        IMoveKeywordToken? moveModifier,
+        StandardName name,
+        IEnumerable<IGenericParameterSyntax> genericParameters,
+        IEnumerable<IStandardTypeNameSyntax> supertypeNames,
+        IEnumerable<IStructMemberDefinitionSyntax> members)
     {
         Span = span;
         File = file;
@@ -1590,7 +1955,17 @@ file class TraitDefinitionSyntax : ITraitDefinitionSyntax
     public override string ToString()
         => FormattingAspect.TraitDefinition_ToString(this);
 
-    public TraitDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IConstKeywordToken? constModifier, IMoveKeywordToken? moveModifier, StandardName name, IEnumerable<IGenericParameterSyntax> genericParameters, IEnumerable<IStandardTypeNameSyntax> supertypeNames, IEnumerable<ITraitMemberDefinitionSyntax> members)
+    public TraitDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IConstKeywordToken? constModifier,
+        IMoveKeywordToken? moveModifier,
+        StandardName name,
+        IEnumerable<IGenericParameterSyntax> genericParameters,
+        IEnumerable<IStandardTypeNameSyntax> supertypeNames,
+        IEnumerable<ITraitMemberDefinitionSyntax> members)
     {
         Span = span;
         File = file;
@@ -1618,7 +1993,12 @@ file class GenericParameterSyntax : IGenericParameterSyntax
     public override string ToString()
         => FormattingAspect.GenericParameter_ToString(this);
 
-    public GenericParameterSyntax(TextSpan span, ICapabilityConstraintSyntax constraint, IdentifierName name, TypeParameterIndependence independence, TypeParameterVariance variance)
+    public GenericParameterSyntax(
+        TextSpan span,
+        ICapabilityConstraintSyntax constraint,
+        IdentifierName name,
+        TypeParameterIndependence independence,
+        TypeParameterVariance variance)
     {
         Span = span;
         Constraint = constraint;
@@ -1644,7 +2024,15 @@ file class AbstractMethodDefinitionSyntax : IAbstractMethodDefinitionSyntax
     public override string ToString()
         => FormattingAspect.AbstractMethodDefinition_ToString(this);
 
-    public AbstractMethodDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IMethodSelfParameterSyntax selfParameter, IEnumerable<INamedParameterSyntax> parameters, IReturnSyntax? @return)
+    public AbstractMethodDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName name,
+        IMethodSelfParameterSyntax selfParameter,
+        IEnumerable<INamedParameterSyntax> parameters,
+        IReturnSyntax? @return)
     {
         Span = span;
         File = file;
@@ -1674,7 +2062,16 @@ file class StandardMethodDefinitionSyntax : IStandardMethodDefinitionSyntax
     public override string ToString()
         => FormattingAspect.StandardMethodDefinition_ToString(this);
 
-    public StandardMethodDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IMethodSelfParameterSyntax selfParameter, IEnumerable<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body)
+    public StandardMethodDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName name,
+        IMethodSelfParameterSyntax selfParameter,
+        IEnumerable<INamedParameterSyntax> parameters,
+        IReturnSyntax? @return,
+        IBodySyntax body)
     {
         Span = span;
         File = file;
@@ -1705,7 +2102,16 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
     public override string ToString()
         => FormattingAspect.GetterMethodDefinition_ToString(this);
 
-    public GetterMethodDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IMethodSelfParameterSyntax selfParameter, IEnumerable<INamedParameterSyntax> parameters, IReturnSyntax @return, IBodySyntax body)
+    public GetterMethodDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName name,
+        IMethodSelfParameterSyntax selfParameter,
+        IEnumerable<INamedParameterSyntax> parameters,
+        IReturnSyntax @return,
+        IBodySyntax body)
     {
         Span = span;
         File = file;
@@ -1736,7 +2142,16 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
     public override string ToString()
         => FormattingAspect.SetterMethodDefinition_ToString(this);
 
-    public SetterMethodDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IMethodSelfParameterSyntax selfParameter, IEnumerable<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body)
+    public SetterMethodDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName name,
+        IMethodSelfParameterSyntax selfParameter,
+        IEnumerable<INamedParameterSyntax> parameters,
+        IReturnSyntax? @return,
+        IBodySyntax body)
     {
         Span = span;
         File = file;
@@ -1766,7 +2181,15 @@ file class ConstructorDefinitionSyntax : IConstructorDefinitionSyntax
     public override string ToString()
         => FormattingAspect.ConstructorDefinition_ToString(this);
 
-    public ConstructorDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName? name, IConstructorSelfParameterSyntax selfParameter, IEnumerable<IConstructorOrInitializerParameterSyntax> parameters, IBlockBodySyntax body)
+    public ConstructorDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName? name,
+        IConstructorSelfParameterSyntax selfParameter,
+        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
+        IBlockBodySyntax body)
     {
         Span = span;
         File = file;
@@ -1795,7 +2218,15 @@ file class InitializerDefinitionSyntax : IInitializerDefinitionSyntax
     public override string ToString()
         => FormattingAspect.InitializerDefinition_ToString(this);
 
-    public InitializerDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName? name, IInitializerSelfParameterSyntax selfParameter, IEnumerable<IConstructorOrInitializerParameterSyntax> parameters, IBlockBodySyntax body)
+    public InitializerDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName? name,
+        IInitializerSelfParameterSyntax selfParameter,
+        IEnumerable<IConstructorOrInitializerParameterSyntax> parameters,
+        IBlockBodySyntax body)
     {
         Span = span;
         File = file;
@@ -1824,7 +2255,15 @@ file class FieldDefinitionSyntax : IFieldDefinitionSyntax
     public override string ToString()
         => FormattingAspect.FieldDefinition_ToString(this);
 
-    public FieldDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, bool isMutableBinding, IdentifierName name, ITypeSyntax type, IExpressionSyntax? initializer)
+    public FieldDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        bool isMutableBinding,
+        IdentifierName name,
+        ITypeSyntax type,
+        IExpressionSyntax? initializer)
     {
         Span = span;
         File = file;
@@ -1853,7 +2292,15 @@ file class AssociatedFunctionDefinitionSyntax : IAssociatedFunctionDefinitionSyn
     public override string ToString()
         => FormattingAspect.AssociatedFunctionDefinition_ToString(this);
 
-    public AssociatedFunctionDefinitionSyntax(TextSpan span, CodeFile file, TextSpan nameSpan, IAccessModifierToken? accessModifier, IdentifierName name, IEnumerable<INamedParameterSyntax> parameters, IReturnSyntax? @return, IBodySyntax body)
+    public AssociatedFunctionDefinitionSyntax(
+        TextSpan span,
+        CodeFile file,
+        TextSpan nameSpan,
+        IAccessModifierToken? accessModifier,
+        IdentifierName name,
+        IEnumerable<INamedParameterSyntax> parameters,
+        IReturnSyntax? @return,
+        IBodySyntax body)
     {
         Span = span;
         File = file;
@@ -1876,7 +2323,9 @@ file class AttributeSyntax : IAttributeSyntax
     public override string ToString()
         => FormattingAspect.Attribute_ToString(this);
 
-    public AttributeSyntax(TextSpan span, IStandardTypeNameSyntax typeName)
+    public AttributeSyntax(
+        TextSpan span,
+        IStandardTypeNameSyntax typeName)
     {
         Span = span;
         TypeName = typeName;
@@ -1893,7 +2342,9 @@ file class CapabilitySetSyntax : ICapabilitySetSyntax
     public override string ToString()
         => FormattingAspect.CapabilitySet_ToString(this);
 
-    public CapabilitySetSyntax(TextSpan span, CapabilitySet constraint)
+    public CapabilitySetSyntax(
+        TextSpan span,
+        CapabilitySet constraint)
     {
         Span = span;
         Constraint = constraint;
@@ -1913,7 +2364,12 @@ file class CapabilitySyntax : ICapabilitySyntax
     public override string ToString()
         => FormattingAspect.Capability_ToString(this);
 
-    public CapabilitySyntax(TextSpan span, ICapabilityConstraint constraint, IEnumerable<ICapabilityToken> tokens, DeclaredCapability declared, Capability capability)
+    public CapabilitySyntax(
+        TextSpan span,
+        ICapabilityConstraint constraint,
+        IEnumerable<ICapabilityToken> tokens,
+        DeclaredCapability declared,
+        Capability capability)
     {
         Span = span;
         Constraint = constraint;
@@ -1938,7 +2394,14 @@ file class NamedParameterSyntax : INamedParameterSyntax
     public override string ToString()
         => FormattingAspect.NamedParameter_ToString(this);
 
-    public NamedParameterSyntax(TextSpan span, TextSpan nameSpan, bool isMutableBinding, bool isLentBinding, IdentifierName name, ITypeSyntax type, IExpressionSyntax? defaultValue)
+    public NamedParameterSyntax(
+        TextSpan span,
+        TextSpan nameSpan,
+        bool isMutableBinding,
+        bool isLentBinding,
+        IdentifierName name,
+        ITypeSyntax type,
+        IExpressionSyntax? defaultValue)
     {
         Span = span;
         NameSpan = nameSpan;
@@ -1962,7 +2425,11 @@ file class ConstructorSelfParameterSyntax : IConstructorSelfParameterSyntax
     public override string ToString()
         => FormattingAspect.SelfParameter_ToString(this);
 
-    public ConstructorSelfParameterSyntax(TextSpan span, IdentifierName? name, bool isLentBinding, ICapabilitySyntax capability)
+    public ConstructorSelfParameterSyntax(
+        TextSpan span,
+        IdentifierName? name,
+        bool isLentBinding,
+        ICapabilitySyntax capability)
     {
         Span = span;
         Name = name;
@@ -1983,7 +2450,11 @@ file class InitializerSelfParameterSyntax : IInitializerSelfParameterSyntax
     public override string ToString()
         => FormattingAspect.SelfParameter_ToString(this);
 
-    public InitializerSelfParameterSyntax(TextSpan span, IdentifierName? name, bool isLentBinding, ICapabilitySyntax capability)
+    public InitializerSelfParameterSyntax(
+        TextSpan span,
+        IdentifierName? name,
+        bool isLentBinding,
+        ICapabilitySyntax capability)
     {
         Span = span;
         Name = name;
@@ -2004,7 +2475,11 @@ file class MethodSelfParameterSyntax : IMethodSelfParameterSyntax
     public override string ToString()
         => FormattingAspect.SelfParameter_ToString(this);
 
-    public MethodSelfParameterSyntax(TextSpan span, IdentifierName? name, bool isLentBinding, ICapabilityConstraintSyntax capability)
+    public MethodSelfParameterSyntax(
+        TextSpan span,
+        IdentifierName? name,
+        bool isLentBinding,
+        ICapabilityConstraintSyntax capability)
     {
         Span = span;
         Name = name;
@@ -2024,7 +2499,10 @@ file class FieldParameterSyntax : IFieldParameterSyntax
     public override string ToString()
         => FormattingAspect.FieldParameter_ToString(this);
 
-    public FieldParameterSyntax(TextSpan span, IdentifierName name, IExpressionSyntax? defaultValue)
+    public FieldParameterSyntax(
+        TextSpan span,
+        IdentifierName name,
+        IExpressionSyntax? defaultValue)
     {
         Span = span;
         Name = name;
@@ -2042,7 +2520,9 @@ file class ReturnSyntax : IReturnSyntax
     public override string ToString()
         => FormattingAspect.Return_ToString(this);
 
-    public ReturnSyntax(TextSpan span, ITypeSyntax type)
+    public ReturnSyntax(
+        TextSpan span,
+        ITypeSyntax type)
     {
         Span = span;
         Type = type;
@@ -2059,7 +2539,9 @@ file class BlockBodySyntax : IBlockBodySyntax
     public override string ToString()
         => FormattingAspect.BlockBody_ToString(this);
 
-    public BlockBodySyntax(TextSpan span, IEnumerable<IBodyStatementSyntax> statements)
+    public BlockBodySyntax(
+        TextSpan span,
+        IEnumerable<IBodyStatementSyntax> statements)
     {
         Span = span;
         Statements = statements.ToFixedList();
@@ -2077,7 +2559,10 @@ file class ExpressionBodySyntax : IExpressionBodySyntax
     public override string ToString()
         => FormattingAspect.ExpressionBody_ToString(this);
 
-    public ExpressionBodySyntax(TextSpan span, IResultStatementSyntax resultStatement, IEnumerable<IStatementSyntax> statements)
+    public ExpressionBodySyntax(
+        TextSpan span,
+        IResultStatementSyntax resultStatement,
+        IEnumerable<IStatementSyntax> statements)
     {
         Span = span;
         ResultStatement = resultStatement;
@@ -2095,7 +2580,9 @@ file class IdentifierTypeNameSyntax : IIdentifierTypeNameSyntax
     public override string ToString()
         => FormattingAspect.IdentifierTypeName_ToString(this);
 
-    public IdentifierTypeNameSyntax(TextSpan span, IdentifierName name)
+    public IdentifierTypeNameSyntax(
+        TextSpan span,
+        IdentifierName name)
     {
         Span = span;
         Name = name;
@@ -2112,7 +2599,9 @@ file class SpecialTypeNameSyntax : ISpecialTypeNameSyntax
     public override string ToString()
         => FormattingAspect.SpecialTypeName_ToString(this);
 
-    public SpecialTypeNameSyntax(TextSpan span, SpecialTypeName name)
+    public SpecialTypeNameSyntax(
+        TextSpan span,
+        SpecialTypeName name)
     {
         Span = span;
         Name = name;
@@ -2130,7 +2619,10 @@ file class GenericTypeNameSyntax : IGenericTypeNameSyntax
     public override string ToString()
         => FormattingAspect.GenericTypeName_ToString(this);
 
-    public GenericTypeNameSyntax(TextSpan span, GenericName name, IEnumerable<ITypeSyntax> typeArguments)
+    public GenericTypeNameSyntax(
+        TextSpan span,
+        GenericName name,
+        IEnumerable<ITypeSyntax> typeArguments)
     {
         Span = span;
         Name = name;
@@ -2150,7 +2642,11 @@ file class QualifiedTypeNameSyntax : IQualifiedTypeNameSyntax
     public override string ToString()
         => FormattingAspect.QualifiedTypeName_ToString(this);
 
-    public QualifiedTypeNameSyntax(TextSpan span, TypeName name, ITypeNameSyntax context, IStandardTypeNameSyntax qualifiedName)
+    public QualifiedTypeNameSyntax(
+        TextSpan span,
+        TypeName name,
+        ITypeNameSyntax context,
+        IStandardTypeNameSyntax qualifiedName)
     {
         Span = span;
         Name = name;
@@ -2169,7 +2665,9 @@ file class OptionalTypeSyntax : IOptionalTypeSyntax
     public override string ToString()
         => FormattingAspect.OptionalType_ToString(this);
 
-    public OptionalTypeSyntax(TextSpan span, ITypeSyntax referent)
+    public OptionalTypeSyntax(
+        TextSpan span,
+        ITypeSyntax referent)
     {
         Span = span;
         Referent = referent;
@@ -2187,7 +2685,10 @@ file class CapabilityTypeSyntax : ICapabilityTypeSyntax
     public override string ToString()
         => FormattingAspect.CapabilityType_ToString(this);
 
-    public CapabilityTypeSyntax(TextSpan span, ICapabilitySyntax capability, ITypeSyntax referent)
+    public CapabilityTypeSyntax(
+        TextSpan span,
+        ICapabilitySyntax capability,
+        ITypeSyntax referent)
     {
         Span = span;
         Capability = capability;
@@ -2206,7 +2707,10 @@ file class FunctionTypeSyntax : IFunctionTypeSyntax
     public override string ToString()
         => FormattingAspect.FunctionType_ToString(this);
 
-    public FunctionTypeSyntax(TextSpan span, IEnumerable<IParameterTypeSyntax> parameters, IReturnTypeSyntax @return)
+    public FunctionTypeSyntax(
+        TextSpan span,
+        IEnumerable<IParameterTypeSyntax> parameters,
+        IReturnTypeSyntax @return)
     {
         Span = span;
         Parameters = parameters.ToFixedList();
@@ -2225,7 +2729,10 @@ file class ParameterTypeSyntax : IParameterTypeSyntax
     public override string ToString()
         => FormattingAspect.ParameterType_ToString(this);
 
-    public ParameterTypeSyntax(TextSpan span, bool isLent, ITypeSyntax referent)
+    public ParameterTypeSyntax(
+        TextSpan span,
+        bool isLent,
+        ITypeSyntax referent)
     {
         Span = span;
         IsLent = isLent;
@@ -2243,7 +2750,9 @@ file class ReturnTypeSyntax : IReturnTypeSyntax
     public override string ToString()
         => FormattingAspect.ReturnType_ToString(this);
 
-    public ReturnTypeSyntax(TextSpan span, ITypeSyntax referent)
+    public ReturnTypeSyntax(
+        TextSpan span,
+        ITypeSyntax referent)
     {
         Span = span;
         Referent = referent;
@@ -2261,7 +2770,10 @@ file class CapabilityViewpointTypeSyntax : ICapabilityViewpointTypeSyntax
     public override string ToString()
         => FormattingAspect.CapabilityViewpointType_ToString(this);
 
-    public CapabilityViewpointTypeSyntax(TextSpan span, ICapabilitySyntax capability, ITypeSyntax referent)
+    public CapabilityViewpointTypeSyntax(
+        TextSpan span,
+        ICapabilitySyntax capability,
+        ITypeSyntax referent)
     {
         Span = span;
         Capability = capability;
@@ -2279,7 +2791,9 @@ file class SelfViewpointTypeSyntax : ISelfViewpointTypeSyntax
     public override string ToString()
         => FormattingAspect.SelfViewpointType_ToString(this);
 
-    public SelfViewpointTypeSyntax(TextSpan span, ITypeSyntax referent)
+    public SelfViewpointTypeSyntax(
+        TextSpan span,
+        ITypeSyntax referent)
     {
         Span = span;
         Referent = referent;
@@ -2296,7 +2810,9 @@ file class ResultStatementSyntax : IResultStatementSyntax
     public override string ToString()
         => FormattingAspect.ResultStatement_ToString(this);
 
-    public ResultStatementSyntax(TextSpan span, IExpressionSyntax expression)
+    public ResultStatementSyntax(
+        TextSpan span,
+        IExpressionSyntax expression)
     {
         Span = span;
         Expression = expression;
@@ -2318,7 +2834,14 @@ file class VariableDeclarationStatementSyntax : IVariableDeclarationStatementSyn
     public override string ToString()
         => FormattingAspect.VariableDeclarationStatement_ToString(this);
 
-    public VariableDeclarationStatementSyntax(TextSpan span, bool isMutableBinding, TextSpan nameSpan, IdentifierName name, ICapabilitySyntax? capability, ITypeSyntax? type, IExpressionSyntax? initializer)
+    public VariableDeclarationStatementSyntax(
+        TextSpan span,
+        bool isMutableBinding,
+        TextSpan nameSpan,
+        IdentifierName name,
+        ICapabilitySyntax? capability,
+        ITypeSyntax? type,
+        IExpressionSyntax? initializer)
     {
         Span = span;
         IsMutableBinding = isMutableBinding;
@@ -2340,7 +2863,9 @@ file class ExpressionStatementSyntax : IExpressionStatementSyntax
     public override string ToString()
         => FormattingAspect.ExpressionStatement_ToString(this);
 
-    public ExpressionStatementSyntax(TextSpan span, IExpressionSyntax expression)
+    public ExpressionStatementSyntax(
+        TextSpan span,
+        IExpressionSyntax expression)
     {
         Span = span;
         Expression = expression;
@@ -2359,7 +2884,11 @@ file class BindingContextPatternSyntax : IBindingContextPatternSyntax
     public override string ToString()
         => FormattingAspect.BindingContextPattern_ToString(this);
 
-    public BindingContextPatternSyntax(TextSpan span, bool isMutableBinding, IPatternSyntax pattern, ITypeSyntax? type)
+    public BindingContextPatternSyntax(
+        TextSpan span,
+        bool isMutableBinding,
+        IPatternSyntax pattern,
+        ITypeSyntax? type)
     {
         Span = span;
         IsMutableBinding = isMutableBinding;
@@ -2380,7 +2909,11 @@ file class BindingPatternSyntax : IBindingPatternSyntax
     public override string ToString()
         => FormattingAspect.BindingPattern_ToString(this);
 
-    public BindingPatternSyntax(TextSpan span, bool isMutableBinding, TextSpan nameSpan, IdentifierName name)
+    public BindingPatternSyntax(
+        TextSpan span,
+        bool isMutableBinding,
+        TextSpan nameSpan,
+        IdentifierName name)
     {
         Span = span;
         IsMutableBinding = isMutableBinding;
@@ -2399,7 +2932,9 @@ file class OptionalPatternSyntax : IOptionalPatternSyntax
     public override string ToString()
         => FormattingAspect.OptionalPattern_ToString(this);
 
-    public OptionalPatternSyntax(TextSpan span, IOptionalOrBindingPatternSyntax pattern)
+    public OptionalPatternSyntax(
+        TextSpan span,
+        IOptionalOrBindingPatternSyntax pattern)
     {
         Span = span;
         Pattern = pattern;
@@ -2416,7 +2951,9 @@ file class BlockExpressionSyntax : IBlockExpressionSyntax
     public override string ToString()
         => FormattingAspect.BlockExpression_ToString(this);
 
-    public BlockExpressionSyntax(TextSpan span, IEnumerable<IStatementSyntax> statements)
+    public BlockExpressionSyntax(
+        TextSpan span,
+        IEnumerable<IStatementSyntax> statements)
     {
         Span = span;
         Statements = statements.ToFixedList();
@@ -2436,7 +2973,12 @@ file class NewObjectExpressionSyntax : INewObjectExpressionSyntax
     public override string ToString()
         => FormattingAspect.NewObjectExpression_ToString(this);
 
-    public NewObjectExpressionSyntax(TextSpan span, ITypeNameSyntax type, IdentifierName? constructorName, TextSpan? constructorNameSpan, IEnumerable<IExpressionSyntax> arguments)
+    public NewObjectExpressionSyntax(
+        TextSpan span,
+        ITypeNameSyntax type,
+        IdentifierName? constructorName,
+        TextSpan? constructorNameSpan,
+        IEnumerable<IExpressionSyntax> arguments)
     {
         Span = span;
         Type = type;
@@ -2456,7 +2998,9 @@ file class UnsafeExpressionSyntax : IUnsafeExpressionSyntax
     public override string ToString()
         => FormattingAspect.UnsafeExpression_ToString(this);
 
-    public UnsafeExpressionSyntax(TextSpan span, IExpressionSyntax expression)
+    public UnsafeExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax expression)
     {
         Span = span;
         Expression = expression;
@@ -2473,7 +3017,9 @@ file class BoolLiteralExpressionSyntax : IBoolLiteralExpressionSyntax
     public override string ToString()
         => FormattingAspect.BoolLiteralExpression_ToString(this);
 
-    public BoolLiteralExpressionSyntax(TextSpan span, bool value)
+    public BoolLiteralExpressionSyntax(
+        TextSpan span,
+        bool value)
     {
         Span = span;
         Value = value;
@@ -2490,7 +3036,9 @@ file class IntegerLiteralExpressionSyntax : IIntegerLiteralExpressionSyntax
     public override string ToString()
         => FormattingAspect.IntegerLiteralExpression_ToString(this);
 
-    public IntegerLiteralExpressionSyntax(TextSpan span, BigInteger value)
+    public IntegerLiteralExpressionSyntax(
+        TextSpan span,
+        BigInteger value)
     {
         Span = span;
         Value = value;
@@ -2506,7 +3054,8 @@ file class NoneLiteralExpressionSyntax : INoneLiteralExpressionSyntax
     public override string ToString()
         => FormattingAspect.NoneLiteralExpression_ToString(this);
 
-    public NoneLiteralExpressionSyntax(TextSpan span)
+    public NoneLiteralExpressionSyntax(
+        TextSpan span)
     {
         Span = span;
     }
@@ -2522,7 +3071,9 @@ file class StringLiteralExpressionSyntax : IStringLiteralExpressionSyntax
     public override string ToString()
         => FormattingAspect.StringLiteralExpression_ToString(this);
 
-    public StringLiteralExpressionSyntax(TextSpan span, string value)
+    public StringLiteralExpressionSyntax(
+        TextSpan span,
+        string value)
     {
         Span = span;
         Value = value;
@@ -2541,7 +3092,11 @@ file class AssignmentExpressionSyntax : IAssignmentExpressionSyntax
     public override string ToString()
         => FormattingAspect.AssignmentExpression_ToString(this);
 
-    public AssignmentExpressionSyntax(TextSpan span, IAssignableExpressionSyntax leftOperand, AssignmentOperator @operator, IExpressionSyntax rightOperand)
+    public AssignmentExpressionSyntax(
+        TextSpan span,
+        IAssignableExpressionSyntax leftOperand,
+        AssignmentOperator @operator,
+        IExpressionSyntax rightOperand)
     {
         Span = span;
         LeftOperand = leftOperand;
@@ -2562,7 +3117,11 @@ file class BinaryOperatorExpressionSyntax : IBinaryOperatorExpressionSyntax
     public override string ToString()
         => FormattingAspect.BinaryOperatorExpression_ToString(this);
 
-    public BinaryOperatorExpressionSyntax(TextSpan span, IExpressionSyntax leftOperand, BinaryOperator @operator, IExpressionSyntax rightOperand)
+    public BinaryOperatorExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax leftOperand,
+        BinaryOperator @operator,
+        IExpressionSyntax rightOperand)
     {
         Span = span;
         LeftOperand = leftOperand;
@@ -2583,7 +3142,11 @@ file class UnaryOperatorExpressionSyntax : IUnaryOperatorExpressionSyntax
     public override string ToString()
         => FormattingAspect.UnaryOperatorExpression_ToString(this);
 
-    public UnaryOperatorExpressionSyntax(TextSpan span, UnaryOperatorFixity fixity, UnaryOperator @operator, IExpressionSyntax operand)
+    public UnaryOperatorExpressionSyntax(
+        TextSpan span,
+        UnaryOperatorFixity fixity,
+        UnaryOperator @operator,
+        IExpressionSyntax operand)
     {
         Span = span;
         Fixity = fixity;
@@ -2602,7 +3165,9 @@ file class IdExpressionSyntax : IIdExpressionSyntax
     public override string ToString()
         => FormattingAspect.IdExpression_ToString(this);
 
-    public IdExpressionSyntax(TextSpan span, IExpressionSyntax referent)
+    public IdExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax referent)
     {
         Span = span;
         Referent = referent;
@@ -2621,7 +3186,11 @@ file class ConversionExpressionSyntax : IConversionExpressionSyntax
     public override string ToString()
         => FormattingAspect.ConversionExpression_ToString(this);
 
-    public ConversionExpressionSyntax(TextSpan span, IExpressionSyntax referent, ConversionOperator @operator, ITypeSyntax convertToType)
+    public ConversionExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax referent,
+        ConversionOperator @operator,
+        ITypeSyntax convertToType)
     {
         Span = span;
         Referent = referent;
@@ -2641,7 +3210,10 @@ file class PatternMatchExpressionSyntax : IPatternMatchExpressionSyntax
     public override string ToString()
         => FormattingAspect.PatternMatchExpression_ToString(this);
 
-    public PatternMatchExpressionSyntax(TextSpan span, IExpressionSyntax referent, IPatternSyntax pattern)
+    public PatternMatchExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax referent,
+        IPatternSyntax pattern)
     {
         Span = span;
         Referent = referent;
@@ -2661,7 +3233,11 @@ file class IfExpressionSyntax : IIfExpressionSyntax
     public override string ToString()
         => FormattingAspect.IfExpression_ToString(this);
 
-    public IfExpressionSyntax(TextSpan span, IExpressionSyntax condition, IBlockOrResultSyntax thenBlock, IElseClauseSyntax? elseClause)
+    public IfExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax condition,
+        IBlockOrResultSyntax thenBlock,
+        IElseClauseSyntax? elseClause)
     {
         Span = span;
         Condition = condition;
@@ -2680,7 +3256,9 @@ file class LoopExpressionSyntax : ILoopExpressionSyntax
     public override string ToString()
         => FormattingAspect.LoopExpression_ToString(this);
 
-    public LoopExpressionSyntax(TextSpan span, IBlockExpressionSyntax block)
+    public LoopExpressionSyntax(
+        TextSpan span,
+        IBlockExpressionSyntax block)
     {
         Span = span;
         Block = block;
@@ -2698,7 +3276,10 @@ file class WhileExpressionSyntax : IWhileExpressionSyntax
     public override string ToString()
         => FormattingAspect.WhileExpression_ToString(this);
 
-    public WhileExpressionSyntax(TextSpan span, IExpressionSyntax condition, IBlockExpressionSyntax block)
+    public WhileExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax condition,
+        IBlockExpressionSyntax block)
     {
         Span = span;
         Condition = condition;
@@ -2721,7 +3302,14 @@ file class ForeachExpressionSyntax : IForeachExpressionSyntax
     public override string ToString()
         => FormattingAspect.ForeachExpression_ToString(this);
 
-    public ForeachExpressionSyntax(TextSpan span, bool isMutableBinding, TextSpan nameSpan, IdentifierName variableName, IExpressionSyntax inExpression, ITypeSyntax? type, IBlockExpressionSyntax block)
+    public ForeachExpressionSyntax(
+        TextSpan span,
+        bool isMutableBinding,
+        TextSpan nameSpan,
+        IdentifierName variableName,
+        IExpressionSyntax inExpression,
+        ITypeSyntax? type,
+        IBlockExpressionSyntax block)
     {
         Span = span;
         IsMutableBinding = isMutableBinding;
@@ -2743,7 +3331,9 @@ file class BreakExpressionSyntax : IBreakExpressionSyntax
     public override string ToString()
         => FormattingAspect.BreakExpression_ToString(this);
 
-    public BreakExpressionSyntax(TextSpan span, IExpressionSyntax? value)
+    public BreakExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax? value)
     {
         Span = span;
         Value = value;
@@ -2759,7 +3349,8 @@ file class NextExpressionSyntax : INextExpressionSyntax
     public override string ToString()
         => FormattingAspect.NextExpression_ToString(this);
 
-    public NextExpressionSyntax(TextSpan span)
+    public NextExpressionSyntax(
+        TextSpan span)
     {
         Span = span;
     }
@@ -2775,7 +3366,9 @@ file class ReturnExpressionSyntax : IReturnExpressionSyntax
     public override string ToString()
         => FormattingAspect.ReturnExpression_ToString(this);
 
-    public ReturnExpressionSyntax(TextSpan span, IExpressionSyntax? value)
+    public ReturnExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax? value)
     {
         Span = span;
         Value = value;
@@ -2793,7 +3386,10 @@ file class InvocationExpressionSyntax : IInvocationExpressionSyntax
     public override string ToString()
         => FormattingAspect.InvocationExpression_ToString(this);
 
-    public InvocationExpressionSyntax(TextSpan span, IExpressionSyntax expression, IEnumerable<IExpressionSyntax> arguments)
+    public InvocationExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax expression,
+        IEnumerable<IExpressionSyntax> arguments)
     {
         Span = span;
         Expression = expression;
@@ -2811,7 +3407,9 @@ file class IdentifierNameExpressionSyntax : IIdentifierNameExpressionSyntax
     public override string ToString()
         => FormattingAspect.IdentifierNameExpression_ToString(this);
 
-    public IdentifierNameExpressionSyntax(TextSpan span, IdentifierName name)
+    public IdentifierNameExpressionSyntax(
+        TextSpan span,
+        IdentifierName name)
     {
         Span = span;
         Name = name;
@@ -2828,7 +3426,9 @@ file class SpecialTypeNameExpressionSyntax : ISpecialTypeNameExpressionSyntax
     public override string ToString()
         => FormattingAspect.SpecialTypeNameExpression_ToString(this);
 
-    public SpecialTypeNameExpressionSyntax(TextSpan span, SpecialTypeName name)
+    public SpecialTypeNameExpressionSyntax(
+        TextSpan span,
+        SpecialTypeName name)
     {
         Span = span;
         Name = name;
@@ -2846,7 +3446,10 @@ file class GenericNameExpressionSyntax : IGenericNameExpressionSyntax
     public override string ToString()
         => FormattingAspect.GenericNameExpression_ToString(this);
 
-    public GenericNameExpressionSyntax(TextSpan span, GenericName name, IEnumerable<ITypeSyntax> typeArguments)
+    public GenericNameExpressionSyntax(
+        TextSpan span,
+        GenericName name,
+        IEnumerable<ITypeSyntax> typeArguments)
     {
         Span = span;
         Name = name;
@@ -2864,7 +3467,9 @@ file class SelfExpressionSyntax : ISelfExpressionSyntax
     public override string ToString()
         => FormattingAspect.SelfExpression_ToString(this);
 
-    public SelfExpressionSyntax(TextSpan span, bool isImplicit)
+    public SelfExpressionSyntax(
+        TextSpan span,
+        bool isImplicit)
     {
         Span = span;
         IsImplicit = isImplicit;
@@ -2884,7 +3489,12 @@ file class MemberAccessExpressionSyntax : IMemberAccessExpressionSyntax
     public override string ToString()
         => FormattingAspect.MemberAccessExpression_ToString(this);
 
-    public MemberAccessExpressionSyntax(TextSpan span, IExpressionSyntax context, StandardName memberName, IEnumerable<ITypeSyntax> typeArguments, TextSpan memberNameSpan)
+    public MemberAccessExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax context,
+        StandardName memberName,
+        IEnumerable<ITypeSyntax> typeArguments,
+        TextSpan memberNameSpan)
     {
         Span = span;
         Context = context;
@@ -2903,7 +3513,8 @@ file class MissingNameSyntax : IMissingNameSyntax
     public override string ToString()
         => FormattingAspect.MissingName_ToString(this);
 
-    public MissingNameSyntax(TextSpan span)
+    public MissingNameSyntax(
+        TextSpan span)
     {
         Span = span;
     }
@@ -2919,7 +3530,9 @@ file class MoveExpressionSyntax : IMoveExpressionSyntax
     public override string ToString()
         => FormattingAspect.MoveExpression_ToString(this);
 
-    public MoveExpressionSyntax(TextSpan span, ISimpleNameSyntax referent)
+    public MoveExpressionSyntax(
+        TextSpan span,
+        ISimpleNameSyntax referent)
     {
         Span = span;
         Referent = referent;
@@ -2936,7 +3549,9 @@ file class FreezeExpressionSyntax : IFreezeExpressionSyntax
     public override string ToString()
         => FormattingAspect.FreezeExpression_ToString(this);
 
-    public FreezeExpressionSyntax(TextSpan span, ISimpleNameSyntax referent)
+    public FreezeExpressionSyntax(
+        TextSpan span,
+        ISimpleNameSyntax referent)
     {
         Span = span;
         Referent = referent;
@@ -2953,7 +3568,9 @@ file class AsyncBlockExpressionSyntax : IAsyncBlockExpressionSyntax
     public override string ToString()
         => FormattingAspect.AsyncBlockExpression_ToString(this);
 
-    public AsyncBlockExpressionSyntax(TextSpan span, IBlockExpressionSyntax block)
+    public AsyncBlockExpressionSyntax(
+        TextSpan span,
+        IBlockExpressionSyntax block)
     {
         Span = span;
         Block = block;
@@ -2971,7 +3588,10 @@ file class AsyncStartExpressionSyntax : IAsyncStartExpressionSyntax
     public override string ToString()
         => FormattingAspect.AsyncStartExpression_ToString(this);
 
-    public AsyncStartExpressionSyntax(TextSpan span, bool scheduled, IExpressionSyntax expression)
+    public AsyncStartExpressionSyntax(
+        TextSpan span,
+        bool scheduled,
+        IExpressionSyntax expression)
     {
         Span = span;
         Scheduled = scheduled;
@@ -2989,7 +3609,9 @@ file class AwaitExpressionSyntax : IAwaitExpressionSyntax
     public override string ToString()
         => FormattingAspect.AwaitExpression_ToString(this);
 
-    public AwaitExpressionSyntax(TextSpan span, IExpressionSyntax expression)
+    public AwaitExpressionSyntax(
+        TextSpan span,
+        IExpressionSyntax expression)
     {
         Span = span;
         Expression = expression;
