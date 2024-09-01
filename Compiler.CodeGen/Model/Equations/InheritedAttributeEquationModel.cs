@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
@@ -43,7 +42,9 @@ public sealed class InheritedAttributeEquationModel : ContributorEquationModel
 
     private InheritedAttributeFamilyModel ComputeAttributeFamily()
         => Aspect.Tree.AllAttributeFamilies.OfType<InheritedAttributeFamilyModel>()
-                 .Single(a => a.Name == Name);
+                 .Where(a => a.Name == Name)
+                 .TrySingle()
+                 ?? throw new FormatException($"Could not find inherited attribute family for {this}");
 
     private IFixedSet<InheritedAttributeModel> ComputeInheritedToAttributes()
     {

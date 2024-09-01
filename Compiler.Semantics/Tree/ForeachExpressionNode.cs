@@ -19,7 +19,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpressionNode
 {
     public override IForeachExpressionSyntax Syntax { get; }
-    bool IBindingNode.IsLentBinding => false;
     public bool IsMutableBinding => Syntax.IsMutableBinding;
     public IdentifierName VariableName => Syntax.VariableName;
     private RewritableChild<IAmbiguousExpressionNode> inExpression;

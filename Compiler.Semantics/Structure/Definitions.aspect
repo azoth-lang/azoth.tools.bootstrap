@@ -7,8 +7,11 @@
 
 ↗↖ *.Diagnostics:`DiagnosticCollection` from `DiagnosticCollectionBuilder` done Build;
 
-// ---------- Packages
+// ---------- Bindings
+↑ Binding.IsLentBinding: `bool`;
+↑ NamedBinding.IsMutableBinding: `bool`;
 
+// ---------- Packages
 /// <remarks>Implements <see cref="IPackageDeclarationNode.AliasOrName"/> which
 /// should be <see langword="null"/> for the current package.</remarks>
 ↑ Package.AliasOrName: `IdentifierName`? => null;
@@ -72,6 +75,22 @@
 ↑ DefaultInitializerDefinition.Parameters: ConstructorOrInitializerParameter*
     => FixedList.Empty<IConstructorOrInitializerParameterNode>();
 ↑ DefaultInitializerDefinition.Body: Body? => null;
+= FieldDefinition.IsLentBinding => false;
+= FieldDefinition.IsMutableBinding => Syntax.IsMutableBinding;
+↑ FieldDefinition.Name: `IdentifierName` => Syntax.Name;
+
+// ---------- Statements
+= VariableDeclarationStatement.IsLentBinding => false;
+= VariableDeclarationStatement.Name => Syntax.Name;
+= VariableDeclarationStatement.IsMutableBinding => Syntax.IsMutableBinding;
+
+// ---------- Patterns
+= BindingPattern.IsLentBinding => false;
+= BindingPattern.IsMutableBinding => Syntax.IsMutableBinding;
+
+// ---------- Control Flow Expressions
+= ForeachExpression.IsLentBinding => false;
+= ForeachExpression.Name => VariableName;
 
 // -------------------------------------------------------------------------------------------------
 // Declarations

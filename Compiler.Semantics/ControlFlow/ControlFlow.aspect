@@ -13,6 +13,10 @@
 = ConcreteInvocableDefinition.Entry.ControlFlowFollowing();
 = ConcreteInvocableDefinition.Body.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(Exit);
+= FieldDefinition.Entry.ControlFlowFollowing()
+    => ControlFlowSet.CreateNormal(Initializer ?? (IControlFlowNode)Exit);
+= FieldDefinition.Initializer.ControlFlowFollowing()
+    => ControlFlowSet.CreateNormal(Exit);
 
 // ---------- Control Flow
 ↓ ControlFlow.ControlFlowEntry(): Entry;

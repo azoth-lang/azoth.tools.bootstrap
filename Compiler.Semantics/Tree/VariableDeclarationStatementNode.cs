@@ -20,7 +20,6 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
 {
     private AttributeLock syncLock;
     public override IVariableDeclarationStatementSyntax Syntax { get; }
-    bool IBindingNode.IsLentBinding => false;
     public bool IsMutableBinding => Syntax.IsMutableBinding;
     public IdentifierName Name => Syntax.Name;
     public ICapabilityNode? Capability { get; }

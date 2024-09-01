@@ -4,6 +4,11 @@
 
 // ↓ ↑ ⮡ ✎
 
+↑ NamedDeclaration.Name: `TypeName`;
+
+// ---------- Bindings
+↑ NamedBindingDeclaration.Name: `IdentifierName`;
+
 // ---------- Facet Declarations
 ↑ PackageFacetDeclaration.PackageName: `IdentifierName` => Package.Name;
 ↑ PackageFacetDeclaration.PackageSymbol:`PackageSymbol` => Package.Symbol;

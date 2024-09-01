@@ -1,4 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
@@ -22,13 +21,5 @@ public partial interface IExpressionNode
     public bool ShouldNotBeExpression()
         => this is INamespaceNameNode or IFunctionGroupNameNode or IMethodGroupNameNode
             or IInitializerGroupNameNode or ITypeNameExpressionNode;
-}
-#endregion
-
-#region Control Flow Expressions
-public partial interface IForeachExpressionNode
-{
-    // TODO some way to code gen this hiding
-    IdentifierName INamedBindingDeclarationNode.Name => VariableName;
 }
 #endregion

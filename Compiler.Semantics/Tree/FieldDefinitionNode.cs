@@ -70,7 +70,10 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
                 VariablesAspect.FieldDefinition_VariableBindingsMap);
 
-    public FieldDefinitionNode(IFieldDefinitionSyntax syntax, ITypeNode type, IAmbiguousExpressionNode? initializer)
+    public FieldDefinitionNode(
+        IFieldDefinitionSyntax syntax,
+        ITypeNode type,
+        IAmbiguousExpressionNode? initializer)
     {
         Syntax = syntax;
         TypeNode = Child.Attach(this, type);
@@ -87,7 +90,7 @@ internal sealed class FieldDefinitionNode : TypeMemberDefinitionNode, IFieldDefi
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        TypeMemberDeclarationsAspect.FieldDefinition_ContributeDiagnostics(this, diagnostics);
+        TypeMemberDeclarationsAspect.FieldDefinition_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

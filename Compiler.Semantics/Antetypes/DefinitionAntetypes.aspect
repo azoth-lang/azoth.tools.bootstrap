@@ -1,5 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 ◊name DefinitionAntetypesAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 // ↓ ↑ ⮡ ✎
 
@@ -9,3 +10,4 @@
 
 // ---------- Member Definitions
 = StandardMethodDefinition.Body.ExpectedAntetype => Self.MethodGroupType.Return.Type.ToAntetype();
+↑ FieldDefinition.BindingAntetype: `IMaybeAntetype`;

@@ -17,5 +17,9 @@ internal static partial class TypeMemberDeclarationsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void MethodDefinition_Contribute_Diagnostics(IMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void FieldDefinition_Contribute_Diagnostics(IFieldDefinitionNode node, DiagnosticCollectionBuilder diagnostics);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FunctionType FunctionDefinition_Type(IFunctionDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial DataType FieldDefinition_BindingType(IFieldDefinitionNode node);
 }

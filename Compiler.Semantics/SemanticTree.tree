@@ -38,10 +38,8 @@ ElseClause <: ControlFlow = Syntax:`ICodeSyntax` FlowStateAfter:`IFlowState`;
 BlockOrResult <: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings
-Binding <: Code, BindingDeclaration = IsLentBinding:`bool`
-    BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
-NamedBinding <: Binding, NamedBindingDeclaration =
-    IsMutableBinding:`bool` BindingType:`DataType`;
+Binding <: Code, BindingDeclaration = BindingAntetype:`IMaybeAntetype` BindingType:`Pseudotype`;
+NamedBinding <: Binding, NamedBindingDeclaration = BindingType:`DataType`;
 LocalBinding <: NamedBinding = Syntax:`ILocalBindingSyntax`;
 VariableBinding <: LocalBinding, DataFlow;
 
@@ -150,7 +148,7 @@ SourceInitializerDefinition <: InitializerDefinition
     = Syntax:`IInitializerDefinitionSyntax`
     SelfParameter:InitializerSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;
 FieldDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, NamedBinding, FieldDeclaration, ExecutableDefinition
-    = Syntax:`IFieldDefinitionSyntax` IsMutableBinding:`bool` Name:`IdentifierName` TypeNode:Type BindingAntetype:`IMaybeAntetype` BindingType:`DataType`
+    = Syntax:`IFieldDefinitionSyntax` TypeNode:Type
     /Entry/ Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`? /Exit/;
 AssociatedFunctionDefinition <: ConcreteFunctionInvocableDefinition, AlwaysTypeMemberDefinition, AssociatedMemberDefinition, AssociatedFunctionDeclaration
     = Syntax:`IAssociatedFunctionDefinitionSyntax` Name:`IdentifierName` Parameters:NamedParameter* Return:Type?
@@ -222,8 +220,8 @@ Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntet
 ResultStatement <: Statement, BlockOrResult = Syntax:`IResultStatementSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`;
 BodyStatement <: Statement = Syntax:`IBodyStatementSyntax`;
-VariableDeclarationStatement <: BodyStatement, VariableBinding = Syntax:`IVariableDeclarationStatementSyntax`
-    IsMutableBinding:`bool` Name:`IdentifierName` Capability? Type?
+VariableDeclarationStatement <: BodyStatement, VariableBinding
+    = Syntax:`IVariableDeclarationStatementSyntax` Capability? Type?
     Initializer:AmbiguousExpression? CurrentInitializer:`IAmbiguousExpressionNode`?;
 ExpressionStatement <: BodyStatement = Syntax:`IExpressionStatementSyntax`
     Expression:AmbiguousExpression CurrentExpression:`IAmbiguousExpressionNode`;
@@ -232,8 +230,7 @@ ExpressionStatement <: BodyStatement = Syntax:`IExpressionStatementSyntax`
 Pattern <: ControlFlow = Syntax:`IPatternSyntax` FlowStateAfter:`IFlowState`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
-BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPatternSyntax`
-    IsMutableBinding:`bool` Name:`IdentifierName`;
+BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPatternSyntax` Name:`IdentifierName`;
 OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
@@ -431,13 +428,13 @@ AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax`
 
 Declaration;
 ChildDeclaration <: Declaration, Child;
-NamedDeclaration <: ChildDeclaration = Name:`TypeName`;
+NamedDeclaration <: ChildDeclaration;
 SymbolDeclaration <: Declaration = Symbol:`Symbol`;
 InvocableDeclaration <: SymbolDeclaration, ChildDeclaration = Symbol:`InvocableSymbol`;
 
 // ---------- Bindings
 BindingDeclaration <: ChildDeclaration;
-NamedBindingDeclaration <: BindingDeclaration, NamedDeclaration = Name:`IdentifierName`;
+NamedBindingDeclaration <: BindingDeclaration, NamedDeclaration;
 
 // ---------- Package Declarations
 PackageDeclaration <: SymbolDeclaration = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`

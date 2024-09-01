@@ -20,8 +20,6 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
 {
     private AttributeLock syncLock;
     public override IBindingPatternSyntax Syntax { get; }
-    bool IBindingNode.IsLentBinding => false;
-    public bool IsMutableBinding => Syntax.IsMutableBinding;
     public IdentifierName Name => Syntax.Name;
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;

@@ -179,9 +179,10 @@ internal static partial class TypeMemberDeclarationsAspect
         }
     }
 
-    public static DataType FieldDefinition_BindingType(IFieldDefinitionNode node) => node.TypeNode.NamedType;
+    public static partial DataType FieldDefinition_BindingType(IFieldDefinitionNode node)
+        => node.TypeNode.NamedType;
 
-    public static void FieldDefinition_ContributeDiagnostics(IFieldDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void FieldDefinition_Contribute_Diagnostics(IFieldDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         CheckFieldIsVarianceSafe(node, diagnostics);
 

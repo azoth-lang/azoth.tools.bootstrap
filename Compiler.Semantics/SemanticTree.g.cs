@@ -104,10 +104,10 @@ public partial interface IBlockOrResultNode : IElseClauseNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 {
-    bool IsLentBinding { get; }
     IMaybeAntetype BindingAntetype { get; }
     Pseudotype BindingType { get; }
     ValueId BindingValueId { get; }
+    bool IsLentBinding { get; }
 }
 
 [Closed(
@@ -116,10 +116,10 @@ public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamedBindingNode : IBindingNode, INamedBindingDeclarationNode
 {
-    bool IsMutableBinding { get; }
     new DataType BindingType { get; }
     Pseudotype IBindingNode.BindingType => BindingType;
     LexicalScope ContainingLexicalScope { get; }
+    bool IsMutableBinding { get; }
 }
 
 [Closed(
@@ -1039,39 +1039,41 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new IdentifierName Name { get; }
-    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    IdentifierName INamedBindingDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
-    IdentifierName IFieldDeclarationNode.Name => Name;
     ITypeNode TypeNode { get; }
-    new DataType BindingType { get; }
-    DataType INamedBindingNode.BindingType => BindingType;
-    Pseudotype IBindingNode.BindingType => BindingType;
-    DataType IFieldDeclarationNode.BindingType => BindingType;
     IAmbiguousExpressionNode? TempInitializer { get; }
     IExpressionNode? Initializer { get; }
     IAmbiguousExpressionNode? CurrentInitializer { get; }
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IDefinitionNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
+    new DataType BindingType { get; }
+    DataType INamedBindingNode.BindingType => BindingType;
+    Pseudotype IBindingNode.BindingType => BindingType;
+    DataType IFieldDeclarationNode.BindingType => BindingType;
+    new IdentifierName Name
+        => Syntax.Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    IdentifierName INamedBindingDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
+    IdentifierName IFieldDeclarationNode.Name => Name;
     new FieldSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FieldSymbol IFieldDeclarationNode.Symbol => Symbol;
+    new IMaybeAntetype BindingAntetype { get; }
+    IMaybeAntetype IBindingNode.BindingAntetype => BindingAntetype;
     LexicalScope IDefinitionNode.LexicalScope
         => ContainingLexicalScope;
+    bool IBindingNode.IsLentBinding
+        => false;
+    bool INamedBindingNode.IsMutableBinding
+        => Syntax.IsMutableBinding;
 
     public static IFieldDefinitionNode Create(
-        bool isLentBinding,
         IFieldDefinitionSyntax syntax,
-        bool isMutableBinding,
-        IdentifierName name,
         ITypeNode typeNode,
-        IMaybeAntetype bindingAntetype,
-        DataType bindingType,
         IAmbiguousExpressionNode? initializer,
         IAmbiguousExpressionNode? currentInitializer)
-        => new FieldDefinitionNode(isLentBinding, syntax, isMutableBinding, name, typeNode, bindingAntetype, bindingType, initializer, currentInitializer);
+        => new FieldDefinitionNode(syntax, typeNode, initializer, currentInitializer);
 }
 
 // [Closed(typeof(AssociatedFunctionDefinitionNode))]
@@ -1214,6 +1216,10 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
+    new bool IsMutableBinding { get; }
+    bool INamedBindingNode.IsMutableBinding => IsMutableBinding;
+    new bool IsLentBinding { get; }
+    bool IBindingNode.IsLentBinding => IsLentBinding;
     new IdentifierName Name { get; }
     IdentifierName? IParameterNode.Name => Name;
     IdentifierName INamedBindingDeclarationNode.Name => Name;
@@ -1256,6 +1262,8 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    new bool IsLentBinding { get; }
+    bool IBindingNode.IsLentBinding => IsLentBinding;
     SelfParameterType ParameterType { get; }
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IDeclaredUserType ContainingDeclaredType { get; }
@@ -1858,6 +1866,12 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     IFlowState FlowStateBefore();
     ValueId? IStatementNode.ResultValueId
         => null;
+    bool IBindingNode.IsLentBinding
+        => false;
+    IdentifierName INamedBindingDeclarationNode.Name
+        => Syntax.Name;
+    bool INamedBindingNode.IsMutableBinding
+        => Syntax.IsMutableBinding;
 
     public static IVariableDeclarationStatementNode Create(
         ControlFlowSet controlFlowNext,
@@ -1865,20 +1879,17 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
         IMaybeAntetype? resultAntetype,
         DataType? resultType,
         IFlowState flowStateAfter,
-        bool isLentBinding,
         IMaybeAntetype bindingAntetype,
         DataType bindingType,
         IFixedSet<IDataFlowNode> dataFlowPrevious,
         BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IVariableDeclarationStatementSyntax syntax,
-        bool isMutableBinding,
-        IdentifierName name,
         ICapabilityNode? capability,
         ITypeNode? type,
         IAmbiguousExpressionNode? initializer,
         IAmbiguousExpressionNode? currentInitializer)
-        => new VariableDeclarationStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, isLentBinding, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, name, capability, type, initializer, currentInitializer);
+        => new VariableDeclarationStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, capability, type, initializer, currentInitializer);
 }
 
 // [Closed(typeof(ExpressionStatementNode))]
@@ -1972,24 +1983,29 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
+    new IdentifierName Name { get; }
+    IdentifierName INamedBindingDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     IFlowState FlowStateBefore();
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => LexicalScopingAspect.BindingPattern_FlowLexicalScope(this);
+    bool IBindingNode.IsLentBinding
+        => false;
+    bool INamedBindingNode.IsMutableBinding
+        => Syntax.IsMutableBinding;
 
     public static IBindingPatternNode Create(
         ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IFlowState flowStateAfter,
-        bool isLentBinding,
         IMaybeAntetype bindingAntetype,
         DataType bindingType,
         IFixedSet<IDataFlowNode> dataFlowPrevious,
         BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IBindingPatternSyntax syntax,
-        bool isMutableBinding,
         IdentifierName name)
-        => new BindingPatternNode(controlFlowNext, controlFlowPrevious, flowStateAfter, isLentBinding, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, name);
+        => new BindingPatternNode(controlFlowNext, controlFlowPrevious, flowStateAfter, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, name);
 }
 
 // [Closed(typeof(OptionalPatternNode))]
@@ -2595,6 +2611,8 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
+    new bool IsMutableBinding { get; }
+    bool INamedBindingNode.IsMutableBinding => IsMutableBinding;
     IdentifierName VariableName { get; }
     IAmbiguousExpressionNode TempInExpression { get; }
     IExpressionNode? InExpression { get; }
@@ -2614,6 +2632,10 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope LexicalScope { get; }
+    bool IBindingNode.IsLentBinding
+        => false;
+    IdentifierName INamedBindingDeclarationNode.Name
+        => VariableName;
 
     public static IForeachExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -2621,9 +2643,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
         IMaybeExpressionAntetype antetype,
         DataType type,
         IFlowState flowStateAfter,
-        bool isLentBinding,
         IMaybeAntetype bindingAntetype,
-        IdentifierName name,
         DataType bindingType,
         IFixedSet<IDataFlowNode> dataFlowPrevious,
         BindingFlags<IVariableBindingNode> definitelyAssigned,
@@ -2643,7 +2663,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
         IMaybeAntetype iteratedAntetype,
         DataType iteratedType,
         IFlowState flowStateBeforeBlock)
-        => new ForeachExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, isLentBinding, bindingAntetype, name, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, variableName, inExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, iteratorType, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype, iteratedType, flowStateBeforeBlock);
+        => new ForeachExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, bindingAntetype, bindingType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, variableName, inExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, iteratorType, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype, iteratedType, flowStateBeforeBlock);
 }
 
 // [Closed(typeof(BreakExpressionNode))]
@@ -7003,13 +7023,8 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     private IFieldDefinitionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public bool IsLentBinding { [DebuggerStepThrough] get; }
     public IFieldDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
-    public bool IsMutableBinding { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public ITypeNode TypeNode { [DebuggerStepThrough] get; }
-    public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
-    public DataType BindingType { [DebuggerStepThrough] get; }
     public IAmbiguousExpressionNode? TempInitializer { [DebuggerStepThrough] get; }
     public IExpressionNode? Initializer => TempInitializer as IExpressionNode;
     public IAmbiguousExpressionNode? CurrentInitializer { [DebuggerStepThrough] get; }
@@ -7049,12 +7064,24 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
                 ValueIdsAspect.FieldDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public DataType BindingType
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                TypeMemberDeclarationsAspect.FieldDefinition_BindingType);
+    private DataType? bindingType;
+    private bool bindingTypeCached;
     public FieldSymbol Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol!
             : this.Synthetic(ref symbolCached, ref symbol,
                 SymbolsAspect.FieldDefinition_Symbol);
     private FieldSymbol? symbol;
     private bool symbolCached;
+    public IMaybeAntetype BindingAntetype
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                DefinitionAntetypesAspect.FieldDefinition_BindingAntetype);
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -7065,23 +7092,13 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     public IExitNode Exit { [DebuggerStepThrough] get; }
 
     public FieldDefinitionNode(
-        bool isLentBinding,
         IFieldDefinitionSyntax syntax,
-        bool isMutableBinding,
-        IdentifierName name,
         ITypeNode typeNode,
-        IMaybeAntetype bindingAntetype,
-        DataType bindingType,
         IAmbiguousExpressionNode? initializer,
         IAmbiguousExpressionNode? currentInitializer)
     {
-        IsLentBinding = isLentBinding;
         Syntax = syntax;
-        IsMutableBinding = isMutableBinding;
-        Name = name;
         TypeNode = Child.Attach(this, typeNode);
-        BindingAntetype = bindingAntetype;
-        BindingType = bindingType;
         TempInitializer = Child.Attach(this, initializer);
         CurrentInitializer = currentInitializer;
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
@@ -7103,6 +7120,33 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return ControlFlowSet.CreateNormal(Initializer ?? (IControlFlowNode)Exit);
+        if (ReferenceEquals(descendant, Self.Initializer))
+            return ControlFlowSet.CreateNormal(Exit);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Initializer))
+            return null;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        TypeMemberDeclarationsAspect.FieldDefinition_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -8230,15 +8274,12 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     public IMaybeAntetype? ResultAntetype { [DebuggerStepThrough] get; }
     public DataType? ResultType { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public bool IsLentBinding { [DebuggerStepThrough] get; }
     public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
     public DataType BindingType { [DebuggerStepThrough] get; }
     public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IVariableDeclarationStatementSyntax Syntax { [DebuggerStepThrough] get; }
-    public bool IsMutableBinding { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public ICapabilityNode? Capability { [DebuggerStepThrough] get; }
     public ITypeNode? Type { [DebuggerStepThrough] get; }
     public IAmbiguousExpressionNode? TempInitializer { [DebuggerStepThrough] get; }
@@ -8281,15 +8322,12 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         IMaybeAntetype? resultAntetype,
         DataType? resultType,
         IFlowState flowStateAfter,
-        bool isLentBinding,
         IMaybeAntetype bindingAntetype,
         DataType bindingType,
         IFixedSet<IDataFlowNode> dataFlowPrevious,
         BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IVariableDeclarationStatementSyntax syntax,
-        bool isMutableBinding,
-        IdentifierName name,
         ICapabilityNode? capability,
         ITypeNode? type,
         IAmbiguousExpressionNode? initializer,
@@ -8300,15 +8338,12 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         ResultAntetype = resultAntetype;
         ResultType = resultType;
         FlowStateAfter = flowStateAfter;
-        IsLentBinding = isLentBinding;
         BindingAntetype = bindingAntetype;
         BindingType = bindingType;
         DataFlowPrevious = dataFlowPrevious;
         DefinitelyAssigned = definitelyAssigned;
         DefinitelyUnassigned = definitelyUnassigned;
         Syntax = syntax;
-        IsMutableBinding = isMutableBinding;
-        Name = name;
         Capability = Child.Attach(this, capability);
         Type = Child.Attach(this, type);
         TempInitializer = Child.Attach(this, initializer);
@@ -8426,14 +8461,12 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public bool IsLentBinding { [DebuggerStepThrough] get; }
     public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
     public DataType BindingType { [DebuggerStepThrough] get; }
     public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IBindingPatternSyntax Syntax { [DebuggerStepThrough] get; }
-    public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -8474,27 +8507,23 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
         ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IFlowState flowStateAfter,
-        bool isLentBinding,
         IMaybeAntetype bindingAntetype,
         DataType bindingType,
         IFixedSet<IDataFlowNode> dataFlowPrevious,
         BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IBindingPatternSyntax syntax,
-        bool isMutableBinding,
         IdentifierName name)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         FlowStateAfter = flowStateAfter;
-        IsLentBinding = isLentBinding;
         BindingAntetype = bindingAntetype;
         BindingType = bindingType;
         DataFlowPrevious = dataFlowPrevious;
         DefinitelyAssigned = definitelyAssigned;
         DefinitelyUnassigned = definitelyUnassigned;
         Syntax = syntax;
-        IsMutableBinding = isMutableBinding;
         Name = name;
     }
 }
@@ -9826,9 +9855,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public bool IsLentBinding { [DebuggerStepThrough] get; }
     public IMaybeAntetype BindingAntetype { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public DataType BindingType { [DebuggerStepThrough] get; }
     public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
@@ -9908,9 +9935,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         IMaybeExpressionAntetype antetype,
         DataType type,
         IFlowState flowStateAfter,
-        bool isLentBinding,
         IMaybeAntetype bindingAntetype,
-        IdentifierName name,
         DataType bindingType,
         IFixedSet<IDataFlowNode> dataFlowPrevious,
         BindingFlags<IVariableBindingNode> definitelyAssigned,
@@ -9936,9 +9961,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         Antetype = antetype;
         Type = type;
         FlowStateAfter = flowStateAfter;
-        IsLentBinding = isLentBinding;
         BindingAntetype = bindingAntetype;
-        Name = name;
         BindingType = bindingType;
         DataFlowPrevious = dataFlowPrevious;
         DefinitelyAssigned = definitelyAssigned;

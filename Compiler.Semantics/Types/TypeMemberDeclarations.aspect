@@ -45,5 +45,10 @@
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
 = SourceInitializerDefinition.Body.**.ExpectedReturnType => DataType.Void;
 
+↑ FieldDefinition.BindingType: `DataType`;
+= FieldDefinition.↑.Diagnostics;
+// Null is the signal that this is a field initializer and not a method body
+= FieldDefinition.Initializer.**.ExpectedReturnType => null;
+
 // ---------- Control Flow Expressions
 ↓ ReturnExpression.ExpectedReturnType: `DataType`?;
