@@ -29,7 +29,7 @@ internal static partial class TypeMemberDeclarationsAspect
         return new FunctionType(parameterTypes, new ReturnType(returnType));
     }
 
-    public static void MethodDefinition_ContributeDiagnostics(IMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void MethodDefinition_Contribute_Diagnostics(IMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
         => CheckParameterAndReturnAreVarianceSafe(node, diagnostics);
 
     private static void CheckParameterAndReturnAreVarianceSafe(IMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)

@@ -17,7 +17,6 @@
 ↑ PackageFacet.GlobalNamespace: NamespaceDefinition;
 
 // ---------- Code Files
-= CompilationUnit.*.ContainingDeclaration;
 ↑ CompilationUnit.ImplicitNamespace: NamespaceDefinition;
 
 // ---------- Namespace Definitions
@@ -29,7 +28,6 @@
 
 // ---------- Type Definitions
 = TypeDefinition.*.**.IsAttributeType => false;
-= TypeDefinition.*.**.ContainingDeclaration;
 
 // ---------- Attributes
 = Attribute.TypeName.IsAttributeType => true;

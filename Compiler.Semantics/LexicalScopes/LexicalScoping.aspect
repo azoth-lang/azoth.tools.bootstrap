@@ -33,6 +33,7 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 // ---------- Definitions
 ↓ Definition.ContainingLexicalScope: `LexicalScope`;
 ↑ Definition.LexicalScope:`LexicalScope`;
+= ConcreteInvocableDefinition.Body.**.ContainingLexicalScope => LexicalScope;
 
 // ---------- Namespace Definitions
 ↓ NamespaceBlockDefinition.ContainingLexicalScope: `NamespaceSearchScope`;
@@ -40,7 +41,7 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 = NamespaceBlockDefinition.*.**.ContainingLexicalScope => LexicalScope;
 
 // ---------- Function Definition
-= FunctionDefinition.Body.**.ContainingLexicalScope => LexicalScope;
+//= FunctionDefinition.Body.**.ContainingLexicalScope => LexicalScope;
 
 // ---------- Type Definitions
 = TypeDefinition.GenericParameters[*].**.ContainingLexicalScope => ContainingLexicalScope;

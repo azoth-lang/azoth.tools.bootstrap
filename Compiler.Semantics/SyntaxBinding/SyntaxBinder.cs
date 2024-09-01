@@ -187,7 +187,7 @@ internal static class SyntaxBinder
         };
 
     private static IStandardMethodDefinitionNode StandardMethodDefinition(IStandardMethodDefinitionSyntax syntax)
-        => new StandardMethodDefinitionNode(syntax, MethodSelfParameter(syntax.SelfParameter),
+        => IStandardMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
             NamedParameters(syntax.Parameters), Type(syntax.Return?.Type), Body(syntax.Body));
 
     private static IGetterMethodDefinitionNode GetterMethodDefinition(IGetterMethodDefinitionSyntax syntax)

@@ -350,10 +350,9 @@ public partial interface IDefinitionNode : ICodeNode, IPackageFacetChildDeclarat
     typeof(IConcreteInvocableDefinitionNode),
     typeof(IMethodDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInvocableDefinitionNode : IDefinitionNode
+public partial interface IInvocableDefinitionNode : IDefinitionNode, IInvocableDeclarationNode
 {
     IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
-    InvocableSymbol Symbol { get; }
     ValueIdScope ValueIdScope { get; }
 }
 
@@ -361,7 +360,7 @@ public partial interface IInvocableDefinitionNode : IDefinitionNode
     typeof(IConcreteInvocableDefinitionNode),
     typeof(IFieldDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IExecutableDefinitionNode : IDefinitionNode
+public partial interface IExecutableDefinitionNode : IDefinitionNode, ISymbolDeclarationNode
 {
     ValueIdScope ValueIdScope { get; }
     IEntryNode Entry { get; }
@@ -400,7 +399,8 @@ public partial interface IConcreteFunctionInvocableDefinitionNode : IConcreteInv
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
     FunctionType Type { get; }
     new FunctionSymbol Symbol { get; }
-    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
+    Symbol ISymbolDeclarationNode.Symbol => Symbol;
 }
 
 // [Closed(typeof(NamespaceBlockDefinitionNode))]
@@ -502,7 +502,6 @@ public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, I
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
     FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
-    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
 
     public static IFunctionDefinitionNode Create(
         IFunctionDefinitionSyntax syntax,
@@ -780,9 +779,8 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
     MethodKind Kind { get; }
     new MethodSymbol Symbol { get; }
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
-    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
-    MethodSymbol IMethodDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
+    MethodSymbol IMethodDeclarationNode.Symbol => Symbol;
 }
 
 // [Closed(typeof(AbstractMethodDefinitionNode))]
@@ -915,10 +913,9 @@ public partial interface IConstructorDefinitionNode : IConcreteInvocableDefiniti
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     new ConstructorSymbol Symbol { get; }
-    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     ConstructorSymbol IConstructorDeclarationNode.Symbol => Symbol;
-    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 }
 
 // [Closed(typeof(DefaultConstructorDefinitionNode))]
@@ -969,10 +966,9 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     new InitializerSymbol Symbol { get; }
-    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     InitializerSymbol IInitializerDeclarationNode.Symbol => Symbol;
-    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 }
 
 // [Closed(typeof(DefaultInitializerDefinitionNode))]
@@ -1075,10 +1071,9 @@ public partial interface IAssociatedFunctionDefinitionNode : IConcreteFunctionIn
     FunctionType IFunctionLikeDeclarationNode.Type => Type;
     new FunctionSymbol Symbol { get; }
     FunctionSymbol IConcreteFunctionInvocableDefinitionNode.Symbol => Symbol;
-    InvocableSymbol IInvocableDefinitionNode.Symbol => Symbol;
+    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FunctionSymbol IFunctionLikeDeclarationNode.Symbol => Symbol;
-    InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
 
     public static IAssociatedFunctionDefinitionNode Create(
         IAssociatedFunctionDefinitionSyntax syntax,
@@ -3889,6 +3884,7 @@ public partial interface INamedDeclarationNode : IChildDeclarationNode
 }
 
 [Closed(
+    typeof(IExecutableDefinitionNode),
     typeof(IInvocableDeclarationNode),
     typeof(IPackageDeclarationNode),
     typeof(IPackageFacetDeclarationNode),
@@ -3903,6 +3899,7 @@ public partial interface ISymbolDeclarationNode : IDeclarationNode
 }
 
 [Closed(
+    typeof(IInvocableDefinitionNode),
     typeof(IFunctionLikeDeclarationNode),
     typeof(IMethodDeclarationNode),
     typeof(IConstructorDeclarationNode),
@@ -5131,7 +5128,7 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
-            return SymbolNodeAspect.CompilationUnit_Children_ContainingDeclaration(this);
+            return Is.OfType<INamespaceDefinitionNode>(ImplicitNamespace);
         return base.Inherited_ContainingDeclaration(child, descendant, ctx);
     }
 
@@ -5378,6 +5375,13 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -5387,27 +5391,20 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
-        if (ReferenceEquals(child, Self.Parameters[0]))
-            return Self.FlowStateBefore();
-        if (IndexOfNode(Self.Parameters, child) is { } index)
-            return Parameters[index - 1].FlowStateAfter;
-        return base.Inherited_FlowStateBefore(child, descendant, ctx);
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return LexicalScope;
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
-    }
-
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (0 < Self.Parameters.Count && ReferenceEquals(child, Self.Parameters[0]))
+            return Self.FlowStateBefore();
+        if (IndexOfNode(Self.Parameters, child) is { } index)
+            return Parameters[index - 1].FlowStateAfter;
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5559,6 +5556,11 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IUserTypeDeclarationNode>(this);
+    }
+
     internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return this;
@@ -5567,11 +5569,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return SymbolNodeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaration(this);
     }
 
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5713,6 +5710,11 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IUserTypeDeclarationNode>(this);
+    }
+
     internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return this;
@@ -5721,11 +5723,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return SymbolNodeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaration(this);
     }
 
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5854,6 +5851,11 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IUserTypeDeclarationNode>(this);
+    }
+
     internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return this;
@@ -5862,11 +5864,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return SymbolNodeAspect.TypeDefinition_Children_Broadcast_ContainingDeclaration(this);
     }
 
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6017,6 +6014,7 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
+        TypeMemberDeclarationsAspect.MethodDefinition_Contribute_Diagnostics(this, builder);
         TypeModifiersAspect.AbstractMethodDefinition_Contribute_Diagnostics(this, builder);
     }
 }
@@ -6116,6 +6114,13 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6127,13 +6132,27 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(child, Self.Body))
-            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
-        if (ReferenceEquals(child, Self.Parameters[0]))
+        if (ReferenceEquals(child, Self.SelfParameter))
             return Self.FlowStateBefore();
+        if (0 < Self.Parameters.Count && ReferenceEquals(child, Self.Parameters[0]))
+            return SelfParameter.FlowStateAfter;
         if (IndexOfNode(Self.Parameters, child) is { } index)
             return Parameters[index - 1].FlowStateAfter;
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Return?.NamedType ?? DataType.Void;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IExecutableDefinitionNode>(this);
     }
 
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6141,8 +6160,33 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
 
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Self.MethodGroupType.Return.Type;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Self.MethodGroupType.Return.Type.ToAntetype();
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        TypeMemberDeclarationsAspect.MethodDefinition_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -6240,6 +6284,13 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6251,13 +6302,27 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(child, Self.Body))
-            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
-        if (ReferenceEquals(child, Self.Parameters[0]))
+        if (ReferenceEquals(child, Self.SelfParameter))
             return Self.FlowStateBefore();
+        if (0 < Self.Parameters.Count && ReferenceEquals(child, Self.Parameters[0]))
+            return SelfParameter.FlowStateAfter;
         if (IndexOfNode(Self.Parameters, child) is { } index)
             return Parameters[index - 1].FlowStateAfter;
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Return?.NamedType ?? DataType.Void;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IExecutableDefinitionNode>(this);
     }
 
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6267,6 +6332,17 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        TypeMemberDeclarationsAspect.MethodDefinition_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -6364,6 +6440,13 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6375,13 +6458,27 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(child, Self.Body))
-            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
-        if (ReferenceEquals(child, Self.Parameters[0]))
+        if (ReferenceEquals(child, Self.SelfParameter))
             return Self.FlowStateBefore();
+        if (0 < Self.Parameters.Count && ReferenceEquals(child, Self.Parameters[0]))
+            return SelfParameter.FlowStateAfter;
         if (IndexOfNode(Self.Parameters, child) is { } index)
             return Parameters[index - 1].FlowStateAfter;
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Return?.NamedType ?? DataType.Void;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IExecutableDefinitionNode>(this);
     }
 
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6391,6 +6488,17 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        TypeMemberDeclarationsAspect.MethodDefinition_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -6485,6 +6593,13 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6492,17 +6607,6 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
-    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
-        if (ReferenceEquals(child, Self.Parameters[0]))
-            return Self.FlowStateBefore();
-        if (IndexOfNode(Self.Parameters, child) is { } index)
-            return Parameters[index - 1].FlowStateAfter;
-        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -6604,6 +6708,13 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6611,17 +6722,6 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
-    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
-        if (ReferenceEquals(child, Self.Parameters[0]))
-            return Self.FlowStateBefore();
-        if (IndexOfNode(Self.Parameters, child) is { } index)
-            return Parameters[index - 1].FlowStateAfter;
-        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -6720,6 +6820,13 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6727,17 +6834,6 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
-    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
-        if (ReferenceEquals(child, Self.Parameters[0]))
-            return Self.FlowStateBefore();
-        if (IndexOfNode(Self.Parameters, child) is { } index)
-            return Parameters[index - 1].FlowStateAfter;
-        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -6839,6 +6935,13 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6846,17 +6949,6 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
-    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
-        if (ReferenceEquals(child, Self.Parameters[0]))
-            return Self.FlowStateBefore();
-        if (IndexOfNode(Self.Parameters, child) is { } index)
-            return Parameters[index - 1].FlowStateAfter;
-        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -7070,6 +7162,13 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -7077,17 +7176,6 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-    }
-
-    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
-        if (ReferenceEquals(child, Self.Parameters[0]))
-            return Self.FlowStateBefore();
-        if (IndexOfNode(Self.Parameters, child) is { } index)
-            return Parameters[index - 1].FlowStateAfter;
-        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)

@@ -14,10 +14,6 @@ internal static partial class SymbolNodeAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial INamespaceDefinitionNode CompilationUnit_Children_ContainingDeclaration(ICompilationUnitNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IUserTypeDeclarationNode TypeDefinition_Children_Broadcast_ContainingDeclaration(ITypeDefinitionNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial INamespaceSymbolNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node);

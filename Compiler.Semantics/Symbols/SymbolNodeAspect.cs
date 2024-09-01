@@ -64,9 +64,6 @@ internal static partial class SymbolNodeAspect
         return current;
     }
 
-    public static partial INamespaceDefinitionNode CompilationUnit_Children_ContainingDeclaration(ICompilationUnitNode node)
-        => node.ImplicitNamespace;
-
     public static partial IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node)
         => new PackageSymbolNode(node);
 
@@ -79,9 +76,6 @@ internal static partial class SymbolNodeAspect
 
     public static partial INamespaceDefinitionNode NamespaceBlockDefinition_Definition(INamespaceBlockDefinitionNode node)
         => FindNamespace(node.ContainingNamespace, node.DeclaredNames);
-
-    public static partial IUserTypeDeclarationNode TypeDefinition_Children_Broadcast_ContainingDeclaration(ITypeDefinitionNode node)
-        => node;
 
     public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)
     {

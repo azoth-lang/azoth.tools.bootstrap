@@ -1,5 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name TypeMemberDeclarationsAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -13,8 +14,18 @@
 ↑ FunctionDefinition.Type: `FunctionType`;
 
 // ---------- Member Definitions
+= MethodDefinition.↑.Diagnostics;
 = AbstractMethodDefinition.MethodGroupType => Symbol.MethodGroupType;
+= ConcreteMethodDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
+= ConcreteMethodDefinition.Parameters[0].**.FlowStateBefore()
+    => SelfParameter.FlowStateAfter;
+= ConcreteMethodDefinition.Parameters[index].**.FlowStateBefore()
+    => Parameters[index - 1].FlowStateAfter;
+= ConcreteMethodDefinition.Body.**.FlowStateBefore()
+    => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
+= ConcreteMethodDefinition.Body.**.ExpectedReturnType => Return?.NamedType ?? DataType.Void;
 = StandardMethodDefinition.MethodGroupType => Symbol.MethodGroupType;
+= StandardMethodDefinition.Body.**.ExpectedType => Self.MethodGroupType.Return.Type;
 
 // ---------- Control Flow Expressions
 ↓ ReturnExpression.ExpectedReturnType: `DataType`?;

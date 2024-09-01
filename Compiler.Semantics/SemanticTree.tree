@@ -69,8 +69,9 @@ UsingDirective <: Code = Syntax:`IUsingDirectiveSyntax`;
 
 // ---------- Definitions
 Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`?;
-InvocableDefinition <: Definition = Parameters:ConstructorOrInitializerParameter* Symbol:`InvocableSymbol`;
-ExecutableDefinition <: Definition = /Entry/ /Exit/;
+InvocableDefinition <: Definition, InvocableDeclaration
+    = Parameters:ConstructorOrInitializerParameter*;
+ExecutableDefinition <: Definition, SymbolDeclaration = /Entry/ /Exit/;
 ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition
     = Parameters:ConstructorOrInitializerParameter* Body?;
 ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition

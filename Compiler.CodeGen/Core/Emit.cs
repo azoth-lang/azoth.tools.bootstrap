@@ -414,7 +414,7 @@ internal static class Emit
                     : SelectorIf("ReferenceEquals(child, descendant)"),
             // TODO use Current child for all of these
             ChildSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, Self.{s.Child})"),
-            ChildAtIndexSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, Self.{s.Child}[{s.Index}])"),
+            ChildAtIndexSelectorModel s => SelectorIf($"{s.Index} < Self.{s.Child}.Count && ReferenceEquals({ChildOrDescendant(s)}, Self.{s.Child}[{s.Index}])"),
             ChildAtVariableSelectorModel s => SelectorIf($"IndexOfNode(Self.{s.Child}, {ChildOrDescendant(s)}) is {{ }} {s.Variable}"),
             ChildListSelectorModel s => SelectorIf($"ContainsNode(Self.{s.Child}, {ChildOrDescendant(s)})"),
             _ => throw ExhaustiveMatch.Failed(selector)
