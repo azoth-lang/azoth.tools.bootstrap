@@ -2,7 +2,7 @@
 ◊name DeclarationsAspect;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 ↑ NamedDeclaration.Name: `TypeName`;
 

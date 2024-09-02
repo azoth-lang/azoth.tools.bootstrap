@@ -2,7 +2,7 @@
 ◊name InheritanceAspect;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Type Definitions
 ↑ TypeDefinition.AllSupertypeNames: IEnumerable<StandardTypeName> => SupertypeNames;

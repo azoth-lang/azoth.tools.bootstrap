@@ -3,7 +3,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-// ↓ ↑ ⮡
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Namespace Declarations
 ↑ NamespaceDeclaration.MembersByName: `FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>`;

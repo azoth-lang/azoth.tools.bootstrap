@@ -6,7 +6,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Type Definitions
 ⟳ TypeDefinition.Supertypes: {`BareReferenceType`} initial => [];

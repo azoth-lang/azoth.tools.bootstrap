@@ -2,7 +2,7 @@
 ◊name NameBindingAntetypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Bindings
 ↑ Binding.BindingAntetype: `IMaybeAntetype`;

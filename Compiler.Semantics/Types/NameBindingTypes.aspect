@@ -3,7 +3,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Bindings
 ↑ Binding.BindingType: `Pseudotype`;

@@ -4,7 +4,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Definitions
 ↑ ConcreteInvocableDefinition.FlowStateBefore(): `IFlowState`;

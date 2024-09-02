@@ -1,0 +1,8 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
+◊name BindingNamesAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Attributes
+= Attribute.↑.Diagnostics;

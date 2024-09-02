@@ -1,7 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 ◊name ControlFlowAspect;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Definitions
 ↑ child eager ExecutableDefinition.Entry: Entry;

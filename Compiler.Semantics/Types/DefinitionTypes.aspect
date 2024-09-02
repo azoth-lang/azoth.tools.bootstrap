@@ -2,7 +2,7 @@
 ◊name DefinitionTypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Definitions
 ↑ ConcreteFunctionInvocableDefinition.Type: `FunctionType`;

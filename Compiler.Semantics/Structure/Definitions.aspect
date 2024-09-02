@@ -3,7 +3,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-// ↓ ↑ ⮡ ✎ ↗↖
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 ↗↖ *.Diagnostics:`DiagnosticCollection` from `DiagnosticCollectionBuilder` done Build;
 

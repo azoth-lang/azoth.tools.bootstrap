@@ -2,7 +2,7 @@
 ◊name SymbolsAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Packages
 ↑ Package.Symbol: `PackageSymbol`;

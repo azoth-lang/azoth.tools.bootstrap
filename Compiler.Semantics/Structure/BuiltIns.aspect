@@ -2,7 +2,7 @@
 ◊name BuiltInsAspect;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Packages
 // TODO this should be included in children only if it isn't a duplicate

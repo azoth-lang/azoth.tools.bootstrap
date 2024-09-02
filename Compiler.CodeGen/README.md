@@ -138,8 +138,6 @@ Circular attributes are always lazy (even when inline expressions are used).
 | `=` *Node*`.`*Attribute*`;`                                                               | Circular equation                        |
 | `=` *Node*`.`*Attribute* `=>` *Expression*`;`                                             | Circular equation with inline expression |
 
-↻ ▶️ ⭲ ↷ ⌱ ↻ ⓘ ○→ ⭘→ ◯→ ⤸
-
 ### Aggregate Attributes
 
 Aggregate attributes are similar to collection attributes but are simpler in some ways. An aggregate

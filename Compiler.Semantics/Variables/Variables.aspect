@@ -2,7 +2,7 @@
 ◊name VariablesAspect;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Definitions
 ↑ ExecutableDefinition.VariableBindingsMap: `FixedDictionary<IVariableBindingNode, int>`;

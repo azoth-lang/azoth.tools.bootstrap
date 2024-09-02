@@ -7330,6 +7330,17 @@ file class AttributeNode : SemanticNode, IAttributeNode
             return true;
         return base.Inherited_IsAttributeType(child, descendant, ctx);
     }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        BindingNamesAspect.Attribute_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]

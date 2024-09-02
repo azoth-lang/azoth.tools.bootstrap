@@ -3,7 +3,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Packages
 ↑ Package.PackageDeclarations: `FixedDictionary<IdentifierName, IPackageDeclarationNode>`;

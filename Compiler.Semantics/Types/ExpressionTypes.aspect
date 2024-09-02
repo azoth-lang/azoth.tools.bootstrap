@@ -1,7 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name ExpressionTypesAspect;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Function Parts
 ↓ ExpressionBody.ExpectedType: `DataType`?;

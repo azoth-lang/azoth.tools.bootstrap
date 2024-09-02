@@ -2,7 +2,7 @@
 ◊name DefinitionAntetypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
-// ↓ ↑ ⮡ ✎
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Function Definition
 // TODO it would be good to refactor to not depend on Type

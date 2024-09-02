@@ -2,7 +2,7 @@
 ◊name DefaultMembersAspect;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
-// ↓ ↑ ⮡ ✎ ↗↖
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Type Definitions
 ↑ TypeDefinition.Members: {TypeMemberDefinition};

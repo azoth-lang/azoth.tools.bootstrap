@@ -7,7 +7,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
-internal static class BindingNamesAspect
+internal static partial class BindingNamesAspect
 {
     public static ISelfParameterNode? SelfExpression_ReferencedDefinition(ISelfExpressionNode node)
         => node.ContainingDeclaration switch
@@ -47,7 +47,7 @@ internal static class BindingNamesAspect
                                   .OfType<IConstructorDeclarationNode>().ToFixedSet();
     }
 
-    public static void Attribute_ContributeDiagnostics(IAttributeNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void Attribute_Contribute_Diagnostics(IAttributeNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ReferencedSymbol is null)
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.TypeName.Syntax.Span));

@@ -1,7 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 ◊name LexicalScopingAspect;
 
-// ↓ ↑ ⮡
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // Type relationship needed to determine most specific type for ContainingLexicalScope
 type `NamespaceSearchScope` <: `LexicalScope`;
