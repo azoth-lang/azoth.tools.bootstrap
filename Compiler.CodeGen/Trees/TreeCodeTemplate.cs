@@ -1740,11 +1740,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write(" before, IInheritanceContext ctx)\r\n        => ");
             
             #line 275 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.QualifiedEquationMethod(eq)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Body(eq)));
             
             #line default
             #line hidden
-            this.Write("(this);\r\n");
+            this.Write(";\r\n");
             
             #line 276 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
       } 

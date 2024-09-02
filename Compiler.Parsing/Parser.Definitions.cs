@@ -655,7 +655,7 @@ public partial class Parser
             // For simplicity of downstream code, make up a fake self parameter
             var selfReferenceCapability = ICapabilitySyntax.Create(expectedSelfParameterLocation,
                 [], DeclaredCapability.Mutable);
-            selfParameter = IConstructorSelfParameterSyntax.Create(expectedSelfParameterLocation, null, false, selfReferenceCapability);
+            selfParameter = IConstructorSelfParameterSyntax.Create(expectedSelfParameterLocation, false, selfReferenceCapability);
         }
         else if (parameters[0] is not ISelfParameterSyntax)
             Add(ParseError.SelfParameterMustBeFirst(File, selfParameter.Span));

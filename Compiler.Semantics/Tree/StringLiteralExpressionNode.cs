@@ -45,7 +45,7 @@ internal sealed class StringLiteralExpressionNode : LiteralExpressionNode, IStri
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.StringLiteralExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.StringLiteralExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

@@ -4,6 +4,9 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
+// ---------- Special Parts
+↑ ElseClause.FlowStateAfter: `IFlowState`;
+
 // ---------- Definitions
 ↑ ConcreteFunctionInvocableDefinition.Type: `FunctionType`;
 
@@ -28,3 +31,8 @@
 
 // ---------- Parameters
 ↓ SelfParameter.ContainingDeclaredType: `IDeclaredUserType`;
+
+// ---------- Function Parts
+↑ Body.FlowStateAfter: `IFlowState`;
+= BlockBody.FlowStateAfter => throw new NotImplementedException();
+= ExpressionBody.FlowStateAfter => throw new NotImplementedException();

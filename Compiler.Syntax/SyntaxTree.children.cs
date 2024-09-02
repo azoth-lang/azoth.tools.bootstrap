@@ -165,8 +165,6 @@ public static class ISyntaxExtensions
                 yield break;
             case IExpressionBodySyntax n:
                 yield return n.ResultStatement;
-                foreach (var child in n.Statements)
-                    yield return child;
                 yield break;
             case IIdentifierTypeNameSyntax n:
                 yield break;

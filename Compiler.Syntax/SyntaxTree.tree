@@ -103,7 +103,8 @@ Capability <: CapabilityConstraint = Tokens:`ICapabilityToken`* Declared:`Declar
 Parameter <: Code = Name:`IdentifierName`?;
 /// A non-self parameter that can be declared in a constructor
 ConstructorOrInitializerParameter <: Parameter;
-NamedParameter <: ConstructorOrInitializerParameter, LocalBinding = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` Type DefaultValue:Expression?;
+NamedParameter <: ConstructorOrInitializerParameter, LocalBinding
+    = IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName` Type DefaultValue:Expression?;
 SelfParameter <: Parameter = IsLentBinding:`bool` Capability:CapabilityConstraint;
 ConstructorSelfParameter <: SelfParameter = Capability;
 InitializerSelfParameter <: SelfParameter = Capability;
@@ -114,7 +115,7 @@ Return <: Code = Type; // Return syntax of a function or method (i.e. ``)
 // ---------- Function Parts
 Body <: BodyOrBlock;
 BlockBody <: Body = Statements:BodyStatement*;
-ExpressionBody <: Body = ResultStatement Statements:Statement*;
+ExpressionBody <: Body = ResultStatement;
 
 // ---------- Types
 Type <: Code;

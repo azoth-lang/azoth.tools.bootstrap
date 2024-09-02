@@ -1,5 +1,6 @@
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Syntax;
 
@@ -13,4 +14,7 @@ internal static partial class ComputedAspect
         };
         return builder.Build();
     }
+
+    public static partial IFixedList<IStatementSyntax> ExpressionBody_Statements(IExpressionBodySyntax node)
+        => node.ResultStatement.Yield().ToFixedList<IStatementSyntax>();
 }

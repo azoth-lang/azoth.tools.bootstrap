@@ -683,6 +683,9 @@ public partial interface ISelfParameterSyntax : IParameterSyntax
 {
     bool IsLentBinding { get; }
     ICapabilityConstraintSyntax Capability { get; }
+    new IdentifierName? Name
+        => null;
+    IdentifierName? IParameterSyntax.Name => Name;
 }
 
 // [Closed(typeof(ConstructorSelfParameterSyntax))]
@@ -694,10 +697,9 @@ public partial interface IConstructorSelfParameterSyntax : ISelfParameterSyntax
 
     public static IConstructorSelfParameterSyntax Create(
         TextSpan span,
-        IdentifierName? name,
         bool isLentBinding,
         ICapabilitySyntax capability)
-        => new ConstructorSelfParameterSyntax(span, name, isLentBinding, capability);
+        => new ConstructorSelfParameterSyntax(span, isLentBinding, capability);
 }
 
 // [Closed(typeof(InitializerSelfParameterSyntax))]
@@ -709,10 +711,9 @@ public partial interface IInitializerSelfParameterSyntax : ISelfParameterSyntax
 
     public static IInitializerSelfParameterSyntax Create(
         TextSpan span,
-        IdentifierName? name,
         bool isLentBinding,
         ICapabilitySyntax capability)
-        => new InitializerSelfParameterSyntax(span, name, isLentBinding, capability);
+        => new InitializerSelfParameterSyntax(span, isLentBinding, capability);
 }
 
 // [Closed(typeof(MethodSelfParameterSyntax))]
@@ -722,10 +723,9 @@ public partial interface IMethodSelfParameterSyntax : ISelfParameterSyntax
 
     public static IMethodSelfParameterSyntax Create(
         TextSpan span,
-        IdentifierName? name,
         bool isLentBinding,
         ICapabilityConstraintSyntax capability)
-        => new MethodSelfParameterSyntax(span, name, isLentBinding, capability);
+        => new MethodSelfParameterSyntax(span, isLentBinding, capability);
 }
 
 // [Closed(typeof(FieldParameterSyntax))]
@@ -781,12 +781,13 @@ public partial interface IBlockBodySyntax : IBodySyntax
 public partial interface IExpressionBodySyntax : IBodySyntax
 {
     IResultStatementSyntax ResultStatement { get; }
+    new IFixedList<IStatementSyntax> Statements { get; }
+    IFixedList<IStatementSyntax> IBodyOrBlockSyntax.Statements => Statements;
 
     public static IExpressionBodySyntax Create(
         TextSpan span,
-        IResultStatementSyntax resultStatement,
-        IEnumerable<IStatementSyntax> statements)
-        => new ExpressionBodySyntax(span, resultStatement, statements);
+        IResultStatementSyntax resultStatement)
+        => new ExpressionBodySyntax(span, resultStatement);
 }
 
 [Closed(
@@ -2419,7 +2420,6 @@ file class ConstructorSelfParameterSyntax : IConstructorSelfParameterSyntax
     private IConstructorSelfParameterSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public IdentifierName? Name { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
     public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
     public override string ToString()
@@ -2427,12 +2427,10 @@ file class ConstructorSelfParameterSyntax : IConstructorSelfParameterSyntax
 
     public ConstructorSelfParameterSyntax(
         TextSpan span,
-        IdentifierName? name,
         bool isLentBinding,
         ICapabilitySyntax capability)
     {
         Span = span;
-        Name = name;
         IsLentBinding = isLentBinding;
         Capability = capability;
     }
@@ -2444,7 +2442,6 @@ file class InitializerSelfParameterSyntax : IInitializerSelfParameterSyntax
     private IInitializerSelfParameterSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public IdentifierName? Name { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
     public ICapabilitySyntax Capability { [DebuggerStepThrough] get; }
     public override string ToString()
@@ -2452,12 +2449,10 @@ file class InitializerSelfParameterSyntax : IInitializerSelfParameterSyntax
 
     public InitializerSelfParameterSyntax(
         TextSpan span,
-        IdentifierName? name,
         bool isLentBinding,
         ICapabilitySyntax capability)
     {
         Span = span;
-        Name = name;
         IsLentBinding = isLentBinding;
         Capability = capability;
     }
@@ -2469,7 +2464,6 @@ file class MethodSelfParameterSyntax : IMethodSelfParameterSyntax
     private IMethodSelfParameterSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public IdentifierName? Name { [DebuggerStepThrough] get; }
     public bool IsLentBinding { [DebuggerStepThrough] get; }
     public ICapabilityConstraintSyntax Capability { [DebuggerStepThrough] get; }
     public override string ToString()
@@ -2477,12 +2471,10 @@ file class MethodSelfParameterSyntax : IMethodSelfParameterSyntax
 
     public MethodSelfParameterSyntax(
         TextSpan span,
-        IdentifierName? name,
         bool isLentBinding,
         ICapabilityConstraintSyntax capability)
     {
         Span = span;
-        Name = name;
         IsLentBinding = isLentBinding;
         Capability = capability;
     }
@@ -2555,18 +2547,17 @@ file class ExpressionBodySyntax : IExpressionBodySyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IResultStatementSyntax ResultStatement { [DebuggerStepThrough] get; }
-    public IFixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.ExpressionBody_ToString(this);
+    public IFixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
 
     public ExpressionBodySyntax(
         TextSpan span,
-        IResultStatementSyntax resultStatement,
-        IEnumerable<IStatementSyntax> statements)
+        IResultStatementSyntax resultStatement)
     {
         Span = span;
         ResultStatement = resultStatement;
-        Statements = statements.ToFixedList();
+        Statements = ComputedAspect.ExpressionBody_Statements(this);
     }
 }
 

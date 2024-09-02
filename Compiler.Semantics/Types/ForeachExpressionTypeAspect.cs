@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-internal static class ForeachExpressionTypeAspect
+internal static partial class ForeachExpressionTypeAspect
 {
     public static DataType ForeachExpression_IteratorType(IForeachExpressionNode node)
     {
@@ -40,7 +40,7 @@ internal static class ForeachExpressionTypeAspect
         // TODO assign correct type to the expression
         => DataType.Void;
 
-    public static IFlowState ForeachExpression_FlowStateAfter(IForeachExpressionNode node)
+    public static partial IFlowState ForeachExpression_FlowStateAfter(IForeachExpressionNode node)
         // TODO loop flow state
         => (node.InExpression?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty)
             // TODO when the `foreach` has a type other than void, correctly handle the value id

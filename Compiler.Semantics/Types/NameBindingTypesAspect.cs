@@ -40,7 +40,7 @@ internal static partial class NameBindingTypesAspect
         return capabilityType.With(capability.Capability);
     }
 
-    public static IFlowState VariableDeclarationStatement_FlowStateAfter(IVariableDeclarationStatementNode node)
+    public static partial IFlowState VariableDeclarationStatement_FlowStateAfter(IVariableDeclarationStatementNode node)
     {
         var flowStateBefore = node.Initializer?.FlowStateAfter ?? node.FlowStateBefore();
         return flowStateBefore.Declare(node, node.Initializer?.ValueId);
@@ -52,7 +52,7 @@ internal static partial class NameBindingTypesAspect
     public static partial DataType BindingPattern_BindingType(IBindingPatternNode node)
         => node.ContextBindingType();
 
-    public static IFlowState BindingPattern_FlowStateAfter(IBindingPatternNode node)
+    public static partial IFlowState BindingPattern_FlowStateAfter(IBindingPatternNode node)
         // TODO the match referent value id could be used multiple times and perhaps shouldn't be removed here
         => node.FlowStateBefore().Declare(node, node.MatchReferentValueId);
 
@@ -73,7 +73,7 @@ internal static partial class NameBindingTypesAspect
     public static partial DataType NamedParameter_BindingType(INamedParameterNode node)
         => node.TypeNode.NamedType;
 
-    public static ParameterType NamedParameter_ParameterType(INamedParameterNode node)
+    public static partial ParameterType NamedParameter_ParameterType(INamedParameterNode node)
     {
         bool isLent = node.IsLentBinding && node.BindingType.CanBeLent();
         return new(isLent, node.BindingType);
@@ -108,6 +108,7 @@ internal static partial class NameBindingTypesAspect
         return declaredType.With(capability, declaredType.GenericParameterTypes);
     }
 
+    // TODO this is strange because a FieldParameter isn't a binding
     public static partial DataType FieldParameter_BindingType(IFieldParameterNode node)
         => node.ReferencedField?.BindingType ?? DataType.Unknown;
 
@@ -142,13 +143,13 @@ internal static partial class NameBindingTypesAspect
         }
     }
 
-    public static SelfParameterType SelfParameter_ParameterType(ISelfParameterNode node)
+    public static partial SelfParameterType SelfParameter_ParameterType(ISelfParameterNode node)
     {
         bool isLent = node.IsLentBinding && node.BindingType.CanBeLent();
         return new(isLent, node.BindingType);
     }
 
-    public static void MethodSelfParameter_ContributeDiagnostics(IMethodSelfParameterNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void MethodSelfParameter_Contribute_Diagnostics(IMethodSelfParameterNode node, DiagnosticCollectionBuilder diagnostics)
     {
         CheckTypeCannotBeLent(node, diagnostics);
 
@@ -170,7 +171,7 @@ internal static partial class NameBindingTypesAspect
             diagnostics.Add(TypeError.ConstClassSelfParameterCannotHaveCapability(node.File, node.Syntax));
     }
 
-    public static void ConstructorSelfParameter_ContributeDiagnostics(
+    public static partial void ConstructorSelfParameter_Contribute_Diagnostics(
         IConstructorSelfParameterNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
@@ -180,10 +181,10 @@ internal static partial class NameBindingTypesAspect
         CheckInvalidConstructorSelfParameterCapability(node.Capability.Syntax, node.File, diagnostics);
     }
 
-    public static ParameterType FieldParameter_ParameterType(IFieldParameterNode node)
+    public static partial ParameterType FieldParameter_ParameterType(IFieldParameterNode node)
         => new ParameterType(false, node.BindingType);
 
-    public static void InitializerSelfParameter_ContributeDiagnostics(
+    public static partial void InitializerSelfParameter_Contribute_Diagnostics(
         IInitializerSelfParameterNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
@@ -193,7 +194,7 @@ internal static partial class NameBindingTypesAspect
         CheckInvalidConstructorSelfParameterCapability(node.Capability.Syntax, node.File, diagnostics);
     }
 
-    public static void NamedParameter_ContributeDiagnostics(INamedParameterNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void NamedParameter_Contribute_Diagnostics(INamedParameterNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var type = node.BindingType;
         if (node.IsLentBinding && !type.CanBeLent())

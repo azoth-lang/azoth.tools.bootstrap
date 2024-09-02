@@ -256,19 +256,19 @@ internal static class SyntaxBinder
         => syntax.Select(NamedParameter);
 
     private static INamedParameterNode NamedParameter(INamedParameterSyntax syntax)
-        => new NamedParameterNode(syntax, Type(syntax.Type));
+        => INamedParameterNode.Create(syntax, Type(syntax.Type));
 
     private static IConstructorSelfParameterNode ConstructorSelfParameter(IConstructorSelfParameterSyntax syntax)
-        => new ConstructorSelfParameterNode(syntax, Capability(syntax.Capability));
+        => IConstructorSelfParameterNode.Create(syntax, Capability(syntax.Capability));
 
     private static IInitializerSelfParameterNode InitializerSelfParameter(IInitializerSelfParameterSyntax syntax)
-        => new InitializerSelfParameterNode(syntax, Capability(syntax.Capability));
+        => IInitializerSelfParameterNode.Create(syntax, Capability(syntax.Capability));
 
     private static IMethodSelfParameterNode MethodSelfParameter(IMethodSelfParameterSyntax syntax)
-        => new MethodSelfParameterNode(syntax, CapabilityConstraint(syntax.Capability));
+        => IMethodSelfParameterNode.Create(syntax, CapabilityConstraint(syntax.Capability));
 
     private static IFieldParameterNode FieldParameter(IFieldParameterSyntax syntax)
-        => new FieldParameterNode(syntax);
+        => IFieldParameterNode.Create(syntax);
     #endregion
 
     #region Function Parts

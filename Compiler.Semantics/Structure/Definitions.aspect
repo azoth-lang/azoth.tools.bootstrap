@@ -80,10 +80,25 @@
 ↑ FieldDefinition.Name: `IdentifierName` => Syntax.Name;
 ↑ AssociatedFunctionDefinition.Name:`IdentifierName` => Syntax.Name;
 
+// ---------- Parameters
+↑ Parameter.Name: `IdentifierName`?;
+↑ Parameter.Unused: `bool` => Name?.Text.StartsWith('_') ?? false;
+↑ ConstructorOrInitializerParameter.Name: `IdentifierName`;
+
+// TODO I don't think NamedParameter.Name should have to be an attribute, an equation should be enough
+//= NamedParameter.Name => Syntax.Name;
+= NamedParameter.IsLentBinding => Syntax.IsLentBinding;
+= NamedParameter.IsMutableBinding => Syntax.IsMutableBinding;
+↑ NamedParameter.Name: `IdentifierName` => Syntax.Name;
+
+= SelfParameter.Name => null;
+= SelfParameter.IsLentBinding => Syntax.IsLentBinding;
+= FieldParameter.Name => Syntax.Name;
+
 // ---------- Statements
 = VariableDeclarationStatement.IsLentBinding => false;
-= VariableDeclarationStatement.Name => Syntax.Name;
 = VariableDeclarationStatement.IsMutableBinding => Syntax.IsMutableBinding;
+= VariableDeclarationStatement.Name => Syntax.Name;
 
 // ---------- Patterns
 = BindingPattern.IsLentBinding => false;

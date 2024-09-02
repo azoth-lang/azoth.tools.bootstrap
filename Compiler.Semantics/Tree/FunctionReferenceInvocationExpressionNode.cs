@@ -49,7 +49,7 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
     public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.FunctionReferenceInvocation_FlowStateAfter);
+                ExpressionTypesAspect.FunctionReferenceInvocationExpression_FlowStateAfter);
 
     public FunctionReferenceInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
@@ -116,7 +116,7 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.FunctionReferenceInvocation_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.FunctionReferenceInvocation_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

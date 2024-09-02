@@ -42,7 +42,7 @@ internal static partial class ExpressionTypesAspect
         return DataType.Unknown;
     }
 
-    public static IFlowState IdExpression_FlowStateAfter(IIdExpressionNode node)
+    public static partial IFlowState IdExpression_FlowStateAfter(IIdExpressionNode node)
     {
         var intermediateReferent = node.Referent;
         if (intermediateReferent is null)
@@ -64,19 +64,19 @@ internal static partial class ExpressionTypesAspect
     public static DataType VariableNameExpression_Type(IVariableNameExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
 
-    public static IFlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
+    public static partial IFlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
         => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
 
-    public static IFlowState NamedParameter_FlowStateAfter(INamedParameterNode node)
+    public static partial IFlowState NamedParameter_FlowStateAfter(INamedParameterNode node)
         => node.FlowStateBefore().Declare(node);
 
-    public static IFlowState SelfParameter_FlowStateAfter(ISelfParameterNode node)
+    public static partial IFlowState SelfParameter_FlowStateAfter(ISelfParameterNode node)
         => node.FlowStateBefore().Declare(node);
 
     public static DataType UnsafeExpression_Type(IUnsafeExpressionNode node)
         => node.Expression?.Type ?? DataType.Unknown;
 
-    public static IFlowState UnsafeExpression_FlowStateAfter(IUnsafeExpressionNode node)
+    public static partial IFlowState UnsafeExpression_FlowStateAfter(IUnsafeExpressionNode node)
         => node.Expression?.FlowStateAfter.Transform(node.Expression.ValueId, node.ValueId, node.Type)
            ?? IFlowState.Empty;
 
@@ -89,7 +89,7 @@ internal static partial class ExpressionTypesAspect
             ? ContextualizedOverload.Create(node.ReferencedDeclaration)
             : null;
 
-    public static IFlowState FunctionInvocationExpression_FlowStateAfter(IFunctionInvocationExpressionNode node)
+    public static partial IFlowState FunctionInvocationExpression_FlowStateAfter(IFunctionInvocationExpressionNode node)
     {
         // The flow state just before the function is called is the state after all arguments have evaluated
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
@@ -124,7 +124,7 @@ internal static partial class ExpressionTypesAspect
     public static DataType FunctionReferenceInvocation_Type(IFunctionReferenceInvocationExpressionNode node)
         => node.FunctionType.Return.Type;
 
-    public static IFlowState FunctionReferenceInvocation_FlowStateAfter(IFunctionReferenceInvocationExpressionNode node)
+    public static partial IFlowState FunctionReferenceInvocationExpression_FlowStateAfter(IFunctionReferenceInvocationExpressionNode node)
     {
         // The flow state just before the function is called is the state after all arguments have evaluated
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Expression.FlowStateAfter;
@@ -134,7 +134,7 @@ internal static partial class ExpressionTypesAspect
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static void FunctionReferenceInvocation_ContributeDiagnostics(IFunctionReferenceInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static void FunctionReferenceInvocation_Contribute_Diagnostics(IFunctionReferenceInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Expression.FlowStateAfter;
         var contextualizedOverload = ContextualizedOverload.Create(node.FunctionType);
@@ -157,10 +157,10 @@ internal static partial class ExpressionTypesAspect
         return typeSymbolNode?.Symbol.GetDeclaredType()?.With(Capability.Constant, FixedList.Empty<DataType>()) ?? DataType.Unknown;
     }
 
-    public static IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node)
+    public static partial IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node)
         => node.FlowStateBefore().Constant(node.ValueId);
 
-    public static void StringLiteralExpression_ContributeDiagnostics(
+    public static void StringLiteralExpression_Contribute_Diagnostics(
         IStringLiteralExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
@@ -246,7 +246,7 @@ internal static partial class ExpressionTypesAspect
         return boundType ?? DataType.Unknown;
     }
 
-    public static IFlowState MethodInvocationExpression_FlowStateAfter(IMethodInvocationExpressionNode node)
+    public static partial IFlowState MethodInvocationExpression_FlowStateAfter(IMethodInvocationExpressionNode node)
     {
         // The flow state just before the method is called is the state after all arguments have evaluated
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.MethodGroup.Context.FlowStateAfter;
@@ -274,7 +274,7 @@ internal static partial class ExpressionTypesAspect
         return boundType ?? DataType.Unknown;
     }
 
-    public static IFlowState GetterInvocationExpression_FlowStateAfter(IGetterInvocationExpressionNode node)
+    public static partial IFlowState GetterInvocationExpression_FlowStateAfter(IGetterInvocationExpressionNode node)
     {
         var flowStateBefore = node.Context.FlowStateAfter;
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Context, []);
@@ -301,7 +301,7 @@ internal static partial class ExpressionTypesAspect
         return boundType ?? DataType.Unknown;
     }
 
-    public static IFlowState SetterInvocationExpression_FlowStateAfter(ISetterInvocationExpressionNode node)
+    public static partial IFlowState SetterInvocationExpression_FlowStateAfter(ISetterInvocationExpressionNode node)
     {
         if (node.Value is not IExpressionNode value)
             return IFlowState.Empty;
@@ -354,7 +354,7 @@ internal static partial class ExpressionTypesAspect
         return type;
     }
 
-    public static IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node)
+    public static partial IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node)
         => node.Context.FlowStateAfter.AccessField(node);
 
     public static void FieldAccessExpression_ContributeDiagnostics(IFieldAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics)
@@ -371,7 +371,7 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(node.File, node.Syntax, node.Context.Type));
     }
 
-    public static IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node)
+    public static partial IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node)
         => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
 
     public static DataType SelfExpression_Type(ISelfExpressionNode node)
@@ -389,7 +389,7 @@ internal static partial class ExpressionTypesAspect
         // TODO does this need to be modified by flow typing?
         => node.ContextualizedOverload?.ReturnType.Type ?? DataType.Unknown;
 
-    public static IFlowState NewObjectExpression_FlowStateAfter(INewObjectExpressionNode node)
+    public static partial IFlowState NewObjectExpression_FlowStateAfter(INewObjectExpressionNode node)
     {
         // The flow state just before the constructor is called is the state after all arguments have evaluated
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
@@ -447,7 +447,7 @@ internal static partial class ExpressionTypesAspect
         // TODO does this need to be modified by flow typing?
         => node.ContextualizedOverload?.ReturnType.Type ?? DataType.Unknown;
 
-    public static IFlowState InitializerInvocationExpression_FlowStateAfter(IInitializerInvocationExpressionNode node)
+    public static partial IFlowState InitializerInvocationExpression_FlowStateAfter(IInitializerInvocationExpressionNode node)
     {
         // The flow state just before the initializer is called is the state after all arguments have evaluated
         var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
@@ -458,7 +458,7 @@ internal static partial class ExpressionTypesAspect
     public static DataType AssignmentExpression_Type(IAssignmentExpressionNode node)
         => node.LeftOperand?.Type ?? DataType.Unknown;
 
-    public static IFlowState AssignmentExpression_FlowStateAfter(IAssignmentExpressionNode node)
+    public static partial IFlowState AssignmentExpression_FlowStateAfter(IAssignmentExpressionNode node)
     {
         // TODO this isn't quite right since the original value is replaced by the new value
         if (node.LeftOperand?.ValueId is not ValueId leftValueId)
@@ -536,7 +536,7 @@ internal static partial class ExpressionTypesAspect
         return rangeAntetype;
     }
 
-    public static IFlowState BinaryOperatorExpression_FlowStateAfter(IBinaryOperatorExpressionNode node)
+    public static partial IFlowState BinaryOperatorExpression_FlowStateAfter(IBinaryOperatorExpressionNode node)
         // Left and right are swapped here because right is known to not be null while left may be null and order doesn't matter to combine
         => node.RightOperand?.FlowStateAfter.Combine(
             node.RightOperand.ValueId, node.LeftOperand?.ValueId, node.ValueId)
@@ -560,7 +560,7 @@ internal static partial class ExpressionTypesAspect
     public static DataType ResultStatement_Type(IResultStatementNode node)
         => node.Expression?.Type.ToNonConstValueType() ?? DataType.Unknown;
 
-    public static IFlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
+    public static partial IFlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
     {
         var thenPath = node.ThenBlock.FlowStateAfter;
         var elsePath = node.ElseClause?.FlowStateAfter ?? node.Condition?.FlowStateAfter ?? IFlowState.Empty;
@@ -595,7 +595,7 @@ internal static partial class ExpressionTypesAspect
         return DataType.Void;
     }
 
-    public static IFlowState BlockExpression_FlowStateAfter(IBlockExpressionNode node)
+    public static partial IFlowState BlockExpression_FlowStateAfter(IBlockExpressionNode node)
     {
         var flowState = node.Statements.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
         flowState = flowState.DropBindings(node.Statements.OfType<IVariableDeclarationStatementNode>());
@@ -610,7 +610,7 @@ internal static partial class ExpressionTypesAspect
         // TODO assign correct type to the expression
         => DataType.Void;
 
-    public static IFlowState WhileExpression_FlowStateAfter(IWhileExpressionNode node)
+    public static partial IFlowState WhileExpression_FlowStateAfter(IWhileExpressionNode node)
         // TODO loop flow state
         // Merge condition with block flow state because the body may not be executed
         => (node.Condition?.FlowStateAfter.Merge(node.Block.FlowStateAfter) ?? IFlowState.Empty)
@@ -621,7 +621,7 @@ internal static partial class ExpressionTypesAspect
         // TODO assign correct type to the expression
         => DataType.Void;
 
-    public static IFlowState LoopExpression_FlowStateAfter(ILoopExpressionNode node)
+    public static partial IFlowState LoopExpression_FlowStateAfter(ILoopExpressionNode node)
         // Body is always executes at least once
         // TODO loop flow state
         => node.Block.FlowStateAfter
@@ -636,7 +636,7 @@ internal static partial class ExpressionTypesAspect
         return convertToType;
     }
 
-    public static IFlowState ConversionExpression_FlowStateAfter(IConversionExpressionNode node)
+    public static partial IFlowState ConversionExpression_FlowStateAfter(IConversionExpressionNode node)
     {
         var intermediateReferent = node.Referent;
         if (intermediateReferent is null)
@@ -653,13 +653,13 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(TypeError.CannotExplicitlyConvert(node.File, node.Referent.Syntax, convertFromType, convertToType));
     }
 
-    public static IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node)
+    public static partial IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node)
         => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
 
     public static DataType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
         => Intrinsic.PromiseOf(node.Expression?.Type ?? DataType.Unknown);
 
-    public static IFlowState AsyncStartExpression_FlowStateAfter(IAsyncStartExpressionNode node)
+    public static partial IFlowState AsyncStartExpression_FlowStateAfter(IAsyncStartExpressionNode node)
         // TODO this isn't correct, async start can act like a delayed lambda. It is also a transform that wraps
         => node.Expression?.FlowStateAfter.Combine(node.Expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
 
@@ -672,7 +672,7 @@ internal static partial class ExpressionTypesAspect
         return DataType.Unknown;
     }
 
-    public static IFlowState AwaitExpression_FlowStateAfter(IAwaitExpressionNode node)
+    public static partial IFlowState AwaitExpression_FlowStateAfter(IAwaitExpressionNode node)
         // TODO actually this is a transform that unwraps
         => node.Expression?.FlowStateAfter.Combine(node.Expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
 
@@ -684,13 +684,13 @@ internal static partial class ExpressionTypesAspect
             _ => throw new InvalidOperationException($"Unexpected antetype {node.Antetype}")
         };
 
-    public static IFlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)
+    public static partial IFlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)
         => node.Operand?.FlowStateAfter.Transform(node.Operand.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
 
     public static DataType FunctionName_Type(IFunctionNameNode node)
         => node.ReferencedDeclaration?.Type ?? DataType.Unknown;
 
-    public static IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node)
+    public static partial IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node)
         => node.FlowStateBefore().Constant(node.ValueId);
 
     public static DataType FreezeExpression_Type(IFreezeExpressionNode node)
@@ -705,7 +705,7 @@ internal static partial class ExpressionTypesAspect
         return capabilityType.With(capability);
     }
 
-    public static IFlowState FreezeVariableExpression_FlowStateAfter(IFreezeVariableExpressionNode node)
+    public static partial IFlowState FreezeVariableExpression_FlowStateAfter(IFreezeVariableExpressionNode node)
     {
         var flowStateBefore = node.Referent.FlowStateAfter;
         var referentValueId = node.Referent.ValueId;
@@ -715,7 +715,7 @@ internal static partial class ExpressionTypesAspect
             : flowStateBefore.FreezeVariable(node.Referent.ReferencedDefinition, referentValueId, node.ValueId);
     }
 
-    public static IFlowState FreezeValueExpression_FlowStateAfter(IFreezeValueExpressionNode node)
+    public static partial IFlowState FreezeValueExpression_FlowStateAfter(IFreezeValueExpressionNode node)
     {
         var flowStateBefore = node.Referent.FlowStateAfter;
         var referentValueId = node.Referent.ValueId;
@@ -756,7 +756,7 @@ internal static partial class ExpressionTypesAspect
             : capabilityType.With(Capability.Isolated);
     }
 
-    public static IFlowState MoveVariableExpression_FlowStateAfter(IMoveVariableExpressionNode node)
+    public static partial IFlowState MoveVariableExpression_FlowStateAfter(IMoveVariableExpressionNode node)
     {
         var flowStateBefore = node.Referent.FlowStateAfter;
         return flowStateBefore.MoveVariable(node.Referent.ReferencedDefinition, node.Referent.ValueId, node.ValueId);
@@ -773,7 +773,7 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(FlowTypingError.CannotMoveValue(node.File, node.Syntax, node.Referent.Syntax));
     }
 
-    public static IFlowState MoveValueExpression_FlowStateAfter(IMoveValueExpressionNode node)
+    public static partial IFlowState MoveValueExpression_FlowStateAfter(IMoveValueExpressionNode node)
     {
         var flowStateBefore = node.Referent.FlowStateAfter;
         return flowStateBefore.MoveValue(node.Referent.ValueId, node.ValueId);
@@ -799,13 +799,13 @@ internal static partial class ExpressionTypesAspect
         return capabilityType.With(Capability.TemporarilyIsolated);
     }
 
-    public static IFlowState ImplicitTempMoveExpression_FlowStateAfter(IImplicitTempMoveExpressionNode node)
+    public static partial IFlowState ImplicitTempMoveExpression_FlowStateAfter(IImplicitTempMoveExpressionNode node)
     {
         var flowStateBefore = node.Referent.FlowStateAfter;
         return flowStateBefore.TempMove(node.Referent.ValueId, node.ValueId);
     }
 
-    public static IFlowState ExpressionStatement_FlowStateAfter(IExpressionStatementNode node)
+    public static partial IFlowState ExpressionStatement_FlowStateAfter(IExpressionStatementNode node)
     {
         var intermediateExpression = node.Expression;
         if (intermediateExpression is null)
@@ -814,7 +814,7 @@ internal static partial class ExpressionTypesAspect
         return intermediateExpression.FlowStateAfter.DropValue(intermediateExpression.ValueId);
     }
 
-    public static IFlowState ReturnExpression_FlowStateAfter(IReturnExpressionNode node)
+    public static partial IFlowState ReturnExpression_FlowStateAfter(IReturnExpressionNode node)
         // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
         => IFlowState.Empty.Constant(node.ValueId);
 
@@ -827,22 +827,22 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(FlowTypingError.CannotReturnLent(node.File, node.Syntax));
     }
 
-    public static IFlowState BreakExpression_FlowStateAfter(IBreakExpressionNode node)
+    public static partial IFlowState BreakExpression_FlowStateAfter(IBreakExpressionNode node)
         // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
         => IFlowState.Empty.Constant(node.ValueId);
 
-    public static IFlowState NextExpression_FlowStateAfter(INextExpressionNode node)
+    public static partial IFlowState NextExpression_FlowStateAfter(INextExpressionNode node)
         // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
         => IFlowState.Empty.Constant(node.ValueId);
 
-    public static IFlowState PatternMatchExpression_FlowStateAfter(IPatternMatchExpressionNode node)
+    public static partial IFlowState PatternMatchExpression_FlowStateAfter(IPatternMatchExpressionNode node)
         // Constant for the boolean result of the pattern match
         => node.Pattern.FlowStateAfter.Constant(node.ValueId);
 
-    public static IFlowState UnknownMemberAccessExpression_FlowStateAfter(IUnknownMemberAccessExpressionNode node)
+    public static partial IFlowState UnknownMemberAccessExpression_FlowStateAfter(IUnknownMemberAccessExpressionNode node)
         => node.Context.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type);
 
-    public static IFlowState PrepareToReturnExpression_FlowStateAfter(IPrepareToReturnExpressionNode node)
+    public static partial IFlowState PrepareToReturnExpression_FlowStateAfter(IPrepareToReturnExpressionNode node)
     {
         var flowStateBefore = node.Value.FlowStateAfter;
         return flowStateBefore.Transform(node.Value.ValueId, node.ValueId, node.Type)

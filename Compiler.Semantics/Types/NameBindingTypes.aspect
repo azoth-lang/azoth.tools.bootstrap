@@ -1,9 +1,15 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name NameBindingTypesAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+struct `ParameterType`;
+struct `SelfParameterType`;
 
 // ---------- Bindings
 ↑ Binding.BindingType: `Pseudotype`;
@@ -15,8 +21,19 @@
 // ---------- Parameters
 ↑ Parameter.BindingType: `Pseudotype`;
 ↑ ConstructorOrInitializerParameter.BindingType: `DataType`;
+↑ ConstructorOrInitializerParameter.ParameterType: `ParameterType`;
+= NamedParameter.↑.Diagnostics;
+↑ SelfParameter.ParameterType:`SelfParameterType`;
+= SelfParameter.ParameterType;
 ↑ ConstructorSelfParameter.BindingType: `CapabilityType`;
+= ConstructorSelfParameter.↑.Diagnostics;
 ↑ InitializerSelfParameter.BindingType: `CapabilityType`;
+= InitializerSelfParameter.↑.Diagnostics;
+= MethodSelfParameter.↑.Diagnostics;
+
+// ---------- Statements
+= VariableDeclarationStatement.FlowStateAfter;
 
 // ---------- Patterns
 ↓ Pattern.ContextBindingType(): `DataType`;
+= BindingPattern.FlowStateAfter;

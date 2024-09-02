@@ -34,7 +34,7 @@ Child <: `IChildTreeNode<ISemanticNode>`;
 
 // ---------- Special Parts
 BodyOrBlock <: Code;
-ElseClause <: ControlFlow = Syntax:`ICodeSyntax` FlowStateAfter:`IFlowState`;
+ElseClause <: ControlFlow = Syntax:`ICodeSyntax`;
 BlockOrResult <: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
 
 // ---------- Bindings
@@ -160,26 +160,19 @@ CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint
 Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability`;
 
 // ---------- Parameters
-Parameter <: Code = Syntax:`IParameterSyntax` Name:`IdentifierName`? Unused:`bool`
-    FlowStateAfter:`IFlowState`;
+Parameter <: Code = Syntax:`IParameterSyntax`;
 /// A non-self parameter that can be declared in a constructor
-ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`
-    ParameterType:`ParameterType`;
-NamedParameter <: ConstructorOrInitializerParameter, LocalBinding = Syntax:`INamedParameterSyntax`
-    IsMutableBinding:`bool` IsLentBinding:`bool` Name:`IdentifierName`
-    TypeNode:Type;
-SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax` IsLentBinding:`bool`
-    ParameterType:`SelfParameterType`;
-ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax`
-    IsLentBinding:`bool` Capability;
-InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax`
-    IsLentBinding:`bool` Capability;
-MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` IsLentBinding:`bool`
-    Capability:CapabilityConstraint ;
-FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax` Name:`IdentifierName`;
+ConstructorOrInitializerParameter <: Parameter = Syntax:`IConstructorOrInitializerParameterSyntax`;
+NamedParameter <: ConstructorOrInitializerParameter, LocalBinding
+    = Syntax:`INamedParameterSyntax` TypeNode:Type;
+SelfParameter <: Parameter, Binding = Syntax:`ISelfParameterSyntax`;
+ConstructorSelfParameter <: SelfParameter = Syntax:`IConstructorSelfParameterSyntax` Capability;
+InitializerSelfParameter <: SelfParameter = Syntax:`IInitializerSelfParameterSyntax` Capability;
+MethodSelfParameter <: SelfParameter = Syntax:`IMethodSelfParameterSyntax` Capability:CapabilityConstraint;
+FieldParameter <: ConstructorOrInitializerParameter = Syntax:`IFieldParameterSyntax`;
 
 // ---------- Function Parts
-Body <: BodyOrBlock = FlowStateAfter:`IFlowState`;
+Body <: BodyOrBlock;
 BlockBody <: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
 ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 
@@ -212,8 +205,7 @@ DataFlow <: ControlFlow = DataFlowPrevious:`IFixedSet<IDataFlowNode>`
     DefinitelyAssigned:`BindingFlags<IVariableBindingNode>` DefinitelyUnassigned:`BindingFlags<IVariableBindingNode>`;
 
 // ---------- Statements
-Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`?
-    ResultType:`DataType`? FlowStateAfter:`IFlowState`;
+Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`? ResultType:`DataType`?;
 ResultStatement <: Statement, BlockOrResult
     = Syntax:`IResultStatementSyntax` Expression:AmbiguousExpression;
 BodyStatement <: Statement = Syntax:`IBodyStatementSyntax`;
@@ -223,7 +215,7 @@ ExpressionStatement <: BodyStatement
     = Syntax:`IExpressionStatementSyntax` Expression:AmbiguousExpression;
 
 // ---------- Patterns
-Pattern <: ControlFlow = Syntax:`IPatternSyntax` FlowStateAfter:`IFlowState`;
+Pattern <: ControlFlow = Syntax:`IPatternSyntax`;
 BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
 BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPatternSyntax` Name:`IdentifierName`;
@@ -234,7 +226,7 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 temp AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
 temp AmbiguousAssignableExpression <: AmbiguousExpression = Syntax:`IAssignableExpressionSyntax`;
 Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`
-    Antetype:`IMaybeExpressionAntetype` Type:`DataType` FlowStateAfter:`IFlowState`;
+    Antetype:`IMaybeExpressionAntetype` Type:`DataType`;
 AssignableExpression <: Expression, AmbiguousAssignableExpression = Syntax:`IAssignableExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*
     Antetype:`IMaybeAntetype`;
@@ -410,7 +402,6 @@ AsyncStartExpression <: Expression = Syntax:`IAsyncStartExpressionSyntax` Schedu
     Expression:AmbiguousExpression;
 AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax`
     Expression:AmbiguousExpression;
-
 
 // -------------------------------------------------------------------------------------------------
 // Declarations

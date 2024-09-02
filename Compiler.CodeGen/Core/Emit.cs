@@ -487,6 +487,14 @@ internal static class Emit
         return "";
     }
 
+    public static string Body(PreviousAttributeEquationModel equation)
+    {
+        if (equation.Expression is not null)
+            return equation.Expression;
+
+        return $"{QualifiedEquationMethod(equation)}(this)";
+    }
+
     public static string QualifiedEquationMethod(PreviousAttributeEquationModel equation)
         => $"{equation.Aspect.Name}.{EquationMethod(equation)}";
 

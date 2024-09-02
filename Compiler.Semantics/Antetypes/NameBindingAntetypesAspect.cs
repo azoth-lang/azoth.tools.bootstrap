@@ -6,6 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
 internal static partial class NameBindingAntetypesAspect
 {
+    // TODO this is strange because a FieldParameter isn't a binding
     public static partial IMaybeAntetype FieldParameter_BindingAntetype(IFieldParameterNode node)
         => node.ReferencedField?.BindingAntetype ?? IAntetype.Unknown;
 

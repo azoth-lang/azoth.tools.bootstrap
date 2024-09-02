@@ -1,5 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name ExpressionTypesAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -8,13 +9,22 @@
 
 // ---------- Parameters
 ↓ Parameter.FlowStateBefore(): `IFlowState`;
+↑ Parameter.FlowStateAfter: `IFlowState`;
+= SelfParameter.FlowStateAfter;
+= FieldParameter.FlowStateAfter => FlowStateBefore();
 
 // ---------- Statements
-↓ ResultStatement.ExpectedType:`DataType`?;
+↑ Statement.FlowStateAfter: `IFlowState`;
+↓ ResultStatement.ExpectedType: `DataType`?;
+↑ ResultStatement.FlowStateAfter: `IFlowState`
+    => Expression?.FlowStateAfter ?? IFlowState.Empty;
 ↓ VariableDeclarationStatement.FlowStateBefore(): `IFlowState`;
 
 // ---------- Patterns
+↑ Pattern.FlowStateAfter: `IFlowState`;
+= BindingContextPattern.FlowStateAfter => Pattern.FlowStateAfter;
 ↓ BindingPattern.FlowStateBefore(): `IFlowState`;
+= OptionalPattern.FlowStateAfter => Pattern.FlowStateAfter;
 
 // ---------- Expressions
 ↓ Expression.ExpectedType:`DataType`?;
@@ -22,24 +32,41 @@
 /// Whether an implicit recovery (i.e. move or freeze) is allowed to convert this expression to
 /// the expected type.
 /// </summary>
-↓ Expression.ImplicitRecoveryAllowed(): `bool`;
-
-/// <summary>
+↓ Expression.ImplicitRecoveryAllowed(): `bool`;/// <summary>
 /// Whether this expression should be prepared for return.
 /// </summary>
 ↓ Expression.ShouldPrepareToReturn(): `bool`;
+↑ Expression.FlowStateAfter: `IFlowState`;
 
 ↓ BlockExpression.FlowStateBefore(): `IFlowState`;
+↑ BlockExpression.FlowStateAfter: `IFlowState`;
 ↓ NewObjectExpression.FlowStateBefore(): `IFlowState`;
 
 // ---------- Literal Expressions
 ↓ LiteralExpression.FlowStateBefore(): `IFlowState`;
+= LiteralExpression.FlowStateAfter;
+
+// ---------- Control Flow Expressions
+↑ IfExpression.FlowStateAfter: `IFlowState`;
 
 // ---------- Invocation Expressions
 ↓ FunctionInvocationExpression.FlowStateBefore(): `IFlowState`;
 ↓ InitializerInvocationExpression.FlowStateBefore(): `IFlowState`;
+= UnknownInvocationExpression.FlowStateAfter => throw new NotImplementedException();
 
 // ---------- Name Expressions
+// TODO delete once all name expressions implement FlowStateAfter
+= NameExpression.FlowStateAfter
+    => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
 ↓ FunctionName.FlowStateBefore(): `IFlowState`;
+= FunctionName.FlowStateAfter;
+= MethodGroupName.FlowStateAfter => Context.FlowStateAfter;
+= FieldAccessExpression.FlowStateAfter;
+= VariableNameExpression.FlowStateAfter;
 ↓ VariableNameExpression.FlowStateBefore(): `IFlowState`;
 ↓ SelfExpression.FlowStateBefore(): `IFlowState`;
+= SelfExpression.FlowStateAfter;
+= UnknownMemberAccessExpression.FlowStateAfter;
+
+// ---------- Async Expressions
+= AsyncBlockExpression.FlowStateAfter => throw new NotImplementedException();
