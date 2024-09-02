@@ -1,6 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 ◊name NameBindingAntetypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -11,5 +12,16 @@
 ↑ Parameter.BindingAntetype: `IMaybeAntetype`;
 = SelfParameter.BindingAntetype;
 
+// ---------- Statements
+= VariableDeclarationStatement.↑.Diagnostics;
+
 // ---------- Patterns
 ↓ Pattern.ContextBindingAntetype(): `IMaybeAntetype`;
+= BindingContextPattern.Pattern.ContextBindingAntetype();
+= OptionalPattern.Pattern.ContextBindingAntetype();
+
+// ---------- Expressions
+↑NewObjectExpression.ConstructingAntetype: `IMaybeAntetype`;
+
+// ---------- Operator Expressions
+= PatternMatchExpression.Pattern.ContextBindingAntetype();

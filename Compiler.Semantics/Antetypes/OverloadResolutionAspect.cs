@@ -17,7 +17,7 @@ internal static partial class OverloadResolutionAspect
         return new FunctionInvocationExpressionNode(node.Syntax, function, node.CurrentArguments);
     }
 
-    public static IFixedSet<IFunctionInvocableDeclarationNode> FunctionInvocationExpression_CompatibleDeclarations(
+    public static partial IFixedSet<IFunctionInvocableDeclarationNode> FunctionInvocationExpression_CompatibleDeclarations(
         IFunctionInvocationExpressionNode node)
     {
         var arguments = node.Arguments.Select(AntetypeIfKnown);
@@ -28,11 +28,11 @@ internal static partial class OverloadResolutionAspect
                    .Select(o => o.Declaration).ToFixedSet();
     }
 
-    public static IFunctionInvocableDeclarationNode? FunctionInvocationExpression_ReferencedDeclaration(
+    public static partial IFunctionInvocableDeclarationNode? FunctionInvocationExpression_ReferencedDeclaration(
         IFunctionInvocationExpressionNode node)
         => node.CompatibleDeclarations.TrySingle();
 
-    public static void FunctionInvocationExpression_ContributeDiagnostics(
+    public static partial void FunctionInvocationExpression_Contribute_Diagnostics(
         IFunctionInvocationExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
@@ -59,7 +59,7 @@ internal static partial class OverloadResolutionAspect
         return new MethodInvocationExpressionNode(node.Syntax, method, node.CurrentArguments);
     }
 
-    public static IFixedSet<IStandardMethodDeclarationNode> MethodInvocationExpression_CompatibleDeclarations(
+    public static partial IFixedSet<IStandardMethodDeclarationNode> MethodInvocationExpression_CompatibleDeclarations(
         IMethodInvocationExpressionNode node)
     {
         var contextAntetype = node.MethodGroup.Context.Antetype;
@@ -78,11 +78,11 @@ internal static partial class OverloadResolutionAspect
         return IAntetype.Unknown;
     }
 
-    public static IStandardMethodDeclarationNode? MethodInvocationExpression_ReferencedDeclaration(
+    public static partial IStandardMethodDeclarationNode? MethodInvocationExpression_ReferencedDeclaration(
         IMethodInvocationExpressionNode node)
         => node.CompatibleDeclarations.TrySingle();
 
-    public static void MethodInvocationExpression_ContributeDiagnostics(
+    public static partial void MethodInvocationExpression_Contribute_Diagnostics(
         IMethodInvocationExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
@@ -124,7 +124,7 @@ internal static partial class OverloadResolutionAspect
         return new InitializerInvocationExpressionNode(node.Syntax, initializer, node.CurrentArguments);
     }
 
-    public static IFixedSet<IInitializerDeclarationNode> InitializerInvocationExpression_CompatibleDeclarations(
+    public static partial IFixedSet<IInitializerDeclarationNode> InitializerInvocationExpression_CompatibleDeclarations(
         IInitializerInvocationExpressionNode node)
     {
         var initializingAntetype = node.InitializerGroup.InitializingAntetype;
@@ -136,7 +136,7 @@ internal static partial class OverloadResolutionAspect
                    .Select(o => o.Declaration).ToFixedSet();
     }
 
-    public static IInitializerDeclarationNode? InitializerInvocationExpression_ReferencedDeclaration(
+    public static partial IInitializerDeclarationNode? InitializerInvocationExpression_ReferencedDeclaration(
         IInitializerInvocationExpressionNode node)
         => node.CompatibleDeclarations.TrySingle();
 
@@ -151,7 +151,7 @@ internal static partial class OverloadResolutionAspect
     public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_ToUnknown(IUnresolvedInvocationExpressionNode node)
         => new UnknownInvocationExpressionNode(node.Syntax, node.CurrentExpression, node.CurrentArguments);
 
-    public static IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(
+    public static partial IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(
         INewObjectExpressionNode node)
     {
         var constructingAntetype = node.ConstructingAntetype;
@@ -163,10 +163,10 @@ internal static partial class OverloadResolutionAspect
                    .Select(o => o.Declaration).ToFixedSet();
     }
 
-    public static IConstructorDeclarationNode? NewObjectExpression_ReferencedConstructor(INewObjectExpressionNode node)
+    public static partial IConstructorDeclarationNode? NewObjectExpression_ReferencedConstructor(INewObjectExpressionNode node)
         => node.CompatibleConstructors.TrySingle();
 
-    public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void NewObjectExpression_Contribute_Diagnostics(INewObjectExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         switch (node.ConstructingAntetype)
         {

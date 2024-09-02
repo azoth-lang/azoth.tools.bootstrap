@@ -1404,8 +1404,8 @@ public partial interface ITypeNode : ICodeNode
     new ITypeSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IMaybeAntetype NamedAntetype { get; }
     DataType NamedType { get; }
+    IMaybeAntetype NamedAntetype { get; }
 }
 
 [Closed(
@@ -1471,12 +1471,11 @@ public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpl
     TypeName ITypeNameNode.Name => Name;
 
     public static IIdentifierTypeNameNode Create(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         BareType? namedBareType,
         IIdentifierTypeNameSyntax syntax,
         IdentifierName name)
-        => new IdentifierTypeNameNode(namedAntetype, namedType, namedBareType, syntax, name);
+        => new IdentifierTypeNameNode(namedType, namedBareType, syntax, name);
 }
 
 // [Closed(typeof(SpecialTypeNameNode))]
@@ -1495,12 +1494,11 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
     TypeSymbol? ITypeNameNode.ReferencedSymbol => ReferencedSymbol;
 
     public static ISpecialTypeNameNode Create(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         BareType? namedBareType,
         ISpecialTypeNameSyntax syntax,
         SpecialTypeName name)
-        => new SpecialTypeNameNode(namedAntetype, namedType, namedBareType, syntax, name);
+        => new SpecialTypeNameNode(namedType, namedBareType, syntax, name);
 }
 
 // [Closed(typeof(GenericTypeNameNode))]
@@ -1519,13 +1517,12 @@ public partial interface IGenericTypeNameNode : IStandardTypeNameNode
     IFixedList<ITypeNode> TypeArguments { get; }
 
     public static IGenericTypeNameNode Create(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         BareType? namedBareType,
         IGenericTypeNameSyntax syntax,
         GenericName name,
         IEnumerable<ITypeNode> typeArguments)
-        => new GenericTypeNameNode(namedAntetype, namedType, namedBareType, syntax, name, typeArguments);
+        => new GenericTypeNameNode(namedType, namedBareType, syntax, name, typeArguments);
 }
 
 // [Closed(typeof(QualifiedTypeNameNode))]
@@ -1539,16 +1536,17 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeNameNode Context { get; }
     IStandardTypeNameNode QualifiedName { get; }
+    IMaybeAntetype ITypeNode.NamedAntetype
+        => throw new NotImplementedException();
 
     public static IQualifiedTypeNameNode Create(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         TypeName name,
         BareType? namedBareType,
         IQualifiedTypeNameSyntax syntax,
         ITypeNameNode context,
         IStandardTypeNameNode qualifiedName)
-        => new QualifiedTypeNameNode(namedAntetype, namedType, name, namedBareType, syntax, context, qualifiedName);
+        => new QualifiedTypeNameNode(namedType, name, namedBareType, syntax, context, qualifiedName);
 }
 
 // [Closed(typeof(OptionalTypeNode))]
@@ -1562,11 +1560,10 @@ public partial interface IOptionalTypeNode : ITypeNode
     ITypeNode Referent { get; }
 
     public static IOptionalTypeNode Create(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         IOptionalTypeSyntax syntax,
         ITypeNode referent)
-        => new OptionalTypeNode(namedAntetype, namedType, syntax, referent);
+        => new OptionalTypeNode(namedType, syntax, referent);
 }
 
 // [Closed(typeof(CapabilityTypeNode))]
@@ -1581,12 +1578,11 @@ public partial interface ICapabilityTypeNode : ITypeNode
     ITypeNode Referent { get; }
 
     public static ICapabilityTypeNode Create(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         ICapabilityTypeSyntax syntax,
         ICapabilityNode capability,
         ITypeNode referent)
-        => new CapabilityTypeNode(namedAntetype, namedType, syntax, capability, referent);
+        => new CapabilityTypeNode(namedType, syntax, capability, referent);
 }
 
 // [Closed(typeof(FunctionTypeNode))]
@@ -1601,12 +1597,11 @@ public partial interface IFunctionTypeNode : ITypeNode
     ITypeNode Return { get; }
 
     public static IFunctionTypeNode Create(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         IFunctionTypeSyntax syntax,
         IEnumerable<IParameterTypeNode> parameters,
         ITypeNode @return)
-        => new FunctionTypeNode(namedAntetype, namedType, syntax, parameters, @return);
+        => new FunctionTypeNode(namedType, syntax, parameters, @return);
 }
 
 // [Closed(typeof(ParameterTypeNode))]
@@ -1653,12 +1648,11 @@ public partial interface ICapabilityViewpointTypeNode : IViewpointTypeNode
     ICapabilityNode Capability { get; }
 
     public static ICapabilityViewpointTypeNode Create(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         ICapabilityViewpointTypeSyntax syntax,
         ICapabilityNode capability,
         ITypeNode referent)
-        => new CapabilityViewpointTypeNode(namedAntetype, namedType, syntax, capability, referent);
+        => new CapabilityViewpointTypeNode(namedType, syntax, capability, referent);
 }
 
 // [Closed(typeof(SelfViewpointTypeNode))]
@@ -1673,11 +1667,10 @@ public partial interface ISelfViewpointTypeNode : IViewpointTypeNode
     Pseudotype? MethodSelfType { get; }
 
     public static ISelfViewpointTypeNode Create(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         ISelfViewpointTypeSyntax syntax,
         ITypeNode referent)
-        => new SelfViewpointTypeNode(namedAntetype, namedType, syntax, referent);
+        => new SelfViewpointTypeNode(namedType, syntax, referent);
 }
 
 [Closed(
@@ -2117,13 +2110,13 @@ public partial interface INewObjectExpressionNode : IInvocationExpressionNode
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
-    IMaybeAntetype ConstructingAntetype { get; }
     IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { get; }
-    IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
-    IConstructorDeclarationNode? ReferencedConstructor { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
     PackageNameScope PackageNameScope();
     IFlowState FlowStateBefore();
+    IMaybeAntetype ConstructingAntetype { get; }
+    IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
+    IConstructorDeclarationNode? ReferencedConstructor { get; }
 
     public static INewObjectExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -2135,12 +2128,9 @@ public partial interface INewObjectExpressionNode : IInvocationExpressionNode
         ITypeNameNode constructingType,
         IdentifierName? constructorName,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        IMaybeAntetype constructingAntetype,
         IEnumerable<IConstructorDeclarationNode> referencedConstructors,
-        IEnumerable<IConstructorDeclarationNode> compatibleConstructors,
-        IConstructorDeclarationNode? referencedConstructor,
         ContextualizedOverload? contextualizedOverload)
-        => new NewObjectExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, constructingType, constructorName, arguments, constructingAntetype, referencedConstructors, compatibleConstructors, referencedConstructor, contextualizedOverload);
+        => new NewObjectExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, constructingType, constructorName, arguments, referencedConstructors, contextualizedOverload);
 }
 
 // [Closed(typeof(UnsafeExpressionNode))]
@@ -2325,9 +2315,9 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
     IAmbiguousExpressionNode TempRightOperand { get; }
     IExpressionNode? RightOperand { get; }
     IAmbiguousExpressionNode CurrentRightOperand { get; }
-    IAntetype? NumericOperatorCommonAntetype { get; }
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
+    IAntetype? NumericOperatorCommonAntetype { get; }
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.BinaryOperatorExpression_FlowLexicalScope(this);
 
@@ -2338,9 +2328,8 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
         IBinaryOperatorExpressionSyntax syntax,
         IAmbiguousExpressionNode leftOperand,
         BinaryOperator @operator,
-        IAmbiguousExpressionNode rightOperand,
-        IAntetype? numericOperatorCommonAntetype)
-        => new BinaryOperatorExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, leftOperand, @operator, rightOperand, numericOperatorCommonAntetype);
+        IAmbiguousExpressionNode rightOperand)
+        => new BinaryOperatorExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, leftOperand, @operator, rightOperand);
 }
 
 // [Closed(typeof(UnaryOperatorExpressionNode))]
@@ -2707,10 +2696,10 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
-    IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations { get; }
-    IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState FlowStateBefore();
+    IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations { get; }
+    IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
 
     public static IFunctionInvocationExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -2721,10 +2710,8 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
         IInvocationExpressionSyntax syntax,
         IFunctionGroupNameNode functionGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IFunctionInvocableDeclarationNode> compatibleDeclarations,
-        IFunctionInvocableDeclarationNode? referencedDeclaration,
         ContextualizedOverload? contextualizedOverload)
-        => new FunctionInvocationExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, functionGroup, arguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
+        => new FunctionInvocationExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, functionGroup, arguments, contextualizedOverload);
 }
 
 // [Closed(typeof(MethodInvocationExpressionNode))]
@@ -2739,9 +2726,9 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
+    ContextualizedOverload? ContextualizedOverload { get; }
     IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
-    ContextualizedOverload? ContextualizedOverload { get; }
 
     public static IMethodInvocationExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -2752,10 +2739,8 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
         IInvocationExpressionSyntax syntax,
         IMethodGroupNameNode methodGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IStandardMethodDeclarationNode> compatibleDeclarations,
-        IStandardMethodDeclarationNode? referencedDeclaration,
         ContextualizedOverload? contextualizedOverload)
-        => new MethodInvocationExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, methodGroup, arguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
+        => new MethodInvocationExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, methodGroup, arguments, contextualizedOverload);
 }
 
 // [Closed(typeof(GetterInvocationExpressionNode))]
@@ -2864,10 +2849,10 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
-    IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
-    IInitializerDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState FlowStateBefore();
+    IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
+    IInitializerDeclarationNode? ReferencedDeclaration { get; }
 
     public static IInitializerInvocationExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -2878,10 +2863,8 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
         IInvocationExpressionSyntax syntax,
         IInitializerGroupNameNode initializerGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IInitializerDeclarationNode> compatibleDeclarations,
-        IInitializerDeclarationNode? referencedDeclaration,
         ContextualizedOverload? contextualizedOverload)
-        => new InitializerInvocationExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, initializerGroup, arguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
+        => new InitializerInvocationExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, initializerGroup, arguments, contextualizedOverload);
 }
 
 // [Closed(typeof(UnknownInvocationExpressionNode))]
@@ -3291,8 +3274,8 @@ public partial interface ITypeNameExpressionNode : INameExpressionNode
     StandardName Name { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     ITypeDeclarationNode ReferencedDeclaration { get; }
-    IMaybeAntetype NamedAntetype { get; }
     BareType? NamedBareType { get; }
+    IMaybeAntetype NamedAntetype { get; }
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 }
@@ -3313,11 +3296,10 @@ public partial interface IStandardTypeNameExpressionNode : ITypeNameExpressionNo
         DataType type,
         StandardName name,
         ITypeDeclarationNode referencedDeclaration,
-        IMaybeAntetype namedAntetype,
         BareType? namedBareType,
         IStandardNameExpressionSyntax syntax,
         IEnumerable<ITypeNode> typeArguments)
-        => new StandardTypeNameExpressionNode(controlFlowNext, controlFlowPrevious, type, name, referencedDeclaration, namedAntetype, namedBareType, syntax, typeArguments);
+        => new StandardTypeNameExpressionNode(controlFlowNext, controlFlowPrevious, type, name, referencedDeclaration, namedBareType, syntax, typeArguments);
 }
 
 // [Closed(typeof(QualifiedTypeNameExpressionNode))]
@@ -3337,12 +3319,11 @@ public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionN
         DataType type,
         StandardName name,
         ITypeDeclarationNode referencedDeclaration,
-        IMaybeAntetype namedAntetype,
         BareType? namedBareType,
         IMemberAccessExpressionSyntax syntax,
         INamespaceNameNode context,
         IEnumerable<ITypeNode> typeArguments)
-        => new QualifiedTypeNameExpressionNode(controlFlowNext, controlFlowPrevious, type, name, referencedDeclaration, namedAntetype, namedBareType, syntax, context, typeArguments);
+        => new QualifiedTypeNameExpressionNode(controlFlowNext, controlFlowPrevious, type, name, referencedDeclaration, namedBareType, syntax, context, typeArguments);
 }
 
 // [Closed(typeof(InitializerGroupNameNode))]
@@ -7771,7 +7752,6 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     private IIdentifierTypeNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public IIdentifierTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
@@ -7792,6 +7772,12 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
                 Inherited_IsAttributeType);
     private bool isAttributeType;
     private bool isAttributeTypeCached;
+    public IMaybeAntetype NamedAntetype
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.IdentifierTypeName_NamedAntetype);
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
@@ -7806,13 +7792,11 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     private bool referencedSymbolCached;
 
     public IdentifierTypeNameNode(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         BareType? namedBareType,
         IIdentifierTypeNameSyntax syntax,
         IdentifierName name)
     {
-        NamedAntetype = namedAntetype;
         NamedType = namedType;
         NamedBareType = namedBareType;
         Syntax = syntax;
@@ -7825,7 +7809,6 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
 {
     private ISpecialTypeNameNode Self { [Inline] get => this; }
 
-    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public ISpecialTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
@@ -7840,6 +7823,12 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public IMaybeAntetype NamedAntetype
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.SpecialTypeName_NamedAntetype);
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
     public TypeSymbol ReferencedSymbol
         => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol!
             : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
@@ -7848,13 +7837,11 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
     private bool referencedSymbolCached;
 
     public SpecialTypeNameNode(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         BareType? namedBareType,
         ISpecialTypeNameSyntax syntax,
         SpecialTypeName name)
     {
-        NamedAntetype = namedAntetype;
         NamedType = namedType;
         NamedBareType = namedBareType;
         Syntax = syntax;
@@ -7868,7 +7855,6 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     private IGenericTypeNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public IGenericTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
@@ -7890,6 +7876,12 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
                 Inherited_IsAttributeType);
     private bool isAttributeType;
     private bool isAttributeTypeCached;
+    public IMaybeAntetype NamedAntetype
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.GenericTypeName_NamedAntetype);
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
@@ -7904,14 +7896,12 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     private bool referencedSymbolCached;
 
     public GenericTypeNameNode(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         BareType? namedBareType,
         IGenericTypeNameSyntax syntax,
         GenericName name,
         IEnumerable<ITypeNode> typeArguments)
     {
-        NamedAntetype = namedAntetype;
         NamedType = namedType;
         NamedBareType = namedBareType;
         Syntax = syntax;
@@ -7925,7 +7915,6 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
 {
     private IQualifiedTypeNameNode Self { [Inline] get => this; }
 
-    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
     public TypeName Name { [DebuggerStepThrough] get; }
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
@@ -7950,7 +7939,6 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
     private bool referencedSymbolCached;
 
     public QualifiedTypeNameNode(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         TypeName name,
         BareType? namedBareType,
@@ -7958,7 +7946,6 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
         ITypeNameNode context,
         IStandardTypeNameNode qualifiedName)
     {
-        NamedAntetype = namedAntetype;
         NamedType = namedType;
         Name = name;
         NamedBareType = namedBareType;
@@ -7973,7 +7960,6 @@ file class OptionalTypeNode : SemanticNode, IOptionalTypeNode
 {
     private IOptionalTypeNode Self { [Inline] get => this; }
 
-    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
     public IOptionalTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
@@ -7981,14 +7967,18 @@ file class OptionalTypeNode : SemanticNode, IOptionalTypeNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybeAntetype NamedAntetype
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.OptionalType_NamedAntetype);
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
 
     public OptionalTypeNode(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         IOptionalTypeSyntax syntax,
         ITypeNode referent)
     {
-        NamedAntetype = namedAntetype;
         NamedType = namedType;
         Syntax = syntax;
         Referent = Child.Attach(this, referent);
@@ -8000,7 +7990,6 @@ file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
 {
     private ICapabilityTypeNode Self { [Inline] get => this; }
 
-    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
     public ICapabilityTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityNode Capability { [DebuggerStepThrough] get; }
@@ -8009,15 +7998,19 @@ file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybeAntetype NamedAntetype
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.CapabilityType_NamedAntetype);
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
 
     public CapabilityTypeNode(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         ICapabilityTypeSyntax syntax,
         ICapabilityNode capability,
         ITypeNode referent)
     {
-        NamedAntetype = namedAntetype;
         NamedType = namedType;
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
@@ -8030,7 +8023,6 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
 {
     private IFunctionTypeNode Self { [Inline] get => this; }
 
-    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
     public IFunctionTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IParameterTypeNode> Parameters { [DebuggerStepThrough] get; }
@@ -8039,15 +8031,19 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybeAntetype NamedAntetype
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.FunctionType_NamedAntetype);
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
 
     public FunctionTypeNode(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         IFunctionTypeSyntax syntax,
         IEnumerable<IParameterTypeNode> parameters,
         ITypeNode @return)
     {
-        NamedAntetype = namedAntetype;
         NamedType = namedType;
         Syntax = syntax;
         Parameters = ChildList.Attach(this, parameters);
@@ -8087,7 +8083,6 @@ file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeN
 {
     private ICapabilityViewpointTypeNode Self { [Inline] get => this; }
 
-    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
     public ICapabilityViewpointTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityNode Capability { [DebuggerStepThrough] get; }
@@ -8096,15 +8091,19 @@ file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeN
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public IMaybeAntetype NamedAntetype
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.ViewpointType_NamedAntetype);
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
 
     public CapabilityViewpointTypeNode(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         ICapabilityViewpointTypeSyntax syntax,
         ICapabilityNode capability,
         ITypeNode referent)
     {
-        NamedAntetype = namedAntetype;
         NamedType = namedType;
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
@@ -8117,7 +8116,6 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
 {
     private ISelfViewpointTypeNode Self { [Inline] get => this; }
 
-    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public DataType NamedType { [DebuggerStepThrough] get; }
     public ISelfViewpointTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
@@ -8131,14 +8129,18 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
                 Inherited_MethodSelfType);
     private Pseudotype? methodSelfType;
     private bool methodSelfTypeCached;
+    public IMaybeAntetype NamedAntetype
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.ViewpointType_NamedAntetype);
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
 
     public SelfViewpointTypeNode(
-        IMaybeAntetype namedAntetype,
         DataType namedType,
         ISelfViewpointTypeSyntax syntax,
         ITypeNode referent)
     {
-        NamedAntetype = namedAntetype;
         NamedType = namedType;
         Syntax = syntax;
         Referent = Child.Attach(this, referent);
@@ -8386,6 +8388,17 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         Type = Child.Attach(this, type);
         this.initializer = Child.Create(this, initializer);
     }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        NameBindingAntetypesAspect.VariableDeclarationStatement_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -8488,6 +8501,13 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
         IsMutableBinding = isMutableBinding;
         Pattern = Child.Attach(this, pattern);
         Type = Child.Attach(this, type);
+    }
+
+    internal override IMaybeAntetype Inherited_ContextBindingAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Pattern))
+            return NameBindingAntetypesAspect.BindingContextPattern_Pattern_ContextBindingAntetype(this);
+        return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
     }
 }
 
@@ -8618,6 +8638,24 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
         Syntax = syntax;
         Pattern = Child.Attach(this, pattern);
     }
+
+    internal override IMaybeAntetype Inherited_ContextBindingAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Pattern))
+            return NameBindingAntetypesAspect.OptionalPattern_Pattern_ContextBindingAntetype(this);
+        return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionAntetypesAspect.OptionalPattern_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -8720,10 +8758,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IMaybeAntetype ConstructingAntetype { [DebuggerStepThrough] get; }
     public IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { [DebuggerStepThrough] get; }
-    public IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { [DebuggerStepThrough] get; }
-    public IConstructorDeclarationNode? ReferencedConstructor { [DebuggerStepThrough] get; }
     public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -8769,6 +8804,24 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
                 ExpressionAntetypesAspect.NewObjectExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public IMaybeAntetype ConstructingAntetype
+        => GrammarAttribute.IsCached(in constructingAntetypeCached) ? constructingAntetype!
+            : this.Synthetic(ref constructingAntetypeCached, ref constructingAntetype,
+                NameBindingAntetypesAspect.NewObjectExpression_ConstructingAntetype);
+    private IMaybeAntetype? constructingAntetype;
+    private bool constructingAntetypeCached;
+    public IFixedSet<IConstructorDeclarationNode> CompatibleConstructors
+        => GrammarAttribute.IsCached(in compatibleConstructorsCached) ? compatibleConstructors!
+            : this.Synthetic(ref compatibleConstructorsCached, ref compatibleConstructors,
+                OverloadResolutionAspect.NewObjectExpression_CompatibleConstructors);
+    private IFixedSet<IConstructorDeclarationNode>? compatibleConstructors;
+    private bool compatibleConstructorsCached;
+    public IConstructorDeclarationNode? ReferencedConstructor
+        => GrammarAttribute.IsCached(in referencedConstructorCached) ? referencedConstructor
+            : this.Synthetic(ref referencedConstructorCached, ref referencedConstructor,
+                OverloadResolutionAspect.NewObjectExpression_ReferencedConstructor);
+    private IConstructorDeclarationNode? referencedConstructor;
+    private bool referencedConstructorCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -8786,10 +8839,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         ITypeNameNode constructingType,
         IdentifierName? constructorName,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        IMaybeAntetype constructingAntetype,
         IEnumerable<IConstructorDeclarationNode> referencedConstructors,
-        IEnumerable<IConstructorDeclarationNode> compatibleConstructors,
-        IConstructorDeclarationNode? referencedConstructor,
         ContextualizedOverload? contextualizedOverload)
     {
         ControlFlowNext = controlFlowNext;
@@ -8801,11 +8851,19 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         ConstructingType = Child.Attach(this, constructingType);
         ConstructorName = constructorName;
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
-        ConstructingAntetype = constructingAntetype;
         ReferencedConstructors = referencedConstructors.ToFixedSet();
-        CompatibleConstructors = compatibleConstructors.ToFixedSet();
-        ReferencedConstructor = referencedConstructor;
         ContextualizedOverload = contextualizedOverload;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        OverloadResolutionAspect.NewObjectExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -9314,7 +9372,6 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
             : this.RewritableChild(ref rightOperandCached, ref rightOperand);
     public IExpressionNode? RightOperand => TempRightOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
-    public IAntetype? NumericOperatorCommonAntetype { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -9359,6 +9416,12 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
                 ExpressionAntetypesAspect.BinaryOperatorExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public IAntetype? NumericOperatorCommonAntetype
+        => GrammarAttribute.IsCached(in numericOperatorCommonAntetypeCached) ? numericOperatorCommonAntetype
+            : this.Synthetic(ref numericOperatorCommonAntetypeCached, ref numericOperatorCommonAntetype,
+                ExpressionAntetypesAspect.BinaryOperatorExpression_NumericOperatorCommonAntetype);
+    private IAntetype? numericOperatorCommonAntetype;
+    private bool numericOperatorCommonAntetypeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -9373,8 +9436,7 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         IBinaryOperatorExpressionSyntax syntax,
         IAmbiguousExpressionNode leftOperand,
         BinaryOperator @operator,
-        IAmbiguousExpressionNode rightOperand,
-        IAntetype? numericOperatorCommonAntetype)
+        IAmbiguousExpressionNode rightOperand)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9383,7 +9445,6 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         this.leftOperand = Child.Create(this, leftOperand);
         Operator = @operator;
         this.rightOperand = Child.Create(this, rightOperand);
-        NumericOperatorCommonAntetype = numericOperatorCommonAntetype;
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -9476,6 +9537,17 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
         Fixity = fixity;
         Operator = @operator;
         this.operand = Child.Create(this, operand);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionAntetypesAspect.UnaryOperatorExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -9785,6 +9857,13 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
         Pattern = Child.Attach(this, pattern);
+    }
+
+    internal override IMaybeAntetype Inherited_ContextBindingAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Pattern))
+            return NameBindingAntetypesAspect.PatternMatchExpression_Pattern_ContextBindingAntetype(this);
+        return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
     }
 }
 
@@ -10474,8 +10553,6 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
-    public IFunctionInvocableDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
     public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -10519,6 +10596,18 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
                 ExpressionAntetypesAspect.FunctionInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations
+        => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
+            : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
+                OverloadResolutionAspect.FunctionInvocationExpression_CompatibleDeclarations);
+    private IFixedSet<IFunctionInvocableDeclarationNode>? compatibleDeclarations;
+    private bool compatibleDeclarationsCached;
+    public IFunctionInvocableDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                OverloadResolutionAspect.FunctionInvocationExpression_ReferencedDeclaration);
+    private IFunctionInvocableDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -10535,8 +10624,6 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         IInvocationExpressionSyntax syntax,
         IFunctionGroupNameNode functionGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IFunctionInvocableDeclarationNode> compatibleDeclarations,
-        IFunctionInvocableDeclarationNode? referencedDeclaration,
         ContextualizedOverload? contextualizedOverload)
     {
         ControlFlowNext = controlFlowNext;
@@ -10547,9 +10634,18 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         Syntax = syntax;
         FunctionGroup = Child.Attach(this, functionGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
-        CompatibleDeclarations = compatibleDeclarations.ToFixedSet();
-        ReferencedDeclaration = referencedDeclaration;
         ContextualizedOverload = contextualizedOverload;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        OverloadResolutionAspect.FunctionInvocationExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -10570,8 +10666,6 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
-    public IStandardMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
     public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -10613,6 +10707,18 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
                 ExpressionAntetypesAspect.MethodInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations
+        => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
+            : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
+                OverloadResolutionAspect.MethodInvocationExpression_CompatibleDeclarations);
+    private IFixedSet<IStandardMethodDeclarationNode>? compatibleDeclarations;
+    private bool compatibleDeclarationsCached;
+    public IStandardMethodDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                OverloadResolutionAspect.MethodInvocationExpression_ReferencedDeclaration);
+    private IStandardMethodDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -10629,8 +10735,6 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         IInvocationExpressionSyntax syntax,
         IMethodGroupNameNode methodGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IStandardMethodDeclarationNode> compatibleDeclarations,
-        IStandardMethodDeclarationNode? referencedDeclaration,
         ContextualizedOverload? contextualizedOverload)
     {
         ControlFlowNext = controlFlowNext;
@@ -10641,9 +10745,18 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         Syntax = syntax;
         MethodGroup = Child.Attach(this, methodGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
-        CompatibleDeclarations = compatibleDeclarations.ToFixedSet();
-        ReferencedDeclaration = referencedDeclaration;
         ContextualizedOverload = contextualizedOverload;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        OverloadResolutionAspect.MethodInvocationExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -10961,8 +11074,6 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
-    public IInitializerDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
     public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -11006,6 +11117,18 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
                 ExpressionAntetypesAspect.InitializerInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations
+        => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
+            : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
+                OverloadResolutionAspect.InitializerInvocationExpression_CompatibleDeclarations);
+    private IFixedSet<IInitializerDeclarationNode>? compatibleDeclarations;
+    private bool compatibleDeclarationsCached;
+    public IInitializerDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                OverloadResolutionAspect.InitializerInvocationExpression_ReferencedDeclaration);
+    private IInitializerDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11022,8 +11145,6 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
         IInvocationExpressionSyntax syntax,
         IInitializerGroupNameNode initializerGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IInitializerDeclarationNode> compatibleDeclarations,
-        IInitializerDeclarationNode? referencedDeclaration,
         ContextualizedOverload? contextualizedOverload)
     {
         ControlFlowNext = controlFlowNext;
@@ -11034,8 +11155,6 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
         Syntax = syntax;
         InitializerGroup = Child.Attach(this, initializerGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
-        CompatibleDeclarations = compatibleDeclarations.ToFixedSet();
-        ReferencedDeclaration = referencedDeclaration;
         ContextualizedOverload = contextualizedOverload;
     }
 }
@@ -11823,7 +11942,6 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
     public DataType Type { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
-    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public IStandardNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
@@ -11855,6 +11973,12 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public IMaybeAntetype NamedAntetype
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.TypeNameExpression_NamedAntetype);
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11868,7 +11992,6 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
         DataType type,
         StandardName name,
         ITypeDeclarationNode referencedDeclaration,
-        IMaybeAntetype namedAntetype,
         BareType? namedBareType,
         IStandardNameExpressionSyntax syntax,
         IEnumerable<ITypeNode> typeArguments)
@@ -11878,7 +12001,6 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
         Type = type;
         Name = name;
         ReferencedDeclaration = referencedDeclaration;
-        NamedAntetype = namedAntetype;
         NamedBareType = namedBareType;
         Syntax = syntax;
         TypeArguments = ChildList.Attach(this, typeArguments);
@@ -11896,7 +12018,6 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     public DataType Type { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
-    public IMaybeAntetype NamedAntetype { [DebuggerStepThrough] get; }
     public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public INamespaceNameNode Context { [DebuggerStepThrough] get; }
@@ -11929,6 +12050,12 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public IMaybeAntetype NamedAntetype
+        => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
+            : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
+                TypeExpressionsAntetypesAspect.TypeNameExpression_NamedAntetype);
+    private IMaybeAntetype? namedAntetype;
+    private bool namedAntetypeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11942,7 +12069,6 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
         DataType type,
         StandardName name,
         ITypeDeclarationNode referencedDeclaration,
-        IMaybeAntetype namedAntetype,
         BareType? namedBareType,
         IMemberAccessExpressionSyntax syntax,
         INamespaceNameNode context,
@@ -11953,7 +12079,6 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
         Type = type;
         Name = name;
         ReferencedDeclaration = referencedDeclaration;
-        NamedAntetype = namedAntetype;
         NamedBareType = namedBareType;
         Syntax = syntax;
         Context = Child.Attach(this, context);
@@ -13189,6 +13314,17 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
         Type = type;
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionAntetypesAspect.AwaitExpression_Contribute_Diagnostics(this, builder);
     }
 }
 

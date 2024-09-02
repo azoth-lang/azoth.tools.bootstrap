@@ -154,7 +154,7 @@ internal sealed class VariableDeclarationStatementNode : StatementNode, IVariabl
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        NameBindingAntetypesAspect.VariableDeclarationStatement_ContributeDiagnostics(this, diagnostics);
+        NameBindingAntetypesAspect.VariableDeclarationStatement_Contribute_Diagnostics(this, diagnostics);
         ShadowingAspect.VariableBinding_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }

@@ -60,7 +60,7 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionAntetypesAspect.UnaryOperatorExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionAntetypesAspect.UnaryOperatorExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

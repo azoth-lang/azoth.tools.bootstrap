@@ -1,11 +1,30 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 ◊name OverloadResolutionAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
+// ---------- Expressions
+↑ NewObjectExpression.CompatibleConstructors: {ConstructorDeclaration};
+↑ NewObjectExpression.ReferencedConstructor: ConstructorDeclaration?;
+= NewObjectExpression.↑.Diagnostics;
+
+// ---------- Invocation Expressions
 ✎ UnresolvedInvocationExpression FunctionGroupNameExpression;
 ✎ UnresolvedInvocationExpression MethodGroupNameExpression;
 ✎ UnresolvedInvocationExpression TypeNameExpression;
 ✎ UnresolvedInvocationExpression InitializerGroupNameExpression;
 ✎ UnresolvedInvocationExpression FunctionReferenceExpression;
 ✎ UnresolvedInvocationExpression ToUnknown;
+
+↑ FunctionInvocationExpression.CompatibleDeclarations: {FunctionInvocableDeclaration};
+↑ FunctionInvocationExpression.ReferencedDeclaration: FunctionInvocableDeclaration?;
+= FunctionInvocationExpression.↑.Diagnostics;
+
+↑ MethodInvocationExpression.CompatibleDeclarations: {StandardMethodDeclaration};
+↑ MethodInvocationExpression.ReferencedDeclaration: StandardMethodDeclaration?;
+= MethodInvocationExpression.↑.Diagnostics;
+
+↑ InitializerInvocationExpression.CompatibleDeclarations: {InitializerDeclaration};
+↑ InitializerInvocationExpression.ReferencedDeclaration: InitializerDeclaration?

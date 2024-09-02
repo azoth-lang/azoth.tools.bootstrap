@@ -95,7 +95,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        OverloadResolutionAspect.FunctionInvocationExpression_ContributeDiagnostics(this, diagnostics);
+        OverloadResolutionAspect.FunctionInvocationExpression_Contribute_Diagnostics(this, diagnostics);
         ExpressionTypesAspect.FunctionInvocationExpression_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }

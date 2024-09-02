@@ -53,7 +53,7 @@ internal sealed class PatternMatchExpressionNode : ExpressionNode, IPatternMatch
     internal override IMaybeAntetype Inherited_ContextBindingAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (descendant == Pattern)
-            return NameBindingAntetypesAspect.PatternMatchExpression_Pattern_ContextBindingAntetype_(this);
+            return NameBindingAntetypesAspect.PatternMatchExpression_Pattern_ContextBindingAntetype(this);
         return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
     }
 

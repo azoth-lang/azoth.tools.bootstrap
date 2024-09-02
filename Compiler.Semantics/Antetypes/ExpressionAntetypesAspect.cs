@@ -58,7 +58,7 @@ internal static partial class ExpressionAntetypesAspect
     public static partial IMaybeAntetype ResultStatement_Antetype(IResultStatementNode node)
         => node.Expression?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
-    public static IAntetype? BinaryOperatorExpression_NumericOperatorCommonAntetype(IBinaryOperatorExpressionNode node)
+    public static partial IAntetype? BinaryOperatorExpression_NumericOperatorCommonAntetype(IBinaryOperatorExpressionNode node)
     {
         var leftAntetype = node.LeftOperand?.Antetype ?? IAntetype.Unknown;
         var rightAntetype = node.RightOperand?.Antetype ?? IAntetype.Unknown;
@@ -260,7 +260,7 @@ internal static partial class ExpressionAntetypesAspect
         return IAntetype.Unknown;
     }
 
-    public static void AwaitExpression_Contribute_Diagnostics(IAwaitExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void AwaitExpression_Contribute_Diagnostics(IAwaitExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO eliminate code duplication with AwaitExpression_Antetype
         if (node.Expression?.Antetype is UserGenericNominalAntetype { DeclaredAntetype: var declaredAntetype }
@@ -303,7 +303,7 @@ internal static partial class ExpressionAntetypesAspect
             _ => IAntetype.Unknown,
         };
 
-    public static void UnaryOperatorExpression_ContributeDiagnostics(
+    public static partial void UnaryOperatorExpression_Contribute_Diagnostics(
         IUnaryOperatorExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
@@ -405,7 +405,7 @@ internal static partial class ExpressionAntetypesAspect
         }
     }
 
-    public static void OptionalPattern_Contribute_Diagnostics(IOptionalPatternNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void OptionalPattern_Contribute_Diagnostics(IOptionalPatternNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ContextBindingAntetype() is not OptionalAntetype)
             diagnostics.Add(TypeError.OptionalPatternOnNonOptionalType(node.File, node.Syntax, node.ContextBindingType()));

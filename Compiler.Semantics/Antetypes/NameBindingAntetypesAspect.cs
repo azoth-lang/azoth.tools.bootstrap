@@ -16,13 +16,13 @@ internal static partial class NameBindingAntetypesAspect
         return containingDeclaredAntetype.With(containingDeclaredAntetype.GenericParameterAntetypes);
     }
 
-    public static IMaybeAntetype PatternMatchExpression_Pattern_ContextBindingAntetype_(IPatternMatchExpressionNode node)
+    public static partial IMaybeAntetype PatternMatchExpression_Pattern_ContextBindingAntetype(IPatternMatchExpressionNode node)
         => node.Referent?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
-    public static IMaybeAntetype BindingContextPattern_Pattern_ContextBindingAntetype(IBindingContextPatternNode node)
+    public static partial IMaybeAntetype BindingContextPattern_Pattern_ContextBindingAntetype(IBindingContextPatternNode node)
         => node.Type?.NamedAntetype ?? node.ContextBindingAntetype();
 
-    public static IMaybeAntetype OptionalPattern_Pattern_ContextBindingAntetype(
+    public static partial IMaybeAntetype OptionalPattern_Pattern_ContextBindingAntetype(
         IOptionalPatternNode node)
     {
         var inheritedBindingAntetype = node.ContextBindingAntetype();
@@ -37,7 +37,7 @@ internal static partial class NameBindingAntetypesAspect
     public static partial IMaybeAntetype VariableDeclarationStatement_BindingAntetype(IVariableDeclarationStatementNode node)
         => node.Type?.NamedAntetype ?? node.Initializer?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
-    public static void VariableDeclarationStatement_ContributeDiagnostics(
+    public static partial void VariableDeclarationStatement_Contribute_Diagnostics(
         IVariableDeclarationStatementNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
@@ -49,7 +49,7 @@ internal static partial class NameBindingAntetypesAspect
     public static partial IMaybeAntetype ForeachExpression_BindingAntetype(IForeachExpressionNode node)
         => node.DeclaredType?.NamedAntetype ?? node.IteratedAntetype;
 
-    public static IMaybeAntetype NewObjectExpression_ConstructingAntetype(INewObjectExpressionNode node)
+    public static partial IMaybeAntetype NewObjectExpression_ConstructingAntetype(INewObjectExpressionNode node)
         => node.ConstructingType.NamedAntetype;
 
     public static partial IMaybeAntetype NamedParameter_BindingAntetype(INamedParameterNode node)

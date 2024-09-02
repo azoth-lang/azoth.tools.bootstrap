@@ -177,7 +177,7 @@ BlockBody <: Body = Syntax:`IBlockBodySyntax` Statements:BodyStatement*;
 ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 
 // ---------- Types
-Type <: Code = Syntax:`ITypeSyntax` NamedAntetype:`IMaybeAntetype` NamedType:`DataType`;
+Type <: Code = Syntax:`ITypeSyntax` NamedType:`DataType`;
 // TODO start from generalized names in syntax and rewrite to type names
 TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName`
     NamedBareType:`BareType`?;
@@ -231,8 +231,7 @@ BlockExpression <: Expression, BlockOrResult, BodyOrBlock
     = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: InvocationExpression = Syntax:`INewObjectExpressionSyntax`
     ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression*
-    ConstructingAntetype:`IMaybeAntetype` ReferencedConstructors:{`IConstructorDeclarationNode`}
-    CompatibleConstructors:{`IConstructorDeclarationNode`} ReferencedConstructor:`IConstructorDeclarationNode`?
+    ReferencedConstructors:{`IConstructorDeclarationNode`}
     ContextualizedOverload:`ContextualizedOverload`?;
 UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression;
 NeverTypedExpression <: Expression = Type:`NeverType`;
@@ -253,8 +252,7 @@ AssignmentExpression <: Expression, DataFlow = Syntax:`IAssignmentExpressionSynt
 BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax`
     LeftOperand:AmbiguousExpression
     Operator:`BinaryOperator`
-    RightOperand:AmbiguousExpression
-    NumericOperatorCommonAntetype:`IAntetype`?;
+    RightOperand:AmbiguousExpression;
 UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` Fixity:`UnaryOperatorFixity`
     Operator:`UnaryOperator` Operand:AmbiguousExpression;
 IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression;
@@ -291,11 +289,9 @@ InvocationExpression <: Expression =
     TempAllArguments:`IEnumerable<IAmbiguousExpressionNode>` AllArguments:`IEnumerable<IExpressionNode?>`;
 FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*
-    CompatibleDeclarations:{`IFunctionInvocableDeclarationNode`} ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
 MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     MethodGroup:MethodGroupName Arguments:AmbiguousExpression*
-    CompatibleDeclarations:{`IStandardMethodDeclarationNode`} ReferencedDeclaration:`IStandardMethodDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
 GetterInvocationExpression <: InvocationExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression PropertyName:`StandardName`
@@ -310,7 +306,6 @@ FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocat
     FunctionAntetype:`FunctionAntetype` FunctionType:`FunctionType`;
 InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression*
-    CompatibleDeclarations:{`IInitializerDeclarationNode`} ReferencedDeclaration:`IInitializerDeclarationNode`?
     ContextualizedOverload:`ContextualizedOverload`?;
 UnknownInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
@@ -354,7 +349,7 @@ VariableNameExpression <: LocalBindingNameExpression, AssignableExpression, Simp
     DataFlowPrevious:`IFixedSet<IDataFlowNode>`;
 TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
     Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`
-    NamedAntetype:`IMaybeAntetype` NamedBareType:`BareType`?;
+    NamedBareType:`BareType`?;
 StandardTypeNameExpression <: TypeNameExpression = Syntax:`IStandardNameExpressionSyntax` TypeArguments:Type*;
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:NamespaceName TypeArguments:Type*;

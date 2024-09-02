@@ -4,3 +4,11 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
+// ---------- Types
+↑ Type.NamedAntetype: `IMaybeAntetype`;
+= QualifiedTypeName.NamedAntetype => throw new NotImplementedException();
+= ViewpointType.NamedAntetype;
+
+// ---------- Name Expressions
+↑ TypeNameExpression.NamedAntetype: `IMaybeAntetype`;
+= TypeNameExpression.NamedAntetype;

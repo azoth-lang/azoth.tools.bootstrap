@@ -1,6 +1,7 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
@@ -10,6 +11,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class ExpressionAntetypesAspect
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void OptionalPattern_Contribute_Diagnostics(IOptionalPatternNode node, DiagnosticCollectionBuilder diagnostics);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void UnaryOperatorExpression_Contribute_Diagnostics(IUnaryOperatorExpressionNode node, DiagnosticCollectionBuilder diagnostics);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void AwaitExpression_Contribute_Diagnostics(IAwaitExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeAntetype ResultStatement_Antetype(IResultStatementNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -30,6 +37,8 @@ internal static partial class ExpressionAntetypesAspect
     public static partial IMaybeExpressionAntetype AssignmentExpression_Antetype(IAssignmentExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeExpressionAntetype BinaryOperatorExpression_Antetype(IBinaryOperatorExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IAntetype? BinaryOperatorExpression_NumericOperatorCommonAntetype(IBinaryOperatorExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeExpressionAntetype UnaryOperatorExpression_Antetype(IUnaryOperatorExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
