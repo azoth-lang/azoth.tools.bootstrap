@@ -211,10 +211,11 @@ public sealed class TreeModel : IHasUsingNamespaces
     {
         var errors = false;
         var equations = Aspects.SelectMany(a => a.DeclaredEquations).OfType<AggregateAttributeEquationModel>();
-        foreach (var equation in equations.Where(eq => eq.Attributes.IsEmpty))
+        foreach (var equation in equations.Where(eq => eq.Attributes.Values.Any(v => v.IsEmpty)))
         {
             errors = true;
-            Console.Error.WriteLine($"ERROR: Equation '{equation}' does not contribute to any node.");
+            var emptyNodes = equation.Attributes.Where(kv => kv.Value.IsEmpty).Select(kv => kv.Key);
+            Console.Error.WriteLine($"ERROR: Equation '{equation}' does not contribute to any node from the following concrete nodes: {string.Join(", ", emptyNodes)}.");
         }
         return errors;
     }

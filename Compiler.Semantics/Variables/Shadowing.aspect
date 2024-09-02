@@ -1,4 +1,11 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 ◊name ShadowingAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Bindings
+= VariableBinding.↑.Diagnostics;
+
+// ---------- Name Expressions
+= VariableNameExpression.↑.Diagnostics;

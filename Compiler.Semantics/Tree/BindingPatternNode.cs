@@ -95,7 +95,7 @@ internal sealed class BindingPatternNode : PatternNode, IBindingPatternNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ShadowingAspect.VariableBinding_ContributeDiagnostics(this, diagnostics);
+        ShadowingAspect.VariableBinding_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

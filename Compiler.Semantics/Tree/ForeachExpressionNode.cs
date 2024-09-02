@@ -185,7 +185,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         ForeachExpressionTypeAspect.ForeachExpression_Contribute_Diagnostics(this, diagnostics);
-        ShadowingAspect.VariableBinding_ContributeDiagnostics(this, diagnostics);
+        ShadowingAspect.VariableBinding_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

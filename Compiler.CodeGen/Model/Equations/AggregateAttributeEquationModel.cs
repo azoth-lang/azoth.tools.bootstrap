@@ -17,8 +17,8 @@ public sealed class AggregateAttributeEquationModel : ContributorEquationModel
     private readonly Lazy<AggregateAttributeFamilyModel> attributeFamily;
     public override TypeModel Type => AttributeFamily.Type;
     public TypeModel FromType => AttributeFamily.FromType;
-    public IFixedSet<AggregateAttributeModel> Attributes => attributes.Value;
-    private readonly Lazy<IFixedSet<AggregateAttributeModel>> attributes;
+    public FixedDictionary<TreeNodeModel, IFixedSet<AggregateAttributeModel>> Attributes => attributes.Value;
+    private readonly Lazy<FixedDictionary<TreeNodeModel, IFixedSet<AggregateAttributeModel>>> attributes;
 
     public AggregateAttributeEquationModel(AspectModel aspect, AggregateAttributeEquationSyntax syntax)
         : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, false, null)
@@ -28,14 +28,19 @@ public sealed class AggregateAttributeEquationModel : ContributorEquationModel
         attributes = new(ComputeAttributes);
     }
 
-    private IFixedSet<AggregateAttributeModel> ComputeAttributes()
+    private FixedDictionary<TreeNodeModel, IFixedSet<AggregateAttributeModel>> ComputeAttributes()
+        // Since each aggregate actually emits from the concrete subtypes, each one must be checked
+        // to ensure that it contributes to some attributes.
+        => Node.ConcreteSubtypes()
+               .ToFixedDictionary(Functions.Identity, ComputeAttributes);
+
+    private IFixedSet<AggregateAttributeModel> ComputeAttributes(TreeNodeModel node)
     {
         var nodesVisited = new HashSet<TreeNodeModel>();
         var attributes = new HashSet<AggregateAttributeModel>();
-        ComputeAttributes(Node, nodesVisited, attributes);
+        ComputeAttributes(node, nodesVisited, attributes);
         return attributes.ToFixedSet();
     }
-
     private void ComputeAttributes(
         TreeNodeModel node,
         HashSet<TreeNodeModel> nodesVisited,

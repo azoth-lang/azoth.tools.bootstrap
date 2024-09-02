@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 
 internal static partial class ShadowingAspect
 {
-    public static void VariableBinding_ContributeDiagnostics(IVariableBindingNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void VariableBinding_Contribute_Diagnostics(IVariableBindingNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ContainingLexicalScope.Lookup(node.Name).TrySingle() is INamedBindingNode shadowedDeclaration)
         {
@@ -19,7 +19,7 @@ internal static partial class ShadowingAspect
         }
     }
 
-    public static void VariableNameExpression_ContributeDiagnostics(IVariableNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void VariableNameExpression_Contribute_Diagnostics(IVariableNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // If it is a mutable binding, then no shadowing is possible
         if (node.ReferencedDefinition.IsMutableBinding)

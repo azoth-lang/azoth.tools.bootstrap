@@ -8383,6 +8383,7 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
+        ShadowingAspect.VariableBinding_Contribute_Diagnostics(this, builder);
         NameBindingAntetypesAspect.VariableDeclarationStatement_Contribute_Diagnostics(this, builder);
     }
 }
@@ -8606,6 +8607,17 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
         Name = name;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ShadowingAspect.VariableBinding_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -10604,6 +10616,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ShadowingAspect.VariableBinding_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12522,6 +12535,7 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         DefiniteAssignmentAspect.VariableNameExpression_Contribute_Diagnostics(this, builder);
+        ShadowingAspect.VariableNameExpression_Contribute_Diagnostics(this, builder);
         SingleAssignmentAspect.VariableNameExpression_Contribute_Diagnostics(this, builder);
     }
 }

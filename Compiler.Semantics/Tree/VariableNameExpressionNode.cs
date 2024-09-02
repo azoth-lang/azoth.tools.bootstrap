@@ -64,7 +64,7 @@ internal sealed class VariableNameExpressionNode : NameExpressionNode, IVariable
     {
         DefiniteAssignmentAspect.VariableNameExpression_Contribute_Diagnostics(this, diagnostics);
         SingleAssignmentAspect.VariableNameExpression_Contribute_Diagnostics(this, diagnostics);
-        ShadowingAspect.VariableNameExpression_ContributeDiagnostics(this, diagnostics);
+        ShadowingAspect.VariableNameExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }
