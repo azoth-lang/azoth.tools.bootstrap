@@ -200,8 +200,7 @@ Entry <: DataFlow;
 Exit <: DataFlow;
 
 // ---------- Data Flow
-DataFlow <: ControlFlow =
-    DefinitelyUnassigned:`BindingFlags<IVariableBindingNode>`;
+DataFlow <: ControlFlow;
 
 // ---------- Statements
 Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`? ResultType:`DataType`?;

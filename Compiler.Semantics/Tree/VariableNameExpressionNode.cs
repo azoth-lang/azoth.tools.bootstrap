@@ -63,7 +63,7 @@ internal sealed class VariableNameExpressionNode : NameExpressionNode, IVariable
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         DefiniteAssignmentAspect.VariableNameExpression_Contribute_Diagnostics(this, diagnostics);
-        SingleAssignmentAspect.VariableNameExpression_ContributeDiagnostics(this, diagnostics);
+        SingleAssignmentAspect.VariableNameExpression_Contribute_Diagnostics(this, diagnostics);
         ShadowingAspect.VariableNameExpression_ContributeDiagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }

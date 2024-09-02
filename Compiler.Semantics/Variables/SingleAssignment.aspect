@@ -1,4 +1,12 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 ◊name SingleAssignmentAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+◊using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Data Flow
+⟳ DataFlow.DefinitelyUnassigned: `BindingFlags<IVariableBindingNode>`;
+
+// ---------- Name Expressions
+= VariableNameExpression.↑.Diagnostics;

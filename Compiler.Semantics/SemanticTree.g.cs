@@ -1683,9 +1683,8 @@ public partial interface IEntryNode : IDataFlowNode
 
     public static IEntryNode Create(
         ICodeSyntax? syntax,
-        ControlFlowSet controlFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyUnassigned)
-        => new EntryNode(syntax, controlFlowPrevious, definitelyUnassigned);
+        ControlFlowSet controlFlowPrevious)
+        => new EntryNode(syntax, controlFlowPrevious);
 }
 
 // [Closed(typeof(ExitNode))]
@@ -1697,9 +1696,8 @@ public partial interface IExitNode : IDataFlowNode
 
     public static IExitNode Create(
         ICodeSyntax? syntax,
-        ControlFlowSet controlFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyUnassigned)
-        => new ExitNode(syntax, controlFlowPrevious, definitelyUnassigned);
+        ControlFlowSet controlFlowPrevious)
+        => new ExitNode(syntax, controlFlowPrevious);
 }
 
 [Closed(
@@ -1710,9 +1708,9 @@ public partial interface IExitNode : IDataFlowNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IDataFlowNode : IControlFlowNode
 {
-    BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; }
     IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
     BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; }
+    BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; }
 }
 
 [Closed(
@@ -1812,12 +1810,11 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
         ControlFlowSet controlFlowPrevious,
         IMaybeAntetype? resultAntetype,
         DataType? resultType,
-        BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IVariableDeclarationStatementSyntax syntax,
         ICapabilityNode? capability,
         ITypeNode? type,
         IAmbiguousExpressionNode? initializer)
-        => new VariableDeclarationStatementNode(controlFlowPrevious, resultAntetype, resultType, definitelyUnassigned, syntax, capability, type, initializer);
+        => new VariableDeclarationStatementNode(controlFlowPrevious, resultAntetype, resultType, syntax, capability, type, initializer);
 }
 
 // [Closed(typeof(ExpressionStatementNode))]
@@ -1921,10 +1918,9 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
 
     public static IBindingPatternNode Create(
         ControlFlowSet controlFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IBindingPatternSyntax syntax,
         IdentifierName name)
-        => new BindingPatternNode(controlFlowPrevious, definitelyUnassigned, syntax, name);
+        => new BindingPatternNode(controlFlowPrevious, syntax, name);
 }
 
 // [Closed(typeof(OptionalPatternNode))]
@@ -2245,12 +2241,11 @@ public partial interface IAssignmentExpressionNode : IExpressionNode, IDataFlowN
 
     public static IAssignmentExpressionNode Create(
         ControlFlowSet controlFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IAssignmentExpressionSyntax syntax,
         IAmbiguousAssignableExpressionNode leftOperand,
         AssignmentOperator @operator,
         IAmbiguousExpressionNode rightOperand)
-        => new AssignmentExpressionNode(controlFlowPrevious, definitelyUnassigned, syntax, leftOperand, @operator, rightOperand);
+        => new AssignmentExpressionNode(controlFlowPrevious, syntax, leftOperand, @operator, rightOperand);
 }
 
 // [Closed(typeof(BinaryOperatorExpressionNode))]
@@ -2503,7 +2498,6 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
 
     public static IForeachExpressionNode Create(
         ControlFlowSet controlFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IForeachExpressionSyntax syntax,
         bool isMutableBinding,
         IdentifierName variableName,
@@ -2519,7 +2513,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
         IMaybeAntetype iteratedAntetype,
         DataType iteratedType,
         IFlowState flowStateBeforeBlock)
-        => new ForeachExpressionNode(controlFlowPrevious, definitelyUnassigned, syntax, isMutableBinding, variableName, inExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, iteratorType, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype, iteratedType, flowStateBeforeBlock);
+        => new ForeachExpressionNode(controlFlowPrevious, syntax, isMutableBinding, variableName, inExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, iteratorType, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype, iteratedType, flowStateBeforeBlock);
 }
 
 // [Closed(typeof(BreakExpressionNode))]
@@ -8104,7 +8098,6 @@ file class EntryNode : SemanticNode, IEntryNode
 
     public ICodeSyntax? Syntax { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8128,6 +8121,13 @@ file class EntryNode : SemanticNode, IEntryNode
                 DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
     private bool definitelyAssignedCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned
+        => GrammarAttribute.IsCached(in definitelyUnassignedCached) ? definitelyUnassigned.UnsafeValue
+            : this.Circular(ref definitelyUnassignedCached, ref definitelyUnassigned,
+                SingleAssignmentAspect.Entry_DefinitelyUnassigned,
+                SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
+    private bool definitelyUnassignedCached;
     public IFixedSet<IDataFlowNode> DataFlowPrevious
         => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
             : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
@@ -8137,12 +8137,10 @@ file class EntryNode : SemanticNode, IEntryNode
 
     public EntryNode(
         ICodeSyntax? syntax,
-        ControlFlowSet controlFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyUnassigned)
+        ControlFlowSet controlFlowPrevious)
     {
         Syntax = syntax;
         ControlFlowPrevious = controlFlowPrevious;
-        DefinitelyUnassigned = definitelyUnassigned;
     }
 }
 
@@ -8153,7 +8151,6 @@ file class ExitNode : SemanticNode, IExitNode
 
     public ICodeSyntax? Syntax { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8169,6 +8166,13 @@ file class ExitNode : SemanticNode, IExitNode
                 DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
     private bool definitelyAssignedCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned
+        => GrammarAttribute.IsCached(in definitelyUnassignedCached) ? definitelyUnassigned.UnsafeValue
+            : this.Circular(ref definitelyUnassignedCached, ref definitelyUnassigned,
+                SingleAssignmentAspect.Exit_DefinitelyUnassigned,
+                SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
+    private bool definitelyUnassignedCached;
     public IFixedSet<IDataFlowNode> DataFlowPrevious
         => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
             : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
@@ -8178,12 +8182,10 @@ file class ExitNode : SemanticNode, IExitNode
 
     public ExitNode(
         ICodeSyntax? syntax,
-        ControlFlowSet controlFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyUnassigned)
+        ControlFlowSet controlFlowPrevious)
     {
         Syntax = syntax;
         ControlFlowPrevious = controlFlowPrevious;
-        DefinitelyUnassigned = definitelyUnassigned;
     }
 }
 
@@ -8270,7 +8272,6 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IMaybeAntetype? ResultAntetype { [DebuggerStepThrough] get; }
     public DataType? ResultType { [DebuggerStepThrough] get; }
-    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IVariableDeclarationStatementSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityNode? Capability { [DebuggerStepThrough] get; }
     public ITypeNode? Type { [DebuggerStepThrough] get; }
@@ -8336,6 +8337,13 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
                 DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
     private bool definitelyAssignedCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned
+        => GrammarAttribute.IsCached(in definitelyUnassignedCached) ? definitelyUnassigned.UnsafeValue
+            : this.Circular(ref definitelyUnassignedCached, ref definitelyUnassigned,
+                SingleAssignmentAspect.VariableDeclarationStatement_DefinitelyUnassigned,
+                SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
+    private bool definitelyUnassignedCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -8353,7 +8361,6 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         ControlFlowSet controlFlowPrevious,
         IMaybeAntetype? resultAntetype,
         DataType? resultType,
-        BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IVariableDeclarationStatementSyntax syntax,
         ICapabilityNode? capability,
         ITypeNode? type,
@@ -8362,7 +8369,6 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         ControlFlowPrevious = controlFlowPrevious;
         ResultAntetype = resultAntetype;
         ResultType = resultType;
-        DefinitelyUnassigned = definitelyUnassigned;
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
         Type = Child.Attach(this, type);
@@ -8511,7 +8517,6 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     private AttributeLock syncLock;
 
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IBindingPatternSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -8579,6 +8584,13 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
                 DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
     private bool definitelyAssignedCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned
+        => GrammarAttribute.IsCached(in definitelyUnassignedCached) ? definitelyUnassigned.UnsafeValue
+            : this.Circular(ref definitelyUnassignedCached, ref definitelyUnassigned,
+                SingleAssignmentAspect.BindingPattern_DefinitelyUnassigned,
+                SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
+    private bool definitelyUnassignedCached;
     public IFixedSet<IDataFlowNode> DataFlowPrevious
         => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
             : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
@@ -8588,12 +8600,10 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
 
     public BindingPatternNode(
         ControlFlowSet controlFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IBindingPatternSyntax syntax,
         IdentifierName name)
     {
         ControlFlowPrevious = controlFlowPrevious;
-        DefinitelyUnassigned = definitelyUnassigned;
         Syntax = syntax;
         Name = name;
     }
@@ -9385,7 +9395,6 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     private AttributeLock syncLock;
 
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousAssignableExpressionNode> leftOperand;
     private bool leftOperandCached;
@@ -9461,6 +9470,13 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
                 DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
     private bool definitelyAssignedCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned
+        => GrammarAttribute.IsCached(in definitelyUnassignedCached) ? definitelyUnassigned.UnsafeValue
+            : this.Circular(ref definitelyUnassignedCached, ref definitelyUnassigned,
+                SingleAssignmentAspect.AssignmentExpression_DefinitelyUnassigned,
+                SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
+    private bool definitelyUnassignedCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -9476,14 +9492,12 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
 
     public AssignmentExpressionNode(
         ControlFlowSet controlFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IAssignmentExpressionSyntax syntax,
         IAmbiguousAssignableExpressionNode leftOperand,
         AssignmentOperator @operator,
         IAmbiguousExpressionNode rightOperand)
     {
         ControlFlowPrevious = controlFlowPrevious;
-        DefinitelyUnassigned = definitelyUnassigned;
         Syntax = syntax;
         this.leftOperand = Child.Create(this, leftOperand);
         Operator = @operator;
@@ -10415,7 +10429,6 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     private AttributeLock syncLock;
 
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IForeachExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IdentifierName VariableName { [DebuggerStepThrough] get; }
@@ -10520,6 +10533,13 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
     private bool definitelyAssignedCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyUnassigned
+        => GrammarAttribute.IsCached(in definitelyUnassignedCached) ? definitelyUnassigned.UnsafeValue
+            : this.Circular(ref definitelyUnassignedCached, ref definitelyUnassigned,
+                SingleAssignmentAspect.ForeachExpression_DefinitelyUnassigned,
+                SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
+    private bool definitelyUnassignedCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -10541,7 +10561,6 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
 
     public ForeachExpressionNode(
         ControlFlowSet controlFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IForeachExpressionSyntax syntax,
         bool isMutableBinding,
         IdentifierName variableName,
@@ -10559,7 +10578,6 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         IFlowState flowStateBeforeBlock)
     {
         ControlFlowPrevious = controlFlowPrevious;
-        DefinitelyUnassigned = definitelyUnassigned;
         Syntax = syntax;
         IsMutableBinding = isMutableBinding;
         VariableName = variableName;
@@ -12504,6 +12522,7 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         DefiniteAssignmentAspect.VariableNameExpression_Contribute_Diagnostics(this, builder);
+        SingleAssignmentAspect.VariableNameExpression_Contribute_Diagnostics(this, builder);
     }
 }
 

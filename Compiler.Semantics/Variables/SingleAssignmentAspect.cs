@@ -12,17 +12,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 /// </summary>
 internal static partial class SingleAssignmentAspect
 {
-    public static BindingFlags<IVariableBindingNode> DataFlow_DefinitelyUnassigned_Initial(IDataFlowNode node)
+    public static partial BindingFlags<IVariableBindingNode> DataFlow_DefinitelyUnassigned_Initial(IDataFlowNode node)
         // Since the merge operation is intersection, the initial state must be that all bindings
         // are definitely unassigned. That is the same as the entry state.
         => node.ControlFlowEntry().DefinitelyUnassigned;
 
-    public static BindingFlags<IVariableBindingNode> Entry_DefinitelyUnassigned(IEntryNode node)
+    public static partial BindingFlags<IVariableBindingNode> Entry_DefinitelyUnassigned(IEntryNode node)
         // All local bindings are definitely unassigned
         => BindingFlags.Create(node.VariableBindingsMap(), true);
 
-
-    public static BindingFlags<IVariableBindingNode> VariableDeclarationStatement_DefinitelyUnassigned(IVariableDeclarationStatementNode node)
+    public static partial BindingFlags<IVariableBindingNode> VariableDeclarationStatement_DefinitelyUnassigned(IVariableDeclarationStatementNode node)
     {
         var previous = node.DefinitelyUnassignedPrevious();
         if (node.TempInitializer is null) return previous;
@@ -30,13 +29,13 @@ internal static partial class SingleAssignmentAspect
         return node.DefinitelyUnassignedPrevious().Set(node, false);
     }
 
-    public static BindingFlags<IVariableBindingNode> BindingPattern_DefinitelyUnassigned(IBindingPatternNode node)
+    public static partial BindingFlags<IVariableBindingNode> BindingPattern_DefinitelyUnassigned(IBindingPatternNode node)
         => node.DefinitelyUnassignedPrevious().Set(node, false);
 
-    public static BindingFlags<IVariableBindingNode> ForeachExpression_DefinitelyUnassigned(IForeachExpressionNode node)
+    public static partial BindingFlags<IVariableBindingNode> ForeachExpression_DefinitelyUnassigned(IForeachExpressionNode node)
         => node.DefinitelyUnassignedPrevious().Set(node, false);
 
-    public static BindingFlags<IVariableBindingNode> AssignmentExpression_DefinitelyUnassigned(IAssignmentExpressionNode node)
+    public static partial BindingFlags<IVariableBindingNode> AssignmentExpression_DefinitelyUnassigned(IAssignmentExpressionNode node)
     {
         var previous = node.DefinitelyUnassignedPrevious();
         if (node.LeftOperand is IVariableNameExpressionNode { ReferencedDefinition: IVariableBindingNode variableBinding })
@@ -44,7 +43,7 @@ internal static partial class SingleAssignmentAspect
         return previous;
     }
 
-    public static BindingFlags<IVariableBindingNode> Exit_DefinitelyUnassigned(IExitNode node)
+    public static partial BindingFlags<IVariableBindingNode> Exit_DefinitelyUnassigned(IExitNode node)
         => node.DefinitelyUnassignedPrevious();
 
     private static BindingFlags<IVariableBindingNode> DefinitelyUnassignedPrevious(this IDataFlowNode node)
@@ -61,7 +60,7 @@ internal static partial class SingleAssignmentAspect
         return previous.Select(d => d.DefinitelyUnassigned).Aggregate((a, b) => a.Intersect(b));
     }
 
-    public static void VariableNameExpression_ContributeDiagnostics(IVariableNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void VariableNameExpression_Contribute_Diagnostics(IVariableNameExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node is not
             {

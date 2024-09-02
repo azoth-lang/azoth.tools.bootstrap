@@ -6,7 +6,7 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Data Flow
-⟳ DataFlow.DefinitelyAssigned:`BindingFlags<IVariableBindingNode>`;
+⟳ DataFlow.DefinitelyAssigned: `BindingFlags<IVariableBindingNode>`;
 
 // ---------- Name Expressions
 = VariableNameExpression.↑.Diagnostics;
