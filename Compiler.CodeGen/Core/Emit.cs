@@ -106,8 +106,7 @@ internal static class Emit
                 }
                 return $"{childListClass}.Create(this, nameof({member.Name}), ";
             default:
-                // TODO return member.MayHaveRewrites ? "Child.Create(this, " : "Child.Attach(this, ";
-                return "Child.Attach(this, ";
+                return member.MayHaveRewrites ? "Child.Create(this, " : "Child.Attach(this, ";
         }
     }
     #endregion
@@ -133,22 +132,42 @@ internal static class Emit
     }
 
     public static string FieldReference(PropertyModel property)
-        => property.IsTemp && property.IsCollection ? $"this.{VariableName(property)}" : property.TempName;
+        => property.MayHaveRewrites ? $"this.{VariableName(property)}" : property.Name;
 
     public static string RewritableBackingType(PropertyModel property)
     {
         switch (property.Type)
         {
-            case SetTypeModel:
-                throw new NotImplementedException($"Rewritable backing type not yet implemented for {property.Type}.");
+            case SetTypeModel _:
+                throw new NotSupportedException($"Rewritable backing type not yet supported for {property.Type}.");
             case CollectionTypeModel collectionType:
                 var finalElementType = ((CollectionTypeModel)property.FinalType).ElementType.ToNonOptional();
                 return property.IsTemp
                     ? $"IRewritableChildList<{Type(collectionType.ElementType)}, {Type(finalElementType)}>"
                     : $"IRewritableChildList<{Type(property.Type)}>";
+            case OptionalTypeModel _:
+            case SymbolTypeModel _:
+                return $"RewritableChild<{Type(property.Type)}>";
             default:
-                throw new NotImplementedException($"Rewritable backing type not yet implemented for {property.Type}.");
+                throw ExhaustiveMatch.Failed(property.Type);
+                //throw new NotImplementedException($"Rewritable backing type not yet implemented for {property.Type}.");
         }
+    }
+
+    public static string FinalValue(PropertyModel property)
+    {
+        if (!property.IsTemp)
+            return VariableName(property);
+        if (property.Type is CollectionTypeModel)
+            return $"{VariableName(property)}.AsFinalType";
+        return $"{property.TempName} as {Type(property.FinalType.ToNonOptional())}";
+    }
+
+    public static string CurrentValue(PropertyModel property)
+    {
+        if (property.Type is CollectionTypeModel)
+            return $"{VariableName(property)}.Current";
+        return $"{VariableName(property)}.UnsafeValue";
     }
 
     public static string Parameters(IEnumerable<PropertyModel> properties)

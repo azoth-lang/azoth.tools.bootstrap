@@ -20,6 +20,7 @@ internal sealed class FieldAccessExpressionNode : ExpressionNode, IFieldAccessEx
     public IExpressionNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
+    public IExpressionNode CurrentContext => context.UnsafeValue;
     public IdentifierName FieldName { get; }
     public IFieldDeclarationNode ReferencedDeclaration { get; }
     private IMaybeExpressionAntetype? antetype;

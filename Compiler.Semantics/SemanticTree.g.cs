@@ -1064,9 +1064,8 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     public static IFieldDefinitionNode Create(
         IFieldDefinitionSyntax syntax,
         ITypeNode typeNode,
-        IAmbiguousExpressionNode? initializer,
-        IAmbiguousExpressionNode? currentInitializer)
-        => new FieldDefinitionNode(syntax, typeNode, initializer, currentInitializer);
+        IAmbiguousExpressionNode? initializer)
+        => new FieldDefinitionNode(syntax, typeNode, initializer);
 }
 
 // [Closed(typeof(AssociatedFunctionDefinitionNode))]
@@ -1804,9 +1803,8 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
         DataType type,
         IResultStatementSyntax syntax,
         IAmbiguousExpressionNode expression,
-        IAmbiguousExpressionNode currentExpression,
         IFlowState flowStateAfter)
-        => new ResultStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, antetype, type, syntax, expression, currentExpression, flowStateAfter);
+        => new ResultStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, antetype, type, syntax, expression, flowStateAfter);
 }
 
 [Closed(
@@ -1863,9 +1861,8 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
         IVariableDeclarationStatementSyntax syntax,
         ICapabilityNode? capability,
         ITypeNode? type,
-        IAmbiguousExpressionNode? initializer,
-        IAmbiguousExpressionNode? currentInitializer)
-        => new VariableDeclarationStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, capability, type, initializer, currentInitializer);
+        IAmbiguousExpressionNode? initializer)
+        => new VariableDeclarationStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, capability, type, initializer);
 }
 
 // [Closed(typeof(ExpressionStatementNode))]
@@ -1890,9 +1887,8 @@ public partial interface IExpressionStatementNode : IBodyStatementNode
         DataType? resultType,
         IFlowState flowStateAfter,
         IExpressionStatementSyntax syntax,
-        IAmbiguousExpressionNode expression,
-        IAmbiguousExpressionNode currentExpression)
-        => new ExpressionStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, syntax, expression, currentExpression);
+        IAmbiguousExpressionNode expression)
+        => new ExpressionStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, flowStateAfter, syntax, expression);
 }
 
 [Closed(
@@ -2138,6 +2134,7 @@ public partial interface INewObjectExpressionNode : IInvocationExpressionNode
     IdentifierName? ConstructorName { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
+    IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     IMaybeAntetype ConstructingAntetype { get; }
     IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { get; }
     IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
@@ -2176,6 +2173,7 @@ public partial interface IUnsafeExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode TempExpression { get; }
     IExpressionNode? Expression { get; }
+    IAmbiguousExpressionNode CurrentExpression { get; }
 
     public static IUnsafeExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -2337,11 +2335,9 @@ public partial interface IAssignmentExpressionNode : IExpressionNode, IDataFlowN
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IAssignmentExpressionSyntax syntax,
         IAmbiguousAssignableExpressionNode leftOperand,
-        IAmbiguousAssignableExpressionNode currentLeftOperand,
         AssignmentOperator @operator,
-        IAmbiguousExpressionNode rightOperand,
-        IAmbiguousExpressionNode currentRightOperand)
-        => new AssignmentExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, leftOperand, currentLeftOperand, @operator, rightOperand, currentRightOperand);
+        IAmbiguousExpressionNode rightOperand)
+        => new AssignmentExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, leftOperand, @operator, rightOperand);
 }
 
 // [Closed(typeof(BinaryOperatorExpressionNode))]
@@ -2354,9 +2350,11 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode TempLeftOperand { get; }
     IExpressionNode? LeftOperand { get; }
+    IAmbiguousExpressionNode CurrentLeftOperand { get; }
     BinaryOperator Operator { get; }
     IAmbiguousExpressionNode TempRightOperand { get; }
     IExpressionNode? RightOperand { get; }
+    IAmbiguousExpressionNode CurrentRightOperand { get; }
     IAntetype? NumericOperatorCommonAntetype { get; }
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
@@ -2389,6 +2387,7 @@ public partial interface IUnaryOperatorExpressionNode : IExpressionNode
     UnaryOperator Operator { get; }
     IAmbiguousExpressionNode TempOperand { get; }
     IExpressionNode? Operand { get; }
+    IAmbiguousExpressionNode CurrentOperand { get; }
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.UnaryOperatorExpression_FlowLexicalScope(this);
 
@@ -2415,6 +2414,7 @@ public partial interface IIdExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode TempReferent { get; }
     IExpressionNode? Referent { get; }
+    IAmbiguousExpressionNode CurrentReferent { get; }
 
     public static IIdExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -2437,6 +2437,7 @@ public partial interface IConversionExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode TempReferent { get; }
     IExpressionNode? Referent { get; }
+    IAmbiguousExpressionNode CurrentReferent { get; }
     ConversionOperator Operator { get; }
     ITypeNode ConvertToType { get; }
 
@@ -2469,9 +2470,8 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
         DataType type,
         IFlowState flowStateAfter,
         IExpressionNode referent,
-        IExpressionNode currentReferent,
         SimpleAntetype antetype)
-        => new ImplicitConversionExpressionNode(controlFlowNext, controlFlowPrevious, syntax, type, flowStateAfter, referent, currentReferent, antetype);
+        => new ImplicitConversionExpressionNode(controlFlowNext, controlFlowPrevious, syntax, type, flowStateAfter, referent, antetype);
 }
 
 // [Closed(typeof(PatternMatchExpressionNode))]
@@ -2484,6 +2484,7 @@ public partial interface IPatternMatchExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode TempReferent { get; }
     IExpressionNode? Referent { get; }
+    IAmbiguousExpressionNode CurrentReferent { get; }
     IPatternNode Pattern { get; }
 
     public static IPatternMatchExpressionNode Create(
@@ -2509,6 +2510,7 @@ public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
     ICodeSyntax IElseClauseNode.Syntax => Syntax;
     IAmbiguousExpressionNode TempCondition { get; }
     IExpressionNode? Condition { get; }
+    IAmbiguousExpressionNode CurrentCondition { get; }
     IBlockOrResultNode ThenBlock { get; }
     IElseClauseNode? ElseClause { get; }
     new ValueId ValueId { get; }
@@ -2562,6 +2564,7 @@ public partial interface IWhileExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode TempCondition { get; }
     IExpressionNode? Condition { get; }
+    IAmbiguousExpressionNode CurrentCondition { get; }
     IBlockExpressionNode Block { get; }
 
     public static IWhileExpressionNode Create(
@@ -2590,6 +2593,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     IdentifierName VariableName { get; }
     IAmbiguousExpressionNode TempInExpression { get; }
     IExpressionNode? InExpression { get; }
+    IAmbiguousExpressionNode CurrentInExpression { get; }
     ITypeNode? DeclaredType { get; }
     IBlockExpressionNode Block { get; }
     ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
@@ -2648,6 +2652,7 @@ public partial interface IBreakExpressionNode : INeverTypedExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode? TempValue { get; }
     IExpressionNode? Value { get; }
+    IAmbiguousExpressionNode? CurrentValue { get; }
 
     public static IBreakExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -2700,9 +2705,8 @@ public partial interface IReturnExpressionNode : INeverTypedExpressionNode
         IFlowState flowStateAfter,
         NeverType type,
         IReturnExpressionSyntax syntax,
-        IAmbiguousExpressionNode? value,
-        IAmbiguousExpressionNode? currentValue)
-        => new ReturnExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, type, syntax, value, currentValue);
+        IAmbiguousExpressionNode? value)
+        => new ReturnExpressionNode(controlFlowNext, controlFlowPrevious, antetype, flowStateAfter, type, syntax, value);
 }
 
 // [Closed(typeof(UnresolvedInvocationExpressionNode))]
@@ -2723,10 +2727,8 @@ public partial interface IUnresolvedInvocationExpressionNode : IAmbiguousExpress
     public static IUnresolvedInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,
         IAmbiguousExpressionNode expression,
-        IAmbiguousExpressionNode currentExpression,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IAmbiguousExpressionNode> currentArguments)
-        => new UnresolvedInvocationExpressionNode(syntax, expression, currentExpression, arguments, currentArguments);
+        IEnumerable<IAmbiguousExpressionNode> arguments)
+        => new UnresolvedInvocationExpressionNode(syntax, expression, arguments);
 }
 
 [Closed(
@@ -2755,6 +2757,7 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
     IFunctionGroupNameNode FunctionGroup { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
+    IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations { get; }
     IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
@@ -2804,11 +2807,10 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
         IInvocationExpressionSyntax syntax,
         IMethodGroupNameNode methodGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IAmbiguousExpressionNode> currentArguments,
         IEnumerable<IStandardMethodDeclarationNode> compatibleDeclarations,
         IStandardMethodDeclarationNode? referencedDeclaration,
         ContextualizedOverload? contextualizedOverload)
-        => new MethodInvocationExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, tempAllArguments, allArguments, syntax, methodGroup, arguments, currentArguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
+        => new MethodInvocationExpressionNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, tempAllArguments, allArguments, syntax, methodGroup, arguments, compatibleDeclarations, referencedDeclaration, contextualizedOverload);
 }
 
 // [Closed(typeof(GetterInvocationExpressionNode))]
@@ -2820,6 +2822,7 @@ public partial interface IGetterInvocationExpressionNode : IInvocationExpression
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionNode Context { get; }
+    IExpressionNode CurrentContext { get; }
     StandardName PropertyName { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
@@ -2851,9 +2854,11 @@ public partial interface ISetterInvocationExpressionNode : IInvocationExpression
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionNode Context { get; }
+    IExpressionNode CurrentContext { get; }
     StandardName PropertyName { get; }
     IAmbiguousExpressionNode TempValue { get; }
     IExpressionNode? Value { get; }
+    IAmbiguousExpressionNode CurrentValue { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
@@ -2885,8 +2890,10 @@ public partial interface IFunctionReferenceInvocationExpressionNode : IInvocatio
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IExpressionNode Expression { get; }
+    IExpressionNode CurrentExpression { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
+    IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     FunctionAntetype FunctionAntetype { get; }
     FunctionType FunctionType { get; }
 
@@ -2917,6 +2924,7 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
     IInitializerGroupNameNode InitializerGroup { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
+    IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
     IInitializerDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
@@ -2949,8 +2957,10 @@ public partial interface IUnknownInvocationExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode TempExpression { get; }
     IExpressionNode? Expression { get; }
+    IAmbiguousExpressionNode CurrentExpression { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
+    IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
 
     public static IUnknownInvocationExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -3072,6 +3082,7 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameNode, IAmbi
     IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode TempContext { get; }
     IExpressionNode? Context { get; }
+    IAmbiguousExpressionNode CurrentContext { get; }
     StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     PackageNameScope PackageNameScope();
@@ -3095,6 +3106,7 @@ public partial interface IPropertyNameNode : IAmbiguousNameNode, IAmbiguousAssig
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
+    IExpressionNode CurrentContext { get; }
     StandardName PropertyName { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
 
@@ -3271,11 +3283,10 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
         IFlowState flowStateAfter,
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
-        IExpressionNode currentContext,
         StandardName methodName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations)
-        => new MethodGroupNameNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, context, currentContext, methodName, typeArguments, referencedDeclarations);
+        => new MethodGroupNameNode(controlFlowNext, controlFlowPrevious, antetype, type, flowStateAfter, syntax, context, methodName, typeArguments, referencedDeclarations);
 }
 
 // [Closed(typeof(FieldAccessExpressionNode))]
@@ -3289,6 +3300,7 @@ public partial interface IFieldAccessExpressionNode : INameExpressionNode, IAssi
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
+    IExpressionNode CurrentContext { get; }
     IdentifierName FieldName { get; }
     IFieldDeclarationNode ReferencedDeclaration { get; }
 
@@ -3607,6 +3619,7 @@ public partial interface IUnknownMemberAccessExpressionNode : IUnknownNameExpres
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
+    IExpressionNode CurrentContext { get; }
     StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IDeclarationNode> ReferencedMembers { get; }
@@ -3635,6 +3648,7 @@ public partial interface IAmbiguousMoveExpressionNode : IAmbiguousExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IUnresolvedSimpleNameNode TempReferent { get; }
     ISimpleNameExpressionNode? Referent { get; }
+    IUnresolvedSimpleNameNode CurrentReferent { get; }
 
     public static IAmbiguousMoveExpressionNode Create(
         IMoveExpressionSyntax syntax,
@@ -3658,6 +3672,7 @@ public partial interface IRecoveryExpressionNode : IExpressionNode
 public partial interface IMoveExpressionNode : IRecoveryExpressionNode
 {
     IExpressionNode Referent { get; }
+    IExpressionNode CurrentReferent { get; }
 }
 
 // [Closed(typeof(MoveVariableExpressionNode))]
@@ -3666,6 +3681,7 @@ public partial interface IMoveVariableExpressionNode : IMoveExpressionNode
 {
     new ILocalBindingNameExpressionNode Referent { get; }
     IExpressionNode IMoveExpressionNode.Referent => Referent;
+    IExpressionNode IMoveExpressionNode.CurrentReferent => Referent;
 
     public static IMoveVariableExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -3701,6 +3717,7 @@ public partial interface IMoveValueExpressionNode : IMoveExpressionNode
 public partial interface IImplicitTempMoveExpressionNode : IExpressionNode
 {
     IExpressionNode Referent { get; }
+    IExpressionNode CurrentReferent { get; }
 
     public static IImplicitTempMoveExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -3723,6 +3740,7 @@ public partial interface IAmbiguousFreezeExpressionNode : IAmbiguousExpressionNo
     ISyntax? ISemanticNode.Syntax => Syntax;
     IUnresolvedSimpleNameNode TempReferent { get; }
     ISimpleNameExpressionNode? Referent { get; }
+    IUnresolvedSimpleNameNode CurrentReferent { get; }
 
     public static IAmbiguousFreezeExpressionNode Create(
         IFreezeExpressionSyntax syntax,
@@ -3737,6 +3755,7 @@ public partial interface IAmbiguousFreezeExpressionNode : IAmbiguousExpressionNo
 public partial interface IFreezeExpressionNode : IRecoveryExpressionNode
 {
     IExpressionNode Referent { get; }
+    IExpressionNode CurrentReferent { get; }
     bool IsTemporary { get; }
 }
 
@@ -3746,6 +3765,7 @@ public partial interface IFreezeVariableExpressionNode : IFreezeExpressionNode
 {
     new ILocalBindingNameExpressionNode Referent { get; }
     IExpressionNode IFreezeExpressionNode.Referent => Referent;
+    IExpressionNode IFreezeExpressionNode.CurrentReferent => Referent;
 
     public static IFreezeVariableExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -3792,9 +3812,8 @@ public partial interface IPrepareToReturnExpressionNode : IExpressionNode
         IMaybeExpressionAntetype antetype,
         DataType type,
         IFlowState flowStateAfter,
-        IExpressionNode value,
-        IExpressionNode currentValue)
-        => new PrepareToReturnExpressionNode(controlFlowNext, controlFlowPrevious, syntax, antetype, type, flowStateAfter, value, currentValue);
+        IExpressionNode value)
+        => new PrepareToReturnExpressionNode(controlFlowNext, controlFlowPrevious, syntax, antetype, type, flowStateAfter, value);
 }
 
 // [Closed(typeof(AsyncBlockExpressionNode))]
@@ -3829,6 +3848,7 @@ public partial interface IAsyncStartExpressionNode : IExpressionNode
     bool Scheduled { get; }
     IAmbiguousExpressionNode TempExpression { get; }
     IExpressionNode? Expression { get; }
+    IAmbiguousExpressionNode CurrentExpression { get; }
 
     public static IAsyncStartExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -3852,6 +3872,7 @@ public partial interface IAwaitExpressionNode : IExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IAmbiguousExpressionNode TempExpression { get; }
     IExpressionNode? Expression { get; }
+    IAmbiguousExpressionNode CurrentExpression { get; }
 
     public static IAwaitExpressionNode Create(
         ControlFlowSet controlFlowNext,
@@ -7000,9 +7021,13 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
 
     public IFieldDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNode TypeNode { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode? TempInitializer { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode?> initializer;
+    private bool initializerCached;
+    public IAmbiguousExpressionNode? TempInitializer
+        => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
+            : this.RewritableChild(ref initializerCached, ref initializer);
     public IExpressionNode? Initializer => TempInitializer as IExpressionNode;
-    public IAmbiguousExpressionNode? CurrentInitializer { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -7069,13 +7094,11 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     public FieldDefinitionNode(
         IFieldDefinitionSyntax syntax,
         ITypeNode typeNode,
-        IAmbiguousExpressionNode? initializer,
-        IAmbiguousExpressionNode? currentInitializer)
+        IAmbiguousExpressionNode? initializer)
     {
         Syntax = syntax;
         TypeNode = Child.Attach(this, typeNode);
-        TempInitializer = Child.Attach(this, initializer);
-        CurrentInitializer = currentInitializer;
+        this.initializer = Child.Create(this, initializer);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
@@ -8246,9 +8269,13 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
     public IMaybeAntetype Antetype { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IResultStatementSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempExpression { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> expression;
+    private bool expressionCached;
+    public IAmbiguousExpressionNode TempExpression
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : this.RewritableChild(ref expressionCached, ref expression);
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
-    public IAmbiguousExpressionNode CurrentExpression { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -8284,7 +8311,6 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
         DataType type,
         IResultStatementSyntax syntax,
         IAmbiguousExpressionNode expression,
-        IAmbiguousExpressionNode currentExpression,
         IFlowState flowStateAfter)
     {
         ControlFlowNext = controlFlowNext;
@@ -8294,8 +8320,7 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
         Antetype = antetype;
         Type = type;
         Syntax = syntax;
-        TempExpression = Child.Attach(this, expression);
-        CurrentExpression = currentExpression;
+        this.expression = Child.Create(this, expression);
         FlowStateAfter = flowStateAfter;
     }
 }
@@ -8317,9 +8342,13 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     public IVariableDeclarationStatementSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityNode? Capability { [DebuggerStepThrough] get; }
     public ITypeNode? Type { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode? TempInitializer { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode?> initializer;
+    private bool initializerCached;
+    public IAmbiguousExpressionNode? TempInitializer
+        => GrammarAttribute.IsCached(in initializerCached) ? initializer.UnsafeValue
+            : this.RewritableChild(ref initializerCached, ref initializer);
     public IExpressionNode? Initializer => TempInitializer as IExpressionNode;
-    public IAmbiguousExpressionNode? CurrentInitializer { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? CurrentInitializer => initializer.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8375,8 +8404,7 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         IVariableDeclarationStatementSyntax syntax,
         ICapabilityNode? capability,
         ITypeNode? type,
-        IAmbiguousExpressionNode? initializer,
-        IAmbiguousExpressionNode? currentInitializer)
+        IAmbiguousExpressionNode? initializer)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8389,8 +8417,7 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
         Type = Child.Attach(this, type);
-        TempInitializer = Child.Attach(this, initializer);
-        CurrentInitializer = currentInitializer;
+        this.initializer = Child.Create(this, initializer);
     }
 }
 
@@ -8405,9 +8432,13 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
     public DataType? ResultType { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IExpressionStatementSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempExpression { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> expression;
+    private bool expressionCached;
+    public IAmbiguousExpressionNode TempExpression
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : this.RewritableChild(ref expressionCached, ref expression);
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
-    public IAmbiguousExpressionNode CurrentExpression { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8428,8 +8459,7 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
         DataType? resultType,
         IFlowState flowStateAfter,
         IExpressionStatementSyntax syntax,
-        IAmbiguousExpressionNode expression,
-        IAmbiguousExpressionNode currentExpression)
+        IAmbiguousExpressionNode expression)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -8437,8 +8467,7 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
         ResultType = resultType;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        TempExpression = Child.Attach(this, expression);
-        CurrentExpression = currentExpression;
+        this.expression = Child.Create(this, expression);
     }
 }
 
@@ -8717,8 +8746,10 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     public ITypeNameNode ConstructingType { [DebuggerStepThrough] get; }
     public IdentifierName? ConstructorName { [DebuggerStepThrough] get; }
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IMaybeAntetype ConstructingAntetype { [DebuggerStepThrough] get; }
     public IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { [DebuggerStepThrough] get; }
     public IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { [DebuggerStepThrough] get; }
@@ -8812,8 +8843,13 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IUnsafeExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempExpression { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> expression;
+    private bool expressionCached;
+    public IAmbiguousExpressionNode TempExpression
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : this.RewritableChild(ref expressionCached, ref expression);
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8864,7 +8900,7 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        TempExpression = Child.Attach(this, expression);
+        this.expression = Child.Create(this, expression);
     }
 }
 
@@ -9160,13 +9196,21 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousAssignableExpressionNode TempLeftOperand { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousAssignableExpressionNode> leftOperand;
+    private bool leftOperandCached;
+    public IAmbiguousAssignableExpressionNode TempLeftOperand
+        => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
+            : this.RewritableChild(ref leftOperandCached, ref leftOperand);
     public IAssignableExpressionNode? LeftOperand => TempLeftOperand as IAssignableExpressionNode;
-    public IAmbiguousAssignableExpressionNode CurrentLeftOperand { [DebuggerStepThrough] get; }
+    public IAmbiguousAssignableExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
     public AssignmentOperator Operator { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempRightOperand { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> rightOperand;
+    private bool rightOperandCached;
+    public IAmbiguousExpressionNode TempRightOperand
+        => GrammarAttribute.IsCached(in rightOperandCached) ? rightOperand.UnsafeValue
+            : this.RewritableChild(ref rightOperandCached, ref rightOperand);
     public IExpressionNode? RightOperand => TempRightOperand as IExpressionNode;
-    public IAmbiguousExpressionNode CurrentRightOperand { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -9213,10 +9257,8 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IAssignmentExpressionSyntax syntax,
         IAmbiguousAssignableExpressionNode leftOperand,
-        IAmbiguousAssignableExpressionNode currentLeftOperand,
         AssignmentOperator @operator,
-        IAmbiguousExpressionNode rightOperand,
-        IAmbiguousExpressionNode currentRightOperand)
+        IAmbiguousExpressionNode rightOperand)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -9227,11 +9269,9 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
         DefinitelyAssigned = definitelyAssigned;
         DefinitelyUnassigned = definitelyUnassigned;
         Syntax = syntax;
-        TempLeftOperand = Child.Attach(this, leftOperand);
-        CurrentLeftOperand = currentLeftOperand;
+        this.leftOperand = Child.Create(this, leftOperand);
         Operator = @operator;
-        TempRightOperand = Child.Attach(this, rightOperand);
-        CurrentRightOperand = currentRightOperand;
+        this.rightOperand = Child.Create(this, rightOperand);
     }
 }
 
@@ -9247,11 +9287,21 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IBinaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempLeftOperand { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> leftOperand;
+    private bool leftOperandCached;
+    public IAmbiguousExpressionNode TempLeftOperand
+        => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
+            : this.RewritableChild(ref leftOperandCached, ref leftOperand);
     public IExpressionNode? LeftOperand => TempLeftOperand as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
     public BinaryOperator Operator { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempRightOperand { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> rightOperand;
+    private bool rightOperandCached;
+    public IAmbiguousExpressionNode TempRightOperand
+        => GrammarAttribute.IsCached(in rightOperandCached) ? rightOperand.UnsafeValue
+            : this.RewritableChild(ref rightOperandCached, ref rightOperand);
     public IExpressionNode? RightOperand => TempRightOperand as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentRightOperand => rightOperand.UnsafeValue;
     public IAntetype? NumericOperatorCommonAntetype { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -9310,9 +9360,9 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        TempLeftOperand = Child.Attach(this, leftOperand);
+        this.leftOperand = Child.Create(this, leftOperand);
         Operator = @operator;
-        TempRightOperand = Child.Attach(this, rightOperand);
+        this.rightOperand = Child.Create(this, rightOperand);
         NumericOperatorCommonAntetype = numericOperatorCommonAntetype;
     }
 
@@ -9338,8 +9388,13 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     public IUnaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public UnaryOperatorFixity Fixity { [DebuggerStepThrough] get; }
     public UnaryOperator Operator { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempOperand { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> operand;
+    private bool operandCached;
+    public IAmbiguousExpressionNode TempOperand
+        => GrammarAttribute.IsCached(in operandCached) ? operand.UnsafeValue
+            : this.RewritableChild(ref operandCached, ref operand);
     public IExpressionNode? Operand => TempOperand as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentOperand => operand.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -9394,7 +9449,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
         Syntax = syntax;
         Fixity = fixity;
         Operator = @operator;
-        TempOperand = Child.Attach(this, operand);
+        this.operand = Child.Create(this, operand);
     }
 }
 
@@ -9410,8 +9465,13 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IIdExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempReferent { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> referent;
+    private bool referentCached;
+    public IAmbiguousExpressionNode TempReferent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -9462,7 +9522,7 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        TempReferent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
     }
 }
 
@@ -9478,8 +9538,13 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IConversionExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempReferent { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> referent;
+    private bool referentCached;
+    public IAmbiguousExpressionNode TempReferent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
     public ConversionOperator Operator { [DebuggerStepThrough] get; }
     public ITypeNode ConvertToType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -9534,7 +9599,7 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        TempReferent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
         Operator = @operator;
         ConvertToType = Child.Attach(this, convertToType);
     }
@@ -9551,8 +9616,12 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public IExpressionNode Referent { [DebuggerStepThrough] get; }
-    public IExpressionNode CurrentReferent { [DebuggerStepThrough] get; }
+    private RewritableChild<IExpressionNode> referent;
+    private bool referentCached;
+    public IExpressionNode Referent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
+    public IExpressionNode CurrentReferent => referent.UnsafeValue;
     public SimpleAntetype Antetype { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -9596,7 +9665,6 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
         DataType type,
         IFlowState flowStateAfter,
         IExpressionNode referent,
-        IExpressionNode currentReferent,
         SimpleAntetype antetype)
     {
         ControlFlowNext = controlFlowNext;
@@ -9604,8 +9672,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
         Syntax = syntax;
         Type = type;
         FlowStateAfter = flowStateAfter;
-        Referent = Child.Attach(this, referent);
-        CurrentReferent = currentReferent;
+        this.referent = Child.Create(this, referent);
         Antetype = antetype;
     }
 }
@@ -9622,8 +9689,13 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IPatternMatchExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempReferent { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> referent;
+    private bool referentCached;
+    public IAmbiguousExpressionNode TempReferent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPatternNode Pattern { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -9676,7 +9748,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        TempReferent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
         Pattern = Child.Attach(this, pattern);
     }
 }
@@ -9692,8 +9764,13 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IIfExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempCondition { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> condition;
+    private bool conditionCached;
+    public IAmbiguousExpressionNode TempCondition
+        => GrammarAttribute.IsCached(in conditionCached) ? condition.UnsafeValue
+            : this.RewritableChild(ref conditionCached, ref condition);
     public IExpressionNode? Condition => TempCondition as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentCondition => condition.UnsafeValue;
     public IBlockOrResultNode ThenBlock { [DebuggerStepThrough] get; }
     public IElseClauseNode? ElseClause { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
@@ -9748,7 +9825,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         Antetype = antetype;
         Type = type;
         Syntax = syntax;
-        TempCondition = Child.Attach(this, condition);
+        this.condition = Child.Create(this, condition);
         ThenBlock = Child.Attach(this, thenBlock);
         ElseClause = Child.Attach(this, elseClause);
         FlowStateAfter = flowStateAfter;
@@ -9834,8 +9911,13 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IWhileExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempCondition { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> condition;
+    private bool conditionCached;
+    public IAmbiguousExpressionNode TempCondition
+        => GrammarAttribute.IsCached(in conditionCached) ? condition.UnsafeValue
+            : this.RewritableChild(ref conditionCached, ref condition);
     public IExpressionNode? Condition => TempCondition as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentCondition => condition.UnsafeValue;
     public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -9888,7 +9970,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        TempCondition = Child.Attach(this, condition);
+        this.condition = Child.Create(this, condition);
         Block = Child.Attach(this, block);
     }
 }
@@ -9910,8 +9992,13 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     public IForeachExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IdentifierName VariableName { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempInExpression { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> inExpression;
+    private bool inExpressionCached;
+    public IAmbiguousExpressionNode TempInExpression
+        => GrammarAttribute.IsCached(in inExpressionCached) ? inExpression.UnsafeValue
+            : this.RewritableChild(ref inExpressionCached, ref inExpression);
     public IExpressionNode? InExpression => TempInExpression as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentInExpression => inExpression.UnsafeValue;
     public ITypeNode? DeclaredType { [DebuggerStepThrough] get; }
     public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode? ReferencedIterableDeclaration { [DebuggerStepThrough] get; }
@@ -10024,7 +10111,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         Syntax = syntax;
         IsMutableBinding = isMutableBinding;
         VariableName = variableName;
-        TempInExpression = Child.Attach(this, inExpression);
+        this.inExpression = Child.Create(this, inExpression);
         DeclaredType = Child.Attach(this, declaredType);
         Block = Child.Attach(this, block);
         ReferencedIterableDeclaration = referencedIterableDeclaration;
@@ -10051,8 +10138,13 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public NeverType Type { [DebuggerStepThrough] get; }
     public IBreakExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode? TempValue { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode?> value;
+    private bool valueCached;
+    public IAmbiguousExpressionNode? TempValue
+        => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
+            : this.RewritableChild(ref valueCached, ref value);
     public IExpressionNode? Value => TempValue as IExpressionNode;
+    public IAmbiguousExpressionNode? CurrentValue => value.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -10103,7 +10195,7 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
         FlowStateAfter = flowStateAfter;
         Type = type;
         Syntax = syntax;
-        TempValue = Child.Attach(this, value);
+        this.value = Child.Create(this, value);
     }
 }
 
@@ -10183,9 +10275,13 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public NeverType Type { [DebuggerStepThrough] get; }
     public IReturnExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode? TempValue { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode?> value;
+    private bool valueCached;
+    public IAmbiguousExpressionNode? TempValue
+        => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
+            : this.RewritableChild(ref valueCached, ref value);
     public IExpressionNode? Value => TempValue as IExpressionNode;
-    public IAmbiguousExpressionNode? CurrentValue { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode? CurrentValue => value.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -10236,8 +10332,7 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
         IFlowState flowStateAfter,
         NeverType type,
         IReturnExpressionSyntax syntax,
-        IAmbiguousExpressionNode? value,
-        IAmbiguousExpressionNode? currentValue)
+        IAmbiguousExpressionNode? value)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -10245,8 +10340,7 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
         FlowStateAfter = flowStateAfter;
         Type = type;
         Syntax = syntax;
-        TempValue = Child.Attach(this, value);
-        CurrentValue = currentValue;
+        this.value = Child.Create(this, value);
     }
 }
 
@@ -10258,13 +10352,18 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
     protected override bool MayHaveRewrite => true;
 
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempExpression { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> expression;
+    private bool expressionCached;
+    public IAmbiguousExpressionNode TempExpression
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : this.RewritableChild(ref expressionCached, ref expression);
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
-    public IAmbiguousExpressionNode CurrentExpression { [DebuggerStepThrough] get; }
+    public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
-    public IFixedList<IAmbiguousExpressionNode> CurrentArguments { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -10283,15 +10382,11 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
     public UnresolvedInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
         IAmbiguousExpressionNode expression,
-        IAmbiguousExpressionNode currentExpression,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IAmbiguousExpressionNode> currentArguments)
+        IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
-        TempExpression = Child.Attach(this, expression);
-        CurrentExpression = currentExpression;
+        this.expression = Child.Create(this, expression);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
-        CurrentArguments = currentArguments.ToFixedList();
     }
 
     protected override IChildTreeNode Rewrite()
@@ -10320,8 +10415,10 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFunctionGroupNameNode FunctionGroup { [DebuggerStepThrough] get; }
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
     public IFunctionInvocableDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
     public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
@@ -10409,9 +10506,10 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodGroupNameNode MethodGroup { [DebuggerStepThrough] get; }
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
-    public IFixedList<IAmbiguousExpressionNode> CurrentArguments { [DebuggerStepThrough] get; }
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
     public IStandardMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
     public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
@@ -10461,7 +10559,6 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         IInvocationExpressionSyntax syntax,
         IMethodGroupNameNode methodGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IAmbiguousExpressionNode> currentArguments,
         IEnumerable<IStandardMethodDeclarationNode> compatibleDeclarations,
         IStandardMethodDeclarationNode? referencedDeclaration,
         ContextualizedOverload? contextualizedOverload)
@@ -10476,7 +10573,6 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         Syntax = syntax;
         MethodGroup = Child.Attach(this, methodGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
-        CurrentArguments = currentArguments.ToFixedList();
         CompatibleDeclarations = compatibleDeclarations.ToFixedSet();
         ReferencedDeclaration = referencedDeclaration;
         ContextualizedOverload = contextualizedOverload;
@@ -10497,7 +10593,12 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IExpressionNode Context { [DebuggerStepThrough] get; }
+    private RewritableChild<IExpressionNode> context;
+    private bool contextCached;
+    public IExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public IExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName PropertyName { [DebuggerStepThrough] get; }
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { [DebuggerStepThrough] get; }
     public IGetterMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
@@ -10560,7 +10661,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
         TempAllArguments = tempAllArguments;
         AllArguments = allArguments;
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         PropertyName = propertyName;
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
         ReferencedDeclaration = referencedDeclaration;
@@ -10582,10 +10683,20 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IExpressionNode Context { [DebuggerStepThrough] get; }
+    private RewritableChild<IExpressionNode> context;
+    private bool contextCached;
+    public IExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public IExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName PropertyName { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempValue { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> value;
+    private bool valueCached;
+    public IAmbiguousExpressionNode TempValue
+        => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
+            : this.RewritableChild(ref valueCached, ref value);
     public IExpressionNode? Value => TempValue as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentValue => value.UnsafeValue;
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { [DebuggerStepThrough] get; }
     public ISetterMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
     public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
@@ -10648,9 +10759,9 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         TempAllArguments = tempAllArguments;
         AllArguments = allArguments;
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         PropertyName = propertyName;
-        TempValue = Child.Attach(this, value);
+        this.value = Child.Create(this, value);
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
         ReferencedDeclaration = referencedDeclaration;
         ContextualizedOverload = contextualizedOverload;
@@ -10671,10 +10782,17 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IExpressionNode Expression { [DebuggerStepThrough] get; }
+    private RewritableChild<IExpressionNode> expression;
+    private bool expressionCached;
+    public IExpressionNode Expression
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : this.RewritableChild(ref expressionCached, ref expression);
+    public IExpressionNode CurrentExpression => expression.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public FunctionAntetype FunctionAntetype { [DebuggerStepThrough] get; }
     public FunctionType FunctionType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -10734,7 +10852,7 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
         TempAllArguments = tempAllArguments;
         AllArguments = allArguments;
         Syntax = syntax;
-        Expression = Child.Attach(this, expression);
+        this.expression = Child.Create(this, expression);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
         FunctionAntetype = functionAntetype;
         FunctionType = functionType;
@@ -10757,8 +10875,10 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IInitializerGroupNameNode InitializerGroup { [DebuggerStepThrough] get; }
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
     public IInitializerDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
     public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
@@ -10842,11 +10962,18 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempExpression { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> expression;
+    private bool expressionCached;
+    public IAmbiguousExpressionNode TempExpression
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : this.RewritableChild(ref expressionCached, ref expression);
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
+    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -10898,7 +11025,7 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        TempExpression = Child.Attach(this, expression);
+        this.expression = Child.Create(this, expression);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 }
@@ -10908,6 +11035,7 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
 {
     private IIdentifierNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IFixedList<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -10947,6 +11075,7 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
 {
     private IGenericNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IFixedList<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IGenericNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -10989,10 +11118,16 @@ file class MemberAccessExpressionNode : SemanticNode, IMemberAccessExpressionNod
 {
     private IMemberAccessExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempContext { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> context;
+    private bool contextCached;
+    public IAmbiguousExpressionNode TempContext
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode? Context => TempContext as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName MemberName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -11019,7 +11154,7 @@ file class MemberAccessExpressionNode : SemanticNode, IMemberAccessExpressionNod
         IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
-        TempContext = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         MemberName = memberName;
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
@@ -11030,9 +11165,15 @@ file class PropertyNameNode : SemanticNode, IPropertyNameNode
 {
     private IPropertyNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IExpressionNode Context { [DebuggerStepThrough] get; }
+    private RewritableChild<IExpressionNode> context;
+    private bool contextCached;
+    public IExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public IExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName PropertyName { [DebuggerStepThrough] get; }
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -11057,7 +11198,7 @@ file class PropertyNameNode : SemanticNode, IPropertyNameNode
         IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors)
     {
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         PropertyName = propertyName;
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
     }
@@ -11372,8 +11513,12 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IExpressionNode Context { [DebuggerStepThrough] get; }
-    public IExpressionNode CurrentContext { [DebuggerStepThrough] get; }
+    private RewritableChild<IExpressionNode> context;
+    private bool contextCached;
+    public IExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public IExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName MethodName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
@@ -11420,7 +11565,6 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
         IFlowState flowStateAfter,
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
-        IExpressionNode currentContext,
         StandardName methodName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations)
@@ -11431,8 +11575,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        Context = Child.Attach(this, context);
-        CurrentContext = currentContext;
+        this.context = Child.Create(this, context);
         MethodName = methodName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
@@ -11451,7 +11594,12 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IExpressionNode Context { [DebuggerStepThrough] get; }
+    private RewritableChild<IExpressionNode> context;
+    private bool contextCached;
+    public IExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public IExpressionNode CurrentContext => context.UnsafeValue;
     public IdentifierName FieldName { [DebuggerStepThrough] get; }
     public IFieldDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -11506,7 +11654,7 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         FieldName = fieldName;
         ReferencedDeclaration = referencedDeclaration;
     }
@@ -12194,7 +12342,12 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public UnknownType Type { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IExpressionNode Context { [DebuggerStepThrough] get; }
+    private RewritableChild<IExpressionNode> context;
+    private bool contextCached;
+    public IExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public IExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName MemberName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IDeclarationNode> ReferencedMembers { [DebuggerStepThrough] get; }
@@ -12251,7 +12404,7 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
         FlowStateAfter = flowStateAfter;
         Type = type;
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         MemberName = memberName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedMembers = referencedMembers.ToFixedSet();
@@ -12263,10 +12416,16 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
 {
     private IAmbiguousMoveExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IMoveExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IUnresolvedSimpleNameNode TempReferent { [DebuggerStepThrough] get; }
+    private RewritableChild<IUnresolvedSimpleNameNode> referent;
+    private bool referentCached;
+    public IUnresolvedSimpleNameNode TempReferent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
     public ISimpleNameExpressionNode? Referent => TempReferent as ISimpleNameExpressionNode;
+    public IUnresolvedSimpleNameNode CurrentReferent => referent.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -12287,7 +12446,7 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
         IUnresolvedSimpleNameNode referent)
     {
         Syntax = syntax;
-        TempReferent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
     }
 }
 
@@ -12374,7 +12533,12 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
-    public IExpressionNode Referent { [DebuggerStepThrough] get; }
+    private RewritableChild<IExpressionNode> referent;
+    private bool referentCached;
+    public IExpressionNode Referent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
+    public IExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -12427,7 +12591,7 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
         Type = type;
         FlowStateAfter = flowStateAfter;
         IsImplicit = isImplicit;
-        Referent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
     }
 }
 
@@ -12443,7 +12607,12 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
     public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public IExpressionNode Referent { [DebuggerStepThrough] get; }
+    private RewritableChild<IExpressionNode> referent;
+    private bool referentCached;
+    public IExpressionNode Referent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
+    public IExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -12494,7 +12663,7 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
         Antetype = antetype;
         Type = type;
         FlowStateAfter = flowStateAfter;
-        Referent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
     }
 }
 
@@ -12503,10 +12672,16 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
 {
     private IAmbiguousFreezeExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IFreezeExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IUnresolvedSimpleNameNode TempReferent { [DebuggerStepThrough] get; }
+    private RewritableChild<IUnresolvedSimpleNameNode> referent;
+    private bool referentCached;
+    public IUnresolvedSimpleNameNode TempReferent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
     public ISimpleNameExpressionNode? Referent => TempReferent as ISimpleNameExpressionNode;
+    public IUnresolvedSimpleNameNode CurrentReferent => referent.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -12527,7 +12702,7 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
         IUnresolvedSimpleNameNode referent)
     {
         Syntax = syntax;
-        TempReferent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
     }
 }
 
@@ -12618,7 +12793,12 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
     public bool IsTemporary { [DebuggerStepThrough] get; }
-    public IExpressionNode Referent { [DebuggerStepThrough] get; }
+    private RewritableChild<IExpressionNode> referent;
+    private bool referentCached;
+    public IExpressionNode Referent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
+    public IExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -12673,7 +12853,7 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
         FlowStateAfter = flowStateAfter;
         IsImplicit = isImplicit;
         IsTemporary = isTemporary;
-        Referent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
     }
 }
 
@@ -12689,8 +12869,12 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
     public IMaybeExpressionAntetype Antetype { [DebuggerStepThrough] get; }
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
-    public IExpressionNode Value { [DebuggerStepThrough] get; }
-    public IExpressionNode CurrentValue { [DebuggerStepThrough] get; }
+    private RewritableChild<IExpressionNode> value;
+    private bool valueCached;
+    public IExpressionNode Value
+        => GrammarAttribute.IsCached(in valueCached) ? value.UnsafeValue
+            : this.RewritableChild(ref valueCached, ref value);
+    public IExpressionNode CurrentValue => value.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -12733,8 +12917,7 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
         IMaybeExpressionAntetype antetype,
         DataType type,
         IFlowState flowStateAfter,
-        IExpressionNode value,
-        IExpressionNode currentValue)
+        IExpressionNode value)
     {
         ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
@@ -12742,8 +12925,7 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
         Antetype = antetype;
         Type = type;
         FlowStateAfter = flowStateAfter;
-        Value = Child.Attach(this, value);
-        CurrentValue = currentValue;
+        this.value = Child.Create(this, value);
     }
 }
 
@@ -12827,8 +13009,13 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IAsyncStartExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool Scheduled { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempExpression { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> expression;
+    private bool expressionCached;
+    public IAmbiguousExpressionNode TempExpression
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : this.RewritableChild(ref expressionCached, ref expression);
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -12881,7 +13068,7 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
         Scheduled = scheduled;
-        TempExpression = Child.Attach(this, expression);
+        this.expression = Child.Create(this, expression);
     }
 }
 
@@ -12897,8 +13084,13 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     public DataType Type { [DebuggerStepThrough] get; }
     public IFlowState FlowStateAfter { [DebuggerStepThrough] get; }
     public IAwaitExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IAmbiguousExpressionNode TempExpression { [DebuggerStepThrough] get; }
+    private RewritableChild<IAmbiguousExpressionNode> expression;
+    private bool expressionCached;
+    public IAmbiguousExpressionNode TempExpression
+        => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
+            : this.RewritableChild(ref expressionCached, ref expression);
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -12949,7 +13141,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
         Type = type;
         FlowStateAfter = flowStateAfter;
         Syntax = syntax;
-        TempExpression = Child.Attach(this, expression);
+        this.expression = Child.Create(this, expression);
     }
 }
 

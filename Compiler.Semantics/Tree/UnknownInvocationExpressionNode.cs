@@ -15,9 +15,11 @@ internal sealed class UnknownInvocationExpressionNode : ExpressionNode, IUnknown
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
+    public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public override IMaybeExpressionAntetype Antetype => IAntetype.Unknown;
 
     public UnknownInvocationExpressionNode(

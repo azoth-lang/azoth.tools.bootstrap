@@ -19,6 +19,7 @@ internal sealed class UnsafeExpressionNode : ExpressionNode, IUnsafeExpressionNo
         => GrammarAttribute.IsCached(in expressionCached) ? expression.UnsafeValue
             : this.RewritableChild(ref expressionCached, ref expression);
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype

@@ -8,6 +8,7 @@
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(tree,
     Build.Conditional(!tree.SimplifiedTree, "System", "System.Linq", "System.Threading", "Azoth.Tools.Bootstrap.Compiler.Core.Attributes"),
@@ -33,6 +34,11 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#              case PropertyModel prop when prop.IsChild && prop.IsTemp: #>
     <#= Emit.IsNew(prop) #><#= Emit.Type(prop.Type) #> <#= prop.TempName #> { get; }
     <#= Emit.IsNew(prop) #><#= Emit.Type(prop.FinalType) #> <#= prop.Name #> { get; }
+    <#= Emit.IsNew(prop) #><#= Emit.Type(prop.Type) #> <#= prop.CurrentName #> { get; }
+<#                  break;#>
+<#              case PropertyModel prop when prop.IsChild && prop.MayHaveRewrites: #>
+    <#= Emit.IsNew(prop) #><#= Emit.Type(prop.Type) #> <#= prop.Name #> { get; }
+    <#= Emit.IsNew(prop) #><#= Emit.Type(prop.Type) #> <#= prop.CurrentName #> { get; }
 <#                  break;#>
 <#              default: #>
     <#= Emit.IsNew(attribute) #><#= Emit.Type(attribute.Type) #> <#= attribute.Name #><#= Emit.ParametersAndBody(attribute) #>
@@ -40,6 +46,9 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#          } #>
 <#          foreach (var baseAttribute in Build.BaseAttributes(node, attribute)) { #>
     <#= Emit.Type(baseAttribute.Type) #> <#= Emit.TypeName(baseAttribute.Node.Defines) #>.<#= baseAttribute.Name #><#= Emit.Parameters(baseAttribute) #> => <#= attribute.Name #><#= Emit.Parameters(attribute) #>;
+<#              if (baseAttribute.IsChild && baseAttribute.MayHaveRewrites) { #>
+    <#= Emit.Type(baseAttribute.Type) #> <#= Emit.TypeName(baseAttribute.Node.Defines) #>.<#= baseAttribute.CurrentName #><#= Emit.Parameters(baseAttribute) #> => <#= attribute.CurrentName #><#= Emit.Parameters(attribute) #>;
+<#              } #>
 <#          } #>
 <#      } #>
 <#      foreach (var eq in node.EquationsRequiringEmit) { #>
@@ -196,15 +205,20 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#      } #>
 
 <#      foreach (var property in Build.PropertiesForClass(node)) { #>
-<#          if (property.IsChild && property.IsTemp) { #>
-<#              if (property.IsCollection) { #>
+<#          if (property.IsChild && property.MayHaveRewrites) { #>
     private <#= Emit.RewritableBackingType(property) #> <#=Emit.VariableName(property) #>;
-    public <#= Emit.Type(property.Type) #> <#= property.TempName #> => <#= Emit.VariableName(property) #>;
-    public <#= Emit.Type(property.FinalType) #> <#= property.Name #> => <#= Emit.VariableName(property) #>.AsFinalType;
-<#              } else { #>
-    public <#= Emit.Type(property.Type) #> <#= property.TempName #> { [DebuggerStepThrough] get; }
-    public <#= Emit.Type(property.FinalType) #> <#= property.Name #> => <#= property.TempName #> as <#= Emit.Type(property.FinalType.ToNonOptional()) #>;
-<#              } #>
+    private bool <#=Emit.VariableName(property) #>Cached;
+<#                  if (property.Type is CollectionTypeModel) { #>
+    public <#= Emit.Type(property.Type) #> <#= property.TempName #> => <#=Emit.VariableName(property) #>;
+<#                  } else { #>
+    public <#= Emit.Type(property.Type) #> <#= property.TempName #>
+        => GrammarAttribute.IsCached(in <#=Emit.VariableName(property) #>Cached) ? <#=Emit.VariableName(property) #>.UnsafeValue
+            : this.RewritableChild(ref <#=Emit.VariableName(property) #>Cached, ref <#=Emit.VariableName(property) #>);
+<#                  } #>
+<#                  if (property.IsTemp) { #>
+    public <#= Emit.Type(property.FinalType) #> <#= property.Name #> => <#= Emit.FinalValue(property) #>;
+<#                  } #>
+    public <#= Emit.Type(property.Type) #> <#= property.CurrentName #> => <#= Emit.CurrentValue(property) #>;
 <#          } else { #>
     public <#= Emit.Type(property.Type) #> <#= property.Name #> { [DebuggerStepThrough] get; }
 <#          } #>

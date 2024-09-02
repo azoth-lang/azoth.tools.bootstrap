@@ -24,6 +24,7 @@ internal sealed class UnaryOperatorExpressionNode : ExpressionNode, IUnaryOperat
         => GrammarAttribute.IsCached(in operandCached) ? operand.UnsafeValue
             : this.RewritableChild(ref operandCached, ref operand);
     public IExpressionNode? Operand => TempOperand as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentOperand => operand.UnsafeValue;
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype

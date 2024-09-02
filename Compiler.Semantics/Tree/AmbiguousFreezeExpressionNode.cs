@@ -16,6 +16,7 @@ internal sealed class AmbiguousFreezeExpressionNode : AmbiguousExpressionNode, I
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public ISimpleNameExpressionNode? Referent => TempReferent as ISimpleNameExpressionNode;
+    public IUnresolvedSimpleNameNode CurrentReferent => referent.UnsafeValue;
 
     public AmbiguousFreezeExpressionNode(IFreezeExpressionSyntax syntax, IUnresolvedSimpleNameNode referent)
     {

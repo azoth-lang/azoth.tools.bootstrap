@@ -20,6 +20,7 @@ internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
     public override IMaybeExpressionAntetype Antetype
         => Referent?.Antetype ?? IAntetype.Unknown;
     private DataType? type;

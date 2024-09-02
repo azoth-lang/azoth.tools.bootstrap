@@ -17,6 +17,7 @@ internal sealed class PropertyNameNode : AmbiguousNameExpressionNode, IPropertyN
     public IExpressionNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
+    public IExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName PropertyName { get; }
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
 

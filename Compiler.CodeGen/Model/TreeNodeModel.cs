@@ -218,7 +218,9 @@ public class TreeNodeModel
         isSyncLockRequired = new(() => ActualAttributes.Any(a => a.IsSyncLockRequired)
                                        || ActualEquations.Any(eq => eq.IsSyncLockRequired));
 
-        mayHaveRewrite = new(() => !ActualRewriteRules.IsEmpty || DescendantNodes.Any(n => n.MayHaveRewrite));
+        mayHaveRewrite = new(()
+            // Temp nodes ought to have rewrites. If they don't already, they will be added soon.
+            => !ActualRewriteRules.IsEmpty || IsTemp || DescendantNodes.Any(n => n.MayHaveRewrite));
 
         // Inheritance Relationships
         supertypeNodes = new(() => DeclaredSupertypes.OfType<InternalSymbol>().Select(s => s.ReferencedNode)

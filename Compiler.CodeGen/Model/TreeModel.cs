@@ -183,8 +183,8 @@ public sealed class TreeModel : IHasUsingNamespaces
     {
         var errors = false;
         // Only temp nodes used as child attribute types need a final type
-        var tempNodes = Nodes.SelectMany(n => n.ActualProperties).Where(p => p.IsChild)
-                             .Select(p => p.Type.ReferencedNode()!).Where(n => n.IsTemp).Distinct();
+        var tempNodes = Nodes.SelectMany(n => n.ActualAttributes).Where(a => a.IsChild)
+                             .Select(a => a.Type.ReferencedNode()!).Where(n => n.IsTemp).Distinct();
         foreach (var node in tempNodes)
             if (node.FinalNode is null)
             {

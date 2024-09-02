@@ -16,6 +16,7 @@ internal sealed class ImplicitTempMoveExpressionNode : ExpressionNode, IImplicit
     public IExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
+    public IExpressionNode CurrentReferent => Referent;
     public override IMaybeExpressionAntetype Antetype => Referent.Antetype;
     private DataType? type;
     private bool typeCached;

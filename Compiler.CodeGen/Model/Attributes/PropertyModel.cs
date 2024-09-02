@@ -19,6 +19,7 @@ public sealed class PropertyModel : TreeAttributeModel
     /// </summary>
     /// <remarks>For properties that have non-temporary types, this is just the name.</remarks>
     public override string TempName => IsTemp ? $"Temp{Name}" : Name;
+    public override string CurrentName => MayHaveRewrites ? $"Current{Name}" : Name;
     public override bool IsMethod => false;
     public override TypeModel Type { get; }
     public override bool IsChild => ReferencesNode;

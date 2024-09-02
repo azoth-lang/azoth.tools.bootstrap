@@ -20,6 +20,7 @@ internal sealed class MemberAccessExpressionNode : AmbiguousNameExpressionNode, 
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode? Context => TempContext as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName MemberName => Syntax.MemberName;
     public IFixedList<ITypeNode> TypeArguments { get; }
 

@@ -20,6 +20,7 @@ public abstract class AttributeModel : IMemberModel
     public abstract TreeNodeModel Node { get; }
     public abstract string Name { get; }
     public virtual string TempName => Name;
+    public virtual string CurrentName => Name;
     public abstract bool IsMethod { get; }
     public abstract TypeModel Type { get; }
     public virtual TypeModel FinalType => Type;

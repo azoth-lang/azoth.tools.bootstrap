@@ -18,6 +18,7 @@ internal class UnknownMemberAccessExpressionNode : UnknownNameExpressionNode, IU
     public IExpressionNode Context
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
+    public IExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName MemberName => Syntax.MemberName;
     public IFixedList<ITypeNode> TypeArguments { get; }
     public IFixedSet<IDeclarationNode> ReferencedMembers { get; }
