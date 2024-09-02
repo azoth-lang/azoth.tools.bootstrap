@@ -70,7 +70,7 @@ internal sealed class BlockExpressionNode : ExpressionNode, IBlockExpressionNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        InvalidStructureAspect.BlockExpression_ContributeDiagnostics(this, diagnostics);
+        InvalidStructureAspect.BlockExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

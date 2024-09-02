@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
 internal static partial class BindingNamesAspect
 {
-    public static ISelfParameterNode? SelfExpression_ReferencedDefinition(ISelfExpressionNode node)
+    public static partial ISelfParameterNode? SelfExpression_ReferencedDefinition(ISelfExpressionNode node)
         => node.ContainingDeclaration switch
         {
             IConcreteMethodDefinitionNode n => n.SelfParameter,
@@ -25,7 +25,7 @@ internal static partial class BindingNamesAspect
             _ => throw ExhaustiveMatch.Failed(node.ContainingDeclaration),
         };
 
-    public static void SelfExpression_ContributeDiagnostics(ISelfExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void SelfExpression_Contribute_Diagnostics(ISelfExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ContainingDeclaration is not (IMethodDefinitionNode or ISourceConstructorDefinitionNode or IInitializerDeclarationNode))
             diagnostics.Add(node.IsImplicit
@@ -33,7 +33,7 @@ internal static partial class BindingNamesAspect
                 : OtherSemanticError.SelfOutsideMethod(node.File, node.Syntax.Span));
     }
 
-    public static IFixedSet<IConstructorDeclarationNode> NewObjectExpression_ReferencedConstructors(INewObjectExpressionNode node)
+    public static partial IFixedSet<IConstructorDeclarationNode> NewObjectExpression_ReferencedConstructors(INewObjectExpressionNode node)
     {
         var typeDeclarationNode = node.PackageNameScope().Lookup(node.ConstructingAntetype);
         if (typeDeclarationNode is null)

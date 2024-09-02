@@ -325,10 +325,11 @@ internal static class Emit
                 builder.AppendLine();
                 var value = equation.Name.ToCamelCase();
                 var cached = equation.Name.ToCamelCase() + "Cached";
-                var isChild = equation.Attribute.IsChild;
+                var attribute = equation.Attribute;
+                var isChild = attribute.IsChild;
                 var attachStart = isChild ? $"n => {ChildAttach(equation)}" : "";
                 var attachEnd = isChild ? "(n))" : "";
-                if (equation.Attribute is CircularAttributeModel attr)
+                if (attribute is CircularAttributeModel attr)
                 {
                     // Circular attribute
                     builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}.UnsafeValue");
@@ -339,12 +340,7 @@ internal static class Emit
                     {
                         builder.AppendLine(",");
                         builder.Append("                ");
-                        builder.Append(equation.Aspect.Name);
-                        builder.Append('.');
-                        builder.Append(equation.NodeSymbol);
-                        builder.Append('_');
-                        builder.Append(equation.Name);
-                        builder.Append("_Initial");
+                        AppendQualifiedInitialMethod(builder, attribute);
                     }
                     builder.AppendLine(");");
                     builder.Append($"    private Circular<{Type(equation.Type)}> {value}");
@@ -393,6 +389,28 @@ internal static class Emit
                 return builder.ToString();
             }
         }
+    }
+
+    public static string InitialMethod(CircularAttributeModel attribute)
+    {
+        var builder = new StringBuilder();
+        AppendInitialMethod(builder, attribute);
+        return builder.ToString();
+    }
+
+    private static void AppendQualifiedInitialMethod(StringBuilder builder, AspectAttributeModel attribute)
+    {
+        builder.Append(attribute.Aspect.Name);
+        builder.Append('.');
+        AppendInitialMethod(builder, attribute);
+    }
+
+    private static void AppendInitialMethod(StringBuilder builder, AspectAttributeModel attribute)
+    {
+        builder.Append(attribute.NodeSymbol);
+        builder.Append('_');
+        builder.Append(attribute.Name);
+        builder.Append("_Initial");
     }
 
     private static void AppendQualifiedEquationMethod(EquationModel equation, StringBuilder builder)

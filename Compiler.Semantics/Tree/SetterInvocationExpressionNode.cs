@@ -119,7 +119,7 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.SetterInvocationExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.SetterInvocationExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

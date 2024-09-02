@@ -61,7 +61,7 @@ internal sealed class FieldAccessExpressionNode : ExpressionNode, IFieldAccessEx
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.FieldAccessExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.FieldAccessExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

@@ -56,10 +56,10 @@ internal static partial class NameBindingTypesAspect
         // TODO the match referent value id could be used multiple times and perhaps shouldn't be removed here
         => node.FlowStateBefore().Declare(node, node.MatchReferentValueId);
 
-    public static DataType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node)
+    public static partial DataType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node)
         => node.Referent?.Type.ToNonConstValueType() ?? DataType.Unknown;
 
-    public static DataType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node)
+    public static partial DataType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node)
     {
         var inheritedBindingType = node.ContextBindingType();
         if (inheritedBindingType is OptionalType optionalType)
@@ -67,7 +67,7 @@ internal static partial class NameBindingTypesAspect
         return inheritedBindingType;
     }
 
-    public static DataType BindingContextPattern_Pattern_ContextBindingType(IBindingContextPatternNode node)
+    public static partial DataType BindingContextPattern_Pattern_ContextBindingType(IBindingContextPatternNode node)
         => node.Type?.NamedType ?? node.ContextBindingType();
 
     public static partial DataType NamedParameter_BindingType(INamedParameterNode node)

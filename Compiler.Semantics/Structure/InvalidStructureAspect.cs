@@ -4,9 +4,9 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
-internal class InvalidStructureAspect
+internal partial class InvalidStructureAspect
 {
-    public static void BlockExpression_ContributeDiagnostics(
+    public static partial void BlockExpression_Contribute_Diagnostics(
         IBlockExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
@@ -22,7 +22,7 @@ internal class InvalidStructureAspect
                 resultStatement = result;
     }
 
-    public static void ReturnExpression_ContributeDiagnostics(IReturnExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void ReturnExpression_Contribute_Diagnostics(IReturnExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var expectedReturnType = node.ExpectedReturnType;
         switch (expectedReturnType)

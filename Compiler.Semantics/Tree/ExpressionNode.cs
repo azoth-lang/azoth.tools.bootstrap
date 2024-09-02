@@ -100,7 +100,7 @@ internal abstract class ExpressionNode : AmbiguousExpressionNode, IExpressionNod
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.Expression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

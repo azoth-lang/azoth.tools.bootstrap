@@ -1,6 +1,10 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name ExpressionTypesAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+◊using Azoth.Tools.Bootstrap.Compiler.Types;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -16,6 +20,7 @@
 // ---------- Statements
 ↑ Statement.FlowStateAfter: `IFlowState`;
 ↓ ResultStatement.ExpectedType: `DataType`?;
+= ResultStatement.Type;
 ↑ ResultStatement.FlowStateAfter: `IFlowState`
     => Expression?.FlowStateAfter ?? IFlowState.Empty;
 ↓ VariableDeclarationStatement.FlowStateBefore(): `IFlowState`;
@@ -36,37 +41,92 @@
 /// Whether this expression should be prepared for return.
 /// </summary>
 ↓ Expression.ShouldPrepareToReturn(): `bool`;
+↑ Expression.Type: `DataType`;
 ↑ Expression.FlowStateAfter: `IFlowState`;
+= Expression.↑.Diagnostics;
+✎ Expression ImplicitMove;
+✎ Expression ImplicitFreeze;
+✎ Expression PrepareToReturn;
 
 ↓ BlockExpression.FlowStateBefore(): `IFlowState`;
+↑ BlockExpression.Type: `DataType`;
 ↑ BlockExpression.FlowStateAfter: `IFlowState`;
+↑ NewObjectExpression.ContextualizedOverload:`ContextualizedOverload`?;
 ↓ NewObjectExpression.FlowStateBefore(): `IFlowState`;
+= NewObjectExpression.↑.Diagnostics;
+
+↑ NeverTypedExpression.Type: `NeverType` => DataType.Never;
 
 // ---------- Literal Expressions
 ↓ LiteralExpression.FlowStateBefore(): `IFlowState`;
 = LiteralExpression.FlowStateAfter;
+↑ BoolLiteralExpression.Type: `BoolConstValueType`;
+↑ IntegerLiteralExpression.Type: `IntegerConstValueType`;
+↑ NoneLiteralExpression.Type:`OptionalType`;
+= StringLiteralExpression.↑.Diagnostics;
+
+// ---------- Operator Expressions
+= AssignmentExpression.↑.Diagnostics;
+= BinaryOperatorExpression.↑.Diagnostics;
+= IdExpression.↑.Diagnostics;
+= ConversionExpression.↑.Diagnostics;
+= PatternMatchExpression.Type => DataType.Bool;
 
 // ---------- Control Flow Expressions
 ↑ IfExpression.FlowStateAfter: `IFlowState`;
+= IfExpression.↑.Diagnostics;
+= ReturnExpression.↑.Diagnostics;
 
 // ---------- Invocation Expressions
 ↓ FunctionInvocationExpression.FlowStateBefore(): `IFlowState`;
+↑ FunctionInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+= FunctionInvocationExpression.↑.Diagnostics;
+↑ MethodInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+= MethodInvocationExpression.↑.Diagnostics;
+↑ GetterInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+= GetterInvocationExpression.↑.Diagnostics;
+↑ SetterInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+= SetterInvocationExpression.↑.Diagnostics;
+↑ FunctionReferenceInvocationExpression.FunctionType: `FunctionType`;
+= FunctionReferenceInvocationExpression.↑.Diagnostics;
 ↓ InitializerInvocationExpression.FlowStateBefore(): `IFlowState`;
+↑ InitializerInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+= UnknownInvocationExpression.Type => DataType.Unknown;
 = UnknownInvocationExpression.FlowStateAfter => throw new NotImplementedException();
 
 // ---------- Name Expressions
 // TODO delete once all name expressions implement FlowStateAfter
 = NameExpression.FlowStateAfter
     => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
+↑ NamespaceName.Type: `UnknownType` => DataType.Unknown;
 ↓ FunctionName.FlowStateBefore(): `IFlowState`;
 = FunctionName.FlowStateAfter;
+= FunctionGroupName.Type => throw new NotImplementedException();
+= MethodGroupName.Type => throw new NotImplementedException();
 = MethodGroupName.FlowStateAfter => Context.FlowStateAfter;
 = FieldAccessExpression.FlowStateAfter;
+= FieldAccessExpression.↑.Diagnostics;
 = VariableNameExpression.FlowStateAfter;
 ↓ VariableNameExpression.FlowStateBefore(): `IFlowState`;
+= TypeNameExpression.Type => DataType.Unknown;
+= InitializerGroupName.Type => throw new NotImplementedException();
+↑ SpecialTypeNameExpression.Type:`UnknownType` => DataType.Unknown;
 ↓ SelfExpression.FlowStateBefore(): `IFlowState`;
+↑ SelfExpression.Pseudotype: `Pseudotype`;
 = SelfExpression.FlowStateAfter;
+↑ MissingNameExpression.Type: `UnknownType` => DataType.Unknown;
+↑ UnknownNameExpression.Type: `UnknownType` => DataType.Unknown;
 = UnknownMemberAccessExpression.FlowStateAfter;
 
+// ---------- Capability Expressions
+= MoveExpression.Type;
+= MoveVariableExpression.↑.Diagnostics;
+= MoveValueExpression.↑.Diagnostics;
+= FreezeExpression.Type;
+= FreezeVariableExpression.↑.Diagnostics;
+= FreezeValueExpression.↑.Diagnostics;
+= PrepareToReturnExpression.Type => Value.Type;
+
 // ---------- Async Expressions
+= AsyncBlockExpression.Type => Block.Type;
 = AsyncBlockExpression.FlowStateAfter => throw new NotImplementedException();

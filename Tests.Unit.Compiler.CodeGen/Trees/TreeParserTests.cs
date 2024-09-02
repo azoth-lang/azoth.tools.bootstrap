@@ -347,7 +347,7 @@ public class TreeParserTests
 
         var ex = Assert.Throws<ArgumentException>(() => TreeParser.Parse(grammar));
 
-        Assert.Equal("Node MyNonterminal contains duplicate property definitions.", ex.Message);
+        Assert.Equal("Node MyNonterminal contains duplicate attribute definitions.", ex.Message);
     }
     #endregion
 

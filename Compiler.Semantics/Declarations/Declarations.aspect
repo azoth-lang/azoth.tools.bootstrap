@@ -5,6 +5,7 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 ↑ NamedDeclaration.Name: `TypeName`;
+↑ FunctionInvocableDeclaration.Type: `FunctionType`;
 
 // ---------- Bindings
 ↑ NamedBindingDeclaration.Name: `IdentifierName`;

@@ -98,7 +98,7 @@ internal sealed class NewObjectExpressionNode : ExpressionNode, INewObjectExpres
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         OverloadResolutionAspect.NewObjectExpression_Contribute_Diagnostics(this, diagnostics);
-        ExpressionTypesAspect.NewObjectExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.NewObjectExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

@@ -39,7 +39,7 @@ public sealed class LocalAttributeEquationModel : SoleEquationModel
         attribute = new(GetAttribute);
     }
 
-    public LocalAttributeEquationModel(TreeNodeModel node, SynthesizedAttributeModel attribute)
+    public LocalAttributeEquationModel(TreeNodeModel node, LocalAttributeModel attribute)
         : base(attribute.Aspect, node.Defines, attribute.Name, attribute.IsMethod, attribute.DefaultExpression)
     {
         strategy = new(attribute.Strategy);

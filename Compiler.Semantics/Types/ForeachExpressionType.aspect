@@ -1,7 +1,10 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name ForeachExpressionTypeAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
+◊using Azoth.Tools.Bootstrap.Compiler.Types;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
+// ---------- Control Flow Expressions
+= ForeachExpression.Type;
 = ForeachExpression.FlowStateAfter;

@@ -54,10 +54,10 @@ internal sealed class FreezeVariableExpressionNode : ExpressionNode, IFreezeVari
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.FreezeVariableExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.FreezeVariableExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()
-        => ControlFlowAspect.FreezeExpression_ControlFlowNext(this);
+        => ControlFlowAspect.RecoveryExpression_ControlFlowNext(this);
 }

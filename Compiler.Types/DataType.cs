@@ -20,7 +20,8 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
 {
     // TODO move these to `Type`
     #region Standard Types
-    public static readonly DataType Unknown = UnknownType.Instance;
+    public static readonly UnknownType Unknown = UnknownType.Instance;
+    public static readonly DataType UnknownDataType = UnknownType.Instance;
     public static readonly VoidType Void = VoidType.Instance;
     public static readonly NeverType Never = NeverType.Instance;
     public static readonly CapabilityType<BoolType> Bool = DeclaredType.Bool.Type;

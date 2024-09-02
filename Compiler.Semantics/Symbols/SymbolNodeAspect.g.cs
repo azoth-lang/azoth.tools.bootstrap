@@ -1,5 +1,6 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
+using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -15,6 +16,8 @@ internal static partial class SymbolNodeAspect
     public static partial IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void StandardTypeName_Contribute_Diagnostics(IStandardTypeNameNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial INamespaceSymbolNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

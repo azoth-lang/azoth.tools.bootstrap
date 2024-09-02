@@ -56,7 +56,7 @@ public sealed class InheritedAttributeFamilyModel : ContextAttributeFamilyModel
     }
 
     private IFixedSet<InheritedAttributeModel> ComputeInstances()
-        => Tree.Aspects.SelectMany(a => a.Attributes).OfType<InheritedAttributeModel>()
+        => Tree.Aspects.SelectMany(a => a.DeclaredAttributes).OfType<InheritedAttributeModel>()
                .Where(a => a.Name == Name).ToFixedSet();
 
     public override string ToString() => $"↓ *.{Name} <: {Type}";

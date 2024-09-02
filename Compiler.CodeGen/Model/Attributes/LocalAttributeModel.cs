@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using ExhaustiveMatching;
 
@@ -13,9 +14,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
     typeof(CircularAttributeModel))]
 public abstract class LocalAttributeModel : AspectAttributeModel
 {
-    protected LocalAttributeModel(AspectModel aspect, InternalSymbol nodeSymbol, string name, bool isMethod)
-        : base(aspect, nodeSymbol, name, isMethod) { }
+    public abstract EvaluationStrategy Strategy { get; }
+    public string? DefaultExpression { get; }
 
-    protected LocalAttributeModel(AspectModel aspect, TreeNodeModel node, string name, bool isMethod)
-        : base(aspect, node, name, isMethod) { }
+    protected LocalAttributeModel(AspectModel aspect, InternalSymbol nodeSymbol, string name, bool isMethod, string? defaultExpression)
+        : base(aspect, nodeSymbol, name, isMethod)
+    {
+        DefaultExpression = defaultExpression;
+    }
+
+    protected LocalAttributeModel(AspectModel aspect, TreeNodeModel node, string name, bool isMethod, string? defaultExpression)
+        : base(aspect, node, name, isMethod)
+    {
+        DefaultExpression = defaultExpression;
+    }
 }

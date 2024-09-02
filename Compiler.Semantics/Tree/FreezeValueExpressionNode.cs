@@ -48,7 +48,7 @@ internal sealed class FreezeValueExpressionNode : ExpressionNode, IFreezeValueEx
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()
-        => ControlFlowAspect.FreezeExpression_ControlFlowNext(this);
+        => ControlFlowAspect.RecoveryExpression_ControlFlowNext(this);
 
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
@@ -66,7 +66,7 @@ internal sealed class FreezeValueExpressionNode : ExpressionNode, IFreezeValueEx
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.FreezeValueExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.FreezeValueExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

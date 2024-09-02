@@ -41,7 +41,7 @@ internal abstract class UserTypeSymbolNode : PackageFacetChildSymbolNode, IUserT
     private IFixedList<IGenericParameterSymbolNode> GetGenericParameters()
     {
         var declarationNodes = SymbolTree().GetChildrenOf(Symbol)
-            .OfType<GenericParameterTypeSymbol>().Select(SymbolNodeAspect.Symbol).WhereNotNull()
+            .OfType<GenericParameterTypeSymbol>().Select(SymbolBinder.Symbol).WhereNotNull()
             .Cast<IGenericParameterSymbolNode>();
         return ChildList.Attach(this, declarationNodes);
     }

@@ -51,7 +51,7 @@ internal sealed class IdExpressionNode : ExpressionNode, IIdExpressionNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.IdExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.IdExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

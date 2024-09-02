@@ -67,7 +67,7 @@ internal sealed class ConversionExpressionNode : ExpressionNode, IConversionExpr
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.ConversionExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.ConversionExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

@@ -66,7 +66,7 @@ internal sealed class SelfExpressionNode : NameExpressionNode, ISelfExpressionNo
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        BindingNamesAspect.SelfExpression_ContributeDiagnostics(this, diagnostics);
+        BindingNamesAspect.SelfExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

@@ -41,7 +41,7 @@ internal sealed class CapabilityTypeNode : TypeNode, ICapabilityTypeNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        TypeExpressionsAspect.CapabilityType_ContributeDiagnostics(this, diagnostics);
+        TypeExpressionsAspect.CapabilityType_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

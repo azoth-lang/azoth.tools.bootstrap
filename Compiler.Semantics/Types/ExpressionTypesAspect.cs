@@ -25,7 +25,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class ExpressionTypesAspect
 {
-    public static void Expression_ContributeDiagnostics(IExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void Expression_Contribute_Diagnostics(IExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ExpectedType is not DataType expectedType)
             return;
@@ -34,7 +34,7 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, expectedType));
     }
 
-    public static DataType IdExpression_Type(IIdExpressionNode node)
+    public static partial DataType IdExpression_Type(IIdExpressionNode node)
     {
         var referentType = node.Referent?.Type ?? DataType.Unknown;
         if (referentType is CapabilityType capabilityType)
@@ -50,7 +50,7 @@ internal static partial class ExpressionTypesAspect
         return intermediateReferent.FlowStateAfter.Transform(intermediateReferent.ValueId, node.ValueId, node.Type);
     }
 
-    public static void IdExpression_ContributeDiagnostics(IIdExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void IdExpression_Contribute_Diagnostics(IIdExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Type is not UnknownType)
             return;
@@ -61,7 +61,7 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(TypeError.CannotIdNonReferenceType(node.File, node.Syntax.Span, referentType));
     }
 
-    public static DataType VariableNameExpression_Type(IVariableNameExpressionNode node)
+    public static partial DataType VariableNameExpression_Type(IVariableNameExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
 
     public static partial IFlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
@@ -73,17 +73,17 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState SelfParameter_FlowStateAfter(ISelfParameterNode node)
         => node.FlowStateBefore().Declare(node);
 
-    public static DataType UnsafeExpression_Type(IUnsafeExpressionNode node)
+    public static partial DataType UnsafeExpression_Type(IUnsafeExpressionNode node)
         => node.Expression?.Type ?? DataType.Unknown;
 
     public static partial IFlowState UnsafeExpression_FlowStateAfter(IUnsafeExpressionNode node)
         => node.Expression?.FlowStateAfter.Transform(node.Expression.ValueId, node.ValueId, node.Type)
            ?? IFlowState.Empty;
 
-    public static DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
+    public static partial DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
         => node.ReferencedDeclaration?.Type.Return.Type ?? DataType.Unknown;
 
-    public static ContextualizedOverload? FunctionInvocationExpression_ContextualizedOverload(
+    public static partial ContextualizedOverload? FunctionInvocationExpression_ContextualizedOverload(
         IFunctionInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
             ? ContextualizedOverload.Create(node.ReferencedDeclaration)
@@ -97,7 +97,7 @@ internal static partial class ExpressionTypesAspect
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static void FunctionInvocationExpression_ContributeDiagnostics(IFunctionInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void FunctionInvocationExpression_Contribute_Diagnostics(IFunctionInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.Arguments);
@@ -118,10 +118,10 @@ internal static partial class ExpressionTypesAspect
         }
     }
 
-    public static FunctionType FunctionReferenceInvocation_FunctionType(IFunctionReferenceInvocationExpressionNode node)
+    public static partial FunctionType FunctionReferenceInvocationExpression_FunctionType(IFunctionReferenceInvocationExpressionNode node)
         => (FunctionType)node.Expression.Type;
 
-    public static DataType FunctionReferenceInvocation_Type(IFunctionReferenceInvocationExpressionNode node)
+    public static partial DataType FunctionReferenceInvocationExpression_Type(IFunctionReferenceInvocationExpressionNode node)
         => node.FunctionType.Return.Type;
 
     public static partial IFlowState FunctionReferenceInvocationExpression_FlowStateAfter(IFunctionReferenceInvocationExpressionNode node)
@@ -134,7 +134,7 @@ internal static partial class ExpressionTypesAspect
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static void FunctionReferenceInvocation_Contribute_Diagnostics(IFunctionReferenceInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void FunctionReferenceInvocationExpression_Contribute_Diagnostics(IFunctionReferenceInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Expression.FlowStateAfter;
         var contextualizedOverload = ContextualizedOverload.Create(node.FunctionType);
@@ -142,25 +142,25 @@ internal static partial class ExpressionTypesAspect
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
-    public static BoolConstValueType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
+    public static partial BoolConstValueType BoolLiteralExpression_Type(IBoolLiteralExpressionNode node)
         => node.Value ? DataType.True : DataType.False;
 
-    public static IntegerConstValueType IntegerLiteralExpression_Type(IIntegerLiteralExpressionNode node)
+    public static partial IntegerConstValueType IntegerLiteralExpression_Type(IIntegerLiteralExpressionNode node)
         => new IntegerConstValueType(node.Value);
 
-    public static OptionalType NoneLiteralExpression_Type(INoneLiteralExpressionNode _)
+    public static partial OptionalType NoneLiteralExpression_Type(INoneLiteralExpressionNode node)
         => DataType.None;
 
-    public static DataType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
+    public static partial DataType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
     {
         var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName).OfType<ITypeDeclarationNode>().TrySingle();
-        return typeSymbolNode?.Symbol.GetDeclaredType()?.With(Capability.Constant, FixedList.Empty<DataType>()) ?? DataType.Unknown;
+        return typeSymbolNode?.Symbol.GetDeclaredType()?.With(Capability.Constant, FixedList.Empty<DataType>()) ?? DataType.UnknownDataType;
     }
 
     public static partial IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node)
         => node.FlowStateBefore().Constant(node.ValueId);
 
-    public static void StringLiteralExpression_Contribute_Diagnostics(
+    public static partial void StringLiteralExpression_Contribute_Diagnostics(
         IStringLiteralExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
@@ -170,13 +170,13 @@ internal static partial class ExpressionTypesAspect
 
     private static readonly IdentifierName StringTypeName = "String";
 
-    public static ContextualizedOverload? MethodInvocationExpression_ContextualizedOverload(
+    public static partial ContextualizedOverload? MethodInvocationExpression_ContextualizedOverload(
         IMethodInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
             ? ContextualizedOverload.Create(node.MethodGroup.Context.Type, node.ReferencedDeclaration)
             : null;
 
-    public static IChildNode? Expression_Rewrite_ImplicitMove(IExpressionNode node)
+    public static partial IExpressionNode? Expression_Rewrite_ImplicitMove(IExpressionNode node)
     {
         if (!node.ImplicitRecoveryAllowed())
             return null;
@@ -203,7 +203,7 @@ internal static partial class ExpressionTypesAspect
         return implicitMove;
     }
 
-    public static IChildNode? Expression_Rewrite_ImplicitFreeze(IExpressionNode node)
+    public static partial IExpressionNode? Expression_Rewrite_ImplicitFreeze(IExpressionNode node)
     {
         if (!node.ImplicitRecoveryAllowed())
             return null;
@@ -228,7 +228,7 @@ internal static partial class ExpressionTypesAspect
         return implicitFreeze;
     }
 
-    public static IChildNode? Expression_Rewrite_PrepareToReturn(IExpressionNode node)
+    public static partial IExpressionNode? Expression_Rewrite_PrepareToReturn(IExpressionNode node)
     {
         if (node is IRecoveryExpressionNode { IsImplicit: true } or IPrepareToReturnExpressionNode
             || !node.ShouldPrepareToReturn())
@@ -237,7 +237,7 @@ internal static partial class ExpressionTypesAspect
         return new PrepareToReturnExpressionNode(node);
     }
 
-    public static DataType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
+    public static partial DataType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
     {
         var selfType = node.MethodGroup.Context.Type;
         // TODO does this need to be modified by flow typing?
@@ -254,19 +254,19 @@ internal static partial class ExpressionTypesAspect
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static void MethodInvocationExpression_ContributeDiagnostics(IMethodInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void MethodInvocationExpression_Contribute_Diagnostics(IMethodInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.MethodGroup.Context.FlowStateAfter;
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.MethodGroup.Context, node.Arguments);
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
-    public static ContextualizedOverload? GetterInvocationExpression_ContextualizedOverload(
-        IGetterInvocationExpressionNode node)
+    public static partial ContextualizedOverload? GetterInvocationExpression_ContextualizedOverload(IGetterInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
             ? ContextualizedOverload.Create(node.Context.Type, node.ReferencedDeclaration)
             : null;
-    public static DataType GetterInvocationExpression_Type(IGetterInvocationExpressionNode node)
+
+    public static partial DataType GetterInvocationExpression_Type(IGetterInvocationExpressionNode node)
     {
         var selfType = node.Context.Type;
         var unboundType = node.ContextualizedOverload?.ReturnType.Type;
@@ -281,19 +281,19 @@ internal static partial class ExpressionTypesAspect
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static void GetterInvocationExpression_ContributeDiagnostics(IGetterInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void GetterInvocationExpression_Contribute_Diagnostics(IGetterInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var flowStateBefore = node.Context.FlowStateAfter;
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Context, []);
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
-    public static ContextualizedOverload? SetterInvocationExpression_ContextualizedOverload(ISetterInvocationExpressionNode node)
+    public static partial ContextualizedOverload? SetterInvocationExpression_ContextualizedOverload(ISetterInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
             ? ContextualizedOverload.Create(node.Context.Type, node.ReferencedDeclaration)
             : null;
 
-    public static DataType SetterInvocationExpression_Type(ISetterInvocationExpressionNode node)
+    public static partial DataType SetterInvocationExpression_Type(ISetterInvocationExpressionNode node)
     {
         var selfType = node.Context.Type;
         var unboundType = node.ContextualizedOverload?.ParameterTypes[0].Type;
@@ -311,7 +311,7 @@ internal static partial class ExpressionTypesAspect
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static void SetterInvocationExpression_ContributeDiagnostics(ISetterInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void SetterInvocationExpression_Contribute_Diagnostics(ISetterInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var value = node.Value!;
         var flowStateBefore = value.FlowStateAfter;
@@ -339,7 +339,7 @@ internal static partial class ExpressionTypesAspect
                              .Select((p, a) => new ArgumentValueId(p.IsLent, a.ValueId));
     }
 
-    public static DataType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
+    public static partial DataType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
     {
         var contextType = node.Context is ISelfExpressionNode selfNode
             ? selfNode.Pseudotype : node.Context.Type;
@@ -357,7 +357,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node)
         => node.Context.FlowStateAfter.AccessField(node);
 
-    public static void FieldAccessExpression_ContributeDiagnostics(IFieldAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void FieldAccessExpression_Contribute_Diagnostics(IFieldAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Parent is IAssignmentExpressionNode assignmentNode && assignmentNode.TempLeftOperand == node)
             // In this case, a different error will be reported and CannotAccessMutableBindingFieldOfIdentityReference
@@ -374,18 +374,19 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node)
         => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
 
-    public static DataType SelfExpression_Type(ISelfExpressionNode node)
+    public static partial DataType SelfExpression_Type(ISelfExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
-    public static Pseudotype SelfExpression_Pseudotype(ISelfExpressionNode node)
+
+    public static partial Pseudotype SelfExpression_Pseudotype(ISelfExpressionNode node)
         => node.ReferencedDefinition?.BindingType ?? DataType.Unknown;
 
-    public static ContextualizedOverload? NewObjectExpression_ContextualizedOverload(
+    public static partial ContextualizedOverload? NewObjectExpression_ContextualizedOverload(
         INewObjectExpressionNode node)
         => node.ReferencedConstructor is not null
             ? ContextualizedOverload.Create(node.ConstructingType.NamedType, node.ReferencedConstructor)
             : null;
 
-    public static DataType NewObjectExpression_Type(INewObjectExpressionNode node)
+    public static partial DataType NewObjectExpression_Type(INewObjectExpressionNode node)
         // TODO does this need to be modified by flow typing?
         => node.ContextualizedOverload?.ReturnType.Type ?? DataType.Unknown;
 
@@ -397,8 +398,7 @@ internal static partial class ExpressionTypesAspect
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-
-    public static void NewObjectExpression_ContributeDiagnostics(INewObjectExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void NewObjectExpression_Contribute_Diagnostics(INewObjectExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         CheckConstructingType(node.ConstructingType, diagnostics);
 
@@ -436,14 +436,13 @@ internal static partial class ExpressionTypesAspect
                     arg.Argument));
     }
 
-    public static ContextualizedOverload?
-        InitializerInvocationExpression_ContextualizedOverload(IInitializerInvocationExpressionNode node)
+    public static partial ContextualizedOverload? InitializerInvocationExpression_ContextualizedOverload(IInitializerInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
            && node.InitializerGroup.Context.NamedBareType is not null and var initializingType
             ? ContextualizedOverload.Create(initializingType.With(Capability.Mutable), node.ReferencedDeclaration)
             : null;
 
-    public static DataType InitializerInvocationExpression_Type(IInitializerInvocationExpressionNode node)
+    public static partial DataType InitializerInvocationExpression_Type(IInitializerInvocationExpressionNode node)
         // TODO does this need to be modified by flow typing?
         => node.ContextualizedOverload?.ReturnType.Type ?? DataType.Unknown;
 
@@ -455,7 +454,7 @@ internal static partial class ExpressionTypesAspect
         return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static DataType AssignmentExpression_Type(IAssignmentExpressionNode node)
+    public static partial DataType AssignmentExpression_Type(IAssignmentExpressionNode node)
         => node.LeftOperand?.Type ?? DataType.Unknown;
 
     public static partial IFlowState AssignmentExpression_FlowStateAfter(IAssignmentExpressionNode node)
@@ -467,7 +466,7 @@ internal static partial class ExpressionTypesAspect
             node.RightOperand.ValueId, node.ValueId) ?? IFlowState.Empty;
     }
 
-    public static void AssignmentExpression_ContributeDiagnostics(IAssignmentExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void AssignmentExpression_Contribute_Diagnostics(IAssignmentExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.LeftOperand is IFieldAccessExpressionNode fieldAccess)
         {
@@ -495,8 +494,7 @@ internal static partial class ExpressionTypesAspect
         }
     }
 
-
-    public static DataType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
+    public static partial DataType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
     {
         if (node.Antetype is ISimpleOrConstValueAntetype simpleOrConstValueAntetype)
             return simpleOrConstValueAntetype.ToType();
@@ -532,7 +530,7 @@ internal static partial class ExpressionTypesAspect
             .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
             .OfType<ITypeDeclarationNode>().TrySingle();
         var rangeAntetype = rangeTypeDeclaration?.Symbol.GetDeclaredType()?.With(Capability.Constant, FixedList.Empty<DataType>())
-                            ?? DataType.Unknown;
+                            ?? DataType.UnknownDataType;
         return rangeAntetype;
     }
 
@@ -542,14 +540,14 @@ internal static partial class ExpressionTypesAspect
             node.RightOperand.ValueId, node.LeftOperand?.ValueId, node.ValueId)
            ?? IFlowState.Empty;
 
-    public static void BinaryOperatorExpression_ContributeDiagnostics(IBinaryOperatorExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void BinaryOperatorExpression_Contribute_Diagnostics(IBinaryOperatorExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Type == DataType.Unknown)
             diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandsOfType(node.File,
                 node.Syntax.Span, node.Operator, node.LeftOperand!.Type, node.RightOperand!.Type));
     }
 
-    public static DataType IfExpression_Type(IIfExpressionNode node)
+    public static partial DataType IfExpression_Type(IIfExpressionNode node)
     {
         if (node.ElseClause is null) return node.ThenBlock.Type.MakeOptional();
 
@@ -557,7 +555,7 @@ internal static partial class ExpressionTypesAspect
         return node.ThenBlock.Type;
     }
 
-    public static DataType ResultStatement_Type(IResultStatementNode node)
+    public static partial DataType ResultStatement_Type(IResultStatementNode node)
         => node.Expression?.Type.ToNonConstValueType() ?? DataType.Unknown;
 
     public static partial IFlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
@@ -568,7 +566,7 @@ internal static partial class ExpressionTypesAspect
         return flowStateBefore.Combine(node.ThenBlock.ValueId, node.ElseClause?.ValueId, node.ValueId);
     }
 
-    public static void IfExpression_ContributeDiagnostics(IIfExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void IfExpression_Contribute_Diagnostics(IIfExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node is { ThenBlock: { } thenBlock, ElseClause: { } elseClause })
         {
@@ -584,7 +582,7 @@ internal static partial class ExpressionTypesAspect
         }
     }
 
-    public static DataType BlockExpression_Type(IBlockExpressionNode node)
+    public static partial DataType BlockExpression_Type(IBlockExpressionNode node)
     {
         // TODO what about blocks that contain a return etc. and never return?
         foreach (var statement in node.Statements)
@@ -606,7 +604,7 @@ internal static partial class ExpressionTypesAspect
         return flowState.Constant(node.ValueId);
     }
 
-    public static DataType WhileExpression_Type(IWhileExpressionNode _)
+    public static partial DataType WhileExpression_Type(IWhileExpressionNode node)
         // TODO assign correct type to the expression
         => DataType.Void;
 
@@ -617,7 +615,7 @@ internal static partial class ExpressionTypesAspect
             // TODO when the `while` has a type other than void, correctly handle the value id
             .Constant(node.ValueId);
 
-    public static DataType LoopExpression_Type(ILoopExpressionNode _)
+    public static partial DataType LoopExpression_Type(ILoopExpressionNode node)
         // TODO assign correct type to the expression
         => DataType.Void;
 
@@ -628,7 +626,7 @@ internal static partial class ExpressionTypesAspect
                // TODO when the `loop` has a type other than void, correctly handle the value id
                .Constant(node.ValueId);
 
-    public static DataType ConversionExpression_Type(IConversionExpressionNode node)
+    public static partial DataType ConversionExpression_Type(IConversionExpressionNode node)
     {
         var convertToType = node.ConvertToType.NamedType;
         if (node.Operator == ConversionOperator.Optional)
@@ -645,7 +643,7 @@ internal static partial class ExpressionTypesAspect
             .Transform(node.Referent?.ValueId, node.ValueId, node.Type);
     }
 
-    public static void ConversionExpression_ContributeDiagnostics(IConversionExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void ConversionExpression_Contribute_Diagnostics(IConversionExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var convertFromType = node.Referent!.Type;
         var convertToType = node.ConvertToType.NamedType;
@@ -656,14 +654,14 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node)
         => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
 
-    public static DataType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
+    public static partial DataType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
         => Intrinsic.PromiseOf(node.Expression?.Type ?? DataType.Unknown);
 
     public static partial IFlowState AsyncStartExpression_FlowStateAfter(IAsyncStartExpressionNode node)
         // TODO this isn't correct, async start can act like a delayed lambda. It is also a transform that wraps
         => node.Expression?.FlowStateAfter.Combine(node.Expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
 
-    public static DataType AwaitExpression_Type(IAwaitExpressionNode node)
+    public static partial DataType AwaitExpression_Type(IAwaitExpressionNode node)
     {
         if (node.Expression?.Type is CapabilityType { DeclaredType: var declaredType } type
             && Intrinsic.PromiseType.Equals(declaredType))
@@ -676,7 +674,7 @@ internal static partial class ExpressionTypesAspect
         // TODO actually this is a transform that unwraps
         => node.Expression?.FlowStateAfter.Combine(node.Expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
 
-    public static DataType UnaryOperatorExpression_Type(IUnaryOperatorExpressionNode node)
+    public static partial DataType UnaryOperatorExpression_Type(IUnaryOperatorExpressionNode node)
         => node.Antetype switch
         {
             ISimpleOrConstValueAntetype t => t.ToType(),
@@ -687,13 +685,13 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)
         => node.Operand?.FlowStateAfter.Transform(node.Operand.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
 
-    public static DataType FunctionName_Type(IFunctionNameNode node)
-        => node.ReferencedDeclaration?.Type ?? DataType.Unknown;
+    public static partial DataType FunctionName_Type(IFunctionNameNode node)
+        => node.ReferencedDeclaration?.Type ?? DataType.UnknownDataType;
 
     public static partial IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node)
         => node.FlowStateBefore().Constant(node.ValueId);
 
-    public static DataType FreezeExpression_Type(IFreezeExpressionNode node)
+    public static partial DataType FreezeExpression_Type(IFreezeExpressionNode node)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
             return DataType.Unknown;
@@ -724,7 +722,7 @@ internal static partial class ExpressionTypesAspect
             : flowStateBefore.FreezeValue(referentValueId, node.ValueId);
     }
 
-    public static void FreezeVariableExpression_ContributeDiagnostics(IFreezeVariableExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void FreezeVariableExpression_Contribute_Diagnostics(IFreezeVariableExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
             return;
@@ -735,7 +733,7 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
     }
 
-    public static void FreezeValueExpression_ContributeDiagnostics(IFreezeExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void FreezeValueExpression_Contribute_Diagnostics(IFreezeValueExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Referent.Type is not CapabilityType capabilityType) return;
 
@@ -744,7 +742,8 @@ internal static partial class ExpressionTypesAspect
         else if (!node.IsTemporary && !node.Referent.FlowStateAfter.CanFreeze(node.Referent.ValueId))
             diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
     }
-    public static DataType MoveExpression_Type(IMoveExpressionNode node)
+
+    public static partial DataType MoveExpression_Type(IMoveExpressionNode node)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
             return DataType.Unknown;
@@ -762,7 +761,7 @@ internal static partial class ExpressionTypesAspect
         return flowStateBefore.MoveVariable(node.Referent.ReferencedDefinition, node.Referent.ValueId, node.ValueId);
     }
 
-    public static void MoveVariableExpression_ContributeDiagnostics(IMoveVariableExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void MoveVariableExpression_Contribute_Diagnostics(IMoveVariableExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
             return;
@@ -779,7 +778,7 @@ internal static partial class ExpressionTypesAspect
         return flowStateBefore.MoveValue(node.Referent.ValueId, node.ValueId);
     }
 
-    public static void MoveValueExpression_ContributeDiagnostics(IMoveValueExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void MoveValueExpression_Contribute_Diagnostics(IMoveValueExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Referent.Type is not CapabilityType capabilityType) return;
 
@@ -789,7 +788,7 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(FlowTypingError.CannotMoveValue(node.File, node.Syntax, node.Referent.Syntax));
     }
 
-    public static DataType ImplicitTempMoveExpression_Type(IImplicitTempMoveExpressionNode node)
+    public static partial DataType ImplicitTempMoveExpression_Type(IImplicitTempMoveExpressionNode node)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
             return DataType.Unknown;
@@ -818,7 +817,7 @@ internal static partial class ExpressionTypesAspect
         // Whatever the previous flow state, now nothing exists except the constant for the `never` typed value
         => IFlowState.Empty.Constant(node.ValueId);
 
-    public static void ReturnExpression_ContributeDiagnostics(IReturnExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void ReturnExpression_Contribute_Diagnostics(IReturnExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.Value is not { } value)
             return;

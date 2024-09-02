@@ -1,0 +1,13 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
+◊name DataFlowAspect;
+◊using Azoth.Tools.Bootstrap.Framework;
+
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Data Flow
+↑ DataFlow.DataFlowPrevious: {DataFlow};
+= DataFlow.DataFlowPrevious;
+
+// ---------- Name Expressions
+// VariableNameExpression can find the previous DataFlow nodes, but isn't a DataFlow node itself.
+↑ VariableNameExpression.DataFlowPrevious: {DataFlow};

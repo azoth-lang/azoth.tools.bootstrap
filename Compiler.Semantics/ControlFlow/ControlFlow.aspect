@@ -22,6 +22,10 @@
 
 // ---------- Control Flow
 ↓ ControlFlow.ControlFlowEntry(): Entry;
+↑ ControlFlow.ControlFlowNext: `ControlFlowSet`;
+// ↑ ControlFlow.ControlFlowPrevious: `ControlFlowSet`;
+// = ControlFlow.ControlFlowPrevious;
+= Exit.ControlFlowNext => ControlFlowSet.Empty;
 
 /// <summary>
 /// The control flow nodes that follow this node based on the context.
@@ -29,5 +33,45 @@
 /// <remarks>This is an inherited property.</remarks>
 ↓ ControlFlow.ControlFlowFollowing(): `ControlFlowSet`;
 
+// ---------- Expressions
+// Default for expressions is just whatever the context says is the following node.
+= Expression.ControlFlowNext;
+= BlockExpression.ControlFlowNext;
+= NewObjectExpression.ControlFlowNext;
+= UnsafeExpression.ControlFlowNext;
+
+// ---------- Operator Expressions
+= AssignmentExpression.ControlFlowNext;
+= BinaryOperatorExpression.ControlFlowNext;
+= UnaryOperatorExpression.ControlFlowNext;
+= IdExpression.ControlFlowNext;
+= ConversionExpression.ControlFlowNext;
+= ImplicitConversionExpression.ControlFlowNext;
+= PatternMatchExpression.ControlFlowNext;
+
 // ---------- Control Flow Expressions
+= IfExpression.ControlFlowNext;
+= LoopExpression.ControlFlowNext;
+= WhileExpression.ControlFlowNext;
+= ForeachExpression.ControlFlowNext;
 ↓ ReturnExpression.ControlFlowExit(): Exit;
+= ReturnExpression.ControlFlowNext;
+
+// ---------- Invocation Expressions
+= FunctionInvocationExpression.ControlFlowNext;
+= MethodInvocationExpression.ControlFlowNext;
+= GetterInvocationExpression.ControlFlowNext;
+= SetterInvocationExpression.ControlFlowNext;
+= FunctionReferenceInvocationExpression.ControlFlowNext;
+
+// ---------- Name Expressions
+= MethodGroupName.ControlFlowNext;
+= FieldAccessExpression.ControlFlowNext;
+
+// ---------- Capability Expressions
+= RecoveryExpression.ControlFlowNext;
+= ImplicitTempMoveExpression.ControlFlowNext;
+= PrepareToReturnExpression.ControlFlowNext;
+
+// ---------- Async Expressions
+= AwaitExpression.ControlFlowNext;

@@ -36,7 +36,7 @@ internal static partial class ForeachExpressionTypeAspect
         return flowState.Declare(node, node.InExpression?.ValueId);
     }
 
-    public static DataType ForeachExpression_Type(IForeachExpressionNode _)
+    public static partial DataType ForeachExpression_Type(IForeachExpressionNode node)
         // TODO assign correct type to the expression
         => DataType.Void;
 
@@ -46,7 +46,7 @@ internal static partial class ForeachExpressionTypeAspect
             // TODO when the `foreach` has a type other than void, correctly handle the value id
             .Constant(node.ValueId);
 
-    public static void ForeachExpression_ContributeDiagnostics(IForeachExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static void ForeachExpression_Contribute_Diagnostics(IForeachExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var iterableType = node.InExpression?.Type ?? DataType.Unknown;
         if (iterableType is UnknownType)

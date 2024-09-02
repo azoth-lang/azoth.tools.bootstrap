@@ -1,0 +1,10 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
+◊name CapabilityExpressionsAspect;
+
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Capability Expressions
+✎ AmbiguousMoveExpression Variable;
+✎ AmbiguousMoveExpression Value;
+✎ AmbiguousFreezeExpression Variable;
+✎ AmbiguousFreezeExpression Value;

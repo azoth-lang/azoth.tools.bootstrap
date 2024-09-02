@@ -55,7 +55,7 @@ internal sealed class GenericTypeNameNode : TypeNameNode, IGenericTypeNameNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        SymbolNodeAspect.StandardTypeName_ContributeDiagnostics(this, diagnostics);
+        SymbolNodeAspect.StandardTypeName_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

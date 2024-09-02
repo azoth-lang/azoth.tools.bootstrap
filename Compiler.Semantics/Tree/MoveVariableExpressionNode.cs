@@ -50,10 +50,10 @@ internal sealed class MoveVariableExpressionNode : ExpressionNode, IMoveVariable
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.MoveVariableExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.MoveVariableExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()
-        => ControlFlowAspect.MoveExpression_ControlFlowNext(this);
+        => ControlFlowAspect.RecoveryExpression_ControlFlowNext(this);
 }

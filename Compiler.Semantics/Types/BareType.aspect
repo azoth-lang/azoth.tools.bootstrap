@@ -1,0 +1,13 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+◊name BareTypeAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Types
+↑ TypeName.NamedBareType: `BareType`?;
+= QualifiedTypeName.NamedBareType => throw new NotImplementedException();
+
+// ---------- Name Expressions
+↑ TypeNameExpression.NamedBareType: `BareType`?;
+= TypeNameExpression.NamedBareType;

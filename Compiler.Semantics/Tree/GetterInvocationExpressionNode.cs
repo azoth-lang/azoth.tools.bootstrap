@@ -91,7 +91,7 @@ internal sealed class GetterInvocationExpressionNode : ExpressionNode, IGetterIn
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.GetterInvocationExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.GetterInvocationExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

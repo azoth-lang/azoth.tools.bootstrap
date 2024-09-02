@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 /// This uses a data flow analysis to determine if a `let` binding may be assigned more than once.
 /// The analysis is based off the variables that are definitely unassigned.
 /// </summary>
-internal static class SingleAssignmentAspect
+internal static partial class SingleAssignmentAspect
 {
     public static BindingFlags<IVariableBindingNode> DataFlow_DefinitelyUnassigned_Initial(IDataFlowNode node)
         // Since the merge operation is intersection, the initial state must be that all bindings

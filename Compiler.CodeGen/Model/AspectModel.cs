@@ -18,7 +18,7 @@ public sealed class AspectModel : IHasUsingNamespaces
     public IFixedSet<string> UsingNamespaces => Syntax.UsingNamespaces;
     public IFixedSet<TypeDeclarationModel> TypeDeclarations { get; }
     public IFixedSet<AttributeFamilyModel> DeclaredAttributeKins { get; }
-    public IFixedList<AspectAttributeModel> Attributes { get; }
+    public IFixedList<AspectAttributeModel> DeclaredAttributes { get; }
     public IFixedList<EquationModel> DeclaredEquations { get; }
     public IFixedList<LocalAttributeEquationModel> ImplicitlyDeclaredEquations => implicitlyDeclaredEquations.Value;
     private readonly Lazy<IFixedList<LocalAttributeEquationModel>> implicitlyDeclaredEquations;
@@ -31,7 +31,7 @@ public sealed class AspectModel : IHasUsingNamespaces
         Syntax = syntax;
         TypeDeclarations = syntax.TypeDeclarations.Select(t => new TypeDeclarationModel(tree, t)).ToFixedSet();
         DeclaredAttributeKins = syntax.AttributeFamilies.Select(s => AttributeFamilyModel.Create(Tree, s)).ToFixedSet();
-        Attributes = syntax.Attributes.Select(a => AspectAttributeModel.Create(this, a)).ToFixedList();
+        DeclaredAttributes = syntax.Attributes.Select(a => AspectAttributeModel.Create(this, a)).ToFixedList();
         DeclaredEquations = syntax.Equations.Select(e => EquationModel.Create(this, e)).ToFixedList();
         implicitlyDeclaredEquations = new(() => ComputeImplicitlyDeclaredEquations().ToFixedList());
         RewriteRules = syntax.RewriteRules.Select(r => new RewriteRuleModel(this, r)).ToFixedList();

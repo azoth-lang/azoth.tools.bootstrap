@@ -19,5 +19,5 @@ internal abstract class ChildSymbolNode : ChildNode, IChildDeclarationNode
 
     protected IEnumerable<IChildDeclarationNode> GetMembers(ISymbolTree symbolTree)
         => symbolTree.GetChildrenOf(Symbol).Where(sym => sym is not GenericParameterTypeSymbol)
-                     .Select(SymbolNodeAspect.Symbol).WhereNotNull();
+                     .Select(SymbolBinder.Symbol).WhereNotNull();
 }

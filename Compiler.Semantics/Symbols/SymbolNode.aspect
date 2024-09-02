@@ -1,5 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 ◊name SymbolNodeAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
@@ -39,6 +40,7 @@
 ↑ StandardTypeName.ReferencedDeclaration: TypeDeclaration?;
 = StandardTypeName.ReferencedDeclaration;
 ↓ StandardTypeName.IsAttributeType:`bool`;
+= StandardTypeName.↑.Diagnostics;
 
 // -------------------------------------------------------------------------------------------------
 // Symbol Nodes
@@ -51,6 +53,9 @@
 = PackageFacetSymbol.*.**.SymbolTree => SymbolTree;
 ↑ child PackageFacetSymbol.GlobalNamespace: NamespaceSymbol;
 = eager PackageFacetSymbol.GlobalNamespace;
+
+// ---------- Function Symbol Nodes
+= FunctionSymbol.Type => Symbol.Type;
 
 // ---------- Type Symbol Nodes
 = PrimitiveTypeSymbol.Supertypes => Symbol.GetDeclaredType()?.Supertypes ?? [];
@@ -71,3 +76,4 @@
 = StandardMethodSymbol.Arity => Symbol.Arity;
 = StandardMethodSymbol.MethodGroupType => Symbol.MethodGroupType;
 = FieldSymbol.BindingType => Symbol.Type;
+= AssociatedFunctionSymbol.Type => Symbol.Type;

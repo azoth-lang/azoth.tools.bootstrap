@@ -25,7 +25,8 @@ internal sealed class MoveValueExpressionNode : ExpressionNode, IMoveValueExpres
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.MoveExpression_Type);
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.MoveExpression_Type);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter
@@ -41,7 +42,7 @@ internal sealed class MoveValueExpressionNode : ExpressionNode, IMoveValueExpres
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()
-        => ControlFlowAspect.MoveExpression_ControlFlowNext(this);
+        => ControlFlowAspect.RecoveryExpression_ControlFlowNext(this);
 
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
@@ -59,7 +60,7 @@ internal sealed class MoveValueExpressionNode : ExpressionNode, IMoveValueExpres
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.MoveValueExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.MoveValueExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

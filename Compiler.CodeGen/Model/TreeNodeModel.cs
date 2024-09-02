@@ -239,7 +239,7 @@ public class TreeNodeModel
 
         // Attributes
         DeclaredTreeAttributes = syntax.DeclaredAttributes.Select(a => TreeAttributeModel.Create(this, a)).ToFixedList();
-        declaredAttributes = new(() => DeclaredTreeAttributes.Concat<AttributeModel>(Tree.Aspects.SelectMany(a => a.Attributes).Where(a => a.NodeSymbol == Defines)).ToFixedList());
+        declaredAttributes = new(() => DeclaredTreeAttributes.Concat<AttributeModel>(Tree.Aspects.SelectMany(a => a.DeclaredAttributes).Where(a => a.NodeSymbol == Defines)).ToFixedList());
         treeChildNodes = new(() =>
             // Skip placeholders, the other attributes will give the true children (avoid cyclic dependencies)
             DeclaredAttributes.Where(p => !p.IsPlaceholder && p.IsChild)
@@ -282,7 +282,7 @@ public class TreeNodeModel
                 var actualEquationsNames = ComputeActualEquations(DeclaredEquations)
                                            .OfType<LocalAttributeEquationModel>()
                                            .Select(eq => eq.Name).ToFixedSet();
-                return ActualAttributes.OfType<SynthesizedAttributeModel>()
+                return ActualAttributes.OfType<LocalAttributeModel>()
                                        .Where(a => a.DefaultExpression is null && !actualEquationsNames.Contains(a.Name))
                                        .Select(ImplicitlyDeclaredEquation).ToFixedList();
             });
@@ -444,7 +444,7 @@ public class TreeNodeModel
                .Concat<EquationModel>(contributorEquations);
     }
 
-    private LocalAttributeEquationModel ImplicitlyDeclaredEquation(SynthesizedAttributeModel attribute)
+    private LocalAttributeEquationModel ImplicitlyDeclaredEquation(LocalAttributeModel attribute)
         => new(this, attribute);
 
     public override string ToString() => Defines.ToString();

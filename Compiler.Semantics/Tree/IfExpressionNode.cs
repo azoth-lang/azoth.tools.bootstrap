@@ -120,7 +120,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.IfExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.IfExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

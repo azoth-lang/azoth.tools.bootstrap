@@ -4,6 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
 <#@ import namespace="ExhaustiveMatching" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(aspect, "System.CodeDom.Compiler", "System.Runtime.CompilerServices")) { #>
@@ -18,6 +19,9 @@ namespace <#=aspect.Namespace #>;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class <#= aspect.Name #>
 {
+<#  foreach (var attr in aspect.DeclaredAttributes.OfType<CircularAttributeModel>().Where(ShouldEmit.Initial)) { #>
+    public static partial <#= Emit.Type(attr.Type) #> <#= Emit.InitialMethod(attr) #>(<#= Emit.TypeName(attr.Node.Defines) #> node);
+<#  } #>
 <#  foreach (var equation in aspect.AllDeclaredEquations.Where(eq => ShouldEmit.EquationPartialImplementation(eq))) { #>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 <#          switch (equation) { #>

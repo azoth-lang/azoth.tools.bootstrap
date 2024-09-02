@@ -13,6 +13,6 @@ internal static partial class BuiltInsAspect
             ?? IIntrinsicsPackageReferenceNode.Create();
 
     public static partial IFixedSet<ITypeDeclarationNode> Package_PrimitivesDeclarations(IPackageNode node)
-        => Primitive.SymbolTree.GlobalSymbols.Select(SymbolNodeAspect.Symbol)
+        => Primitive.SymbolTree.GlobalSymbols.Select(SymbolBinder.Symbol)
                     .WhereNotNull().Cast<ITypeDeclarationNode>().ToFixedSet();
 }

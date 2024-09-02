@@ -109,7 +109,7 @@ internal sealed class BinaryOperatorExpressionNode : ExpressionNode, IBinaryOper
     }
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
-        => ExpressionTypesAspect.BinaryOperatorExpression_ContributeDiagnostics(this, diagnostics);
+        => ExpressionTypesAspect.BinaryOperatorExpression_Contribute_Diagnostics(this, diagnostics);
 
     protected override ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.BinaryOperatorExpression_ControlFlowNext(this);

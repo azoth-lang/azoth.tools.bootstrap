@@ -27,7 +27,13 @@ internal static partial class NameBindingTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState VariableDeclarationStatement_FlowStateAfter(IVariableDeclarationStatementNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial DataType BindingContextPattern_Pattern_ContextBindingType(IBindingContextPatternNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState BindingPattern_FlowStateAfter(IBindingPatternNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial DataType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial DataType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial DataType FieldDefinition_BindingType(IFieldDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

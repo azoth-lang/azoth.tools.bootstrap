@@ -6,7 +6,6 @@
 
 // ---------- Special Parts
 ↑ BodyOrBlock.Statements: Statement*;
-// TODO allow the property to override this attribute
 
 // ---------- Function Parts
 = ExpressionBody.Statements => FixedList.Create(ResultStatement);

@@ -125,7 +125,7 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.AssignmentExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.AssignmentExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

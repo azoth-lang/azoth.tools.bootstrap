@@ -1,5 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name TypeExpressionsAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+◊using Azoth.Tools.Bootstrap.Compiler.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
@@ -8,4 +10,8 @@
 = ConcreteMethodDefinition.*.**.MethodSelfType;
 
 // ---------- Types
+↑ Type.NamedType: `DataType`;
+= TypeName.NamedType;
+= CapabilityType.↑.Diagnostics;
 ↓ SelfViewpointType.MethodSelfType: `Pseudotype`?;
+= SelfViewpointType.↑.Diagnostics;

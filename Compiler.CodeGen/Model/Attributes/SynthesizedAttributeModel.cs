@@ -37,13 +37,12 @@ public sealed class SynthesizedAttributeModel : LocalAttributeModel
 
     public override SynthesizedAttributeSyntax? Syntax { get; }
 
-    public EvaluationStrategy Strategy { get; }
+    public override EvaluationStrategy Strategy { get; }
     public override TypeModel Type { get; }
-    public string? DefaultExpression { get; }
 
     public SynthesizedAttributeModel(AspectModel aspect, SynthesizedAttributeSyntax syntax)
         : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name,
-            syntax.IsMethod)
+            syntax.IsMethod, syntax.DefaultExpression)
     {
         if (syntax.Strategy is not null && syntax.IsMethod)
             throw new FormatException($"{syntax.Node}.{syntax.Name} cannot specify evaluation strategy for method.");
@@ -52,7 +51,6 @@ public sealed class SynthesizedAttributeModel : LocalAttributeModel
         Strategy = syntax.IsMethod ? EvaluationStrategy.Computed
             : syntax.Strategy.WithDefault(syntax.DefaultExpression);
         Type = TypeModel.CreateFromSyntax(aspect.Tree, syntax.Type);
-        DefaultExpression = syntax.DefaultExpression;
     }
 
     private SynthesizedAttributeModel(
@@ -63,11 +61,10 @@ public sealed class SynthesizedAttributeModel : LocalAttributeModel
         TypeModel type,
         bool isMethod,
         string? defaultExpression)
-        : base(aspect, node, name, isMethod)
+        : base(aspect, node, name, isMethod, defaultExpression)
     {
         Strategy = strategy;
         Type = type;
-        DefaultExpression = defaultExpression;
     }
 
     public override string ToString()

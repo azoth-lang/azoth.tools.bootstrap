@@ -1,0 +1,11 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
+◊name InvalidStructureAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Expressions
+= BlockExpression.↑.Diagnostics;
+
+// ---------- Control Flow Expressions
+= ReturnExpression.↑.Diagnostics;

@@ -4,12 +4,12 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
 
-internal static class DataFlowAspect
+internal static partial class DataFlowAspect
 {
-    public static IFixedSet<IDataFlowNode> DataFlow_DataFlowPrevious(IDataFlowNode node)
+    public static partial IFixedSet<IDataFlowNode> DataFlow_DataFlowPrevious(IDataFlowNode node)
         => GetDataFlowPrevious(node);
 
-    public static IFixedSet<IDataFlowNode> VariableNameExpression_DataFlowPrevious(IVariableNameExpressionNode node)
+    public static partial IFixedSet<IDataFlowNode> VariableNameExpression_DataFlowPrevious(IVariableNameExpressionNode node)
         => GetDataFlowPrevious(node);
 
     private static IFixedSet<IDataFlowNode> GetDataFlowPrevious(this IControlFlowNode node)

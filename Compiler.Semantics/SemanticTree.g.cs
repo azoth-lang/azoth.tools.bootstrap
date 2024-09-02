@@ -397,8 +397,6 @@ public partial interface IConcreteFunctionInvocableDefinitionNode : IConcreteInv
     ITypeNode? Return { get; }
     new IBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
-    new FunctionType Type { get; }
-    FunctionType IFunctionInvocableDeclarationNode.Type => Type;
 }
 
 // [Closed(typeof(NamespaceBlockDefinitionNode))]
@@ -1420,9 +1418,9 @@ public partial interface ITypeNameNode : ITypeNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     TypeName Name { get; }
-    BareType? NamedBareType { get; }
     LexicalScope ContainingLexicalScope { get; }
     TypeSymbol? ReferencedSymbol { get; }
+    BareType? NamedBareType { get; }
 }
 
 [Closed(
@@ -1471,11 +1469,9 @@ public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpl
     TypeName ITypeNameNode.Name => Name;
 
     public static IIdentifierTypeNameNode Create(
-        DataType namedType,
-        BareType? namedBareType,
         IIdentifierTypeNameSyntax syntax,
         IdentifierName name)
-        => new IdentifierTypeNameNode(namedType, namedBareType, syntax, name);
+        => new IdentifierTypeNameNode(syntax, name);
 }
 
 // [Closed(typeof(SpecialTypeNameNode))]
@@ -1494,11 +1490,9 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
     TypeSymbol? ITypeNameNode.ReferencedSymbol => ReferencedSymbol;
 
     public static ISpecialTypeNameNode Create(
-        DataType namedType,
-        BareType? namedBareType,
         ISpecialTypeNameSyntax syntax,
         SpecialTypeName name)
-        => new SpecialTypeNameNode(namedType, namedBareType, syntax, name);
+        => new SpecialTypeNameNode(syntax, name);
 }
 
 // [Closed(typeof(GenericTypeNameNode))]
@@ -1517,12 +1511,10 @@ public partial interface IGenericTypeNameNode : IStandardTypeNameNode
     IFixedList<ITypeNode> TypeArguments { get; }
 
     public static IGenericTypeNameNode Create(
-        DataType namedType,
-        BareType? namedBareType,
         IGenericTypeNameSyntax syntax,
         GenericName name,
         IEnumerable<ITypeNode> typeArguments)
-        => new GenericTypeNameNode(namedType, namedBareType, syntax, name, typeArguments);
+        => new GenericTypeNameNode(syntax, name, typeArguments);
 }
 
 // [Closed(typeof(QualifiedTypeNameNode))]
@@ -1538,15 +1530,15 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
     IStandardTypeNameNode QualifiedName { get; }
     IMaybeAntetype ITypeNode.NamedAntetype
         => throw new NotImplementedException();
+    BareType? ITypeNameNode.NamedBareType
+        => throw new NotImplementedException();
 
     public static IQualifiedTypeNameNode Create(
-        DataType namedType,
         TypeName name,
-        BareType? namedBareType,
         IQualifiedTypeNameSyntax syntax,
         ITypeNameNode context,
         IStandardTypeNameNode qualifiedName)
-        => new QualifiedTypeNameNode(namedType, name, namedBareType, syntax, context, qualifiedName);
+        => new QualifiedTypeNameNode(name, syntax, context, qualifiedName);
 }
 
 // [Closed(typeof(OptionalTypeNode))]
@@ -1560,10 +1552,9 @@ public partial interface IOptionalTypeNode : ITypeNode
     ITypeNode Referent { get; }
 
     public static IOptionalTypeNode Create(
-        DataType namedType,
         IOptionalTypeSyntax syntax,
         ITypeNode referent)
-        => new OptionalTypeNode(namedType, syntax, referent);
+        => new OptionalTypeNode(syntax, referent);
 }
 
 // [Closed(typeof(CapabilityTypeNode))]
@@ -1578,11 +1569,10 @@ public partial interface ICapabilityTypeNode : ITypeNode
     ITypeNode Referent { get; }
 
     public static ICapabilityTypeNode Create(
-        DataType namedType,
         ICapabilityTypeSyntax syntax,
         ICapabilityNode capability,
         ITypeNode referent)
-        => new CapabilityTypeNode(namedType, syntax, capability, referent);
+        => new CapabilityTypeNode(syntax, capability, referent);
 }
 
 // [Closed(typeof(FunctionTypeNode))]
@@ -1597,11 +1587,10 @@ public partial interface IFunctionTypeNode : ITypeNode
     ITypeNode Return { get; }
 
     public static IFunctionTypeNode Create(
-        DataType namedType,
         IFunctionTypeSyntax syntax,
         IEnumerable<IParameterTypeNode> parameters,
         ITypeNode @return)
-        => new FunctionTypeNode(namedType, syntax, parameters, @return);
+        => new FunctionTypeNode(syntax, parameters, @return);
 }
 
 // [Closed(typeof(ParameterTypeNode))]
@@ -1648,11 +1637,10 @@ public partial interface ICapabilityViewpointTypeNode : IViewpointTypeNode
     ICapabilityNode Capability { get; }
 
     public static ICapabilityViewpointTypeNode Create(
-        DataType namedType,
         ICapabilityViewpointTypeSyntax syntax,
         ICapabilityNode capability,
         ITypeNode referent)
-        => new CapabilityViewpointTypeNode(namedType, syntax, capability, referent);
+        => new CapabilityViewpointTypeNode(syntax, capability, referent);
 }
 
 // [Closed(typeof(SelfViewpointTypeNode))]
@@ -1667,10 +1655,9 @@ public partial interface ISelfViewpointTypeNode : IViewpointTypeNode
     Pseudotype? MethodSelfType { get; }
 
     public static ISelfViewpointTypeNode Create(
-        DataType namedType,
         ISelfViewpointTypeSyntax syntax,
         ITypeNode referent)
-        => new SelfViewpointTypeNode(namedType, syntax, referent);
+        => new SelfViewpointTypeNode(syntax, referent);
 }
 
 [Closed(
@@ -1682,9 +1669,9 @@ public partial interface ISelfViewpointTypeNode : IViewpointTypeNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IControlFlowNode : ICodeNode
 {
-    ControlFlowSet ControlFlowNext { get; }
     ControlFlowSet ControlFlowPrevious { get; }
     IEntryNode ControlFlowEntry();
+    ControlFlowSet ControlFlowNext { get; }
     ControlFlowSet ControlFlowFollowing();
 }
 
@@ -1696,27 +1683,23 @@ public partial interface IEntryNode : IDataFlowNode
 
     public static IEntryNode Create(
         ICodeSyntax? syntax,
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        IFixedSet<IDataFlowNode> dataFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned)
-        => new EntryNode(syntax, controlFlowNext, controlFlowPrevious, dataFlowPrevious, definitelyAssigned, definitelyUnassigned);
+        => new EntryNode(syntax, controlFlowPrevious, definitelyUnassigned);
 }
 
 // [Closed(typeof(ExitNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExitNode : IDataFlowNode
 {
+    ControlFlowSet IControlFlowNode.ControlFlowNext
+        => ControlFlowSet.Empty;
 
     public static IExitNode Create(
         ICodeSyntax? syntax,
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        IFixedSet<IDataFlowNode> dataFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned)
-        => new ExitNode(syntax, controlFlowNext, controlFlowPrevious, dataFlowPrevious, definitelyAssigned, definitelyUnassigned);
+        => new ExitNode(syntax, controlFlowPrevious, definitelyUnassigned);
 }
 
 [Closed(
@@ -1727,9 +1710,9 @@ public partial interface IExitNode : IDataFlowNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IDataFlowNode : IControlFlowNode
 {
+    BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; }
     IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
     BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; }
-    BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; }
 }
 
 [Closed(
@@ -1775,14 +1758,12 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
         => Expression?.ValueId ?? default;
 
     public static IResultStatementNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IMaybeAntetype? resultAntetype,
         DataType? resultType,
-        DataType type,
         IResultStatementSyntax syntax,
         IAmbiguousExpressionNode expression)
-        => new ResultStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, type, syntax, expression);
+        => new ResultStatementNode(controlFlowPrevious, resultAntetype, resultType, syntax, expression);
 }
 
 [Closed(
@@ -1828,18 +1809,15 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
         => Syntax.Name;
 
     public static IVariableDeclarationStatementNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IMaybeAntetype? resultAntetype,
         DataType? resultType,
-        IFixedSet<IDataFlowNode> dataFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IVariableDeclarationStatementSyntax syntax,
         ICapabilityNode? capability,
         ITypeNode? type,
         IAmbiguousExpressionNode? initializer)
-        => new VariableDeclarationStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, capability, type, initializer);
+        => new VariableDeclarationStatementNode(controlFlowPrevious, resultAntetype, resultType, definitelyUnassigned, syntax, capability, type, initializer);
 }
 
 // [Closed(typeof(ExpressionStatementNode))]
@@ -1858,13 +1836,12 @@ public partial interface IExpressionStatementNode : IBodyStatementNode
         => null;
 
     public static IExpressionStatementNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IMaybeAntetype? resultAntetype,
         DataType? resultType,
         IExpressionStatementSyntax syntax,
         IAmbiguousExpressionNode expression)
-        => new ExpressionStatementNode(controlFlowNext, controlFlowPrevious, resultAntetype, resultType, syntax, expression);
+        => new ExpressionStatementNode(controlFlowPrevious, resultAntetype, resultType, syntax, expression);
 }
 
 [Closed(
@@ -1901,13 +1878,12 @@ public partial interface IBindingContextPatternNode : IPatternNode
         => Pattern.FlowStateAfter;
 
     public static IBindingContextPatternNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IBindingContextPatternSyntax syntax,
         bool isMutableBinding,
         IPatternNode pattern,
         ITypeNode? type)
-        => new BindingContextPatternNode(controlFlowNext, controlFlowPrevious, syntax, isMutableBinding, pattern, type);
+        => new BindingContextPatternNode(controlFlowPrevious, syntax, isMutableBinding, pattern, type);
 }
 
 [Closed(
@@ -1944,14 +1920,11 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
         => Syntax.IsMutableBinding;
 
     public static IBindingPatternNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        IFixedSet<IDataFlowNode> dataFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IBindingPatternSyntax syntax,
         IdentifierName name)
-        => new BindingPatternNode(controlFlowNext, controlFlowPrevious, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, name);
+        => new BindingPatternNode(controlFlowPrevious, definitelyUnassigned, syntax, name);
 }
 
 // [Closed(typeof(OptionalPatternNode))]
@@ -1970,11 +1943,10 @@ public partial interface IOptionalPatternNode : IOptionalOrBindingPatternNode
         => Pattern.FlowStateAfter;
 
     public static IOptionalPatternNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IOptionalPatternSyntax syntax,
         IOptionalOrBindingPatternNode pattern)
-        => new OptionalPatternNode(controlFlowNext, controlFlowPrevious, syntax, pattern);
+        => new OptionalPatternNode(controlFlowPrevious, syntax, pattern);
 }
 
 [Closed(
@@ -2040,10 +2012,10 @@ public partial interface IAmbiguousAssignableExpressionNode : IAmbiguousExpressi
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlowNode
 {
-    DataType Type { get; }
     DataType? ExpectedType { get; }
     bool ImplicitRecoveryAllowed();
     bool ShouldPrepareToReturn();
+    DataType Type { get; }
     IFlowState FlowStateAfter { get; }
     IMaybeExpressionAntetype? ExpectedAntetype { get; }
     IMaybeExpressionAntetype Antetype { get; }
@@ -2072,6 +2044,9 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
     new IFixedList<IStatementNode> Statements { get; }
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements => Statements;
     IFlowState FlowStateBefore();
+    new DataType Type { get; }
+    DataType IExpressionNode.Type => Type;
+    DataType IBlockOrResultNode.Type => Type;
     new IFlowState FlowStateAfter { get; }
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
@@ -2084,17 +2059,12 @@ public partial interface IBlockExpressionNode : IExpressionNode, IBlockOrResultN
     new ValueId ValueId { get; }
     ValueId IAmbiguousExpressionNode.ValueId => ValueId;
     ValueId IElseClauseNode.ValueId => ValueId;
-    new DataType Type { get; }
-    DataType IExpressionNode.Type => Type;
-    DataType IBlockOrResultNode.Type => Type;
 
     public static IBlockExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IBlockExpressionSyntax syntax,
-        IEnumerable<IStatementNode> statements,
-        DataType type)
-        => new BlockExpressionNode(controlFlowNext, controlFlowPrevious, syntax, statements, type);
+        IEnumerable<IStatementNode> statements)
+        => new BlockExpressionNode(controlFlowPrevious, syntax, statements);
 }
 
 // [Closed(typeof(NewObjectExpressionNode))]
@@ -2110,27 +2080,23 @@ public partial interface INewObjectExpressionNode : IInvocationExpressionNode
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
-    IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { get; }
-    ContextualizedOverload? ContextualizedOverload { get; }
     PackageNameScope PackageNameScope();
+    ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState FlowStateBefore();
     IMaybeAntetype ConstructingAntetype { get; }
     IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
     IConstructorDeclarationNode? ReferencedConstructor { get; }
+    IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { get; }
 
     public static INewObjectExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         INewObjectExpressionSyntax syntax,
         ITypeNameNode constructingType,
         IdentifierName? constructorName,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IConstructorDeclarationNode> referencedConstructors,
-        ContextualizedOverload? contextualizedOverload)
-        => new NewObjectExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, constructingType, constructorName, arguments, referencedConstructors, contextualizedOverload);
+        IEnumerable<IAmbiguousExpressionNode> arguments)
+        => new NewObjectExpressionNode(controlFlowPrevious, tempAllArguments, allArguments, syntax, constructingType, constructorName, arguments);
 }
 
 // [Closed(typeof(UnsafeExpressionNode))]
@@ -2146,12 +2112,10 @@ public partial interface IUnsafeExpressionNode : IExpressionNode
     IAmbiguousExpressionNode CurrentExpression { get; }
 
     public static IUnsafeExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IUnsafeExpressionSyntax syntax,
         IAmbiguousExpressionNode expression)
-        => new UnsafeExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, expression);
+        => new UnsafeExpressionNode(controlFlowPrevious, syntax, expression);
 }
 
 [Closed(
@@ -2161,7 +2125,8 @@ public partial interface IUnsafeExpressionNode : IExpressionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INeverTypedExpressionNode : IExpressionNode
 {
-    new NeverType Type { get; }
+    new NeverType Type
+        => DataType.Never;
     DataType IExpressionNode.Type => Type;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Never;
@@ -2196,12 +2161,10 @@ public partial interface IBoolLiteralExpressionNode : ILiteralExpressionNode
     DataType IExpressionNode.Type => Type;
 
     public static IBoolLiteralExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IBoolLiteralExpressionSyntax syntax,
-        bool value,
-        BoolConstValueType type)
-        => new BoolLiteralExpressionNode(controlFlowNext, controlFlowPrevious, syntax, value, type);
+        bool value)
+        => new BoolLiteralExpressionNode(controlFlowPrevious, syntax, value);
 }
 
 // [Closed(typeof(IntegerLiteralExpressionNode))]
@@ -2218,12 +2181,10 @@ public partial interface IIntegerLiteralExpressionNode : ILiteralExpressionNode
     DataType IExpressionNode.Type => Type;
 
     public static IIntegerLiteralExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IIntegerLiteralExpressionSyntax syntax,
-        BigInteger value,
-        IntegerConstValueType type)
-        => new IntegerLiteralExpressionNode(controlFlowNext, controlFlowPrevious, syntax, value, type);
+        BigInteger value)
+        => new IntegerLiteralExpressionNode(controlFlowPrevious, syntax, value);
 }
 
 // [Closed(typeof(NoneLiteralExpressionNode))]
@@ -2239,11 +2200,9 @@ public partial interface INoneLiteralExpressionNode : ILiteralExpressionNode
     DataType IExpressionNode.Type => Type;
 
     public static INoneLiteralExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        INoneLiteralExpressionSyntax syntax,
-        OptionalType type)
-        => new NoneLiteralExpressionNode(controlFlowNext, controlFlowPrevious, syntax, type);
+        INoneLiteralExpressionSyntax syntax)
+        => new NoneLiteralExpressionNode(controlFlowPrevious, syntax);
 }
 
 // [Closed(typeof(StringLiteralExpressionNode))]
@@ -2260,12 +2219,10 @@ public partial interface IStringLiteralExpressionNode : ILiteralExpressionNode
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
 
     public static IStringLiteralExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IStringLiteralExpressionSyntax syntax,
-        string value,
-        DataType type)
-        => new StringLiteralExpressionNode(controlFlowNext, controlFlowPrevious, syntax, value, type);
+        string value)
+        => new StringLiteralExpressionNode(controlFlowPrevious, syntax, value);
 }
 
 // [Closed(typeof(AssignmentExpressionNode))]
@@ -2287,17 +2244,13 @@ public partial interface IAssignmentExpressionNode : IExpressionNode, IDataFlowN
         => LexicalScopingAspect.AssignmentExpression_FlowLexicalScope(this);
 
     public static IAssignmentExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
-        IFixedSet<IDataFlowNode> dataFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IAssignmentExpressionSyntax syntax,
         IAmbiguousAssignableExpressionNode leftOperand,
         AssignmentOperator @operator,
         IAmbiguousExpressionNode rightOperand)
-        => new AssignmentExpressionNode(controlFlowNext, controlFlowPrevious, type, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, leftOperand, @operator, rightOperand);
+        => new AssignmentExpressionNode(controlFlowPrevious, definitelyUnassigned, syntax, leftOperand, @operator, rightOperand);
 }
 
 // [Closed(typeof(BinaryOperatorExpressionNode))]
@@ -2322,14 +2275,12 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
         => LexicalScopingAspect.BinaryOperatorExpression_FlowLexicalScope(this);
 
     public static IBinaryOperatorExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IBinaryOperatorExpressionSyntax syntax,
         IAmbiguousExpressionNode leftOperand,
         BinaryOperator @operator,
         IAmbiguousExpressionNode rightOperand)
-        => new BinaryOperatorExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, leftOperand, @operator, rightOperand);
+        => new BinaryOperatorExpressionNode(controlFlowPrevious, syntax, leftOperand, @operator, rightOperand);
 }
 
 // [Closed(typeof(UnaryOperatorExpressionNode))]
@@ -2349,14 +2300,12 @@ public partial interface IUnaryOperatorExpressionNode : IExpressionNode
         => LexicalScopingAspect.UnaryOperatorExpression_FlowLexicalScope(this);
 
     public static IUnaryOperatorExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IUnaryOperatorExpressionSyntax syntax,
         UnaryOperatorFixity fixity,
         UnaryOperator @operator,
         IAmbiguousExpressionNode operand)
-        => new UnaryOperatorExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, fixity, @operator, operand);
+        => new UnaryOperatorExpressionNode(controlFlowPrevious, syntax, fixity, @operator, operand);
 }
 
 // [Closed(typeof(IdExpressionNode))]
@@ -2374,12 +2323,10 @@ public partial interface IIdExpressionNode : IExpressionNode
         => Referent?.Antetype ?? IAntetype.Unknown;
 
     public static IIdExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IIdExpressionSyntax syntax,
         IAmbiguousExpressionNode referent)
-        => new IdExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, referent);
+        => new IdExpressionNode(controlFlowPrevious, syntax, referent);
 }
 
 // [Closed(typeof(ConversionExpressionNode))]
@@ -2397,14 +2344,12 @@ public partial interface IConversionExpressionNode : IExpressionNode
     ITypeNode ConvertToType { get; }
 
     public static IConversionExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IConversionExpressionSyntax syntax,
         IAmbiguousExpressionNode referent,
         ConversionOperator @operator,
         ITypeNode convertToType)
-        => new ConversionExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, referent, @operator, convertToType);
+        => new ConversionExpressionNode(controlFlowPrevious, syntax, referent, @operator, convertToType);
 }
 
 // [Closed(typeof(ImplicitConversionExpressionNode))]
@@ -2415,15 +2360,16 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
     IExpressionNode CurrentReferent { get; }
     new SimpleAntetype Antetype { get; }
     IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
+    new DataType Type { get; }
+    DataType IExpressionNode.Type => Type;
 
     public static IImplicitConversionExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         IExpressionNode referent,
-        SimpleAntetype antetype)
-        => new ImplicitConversionExpressionNode(controlFlowNext, controlFlowPrevious, syntax, type, referent, antetype);
+        SimpleAntetype antetype,
+        DataType type)
+        => new ImplicitConversionExpressionNode(controlFlowPrevious, syntax, referent, antetype, type);
 }
 
 // [Closed(typeof(PatternMatchExpressionNode))]
@@ -2438,17 +2384,17 @@ public partial interface IPatternMatchExpressionNode : IExpressionNode
     IExpressionNode? Referent { get; }
     IAmbiguousExpressionNode CurrentReferent { get; }
     IPatternNode Pattern { get; }
+    DataType IExpressionNode.Type
+        => DataType.Bool;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Bool;
 
     public static IPatternMatchExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IPatternMatchExpressionSyntax syntax,
         IAmbiguousExpressionNode referent,
         IPatternNode pattern)
-        => new PatternMatchExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, referent, pattern);
+        => new PatternMatchExpressionNode(controlFlowPrevious, syntax, referent, pattern);
 }
 
 // [Closed(typeof(IfExpressionNode))]
@@ -2473,14 +2419,12 @@ public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
     ValueId IElseClauseNode.ValueId => ValueId;
 
     public static IIfExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IIfExpressionSyntax syntax,
         IAmbiguousExpressionNode condition,
         IBlockOrResultNode thenBlock,
         IElseClauseNode? elseClause)
-        => new IfExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, condition, thenBlock, elseClause);
+        => new IfExpressionNode(controlFlowPrevious, syntax, condition, thenBlock, elseClause);
 }
 
 // [Closed(typeof(LoopExpressionNode))]
@@ -2494,12 +2438,10 @@ public partial interface ILoopExpressionNode : IExpressionNode
     IBlockExpressionNode Block { get; }
 
     public static ILoopExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         ILoopExpressionSyntax syntax,
         IBlockExpressionNode block)
-        => new LoopExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, block);
+        => new LoopExpressionNode(controlFlowPrevious, syntax, block);
 }
 
 // [Closed(typeof(WhileExpressionNode))]
@@ -2516,13 +2458,11 @@ public partial interface IWhileExpressionNode : IExpressionNode
     IBlockExpressionNode Block { get; }
 
     public static IWhileExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IWhileExpressionSyntax syntax,
         IAmbiguousExpressionNode condition,
         IBlockExpressionNode block)
-        => new WhileExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, condition, block);
+        => new WhileExpressionNode(controlFlowPrevious, syntax, condition, block);
 }
 
 // [Closed(typeof(ForeachExpressionNode))]
@@ -2562,11 +2502,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
         => VariableName;
 
     public static IForeachExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
-        IFixedSet<IDataFlowNode> dataFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IForeachExpressionSyntax syntax,
         bool isMutableBinding,
@@ -2583,7 +2519,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
         IMaybeAntetype iteratedAntetype,
         DataType iteratedType,
         IFlowState flowStateBeforeBlock)
-        => new ForeachExpressionNode(controlFlowNext, controlFlowPrevious, type, dataFlowPrevious, definitelyAssigned, definitelyUnassigned, syntax, isMutableBinding, variableName, inExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, iteratorType, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype, iteratedType, flowStateBeforeBlock);
+        => new ForeachExpressionNode(controlFlowPrevious, definitelyUnassigned, syntax, isMutableBinding, variableName, inExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, iteratorType, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype, iteratedType, flowStateBeforeBlock);
 }
 
 // [Closed(typeof(BreakExpressionNode))]
@@ -2599,12 +2535,10 @@ public partial interface IBreakExpressionNode : INeverTypedExpressionNode
     IAmbiguousExpressionNode? CurrentValue { get; }
 
     public static IBreakExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        NeverType type,
         IBreakExpressionSyntax syntax,
         IAmbiguousExpressionNode? value)
-        => new BreakExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, value);
+        => new BreakExpressionNode(controlFlowPrevious, syntax, value);
 }
 
 // [Closed(typeof(NextExpressionNode))]
@@ -2617,11 +2551,9 @@ public partial interface INextExpressionNode : INeverTypedExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
 
     public static INextExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        NeverType type,
         INextExpressionSyntax syntax)
-        => new NextExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax);
+        => new NextExpressionNode(controlFlowPrevious, syntax);
 }
 
 // [Closed(typeof(ReturnExpressionNode))]
@@ -2639,12 +2571,10 @@ public partial interface IReturnExpressionNode : INeverTypedExpressionNode
     DataType? ExpectedReturnType { get; }
 
     public static IReturnExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        NeverType type,
         IReturnExpressionSyntax syntax,
         IAmbiguousExpressionNode? value)
-        => new ReturnExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, value);
+        => new ReturnExpressionNode(controlFlowPrevious, syntax, value);
 }
 
 // [Closed(typeof(UnresolvedInvocationExpressionNode))]
@@ -2696,22 +2626,19 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
-    ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState FlowStateBefore();
+    ContextualizedOverload? ContextualizedOverload { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations { get; }
     IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
 
     public static IFunctionInvocationExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IFunctionGroupNameNode functionGroup,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
-        ContextualizedOverload? contextualizedOverload)
-        => new FunctionInvocationExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, functionGroup, arguments, contextualizedOverload);
+        IEnumerable<IAmbiguousExpressionNode> arguments)
+        => new FunctionInvocationExpressionNode(controlFlowPrevious, tempAllArguments, allArguments, syntax, functionGroup, arguments);
 }
 
 // [Closed(typeof(MethodInvocationExpressionNode))]
@@ -2731,16 +2658,13 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
 
     public static IMethodInvocationExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IMethodGroupNameNode methodGroup,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
-        ContextualizedOverload? contextualizedOverload)
-        => new MethodInvocationExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, methodGroup, arguments, contextualizedOverload);
+        IEnumerable<IAmbiguousExpressionNode> arguments)
+        => new MethodInvocationExpressionNode(controlFlowPrevious, tempAllArguments, allArguments, syntax, methodGroup, arguments);
 }
 
 // [Closed(typeof(GetterInvocationExpressionNode))]
@@ -2759,18 +2683,15 @@ public partial interface IGetterInvocationExpressionNode : IInvocationExpression
     ContextualizedOverload? ContextualizedOverload { get; }
 
     public static IGetterInvocationExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         StandardName propertyName,
         IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors,
-        IGetterMethodDeclarationNode? referencedDeclaration,
-        ContextualizedOverload? contextualizedOverload)
-        => new GetterInvocationExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, context, propertyName, referencedPropertyAccessors, referencedDeclaration, contextualizedOverload);
+        IGetterMethodDeclarationNode? referencedDeclaration)
+        => new GetterInvocationExpressionNode(controlFlowPrevious, tempAllArguments, allArguments, syntax, context, propertyName, referencedPropertyAccessors, referencedDeclaration);
 }
 
 // [Closed(typeof(SetterInvocationExpressionNode))]
@@ -2792,9 +2713,7 @@ public partial interface ISetterInvocationExpressionNode : IInvocationExpression
     ContextualizedOverload? ContextualizedOverload { get; }
 
     public static ISetterInvocationExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         IAssignmentExpressionSyntax syntax,
@@ -2802,9 +2721,8 @@ public partial interface ISetterInvocationExpressionNode : IInvocationExpression
         StandardName propertyName,
         IAmbiguousExpressionNode value,
         IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors,
-        ISetterMethodDeclarationNode? referencedDeclaration,
-        ContextualizedOverload? contextualizedOverload)
-        => new SetterInvocationExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, context, propertyName, value, referencedPropertyAccessors, referencedDeclaration, contextualizedOverload);
+        ISetterMethodDeclarationNode? referencedDeclaration)
+        => new SetterInvocationExpressionNode(controlFlowPrevious, tempAllArguments, allArguments, syntax, context, propertyName, value, referencedPropertyAccessors, referencedDeclaration);
 }
 
 // [Closed(typeof(FunctionReferenceInvocationExpressionNode))]
@@ -2824,17 +2742,14 @@ public partial interface IFunctionReferenceInvocationExpressionNode : IInvocatio
     FunctionType FunctionType { get; }
 
     public static IFunctionReferenceInvocationExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IExpressionNode expression,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        FunctionAntetype functionAntetype,
-        FunctionType functionType)
-        => new FunctionReferenceInvocationExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, expression, arguments, functionAntetype, functionType);
+        FunctionAntetype functionAntetype)
+        => new FunctionReferenceInvocationExpressionNode(controlFlowPrevious, tempAllArguments, allArguments, syntax, expression, arguments, functionAntetype);
 }
 
 // [Closed(typeof(InitializerInvocationExpressionNode))]
@@ -2849,22 +2764,19 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
-    ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState FlowStateBefore();
+    ContextualizedOverload? ContextualizedOverload { get; }
     IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
     IInitializerDeclarationNode? ReferencedDeclaration { get; }
 
     public static IInitializerInvocationExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IInitializerGroupNameNode initializerGroup,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
-        ContextualizedOverload? contextualizedOverload)
-        => new InitializerInvocationExpressionNode(controlFlowNext, controlFlowPrevious, type, tempAllArguments, allArguments, syntax, initializerGroup, arguments, contextualizedOverload);
+        IEnumerable<IAmbiguousExpressionNode> arguments)
+        => new InitializerInvocationExpressionNode(controlFlowPrevious, tempAllArguments, allArguments, syntax, initializerGroup, arguments);
 }
 
 // [Closed(typeof(UnknownInvocationExpressionNode))]
@@ -2881,19 +2793,19 @@ public partial interface IUnknownInvocationExpressionNode : IExpressionNode
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
+    DataType IExpressionNode.Type
+        => DataType.Unknown;
     IFlowState IExpressionNode.FlowStateAfter
         => throw new NotImplementedException();
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 
     public static IUnknownInvocationExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IInvocationExpressionSyntax syntax,
         IAmbiguousExpressionNode expression,
         IEnumerable<IAmbiguousExpressionNode> arguments)
-        => new UnknownInvocationExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, expression, arguments);
+        => new UnknownInvocationExpressionNode(controlFlowPrevious, syntax, expression, arguments);
 }
 
 [Closed(
@@ -3084,9 +2996,10 @@ public partial interface ISimpleNameExpressionNode : INameExpressionNode, IUnres
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamespaceNameNode : INameExpressionNode
 {
-    new UnknownType Type { get; }
-    DataType IExpressionNode.Type => Type;
     IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { get; }
+    new UnknownType Type
+        => DataType.Unknown;
+    DataType IExpressionNode.Type => Type;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 }
@@ -3103,13 +3016,11 @@ public partial interface IUnqualifiedNamespaceNameNode : INamespaceNameNode
     IdentifierName Name { get; }
 
     public static IUnqualifiedNamespaceNameNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        UnknownType type,
         IEnumerable<INamespaceDeclarationNode> referencedDeclarations,
         IIdentifierNameExpressionSyntax syntax,
         IdentifierName name)
-        => new UnqualifiedNamespaceNameNode(controlFlowNext, controlFlowPrevious, type, referencedDeclarations, syntax, name);
+        => new UnqualifiedNamespaceNameNode(controlFlowPrevious, referencedDeclarations, syntax, name);
 }
 
 // [Closed(typeof(QualifiedNamespaceNameNode))]
@@ -3125,14 +3036,12 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
     IdentifierName Name { get; }
 
     public static IQualifiedNamespaceNameNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        UnknownType type,
         IEnumerable<INamespaceDeclarationNode> referencedDeclarations,
         IMemberAccessExpressionSyntax syntax,
         INamespaceNameNode context,
         IdentifierName name)
-        => new QualifiedNamespaceNameNode(controlFlowNext, controlFlowPrevious, type, referencedDeclarations, syntax, context, name);
+        => new QualifiedNamespaceNameNode(controlFlowPrevious, referencedDeclarations, syntax, context, name);
 }
 
 // [Closed(typeof(FunctionGroupNameNode))]
@@ -3143,19 +3052,19 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
     StandardName FunctionName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
+    DataType IExpressionNode.Type
+        => throw new NotImplementedException();
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => throw new NotImplementedException();
 
     public static IFunctionGroupNameNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         INameExpressionSyntax syntax,
         INameExpressionNode? context,
         StandardName functionName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
-        => new FunctionGroupNameNode(controlFlowNext, controlFlowPrevious, type, syntax, context, functionName, typeArguments, referencedDeclarations);
+        => new FunctionGroupNameNode(controlFlowPrevious, syntax, context, functionName, typeArguments, referencedDeclarations);
 }
 
 // [Closed(typeof(FunctionNameNode))]
@@ -3169,15 +3078,13 @@ public partial interface IFunctionNameNode : INameExpressionNode
     IFlowState FlowStateBefore();
 
     public static IFunctionNameNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         INameExpressionSyntax syntax,
         IFunctionGroupNameNode functionGroup,
         StandardName functionName,
         IEnumerable<ITypeNode> typeArguments,
         IFunctionInvocableDeclarationNode? referencedDeclaration)
-        => new FunctionNameNode(controlFlowNext, controlFlowPrevious, type, syntax, functionGroup, functionName, typeArguments, referencedDeclaration);
+        => new FunctionNameNode(controlFlowPrevious, syntax, functionGroup, functionName, typeArguments, referencedDeclaration);
 }
 
 // [Closed(typeof(MethodGroupNameNode))]
@@ -3194,21 +3101,21 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     StandardName MethodName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
+    DataType IExpressionNode.Type
+        => throw new NotImplementedException();
     IFlowState IExpressionNode.FlowStateAfter
         => Context.FlowStateAfter;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => throw new NotImplementedException();
 
     public static IMethodGroupNameNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         StandardName methodName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations)
-        => new MethodGroupNameNode(controlFlowNext, controlFlowPrevious, type, syntax, context, methodName, typeArguments, referencedDeclarations);
+        => new MethodGroupNameNode(controlFlowPrevious, syntax, context, methodName, typeArguments, referencedDeclarations);
 }
 
 // [Closed(typeof(FieldAccessExpressionNode))]
@@ -3227,14 +3134,12 @@ public partial interface IFieldAccessExpressionNode : INameExpressionNode, IAssi
     IFieldDeclarationNode ReferencedDeclaration { get; }
 
     public static IFieldAccessExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         IdentifierName fieldName,
         IFieldDeclarationNode referencedDeclaration)
-        => new FieldAccessExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, context, fieldName, referencedDeclaration);
+        => new FieldAccessExpressionNode(controlFlowPrevious, syntax, context, fieldName, referencedDeclaration);
 }
 
 // [Closed(typeof(VariableNameExpressionNode))]
@@ -3251,18 +3156,15 @@ public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressi
     IdentifierName Name { get; }
     new ILocalBindingNode ReferencedDefinition { get; }
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
-    IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
     IFlowState FlowStateBefore();
+    IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
 
     public static IVariableNameExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IIdentifierNameExpressionSyntax syntax,
         IdentifierName name,
-        ILocalBindingNode referencedDefinition,
-        IFixedSet<IDataFlowNode> dataFlowPrevious)
-        => new VariableNameExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, name, referencedDefinition, dataFlowPrevious);
+        ILocalBindingNode referencedDefinition)
+        => new VariableNameExpressionNode(controlFlowPrevious, syntax, name, referencedDefinition);
 }
 
 [Closed(
@@ -3274,8 +3176,10 @@ public partial interface ITypeNameExpressionNode : INameExpressionNode
     StandardName Name { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     ITypeDeclarationNode ReferencedDeclaration { get; }
-    BareType? NamedBareType { get; }
     IMaybeAntetype NamedAntetype { get; }
+    BareType? NamedBareType { get; }
+    DataType IExpressionNode.Type
+        => DataType.Unknown;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 }
@@ -3291,15 +3195,12 @@ public partial interface IStandardTypeNameExpressionNode : ITypeNameExpressionNo
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
 
     public static IStandardTypeNameExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         StandardName name,
         ITypeDeclarationNode referencedDeclaration,
-        BareType? namedBareType,
         IStandardNameExpressionSyntax syntax,
         IEnumerable<ITypeNode> typeArguments)
-        => new StandardTypeNameExpressionNode(controlFlowNext, controlFlowPrevious, type, name, referencedDeclaration, namedBareType, syntax, typeArguments);
+        => new StandardTypeNameExpressionNode(controlFlowPrevious, name, referencedDeclaration, syntax, typeArguments);
 }
 
 // [Closed(typeof(QualifiedTypeNameExpressionNode))]
@@ -3314,16 +3215,13 @@ public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionN
     INamespaceNameNode Context { get; }
 
     public static IQualifiedTypeNameExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         StandardName name,
         ITypeDeclarationNode referencedDeclaration,
-        BareType? namedBareType,
         IMemberAccessExpressionSyntax syntax,
         INamespaceNameNode context,
         IEnumerable<ITypeNode> typeArguments)
-        => new QualifiedTypeNameExpressionNode(controlFlowNext, controlFlowPrevious, type, name, referencedDeclaration, namedBareType, syntax, context, typeArguments);
+        => new QualifiedTypeNameExpressionNode(controlFlowPrevious, name, referencedDeclaration, syntax, context, typeArguments);
 }
 
 // [Closed(typeof(InitializerGroupNameNode))]
@@ -3334,19 +3232,19 @@ public partial interface IInitializerGroupNameNode : INameExpressionNode
     StandardName? InitializerName { get; }
     IMaybeAntetype InitializingAntetype { get; }
     IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { get; }
+    DataType IExpressionNode.Type
+        => throw new NotImplementedException();
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => throw new NotImplementedException();
 
     public static IInitializerGroupNameNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         INameExpressionSyntax syntax,
         ITypeNameExpressionNode context,
         StandardName? initializerName,
         IMaybeAntetype initializingAntetype,
         IEnumerable<IInitializerDeclarationNode> referencedDeclarations)
-        => new InitializerGroupNameNode(controlFlowNext, controlFlowPrevious, type, syntax, context, initializerName, initializingAntetype, referencedDeclarations);
+        => new InitializerGroupNameNode(controlFlowPrevious, syntax, context, initializerName, initializingAntetype, referencedDeclarations);
 }
 
 // [Closed(typeof(SpecialTypeNameExpressionNode))]
@@ -3360,19 +3258,18 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     SpecialTypeName Name { get; }
     TypeSymbol ReferencedSymbol { get; }
-    new UnknownType Type { get; }
+    new UnknownType Type
+        => DataType.Unknown;
     DataType IExpressionNode.Type => Type;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 
     public static ISpecialTypeNameExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         ISpecialTypeNameExpressionSyntax syntax,
         SpecialTypeName name,
-        TypeSymbol referencedSymbol,
-        UnknownType type)
-        => new SpecialTypeNameExpressionNode(controlFlowNext, controlFlowPrevious, syntax, name, referencedSymbol, type);
+        TypeSymbol referencedSymbol)
+        => new SpecialTypeNameExpressionNode(controlFlowPrevious, syntax, name, referencedSymbol);
 }
 
 [Closed(
@@ -3400,21 +3297,17 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
     bool IsImplicit { get; }
+    IFlowState FlowStateBefore();
     Pseudotype Pseudotype { get; }
+    IExecutableDefinitionNode ContainingDeclaration { get; }
     new ISelfParameterNode? ReferencedDefinition { get; }
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
-    IFlowState FlowStateBefore();
-    IExecutableDefinitionNode ContainingDeclaration { get; }
 
     public static ISelfExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         ISelfExpressionSyntax syntax,
-        bool isImplicit,
-        Pseudotype pseudotype,
-        ISelfParameterNode? referencedDefinition)
-        => new SelfExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, isImplicit, pseudotype, referencedDefinition);
+        bool isImplicit)
+        => new SelfExpressionNode(controlFlowPrevious, syntax, isImplicit);
 }
 
 // [Closed(typeof(MissingNameExpressionNode))]
@@ -3428,17 +3321,16 @@ public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode,
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
     IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
-    new UnknownType Type { get; }
+    new UnknownType Type
+        => DataType.Unknown;
     DataType IExpressionNode.Type => Type;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 
     public static IMissingNameExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        IMissingNameSyntax syntax,
-        UnknownType type)
-        => new MissingNameExpressionNode(controlFlowNext, controlFlowPrevious, syntax, type);
+        IMissingNameSyntax syntax)
+        => new MissingNameExpressionNode(controlFlowPrevious, syntax);
 }
 
 [Closed(
@@ -3447,7 +3339,8 @@ public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode,
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnknownNameExpressionNode : INameExpressionNode
 {
-    new UnknownType Type { get; }
+    new UnknownType Type
+        => DataType.Unknown;
     DataType IExpressionNode.Type => Type;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
@@ -3484,13 +3377,11 @@ public partial interface IUnknownIdentifierNameExpressionNode : IUnknownStandard
     StandardName IUnknownStandardNameExpressionNode.Name => Name;
 
     public static IUnknownIdentifierNameExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        UnknownType type,
         IEnumerable<IDeclarationNode> referencedDeclarations,
         IIdentifierNameExpressionSyntax syntax,
         IdentifierName name)
-        => new UnknownIdentifierNameExpressionNode(controlFlowNext, controlFlowPrevious, type, referencedDeclarations, syntax, name);
+        => new UnknownIdentifierNameExpressionNode(controlFlowPrevious, referencedDeclarations, syntax, name);
 }
 
 // [Closed(typeof(UnknownGenericNameExpressionNode))]
@@ -3508,14 +3399,12 @@ public partial interface IUnknownGenericNameExpressionNode : IUnknownStandardNam
     IFixedList<ITypeNode> TypeArguments { get; }
 
     public static IUnknownGenericNameExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        UnknownType type,
         IEnumerable<IDeclarationNode> referencedDeclarations,
         IGenericNameExpressionSyntax syntax,
         GenericName name,
         IEnumerable<ITypeNode> typeArguments)
-        => new UnknownGenericNameExpressionNode(controlFlowNext, controlFlowPrevious, type, referencedDeclarations, syntax, name, typeArguments);
+        => new UnknownGenericNameExpressionNode(controlFlowPrevious, referencedDeclarations, syntax, name, typeArguments);
 }
 
 // [Closed(typeof(UnknownMemberAccessExpressionNode))]
@@ -3535,15 +3424,13 @@ public partial interface IUnknownMemberAccessExpressionNode : IUnknownNameExpres
     IFixedSet<IDeclarationNode> ReferencedMembers { get; }
 
     public static IUnknownMemberAccessExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        UnknownType type,
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         StandardName memberName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IDeclarationNode> referencedMembers)
-        => new UnknownMemberAccessExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, context, memberName, typeArguments, referencedMembers);
+        => new UnknownMemberAccessExpressionNode(controlFlowPrevious, syntax, context, memberName, typeArguments, referencedMembers);
 }
 
 // [Closed(typeof(AmbiguousMoveExpressionNode))]
@@ -3570,6 +3457,8 @@ public partial interface IAmbiguousMoveExpressionNode : IAmbiguousExpressionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IRecoveryExpressionNode : IExpressionNode
 {
+    IExpressionNode Referent { get; }
+    IExpressionNode CurrentReferent { get; }
     bool IsImplicit { get; }
 }
 
@@ -3579,8 +3468,6 @@ public partial interface IRecoveryExpressionNode : IExpressionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMoveExpressionNode : IRecoveryExpressionNode
 {
-    IExpressionNode Referent { get; }
-    IExpressionNode CurrentReferent { get; }
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => Referent.Antetype;
 }
@@ -3590,17 +3477,15 @@ public partial interface IMoveExpressionNode : IRecoveryExpressionNode
 public partial interface IMoveVariableExpressionNode : IMoveExpressionNode
 {
     new ILocalBindingNameExpressionNode Referent { get; }
-    IExpressionNode IMoveExpressionNode.Referent => Referent;
-    IExpressionNode IMoveExpressionNode.CurrentReferent => Referent;
+    IExpressionNode IRecoveryExpressionNode.Referent => Referent;
+    IExpressionNode IRecoveryExpressionNode.CurrentReferent => Referent;
 
     public static IMoveVariableExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         bool isImplicit,
         ILocalBindingNameExpressionNode referent)
-        => new MoveVariableExpressionNode(controlFlowNext, controlFlowPrevious, syntax, type, isImplicit, referent);
+        => new MoveVariableExpressionNode(controlFlowPrevious, syntax, isImplicit, referent);
 }
 
 // [Closed(typeof(MoveValueExpressionNode))]
@@ -3609,13 +3494,11 @@ public partial interface IMoveValueExpressionNode : IMoveExpressionNode
 {
 
     public static IMoveValueExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         bool isImplicit,
         IExpressionNode referent)
-        => new MoveValueExpressionNode(controlFlowNext, controlFlowPrevious, syntax, type, isImplicit, referent);
+        => new MoveValueExpressionNode(controlFlowPrevious, syntax, isImplicit, referent);
 }
 
 // [Closed(typeof(ImplicitTempMoveExpressionNode))]
@@ -3628,12 +3511,10 @@ public partial interface IImplicitTempMoveExpressionNode : IExpressionNode
         => Referent.Antetype;
 
     public static IImplicitTempMoveExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         IExpressionNode referent)
-        => new ImplicitTempMoveExpressionNode(controlFlowNext, controlFlowPrevious, syntax, type, referent);
+        => new ImplicitTempMoveExpressionNode(controlFlowPrevious, syntax, referent);
 }
 
 // [Closed(typeof(AmbiguousFreezeExpressionNode))]
@@ -3660,8 +3541,6 @@ public partial interface IAmbiguousFreezeExpressionNode : IAmbiguousExpressionNo
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFreezeExpressionNode : IRecoveryExpressionNode
 {
-    IExpressionNode Referent { get; }
-    IExpressionNode CurrentReferent { get; }
     bool IsTemporary { get; }
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => Referent.Antetype;
@@ -3672,18 +3551,16 @@ public partial interface IFreezeExpressionNode : IRecoveryExpressionNode
 public partial interface IFreezeVariableExpressionNode : IFreezeExpressionNode
 {
     new ILocalBindingNameExpressionNode Referent { get; }
-    IExpressionNode IFreezeExpressionNode.Referent => Referent;
-    IExpressionNode IFreezeExpressionNode.CurrentReferent => Referent;
+    IExpressionNode IRecoveryExpressionNode.Referent => Referent;
+    IExpressionNode IRecoveryExpressionNode.CurrentReferent => Referent;
 
     public static IFreezeVariableExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         bool isImplicit,
         bool isTemporary,
         ILocalBindingNameExpressionNode referent)
-        => new FreezeVariableExpressionNode(controlFlowNext, controlFlowPrevious, syntax, type, isImplicit, isTemporary, referent);
+        => new FreezeVariableExpressionNode(controlFlowPrevious, syntax, isImplicit, isTemporary, referent);
 }
 
 // [Closed(typeof(FreezeValueExpressionNode))]
@@ -3692,14 +3569,12 @@ public partial interface IFreezeValueExpressionNode : IFreezeExpressionNode
 {
 
     public static IFreezeValueExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         bool isImplicit,
         bool isTemporary,
         IExpressionNode referent)
-        => new FreezeValueExpressionNode(controlFlowNext, controlFlowPrevious, syntax, type, isImplicit, isTemporary, referent);
+        => new FreezeValueExpressionNode(controlFlowPrevious, syntax, isImplicit, isTemporary, referent);
 }
 
 // [Closed(typeof(PrepareToReturnExpressionNode))]
@@ -3708,16 +3583,16 @@ public partial interface IPrepareToReturnExpressionNode : IExpressionNode
 {
     IExpressionNode Value { get; }
     IExpressionNode CurrentValue { get; }
+    DataType IExpressionNode.Type
+        => Value.Type;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => Value.Antetype;
 
     public static IPrepareToReturnExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         IExpressionNode value)
-        => new PrepareToReturnExpressionNode(controlFlowNext, controlFlowPrevious, syntax, type, value);
+        => new PrepareToReturnExpressionNode(controlFlowPrevious, syntax, value);
 }
 
 // [Closed(typeof(AsyncBlockExpressionNode))]
@@ -3729,18 +3604,18 @@ public partial interface IAsyncBlockExpressionNode : IExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IBlockExpressionNode Block { get; }
+    DataType IExpressionNode.Type
+        => Block.Type;
     IFlowState IExpressionNode.FlowStateAfter
         => throw new NotImplementedException();
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => Block.Antetype;
 
     public static IAsyncBlockExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IAsyncBlockExpressionSyntax syntax,
         IBlockExpressionNode block)
-        => new AsyncBlockExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, block);
+        => new AsyncBlockExpressionNode(controlFlowPrevious, syntax, block);
 }
 
 // [Closed(typeof(AsyncStartExpressionNode))]
@@ -3757,13 +3632,11 @@ public partial interface IAsyncStartExpressionNode : IExpressionNode
     IAmbiguousExpressionNode CurrentExpression { get; }
 
     public static IAsyncStartExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IAsyncStartExpressionSyntax syntax,
         bool scheduled,
         IAmbiguousExpressionNode expression)
-        => new AsyncStartExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, scheduled, expression);
+        => new AsyncStartExpressionNode(controlFlowPrevious, syntax, scheduled, expression);
 }
 
 // [Closed(typeof(AwaitExpressionNode))]
@@ -3779,12 +3652,10 @@ public partial interface IAwaitExpressionNode : IExpressionNode
     IAmbiguousExpressionNode CurrentExpression { get; }
 
     public static IAwaitExpressionNode Create(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IAwaitExpressionSyntax syntax,
         IAmbiguousExpressionNode expression)
-        => new AwaitExpressionNode(controlFlowNext, controlFlowPrevious, type, syntax, expression);
+        => new AwaitExpressionNode(controlFlowPrevious, syntax, expression);
 }
 
 [Closed(
@@ -4326,12 +4197,13 @@ public partial interface INamespaceMemberSymbolNode : INamespaceMemberDeclaratio
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamespaceMemberSymbolNode
 {
+    FunctionType IFunctionInvocableDeclarationNode.Type
+        => Symbol.Type;
 
     public static IFunctionSymbolNode Create(
         FunctionSymbol symbol,
-        StandardName name,
-        FunctionType type)
-        => new FunctionSymbolNode(symbol, name, type);
+        StandardName name)
+        => new FunctionSymbolNode(symbol, name);
 }
 
 // [Closed(typeof(PrimitiveTypeSymbolNode))]
@@ -4585,13 +4457,14 @@ public partial interface IFieldSymbolNode : IFieldDeclarationNode, IClassMemberS
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDeclarationNode, IAssociatedMemberSymbolNode
 {
+    FunctionType IFunctionInvocableDeclarationNode.Type
+        => Symbol.Type;
 
     public static IAssociatedFunctionSymbolNode Create(
         ISyntax? syntax,
         FunctionSymbol symbol,
-        FunctionType type,
         StandardName name)
-        => new AssociatedFunctionSymbolNode(syntax, symbol, type, name);
+        => new AssociatedFunctionSymbolNode(syntax, symbol, name);
 }
 
 // TODO switch back to `file` and not `partial` once fully transitioned
@@ -7752,8 +7625,6 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     private IIdentifierTypeNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public DataType NamedType { [DebuggerStepThrough] get; }
-    public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public IIdentifierTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -7778,6 +7649,12 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
                 TypeExpressionsAntetypesAspect.IdentifierTypeName_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
+    public BareType? NamedBareType
+        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
+            : this.Synthetic(ref namedBareTypeCached, ref namedBareType,
+                BareTypeAspect.IdentifierTypeName_NamedBareType);
+    private BareType? namedBareType;
+    private bool namedBareTypeCached;
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
@@ -7790,17 +7667,30 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
                 SymbolsAspect.StandardTypeName_ReferencedSymbol);
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.TypeName_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
 
     public IdentifierTypeNameNode(
-        DataType namedType,
-        BareType? namedBareType,
         IIdentifierTypeNameSyntax syntax,
         IdentifierName name)
     {
-        NamedType = namedType;
-        NamedBareType = namedBareType;
         Syntax = syntax;
         Name = name;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        SymbolNodeAspect.StandardTypeName_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -7809,8 +7699,6 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
 {
     private ISpecialTypeNameNode Self { [Inline] get => this; }
 
-    public DataType NamedType { [DebuggerStepThrough] get; }
-    public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public ISpecialTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public SpecialTypeName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -7829,21 +7717,29 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
                 TypeExpressionsAntetypesAspect.SpecialTypeName_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
+    public BareType? NamedBareType
+        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
+            : this.Synthetic(ref namedBareTypeCached, ref namedBareType,
+                BareTypeAspect.SpecialTypeName_NamedBareType);
+    private BareType? namedBareType;
+    private bool namedBareTypeCached;
     public TypeSymbol ReferencedSymbol
         => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol!
             : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
                 SymbolsAspect.SpecialTypeName_ReferencedSymbol);
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.TypeName_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
 
     public SpecialTypeNameNode(
-        DataType namedType,
-        BareType? namedBareType,
         ISpecialTypeNameSyntax syntax,
         SpecialTypeName name)
     {
-        NamedType = namedType;
-        NamedBareType = namedBareType;
         Syntax = syntax;
         Name = name;
     }
@@ -7855,8 +7751,6 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     private IGenericTypeNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public DataType NamedType { [DebuggerStepThrough] get; }
-    public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public IGenericTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public GenericName Name { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
@@ -7882,6 +7776,12 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
                 TypeExpressionsAntetypesAspect.GenericTypeName_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
+    public BareType? NamedBareType
+        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
+            : this.Synthetic(ref namedBareTypeCached, ref namedBareType,
+                BareTypeAspect.GenericTypeName_NamedBareType);
+    private BareType? namedBareType;
+    private bool namedBareTypeCached;
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
@@ -7894,19 +7794,32 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
                 SymbolsAspect.StandardTypeName_ReferencedSymbol);
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.TypeName_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
 
     public GenericTypeNameNode(
-        DataType namedType,
-        BareType? namedBareType,
         IGenericTypeNameSyntax syntax,
         GenericName name,
         IEnumerable<ITypeNode> typeArguments)
     {
-        NamedType = namedType;
-        NamedBareType = namedBareType;
         Syntax = syntax;
         Name = name;
         TypeArguments = ChildList.Attach(this, typeArguments);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        SymbolNodeAspect.StandardTypeName_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -7915,9 +7828,7 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
 {
     private IQualifiedTypeNameNode Self { [Inline] get => this; }
 
-    public DataType NamedType { [DebuggerStepThrough] get; }
     public TypeName Name { [DebuggerStepThrough] get; }
-    public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public IQualifiedTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameNode Context { [DebuggerStepThrough] get; }
     public IStandardTypeNameNode QualifiedName { [DebuggerStepThrough] get; }
@@ -7937,18 +7848,20 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
                 SymbolsAspect.QualifiedTypeName_ReferencedSymbol);
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.TypeName_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
 
     public QualifiedTypeNameNode(
-        DataType namedType,
         TypeName name,
-        BareType? namedBareType,
         IQualifiedTypeNameSyntax syntax,
         ITypeNameNode context,
         IStandardTypeNameNode qualifiedName)
     {
-        NamedType = namedType;
         Name = name;
-        NamedBareType = namedBareType;
         Syntax = syntax;
         Context = Child.Attach(this, context);
         QualifiedName = Child.Attach(this, qualifiedName);
@@ -7960,13 +7873,18 @@ file class OptionalTypeNode : SemanticNode, IOptionalTypeNode
 {
     private IOptionalTypeNode Self { [Inline] get => this; }
 
-    public DataType NamedType { [DebuggerStepThrough] get; }
     public IOptionalTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.OptionalType_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
     public IMaybeAntetype NamedAntetype
         => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
             : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
@@ -7975,11 +7893,9 @@ file class OptionalTypeNode : SemanticNode, IOptionalTypeNode
     private bool namedAntetypeCached;
 
     public OptionalTypeNode(
-        DataType namedType,
         IOptionalTypeSyntax syntax,
         ITypeNode referent)
     {
-        NamedType = namedType;
         Syntax = syntax;
         Referent = Child.Attach(this, referent);
     }
@@ -7990,7 +7906,6 @@ file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
 {
     private ICapabilityTypeNode Self { [Inline] get => this; }
 
-    public DataType NamedType { [DebuggerStepThrough] get; }
     public ICapabilityTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityNode Capability { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
@@ -7998,6 +7913,12 @@ file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.CapabilityType_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
     public IMaybeAntetype NamedAntetype
         => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
             : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
@@ -8006,15 +7927,24 @@ file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
     private bool namedAntetypeCached;
 
     public CapabilityTypeNode(
-        DataType namedType,
         ICapabilityTypeSyntax syntax,
         ICapabilityNode capability,
         ITypeNode referent)
     {
-        NamedType = namedType;
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
         Referent = Child.Attach(this, referent);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        TypeExpressionsAspect.CapabilityType_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -8023,7 +7953,6 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
 {
     private IFunctionTypeNode Self { [Inline] get => this; }
 
-    public DataType NamedType { [DebuggerStepThrough] get; }
     public IFunctionTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IParameterTypeNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode Return { [DebuggerStepThrough] get; }
@@ -8031,6 +7960,12 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.FunctionType_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
     public IMaybeAntetype NamedAntetype
         => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
             : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
@@ -8039,12 +7974,10 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
     private bool namedAntetypeCached;
 
     public FunctionTypeNode(
-        DataType namedType,
         IFunctionTypeSyntax syntax,
         IEnumerable<IParameterTypeNode> parameters,
         ITypeNode @return)
     {
-        NamedType = namedType;
         Syntax = syntax;
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
@@ -8083,7 +8016,6 @@ file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeN
 {
     private ICapabilityViewpointTypeNode Self { [Inline] get => this; }
 
-    public DataType NamedType { [DebuggerStepThrough] get; }
     public ICapabilityViewpointTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityNode Capability { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
@@ -8091,6 +8023,12 @@ file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeN
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.CapabilityViewpointType_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
     public IMaybeAntetype NamedAntetype
         => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
             : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
@@ -8099,12 +8037,10 @@ file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeN
     private bool namedAntetypeCached;
 
     public CapabilityViewpointTypeNode(
-        DataType namedType,
         ICapabilityViewpointTypeSyntax syntax,
         ICapabilityNode capability,
         ITypeNode referent)
     {
-        NamedType = namedType;
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
         Referent = Child.Attach(this, referent);
@@ -8116,7 +8052,6 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
 {
     private ISelfViewpointTypeNode Self { [Inline] get => this; }
 
-    public DataType NamedType { [DebuggerStepThrough] get; }
     public ISelfViewpointTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -8129,6 +8064,12 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
                 Inherited_MethodSelfType);
     private Pseudotype? methodSelfType;
     private bool methodSelfTypeCached;
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.SelfViewpointType_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
     public IMaybeAntetype NamedAntetype
         => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
             : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
@@ -8137,13 +8078,22 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
     private bool namedAntetypeCached;
 
     public SelfViewpointTypeNode(
-        DataType namedType,
         ISelfViewpointTypeSyntax syntax,
         ITypeNode referent)
     {
-        NamedType = namedType;
         Syntax = syntax;
         Referent = Child.Attach(this, referent);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        TypeExpressionsAspect.SelfViewpointType_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -8153,10 +8103,7 @@ file class EntryNode : SemanticNode, IEntryNode
     private IEntryNode Self { [Inline] get => this; }
 
     public ICodeSyntax? Syntax { [DebuggerStepThrough] get; }
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
-    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -8168,20 +8115,33 @@ file class EntryNode : SemanticNode, IEntryNode
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap()
         => Inherited_VariableBindingsMap(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Entry_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned
+        => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
+            : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
+                DefiniteAssignmentAspect.Entry_DefinitelyAssigned,
+                DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
+    private bool definitelyAssignedCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.DataFlow_DataFlowPrevious);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
 
     public EntryNode(
         ICodeSyntax? syntax,
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        IFixedSet<IDataFlowNode> dataFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned)
     {
         Syntax = syntax;
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        DataFlowPrevious = dataFlowPrevious;
-        DefinitelyAssigned = definitelyAssigned;
         DefinitelyUnassigned = definitelyUnassigned;
     }
 }
@@ -8192,10 +8152,7 @@ file class ExitNode : SemanticNode, IExitNode
     private IExitNode Self { [Inline] get => this; }
 
     public ICodeSyntax? Syntax { [DebuggerStepThrough] get; }
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
-    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -8205,20 +8162,27 @@ file class ExitNode : SemanticNode, IExitNode
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned
+        => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
+            : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
+                DefiniteAssignmentAspect.Exit_DefinitelyAssigned,
+                DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
+    private bool definitelyAssignedCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.DataFlow_DataFlowPrevious);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
 
     public ExitNode(
         ICodeSyntax? syntax,
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        IFixedSet<IDataFlowNode> dataFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned)
     {
         Syntax = syntax;
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        DataFlowPrevious = dataFlowPrevious;
-        DefinitelyAssigned = definitelyAssigned;
         DefinitelyUnassigned = definitelyUnassigned;
     }
 }
@@ -8228,11 +8192,9 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
 {
     private IResultStatementNode Self { [Inline] get => this; }
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IMaybeAntetype? ResultAntetype { [DebuggerStepThrough] get; }
     public DataType? ResultType { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IResultStatementSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
@@ -8265,6 +8227,18 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.ResultStatement_Type);
+    private DataType? type;
+    private bool typeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.ResultStatement_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
@@ -8273,19 +8247,15 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
     private bool antetypeCached;
 
     public ResultStatementNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IMaybeAntetype? resultAntetype,
         DataType? resultType,
-        DataType type,
         IResultStatementSyntax syntax,
         IAmbiguousExpressionNode expression)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         ResultAntetype = resultAntetype;
         ResultType = resultType;
-        Type = type;
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
     }
@@ -8297,12 +8267,9 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     private IVariableDeclarationStatementNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IMaybeAntetype? ResultAntetype { [DebuggerStepThrough] get; }
     public DataType? ResultType { [DebuggerStepThrough] get; }
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
-    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IVariableDeclarationStatementSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityNode? Capability { [DebuggerStepThrough] get; }
@@ -8338,6 +8305,12 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
                 NameBindingTypesAspect.VariableDeclarationStatement_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.VariableDeclarationStatement_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
@@ -8356,32 +8329,39 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
                 NameBindingTypesAspect.VariableDeclarationStatement_BindingType);
     private DataType? bindingType;
     private bool bindingTypeCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned
+        => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
+            : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
+                DefiniteAssignmentAspect.VariableDeclarationStatement_DefinitelyAssigned,
+                DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
+    private bool definitelyAssignedCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.VariableDeclarationStatement_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.DataFlow_DataFlowPrevious);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
 
     public VariableDeclarationStatementNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IMaybeAntetype? resultAntetype,
         DataType? resultType,
-        IFixedSet<IDataFlowNode> dataFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IVariableDeclarationStatementSyntax syntax,
         ICapabilityNode? capability,
         ITypeNode? type,
         IAmbiguousExpressionNode? initializer)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         ResultAntetype = resultAntetype;
         ResultType = resultType;
-        DataFlowPrevious = dataFlowPrevious;
-        DefinitelyAssigned = definitelyAssigned;
         DefinitelyUnassigned = definitelyUnassigned;
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
@@ -8406,7 +8386,6 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
 {
     private IExpressionStatementNode Self { [Inline] get => this; }
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IMaybeAntetype? ResultAntetype { [DebuggerStepThrough] get; }
     public DataType? ResultType { [DebuggerStepThrough] get; }
@@ -8430,6 +8409,12 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
     public IPreviousValueId PreviousValueId()
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.ExpressionStatement_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -8438,14 +8423,12 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
     private bool flowStateAfterCached;
 
     public ExpressionStatementNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IMaybeAntetype? resultAntetype,
         DataType? resultType,
         IExpressionStatementSyntax syntax,
         IAmbiguousExpressionNode expression)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         ResultAntetype = resultAntetype;
         ResultType = resultType;
@@ -8460,7 +8443,6 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
     private IBindingContextPatternNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IBindingContextPatternSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
@@ -8486,16 +8468,20 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
         => Inherited_ContextBindingAntetype(GrammarAttribute.CurrentInheritanceContext());
     public DataType ContextBindingType()
         => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.BindingContextPattern_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
 
     public BindingContextPatternNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IBindingContextPatternSyntax syntax,
         bool isMutableBinding,
         IPatternNode pattern,
         ITypeNode? type)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
         IsMutableBinding = isMutableBinding;
@@ -8509,6 +8495,13 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
             return NameBindingAntetypesAspect.BindingContextPattern_Pattern_ContextBindingAntetype(this);
         return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
     }
+
+    internal override DataType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Pattern))
+            return NameBindingTypesAspect.BindingContextPattern_Pattern_ContextBindingType(this);
+        return base.Inherited_ContextBindingType(child, descendant, ctx);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -8517,10 +8510,7 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     private IBindingPatternNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
-    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IBindingPatternSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -8558,6 +8548,12 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
                 NameBindingTypesAspect.BindingPattern_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.BindingPattern_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
@@ -8576,20 +8572,27 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
                 NameBindingTypesAspect.BindingPattern_BindingType);
     private DataType? bindingType;
     private bool bindingTypeCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned
+        => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
+            : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
+                DefiniteAssignmentAspect.BindingPattern_DefinitelyAssigned,
+                DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
+    private bool definitelyAssignedCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.DataFlow_DataFlowPrevious);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
 
     public BindingPatternNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        IFixedSet<IDataFlowNode> dataFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IBindingPatternSyntax syntax,
         IdentifierName name)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        DataFlowPrevious = dataFlowPrevious;
-        DefinitelyAssigned = definitelyAssigned;
         DefinitelyUnassigned = definitelyUnassigned;
         Syntax = syntax;
         Name = name;
@@ -8602,7 +8605,6 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
     private IOptionalPatternNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IOptionalPatternSyntax Syntax { [DebuggerStepThrough] get; }
     public IOptionalOrBindingPatternNode Pattern { [DebuggerStepThrough] get; }
@@ -8626,14 +8628,18 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
         => Inherited_ContextBindingAntetype(GrammarAttribute.CurrentInheritanceContext());
     public DataType ContextBindingType()
         => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.OptionalPattern_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
 
     public OptionalPatternNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IOptionalPatternSyntax syntax,
         IOptionalOrBindingPatternNode pattern)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
         Pattern = Child.Attach(this, pattern);
@@ -8644,6 +8650,13 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
         if (ReferenceEquals(descendant, Self.Pattern))
             return NameBindingAntetypesAspect.OptionalPattern_Pattern_ContextBindingAntetype(this);
         return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
+    }
+
+    internal override DataType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Pattern))
+            return NameBindingTypesAspect.OptionalPattern_Pattern_ContextBindingType(this);
+        return base.Inherited_ContextBindingType(child, descendant, ctx);
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -8664,11 +8677,9 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
     private IBlockExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IBlockExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IStatementNode> Statements { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8699,6 +8710,18 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.BlockExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.BlockExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -8719,17 +8742,13 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
     private bool valueIdCached;
 
     public BlockExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IBlockExpressionSyntax syntax,
-        IEnumerable<IStatementNode> statements,
-        DataType type)
+        IEnumerable<IStatementNode> statements)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
         Statements = ChildList.Attach(this, statements);
-        Type = type;
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -8737,6 +8756,18 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         if (IndexOfNode(Self.Statements, child) is { } statementIndex)
             return LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, statementIndex);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        InvalidStructureAspect.BlockExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -8746,9 +8777,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     private INewObjectExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public INewObjectExpressionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -8758,8 +8787,6 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { [DebuggerStepThrough] get; }
-    public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8792,6 +8819,18 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         => Inherited_PackageNameScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.NewObjectExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.NewObjectExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -8804,6 +8843,12 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
                 ExpressionAntetypesAspect.NewObjectExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ContextualizedOverload? ContextualizedOverload
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
+                ExpressionTypesAspect.NewObjectExpression_ContextualizedOverload);
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
     public IMaybeAntetype ConstructingAntetype
         => GrammarAttribute.IsCached(in constructingAntetypeCached) ? constructingAntetype!
             : this.Synthetic(ref constructingAntetypeCached, ref constructingAntetype,
@@ -8822,6 +8867,12 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
                 OverloadResolutionAspect.NewObjectExpression_ReferencedConstructor);
     private IConstructorDeclarationNode? referencedConstructor;
     private bool referencedConstructorCached;
+    public IFixedSet<IConstructorDeclarationNode> ReferencedConstructors
+        => GrammarAttribute.IsCached(in referencedConstructorsCached) ? referencedConstructors!
+            : this.Synthetic(ref referencedConstructorsCached, ref referencedConstructors,
+                BindingNamesAspect.NewObjectExpression_ReferencedConstructors);
+    private IFixedSet<IConstructorDeclarationNode>? referencedConstructors;
+    private bool referencedConstructorsCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -8830,29 +8881,21 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     private bool valueIdCached;
 
     public NewObjectExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         INewObjectExpressionSyntax syntax,
         ITypeNameNode constructingType,
         IdentifierName? constructorName,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
-        IEnumerable<IConstructorDeclarationNode> referencedConstructors,
-        ContextualizedOverload? contextualizedOverload)
+        IEnumerable<IAmbiguousExpressionNode> arguments)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         TempAllArguments = tempAllArguments;
         AllArguments = allArguments;
         Syntax = syntax;
         ConstructingType = Child.Attach(this, constructingType);
         ConstructorName = constructorName;
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
-        ReferencedConstructors = referencedConstructors.ToFixedSet();
-        ContextualizedOverload = contextualizedOverload;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -8863,6 +8906,8 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.NewObjectExpression_Contribute_Diagnostics(this, builder);
         OverloadResolutionAspect.NewObjectExpression_Contribute_Diagnostics(this, builder);
     }
 }
@@ -8873,9 +8918,7 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     private IUnsafeExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IUnsafeExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
@@ -8912,6 +8955,18 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.UnsafeExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.UnsafeExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -8932,17 +8987,24 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     private bool valueIdCached;
 
     public UnsafeExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IUnsafeExpressionSyntax syntax,
         IAmbiguousExpressionNode expression)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -8952,11 +9014,9 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     private IBoolLiteralExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IBoolLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool Value { [DebuggerStepThrough] get; }
-    public BoolConstValueType Type { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8993,12 +9053,24 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
                 ExpressionAntetypesAspect.BoolLiteralExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public BoolConstValueType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.BoolLiteralExpression_Type);
+    private BoolConstValueType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -9007,17 +9079,24 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     private bool valueIdCached;
 
     public BoolLiteralExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IBoolLiteralExpressionSyntax syntax,
-        bool value,
-        BoolConstValueType type)
+        bool value)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
         Value = value;
-        Type = type;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -9027,11 +9106,9 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
     private IIntegerLiteralExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IIntegerLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public BigInteger Value { [DebuggerStepThrough] get; }
-    public IntegerConstValueType Type { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -9068,12 +9145,24 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
                 ExpressionAntetypesAspect.IntegerLiteralExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public IntegerConstValueType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.IntegerLiteralExpression_Type);
+    private IntegerConstValueType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -9082,17 +9171,24 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
     private bool valueIdCached;
 
     public IntegerLiteralExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IIntegerLiteralExpressionSyntax syntax,
-        BigInteger value,
-        IntegerConstValueType type)
+        BigInteger value)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
         Value = value;
-        Type = type;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -9102,10 +9198,8 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
     private INoneLiteralExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public INoneLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public OptionalType Type { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -9142,12 +9236,24 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
                 ExpressionAntetypesAspect.NoneLiteralExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public OptionalType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.NoneLiteralExpression_Type);
+    private OptionalType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -9156,15 +9262,22 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
     private bool valueIdCached;
 
     public NoneLiteralExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        INoneLiteralExpressionSyntax syntax,
-        OptionalType type)
+        INoneLiteralExpressionSyntax syntax)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
-        Type = type;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -9174,11 +9287,9 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
     private IStringLiteralExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IStringLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public string Value { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -9213,6 +9324,12 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.StringLiteralExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
@@ -9225,6 +9342,12 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
                 ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -9233,17 +9356,25 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
     private bool valueIdCached;
 
     public StringLiteralExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IStringLiteralExpressionSyntax syntax,
-        string value,
-        DataType type)
+        string value)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
         Value = value;
-        Type = type;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.StringLiteralExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -9253,11 +9384,7 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     private IAssignmentExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
-    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousAssignableExpressionNode> leftOperand;
@@ -9303,6 +9430,18 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.AssignmentExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.AssignmentExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -9315,35 +9454,52 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
                 ExpressionAntetypesAspect.AssignmentExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned
+        => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
+            : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
+                DefiniteAssignmentAspect.AssignmentExpression_DefinitelyAssigned,
+                DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
+    private bool definitelyAssignedCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
                 ValueIdsAspect.AmbiguousExpression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.DataFlow_DataFlowPrevious);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
 
     public AssignmentExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
-        IFixedSet<IDataFlowNode> dataFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IAssignmentExpressionSyntax syntax,
         IAmbiguousAssignableExpressionNode leftOperand,
         AssignmentOperator @operator,
         IAmbiguousExpressionNode rightOperand)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
-        DataFlowPrevious = dataFlowPrevious;
-        DefinitelyAssigned = definitelyAssigned;
         DefinitelyUnassigned = definitelyUnassigned;
         Syntax = syntax;
         this.leftOperand = Child.Create(this, leftOperand);
         Operator = @operator;
         this.rightOperand = Child.Create(this, rightOperand);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.AssignmentExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -9353,9 +9509,7 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     private IBinaryOperatorExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IBinaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> leftOperand;
     private bool leftOperandCached;
@@ -9404,6 +9558,18 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.BinaryOperatorExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.BinaryOperatorExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -9430,17 +9596,13 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     private bool valueIdCached;
 
     public BinaryOperatorExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IBinaryOperatorExpressionSyntax syntax,
         IAmbiguousExpressionNode leftOperand,
         BinaryOperator @operator,
         IAmbiguousExpressionNode rightOperand)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.leftOperand = Child.Create(this, leftOperand);
         Operator = @operator;
@@ -9453,6 +9615,18 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
             return LexicalScopingAspect.BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(this);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.BinaryOperatorExpression_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9461,9 +9635,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     private IUnaryOperatorExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IUnaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public UnaryOperatorFixity Fixity { [DebuggerStepThrough] get; }
     public UnaryOperator Operator { [DebuggerStepThrough] get; }
@@ -9502,6 +9674,18 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.UnaryOperatorExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.UnaryOperatorExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -9522,17 +9706,13 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     private bool valueIdCached;
 
     public UnaryOperatorExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IUnaryOperatorExpressionSyntax syntax,
         UnaryOperatorFixity fixity,
         UnaryOperator @operator,
         IAmbiguousExpressionNode operand)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         Fixity = fixity;
         Operator = @operator;
@@ -9547,6 +9727,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionAntetypesAspect.UnaryOperatorExpression_Contribute_Diagnostics(this, builder);
     }
 }
@@ -9557,9 +9738,7 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
     private IIdExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IIdExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
     private bool referentCached;
@@ -9596,6 +9775,18 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.IdExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.IdExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -9610,17 +9801,25 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
     private bool valueIdCached;
 
     public IdExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IIdExpressionSyntax syntax,
         IAmbiguousExpressionNode referent)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.IdExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -9630,9 +9829,7 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
     private IConversionExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IConversionExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
     private bool referentCached;
@@ -9671,6 +9868,18 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.ConversionExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.ConversionExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -9691,21 +9900,29 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
     private bool valueIdCached;
 
     public ConversionExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IConversionExpressionSyntax syntax,
         IAmbiguousExpressionNode referent,
         ConversionOperator @operator,
         ITypeNode convertToType)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
         Operator = @operator;
         ConvertToType = Child.Attach(this, convertToType);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.ConversionExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -9715,10 +9932,8 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
     private IImplicitConversionExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
     public IExpressionNode Referent
@@ -9726,6 +9941,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode CurrentReferent => referent.UnsafeValue;
     public SimpleAntetype Antetype { [DebuggerStepThrough] get; }
+    public DataType Type { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -9754,6 +9970,12 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.ImplicitConversionExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -9768,19 +9990,28 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
     private bool valueIdCached;
 
     public ImplicitConversionExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         IExpressionNode referent,
-        SimpleAntetype antetype)
+        SimpleAntetype antetype,
+        DataType type)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
-        Type = type;
         this.referent = Child.Create(this, referent);
         Antetype = antetype;
+        Type = type;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -9790,9 +10021,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
     private IPatternMatchExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IPatternMatchExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
     private bool referentCached;
@@ -9830,6 +10059,12 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.PatternMatchExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -9844,16 +10079,12 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
     private bool valueIdCached;
 
     public PatternMatchExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IPatternMatchExpressionSyntax syntax,
         IAmbiguousExpressionNode referent,
         IPatternNode pattern)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
         Pattern = Child.Attach(this, pattern);
@@ -9865,6 +10096,24 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
             return NameBindingAntetypesAspect.PatternMatchExpression_Pattern_ContextBindingAntetype(this);
         return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
     }
+
+    internal override DataType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Pattern))
+            return NameBindingTypesAspect.PatternMatchExpression_Pattern_ContextBindingType(this);
+        return base.Inherited_ContextBindingType(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9873,9 +10122,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     private IIfExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IIfExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> condition;
     private bool conditionCached;
@@ -9914,6 +10161,18 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.IfExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.IfExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
@@ -9934,21 +10193,29 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     private bool valueIdCached;
 
     public IfExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IIfExpressionSyntax syntax,
         IAmbiguousExpressionNode condition,
         IBlockOrResultNode thenBlock,
         IElseClauseNode? elseClause)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.condition = Child.Create(this, condition);
         ThenBlock = Child.Attach(this, thenBlock);
         ElseClause = Child.Attach(this, elseClause);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.IfExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -9958,9 +10225,7 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
     private ILoopExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public ILoopExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -9991,6 +10256,18 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.LoopExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.LoopExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -10011,17 +10288,24 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
     private bool valueIdCached;
 
     public LoopExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         ILoopExpressionSyntax syntax,
         IBlockExpressionNode block)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         Block = Child.Attach(this, block);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -10031,9 +10315,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     private IWhileExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IWhileExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> condition;
     private bool conditionCached;
@@ -10071,6 +10353,18 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.WhileExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.WhileExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -10091,19 +10385,26 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     private bool valueIdCached;
 
     public WhileExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IWhileExpressionSyntax syntax,
         IAmbiguousExpressionNode condition,
         IBlockExpressionNode block)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.condition = Child.Create(this, condition);
         Block = Child.Attach(this, block);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -10113,11 +10414,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     private IForeachExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
-    public BindingFlags<IVariableBindingNode> DefinitelyAssigned { [DebuggerStepThrough] get; }
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned { [DebuggerStepThrough] get; }
     public IForeachExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
@@ -10174,6 +10471,18 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.ForeachExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ForeachExpressionTypeAspect.ForeachExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -10204,6 +10513,13 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 NameBindingTypesAspect.ForeachExpression_BindingType);
     private DataType? bindingType;
     private bool bindingTypeCached;
+    public BindingFlags<IVariableBindingNode> DefinitelyAssigned
+        => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
+            : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
+                DefiniteAssignmentAspect.ForeachExpression_DefinitelyAssigned,
+                DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
+    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
+    private bool definitelyAssignedCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -10216,13 +10532,15 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 ValueIdsAspect.AmbiguousExpression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.DataFlow_DataFlowPrevious);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
 
     public ForeachExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
-        IFixedSet<IDataFlowNode> dataFlowPrevious,
-        BindingFlags<IVariableBindingNode> definitelyAssigned,
         BindingFlags<IVariableBindingNode> definitelyUnassigned,
         IForeachExpressionSyntax syntax,
         bool isMutableBinding,
@@ -10240,11 +10558,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         DataType iteratedType,
         IFlowState flowStateBeforeBlock)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
-        DataFlowPrevious = dataFlowPrevious;
-        DefinitelyAssigned = definitelyAssigned;
         DefinitelyUnassigned = definitelyUnassigned;
         Syntax = syntax;
         IsMutableBinding = isMutableBinding;
@@ -10262,6 +10576,17 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         IteratedType = iteratedType;
         FlowStateBeforeBlock = flowStateBeforeBlock;
     }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10270,9 +10595,7 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
     private IBreakExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public NeverType Type { [DebuggerStepThrough] get; }
     public IBreakExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode?> value;
     private bool valueCached;
@@ -10315,6 +10638,12 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
                 ExpressionTypesAspect.BreakExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -10323,17 +10652,24 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
     private bool valueIdCached;
 
     public BreakExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        NeverType type,
         IBreakExpressionSyntax syntax,
         IAmbiguousExpressionNode? value)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.value = Child.Create(this, value);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -10343,9 +10679,7 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
     private INextExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public NeverType Type { [DebuggerStepThrough] get; }
     public INextExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -10381,6 +10715,12 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
                 ExpressionTypesAspect.NextExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -10389,15 +10729,22 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
     private bool valueIdCached;
 
     public NextExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        NeverType type,
         INextExpressionSyntax syntax)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -10407,9 +10754,7 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     private IReturnExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public NeverType Type { [DebuggerStepThrough] get; }
     public IReturnExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode?> value;
     private bool valueCached;
@@ -10454,6 +10799,12 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
                 Inherited_ExpectedReturnType);
     private DataType? expectedReturnType;
     private bool expectedReturnTypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.ReturnExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -10468,17 +10819,26 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     private bool valueIdCached;
 
     public ReturnExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        NeverType type,
         IReturnExpressionSyntax syntax,
         IAmbiguousExpressionNode? value)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.value = Child.Create(this, value);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.ReturnExpression_Contribute_Diagnostics(this, builder);
+        InvalidStructureAspect.ReturnExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -10542,9 +10902,7 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     private IFunctionInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -10553,7 +10911,6 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -10584,6 +10941,18 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.FunctionInvocationExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.FunctionInvocationExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -10596,6 +10965,12 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
                 ExpressionAntetypesAspect.FunctionInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ContextualizedOverload? ContextualizedOverload
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
+                ExpressionTypesAspect.FunctionInvocationExpression_ContextualizedOverload);
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
     public IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations
         => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
             : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
@@ -10616,25 +10991,19 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     private bool valueIdCached;
 
     public FunctionInvocationExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IFunctionGroupNameNode functionGroup,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
-        ContextualizedOverload? contextualizedOverload)
+        IEnumerable<IAmbiguousExpressionNode> arguments)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         TempAllArguments = tempAllArguments;
         AllArguments = allArguments;
         Syntax = syntax;
         FunctionGroup = Child.Attach(this, functionGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
-        ContextualizedOverload = contextualizedOverload;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -10645,6 +11014,8 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.FunctionInvocationExpression_Contribute_Diagnostics(this, builder);
         OverloadResolutionAspect.FunctionInvocationExpression_Contribute_Diagnostics(this, builder);
     }
 }
@@ -10655,9 +11026,7 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     private IMethodInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -10666,7 +11035,6 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -10695,6 +11063,18 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.MethodInvocationExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.MethodInvocationExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -10707,6 +11087,12 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
                 ExpressionAntetypesAspect.MethodInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ContextualizedOverload? ContextualizedOverload
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
+                ExpressionTypesAspect.MethodInvocationExpression_ContextualizedOverload);
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
     public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations
         => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
             : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
@@ -10727,25 +11113,19 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     private bool valueIdCached;
 
     public MethodInvocationExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IMethodGroupNameNode methodGroup,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
-        ContextualizedOverload? contextualizedOverload)
+        IEnumerable<IAmbiguousExpressionNode> arguments)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         TempAllArguments = tempAllArguments;
         AllArguments = allArguments;
         Syntax = syntax;
         MethodGroup = Child.Attach(this, methodGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
-        ContextualizedOverload = contextualizedOverload;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -10756,6 +11136,8 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.MethodInvocationExpression_Contribute_Diagnostics(this, builder);
         OverloadResolutionAspect.MethodInvocationExpression_Contribute_Diagnostics(this, builder);
     }
 }
@@ -10766,9 +11148,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     private IGetterInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -10781,7 +11161,6 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     public StandardName PropertyName { [DebuggerStepThrough] get; }
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { [DebuggerStepThrough] get; }
     public IGetterMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
-    public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -10810,6 +11189,18 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.GetterInvocationExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.GetterInvocationExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -10822,6 +11213,12 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
                 ExpressionAntetypesAspect.GetterInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ContextualizedOverload? ContextualizedOverload
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
+                ExpressionTypesAspect.GetterInvocationExpression_ContextualizedOverload);
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -10830,21 +11227,16 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     private bool valueIdCached;
 
     public GetterInvocationExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         StandardName propertyName,
         IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors,
-        IGetterMethodDeclarationNode? referencedDeclaration,
-        ContextualizedOverload? contextualizedOverload)
+        IGetterMethodDeclarationNode? referencedDeclaration)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         TempAllArguments = tempAllArguments;
         AllArguments = allArguments;
         Syntax = syntax;
@@ -10852,7 +11244,18 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
         PropertyName = propertyName;
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
         ReferencedDeclaration = referencedDeclaration;
-        ContextualizedOverload = contextualizedOverload;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.GetterInvocationExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -10862,9 +11265,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     private ISetterInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -10884,7 +11285,6 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     public IAmbiguousExpressionNode CurrentValue => value.UnsafeValue;
     public IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { [DebuggerStepThrough] get; }
     public ISetterMethodDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
-    public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -10913,6 +11313,18 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.SetterInvocationExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.SetterInvocationExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -10925,6 +11337,12 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
                 ExpressionAntetypesAspect.SetterInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ContextualizedOverload? ContextualizedOverload
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
+                ExpressionTypesAspect.SetterInvocationExpression_ContextualizedOverload);
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -10933,9 +11351,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     private bool valueIdCached;
 
     public SetterInvocationExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         IAssignmentExpressionSyntax syntax,
@@ -10943,12 +11359,9 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         StandardName propertyName,
         IAmbiguousExpressionNode value,
         IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors,
-        ISetterMethodDeclarationNode? referencedDeclaration,
-        ContextualizedOverload? contextualizedOverload)
+        ISetterMethodDeclarationNode? referencedDeclaration)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         TempAllArguments = tempAllArguments;
         AllArguments = allArguments;
         Syntax = syntax;
@@ -10957,7 +11370,18 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         this.value = Child.Create(this, value);
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
         ReferencedDeclaration = referencedDeclaration;
-        ContextualizedOverload = contextualizedOverload;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.SetterInvocationExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -10967,9 +11391,7 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     private IFunctionReferenceInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -10984,7 +11406,6 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
     public FunctionAntetype FunctionAntetype { [DebuggerStepThrough] get; }
-    public FunctionType FunctionType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -11013,6 +11434,18 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.FunctionReferenceInvocationExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.FunctionReferenceInvocationExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -11025,6 +11458,12 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
                 ExpressionAntetypesAspect.FunctionReferenceInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public FunctionType FunctionType
+        => GrammarAttribute.IsCached(in functionTypeCached) ? functionType!
+            : this.Synthetic(ref functionTypeCached, ref functionType,
+                ExpressionTypesAspect.FunctionReferenceInvocationExpression_FunctionType);
+    private FunctionType? functionType;
+    private bool functionTypeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11033,27 +11472,33 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     private bool valueIdCached;
 
     public FunctionReferenceInvocationExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IExpressionNode expression,
         IEnumerable<IAmbiguousExpressionNode> arguments,
-        FunctionAntetype functionAntetype,
-        FunctionType functionType)
+        FunctionAntetype functionAntetype)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         TempAllArguments = tempAllArguments;
         AllArguments = allArguments;
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
         FunctionAntetype = functionAntetype;
-        FunctionType = functionType;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.FunctionReferenceInvocationExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -11063,9 +11508,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     private IInitializerInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -11074,7 +11517,6 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public ContextualizedOverload? ContextualizedOverload { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -11105,6 +11547,12 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.InitializerInvocationExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -11117,6 +11565,12 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
                 ExpressionAntetypesAspect.InitializerInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ContextualizedOverload? ContextualizedOverload
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
+                ExpressionTypesAspect.InitializerInvocationExpression_ContextualizedOverload);
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
     public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations
         => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
             : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
@@ -11129,6 +11583,12 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
                 OverloadResolutionAspect.InitializerInvocationExpression_ReferencedDeclaration);
     private IInitializerDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11137,25 +11597,30 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     private bool valueIdCached;
 
     public InitializerInvocationExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
         IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IInitializerGroupNameNode initializerGroup,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
-        ContextualizedOverload? contextualizedOverload)
+        IEnumerable<IAmbiguousExpressionNode> arguments)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         TempAllArguments = tempAllArguments;
         AllArguments = allArguments;
         Syntax = syntax;
         InitializerGroup = Child.Attach(this, initializerGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
-        ContextualizedOverload = contextualizedOverload;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -11165,9 +11630,7 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     private IUnknownInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
@@ -11208,6 +11671,12 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11216,19 +11685,26 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     private bool valueIdCached;
 
     public UnknownInvocationExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IInvocationExpressionSyntax syntax,
         IAmbiguousExpressionNode expression,
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -11412,9 +11888,7 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
     private IUnqualifiedNamespaceNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public UnknownType Type { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -11446,6 +11920,12 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11454,19 +11934,26 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
     private bool valueIdCached;
 
     public UnqualifiedNamespaceNameNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        UnknownType type,
         IEnumerable<INamespaceDeclarationNode> referencedDeclarations,
         IIdentifierNameExpressionSyntax syntax,
         IdentifierName name)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         ReferencedDeclarations = referencedDeclarations.ToFixedList();
         Syntax = syntax;
         Name = name;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -11476,9 +11963,7 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
     private IQualifiedNamespaceNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public UnknownType Type { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public INamespaceNameNode Context { [DebuggerStepThrough] get; }
@@ -11511,6 +11996,12 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11519,21 +12010,28 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
     private bool valueIdCached;
 
     public QualifiedNamespaceNameNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        UnknownType type,
         IEnumerable<INamespaceDeclarationNode> referencedDeclarations,
         IMemberAccessExpressionSyntax syntax,
         INamespaceNameNode context,
         IdentifierName name)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         ReferencedDeclarations = referencedDeclarations.ToFixedList();
         Syntax = syntax;
         Context = Child.Attach(this, context);
         Name = name;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -11543,9 +12041,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     private IFunctionGroupNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public INameExpressionNode? Context { [DebuggerStepThrough] get; }
     public StandardName FunctionName { [DebuggerStepThrough] get; }
@@ -11579,6 +12075,12 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11587,23 +12089,30 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     private bool valueIdCached;
 
     public FunctionGroupNameNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         INameExpressionSyntax syntax,
         INameExpressionNode? context,
         StandardName functionName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         Context = Child.Attach(this, context);
         FunctionName = functionName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -11613,9 +12122,7 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     private IFunctionNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFunctionGroupNameNode FunctionGroup { [DebuggerStepThrough] get; }
     public StandardName FunctionName { [DebuggerStepThrough] get; }
@@ -11657,12 +12164,24 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
                 ExpressionTypesAspect.FunctionName_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.FunctionName_Type);
+    private DataType? type;
+    private bool typeCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.FunctionName_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11671,23 +12190,30 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     private bool valueIdCached;
 
     public FunctionNameNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         INameExpressionSyntax syntax,
         IFunctionGroupNameNode functionGroup,
         StandardName functionName,
         IEnumerable<ITypeNode> typeArguments,
         IFunctionInvocableDeclarationNode? referencedDeclaration)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         FunctionGroup = Child.Attach(this, functionGroup);
         FunctionName = functionName;
         TypeArguments = typeArguments.ToFixedList();
         ReferencedDeclaration = referencedDeclaration;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -11697,9 +12223,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     private IMethodGroupNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
     private bool contextCached;
@@ -11738,6 +12262,12 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.MethodGroupName_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11746,23 +12276,30 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     private bool valueIdCached;
 
     public MethodGroupNameNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         StandardName methodName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IStandardMethodDeclarationNode> referencedDeclarations)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.context = Child.Create(this, context);
         MethodName = methodName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -11772,9 +12309,7 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
     private IFieldAccessExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
     private bool contextCached;
@@ -11818,6 +12353,18 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
                 ExpressionTypesAspect.FieldAccessExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.FieldAccessExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.FieldAccessExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
@@ -11832,21 +12379,29 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
     private bool valueIdCached;
 
     public FieldAccessExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         IdentifierName fieldName,
         IFieldDeclarationNode referencedDeclaration)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.context = Child.Create(this, context);
         FieldName = fieldName;
         ReferencedDeclaration = referencedDeclaration;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.FieldAccessExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -11856,13 +12411,10 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
     private IVariableNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public ILocalBindingNode ReferencedDefinition { [DebuggerStepThrough] get; }
-    public IFixedSet<IDataFlowNode> DataFlowPrevious { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -11899,12 +12451,30 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
                 ExpressionTypesAspect.VariableNameExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.VariableNameExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.VariableNameExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.VariableNameExpression_DataFlowPrevious);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11913,21 +12483,27 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
     private bool valueIdCached;
 
     public VariableNameExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IIdentifierNameExpressionSyntax syntax,
         IdentifierName name,
-        ILocalBindingNode referencedDefinition,
-        IFixedSet<IDataFlowNode> dataFlowPrevious)
+        ILocalBindingNode referencedDefinition)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         Name = name;
         ReferencedDefinition = referencedDefinition;
-        DataFlowPrevious = dataFlowPrevious;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        DefiniteAssignmentAspect.VariableNameExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -11937,12 +12513,9 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
     private IStandardTypeNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
-    public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public IStandardNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -11979,6 +12552,18 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
                 TypeExpressionsAntetypesAspect.TypeNameExpression_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
+    public BareType? NamedBareType
+        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
+            : this.Synthetic(ref namedBareTypeCached, ref namedBareType,
+                BareTypeAspect.TypeNameExpression_NamedBareType);
+    private BareType? namedBareType;
+    private bool namedBareTypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11987,23 +12572,28 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
     private bool valueIdCached;
 
     public StandardTypeNameExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         StandardName name,
         ITypeDeclarationNode referencedDeclaration,
-        BareType? namedBareType,
         IStandardNameExpressionSyntax syntax,
         IEnumerable<ITypeNode> typeArguments)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Name = name;
         ReferencedDeclaration = referencedDeclaration;
-        NamedBareType = namedBareType;
         Syntax = syntax;
         TypeArguments = ChildList.Attach(this, typeArguments);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12013,12 +12603,9 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     private IQualifiedTypeNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
-    public BareType? NamedBareType { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public INamespaceNameNode Context { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
@@ -12056,6 +12643,18 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
                 TypeExpressionsAntetypesAspect.TypeNameExpression_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
+    public BareType? NamedBareType
+        => GrammarAttribute.IsCached(in namedBareTypeCached) ? namedBareType
+            : this.Synthetic(ref namedBareTypeCached, ref namedBareType,
+                BareTypeAspect.TypeNameExpression_NamedBareType);
+    private BareType? namedBareType;
+    private bool namedBareTypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12064,25 +12663,30 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     private bool valueIdCached;
 
     public QualifiedTypeNameExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         StandardName name,
         ITypeDeclarationNode referencedDeclaration,
-        BareType? namedBareType,
         IMemberAccessExpressionSyntax syntax,
         INamespaceNameNode context,
         IEnumerable<ITypeNode> typeArguments)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Name = name;
         ReferencedDeclaration = referencedDeclaration;
-        NamedBareType = namedBareType;
         Syntax = syntax;
         Context = Child.Attach(this, context);
         TypeArguments = ChildList.Attach(this, typeArguments);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12092,9 +12696,7 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
     private IInitializerGroupNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameExpressionNode Context { [DebuggerStepThrough] get; }
     public StandardName? InitializerName { [DebuggerStepThrough] get; }
@@ -12128,6 +12730,12 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12136,23 +12744,30 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
     private bool valueIdCached;
 
     public InitializerGroupNameNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         INameExpressionSyntax syntax,
         ITypeNameExpressionNode context,
         StandardName? initializerName,
         IMaybeAntetype initializingAntetype,
         IEnumerable<IInitializerDeclarationNode> referencedDeclarations)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         Context = Child.Attach(this, context);
         InitializerName = initializerName;
         InitializingAntetype = initializingAntetype;
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12162,12 +12777,10 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
     private ISpecialTypeNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public ISpecialTypeNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public SpecialTypeName Name { [DebuggerStepThrough] get; }
     public TypeSymbol ReferencedSymbol { [DebuggerStepThrough] get; }
-    public UnknownType Type { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -12196,6 +12809,12 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12204,19 +12823,26 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
     private bool valueIdCached;
 
     public SpecialTypeNameExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         ISpecialTypeNameExpressionSyntax syntax,
         SpecialTypeName name,
-        TypeSymbol referencedSymbol,
-        UnknownType type)
+        TypeSymbol referencedSymbol)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
         Name = name;
         ReferencedSymbol = referencedSymbol;
-        Type = type;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12226,13 +12852,9 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
     private ISelfExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public ISelfExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
-    public Pseudotype Pseudotype { [DebuggerStepThrough] get; }
-    public ISelfParameterNode? ReferencedDefinition { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -12275,12 +12897,36 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
                 ExpressionTypesAspect.SelfExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.SelfExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.SelfExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public Pseudotype Pseudotype
+        => GrammarAttribute.IsCached(in pseudotypeCached) ? pseudotype!
+            : this.Synthetic(ref pseudotypeCached, ref pseudotype,
+                ExpressionTypesAspect.SelfExpression_Pseudotype);
+    private Pseudotype? pseudotype;
+    private bool pseudotypeCached;
+    public ISelfParameterNode? ReferencedDefinition
+        => GrammarAttribute.IsCached(in referencedDefinitionCached) ? referencedDefinition
+            : this.Synthetic(ref referencedDefinitionCached, ref referencedDefinition,
+                BindingNamesAspect.SelfExpression_ReferencedDefinition);
+    private ISelfParameterNode? referencedDefinition;
+    private bool referencedDefinitionCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12289,21 +12935,25 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
     private bool valueIdCached;
 
     public SelfExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         ISelfExpressionSyntax syntax,
-        bool isImplicit,
-        Pseudotype pseudotype,
-        ISelfParameterNode? referencedDefinition)
+        bool isImplicit)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         IsImplicit = isImplicit;
-        Pseudotype = pseudotype;
-        ReferencedDefinition = referencedDefinition;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        BindingNamesAspect.SelfExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12313,10 +12963,8 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
     private IMissingNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IMissingNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public UnknownType Type { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -12345,6 +12993,12 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12353,15 +13007,22 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
     private bool valueIdCached;
 
     public MissingNameExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        IMissingNameSyntax syntax,
-        UnknownType type)
+        IMissingNameSyntax syntax)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
-        Type = type;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12371,9 +13032,7 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
     private IUnknownIdentifierNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public UnknownType Type { [DebuggerStepThrough] get; }
     public IFixedSet<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -12405,6 +13064,12 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12413,19 +13078,26 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
     private bool valueIdCached;
 
     public UnknownIdentifierNameExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        UnknownType type,
         IEnumerable<IDeclarationNode> referencedDeclarations,
         IIdentifierNameExpressionSyntax syntax,
         IdentifierName name)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
         Syntax = syntax;
         Name = name;
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12435,9 +13107,7 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
     private IUnknownGenericNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public UnknownType Type { [DebuggerStepThrough] get; }
     public IFixedSet<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IGenericNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public GenericName Name { [DebuggerStepThrough] get; }
@@ -12470,6 +13140,12 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12478,21 +13154,28 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
     private bool valueIdCached;
 
     public UnknownGenericNameExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        UnknownType type,
         IEnumerable<IDeclarationNode> referencedDeclarations,
         IGenericNameExpressionSyntax syntax,
         GenericName name,
         IEnumerable<ITypeNode> typeArguments)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
         Syntax = syntax;
         Name = name;
         TypeArguments = ChildList.Attach(this, typeArguments);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12502,9 +13185,7 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
     private IUnknownMemberAccessExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public UnknownType Type { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
     private bool contextCached;
@@ -12549,6 +13230,12 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
                 ExpressionTypesAspect.UnknownMemberAccessExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12557,23 +13244,30 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
     private bool valueIdCached;
 
     public UnknownMemberAccessExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        UnknownType type,
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         StandardName memberName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IDeclarationNode> referencedMembers)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.context = Child.Create(this, context);
         MemberName = memberName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedMembers = referencedMembers.ToFixedSet();
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12614,6 +13308,11 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Variable(this)
+        ?? CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Value(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -12622,10 +13321,8 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
     private IMoveVariableExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
     public ILocalBindingNameExpressionNode Referent { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -12662,6 +13359,18 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
                 ExpressionTypesAspect.MoveVariableExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.MoveExpression_Type);
+    private DataType? type;
+    private bool typeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.RecoveryExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12670,19 +13379,27 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
     private bool valueIdCached;
 
     public MoveVariableExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         bool isImplicit,
         ILocalBindingNameExpressionNode referent)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
-        Type = type;
         IsImplicit = isImplicit;
         Referent = Child.Attach(this, referent);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.MoveVariableExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12692,10 +13409,8 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
     private IMoveValueExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
@@ -12737,6 +13452,18 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
                 ExpressionTypesAspect.MoveValueExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.MoveExpression_Type);
+    private DataType? type;
+    private bool typeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.RecoveryExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12745,19 +13472,27 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
     private bool valueIdCached;
 
     public MoveValueExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         bool isImplicit,
         IExpressionNode referent)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
-        Type = type;
         IsImplicit = isImplicit;
         this.referent = Child.Create(this, referent);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.MoveValueExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12767,10 +13502,8 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
     private IImplicitTempMoveExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
     public IExpressionNode Referent
@@ -12805,6 +13538,18 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.ImplicitTempMoveExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.ImplicitTempMoveExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -12819,17 +13564,24 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
     private bool valueIdCached;
 
     public ImplicitTempMoveExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         IExpressionNode referent)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
-        Type = type;
         this.referent = Child.Create(this, referent);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12870,6 +13622,11 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => CapabilityExpressionsAspect.AmbiguousFreezeExpression_Rewrite_Variable(this)
+        ?? CapabilityExpressionsAspect.AmbiguousFreezeExpression_Rewrite_Value(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -12878,10 +13635,8 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
     private IFreezeVariableExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
     public bool IsTemporary { [DebuggerStepThrough] get; }
     public ILocalBindingNameExpressionNode Referent { [DebuggerStepThrough] get; }
@@ -12919,6 +13674,18 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
                 ExpressionTypesAspect.FreezeVariableExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.FreezeExpression_Type);
+    private DataType? type;
+    private bool typeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.RecoveryExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12927,21 +13694,29 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
     private bool valueIdCached;
 
     public FreezeVariableExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         bool isImplicit,
         bool isTemporary,
         ILocalBindingNameExpressionNode referent)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
-        Type = type;
         IsImplicit = isImplicit;
         IsTemporary = isTemporary;
         Referent = Child.Attach(this, referent);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.FreezeVariableExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -12951,10 +13726,8 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
     private IFreezeValueExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
     public bool IsTemporary { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
@@ -12997,6 +13770,18 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
                 ExpressionTypesAspect.FreezeValueExpression_FlowStateAfter);
     private IFlowState? flowStateAfter;
     private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.FreezeExpression_Type);
+    private DataType? type;
+    private bool typeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.RecoveryExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -13005,21 +13790,29 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
     private bool valueIdCached;
 
     public FreezeValueExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         bool isImplicit,
         bool isTemporary,
         IExpressionNode referent)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
-        Type = type;
         IsImplicit = isImplicit;
         IsTemporary = isTemporary;
         this.referent = Child.Create(this, referent);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        ExpressionTypesAspect.FreezeValueExpression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -13029,10 +13822,8 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
     private IPrepareToReturnExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> value;
     private bool valueCached;
     public IExpressionNode Value
@@ -13067,6 +13858,12 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.PrepareToReturnExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -13081,17 +13878,24 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
     private bool valueIdCached;
 
     public PrepareToReturnExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
         IExpressionSyntax syntax,
-        DataType type,
         IExpressionNode value)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
-        Type = type;
         this.value = Child.Create(this, value);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -13101,9 +13905,7 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
     private IAsyncBlockExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IAsyncBlockExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -13134,6 +13936,12 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -13142,17 +13950,24 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
     private bool valueIdCached;
 
     public AsyncBlockExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IAsyncBlockExpressionSyntax syntax,
         IBlockExpressionNode block)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         Block = Child.Attach(this, block);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -13162,9 +13977,7 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     private IAsyncStartExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IAsyncStartExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool Scheduled { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
@@ -13202,6 +14015,12 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.AsyncStartExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -13214,6 +14033,12 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
                 ExpressionAntetypesAspect.AsyncStartExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -13222,19 +14047,26 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     private bool valueIdCached;
 
     public AsyncStartExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IAsyncStartExpressionSyntax syntax,
         bool scheduled,
         IAmbiguousExpressionNode expression)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         Scheduled = scheduled;
         this.expression = Child.Create(this, expression);
+    }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
 }
 
@@ -13244,9 +14076,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     private IAwaitExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public ControlFlowSet ControlFlowNext { [DebuggerStepThrough] get; }
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IAwaitExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
@@ -13283,6 +14113,18 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.AwaitExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.AwaitExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
             : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
@@ -13303,15 +14145,11 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     private bool valueIdCached;
 
     public AwaitExpressionNode(
-        ControlFlowSet controlFlowNext,
         ControlFlowSet controlFlowPrevious,
-        DataType type,
         IAwaitExpressionSyntax syntax,
         IAmbiguousExpressionNode expression)
     {
-        ControlFlowNext = controlFlowNext;
         ControlFlowPrevious = controlFlowPrevious;
-        Type = type;
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
     }
@@ -13324,6 +14162,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
+        ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionAntetypesAspect.AwaitExpression_Contribute_Diagnostics(this, builder);
     }
 }
@@ -13435,7 +14274,6 @@ file class FunctionSymbolNode : SemanticNode, IFunctionSymbolNode
 
     public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
-    public FunctionType Type { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -13443,12 +14281,10 @@ file class FunctionSymbolNode : SemanticNode, IFunctionSymbolNode
 
     public FunctionSymbolNode(
         FunctionSymbol symbol,
-        StandardName name,
-        FunctionType type)
+        StandardName name)
     {
         Symbol = symbol;
         Name = name;
-        Type = type;
     }
 }
 
@@ -13787,7 +14623,6 @@ file class AssociatedFunctionSymbolNode : SemanticNode, IAssociatedFunctionSymbo
 
     public ISyntax? Syntax { [DebuggerStepThrough] get; }
     public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
-    public FunctionType Type { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -13797,12 +14632,10 @@ file class AssociatedFunctionSymbolNode : SemanticNode, IAssociatedFunctionSymbo
     public AssociatedFunctionSymbolNode(
         ISyntax? syntax,
         FunctionSymbol symbol,
-        FunctionType type,
         StandardName name)
     {
         Syntax = syntax;
         Symbol = symbol;
-        Type = type;
         Name = name;
     }
 }

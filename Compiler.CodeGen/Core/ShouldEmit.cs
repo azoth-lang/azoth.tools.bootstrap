@@ -25,4 +25,7 @@ public static class ShouldEmit
 
     public static bool OverrideContribute(AggregateAttributeFamilyModel family, TreeNodeModel node)
         => node.ActualEquations.OfType<AggregateAttributeEquationModel>().Any(eq => eq.AttributeFamily == family);
+
+    public static bool Initial(CircularAttributeModel attribute)
+        => attribute.InitialExpression is null;
 }

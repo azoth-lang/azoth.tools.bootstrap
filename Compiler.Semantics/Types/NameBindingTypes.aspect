@@ -36,4 +36,9 @@ struct `SelfParameterType`;
 
 // ---------- Patterns
 ↓ Pattern.ContextBindingType(): `DataType`;
+= BindingContextPattern.Pattern.ContextBindingType();
 = BindingPattern.FlowStateAfter;
+= OptionalPattern.Pattern.ContextBindingType();
+
+// ---------- Operator Expressions
+= PatternMatchExpression.Pattern.ContextBindingType();

@@ -9,9 +9,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 /// </summary>
 internal static partial class TypeModifiersAspect
 {
-    public static AccessModifier PackageMemberDefinition_AccessModifier(IFacetMemberDefinitionNode node)
-        => EntityDeclarationAccessModifier((IEntityDefinitionSyntax)node.Syntax!);
-
     public static partial AccessModifier FunctionDefinition_AccessModifier(IFunctionDefinitionNode node)
          => EntityDeclarationAccessModifier(node.Syntax);
 

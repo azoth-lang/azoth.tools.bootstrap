@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 
-internal static class ShadowingAspect
+internal static partial class ShadowingAspect
 {
     public static void VariableBinding_ContributeDiagnostics(IVariableBindingNode node, DiagnosticCollectionBuilder diagnostics)
     {

@@ -40,7 +40,8 @@ internal sealed class ResultStatementNode : StatementNode, IResultStatementNode
     private bool typeCached;
     public DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.ResultStatement_Type);
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.ResultStatement_Type);
     public override DataType ResultType => Type;
     public override ValueId? ResultValueId => ValueId;
     public override IFlowState FlowStateAfter

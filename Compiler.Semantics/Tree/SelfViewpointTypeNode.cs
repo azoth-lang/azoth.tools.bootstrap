@@ -48,7 +48,7 @@ internal sealed class SelfViewpointTypeNode : TypeNode, ISelfViewpointTypeNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        TypeExpressionsAspect.SelfViewpointType_ContributeDiagnostics(this, diagnostics);
+        TypeExpressionsAspect.SelfViewpointType_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

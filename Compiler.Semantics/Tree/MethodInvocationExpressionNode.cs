@@ -144,7 +144,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
         OverloadResolutionAspect.MethodInvocationExpression_Contribute_Diagnostics(this, diagnostics);
-        ExpressionTypesAspect.MethodInvocationExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionTypesAspect.MethodInvocationExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

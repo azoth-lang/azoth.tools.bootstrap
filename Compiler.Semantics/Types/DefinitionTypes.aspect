@@ -6,6 +6,7 @@
 
 // ---------- Special Parts
 ↑ ElseClause.FlowStateAfter: `IFlowState`;
+↑ BlockOrResult.Type: `DataType`;
 
 // ---------- Definitions
 ↑ ConcreteFunctionInvocableDefinition.Type: `FunctionType`;

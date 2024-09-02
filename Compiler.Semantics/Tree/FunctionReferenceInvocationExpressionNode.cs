@@ -38,12 +38,14 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
     private bool functionTypeCached;
     public FunctionType FunctionType
         => GrammarAttribute.IsCached(in functionTypeCached) ? functionType!
-            : this.Synthetic(ref functionTypeCached, ref functionType, ExpressionTypesAspect.FunctionReferenceInvocation_FunctionType);
+            : this.Synthetic(ref functionTypeCached, ref functionType,
+                ExpressionTypesAspect.FunctionReferenceInvocationExpression_FunctionType);
     private DataType? type;
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.FunctionReferenceInvocation_Type);
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.FunctionReferenceInvocationExpression_Type);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter
@@ -72,7 +74,7 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
     }
 
     protected override ControlFlowSet ComputeControlFlowNext()
-        => ControlFlowAspect.FunctionReferenceInvocation_ControlFlowNext(this);
+        => ControlFlowAspect.FunctionReferenceInvocationExpression_ControlFlowNext(this);
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(
         SemanticNode child,
@@ -116,7 +118,7 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionTypesAspect.FunctionReferenceInvocation_Contribute_Diagnostics(this, diagnostics);
+        ExpressionTypesAspect.FunctionReferenceInvocationExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }
