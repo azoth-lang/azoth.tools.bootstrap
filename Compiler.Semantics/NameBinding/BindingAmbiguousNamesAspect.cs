@@ -64,7 +64,7 @@ internal static class BindingAmbiguousNamesAspect
             return null;
 
         return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments,
-            FixedList.Empty<DefinitionNode>());
+            FixedList.Empty<IDefinitionNode>());
     }
 
     public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_NamespaceNameContext(
@@ -76,7 +76,7 @@ internal static class BindingAmbiguousNamesAspect
         var members = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
         if (members.Count == 0)
             return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments,
-                FixedList.Empty<DefinitionNode>());
+                FixedList.Empty<IDefinitionNode>());
 
         if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
             return new QualifiedNamespaceNameNode(node.Syntax, context, referencedNamespaces);
@@ -104,7 +104,7 @@ internal static class BindingAmbiguousNamesAspect
 
         var members = referencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
         if (members.Count == 0)
-            return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<DefinitionNode>());
+            return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDefinitionNode>());
 
         if (members.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
             return new FunctionGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments,
@@ -133,7 +133,7 @@ internal static class BindingAmbiguousNamesAspect
         var contextTypeDeclaration = node.PackageNameScope().Lookup(context.Antetype);
         var members = contextTypeDeclaration?.InclusiveInstanceMembersNamed(node.MemberName).ToFixedSet() ?? [];
         if (members.Count == 0)
-            return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<DefinitionNode>());
+            return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDefinitionNode>());
 
         if (members.TryAllOfType<IStandardMethodDeclarationNode>(out var referencedMethods))
             return new MethodGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);

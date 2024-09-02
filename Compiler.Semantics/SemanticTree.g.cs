@@ -8746,7 +8746,6 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     public ITypeNameNode ConstructingType { [DebuggerStepThrough] get; }
     public IdentifierName? ConstructorName { [DebuggerStepThrough] get; }
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
-    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
@@ -10360,7 +10359,6 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
-    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
@@ -10415,7 +10413,6 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFunctionGroupNameNode FunctionGroup { [DebuggerStepThrough] get; }
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
-    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
@@ -10506,7 +10503,6 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IMethodGroupNameNode MethodGroup { [DebuggerStepThrough] get; }
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
-    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
@@ -10789,7 +10785,6 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
             : this.RewritableChild(ref expressionCached, ref expression);
     public IExpressionNode CurrentExpression => expression.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
-    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
@@ -10875,7 +10870,6 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IInitializerGroupNameNode InitializerGroup { [DebuggerStepThrough] get; }
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
-    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
@@ -10970,7 +10964,6 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     public IExpressionNode? Expression => TempExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentExpression => expression.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
-    private bool argumentsCached;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;

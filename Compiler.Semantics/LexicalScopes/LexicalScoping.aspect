@@ -40,9 +40,6 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 ↑ NamespaceBlockDefinition.LexicalScope: `NamespaceSearchScope`;
 = NamespaceBlockDefinition.*.**.ContainingLexicalScope => LexicalScope;
 
-// ---------- Function Definition
-//= FunctionDefinition.Body.**.ContainingLexicalScope => LexicalScope;
-
 // ---------- Type Definitions
 = TypeDefinition.GenericParameters[*].**.ContainingLexicalScope => ContainingLexicalScope;
 = TypeDefinition.AllSupertypeNames[*].**.ContainingLexicalScope;
@@ -56,6 +53,7 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 = ConstructorDefinition.LexicalScope;
 = InitializerDefinition.LexicalScope;
 ↓ FieldDefinition.ContainingLexicalScope: `LexicalScope`; // needed due to conflict between NamedBinding and Definition
+// TODO does this need to make a new lexical scope?
 = FieldDefinition.LexicalScope => ContainingLexicalScope;
 
 // ---------- Types

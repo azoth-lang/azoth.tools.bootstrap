@@ -1143,49 +1143,49 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             
             #line default
             #line hidden
-            this.Write(";\r\n    private bool ");
+            this.Write(";\r\n");
             
             #line 210 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.VariableName(property)));
-            
-            #line default
-            #line hidden
-            this.Write("Cached;\r\n");
-            
-            #line 211 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
                   if (property.Type is CollectionTypeModel) { 
             
             #line default
             #line hidden
             this.Write("    public ");
             
-            #line 212 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 211 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(property.Type)));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 212 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 211 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.TempName));
             
             #line default
             #line hidden
             this.Write(" => ");
             
-            #line 212 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 211 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.VariableName(property)));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 213 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            #line 212 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
                   } else { 
             
             #line default
             #line hidden
-            this.Write("    public ");
+            this.Write("    private bool ");
+            
+            #line 213 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.VariableName(property)));
+            
+            #line default
+            #line hidden
+            this.Write("Cached;\r\n    public ");
             
             #line 214 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(property.Type)));

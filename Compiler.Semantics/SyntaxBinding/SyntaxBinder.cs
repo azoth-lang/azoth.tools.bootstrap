@@ -207,7 +207,7 @@ internal static class SyntaxBinder
             ConstructorOrInitializerParameters(syntax.Parameters), BlockBody(syntax.Body));
 
     private static IFieldDefinitionNode FieldDefinition(IFieldDefinitionSyntax syntax)
-        => new FieldDefinitionNode(syntax, Type(syntax.Type), Expression(syntax.Initializer));
+        => IFieldDefinitionNode.Create(syntax, Type(syntax.Type), Expression(syntax.Initializer));
     private static IAssociatedFunctionDefinitionNode AssociatedFunctionDefinition(IAssociatedFunctionDefinitionSyntax syntax)
         => IAssociatedFunctionDefinitionNode.Create(syntax, NamedParameters(syntax.Parameters),
             Type(syntax.Return?.Type), Body(syntax.Body));

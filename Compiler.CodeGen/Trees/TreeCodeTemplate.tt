@@ -207,10 +207,10 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 <#      foreach (var property in Build.PropertiesForClass(node)) { #>
 <#          if (property.IsChild && property.MayHaveRewrites) { #>
     private <#= Emit.RewritableBackingType(property) #> <#=Emit.VariableName(property) #>;
-    private bool <#=Emit.VariableName(property) #>Cached;
 <#                  if (property.Type is CollectionTypeModel) { #>
     public <#= Emit.Type(property.Type) #> <#= property.TempName #> => <#=Emit.VariableName(property) #>;
 <#                  } else { #>
+    private bool <#=Emit.VariableName(property) #>Cached;
     public <#= Emit.Type(property.Type) #> <#= property.TempName #>
         => GrammarAttribute.IsCached(in <#=Emit.VariableName(property) #>Cached) ? <#=Emit.VariableName(property) #>.UnsafeValue
             : this.RewritableChild(ref <#=Emit.VariableName(property) #>Cached, ref <#=Emit.VariableName(property) #>);
