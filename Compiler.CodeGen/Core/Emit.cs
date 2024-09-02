@@ -432,21 +432,22 @@ internal static class Emit
     }
 
     public static string Selector(InheritedAttributeEquationModel equation)
-        => Selector(equation.Selector);
-
-    private static string Selector(SelectorModel selector)
-        => selector switch
+    {
+        var selector = equation.Selector;
+        var child = equation.Node.ActualAttributes.Where(selector.Matches).TrySingle();
+        var childName = child?.CurrentName;
+        return selector switch
         {
             AllChildrenSelectorModel s
                 => s.IsBroadcast ? "" // If broadcast, always matches, no condition needed
                     : SelectorIf("ReferenceEquals(child, descendant)"),
-            // TODO use Current child for all of these
-            ChildSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, Self.{s.Child})"),
-            ChildAtIndexSelectorModel s => SelectorIf($"{s.Index} < Self.{s.Child}.Count && ReferenceEquals({ChildOrDescendant(s)}, Self.{s.Child}[{s.Index}])"),
-            ChildAtVariableSelectorModel s => SelectorIf($"IndexOfNode(Self.{s.Child}, {ChildOrDescendant(s)}) is {{ }} {s.Variable}"),
-            ChildListSelectorModel s => SelectorIf($"ContainsNode(Self.{s.Child}, {ChildOrDescendant(s)})"),
+            ChildSelectorModel s => SelectorIf($"ReferenceEquals({ChildOrDescendant(s)}, Self.{childName})"),
+            ChildAtIndexSelectorModel s => SelectorIf($"{s.Index} < Self.{childName}.Count && ReferenceEquals({ChildOrDescendant(s)}, Self.{childName}[{s.Index}])"),
+            ChildAtVariableSelectorModel s => SelectorIf($"IndexOfNode(Self.{childName}, {ChildOrDescendant(s)}) is {{ }} {s.Variable}"),
+            ChildListSelectorModel s => SelectorIf($"ContainsNode(Self.{childName}, {ChildOrDescendant(s)})"),
             _ => throw ExhaustiveMatch.Failed(selector)
         };
+    }
 
     private static string SelectorIf(string condition)
         => "if (" + condition + $"){Environment.NewLine}            ";

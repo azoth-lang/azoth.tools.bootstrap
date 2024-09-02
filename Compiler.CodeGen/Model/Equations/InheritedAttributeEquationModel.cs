@@ -49,7 +49,7 @@ public sealed class InheritedAttributeEquationModel : ContributorEquationModel
     private IFixedSet<InheritedAttributeModel> ComputeInheritedToAttributes()
     {
         var inheritedToNodes = new HashSet<TreeNodeModel>();
-        foreach (var childAttribute in Node.ActualAttributes.Where(a => a.IsChild && Selector.MatchesChild(a)))
+        foreach (var childAttribute in Node.ActualAttributes.Where(a => a.IsChild && Selector.Matches(a)))
         {
             var childNode = childAttribute.Type.ReferencedNode()!;
 
@@ -102,7 +102,7 @@ public sealed class InheritedAttributeEquationModel : ContributorEquationModel
 
     private static IFixedList<InheritedAttributeEquationModel> EquationsCovering(
         InheritedAttributeEquationGroupModel? equationGroup, AttributeModel childAttribute)
-        => (equationGroup?.Equations.Where(e => e.Selector.MatchesChild(childAttribute)) ?? []).ToFixedList();
+        => (equationGroup?.Equations.Where(e => e.Selector.Matches(childAttribute)) ?? []).ToFixedList();
 
     /// <summary>
     /// Whether these equations fully cover the child they select for.

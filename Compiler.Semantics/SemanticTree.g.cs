@@ -7064,14 +7064,14 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     {
         if (ReferenceEquals(descendant, Self.Entry))
             return ControlFlowSet.CreateNormal(Initializer ?? (IControlFlowNode)Exit);
-        if (ReferenceEquals(descendant, Self.Initializer))
+        if (ReferenceEquals(descendant, Self.CurrentInitializer))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(child, Self.Initializer))
+        if (ReferenceEquals(child, Self.CurrentInitializer))
             return null;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
@@ -9377,7 +9377,7 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(child, Self.RightOperand))
+        if (ReferenceEquals(child, Self.CurrentRightOperand))
             return LexicalScopingAspect.BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(this);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }

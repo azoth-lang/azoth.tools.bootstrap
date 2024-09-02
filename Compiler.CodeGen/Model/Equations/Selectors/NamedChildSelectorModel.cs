@@ -18,6 +18,6 @@ public abstract class NamedChildSelectorModel : SelectorModel
         Child = child;
     }
 
-    public override bool MatchesChild(AttributeModel attribute)
-        => attribute.IsChild && attribute.Name == Child;
+    public override bool Matches(AttributeModel attribute)
+        => attribute.Name == Child;
 }

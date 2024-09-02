@@ -20,7 +20,7 @@ public sealed class AllChildrenSelectorModel : SelectorModel
         Syntax = syntax;
     }
 
-    public override bool MatchesChild(AttributeModel attribute) => attribute.IsChild;
+    public override bool Matches(AttributeModel attribute) => true;
 
     protected override string ToChildSelectorString() => "*";
 }

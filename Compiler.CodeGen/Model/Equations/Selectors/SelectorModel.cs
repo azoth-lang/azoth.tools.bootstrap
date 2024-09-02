@@ -35,9 +35,9 @@ public abstract class SelectorModel
     }
 
     /// <summary>
-    /// Whether this selector matches the given child attribute.
+    /// Whether this selector matches the given attribute.
     /// </summary>
-    public abstract bool MatchesChild(AttributeModel attribute);
+    public abstract bool Matches(AttributeModel attribute);
 
     public sealed override string ToString()
         => IsBroadcast ? $"{ToChildSelectorString()}.**" : ToChildSelectorString();
