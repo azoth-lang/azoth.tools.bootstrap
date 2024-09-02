@@ -35,7 +35,7 @@ Child <: `IChildTreeNode<ISemanticNode>`;
 // ---------- Special Parts
 BodyOrBlock <: Code;
 ElseClause <: ControlFlow = Syntax:`ICodeSyntax`;
-BlockOrResult <: ElseClause = Antetype:`IMaybeAntetype` Type:`DataType`;
+BlockOrResult <: ElseClause = Type:`DataType`;
 
 // ---------- Bindings
 Binding <: Code, BindingDeclaration;
@@ -225,11 +225,10 @@ OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pa
 // TODO rename Ambiguous to `Unresolved` or `Unbound` because it is not ambiguous, it is just not bound
 temp AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
 temp AmbiguousAssignableExpression <: AmbiguousExpression = Syntax:`IAssignableExpressionSyntax`;
-Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`
-    Antetype:`IMaybeExpressionAntetype` Type:`DataType`;
+Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax` Type:`DataType`;
 AssignableExpression <: Expression, AmbiguousAssignableExpression = Syntax:`IAssignableExpressionSyntax`;
-BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Syntax:`IBlockExpressionSyntax` Statements:Statement*
-    Antetype:`IMaybeAntetype`;
+BlockExpression <: Expression, BlockOrResult, BodyOrBlock
+    = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: InvocationExpression = Syntax:`INewObjectExpressionSyntax`
     ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression*
     ConstructingAntetype:`IMaybeAntetype` ReferencedConstructors:{`IConstructorDeclarationNode`}
@@ -262,8 +261,8 @@ IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpr
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax`
     Referent:AmbiguousExpression Operator:`ConversionOperator` ConvertToType:Type;
 ImplicitConversionExpression <: Expression = Referent:Expression Antetype:`SimpleAntetype`;
-PatternMatchExpression <: Expression = Syntax:`IPatternMatchExpressionSyntax`
-    Referent:AmbiguousExpression Pattern;
+PatternMatchExpression <: Expression
+    = Syntax:`IPatternMatchExpressionSyntax` Referent:AmbiguousExpression Pattern;
 
 // ---------- Control Flow Expressions
 IfExpression <: Expression, ElseClause = Syntax:`IIfExpressionSyntax`

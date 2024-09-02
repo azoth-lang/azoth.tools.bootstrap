@@ -16,7 +16,7 @@ internal sealed class BoolLiteralExpressionNode : LiteralExpressionNode, IBoolLi
     public override IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
-                TypeExpressionsAntetypesAspect.BoolLiteralExpression_NamedAntetype);
+                ExpressionAntetypesAspect.BoolLiteralExpression_Antetype);
     public override BoolConstValueType Type => ExpressionTypesAspect.BoolLiteralExpression_Type(this);
 
     public BoolLiteralExpressionNode(IBoolLiteralExpressionSyntax syntax)

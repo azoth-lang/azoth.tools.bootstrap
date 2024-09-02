@@ -48,7 +48,7 @@ internal sealed class OptionalPatternNode : PatternNode, IOptionalPatternNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionAntetypesAspect.OptionalPattern_ContributeDiagnostics(this, diagnostics);
+        ExpressionAntetypesAspect.OptionalPattern_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

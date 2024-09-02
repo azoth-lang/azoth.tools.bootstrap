@@ -1,7 +1,11 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 ◊name ExpressionAntetypesAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Special Parts
+↑ BlockOrResult.Antetype: `IMaybeAntetype`;
 
 // ---------- Function Parts
 ↓ ExpressionBody.ExpectedAntetype: `IMaybeExpressionAntetype`?;
@@ -11,4 +15,33 @@
 
 // ---------- Expressions
 ↓ Expression.ExpectedAntetype: `IMaybeExpressionAntetype`?;
+↑ Expression.Antetype: `IMaybeExpressionAntetype`;
 ✎ Expression ImplicitConversion;
+↑ BlockExpression.Antetype: `IMaybeAntetype`;
+= NeverTypedExpression.Antetype => IAntetype.Never;
+
+// ---------- Operator Expressions
+= IdExpression.Antetype => Referent?.Antetype ?? IAntetype.Unknown;
+= PatternMatchExpression.Antetype => IAntetype.Bool;
+
+// ---------- Invocation Expressions
+= UnknownInvocationExpression.Antetype => IAntetype.Unknown;
+
+// ---------- Name Expressions
+= NamespaceName.Antetype => IAntetype.Unknown;
+= FunctionGroupName.Antetype => throw new NotImplementedException();
+= MethodGroupName.Antetype => throw new NotImplementedException();
+= TypeNameExpression.Antetype => IAntetype.Unknown;
+= InitializerGroupName.Antetype => throw new NotImplementedException();
+= SpecialTypeNameExpression.Antetype => IAntetype.Unknown;
+= MissingNameExpression.Antetype => IAntetype.Unknown;
+= UnknownNameExpression.Antetype => IAntetype.Unknown;
+
+// ---------- Capability Expressions
+= MoveExpression.Antetype => Referent.Antetype;
+= ImplicitTempMoveExpression.Antetype => Referent.Antetype;
+= FreezeExpression.Antetype => Referent.Antetype;
+= PrepareToReturnExpression.Antetype => Value.Antetype;
+
+// ---------- Async Expressions
+= AsyncBlockExpression.Antetype => Block.Antetype;

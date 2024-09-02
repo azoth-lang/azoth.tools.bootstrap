@@ -17,7 +17,7 @@ internal sealed class IntegerLiteralExpressionNode : LiteralExpressionNode, IInt
     public override IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
-                TypeExpressionsAntetypesAspect.IntegerLiteralExpression_NamedAntetype);
+                ExpressionAntetypesAspect.IntegerLiteralExpression_Antetype);
     private IntegerConstValueType? type;
     private bool typeCached;
     public override IntegerConstValueType Type

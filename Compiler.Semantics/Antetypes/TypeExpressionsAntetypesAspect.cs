@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
-internal static class TypeExpressionsAntetypesAspect
+internal static partial class TypeExpressionsAntetypesAspect
 {
     public static IMaybeAntetype ViewpointType_NamedAntetype(IViewpointTypeNode node)
         // Viewpoint has not affect on the antetype
@@ -56,12 +56,6 @@ internal static class TypeExpressionsAntetypesAspect
             return IAntetype.Unknown;
         return declaredAntetype.With(antetypeArguments);
     }
-
-    public static IMaybeExpressionAntetype IntegerLiteralExpression_NamedAntetype(IIntegerLiteralExpressionNode node)
-        => new IntegerConstValueAntetype(node.Value);
-
-    public static IMaybeExpressionAntetype BoolLiteralExpression_NamedAntetype(IBoolLiteralExpressionNode node)
-        => node.Value ? IExpressionAntetype.True : IExpressionAntetype.False;
 
     public static IMaybeAntetype TypeNameExpression_NamedAntetype(ITypeNameExpressionNode node)
     {

@@ -1,0 +1,6 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
+◊name TypeExpressionsAntetypesAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+

@@ -55,7 +55,7 @@ internal sealed class AwaitExpressionNode : ExpressionNode, IAwaitExpressionNode
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ExpressionAntetypesAspect.AwaitExpression_ContributeDiagnostics(this, diagnostics);
+        ExpressionAntetypesAspect.AwaitExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 

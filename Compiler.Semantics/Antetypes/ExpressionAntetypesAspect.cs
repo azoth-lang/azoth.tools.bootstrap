@@ -15,14 +15,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
 internal static partial class ExpressionAntetypesAspect
 {
-    public static IMaybeExpressionAntetype UnsafeExpression_Antetype(IUnsafeExpressionNode node)
+    public static partial IMaybeExpressionAntetype UnsafeExpression_Antetype(IUnsafeExpressionNode node)
         => node.Expression?.Antetype ?? IAntetype.Unknown;
 
-    public static IMaybeExpressionAntetype FunctionInvocationExpression_Antetype(IFunctionInvocationExpressionNode node)
+    public static partial IMaybeExpressionAntetype FunctionInvocationExpression_Antetype(IFunctionInvocationExpressionNode node)
         // TODO should probably use Antetype on the declaration
         => node.ReferencedDeclaration?.Type.Return.Type.ToAntetype() ?? IAntetype.Unknown;
 
-    public static IMaybeExpressionAntetype MethodInvocationExpression_Antetype(IMethodInvocationExpressionNode node)
+    public static partial IMaybeExpressionAntetype MethodInvocationExpression_Antetype(IMethodInvocationExpressionNode node)
     {
         // TODO should probably use Antetype on the declaration
         var unboundAntetype = node.ReferencedDeclaration?.MethodGroupType.Return.Type.ToAntetype() ?? IAntetype.Unknown;
@@ -30,13 +30,13 @@ internal static partial class ExpressionAntetypesAspect
         return boundAntetype;
     }
 
-    public static IMaybeExpressionAntetype VariableNameExpression_Antetype(IVariableNameExpressionNode node)
+    public static partial IMaybeExpressionAntetype VariableNameExpression_Antetype(IVariableNameExpressionNode node)
         => node.ReferencedDefinition.BindingAntetype;
 
-    public static IMaybeExpressionAntetype SelfExpression_Antetype(ISelfExpressionNode node)
+    public static partial IMaybeExpressionAntetype SelfExpression_Antetype(ISelfExpressionNode node)
         => node.ReferencedDefinition?.BindingAntetype ?? IAntetype.Unknown;
 
-    public static IMaybeExpressionAntetype FieldAccessExpression_Antetype(IFieldAccessExpressionNode node)
+    public static partial IMaybeExpressionAntetype FieldAccessExpression_Antetype(IFieldAccessExpressionNode node)
     {
         // TODO should probably use Antetype on the declaration
         var unboundAntetype = node.ReferencedDeclaration.BindingType.ToAntetype();
@@ -44,7 +44,7 @@ internal static partial class ExpressionAntetypesAspect
         return boundAntetype;
     }
 
-    public static IMaybeExpressionAntetype NewObjectExpression_Antetype(INewObjectExpressionNode node)
+    public static partial IMaybeExpressionAntetype NewObjectExpression_Antetype(INewObjectExpressionNode node)
     {
         // TODO should probably use Antetype on the declaration
         var unboundType = node.ReferencedConstructor?.Symbol.ReturnType.ToAntetype() ?? IAntetype.Unknown;
@@ -52,10 +52,10 @@ internal static partial class ExpressionAntetypesAspect
         return boundType;
     }
 
-    public static IMaybeExpressionAntetype AssignmentExpression_Antetype(IAssignmentExpressionNode node)
+    public static partial IMaybeExpressionAntetype AssignmentExpression_Antetype(IAssignmentExpressionNode node)
         => node.LeftOperand?.Antetype ?? IAntetype.Unknown;
 
-    public static IMaybeAntetype ResultStatement_Antetype(IResultStatementNode node)
+    public static partial IMaybeAntetype ResultStatement_Antetype(IResultStatementNode node)
         => node.Expression?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown;
 
     public static IAntetype? BinaryOperatorExpression_NumericOperatorCommonAntetype(IBinaryOperatorExpressionNode node)
@@ -116,7 +116,7 @@ internal static partial class ExpressionAntetypesAspect
         };
     }
 
-    public static IMaybeExpressionAntetype BinaryOperatorExpression_Antetype(IBinaryOperatorExpressionNode node)
+    public static partial IMaybeExpressionAntetype BinaryOperatorExpression_Antetype(IBinaryOperatorExpressionNode node)
     {
         var leftAntetype = node.LeftOperand?.Antetype ?? IAntetype.Unknown;
         var rightAntetype = node.RightOperand?.Antetype ?? IAntetype.Unknown;
@@ -198,7 +198,7 @@ internal static partial class ExpressionAntetypesAspect
         return rangeAntetype;
     }
 
-    public static IMaybeExpressionAntetype StringLiteralExpression_Antetype(IStringLiteralExpressionNode node)
+    public static partial IMaybeExpressionAntetype StringLiteralExpression_Antetype(IStringLiteralExpressionNode node)
     {
         var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName)
                                  .OfType<ITypeDeclarationNode>().TrySingle();
@@ -207,7 +207,7 @@ internal static partial class ExpressionAntetypesAspect
 
     private static readonly IdentifierName StringTypeName = "String";
 
-    public static IMaybeExpressionAntetype IfExpression_Antetype(IIfExpressionNode node)
+    public static partial IMaybeExpressionAntetype IfExpression_Antetype(IIfExpressionNode node)
     {
         if (node.ElseClause is null) return node.ThenBlock.Antetype.MakeOptional();
 
@@ -215,19 +215,19 @@ internal static partial class ExpressionAntetypesAspect
         return node.ThenBlock.Antetype;
     }
 
-    public static IMaybeExpressionAntetype WhileExpression_Antetype(IWhileExpressionNode _)
+    public static partial IMaybeExpressionAntetype WhileExpression_Antetype(IWhileExpressionNode node)
         // TODO assign correct type to the expression
         => IAntetype.Void;
 
-    public static IMaybeExpressionAntetype LoopExpression_Antetype(ILoopExpressionNode _)
+    public static partial IMaybeExpressionAntetype LoopExpression_Antetype(ILoopExpressionNode node)
         // TODO assign correct type to the expression
         => IAntetype.Void;
 
-    public static IMaybeExpressionAntetype ForeachExpression_Antetype(IForeachExpressionNode _)
+    public static partial IMaybeExpressionAntetype ForeachExpression_Antetype(IForeachExpressionNode node)
         // TODO assign correct type to the expression
         => IAntetype.Void;
 
-    public static IMaybeAntetype BlockExpression_Antetype(IBlockExpressionNode node)
+    public static partial IMaybeAntetype BlockExpression_Antetype(IBlockExpressionNode node)
     {
         foreach (var statement in node.Statements)
             if (statement.ResultAntetype is not null and var resultAntetype)
@@ -237,7 +237,7 @@ internal static partial class ExpressionAntetypesAspect
         return IAntetype.Void;
     }
 
-    public static IMaybeExpressionAntetype ConversionExpression_Antetype(IConversionExpressionNode node)
+    public static partial IMaybeExpressionAntetype ConversionExpression_Antetype(IConversionExpressionNode node)
     {
         var convertToAntetype = node.ConvertToType.NamedAntetype;
         if (node.Operator == ConversionOperator.Optional)
@@ -245,13 +245,13 @@ internal static partial class ExpressionAntetypesAspect
         return convertToAntetype;
     }
 
-    public static IMaybeExpressionAntetype NoneLiteralExpression_Antetype(INoneLiteralExpressionNode _)
+    public static partial IMaybeExpressionAntetype NoneLiteralExpression_Antetype(INoneLiteralExpressionNode node)
         => IAntetype.None;
 
-    public static IMaybeExpressionAntetype AsyncStartExpression_Antetype(IAsyncStartExpressionNode node)
+    public static partial IMaybeExpressionAntetype AsyncStartExpression_Antetype(IAsyncStartExpressionNode node)
         => Intrinsic.PromiseOf(node.Expression?.Antetype ?? IAntetype.Unknown);
 
-    public static IMaybeExpressionAntetype AwaitExpression_Antetype(IAwaitExpressionNode node)
+    public static partial IMaybeExpressionAntetype AwaitExpression_Antetype(IAwaitExpressionNode node)
     {
         if (node.Expression?.Antetype is UserGenericNominalAntetype { DeclaredAntetype: var declaredAntetype } antetype
             && Intrinsic.PromiseAntetype.Equals(declaredAntetype))
@@ -260,7 +260,7 @@ internal static partial class ExpressionAntetypesAspect
         return IAntetype.Unknown;
     }
 
-    public static void AwaitExpression_ContributeDiagnostics(IAwaitExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static void AwaitExpression_Contribute_Diagnostics(IAwaitExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO eliminate code duplication with AwaitExpression_Antetype
         if (node.Expression?.Antetype is UserGenericNominalAntetype { DeclaredAntetype: var declaredAntetype }
@@ -270,7 +270,7 @@ internal static partial class ExpressionAntetypesAspect
         diagnostics.Add(TypeError.CannotAwaitType(node.File, node.Syntax.Span, node.Expression!.Type));
     }
 
-    public static IMaybeExpressionAntetype UnaryOperatorExpression_Antetype(IUnaryOperatorExpressionNode node)
+    public static partial IMaybeExpressionAntetype UnaryOperatorExpression_Antetype(IUnaryOperatorExpressionNode node)
         => node.Operator switch
         {
             UnaryOperator.Not => UnaryOperatorExpression_Antetype_Not(node),
@@ -321,32 +321,31 @@ internal static partial class ExpressionAntetypesAspect
                 node.Syntax.Span, node.Operator, node.Operand!.Type));
     }
 
-    public static IMaybeExpressionAntetype GetterInvocationExpression_Antetype(IGetterInvocationExpressionNode node)
+    public static partial IMaybeExpressionAntetype GetterInvocationExpression_Antetype(IGetterInvocationExpressionNode node)
     {
         var unboundAntetype = node.ReferencedDeclaration?.Symbol.Return.Type.ToAntetype() ?? IAntetype.Unknown;
         var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
-    public static IMaybeExpressionAntetype SetterInvocationExpression_Antetype(ISetterInvocationExpressionNode node)
+    public static partial IMaybeExpressionAntetype SetterInvocationExpression_Antetype(ISetterInvocationExpressionNode node)
     {
         var unboundAntetype = node.ReferencedDeclaration?.Symbol.Parameters[0].Type.ToAntetype() ?? IAntetype.Unknown;
         var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
-    public static IMaybeExpressionAntetype FunctionReferenceInvocation_Antetype(IFunctionReferenceInvocationExpressionNode node)
+    public static partial IMaybeExpressionAntetype FunctionReferenceInvocationExpression_Antetype(IFunctionReferenceInvocationExpressionNode node)
         => node.FunctionAntetype.Return;
 
-    public static IMaybeExpressionAntetype InitializerInvocationExpression_Antetype(
-        IInitializerInvocationExpressionNode node)
+    public static partial IMaybeExpressionAntetype InitializerInvocationExpression_Antetype(IInitializerInvocationExpressionNode node)
     {
         var unboundAntetype = node.ReferencedDeclaration?.Symbol.Return.Type.ToAntetype() ?? IAntetype.Unknown;
         var boundAntetype = node.InitializerGroup.InitializingAntetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
-    public static IMaybeExpressionAntetype FunctionName_Antetype(IFunctionNameNode node)
+    public static partial IMaybeExpressionAntetype FunctionName_Antetype(IFunctionNameNode node)
         // TODO should probably use Antetype on the declaration
         => node.ReferencedDeclaration?.Type.ToAntetype() ?? IAntetype.Unknown;
 
@@ -406,9 +405,15 @@ internal static partial class ExpressionAntetypesAspect
         }
     }
 
-    public static void OptionalPattern_ContributeDiagnostics(IOptionalPatternNode node, DiagnosticCollectionBuilder diagnostics)
+    public static void OptionalPattern_Contribute_Diagnostics(IOptionalPatternNode node, DiagnosticCollectionBuilder diagnostics)
     {
         if (node.ContextBindingAntetype() is not OptionalAntetype)
             diagnostics.Add(TypeError.OptionalPatternOnNonOptionalType(node.File, node.Syntax, node.ContextBindingType()));
     }
+
+    public static partial IMaybeExpressionAntetype IntegerLiteralExpression_Antetype(IIntegerLiteralExpressionNode node)
+        => new IntegerConstValueAntetype(node.Value);
+
+    public static partial IMaybeExpressionAntetype BoolLiteralExpression_Antetype(IBoolLiteralExpressionNode node)
+        => node.Value ? IExpressionAntetype.True : IExpressionAntetype.False;
 }

@@ -29,11 +29,11 @@ internal class ImplicitConversionExpressionNode : ExpressionNode, IImplicitConve
 
     public ImplicitConversionExpressionNode(
         IExpressionNode referent,
-        SimpleAntetype convertToAntetype)
+        SimpleAntetype antetype)
     {
         this.referent = Child.Create(this, referent);
-        Antetype = convertToAntetype;
-        Type = convertToAntetype.ToType();
+        Antetype = antetype;
+        Type = antetype.ToType();
     }
 
     public override ConditionalLexicalScope FlowLexicalScope() => Referent.FlowLexicalScope();

@@ -33,7 +33,7 @@ internal sealed class FunctionReferenceInvocationExpressionNode : ExpressionNode
     public override IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
-                ExpressionAntetypesAspect.FunctionReferenceInvocation_Antetype);
+                ExpressionAntetypesAspect.FunctionReferenceInvocationExpression_Antetype);
     private FunctionType? functionType;
     private bool functionTypeCached;
     public FunctionType FunctionType
