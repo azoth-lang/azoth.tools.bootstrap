@@ -7,11 +7,18 @@
 // the syntax tree shouldn't have these. They should be on the semantic tree. However, there are a
 // few cases where it makes sense and so these have been lumped together in this aspect.
 
+// ---------- Packages
 ↑ eager Package.Diagnostics: `DiagnosticCollection`;
 
+// ---------- Member Definitions
+↑ GetterMethodDefinition.Parameters: NamedParameter* => FixedList.Empty<INamedParameterSyntax>();
+↑ SetterMethodDefinition.Return: Return? => null;
 
 // ---------- Parameters and Return
 ↑ SelfParameter.Name: `IdentifierName`? => null;
 
 // ---------- Function Parts
 ↑ eager ExpressionBody.Statements: Statement*;
+
+// ---------- Patterns
+↑ BindingPattern.Span: `TextSpan` => NameSpan;

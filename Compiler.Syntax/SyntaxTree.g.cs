@@ -466,6 +466,10 @@ public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefiniti
 {
     new IReturnSyntax Return { get; }
     IReturnSyntax? IMethodDefinitionSyntax.Return => Return;
+    new IFixedList<INamedParameterSyntax> Parameters
+        => FixedList.Empty<INamedParameterSyntax>();
+    IFixedList<INamedParameterSyntax> IMethodDefinitionSyntax.Parameters => Parameters;
+    IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
 
     public static IGetterMethodDefinitionSyntax Create(
         TextSpan span,
@@ -474,16 +478,18 @@ public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefiniti
         IAccessModifierToken? accessModifier,
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
-        IEnumerable<INamedParameterSyntax> parameters,
         IReturnSyntax @return,
         IBodySyntax body)
-        => new GetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, @return, body);
+        => new GetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, @return, body);
 }
 
 // [Closed(typeof(SetterMethodDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISetterMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
 {
+    new IReturnSyntax? Return
+        => null;
+    IReturnSyntax? IMethodDefinitionSyntax.Return => Return;
 
     public static ISetterMethodDefinitionSyntax Create(
         TextSpan span,
@@ -493,9 +499,8 @@ public partial interface ISetterMethodDefinitionSyntax : IConcreteMethodDefiniti
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IEnumerable<INamedParameterSyntax> parameters,
-        IReturnSyntax? @return,
         IBodySyntax body)
-        => new SetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, @return, body);
+        => new SetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, body);
 }
 
 // [Closed(typeof(ConstructorDefinitionSyntax))]
@@ -1083,13 +1088,15 @@ public partial interface IOptionalOrBindingPatternSyntax : IPatternSyntax
 public partial interface IBindingPatternSyntax : IOptionalOrBindingPatternSyntax, ILocalBindingSyntax
 {
     IdentifierName Name { get; }
+    new TextSpan Span
+        => NameSpan;
+    TextSpan ICodeSyntax.Span => Span;
 
     public static IBindingPatternSyntax Create(
-        TextSpan span,
         bool isMutableBinding,
         TextSpan nameSpan,
         IdentifierName name)
-        => new BindingPatternSyntax(span, isMutableBinding, nameSpan, name);
+        => new BindingPatternSyntax(isMutableBinding, nameSpan, name);
 }
 
 // [Closed(typeof(OptionalPatternSyntax))]
@@ -2097,7 +2104,6 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
     public IAccessModifierToken? AccessModifier { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
-    public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
     public IReturnSyntax Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }
     public override string ToString()
@@ -2110,7 +2116,6 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
         IAccessModifierToken? accessModifier,
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
-        IEnumerable<INamedParameterSyntax> parameters,
         IReturnSyntax @return,
         IBodySyntax body)
     {
@@ -2120,7 +2125,6 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
         AccessModifier = accessModifier;
         Name = name;
         SelfParameter = selfParameter;
-        Parameters = parameters.ToFixedList();
         Return = @return;
         Body = body;
     }
@@ -2138,7 +2142,6 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterSyntax> Parameters { [DebuggerStepThrough] get; }
-    public IReturnSyntax? Return { [DebuggerStepThrough] get; }
     public IBodySyntax Body { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.SetterMethodDefinition_ToString(this);
@@ -2151,7 +2154,6 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IEnumerable<INamedParameterSyntax> parameters,
-        IReturnSyntax? @return,
         IBodySyntax body)
     {
         Span = span;
@@ -2161,7 +2163,6 @@ file class SetterMethodDefinitionSyntax : ISetterMethodDefinitionSyntax
         Name = name;
         SelfParameter = selfParameter;
         Parameters = parameters.ToFixedList();
-        Return = @return;
         Body = body;
     }
 }
@@ -2893,7 +2894,6 @@ file class BindingPatternSyntax : IBindingPatternSyntax
 {
     private IBindingPatternSyntax Self { [Inline] get => this; }
 
-    public TextSpan Span { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -2901,12 +2901,10 @@ file class BindingPatternSyntax : IBindingPatternSyntax
         => FormattingAspect.BindingPattern_ToString(this);
 
     public BindingPatternSyntax(
-        TextSpan span,
         bool isMutableBinding,
         TextSpan nameSpan,
         IdentifierName name)
     {
-        Span = span;
         IsMutableBinding = isMutableBinding;
         NameSpan = nameSpan;
         Name = name;

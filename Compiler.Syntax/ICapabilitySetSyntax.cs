@@ -9,6 +9,6 @@ public partial interface ICapabilitySetSyntax
     public static ICapabilitySetSyntax CreateImplicitAliasable(TextSpan span)
     {
         Requires.That(span.Length == 0, nameof(span), "span must be empty");
-        return ICapabilitySetSyntax.Create(span, CapabilitySet.Aliasable);
+        return Create(span, CapabilitySet.Aliasable);
     }
 }

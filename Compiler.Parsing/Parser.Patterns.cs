@@ -42,7 +42,7 @@ public partial class Parser
     {
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
         var name = identifier.Value;
-        IOptionalOrBindingPatternSyntax pattern = IBindingPatternSyntax.Create(identifier.Span, isMutableBinding, name);
+        IOptionalOrBindingPatternSyntax pattern = IBindingPatternSyntax.Create(isMutableBinding, identifier.Span, name);
         while (TryParseOptionalPattern(ref pattern))
         {
             // Work is done by TryParseOptionalPattern

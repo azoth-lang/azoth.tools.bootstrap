@@ -94,8 +94,6 @@ public static class ISyntaxExtensions
                 yield break;
             case IGetterMethodDefinitionSyntax n:
                 yield return n.SelfParameter;
-                foreach (var child in n.Parameters)
-                    yield return child;
                 yield return n.Return;
                 yield return n.Body;
                 yield break;
@@ -103,8 +101,6 @@ public static class ISyntaxExtensions
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
-                if (n.Return is not null)
-                    yield return n.Return;
                 yield return n.Body;
                 yield break;
             case IConstructorDefinitionSyntax n:

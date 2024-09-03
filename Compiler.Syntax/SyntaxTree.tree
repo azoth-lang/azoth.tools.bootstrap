@@ -19,11 +19,12 @@
 //     The syntax tree ought to be independent of semantics. It should not try to enforce rules
 //     such as that certian kinds of expressions are expected in certian places. It should collapse
 //     node types even if they appear in different contexts. For example, a `SpecialTypeName` and a
-//     `SpecialTypeNameExpression` should be the same type.
+//     `SpecialTypeNameExpression` should be the same node type.
 
 <default>;
 
 // ---------- Top Level
+/// Syntax that corresponds to Azoth code.
 Code = Span:`TextSpan`;
 CompilationUnit <: Code = File:`CodeFile` ImplicitNamespaceName:`NamespaceName` Diagnostics:`DiagnosticCollection`
     UsingDirectives:UsingDirective* Definitions:NonMemberDefinition*;
@@ -45,11 +46,16 @@ PackageReference = AliasOrName:`IdentifierName` Package:`IPackageSymbols` IsTrus
 
 // ---------- Definitions
 Definition <: Code = File:`CodeFile` Name:`TypeName`? NameSpan:`TextSpan`;
+/// All non-namespace declarations since a namespace doesn't really create
+/// a thing, it just defines a group of names.
+// TODO give a better name to this (the semantic tree has moved away from "entity")
 EntityDefinition <: Definition = AccessModifier:`IAccessModifierToken`?;
+/// Base type for any declaration that declares a callable thing (i.e. function, method, getter, setter, constructor, or initializer).
 InvocableDefinition <: EntityDefinition = Parameters:ConstructorOrInitializerParameter*;
 ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrInitializerParameter* Body;
 
 // ---------- Namespace Definitions
+/// Things that can be declared outside of a class.
 // TODO rename to NamespaceMemberDefinition
 NonMemberDefinition <: Definition;
 NamespaceDefinition <: NonMemberDefinition = IsGlobalQualified:`bool` DeclaredNames:`NamespaceName` UsingDirectives:UsingDirective* Definitions:NonMemberDefinition*;
@@ -80,8 +86,8 @@ AbstractMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter
 ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteInvocableDefinition
     = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
 StandardMethodDefinition <: ConcreteMethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
-GetterMethodDefinition <: ConcreteMethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return Body;
-SetterMethodDefinition <: ConcreteMethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
+GetterMethodDefinition <: ConcreteMethodDefinition = SelfParameter:MethodSelfParameter Return Body;
+SetterMethodDefinition <: ConcreteMethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body;
 ConstructorDefinition <: ConcreteInvocableDefinition, ClassMemberDefinition
     = Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
 InitializerDefinition <: ConcreteInvocableDefinition, StructMemberDefinition
@@ -124,7 +130,7 @@ StandardTypeName <: TypeName = Name:`StandardName`;
 SimpleTypeName <: TypeName;
 IdentifierTypeName <: TypeName, StandardTypeName, SimpleTypeName = Name:`IdentifierName`;
 SpecialTypeName <: SimpleTypeName = Name:`SpecialTypeName`;
-GenericTypeName <: StandardTypeName =  Name:`GenericName` TypeArguments:Type*;
+GenericTypeName <: StandardTypeName = Name:`GenericName` TypeArguments:Type*;
 QualifiedTypeName <: TypeName = Context:TypeName QualifiedName:StandardTypeName;
 OptionalType <: Type = Referent:Type;
 CapabilityType <: Type = Capability Referent:Type;
@@ -138,6 +144,8 @@ SelfViewpointType <: ViewpointType = Referent:Type;
 // ---------- Statements
 Statement <: Code;
 ResultStatement <: Statement, BlockOrResult = Expression;
+
+/// A statement that can appear directly in a method body. (i.e. not a result statement)
 BodyStatement <: Statement;
 VariableDeclarationStatement <: BodyStatement, LocalBinding = NameSpan:`TextSpan` Name:`IdentifierName` Capability? Type? Initializer:Expression?;
 ExpressionStatement <: BodyStatement = Expression;
@@ -152,7 +160,10 @@ OptionalPattern <: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 // ---------- Expressions
 Expression <: Code;
 AssignableExpression <: Expression;
+
+/// A block expression. Not to be used to represent function or type bodies.
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
+
 /// <summary>
 /// Note that this could represent a named or unnamed constructor. So
 /// for an unnamed constructor, it is really the type name. Conceptually
@@ -204,6 +215,7 @@ MemberAccessExpression <: NameExpression, AssignableExpression
 MissingName <: NameExpression, SimpleName, AssignableExpression;
 
 // ---------- Capability Expressions
+/// i.e. `move name`. A move takes ownership of something from a variable.
 MoveExpression <: Expression = Referent:SimpleName;
 FreezeExpression <: Expression = Referent:SimpleName;
 

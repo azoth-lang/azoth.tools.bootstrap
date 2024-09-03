@@ -1,7 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
-using Azoth.Tools.Bootstrap.Compiler.Syntax.Walkers;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Parsing.NotImplemented;
 
@@ -9,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing.NotImplemented;
 /// Reports errors for syntax that the parsing supports but the semantic
 /// analyzer doesn't.
 /// </summary>
-internal class SyntaxNotImplementedChecker : SyntaxWalker
+internal class SyntaxNotImplementedChecker
 {
     private readonly ICompilationUnitSyntax compilationUnit;
     private readonly DiagnosticCollectionBuilder diagnostics;
@@ -22,9 +21,9 @@ internal class SyntaxNotImplementedChecker : SyntaxWalker
         file = compilationUnit.File;
     }
 
-    public void Check() => WalkNonNull(compilationUnit);
+    public void Check() => Check(compilationUnit);
 
-    protected override void WalkNonNull(ISyntax syntax)
+    protected void Check(ISyntax syntax)
     {
         switch (syntax)
         {
@@ -45,6 +44,8 @@ internal class SyntaxNotImplementedChecker : SyntaxWalker
                     diagnostics.Add(ParseError.NotImplemented(file, syn.Initializer.Span, "Field initializers"));
                 break;
         }
-        WalkChildren(syntax);
+
+        foreach (var child in syntax.Children())
+            Check(child);
     }
 }

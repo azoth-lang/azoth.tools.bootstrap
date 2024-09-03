@@ -172,6 +172,16 @@ JastAdd style collection attributes.
 | `→*←` *Node*`.`*Attribute*`:` *Type* (`root` *Node*)? `from` *Type* (`=>` *Expression*)? `;` | A collection attribute                          |
 | `=` *Node*`.→*.`*Node*`.`*Attribute* (`when` *cond*)? (`for` *target-exp*)?`;`               | Equation contributing to a collection attribute |
 
+### Attribute Overriding
+
+It isn't possible to change the type of an attribute from an equation. This is intentional.
+Logically, equations are simply implementations of the attribute. However, one can override one
+attribute with another. This is akin to how you can use `override` or `new` to replace a superclass
+member in C#.
+
+**TODO:** should `override` and `new` keywords be required to make it obvious when this is
+happening?
+
 ### Rewrites
 
 Rewrite rule names are optional. They exist to distinguish rewrites from each other.
