@@ -64,7 +64,7 @@ public partial interface ICompilationUnitSyntax : ICodeSyntax
     NamespaceName ImplicitNamespaceName { get; }
     DiagnosticCollection Diagnostics { get; }
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
-    IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
+    IFixedList<INamespaceBlockMemberDefinitionSyntax> Definitions { get; }
 
     public static ICompilationUnitSyntax Create(
         TextSpan span,
@@ -72,7 +72,7 @@ public partial interface ICompilationUnitSyntax : ICodeSyntax
         NamespaceName implicitNamespaceName,
         DiagnosticCollection diagnostics,
         IEnumerable<IUsingDirectiveSyntax> usingDirectives,
-        IEnumerable<INonMemberDefinitionSyntax> definitions)
+        IEnumerable<INamespaceBlockMemberDefinitionSyntax> definitions)
         => new CompilationUnitSyntax(span, file, implicitNamespaceName, diagnostics, usingDirectives, definitions);
 }
 
@@ -168,7 +168,7 @@ public partial interface IPackageReferenceSyntax : ISyntax
 
 [Closed(
     typeof(IEntityDefinitionSyntax),
-    typeof(INonMemberDefinitionSyntax))]
+    typeof(INamespaceBlockMemberDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IDefinitionSyntax : ICodeSyntax
 {
@@ -212,18 +212,18 @@ public partial interface IConcreteInvocableDefinitionSyntax : IInvocableDefiniti
     typeof(IFunctionDefinitionSyntax),
     typeof(ITypeDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INonMemberDefinitionSyntax : IDefinitionSyntax
+public partial interface INamespaceBlockMemberDefinitionSyntax : IDefinitionSyntax
 {
 }
 
 // [Closed(typeof(NamespaceDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INamespaceDefinitionSyntax : INonMemberDefinitionSyntax
+public partial interface INamespaceDefinitionSyntax : INamespaceBlockMemberDefinitionSyntax
 {
     bool IsGlobalQualified { get; }
     NamespaceName DeclaredNames { get; }
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
-    IFixedList<INonMemberDefinitionSyntax> Definitions { get; }
+    IFixedList<INamespaceBlockMemberDefinitionSyntax> Definitions { get; }
 
     public static INamespaceDefinitionSyntax Create(
         TextSpan span,
@@ -233,13 +233,13 @@ public partial interface INamespaceDefinitionSyntax : INonMemberDefinitionSyntax
         bool isGlobalQualified,
         NamespaceName declaredNames,
         IEnumerable<IUsingDirectiveSyntax> usingDirectives,
-        IEnumerable<INonMemberDefinitionSyntax> definitions)
+        IEnumerable<INamespaceBlockMemberDefinitionSyntax> definitions)
         => new NamespaceDefinitionSyntax(span, file, name, nameSpan, isGlobalQualified, declaredNames, usingDirectives, definitions);
 }
 
 // [Closed(typeof(FunctionDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFunctionDefinitionSyntax : IConcreteInvocableDefinitionSyntax, INonMemberDefinitionSyntax
+public partial interface IFunctionDefinitionSyntax : IConcreteInvocableDefinitionSyntax, INamespaceBlockMemberDefinitionSyntax
 {
     IFixedList<IAttributeSyntax> Attributes { get; }
     new IdentifierName Name { get; }
@@ -266,7 +266,7 @@ public partial interface IFunctionDefinitionSyntax : IConcreteInvocableDefinitio
     typeof(IStructDefinitionSyntax),
     typeof(ITraitDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ITypeDefinitionSyntax : INonMemberDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax
+public partial interface ITypeDefinitionSyntax : INamespaceBlockMemberDefinitionSyntax, IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax
 {
     IConstKeywordToken? ConstModifier { get; }
     IMoveKeywordToken? MoveModifier { get; }
@@ -1687,7 +1687,7 @@ file class CompilationUnitSyntax : ICompilationUnitSyntax
     public NamespaceName ImplicitNamespaceName { [DebuggerStepThrough] get; }
     public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { [DebuggerStepThrough] get; }
-    public IFixedList<INonMemberDefinitionSyntax> Definitions { [DebuggerStepThrough] get; }
+    public IFixedList<INamespaceBlockMemberDefinitionSyntax> Definitions { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.CompilationUnit_ToString(this);
 
@@ -1697,7 +1697,7 @@ file class CompilationUnitSyntax : ICompilationUnitSyntax
         NamespaceName implicitNamespaceName,
         DiagnosticCollection diagnostics,
         IEnumerable<IUsingDirectiveSyntax> usingDirectives,
-        IEnumerable<INonMemberDefinitionSyntax> definitions)
+        IEnumerable<INamespaceBlockMemberDefinitionSyntax> definitions)
     {
         Span = span;
         File = file;
@@ -1788,7 +1788,7 @@ file class NamespaceDefinitionSyntax : INamespaceDefinitionSyntax
     public bool IsGlobalQualified { [DebuggerStepThrough] get; }
     public NamespaceName DeclaredNames { [DebuggerStepThrough] get; }
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { [DebuggerStepThrough] get; }
-    public IFixedList<INonMemberDefinitionSyntax> Definitions { [DebuggerStepThrough] get; }
+    public IFixedList<INamespaceBlockMemberDefinitionSyntax> Definitions { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.NamespaceDefinition_ToString(this);
 
@@ -1800,7 +1800,7 @@ file class NamespaceDefinitionSyntax : INamespaceDefinitionSyntax
         bool isGlobalQualified,
         NamespaceName declaredNames,
         IEnumerable<IUsingDirectiveSyntax> usingDirectives,
-        IEnumerable<INonMemberDefinitionSyntax> definitions)
+        IEnumerable<INamespaceBlockMemberDefinitionSyntax> definitions)
     {
         Span = span;
         File = file;

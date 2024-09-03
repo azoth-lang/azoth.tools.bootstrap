@@ -14,15 +14,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
 public partial class Parser
 {
-    public IFixedList<INonMemberDefinitionSyntax> ParseNonMemberDefinitions<T>()
+    public IFixedList<INamespaceBlockMemberDefinitionSyntax> ParseNamespaceBlockMemberDefinitions<T>()
         where T : IToken
     {
-        var declarations = new List<INonMemberDefinitionSyntax>();
+        var declarations = new List<INamespaceBlockMemberDefinitionSyntax>();
         // Stop at end of file or some token that contains these declarations
         while (!Tokens.AtEnd<T>())
             try
             {
-                declarations.Add(ParseNonMemberDefinition());
+                declarations.Add(ParseNamespaceBlockMemberDefinition());
             }
             catch (ParseFailedException)
             {
@@ -32,7 +32,7 @@ public partial class Parser
         return declarations.ToFixedList();
     }
 
-    public INonMemberDefinitionSyntax ParseNonMemberDefinition()
+    public INamespaceBlockMemberDefinitionSyntax ParseNamespaceBlockMemberDefinition()
     {
         var attributes = ParseAttributes();
         var modifiers = ParseModifiers();
@@ -88,7 +88,7 @@ public partial class Parser
             nameSpan = globalQualifier.Span;
         Tokens.Expect<IOpenBraceToken>();
         var usingDirectives = ParseUsingDirectives();
-        var declarations = ParseNonMemberDefinitions<ICloseBraceToken>();
+        var declarations = ParseNamespaceBlockMemberDefinitions<ICloseBraceToken>();
         var closeBrace = Tokens.Expect<ICloseBraceToken>();
         var span = TextSpan.Covering(ns, closeBrace);
         var isGlobalQualified = globalQualifier is not null;
