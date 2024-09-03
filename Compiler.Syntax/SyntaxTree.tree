@@ -46,8 +46,8 @@ PackageReference = AliasOrName:`IdentifierName` Package:`IPackageSymbols` IsTrus
 
 // ---------- Definitions
 Definition <: Code = File:`CodeFile` Name:`TypeName`? NameSpan:`TextSpan`;
-/// All non-namespace declarations since a namespace doesn't really create
-/// a thing, it just defines a group of names.
+/// All top-level non-namespace definitions since a namespace doesn't really create a thing, it just
+/// defines a group of names.
 // TODO give a better name to this (the semantic tree has moved away from "entity")
 EntityDefinition <: Definition = AccessModifier:`IAccessModifierToken`?;
 /// Base type for any declaration that declares a callable thing (i.e. function, method, getter, setter, constructor, or initializer).
@@ -55,10 +55,10 @@ InvocableDefinition <: EntityDefinition = Parameters:ConstructorOrInitializerPar
 ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrInitializerParameter* Body;
 
 // ---------- Namespace Definitions
-/// Things that can be declared outside of a class.
-NamespaceBlockMemberDefinition <: Definition;
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition
     = IsGlobalQualified:`bool` DeclaredNames:`NamespaceName` UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*;
+/// Things that can be declared outside of a type (i.e. functions, types, and namespace blocks).
+NamespaceBlockMemberDefinition <: Definition;
 
 // ---------- Function Definition
 FunctionDefinition <: ConcreteInvocableDefinition, NamespaceBlockMemberDefinition

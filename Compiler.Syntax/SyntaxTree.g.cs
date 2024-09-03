@@ -207,15 +207,6 @@ public partial interface IConcreteInvocableDefinitionSyntax : IInvocableDefiniti
     IBodySyntax Body { get; }
 }
 
-[Closed(
-    typeof(INamespaceBlockDefinitionSyntax),
-    typeof(IFunctionDefinitionSyntax),
-    typeof(ITypeDefinitionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INamespaceBlockMemberDefinitionSyntax : IDefinitionSyntax
-{
-}
-
 // [Closed(typeof(NamespaceBlockDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamespaceBlockDefinitionSyntax : INamespaceBlockMemberDefinitionSyntax
@@ -235,6 +226,15 @@ public partial interface INamespaceBlockDefinitionSyntax : INamespaceBlockMember
         IEnumerable<IUsingDirectiveSyntax> usingDirectives,
         IEnumerable<INamespaceBlockMemberDefinitionSyntax> definitions)
         => new NamespaceBlockDefinitionSyntax(span, file, name, nameSpan, isGlobalQualified, declaredNames, usingDirectives, definitions);
+}
+
+[Closed(
+    typeof(INamespaceBlockDefinitionSyntax),
+    typeof(IFunctionDefinitionSyntax),
+    typeof(ITypeDefinitionSyntax))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface INamespaceBlockMemberDefinitionSyntax : IDefinitionSyntax
+{
 }
 
 // [Closed(typeof(FunctionDefinitionSyntax))]

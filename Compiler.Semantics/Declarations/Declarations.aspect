@@ -24,7 +24,10 @@
 = NamespaceDeclaration.NestedMembers;
 
 // ---------- Type Declarations
+↑ TypeDeclaration.Supertypes: {`BareReferenceType`};
+↑ TypeDeclaration.Members: {TypeMemberDeclaration};
 /// Members including ones inherited from supertypes
+↑ TypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
 ↑ UserTypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
 ↑ ClassDeclaration.InclusiveMembers: {ClassMemberDeclaration};
 ↑ StructDeclaration.InclusiveMembers: {StructMemberDeclaration};
@@ -34,8 +37,3 @@
 ↑ StandardMethodDeclaration.Arity: `int`;
 ↑ StandardMethodDeclaration.MethodGroupType: `FunctionType`;
 ↑ FieldDeclaration.BindingType: `DataType`;
-
-// ---------- Can be Referenced by Type Name
-↑ TypeDeclaration.Supertypes: {`BareReferenceType`};
-↑ TypeDeclaration.Members: {TypeMemberDeclaration};
-↑ TypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};

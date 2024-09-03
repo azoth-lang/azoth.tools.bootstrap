@@ -16,6 +16,12 @@
     => NestedMembersByName.GetValueOrDefault(named) ?? [];
 
 // ---------- Type Declarations
+/// <summary>
+/// All members of the type with the given name along with inherited members with the given name
+/// if they are not hidden by a member in the type itself.
+/// </summary>
++ TypeDeclaration.InclusiveInstanceMembersNamed(StandardName named): `IEnumerable<IInstanceMemberDeclarationNode>`;
++ TypeDeclaration.AssociatedMembersNamed(StandardName named): `IEnumerable<IAssociatedMemberDeclarationNode>`;
 ↑ PrimitiveTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>`;
 = PrimitiveTypeDeclaration.InclusiveInstanceMembersByName;
 ↑ PrimitiveTypeDeclaration.AssociatedMembersByName: `FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
@@ -38,11 +44,3 @@
 = GenericParameterDeclaration.InclusiveInstanceMembersNamed(StandardName named) => [];
 // TODO should look up members based on generic constraints
 = GenericParameterDeclaration.AssociatedMembersNamed(StandardName named) => [];
-
-// ---------- Can be Referenced by Type Name
-/// <summary>
-/// All members of the type with the given name along with inherited members with the given name
-/// if they are not hidden by a member in the type itself.
-/// </summary>
-+ TypeDeclaration.InclusiveInstanceMembersNamed(StandardName named): `IEnumerable<IInstanceMemberDeclarationNode>`;
-+ TypeDeclaration.AssociatedMembersNamed(StandardName named): `IEnumerable<IAssociatedMemberDeclarationNode>`;

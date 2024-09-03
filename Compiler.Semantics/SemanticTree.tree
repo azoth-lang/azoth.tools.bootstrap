@@ -29,7 +29,6 @@
 
 // ---------- Parent
 Semantic <: `ITreeNode` = Syntax:`ISyntax`?;
-// Parent and Package types quoted so that is is not treated as a child node
 Child <: `IChildTreeNode<ISemanticNode>`;
 
 // ---------- Special Parts
@@ -409,11 +408,9 @@ PackageDeclaration <: SymbolDeclaration = AliasOrName:`IdentifierName`? Name:`Id
     MainFacet:PackageFacetDeclaration TestingFacet:PackageFacetDeclaration;
 
 // ---------- Facet Declarations
-/// Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
+/// Facets separate the testing and non-testing aspects of a package. They do no have their own
+/// symbol. They use the package symbol.
 PackageFacetDeclaration <: ChildDeclaration, SymbolDeclaration;
-
-// TODO better name for this
-FacetMemberDeclaration <: NamespaceMemberDeclaration;
 
 // TODO better name for this
 // Any child declaration node of a facet (not just members)
@@ -425,11 +422,12 @@ NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, Sy
     = Name:`StandardName`;
 
 // ---------- Function Declaration
-FunctionDeclaration <: FacetMemberDeclaration, FunctionInvocableDeclaration;
+FunctionDeclaration <: NamespaceMemberDeclaration, FunctionInvocableDeclaration;
 
 // ---------- Type Declarations
+TypeDeclaration <: NamedDeclaration, SymbolDeclaration = Symbol:`TypeSymbol`;
 PrimitiveTypeDeclaration <: TypeDeclaration = Name:`SpecialTypeName` Members:{TypeMemberDeclaration};
-UserTypeDeclaration <: FacetMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
+UserTypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
     = Name:`StandardName` GenericParameters:GenericParameterDeclaration* Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration};
 ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration};
 StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration};
@@ -462,9 +460,6 @@ FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclar
     = Name:`IdentifierName` Symbol:`FieldSymbol`;
 AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableDeclaration, InvocableDeclaration
     = Name:`StandardName`;
-
-// ---------- Can be Referenced by Type Name
-TypeDeclaration <: NamedDeclaration, SymbolDeclaration = Symbol:`TypeSymbol`;
 
 // -------------------------------------------------------------------------------------------------
 // Symbol Nodes

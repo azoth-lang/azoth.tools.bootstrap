@@ -3677,8 +3677,8 @@ public partial interface IChildDeclarationNode : IDeclarationNode, IChildNode
     typeof(IFunctionInvocableDeclarationNode),
     typeof(INamedBindingDeclarationNode),
     typeof(INamespaceMemberDeclarationNode),
-    typeof(IMethodDeclarationNode),
-    typeof(ITypeDeclarationNode))]
+    typeof(ITypeDeclarationNode),
+    typeof(IMethodDeclarationNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamedDeclarationNode : IChildDeclarationNode
 {
@@ -3691,9 +3691,9 @@ public partial interface INamedDeclarationNode : IChildDeclarationNode
     typeof(IPackageDeclarationNode),
     typeof(IPackageFacetDeclarationNode),
     typeof(INamespaceMemberDeclarationNode),
+    typeof(ITypeDeclarationNode),
     typeof(ITypeMemberDeclarationNode),
-    typeof(IAssociatedMemberDeclarationNode),
-    typeof(ITypeDeclarationNode))]
+    typeof(IAssociatedMemberDeclarationNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISymbolDeclarationNode : IDeclarationNode
 {
@@ -3775,14 +3775,6 @@ public partial interface IPackageFacetDeclarationNode : IChildDeclarationNode, I
 }
 
 [Closed(
-    typeof(IFunctionDeclarationNode),
-    typeof(IUserTypeDeclarationNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFacetMemberDeclarationNode : INamespaceMemberDeclarationNode
-{
-}
-
-[Closed(
     typeof(IDefinitionNode),
     typeof(INamespaceMemberDeclarationNode),
     typeof(ITypeMemberDeclarationNode))]
@@ -3818,8 +3810,9 @@ public partial interface INamespaceDeclarationNode : INamespaceMemberDeclaration
 
 [Closed(
     typeof(INamespaceMemberDefinitionNode),
-    typeof(IFacetMemberDeclarationNode),
     typeof(INamespaceDeclarationNode),
+    typeof(IFunctionDeclarationNode),
+    typeof(IUserTypeDeclarationNode),
     typeof(INamespaceMemberSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamespaceMemberDeclarationNode : IPackageFacetChildDeclarationNode, INamedDeclarationNode, ISymbolDeclarationNode
@@ -3833,8 +3826,24 @@ public partial interface INamespaceMemberDeclarationNode : IPackageFacetChildDec
     typeof(IFunctionDefinitionNode),
     typeof(IFunctionSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFunctionDeclarationNode : IFacetMemberDeclarationNode, IFunctionInvocableDeclarationNode
+public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationNode, IFunctionInvocableDeclarationNode
 {
+}
+
+[Closed(
+    typeof(IPrimitiveTypeDeclarationNode),
+    typeof(IUserTypeDeclarationNode),
+    typeof(IGenericParameterDeclarationNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDeclarationNode
+{
+    new TypeSymbol Symbol { get; }
+    Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named);
+    IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
+    IFixedSet<BareReferenceType> Supertypes { get; }
+    IFixedSet<ITypeMemberDeclarationNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
 }
 
 [Closed(
@@ -3861,7 +3870,7 @@ public partial interface IPrimitiveTypeDeclarationNode : ITypeDeclarationNode
     typeof(ITraitDeclarationNode),
     typeof(IUserTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUserTypeDeclarationNode : IFacetMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, ITypeDeclarationNode
+public partial interface IUserTypeDeclarationNode : INamespaceMemberDeclarationNode, IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, ITypeDeclarationNode
 {
     IFixedList<IGenericParameterDeclarationNode> GenericParameters { get; }
     new UserTypeSymbol Symbol { get; }
@@ -4103,22 +4112,6 @@ public partial interface IAssociatedFunctionDeclarationNode : IAssociatedMemberD
     new StandardName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
-}
-
-[Closed(
-    typeof(IPrimitiveTypeDeclarationNode),
-    typeof(IUserTypeDeclarationNode),
-    typeof(IGenericParameterDeclarationNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDeclarationNode
-{
-    new TypeSymbol Symbol { get; }
-    Symbol ISymbolDeclarationNode.Symbol => Symbol;
-    IEnumerable<IInstanceMemberDeclarationNode> InclusiveInstanceMembersNamed(StandardName named);
-    IEnumerable<IAssociatedMemberDeclarationNode> AssociatedMembersNamed(StandardName named);
-    IFixedSet<BareReferenceType> Supertypes { get; }
-    IFixedSet<ITypeMemberDeclarationNode> Members { get; }
-    IFixedSet<ITypeMemberDeclarationNode> InclusiveMembers { get; }
 }
 
 [Closed(
