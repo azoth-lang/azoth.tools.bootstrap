@@ -58,17 +58,22 @@ ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrIni
 /// Things that can be declared outside of a class.
 // TODO rename to NamespaceMemberDefinition
 NonMemberDefinition <: Definition;
-NamespaceDefinition <: NonMemberDefinition = IsGlobalQualified:`bool` DeclaredNames:`NamespaceName` UsingDirectives:UsingDirective* Definitions:NonMemberDefinition*;
+NamespaceDefinition <: NonMemberDefinition
+    = IsGlobalQualified:`bool` DeclaredNames:`NamespaceName` UsingDirectives:UsingDirective* Definitions:NonMemberDefinition*;
 
 // ---------- Function Definition
-FunctionDefinition <: ConcreteInvocableDefinition, NonMemberDefinition = Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
+FunctionDefinition <: ConcreteInvocableDefinition, NonMemberDefinition
+    = Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
 
 // ---------- Type Definitions
 TypeDefinition <: NonMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition
     = ConstModifier:`IConstKeywordToken`? MoveModifier:`IMoveKeywordToken`? Name:`StandardName` GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TypeMemberDefinition*;
-ClassDefinition <: TypeDefinition = AbstractModifier:`IAbstractKeywordToken`? GenericParameters:GenericParameter* BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* Members:ClassMemberDefinition*;
-StructDefinition <: TypeDefinition = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:StructMemberDefinition*;
-TraitDefinition <: TypeDefinition = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TraitMemberDefinition*;
+ClassDefinition <: TypeDefinition
+    = AbstractModifier:`IAbstractKeywordToken`? GenericParameters:GenericParameter* BaseTypeName:StandardTypeName? SupertypeNames:StandardTypeName* Members:ClassMemberDefinition*;
+StructDefinition <: TypeDefinition
+    = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:StructMemberDefinition*;
+TraitDefinition <: TypeDefinition
+    = GenericParameters:GenericParameter* SupertypeNames:StandardTypeName* Members:TraitMemberDefinition*;
 
 // ---------- Type Definition Parts
 GenericParameter <: Code = Constraint:CapabilityConstraint Name:`IdentifierName` Independence:`TypeParameterIndependence` Variance:`TypeParameterVariance`;
@@ -147,7 +152,8 @@ ResultStatement <: Statement, BlockOrResult = Expression;
 
 /// A statement that can appear directly in a method body. (i.e. not a result statement)
 BodyStatement <: Statement;
-VariableDeclarationStatement <: BodyStatement, LocalBinding = NameSpan:`TextSpan` Name:`IdentifierName` Capability? Type? Initializer:Expression?;
+VariableDeclarationStatement <: BodyStatement, LocalBinding
+    = Name:`IdentifierName` Capability? Type? Initializer:Expression?;
 ExpressionStatement <: BodyStatement = Expression;
 
 // ---------- Patterns
@@ -170,7 +176,8 @@ BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Statements:Statement
 /// though, the type name is the name of the unnamed constructor. Thus,
 /// this expression's type could be either an object type, or member type.
 /// </summary>
-NewObjectExpression <: Expression = Type:TypeName ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
+NewObjectExpression <: Expression
+    = Type:TypeName ConstructorName:`IdentifierName`? ConstructorNameSpan:`TextSpan`? Arguments:Expression*;
 UnsafeExpression <: Expression = Expression;
 
 // ---------- Literal Expressions
@@ -192,7 +199,8 @@ PatternMatchExpression <: Expression = Referent:Expression Pattern;
 IfExpression <: Expression, ElseClause = Condition:Expression ThenBlock:BlockOrResult ElseClause?;
 LoopExpression <: Expression = Block:BlockExpression;
 WhileExpression <: Expression = Condition:Expression Block:BlockExpression;
-ForeachExpression <: Expression, LocalBinding = VariableName:`IdentifierName` InExpression:Expression Type? Block:BlockExpression;
+ForeachExpression <: Expression, LocalBinding
+    = VariableName:`IdentifierName` InExpression:Expression Type? Block:BlockExpression;
 BreakExpression <: Expression = Value:Expression?;
 NextExpression <: Expression;
 ReturnExpression <: Expression = Value:Expression?;
