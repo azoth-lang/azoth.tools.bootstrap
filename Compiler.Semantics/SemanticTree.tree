@@ -76,7 +76,7 @@ ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition, FunctionInvo
     = Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body Symbol:`FunctionSymbol`;
 
 // ---------- Namespace Definitions
-NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceDefinitionSyntax`
+NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceBlockDefinitionSyntax`
     UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*;
 NamespaceBlockMemberDefinition <: Definition;
 NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration

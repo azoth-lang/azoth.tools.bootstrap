@@ -40,7 +40,7 @@ public partial class Parser
         switch (Tokens.Current)
         {
             case INamespaceKeywordToken _:
-                return ParseNamespace(modifiers);
+                return ParseNamespaceBlock(modifiers);
             case IClassKeywordToken _:
                 return ParseClass(modifiers);
             case IStructKeywordToken _:
@@ -71,7 +71,7 @@ public partial class Parser
             : FixedList.Empty<IStandardTypeNameSyntax>();
 
     #region Parse Namespaces
-    internal INamespaceDefinitionSyntax ParseNamespace(ModifierParser modifiers)
+    internal INamespaceBlockDefinitionSyntax ParseNamespaceBlock(ModifierParser modifiers)
     {
         modifiers.ParseEndOfModifiers();
         var ns = Tokens.Consume<INamespaceKeywordToken>();
@@ -92,7 +92,7 @@ public partial class Parser
         var closeBrace = Tokens.Expect<ICloseBraceToken>();
         var span = TextSpan.Covering(ns, closeBrace);
         var isGlobalQualified = globalQualifier is not null;
-        return INamespaceDefinitionSyntax.Create(span, File, name.Segments.LastOrDefault(), nameSpan, isGlobalQualified, name,
+        return INamespaceBlockDefinitionSyntax.Create(span, File, name.Segments.LastOrDefault(), nameSpan, isGlobalQualified, name,
             usingDirectives, declarations);
     }
 

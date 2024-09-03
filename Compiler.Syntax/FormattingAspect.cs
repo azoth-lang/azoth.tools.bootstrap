@@ -27,7 +27,7 @@ internal static partial class FormattingAspect
     #endregion
 
     #region Namespace Definitions
-    public static partial string NamespaceDefinition_ToString(INamespaceDefinitionSyntax node)
+    public static partial string NamespaceBlockDefinition_ToString(INamespaceBlockDefinitionSyntax node)
         => node.IsGlobalQualified ? $"namespace ::{node.DeclaredNames} {{ … }}" : $"namespace {node.DeclaredNames} {{ … }}";
     #endregion
 

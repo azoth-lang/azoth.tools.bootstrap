@@ -61,7 +61,7 @@ internal static class SyntaxBinder
     #endregion
 
     #region Namespace Declarations
-    private static INamespaceBlockDefinitionNode NamespaceDefinition(INamespaceDefinitionSyntax syntax)
+    private static INamespaceBlockDefinitionNode NamespaceBlockDefinition(INamespaceBlockDefinitionSyntax syntax)
         => INamespaceBlockDefinitionNode.Create(syntax, UsingDirectives(syntax.UsingDirectives),
             NamespaceMemberDefinitions(syntax.Definitions));
 
@@ -71,7 +71,7 @@ internal static class SyntaxBinder
     private static INamespaceBlockMemberDefinitionNode NamespaceBlockMemberDefinition(INamespaceBlockMemberDefinitionSyntax syntax)
         => syntax switch
         {
-            INamespaceDefinitionSyntax syn => NamespaceDefinition(syn),
+            INamespaceBlockDefinitionSyntax syn => NamespaceBlockDefinition(syn),
             ITypeDefinitionSyntax syn => TypeDefinition(syn),
             IFunctionDefinitionSyntax syn => FunctionDefinition(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)

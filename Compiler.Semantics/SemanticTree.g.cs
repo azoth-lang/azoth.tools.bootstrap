@@ -403,7 +403,7 @@ public partial interface IConcreteFunctionInvocableDefinitionNode : IConcreteInv
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDefinitionNode
 {
-    new INamespaceDefinitionSyntax Syntax { get; }
+    new INamespaceBlockDefinitionSyntax Syntax { get; }
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -430,7 +430,7 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
         => DeclaredNames.Segments.LastOrDefault();
 
     public static INamespaceBlockDefinitionNode Create(
-        INamespaceDefinitionSyntax syntax,
+        INamespaceBlockDefinitionSyntax syntax,
         IEnumerable<IUsingDirectiveNode> usingDirectives,
         IEnumerable<INamespaceBlockMemberDefinitionNode> members)
         => new NamespaceBlockDefinitionNode(syntax, usingDirectives, members);
@@ -4974,7 +4974,7 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
 {
     private INamespaceBlockDefinitionNode Self { [Inline] get => this; }
 
-    public INamespaceDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
+    public INamespaceBlockDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IUsingDirectiveNode> UsingDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -5015,7 +5015,7 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
     private bool definitionCached;
 
     public NamespaceBlockDefinitionNode(
-        INamespaceDefinitionSyntax syntax,
+        INamespaceBlockDefinitionSyntax syntax,
         IEnumerable<IUsingDirectiveNode> usingDirectives,
         IEnumerable<INamespaceBlockMemberDefinitionNode> members)
     {

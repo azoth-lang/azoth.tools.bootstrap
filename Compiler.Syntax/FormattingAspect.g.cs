@@ -20,7 +20,7 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string PackageReference_ToString(IPackageReferenceSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string NamespaceDefinition_ToString(INamespaceDefinitionSyntax node);
+    public static partial string NamespaceBlockDefinition_ToString(INamespaceBlockDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string FunctionDefinition_ToString(IFunctionDefinitionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

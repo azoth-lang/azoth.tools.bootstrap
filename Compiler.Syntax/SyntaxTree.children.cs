@@ -33,7 +33,7 @@ public static class ISyntaxExtensions
                 yield break;
             case IPackageReferenceSyntax n:
                 yield break;
-            case INamespaceDefinitionSyntax n:
+            case INamespaceBlockDefinitionSyntax n:
                 foreach (var child in n.UsingDirectives)
                     yield return child;
                 foreach (var child in n.Definitions)

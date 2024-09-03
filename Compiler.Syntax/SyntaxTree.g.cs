@@ -208,7 +208,7 @@ public partial interface IConcreteInvocableDefinitionSyntax : IInvocableDefiniti
 }
 
 [Closed(
-    typeof(INamespaceDefinitionSyntax),
+    typeof(INamespaceBlockDefinitionSyntax),
     typeof(IFunctionDefinitionSyntax),
     typeof(ITypeDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -216,16 +216,16 @@ public partial interface INamespaceBlockMemberDefinitionSyntax : IDefinitionSynt
 {
 }
 
-// [Closed(typeof(NamespaceDefinitionSyntax))]
+// [Closed(typeof(NamespaceBlockDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface INamespaceDefinitionSyntax : INamespaceBlockMemberDefinitionSyntax
+public partial interface INamespaceBlockDefinitionSyntax : INamespaceBlockMemberDefinitionSyntax
 {
     bool IsGlobalQualified { get; }
     NamespaceName DeclaredNames { get; }
     IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionSyntax> Definitions { get; }
 
-    public static INamespaceDefinitionSyntax Create(
+    public static INamespaceBlockDefinitionSyntax Create(
         TextSpan span,
         CodeFile file,
         TypeName? name,
@@ -234,7 +234,7 @@ public partial interface INamespaceDefinitionSyntax : INamespaceBlockMemberDefin
         NamespaceName declaredNames,
         IEnumerable<IUsingDirectiveSyntax> usingDirectives,
         IEnumerable<INamespaceBlockMemberDefinitionSyntax> definitions)
-        => new NamespaceDefinitionSyntax(span, file, name, nameSpan, isGlobalQualified, declaredNames, usingDirectives, definitions);
+        => new NamespaceBlockDefinitionSyntax(span, file, name, nameSpan, isGlobalQualified, declaredNames, usingDirectives, definitions);
 }
 
 // [Closed(typeof(FunctionDefinitionSyntax))]
@@ -1777,9 +1777,9 @@ file class PackageReferenceSyntax : IPackageReferenceSyntax
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class NamespaceDefinitionSyntax : INamespaceDefinitionSyntax
+file class NamespaceBlockDefinitionSyntax : INamespaceBlockDefinitionSyntax
 {
-    private INamespaceDefinitionSyntax Self { [Inline] get => this; }
+    private INamespaceBlockDefinitionSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public CodeFile File { [DebuggerStepThrough] get; }
@@ -1790,9 +1790,9 @@ file class NamespaceDefinitionSyntax : INamespaceDefinitionSyntax
     public IFixedList<IUsingDirectiveSyntax> UsingDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceBlockMemberDefinitionSyntax> Definitions { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.NamespaceDefinition_ToString(this);
+        => FormattingAspect.NamespaceBlockDefinition_ToString(this);
 
-    public NamespaceDefinitionSyntax(
+    public NamespaceBlockDefinitionSyntax(
         TextSpan span,
         CodeFile file,
         TypeName? name,

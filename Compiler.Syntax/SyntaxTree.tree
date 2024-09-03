@@ -57,7 +57,7 @@ ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrIni
 // ---------- Namespace Definitions
 /// Things that can be declared outside of a class.
 NamespaceBlockMemberDefinition <: Definition;
-NamespaceDefinition <: NamespaceBlockMemberDefinition
+NamespaceBlockDefinition <: NamespaceBlockMemberDefinition
     = IsGlobalQualified:`bool` DeclaredNames:`NamespaceName` UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*;
 
 // ---------- Function Definition
