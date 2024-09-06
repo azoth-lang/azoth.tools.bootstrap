@@ -459,7 +459,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             this.Write("(");
             
             #line 60 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(string.Join(", ", Build.PropertiesForClass(node).Select(p => Emit.VariableName(p)))));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Arguments(Build.PropertiesForClass(node))));
             
             #line default
             #line hidden

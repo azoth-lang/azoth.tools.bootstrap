@@ -57,7 +57,7 @@ public partial interface <#= Emit.TypeName(node.Defines) #><#= Emit.BaseTypes(no
 <#      if (tree.GenerateClasses && !node.IsAbstract) { #>
 
     public static <#= Emit.TypeName(node.Defines) #> Create(<#= Emit.Parameters(Build.PropertiesForClass(node)) #>)
-        => new <#= Emit.ClassName(node.Defines) #>(<#=string.Join(", ", Build.PropertiesForClass(node).Select(p => Emit.VariableName(p))) #>);
+        => new <#= Emit.ClassName(node.Defines) #>(<#= Emit.Arguments(Build.PropertiesForClass(node)) #>);
 <#      } #>
 }
 

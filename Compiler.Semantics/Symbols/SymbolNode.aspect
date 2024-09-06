@@ -2,6 +2,7 @@
 ◊name SymbolNodeAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Compiler.Primitives;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
@@ -58,14 +59,31 @@
 = FunctionSymbol.Type => Symbol.Type;
 
 // ---------- Type Symbol Nodes
+↓ TypeSymbol.SymbolTree(): `ISymbolTree`;
+↑ child TypeSymbol.Members: {TypeMemberSymbol};
+
+↑ PrimitiveTypeSymbol.SymbolTree(): `PrimitiveSymbolTree` => Primitive.SymbolTree;
 = PrimitiveTypeSymbol.Supertypes => Symbol.GetDeclaredType()?.Supertypes ?? [];
+↑ child PrimitiveTypeSymbol.Members: {TypeMemberSymbol};
 // For now, the symbol tree already includes all inherited members.
 = PrimitiveTypeSymbol.InclusiveMembers => Members;
-↓ UserTypeSymbol.SymbolTree(): `ISymbolTree`;
+
+↑ UserTypeSymbol.Name: `StandardName` => Symbol.Name;
+↑ child UserTypeSymbol.GenericParameters: GenericParameterSymbol*;
 = UserTypeSymbol.Supertypes => Symbol.GetDeclaredType().Supertypes;
+= UserTypeSymbol.GenericParameters;
+↑ child UserTypeSymbol.Members: {TypeMemberSymbol};
+
+↑ child ClassSymbol.Members: {ClassMemberSymbol};
 // For now, the symbol tree already includes all inherited members.
 = ClassSymbol.InclusiveMembers => Members;
+
+↑ child StructSymbol.Members: {StructMemberSymbol};
+// For now, the symbol tree already includes all inherited members.
 = StructSymbol.InclusiveMembers => Members;
+
+↑ child TraitSymbol.Members: {TraitMemberSymbol};
+// For now, the symbol tree already includes all inherited members.
 = TraitSymbol.InclusiveMembers => Members;
 
 // ---------- Type Declaration Parts

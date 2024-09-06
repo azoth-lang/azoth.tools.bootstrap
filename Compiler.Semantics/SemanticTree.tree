@@ -486,11 +486,12 @@ NamespaceMemberSymbol <: NamespaceMemberDeclaration, ChildSymbol;
 FunctionSymbol <: FunctionDeclaration, NamespaceMemberSymbol;
 
 // ---------- Type Symbol Nodes
-PrimitiveTypeSymbol <: PrimitiveTypeDeclaration = Members:{TypeMemberSymbol};
-UserTypeSymbol <: UserTypeDeclaration, NamespaceMemberSymbol = GenericParameters:GenericParameterSymbol* Members:{TypeMemberSymbol};
-ClassSymbol <: ClassDeclaration, UserTypeSymbol = GenericParameters:GenericParameterSymbol* Members:{ClassMemberSymbol};
-StructSymbol <: StructDeclaration, UserTypeSymbol = GenericParameters:GenericParameterSymbol* Members:{StructMemberSymbol};
-TraitSymbol <: TraitDeclaration, UserTypeSymbol = GenericParameters:GenericParameterSymbol* Members:{TraitMemberSymbol};
+TypeSymbol <: TypeDeclaration, ChildSymbol;
+PrimitiveTypeSymbol <: PrimitiveTypeDeclaration, TypeSymbol;
+UserTypeSymbol <: UserTypeDeclaration, TypeSymbol, NamespaceMemberSymbol;
+ClassSymbol <: ClassDeclaration, UserTypeSymbol = /GenericParameters/ /Members/;
+StructSymbol <: StructDeclaration, UserTypeSymbol = /GenericParameters/ /Members/;
+TraitSymbol <: TraitDeclaration, UserTypeSymbol = /GenericParameters/ /Members/;
 
 // ---------- Type Declaration Parts
 GenericParameterSymbol <: GenericParameterDeclaration, ChildSymbol = Members:{`ITypeMemberSymbolNode`};

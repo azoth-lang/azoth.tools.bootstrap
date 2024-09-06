@@ -12,6 +12,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Core.Operators;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.DataFlow;
@@ -3833,7 +3834,8 @@ public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationN
 [Closed(
     typeof(IPrimitiveTypeDeclarationNode),
     typeof(IUserTypeDeclarationNode),
-    typeof(IGenericParameterDeclarationNode))]
+    typeof(IGenericParameterDeclarationNode),
+    typeof(ITypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDeclarationNode
 {
@@ -4118,6 +4120,7 @@ public partial interface IAssociatedFunctionDeclarationNode : IAssociatedMemberD
     typeof(IPackageSymbolNode),
     typeof(IPackageFacetSymbolNode),
     typeof(INamespaceMemberSymbolNode),
+    typeof(ITypeSymbolNode),
     typeof(IGenericParameterSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IChildSymbolNode : IChildDeclarationNode
@@ -4193,24 +4196,37 @@ public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamesp
         => new FunctionSymbolNode(symbol, name);
 }
 
+[Closed(
+    typeof(IPrimitiveTypeSymbolNode),
+    typeof(IUserTypeSymbolNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface ITypeSymbolNode : ITypeDeclarationNode, IChildSymbolNode
+{
+    ISymbolTree SymbolTree();
+    new IFixedSet<ITypeMemberSymbolNode> Members { get; }
+    IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+}
+
 // [Closed(typeof(PrimitiveTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IPrimitiveTypeSymbolNode : IPrimitiveTypeDeclarationNode
+public partial interface IPrimitiveTypeSymbolNode : IPrimitiveTypeDeclarationNode, ITypeSymbolNode
 {
+    new PrimitiveSymbolTree SymbolTree()
+        => Primitive.SymbolTree;
+    ISymbolTree ITypeSymbolNode.SymbolTree() => SymbolTree();
     new IFixedSet<ITypeMemberSymbolNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> IPrimitiveTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
+    IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
     IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes
         => Symbol.GetDeclaredType()?.Supertypes ?? [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => Members;
 
     public static IPrimitiveTypeSymbolNode Create(
-        ISyntax? syntax,
         TypeSymbol symbol,
-        SpecialTypeName name,
-        IEnumerable<ITypeMemberSymbolNode> members)
-        => new PrimitiveTypeSymbolNode(syntax, symbol, name, members);
+        SpecialTypeName name)
+        => new PrimitiveTypeSymbolNode(symbol, name);
 }
 
 [Closed(
@@ -4218,14 +4234,19 @@ public partial interface IPrimitiveTypeSymbolNode : IPrimitiveTypeDeclarationNod
     typeof(IStructSymbolNode),
     typeof(ITraitSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUserTypeSymbolNode : IUserTypeDeclarationNode, INamespaceMemberSymbolNode
+public partial interface IUserTypeSymbolNode : IUserTypeDeclarationNode, ITypeSymbolNode, INamespaceMemberSymbolNode
 {
+    new StandardName Name
+        => Symbol.Name;
+    StandardName INamespaceMemberDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     new IFixedList<IGenericParameterSymbolNode> GenericParameters { get; }
     IFixedList<IGenericParameterDeclarationNode> IUserTypeDeclarationNode.GenericParameters => GenericParameters;
     new IFixedSet<ITypeMemberSymbolNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
-    ISymbolTree SymbolTree();
+    IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
     IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes
         => Symbol.GetDeclaredType().Supertypes;
 }
@@ -4239,15 +4260,13 @@ public partial interface IClassSymbolNode : IClassDeclarationNode, IUserTypeSymb
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> IUserTypeSymbolNode.Members => Members;
+    IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
     IFixedSet<IClassMemberDeclarationNode> IClassDeclarationNode.InclusiveMembers
         => Members;
 
     public static IClassSymbolNode Create(
-        StandardName name,
-        UserTypeSymbol symbol,
-        IEnumerable<IGenericParameterSymbolNode> genericParameters,
-        IEnumerable<IClassMemberSymbolNode> members)
-        => new ClassSymbolNode(name, symbol, genericParameters, members);
+        UserTypeSymbol symbol)
+        => new ClassSymbolNode(symbol);
 }
 
 // [Closed(typeof(StructSymbolNode))]
@@ -4259,15 +4278,13 @@ public partial interface IStructSymbolNode : IStructDeclarationNode, IUserTypeSy
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> IUserTypeSymbolNode.Members => Members;
+    IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
     IFixedSet<IStructMemberDeclarationNode> IStructDeclarationNode.InclusiveMembers
         => Members;
 
     public static IStructSymbolNode Create(
-        StandardName name,
-        UserTypeSymbol symbol,
-        IEnumerable<IGenericParameterSymbolNode> genericParameters,
-        IEnumerable<IStructMemberSymbolNode> members)
-        => new StructSymbolNode(name, symbol, genericParameters, members);
+        UserTypeSymbol symbol)
+        => new StructSymbolNode(symbol);
 }
 
 // [Closed(typeof(TraitSymbolNode))]
@@ -4279,15 +4296,13 @@ public partial interface ITraitSymbolNode : ITraitDeclarationNode, IUserTypeSymb
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> IUserTypeSymbolNode.Members => Members;
+    IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
     IFixedSet<ITraitMemberDeclarationNode> ITraitDeclarationNode.InclusiveMembers
         => Members;
 
     public static ITraitSymbolNode Create(
-        StandardName name,
-        UserTypeSymbol symbol,
-        IEnumerable<IGenericParameterSymbolNode> genericParameters,
-        IEnumerable<ITraitMemberSymbolNode> members)
-        => new TraitSymbolNode(name, symbol, genericParameters, members);
+        UserTypeSymbol symbol)
+        => new TraitSymbolNode(symbol);
 }
 
 // [Closed(typeof(GenericParameterSymbolNode))]
@@ -14319,12 +14334,16 @@ file class PrimitiveTypeSymbolNode : SemanticNode, IPrimitiveTypeSymbolNode
 {
     private IPrimitiveTypeSymbolNode Self { [Inline] get => this; }
 
-    public ISyntax? Syntax { [DebuggerStepThrough] get; }
     public TypeSymbol Symbol { [DebuggerStepThrough] get; }
     public SpecialTypeName Name { [DebuggerStepThrough] get; }
-    public IFixedSet<ITypeMemberSymbolNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public IFixedSet<ITypeMemberSymbolNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                n => ChildSet.Attach(this, SymbolNodeAspect.PrimitiveTypeSymbol_Members(n)));
+    private IFixedSet<ITypeMemberSymbolNode>? members;
+    private bool membersCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -14339,15 +14358,11 @@ file class PrimitiveTypeSymbolNode : SemanticNode, IPrimitiveTypeSymbolNode
     private bool associatedMembersByNameCached;
 
     public PrimitiveTypeSymbolNode(
-        ISyntax? syntax,
         TypeSymbol symbol,
-        SpecialTypeName name,
-        IEnumerable<ITypeMemberSymbolNode> members)
+        SpecialTypeName name)
     {
-        Syntax = syntax;
         Symbol = symbol;
         Name = name;
-        Members = ChildSet.Attach(this, members);
     }
 }
 
@@ -14356,16 +14371,19 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
 {
     private IClassSymbolNode Self { [Inline] get => this; }
 
-    public StandardName Name { [DebuggerStepThrough] get; }
     public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
-    public IFixedList<IGenericParameterSymbolNode> GenericParameters { [DebuggerStepThrough] get; }
-    public IFixedSet<IClassMemberSymbolNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
+    public IFixedSet<IClassMemberSymbolNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                n => ChildSet.Attach(this, SymbolNodeAspect.ClassSymbol_Members(n)));
+    private IFixedSet<IClassMemberSymbolNode>? members;
+    private bool membersCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -14378,17 +14396,17 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
+    public IFixedList<IGenericParameterSymbolNode> GenericParameters
+        => GrammarAttribute.IsCached(in genericParametersCached) ? genericParameters!
+            : this.Synthetic(ref genericParametersCached, ref genericParameters,
+                n => ChildList.Attach(this, SymbolNodeAspect.UserTypeSymbol_GenericParameters(n)));
+    private IFixedList<IGenericParameterSymbolNode>? genericParameters;
+    private bool genericParametersCached;
 
     public ClassSymbolNode(
-        StandardName name,
-        UserTypeSymbol symbol,
-        IEnumerable<IGenericParameterSymbolNode> genericParameters,
-        IEnumerable<IClassMemberSymbolNode> members)
+        UserTypeSymbol symbol)
     {
-        Name = name;
         Symbol = symbol;
-        GenericParameters = ChildList.Attach(this, genericParameters);
-        Members = ChildSet.Attach(this, members);
     }
 }
 
@@ -14397,16 +14415,19 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
 {
     private IStructSymbolNode Self { [Inline] get => this; }
 
-    public StandardName Name { [DebuggerStepThrough] get; }
     public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
-    public IFixedList<IGenericParameterSymbolNode> GenericParameters { [DebuggerStepThrough] get; }
-    public IFixedSet<IStructMemberSymbolNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
+    public IFixedSet<IStructMemberSymbolNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                n => ChildSet.Attach(this, SymbolNodeAspect.StructSymbol_Members(n)));
+    private IFixedSet<IStructMemberSymbolNode>? members;
+    private bool membersCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -14419,17 +14440,17 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
+    public IFixedList<IGenericParameterSymbolNode> GenericParameters
+        => GrammarAttribute.IsCached(in genericParametersCached) ? genericParameters!
+            : this.Synthetic(ref genericParametersCached, ref genericParameters,
+                n => ChildList.Attach(this, SymbolNodeAspect.UserTypeSymbol_GenericParameters(n)));
+    private IFixedList<IGenericParameterSymbolNode>? genericParameters;
+    private bool genericParametersCached;
 
     public StructSymbolNode(
-        StandardName name,
-        UserTypeSymbol symbol,
-        IEnumerable<IGenericParameterSymbolNode> genericParameters,
-        IEnumerable<IStructMemberSymbolNode> members)
+        UserTypeSymbol symbol)
     {
-        Name = name;
         Symbol = symbol;
-        GenericParameters = ChildList.Attach(this, genericParameters);
-        Members = ChildSet.Attach(this, members);
     }
 }
 
@@ -14438,16 +14459,19 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
 {
     private ITraitSymbolNode Self { [Inline] get => this; }
 
-    public StandardName Name { [DebuggerStepThrough] get; }
     public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
-    public IFixedList<IGenericParameterSymbolNode> GenericParameters { [DebuggerStepThrough] get; }
-    public IFixedSet<ITraitMemberSymbolNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
+    public IFixedSet<ITraitMemberSymbolNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                n => ChildSet.Attach(this, SymbolNodeAspect.TraitSymbol_Members(n)));
+    private IFixedSet<ITraitMemberSymbolNode>? members;
+    private bool membersCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
@@ -14460,17 +14484,17 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
                 NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
+    public IFixedList<IGenericParameterSymbolNode> GenericParameters
+        => GrammarAttribute.IsCached(in genericParametersCached) ? genericParameters!
+            : this.Synthetic(ref genericParametersCached, ref genericParameters,
+                n => ChildList.Attach(this, SymbolNodeAspect.UserTypeSymbol_GenericParameters(n)));
+    private IFixedList<IGenericParameterSymbolNode>? genericParameters;
+    private bool genericParametersCached;
 
     public TraitSymbolNode(
-        StandardName name,
-        UserTypeSymbol symbol,
-        IEnumerable<IGenericParameterSymbolNode> genericParameters,
-        IEnumerable<ITraitMemberSymbolNode> members)
+        UserTypeSymbol symbol)
     {
-        Name = name;
         Symbol = symbol;
-        GenericParameters = ChildList.Attach(this, genericParameters);
-        Members = ChildSet.Attach(this, members);
     }
 }
 

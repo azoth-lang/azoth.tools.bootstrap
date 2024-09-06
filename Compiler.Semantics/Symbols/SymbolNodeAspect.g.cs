@@ -2,6 +2,7 @@ using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
@@ -21,6 +22,8 @@ internal static partial class SymbolNodeAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial INamespaceSymbolNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFixedList<IGenericParameterSymbolNode> UserTypeSymbol_GenericParameters(IUserTypeSymbolNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FixedDictionary<IdentifierName, IPackageDeclarationNode> Package_PackageDeclarations(IPackageNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial INamespaceDefinitionNode PackageFacet_GlobalNamespace(IPackageFacetNode node);
@@ -32,4 +35,12 @@ internal static partial class SymbolNodeAspect
     public static partial INamespaceDefinitionNode NamespaceBlockDefinition_Definition(INamespaceBlockDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFixedSet<ITypeMemberSymbolNode> PrimitiveTypeSymbol_Members(IPrimitiveTypeSymbolNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFixedSet<IClassMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFixedSet<IStructMemberSymbolNode> StructSymbol_Members(IStructSymbolNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFixedSet<ITraitMemberSymbolNode> TraitSymbol_Members(ITraitSymbolNode node);
 }

@@ -186,6 +186,9 @@ internal static class Emit
         return attribute.IsMethod ? "()" : "";
     }
 
+    public static string Arguments(IEnumerable<PropertyModel> properties)
+        => string.Join(", ", properties.Select(VariableName));
+
     public static string ParametersAndBody(AttributeModel attribute)
         => attribute switch
         {

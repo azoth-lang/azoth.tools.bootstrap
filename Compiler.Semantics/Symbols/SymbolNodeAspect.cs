@@ -75,6 +75,30 @@ internal static partial class SymbolNodeAspect
     public static partial INamespaceDefinitionNode NamespaceBlockDefinition_Definition(INamespaceBlockDefinitionNode node)
         => FindNamespace(node.ContainingNamespace, node.DeclaredNames);
 
+    #region Type Symbol Nodes
+    public static partial IFixedList<IGenericParameterSymbolNode> UserTypeSymbol_GenericParameters(IUserTypeSymbolNode node)
+        => node.SymbolTree().GetChildrenOf(node.Symbol).OfType<GenericParameterTypeSymbol>()
+               .Select(SymbolBinder.Symbol).WhereNotNull()
+               .Cast<IGenericParameterSymbolNode>().ToFixedList();
+
+    public static partial IFixedSet<ITypeMemberSymbolNode> PrimitiveTypeSymbol_Members(IPrimitiveTypeSymbolNode node)
+        => GetMembers<ITypeMemberSymbolNode>(node);
+
+    public static partial IFixedSet<IClassMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node)
+        => GetMembers<IClassMemberSymbolNode>(node);
+
+    public static partial IFixedSet<IStructMemberSymbolNode> StructSymbol_Members(IStructSymbolNode node)
+        => GetMembers<IStructMemberSymbolNode>(node);
+
+    public static partial IFixedSet<ITraitMemberSymbolNode> TraitSymbol_Members(ITraitSymbolNode node)
+        => GetMembers<ITraitMemberSymbolNode>(node);
+
+    private static IFixedSet<T> GetMembers<T>(ITypeSymbolNode node)
+        where T : IChildDeclarationNode
+        => node.SymbolTree().GetChildrenOf(node.Symbol).Where(sym => sym is not GenericParameterTypeSymbol)
+               .Select(SymbolBinder.Symbol).WhereNotNull().Cast<T>().ToFixedSet();
+    #endregion
+
     public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)
     {
         var symbolNode = LookupDeclarations(node).TrySingle();
