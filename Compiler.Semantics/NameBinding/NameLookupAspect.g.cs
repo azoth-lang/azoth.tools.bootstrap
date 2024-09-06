@@ -16,9 +16,9 @@ internal static partial class NameLookupAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> NamespaceDeclaration_NestedMembersByName(INamespaceDeclarationNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> PrimitiveTypeDeclaration_InclusiveInstanceMembersByName(IPrimitiveTypeDeclarationNode node);
+    public static partial FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> BuiltInTypeDeclaration_InclusiveInstanceMembersByName(IBuiltInTypeDeclarationNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> PrimitiveTypeDeclaration_AssociatedMembersByName(IPrimitiveTypeDeclarationNode node);
+    public static partial FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> BuiltInTypeDeclaration_AssociatedMembersByName(IBuiltInTypeDeclarationNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> UserTypeDeclaration_InclusiveInstanceMembersByName(IUserTypeDeclarationNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

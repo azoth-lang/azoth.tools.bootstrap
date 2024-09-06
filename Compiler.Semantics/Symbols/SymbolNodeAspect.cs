@@ -82,7 +82,7 @@ internal static partial class SymbolNodeAspect
                .Select(SymbolBinder.Symbol).WhereNotNull()
                .Cast<IGenericParameterSymbolNode>().ToFixedList();
 
-    public static partial IFixedSet<ITypeMemberSymbolNode> PrimitiveTypeSymbol_Members(IPrimitiveTypeSymbolNode node)
+    public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_Members(IBuiltInTypeSymbolNode node)
         => GetMembers<ITypeMemberSymbolNode>(node);
 
     public static partial void Validate_ClassSymbolNode(UserTypeSymbol symbol)

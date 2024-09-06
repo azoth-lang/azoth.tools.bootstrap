@@ -63,11 +63,16 @@
 ↓ TypeSymbol.SymbolTree(): `ISymbolTree`;
 ↑ child TypeSymbol.Members: {TypeMemberSymbol};
 
-↑ PrimitiveTypeSymbol.SymbolTree(): `PrimitiveSymbolTree` => Primitive.SymbolTree;
-= PrimitiveTypeSymbol.Supertypes => Symbol.GetDeclaredType()?.Supertypes ?? [];
-↑ child PrimitiveTypeSymbol.Members: {TypeMemberSymbol};
+↑ BuiltInTypeSymbol.SymbolTree(): `PrimitiveSymbolTree` => Primitive.SymbolTree;
+↑ BuiltInTypeSymbol.Name: `SpecialTypeName`;
+= BuiltInTypeSymbol.Supertypes => Symbol.GetDeclaredType()?.Supertypes ?? [];
+↑ child BuiltInTypeSymbol.Members: {TypeMemberSymbol};
+= BuiltInTypeSymbol.Members;
 // For now, the symbol tree already includes all inherited members.
-= PrimitiveTypeSymbol.InclusiveMembers => Members;
+= BuiltInTypeSymbol.InclusiveMembers => Members;
+
+= EmptyTypeSymbol.Name => Symbol.Name;
+= PrimitiveTypeSymbol.Name => Symbol.Name;
 
 ↑ UserTypeSymbol.Name: `StandardName` => Symbol.Name;
 ↑ child UserTypeSymbol.GenericParameters: GenericParameterSymbol*;

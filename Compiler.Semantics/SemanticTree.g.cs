@@ -3832,7 +3832,7 @@ public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationN
 }
 
 [Closed(
-    typeof(IPrimitiveTypeDeclarationNode),
+    typeof(IBuiltInTypeDeclarationNode),
     typeof(IUserTypeDeclarationNode),
     typeof(IGenericParameterDeclarationNode),
     typeof(ITypeSymbolNode))]
@@ -3849,9 +3849,9 @@ public partial interface ITypeDeclarationNode : INamedDeclarationNode, ISymbolDe
 }
 
 [Closed(
-    typeof(IPrimitiveTypeSymbolNode))]
+    typeof(IBuiltInTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IPrimitiveTypeDeclarationNode : ITypeDeclarationNode
+public partial interface IBuiltInTypeDeclarationNode : ITypeDeclarationNode
 {
     new SpecialTypeName Name { get; }
     TypeName INamedDeclarationNode.Name => Name;
@@ -4197,7 +4197,7 @@ public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamesp
 }
 
 [Closed(
-    typeof(IPrimitiveTypeSymbolNode),
+    typeof(IBuiltInTypeSymbolNode),
     typeof(IUserTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeSymbolNode : ITypeDeclarationNode, IChildSymbolNode
@@ -4207,26 +4207,56 @@ public partial interface ITypeSymbolNode : ITypeDeclarationNode, IChildSymbolNod
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }
 
-// [Closed(typeof(PrimitiveTypeSymbolNode))]
+[Closed(
+    typeof(IEmptyTypeSymbolNode),
+    typeof(IPrimitiveTypeSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IPrimitiveTypeSymbolNode : IPrimitiveTypeDeclarationNode, ITypeSymbolNode
+public partial interface IBuiltInTypeSymbolNode : IBuiltInTypeDeclarationNode, ITypeSymbolNode
 {
     new PrimitiveSymbolTree SymbolTree()
         => Primitive.SymbolTree;
     ISymbolTree ITypeSymbolNode.SymbolTree() => SymbolTree();
+    new SpecialTypeName Name { get; }
+    SpecialTypeName IBuiltInTypeDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     new IFixedSet<ITypeMemberSymbolNode> Members { get; }
-    IFixedSet<ITypeMemberDeclarationNode> IPrimitiveTypeDeclarationNode.Members => Members;
+    IFixedSet<ITypeMemberDeclarationNode> IBuiltInTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberSymbolNode> ITypeSymbolNode.Members => Members;
     IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes
         => Symbol.GetDeclaredType()?.Supertypes ?? [];
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => Members;
+}
+
+// [Closed(typeof(EmptyTypeSymbolNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IEmptyTypeSymbolNode : IBuiltInTypeSymbolNode
+{
+    new EmptyTypeSymbol Symbol { get; }
+    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    SpecialTypeName IBuiltInTypeSymbolNode.Name
+        => Symbol.Name;
+
+    public static IEmptyTypeSymbolNode Create(
+        EmptyTypeSymbol symbol)
+        => new EmptyTypeSymbolNode(symbol);
+}
+
+// [Closed(typeof(PrimitiveTypeSymbolNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IPrimitiveTypeSymbolNode : IBuiltInTypeSymbolNode
+{
+    new PrimitiveTypeSymbol Symbol { get; }
+    TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
+    Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    SpecialTypeName IBuiltInTypeSymbolNode.Name
+        => Symbol.Name;
 
     public static IPrimitiveTypeSymbolNode Create(
-        TypeSymbol symbol,
-        SpecialTypeName name)
-        => new PrimitiveTypeSymbolNode(symbol, name);
+        PrimitiveTypeSymbol symbol)
+        => new PrimitiveTypeSymbolNode(symbol);
 }
 
 [Closed(
@@ -14330,39 +14360,70 @@ file class FunctionSymbolNode : SemanticNode, IFunctionSymbolNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class PrimitiveTypeSymbolNode : SemanticNode, IPrimitiveTypeSymbolNode
+file class EmptyTypeSymbolNode : SemanticNode, IEmptyTypeSymbolNode
 {
-    private IPrimitiveTypeSymbolNode Self { [Inline] get => this; }
+    private IEmptyTypeSymbolNode Self { [Inline] get => this; }
 
-    public TypeSymbol Symbol { [DebuggerStepThrough] get; }
-    public SpecialTypeName Name { [DebuggerStepThrough] get; }
+    public EmptyTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IFixedSet<ITypeMemberSymbolNode> Members
         => GrammarAttribute.IsCached(in membersCached) ? members!
             : this.Synthetic(ref membersCached, ref members,
-                n => ChildSet.Attach(this, SymbolNodeAspect.PrimitiveTypeSymbol_Members(n)));
+                n => ChildSet.Attach(this, SymbolNodeAspect.BuiltInTypeSymbol_Members(n)));
     private IFixedSet<ITypeMemberSymbolNode>? members;
     private bool membersCached;
     public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
         => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
             : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
-                NameLookupAspect.PrimitiveTypeDeclaration_InclusiveInstanceMembersByName);
+                NameLookupAspect.BuiltInTypeDeclaration_InclusiveInstanceMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
     private bool inclusiveInstanceMembersByNameCached;
     public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
         => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
             : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
-                NameLookupAspect.PrimitiveTypeDeclaration_AssociatedMembersByName);
+                NameLookupAspect.BuiltInTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
+
+    public EmptyTypeSymbolNode(
+        EmptyTypeSymbol symbol)
+    {
+        Symbol = symbol;
+    }
+}
+
+[GeneratedCode("AzothCompilerCodeGen", null)]
+file class PrimitiveTypeSymbolNode : SemanticNode, IPrimitiveTypeSymbolNode
+{
+    private IPrimitiveTypeSymbolNode Self { [Inline] get => this; }
+
+    public PrimitiveTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public IPackageDeclarationNode Package
+        => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public IFixedSet<ITypeMemberSymbolNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                n => ChildSet.Attach(this, SymbolNodeAspect.BuiltInTypeSymbol_Members(n)));
+    private IFixedSet<ITypeMemberSymbolNode>? members;
+    private bool membersCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.BuiltInTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.BuiltInTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
     public PrimitiveTypeSymbolNode(
-        TypeSymbol symbol,
-        SpecialTypeName name)
+        PrimitiveTypeSymbol symbol)
     {
         Symbol = symbol;
-        Name = name;
     }
 }
 

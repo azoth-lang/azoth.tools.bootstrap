@@ -41,11 +41,11 @@ internal static class SymbolBinder
              _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType),
          };
 
-    private static IPrimitiveTypeSymbolNode EmptyTypeSymbol(EmptyTypeSymbol sym)
-        => new EmptyTypeSymbolNode(sym);
+    private static IEmptyTypeSymbolNode EmptyTypeSymbol(EmptyTypeSymbol sym)
+        => IEmptyTypeSymbolNode.Create(sym);
 
     private static IPrimitiveTypeSymbolNode PrimitiveTypeSymbol(PrimitiveTypeSymbol sym)
-        => new PrimitiveTypeSymbolNode(sym);
+        => IPrimitiveTypeSymbolNode.Create(sym);
 
     private static IGenericParameterSymbolNode GenericParameterTypeSymbol(GenericParameterTypeSymbol sym)
         => new GenericParameterSymbolNode(sym);

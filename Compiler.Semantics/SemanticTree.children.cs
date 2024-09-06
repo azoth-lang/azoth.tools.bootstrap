@@ -492,6 +492,10 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IFunctionSymbolNode n:
                 yield break;
+            case IEmptyTypeSymbolNode n:
+                foreach (var child in n.Members)
+                    yield return child;
+                yield break;
             case IPrimitiveTypeSymbolNode n:
                 foreach (var child in n.Members)
                     yield return child;

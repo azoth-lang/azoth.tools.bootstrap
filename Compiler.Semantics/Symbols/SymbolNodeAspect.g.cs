@@ -32,6 +32,8 @@ internal static partial class SymbolNodeAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial INamespaceSymbolNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_Members(IBuiltInTypeSymbolNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<IGenericParameterSymbolNode> UserTypeSymbol_GenericParameters(IUserTypeSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FixedDictionary<IdentifierName, IPackageDeclarationNode> Package_PackageDeclarations(IPackageNode node);
@@ -45,8 +47,6 @@ internal static partial class SymbolNodeAspect
     public static partial INamespaceDefinitionNode NamespaceBlockDefinition_Definition(INamespaceBlockDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<ITypeMemberSymbolNode> PrimitiveTypeSymbol_Members(IPrimitiveTypeSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<IClassMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

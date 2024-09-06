@@ -426,7 +426,7 @@ FunctionDeclaration <: NamespaceMemberDeclaration, FunctionInvocableDeclaration;
 
 // ---------- Type Declarations
 TypeDeclaration <: NamedDeclaration, SymbolDeclaration = Symbol:`TypeSymbol`;
-PrimitiveTypeDeclaration <: TypeDeclaration = Name:`SpecialTypeName` Members:{TypeMemberDeclaration};
+BuiltInTypeDeclaration <: TypeDeclaration = Name:`SpecialTypeName` Members:{TypeMemberDeclaration};
 UserTypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
     = Name:`StandardName` GenericParameters:GenericParameterDeclaration* Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration};
 ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration};
@@ -487,7 +487,9 @@ FunctionSymbol <: FunctionDeclaration, NamespaceMemberSymbol;
 
 // ---------- Type Symbol Nodes
 TypeSymbol <: TypeDeclaration, ChildSymbol;
-PrimitiveTypeSymbol <: PrimitiveTypeDeclaration, TypeSymbol;
+BuiltInTypeSymbol <: BuiltInTypeDeclaration, TypeSymbol;
+EmptyTypeSymbol <: BuiltInTypeSymbol = Symbol:`EmptyTypeSymbol`;
+PrimitiveTypeSymbol <: BuiltInTypeSymbol = Symbol:`PrimitiveTypeSymbol`;
 UserTypeSymbol <: UserTypeDeclaration, TypeSymbol, NamespaceMemberSymbol;
 ClassSymbol <: ClassDeclaration, UserTypeSymbol = /GenericParameters/ /Members/;
 StructSymbol <: StructDeclaration, UserTypeSymbol = /GenericParameters/ /Members/;

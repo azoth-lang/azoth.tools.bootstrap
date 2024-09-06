@@ -22,13 +22,13 @@
 /// </summary>
 + TypeDeclaration.InclusiveInstanceMembersNamed(StandardName named): `IEnumerable<IInstanceMemberDeclarationNode>`;
 + TypeDeclaration.AssociatedMembersNamed(StandardName named): `IEnumerable<IAssociatedMemberDeclarationNode>`;
-↑ PrimitiveTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>`;
-= PrimitiveTypeDeclaration.InclusiveInstanceMembersByName;
-↑ PrimitiveTypeDeclaration.AssociatedMembersByName: `FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
-= PrimitiveTypeDeclaration.AssociatedMembersByName;
-= PrimitiveTypeDeclaration.InclusiveInstanceMembersNamed(StandardName named)
+↑ BuiltInTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>`;
+= BuiltInTypeDeclaration.InclusiveInstanceMembersByName;
+↑ BuiltInTypeDeclaration.AssociatedMembersByName: `FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>`;
+= BuiltInTypeDeclaration.AssociatedMembersByName;
+= BuiltInTypeDeclaration.InclusiveInstanceMembersNamed(StandardName named)
     => InclusiveInstanceMembersByName.GetValueOrDefault(named) ?? [];
-= PrimitiveTypeDeclaration.AssociatedMembersNamed(StandardName named)
+= BuiltInTypeDeclaration.AssociatedMembersNamed(StandardName named)
     => AssociatedMembersByName.GetValueOrDefault(named) ?? [];
 ↑ UserTypeDeclaration.InclusiveInstanceMembersByName: `FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>`;
 = UserTypeDeclaration.InclusiveInstanceMembersByName;

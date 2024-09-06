@@ -16,11 +16,11 @@ internal static partial class NameLookupAspect
         => node.NestedMembers.ToNameLookup();
 
     public static partial FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>
-        PrimitiveTypeDeclaration_InclusiveInstanceMembersByName(IPrimitiveTypeDeclarationNode node)
+        BuiltInTypeDeclaration_InclusiveInstanceMembersByName(IBuiltInTypeDeclarationNode node)
         => node.InclusiveMembers.OfType<IInstanceMemberDeclarationNode>().ToNameLookup();
 
     public static partial FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>
-        PrimitiveTypeDeclaration_AssociatedMembersByName(IPrimitiveTypeDeclarationNode node)
+        BuiltInTypeDeclaration_AssociatedMembersByName(IBuiltInTypeDeclarationNode node)
         => node.Members.OfType<IAssociatedMemberDeclarationNode>().ToNameLookup();
 
     public static partial FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>
