@@ -14406,6 +14406,7 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
     public ClassSymbolNode(
         UserTypeSymbol symbol)
     {
+        SymbolNodeAspect.Validate_ClassSymbolNode(symbol);
         Symbol = symbol;
     }
 }

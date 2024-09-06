@@ -6,6 +6,7 @@ using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations.Selectors;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Snippets;
 using Azoth.Tools.Bootstrap.Framework;
 using static Azoth.Tools.Bootstrap.Compiler.CodeGen.Core.Parsing;
 
@@ -20,8 +21,9 @@ public static class AspectParser
         var ns = GetRequiredConfig(lines, "namespace");
         var name = GetRequiredConfig(lines, "name");
         var usingNamespaces = ParseUsingNamespaces(lines);
-        var (typeDeclarations, attributeFamilies, attributes, equations, rewriteRules) = ParseStatements(lines);
-        return new(ns, name, usingNamespaces, typeDeclarations, attributeFamilies, attributes, equations, rewriteRules);
+        var (typeDeclarations, snippets, attributeFamilies, attributes, equations, rewriteRules) = ParseStatements(lines);
+        return new(ns, name, usingNamespaces, typeDeclarations, snippets, attributeFamilies,
+            attributes, equations, rewriteRules);
     }
 
     private static AspectStatementsSyntax ParseStatements(
@@ -29,6 +31,7 @@ public static class AspectParser
     {
         var statements = ParseToStatements(lines).ToFixedList();
         var typeDeclarations = new List<TypeDeclarationSyntax>();
+        var snippets = new List<SnippetSyntax>();
         var attributeFamilies = new List<AttributeFamilySyntax>();
         var attributes = new List<AspectAttributeSyntax>();
         var equations = new List<EquationSyntax>();
@@ -37,9 +40,11 @@ public static class AspectParser
         {
             if (statement.StartsWith("struct") || statement.StartsWith("type"))
                 typeDeclarations.Add(ParseTypeDeclaration(statement));
+            else if (statement.StartsWith('+') && statement.Contains("new") && statement.Contains("Validate"))
+                snippets.Add(ParseConstructorArgumentValidation(statement));
             else if (statement.StartsWith('↓') && statement.Contains("<:"))
                 attributeFamilies.Add(ParseInheritedAttributeFamily(statement));
-            else if (statement.StartsWith('⮡') && statement.Contains(":"))
+            else if (statement.StartsWith('⮡') && statement.Contains(':'))
                 attributeFamilies.Add(ParsePreviousAttributeFamily(statement));
             else if (statement.StartsWith("↗↖") && statement.Contains(':'))
                 attributeFamilies.Add(ParseAggregateAttributeFamily(statement));
@@ -50,7 +55,20 @@ public static class AspectParser
             else
                 attributes.Add(ParseAttribute(statement));
         }
-        return new(typeDeclarations, attributeFamilies, attributes, equations, rewriteRules);
+        return new(typeDeclarations, snippets, attributeFamilies, attributes, equations, rewriteRules);
+    }
+
+    private static ConstructorArgumentValidationSyntax ParseConstructorArgumentValidation(string statement)
+    {
+        if (!ParseOffStart(ref statement, "+"))
+            throw new ArgumentException("Not a constructor argument validation statement.", nameof(statement));
+        (var node, statement) = SplitOffStart(statement, ".", "Missing `.` in: '{0}'");
+        var (newKeyword, validateKeyword) = Bisect(statement, ".", "Should be exactly one `.` in: '{0}'");
+        if (newKeyword != "new")
+            throw new FormatException($"Expected 'new', found: '{newKeyword}'");
+        if (validateKeyword != "Validate")
+            throw new FormatException($"Expected 'Validate', found: '{validateKeyword}'");
+        return new(ParseSymbol(node));
     }
 
     private static TypeDeclarationSyntax ParseTypeDeclaration(string statement)
@@ -414,6 +432,7 @@ public static class AspectParser
 
     private record AspectStatementsSyntax(
         IFixedSet<TypeDeclarationSyntax> TypeDeclarations,
+        IFixedList<SnippetSyntax> Snippets,
         IFixedSet<AttributeFamilySyntax> AttributeFamilies,
         IFixedList<AspectAttributeSyntax> Attributes,
         IFixedList<EquationSyntax> Equations,
@@ -421,11 +440,12 @@ public static class AspectParser
     {
         public AspectStatementsSyntax(
             IEnumerable<TypeDeclarationSyntax> typeDeclarations,
+            IEnumerable<SnippetSyntax> snippets,
             IEnumerable<AttributeFamilySyntax> attributeFamilies,
             IEnumerable<AspectAttributeSyntax> attributes,
             IEnumerable<EquationSyntax> equations,
             IEnumerable<RewriteRuleSyntax> rewriteRules)
-            : this(typeDeclarations.ToFixedSet(), attributeFamilies.ToFixedSet(),
+            : this(typeDeclarations.ToFixedSet(), snippets.ToFixedList(), attributeFamilies.ToFixedSet(),
                 attributes.ToFixedList(), equations.ToFixedList(), rewriteRules.ToFixedList())
         { }
     }

@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees;
 
 internal static class TreeParser
 {
-    public static TreeSyntax Parse(string treeDefinition)
+    public static TreeSyntax Parse(string treeName, string treeDefinition)
     {
         var lines = ParseLines(treeDefinition).ToFixedList();
 
@@ -24,7 +24,7 @@ internal static class TreeParser
         var classSuffix = GetConfig(lines, "class-suffix") ?? "";
         var usingNamespaces = ParseUsingNamespaces(lines);
         var rules = ParseNodes(lines);
-        return new(ns, rootType, symbolPrefix, symbolSuffix, generateClasses, simplifiedTree,
+        return new(treeName, ns, rootType, symbolPrefix, symbolSuffix, generateClasses, simplifiedTree,
             classPrefix, classSuffix, usingNamespaces, rules);
     }
 

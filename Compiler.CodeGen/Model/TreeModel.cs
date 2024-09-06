@@ -16,6 +16,7 @@ public sealed class TreeModel : IHasUsingNamespaces
 {
     public TreeSyntax Syntax { get; }
 
+    public string Name => Syntax.Name;
     public string Namespace => Syntax.Namespace;
     public InternalSymbol? RootSupertype { get; }
     public string SymbolPrefix => Syntax.SymbolPrefix;

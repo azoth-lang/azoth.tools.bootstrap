@@ -3,6 +3,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Names;
 ◊using Azoth.Tools.Bootstrap.Compiler.Primitives;
+◊using Azoth.Tools.Bootstrap.Compiler.Symbols;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
@@ -74,6 +75,7 @@
 = UserTypeSymbol.GenericParameters;
 ↑ child UserTypeSymbol.Members: {TypeMemberSymbol};
 
++ ClassSymbol.new.Validate;
 ↑ child ClassSymbol.Members: {ClassMemberSymbol};
 // For now, the symbol tree already includes all inherited members.
 = ClassSymbol.InclusiveMembers => Members;

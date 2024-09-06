@@ -6,6 +6,7 @@
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Core" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Snippets" #>
 <#@ import namespace="ExhaustiveMatching" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(aspect, "System.CodeDom.Compiler", "System.Runtime.CompilerServices")) { #>
 using <#=usingNamespace #>;
@@ -19,6 +20,10 @@ namespace <#=aspect.Namespace #>;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class <#= aspect.Name #>
 {
+<#  foreach (var valid in aspect.Snippets.OfType<ConstructorArgumentValidationModel>()) { #>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void Validate_<#= Emit.ClassName(valid.Node.Defines) #>(<#= Emit.Parameters(Build.PropertiesForClass(valid.Node)) #>);
+<#  } #>
 <#  foreach (var attr in aspect.DeclaredAttributes.OfType<CircularAttributeModel>().Where(ShouldEmit.Initial)) { #>
     public static partial <#= Emit.Type(attr.Type) #> <#= Emit.InitialMethod(attr) #>(<#= Emit.TypeName(attr.Node.Defines) #> node);
 <#  } #>

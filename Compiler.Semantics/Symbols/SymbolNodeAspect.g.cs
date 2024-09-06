@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
+using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
@@ -13,6 +14,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class SymbolNodeAspect
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void Validate_ClassSymbolNode(
+        UserTypeSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

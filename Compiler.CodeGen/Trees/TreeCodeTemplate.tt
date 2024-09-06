@@ -8,6 +8,7 @@
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations" #>
+<#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Snippets" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(tree,
@@ -246,6 +247,9 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
         : base(true)
 <#     } #>
     {
+<#          foreach (var valid in node.Snippets.OfType<ConstructorArgumentValidationModel>()) { #>
+        <#= valid.Aspect.Name #>.Validate_<#= Emit.ClassName(node.Defines) #>(<#= Emit.Arguments(Build.PropertiesForClass(node)) #>);
+<#          } #>
 <#      foreach (var property in Build.PropertiesForClass(node)) { #>
 <#          if (!tree.SimplifiedTree && property.IsChild) { #>
         <#= Emit.FieldReference(property) #> = <#= Emit.ChildAttach(property) #><#= Emit.VariableName(property) #>);

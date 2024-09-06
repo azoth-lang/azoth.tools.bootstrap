@@ -86,7 +86,8 @@ public static class Program
             Console.WriteLine($"Tree Output: {treeOutputPath}");
             Console.WriteLine($"Children Output: {childrenOutputPath}");
 
-            var treeSyntax = TreeParser.Parse(File.ReadAllText(treePath));
+            var treeName = Path.GetFileNameWithoutExtension(treePath);
+            var treeSyntax = TreeParser.Parse(treeName, File.ReadAllText(treePath));
             var aspectSyntax = new List<AspectSyntax>();
             foreach (var aspectPath in aspectPaths)
             {

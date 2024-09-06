@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Snippets;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
@@ -83,6 +84,11 @@ public class TreeNodeModel
     /// non-temp node type below this.</remarks>
     public TreeNodeModel? FinalNode => finalNodeType.Value;
     private readonly Lazy<TreeNodeModel?> finalNodeType;
+    #endregion
+
+    #region Snippets
+    public IFixedList<SnippetModel> Snippets => snippets.Value;
+    private readonly Lazy<IFixedList<SnippetModel>> snippets;
     #endregion
 
     #region Attributes
@@ -236,6 +242,9 @@ public class TreeNodeModel
                                                        .Select(t => t.ReferencedNode()!)
                                                        .ToFixedSet());
         finalNodeType = IsTemp ? new(() => CandidateFinalNodes.TrySingle()) : new(this);
+
+        // Snippets
+        snippets = new(() => Tree.Aspects.SelectMany(a => a.Snippets).Where(s => s.Node == this).ToFixedList());
 
         // Attributes
         DeclaredTreeAttributes = syntax.DeclaredAttributes.Select(a => TreeAttributeModel.Create(this, a)).ToFixedList();

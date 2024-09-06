@@ -8,6 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 
 public sealed class TreeSyntax
 {
+    public string Name { get; }
     public string Namespace { get; }
     public SymbolSyntax? Root { get; }
     public string SymbolPrefix { get; }
@@ -21,6 +22,7 @@ public sealed class TreeSyntax
     public IFixedList<TreeNodeSyntax> Nodes { get; }
 
     public TreeSyntax(
+        string name,
         string @namespace,
         SymbolSyntax? root,
         string symbolPrefix,
@@ -32,6 +34,7 @@ public sealed class TreeSyntax
         IEnumerable<string> usingNamespaces,
         IEnumerable<TreeNodeSyntax> nodes)
     {
+        Name = name;
         Namespace = @namespace;
         Root = root;
         SymbolPrefix = symbolPrefix;

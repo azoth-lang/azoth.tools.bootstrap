@@ -4,6 +4,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Snippets;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -17,6 +18,7 @@ public sealed class AspectModel : IHasUsingNamespaces
     public string Name => Syntax.Name;
     public IFixedSet<string> UsingNamespaces => Syntax.UsingNamespaces;
     public IFixedSet<TypeDeclarationModel> TypeDeclarations { get; }
+    public IFixedList<SnippetModel> Snippets { get; private set; }
     public IFixedSet<AttributeFamilyModel> DeclaredAttributeKins { get; }
     public IFixedList<AspectAttributeModel> DeclaredAttributes { get; }
     public IFixedList<EquationModel> DeclaredEquations { get; }
@@ -30,6 +32,7 @@ public sealed class AspectModel : IHasUsingNamespaces
         Tree = tree;
         Syntax = syntax;
         TypeDeclarations = syntax.TypeDeclarations.Select(t => new TypeDeclarationModel(tree, t)).ToFixedSet();
+        Snippets = syntax.Snippets.Select(s => SnippetModel.Create(this, s)).ToFixedList();
         DeclaredAttributeKins = syntax.AttributeFamilies.Select(s => AttributeFamilyModel.Create(Tree, s)).ToFixedSet();
         DeclaredAttributes = syntax.Attributes.Select(a => AspectAttributeModel.Create(this, a)).ToFixedList();
         DeclaredEquations = syntax.Equations.Select(e => EquationModel.Create(this, e)).ToFixedList();

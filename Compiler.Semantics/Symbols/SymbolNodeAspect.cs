@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -83,6 +84,10 @@ internal static partial class SymbolNodeAspect
 
     public static partial IFixedSet<ITypeMemberSymbolNode> PrimitiveTypeSymbol_Members(IPrimitiveTypeSymbolNode node)
         => GetMembers<ITypeMemberSymbolNode>(node);
+
+    public static partial void Validate_ClassSymbolNode(UserTypeSymbol symbol)
+        => Requires.That(symbol.DeclaresType is ObjectType { IsClass: true }, nameof(symbol),
+            "Symbol must be for an class type.");
 
     public static partial IFixedSet<IClassMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node)
         => GetMembers<IClassMemberSymbolNode>(node);

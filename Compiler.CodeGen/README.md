@@ -47,6 +47,12 @@
 | `◊name` *Node*`;`                     |         |
 | `◊using` *DottedNamespaceName*`;`     |         |
 
+### Construction
+
+| Declaration                | Meaning                          |
+| -------------------------- | -------------------------------- |
+| `+` *Node*`.new.Validate;` | A constructor argument validator |
+
 ### Intertype Declared Members
 
 **TODO:** There is a strange overlap between this and synthesized attributes that are methods. Maybe
