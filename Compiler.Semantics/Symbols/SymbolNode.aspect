@@ -80,10 +80,12 @@
 // For now, the symbol tree already includes all inherited members.
 = ClassSymbol.InclusiveMembers => Members;
 
++ StructSymbol.new.Validate;
 ↑ child StructSymbol.Members: {StructMemberSymbol};
 // For now, the symbol tree already includes all inherited members.
 = StructSymbol.InclusiveMembers => Members;
 
++ TraitSymbol.new.Validate;
 ↑ child TraitSymbol.Members: {TraitMemberSymbol};
 // For now, the symbol tree already includes all inherited members.
 = TraitSymbol.InclusiveMembers => Members;

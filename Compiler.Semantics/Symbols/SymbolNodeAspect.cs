@@ -92,8 +92,15 @@ internal static partial class SymbolNodeAspect
     public static partial IFixedSet<IClassMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node)
         => GetMembers<IClassMemberSymbolNode>(node);
 
+    public static partial void Validate_StructSymbolNode(UserTypeSymbol symbol)
+        => Requires.That(symbol.DeclaresType is StructType, nameof(symbol), "Symbol must be for a struct type.");
+
     public static partial IFixedSet<IStructMemberSymbolNode> StructSymbol_Members(IStructSymbolNode node)
         => GetMembers<IStructMemberSymbolNode>(node);
+
+    public static partial void Validate_TraitSymbolNode(UserTypeSymbol symbol)
+        => Requires.That(symbol.DeclaresType is ObjectType { IsClass: false }, nameof(symbol),
+            "Symbol must be for an trait type.");
 
     public static partial IFixedSet<ITraitMemberSymbolNode> TraitSymbol_Members(ITraitSymbolNode node)
         => GetMembers<ITraitMemberSymbolNode>(node);
@@ -101,7 +108,7 @@ internal static partial class SymbolNodeAspect
     private static IFixedSet<T> GetMembers<T>(ITypeSymbolNode node)
         where T : IChildDeclarationNode
         => node.SymbolTree().GetChildrenOf(node.Symbol).Where(sym => sym is not GenericParameterTypeSymbol)
-               .Select(SymbolBinder.Symbol).WhereNotNull().Cast<T>().ToFixedSet();
+               .Select(SymbolBinder.Symbol).WhereNotNull().OfType<T>().ToFixedSet();
     #endregion
 
     public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)

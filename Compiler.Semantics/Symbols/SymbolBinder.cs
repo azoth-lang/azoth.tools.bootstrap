@@ -32,11 +32,11 @@ internal static class SymbolBinder
     private static IUserTypeDeclarationNode UserTypeSymbol(UserTypeSymbol symbol)
          => symbol.DeclaresType switch
          {
-             StructType _ => new StructSymbolNode(symbol),
+             StructType _ => IStructSymbolNode.Create(symbol),
              ObjectType t => t.IsClass switch
              {
-                 true => new ClassSymbolNode(symbol),
-                 false => new TraitSymbolNode(symbol),
+                 true => IClassSymbolNode.Create(symbol),
+                 false => ITraitSymbolNode.Create(symbol),
              },
              _ => throw ExhaustiveMatch.Failed(symbol.DeclaresType),
          };

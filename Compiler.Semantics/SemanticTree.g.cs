@@ -14451,6 +14451,7 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
     public StructSymbolNode(
         UserTypeSymbol symbol)
     {
+        SymbolNodeAspect.Validate_StructSymbolNode(symbol);
         Symbol = symbol;
     }
 }
@@ -14495,6 +14496,7 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
     public TraitSymbolNode(
         UserTypeSymbol symbol)
     {
+        SymbolNodeAspect.Validate_TraitSymbolNode(symbol);
         Symbol = symbol;
     }
 }

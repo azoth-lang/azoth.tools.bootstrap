@@ -18,6 +18,12 @@ internal static partial class SymbolNodeAspect
     public static partial void Validate_ClassSymbolNode(
         UserTypeSymbol symbol);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void Validate_StructSymbolNode(
+        UserTypeSymbol symbol);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void Validate_TraitSymbolNode(
+        UserTypeSymbol symbol);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node);
