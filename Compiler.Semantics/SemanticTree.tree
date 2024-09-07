@@ -306,7 +306,7 @@ temp StandardNameExpression <: AmbiguousName = Syntax:`IStandardNameExpressionSy
 temp IdentifierNameExpression <: AmbiguousName, StandardNameExpression, UnresolvedSimpleName
     = Syntax:`IIdentifierNameExpressionSyntax`;
 temp GenericNameExpression <: AmbiguousName, StandardNameExpression
-    = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
+    = Syntax:`IGenericNameExpressionSyntax` TypeArguments:Type*;
 temp MemberAccessExpression <: AmbiguousName
     = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression MemberName:`StandardName` TypeArguments:Type*;
 temp PropertyName <: AmbiguousName

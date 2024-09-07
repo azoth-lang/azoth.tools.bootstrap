@@ -582,7 +582,7 @@ internal static class SyntaxBinder
         => new SpecialTypeNameExpressionNode(syntax);
 
     private static IGenericNameExpressionNode GenericNameExpression(IGenericNameExpressionSyntax syntax)
-        => new GenericNameExpressionNode(syntax, Types(syntax.TypeArguments));
+        => IGenericNameExpressionNode.Create(syntax, Types(syntax.TypeArguments));
 
     private static IMemberAccessExpressionNode MemberAccessExpression(IMemberAccessExpressionSyntax syntax)
         => new MemberAccessExpressionNode(syntax, Expression(syntax.Context), Types(syntax.TypeArguments));

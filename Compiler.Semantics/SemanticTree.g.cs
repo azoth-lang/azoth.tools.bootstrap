@@ -2829,15 +2829,15 @@ public partial interface IGenericNameExpressionNode : IStandardNameExpressionNod
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new GenericName Name { get; }
-    StandardName IStandardNameExpressionNode.Name => Name;
     IFixedList<ITypeNode> TypeArguments { get; }
+    new GenericName Name
+        => Syntax.Name;
+    StandardName IStandardNameExpressionNode.Name => Name;
 
     public static IGenericNameExpressionNode Create(
         IGenericNameExpressionSyntax syntax,
-        GenericName name,
         IEnumerable<ITypeNode> typeArguments)
-        => new GenericNameExpressionNode(syntax, name, typeArguments);
+        => new GenericNameExpressionNode(syntax, typeArguments);
 }
 
 // [Closed(typeof(MemberAccessExpressionNode))]
@@ -11834,7 +11834,6 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
     protected override bool MayHaveRewrite => true;
 
     public IGenericNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public GenericName Name { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -11863,11 +11862,9 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
 
     public GenericNameExpressionNode(
         IGenericNameExpressionSyntax syntax,
-        GenericName name,
         IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
-        Name = name;
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 }
