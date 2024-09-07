@@ -6,7 +6,6 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
@@ -65,7 +64,7 @@ internal static partial class SymbolNodeAspect
     }
 
     public static partial IPackageSymbolNode PackageReference_SymbolNode(IPackageReferenceNode node)
-        => new PackageSymbolNode(node);
+        => IPackageSymbolNode.Create(node);
 
     public static partial FixedDictionary<IdentifierName, IPackageDeclarationNode> Package_PackageDeclarations(IPackageNode node)
         => node.References.Select(r => r.SymbolNode).Append<IPackageDeclarationNode>(node)
@@ -118,11 +117,32 @@ internal static partial class SymbolNodeAspect
         => node.ContainingTypeDefinition.Members.OfType<IFieldDefinitionNode>()
                .FirstOrDefault(f => f.Name == node.Name);
 
+    private static IEnumerable<Symbol> GetMembers(IChildSymbolNode node)
+        => node.SymbolTree().GetChildrenOf(node.Symbol);
+
+    #region Package Symbol Nodes
+    public static partial IPackageFacetSymbolNode PackageSymbol_MainFacet(IPackageSymbolNode node)
+        => IPackageFacetSymbolNode.Create(node.PackageReference.PackageSymbols.SymbolTree);
+
+    public static partial IPackageFacetSymbolNode PackageSymbol_TestingFacet(IPackageSymbolNode node)
+        => IPackageFacetSymbolNode.Create(node.PackageReference.PackageSymbols.TestingSymbolTree);
+    #endregion
+
+    #region Facet Symbol Nodes
+    public static partial INamespaceSymbolNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node)
+        => INamespaceSymbolNode.Create(node.SymbolTree.Package);
+    #endregion
+
+    #region Namespace Symbol Nodes
+    public static partial IFixedList<INamespaceMemberSymbolNode> NamespaceSymbol_Members(INamespaceSymbolNode node)
+        => GetMembers(node).Select(SymbolBinder.Symbol).Cast<INamespaceMemberSymbolNode>().ToFixedList();
+    #endregion
+
     #region Type Symbol Nodes
     public static partial IFixedList<IGenericParameterSymbolNode> UserTypeSymbol_GenericParameters(IUserTypeSymbolNode node)
-        => node.SymbolTree().GetChildrenOf(node.Symbol).OfType<GenericParameterTypeSymbol>()
-               .Select(SymbolBinder.Symbol).WhereNotNull()
-               .Cast<IGenericParameterSymbolNode>().ToFixedList();
+        => GetMembers(node).OfType<GenericParameterTypeSymbol>()
+                           .Select(SymbolBinder.Symbol).WhereNotNull()
+                           .Cast<IGenericParameterSymbolNode>().ToFixedList();
 
     public static partial IFixedSet<ITypeMemberSymbolNode> BuiltInTypeSymbol_Members(IBuiltInTypeSymbolNode node)
         => GetMembers<ITypeMemberSymbolNode>(node);
@@ -149,8 +169,8 @@ internal static partial class SymbolNodeAspect
 
     private static IFixedSet<T> GetMembers<T>(ITypeSymbolNode node)
         where T : IChildDeclarationNode
-        => node.SymbolTree().GetChildrenOf(node.Symbol).Where(sym => sym is not GenericParameterTypeSymbol)
-               .Select(SymbolBinder.Symbol).WhereNotNull().OfType<T>().ToFixedSet();
+        => GetMembers(node).Where(sym => sym is not GenericParameterTypeSymbol)
+                           .Select(SymbolBinder.Symbol).WhereNotNull().OfType<T>().ToFixedSet();
     #endregion
 
     #region Member Symbol Nodes
@@ -163,10 +183,5 @@ internal static partial class SymbolNodeAspect
 
     public static partial void Validate_SetterMethodSymbolNode(MethodSymbol symbol)
         => Requires.That(symbol.Kind == MethodKind.Setter, nameof(symbol), "Must be a standard method symbol.");
-    #endregion
-
-    #region Symbol Nodes
-    public static partial INamespaceSymbolNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node)
-        => new NamespaceSymbolNode(node.SymbolTree.Package);
     #endregion
 }

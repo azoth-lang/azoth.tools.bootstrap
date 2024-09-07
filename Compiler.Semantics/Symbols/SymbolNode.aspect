@@ -48,19 +48,31 @@
 // Symbol Nodes
 // -------------------------------------------------------------------------------------------------
 
-// ---------- Parent
+// ---------- Parent Symbol Nodes
+↓ ChildSymbol.SymbolTree(): `ISymbolTree`;
+↑ ChildSymbol.Symbol: `Symbol`;
 ↑ ChildSymbol.Syntax: `ISyntax`? => null;
 
-// ---------- Facets
+// ---------- Package Symbol Nodes
+= PackageSymbol.Symbol => PackageReference.PackageSymbols.PackageSymbol;
+↑ PackageSymbol.Name: `IdentifierName` => Symbol.Name;
+↑ PackageSymbol.AliasOrName: `IdentifierName` => PackageReference.AliasOrName;
+↑ child eager PackageSymbol.MainFacet: PackageFacetSymbol;
+↑ child eager PackageSymbol.TestingFacet: PackageFacetSymbol;
+
+// ---------- Facet Symbol Nodes
 = PackageFacetSymbol.*.**.SymbolTree => SymbolTree;
 ↑ child PackageFacetSymbol.GlobalNamespace: NamespaceSymbol;
 = eager PackageFacetSymbol.GlobalNamespace;
 
+// ---------- Namespace Symbol Nodes
+↑ child NamespaceSymbol.Members:NamespaceMemberSymbol*;
+
 // ---------- Function Symbol Nodes
+↑ FunctionSymbol.Name: `IdentifierName` => Symbol.Name;
 = FunctionSymbol.Type => Symbol.Type;
 
 // ---------- Type Symbol Nodes
-↓ TypeSymbol.SymbolTree(): `ISymbolTree`;
 ↑ child TypeSymbol.Members: {TypeMemberSymbol};
 
 ↑ BuiltInTypeSymbol.SymbolTree(): `PrimitiveSymbolTree` => Primitive.SymbolTree;

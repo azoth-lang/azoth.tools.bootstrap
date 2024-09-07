@@ -469,20 +469,19 @@ AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableD
 // -------------------------------------------------------------------------------------------------
 // TODO move into separate aspect
 
-// ---------- Parent
-ChildSymbol <: ChildDeclaration;
+// ---------- Parent Symbol Nodes
+ChildSymbol <: SymbolDeclaration, ChildDeclaration;
 
 // ---------- Package Symbol Nodes
 PackageSymbol <: PackageDeclaration, ChildSymbol
-    = Symbol:`PackageSymbol` MainFacet:PackageFacetSymbol TestingFacet:PackageFacetSymbol;
+    = PackageReference:`IPackageReferenceNode` /MainFacet/ /TestingFacet/;
 
 // ---------- Facet Symbol Nodes
 // Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
 PackageFacetSymbol <: PackageFacetDeclaration, ChildSymbol = SymbolTree:`FixedSymbolTree`;
 
 // ---------- Namespace Symbol Nodes
-NamespaceSymbol <: NamespaceDeclaration, NamespaceMemberSymbol
-    = Symbol:`NamespaceSymbol` Members:NamespaceMemberSymbol*;
+NamespaceSymbol <: NamespaceDeclaration, NamespaceMemberSymbol = Symbol:`NamespaceSymbol`;
 NamespaceMemberSymbol <: NamespaceMemberDeclaration, ChildSymbol;
 
 // ---------- Function Symbol Nodes

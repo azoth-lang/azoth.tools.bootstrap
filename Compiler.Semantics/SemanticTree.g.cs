@@ -3663,7 +3663,8 @@ public partial interface INamedDeclarationNode : IChildDeclarationNode
     typeof(INamespaceMemberDeclarationNode),
     typeof(ITypeDeclarationNode),
     typeof(ITypeMemberDeclarationNode),
-    typeof(IAssociatedMemberDeclarationNode))]
+    typeof(IAssociatedMemberDeclarationNode),
+    typeof(IChildSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ISymbolDeclarationNode : IDeclarationNode
 {
@@ -4093,8 +4094,9 @@ public partial interface IAssociatedFunctionDeclarationNode : IAssociatedMemberD
     typeof(IGenericParameterSymbolNode),
     typeof(ITypeMemberSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IChildSymbolNode : IChildDeclarationNode
+public partial interface IChildSymbolNode : ISymbolDeclarationNode, IChildDeclarationNode
 {
+    ISymbolTree SymbolTree();
     new ISyntax? Syntax
         => null;
     ISyntax? ISemanticNode.Syntax => Syntax;
@@ -4104,28 +4106,31 @@ public partial interface IChildSymbolNode : IChildDeclarationNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageSymbolNode : IPackageDeclarationNode, IChildSymbolNode
 {
-    new PackageSymbol Symbol { get; }
-    PackageSymbol IPackageDeclarationNode.Symbol => Symbol;
-    Symbol ISymbolDeclarationNode.Symbol => Symbol;
+    IPackageReferenceNode PackageReference { get; }
+    new IdentifierName Name
+        => Symbol.Name;
+    IdentifierName IPackageDeclarationNode.Name => Name;
+    new IdentifierName AliasOrName
+        => PackageReference.AliasOrName;
+    IdentifierName? IPackageDeclarationNode.AliasOrName => AliasOrName;
     new IPackageFacetSymbolNode MainFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.MainFacet => MainFacet;
     new IPackageFacetSymbolNode TestingFacet { get; }
     IPackageFacetDeclarationNode IPackageDeclarationNode.TestingFacet => TestingFacet;
+    PackageSymbol IPackageDeclarationNode.Symbol
+        => PackageReference.PackageSymbols.PackageSymbol;
 
     public static IPackageSymbolNode Create(
-        IdentifierName? aliasOrName,
-        IdentifierName name,
-        PackageSymbol symbol,
-        IPackageFacetSymbolNode mainFacet,
-        IPackageFacetSymbolNode testingFacet)
-        => new PackageSymbolNode(aliasOrName, name, symbol, mainFacet, testingFacet);
+        IPackageReferenceNode packageReference)
+        => new PackageSymbolNode(packageReference);
 }
 
 // [Closed(typeof(PackageFacetSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IPackageFacetSymbolNode : IPackageFacetDeclarationNode, IChildSymbolNode
 {
-    FixedSymbolTree SymbolTree { get; }
+    new FixedSymbolTree SymbolTree { get; }
+    ISymbolTree IChildSymbolNode.SymbolTree() => SymbolTree;
     new INamespaceSymbolNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
 
@@ -4145,9 +4150,8 @@ public partial interface INamespaceSymbolNode : INamespaceDeclarationNode, IName
     IFixedList<INamespaceMemberDeclarationNode> INamespaceDeclarationNode.Members => Members;
 
     public static INamespaceSymbolNode Create(
-        NamespaceSymbol symbol,
-        IEnumerable<INamespaceMemberSymbolNode> members)
-        => new NamespaceSymbolNode(symbol, members);
+        NamespaceSymbol symbol)
+        => new NamespaceSymbolNode(symbol);
 }
 
 [Closed(
@@ -4167,13 +4171,17 @@ public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamesp
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
     FunctionSymbol IFunctionInvocableDeclarationNode.Symbol => Symbol;
     InvocableSymbol IInvocableDeclarationNode.Symbol => Symbol;
+    new IdentifierName Name
+        => Symbol.Name;
+    StandardName INamespaceMemberDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     FunctionType IFunctionInvocableDeclarationNode.Type
         => Symbol.Type;
 
     public static IFunctionSymbolNode Create(
-        StandardName name,
         FunctionSymbol symbol)
-        => new FunctionSymbolNode(name, symbol);
+        => new FunctionSymbolNode(symbol);
 }
 
 [Closed(
@@ -4185,7 +4193,6 @@ public partial interface ITypeSymbolNode : ITypeDeclarationNode, IChildSymbolNod
     new TypeSymbol Symbol { get; }
     TypeSymbol ITypeDeclarationNode.Symbol => Symbol;
     Symbol ISymbolDeclarationNode.Symbol => Symbol;
-    ISymbolTree SymbolTree();
     new IFixedSet<ITypeMemberSymbolNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
 }
@@ -4198,7 +4205,7 @@ public partial interface IBuiltInTypeSymbolNode : IBuiltInTypeDeclarationNode, I
 {
     new PrimitiveSymbolTree SymbolTree()
         => Primitive.SymbolTree;
-    ISymbolTree ITypeSymbolNode.SymbolTree() => SymbolTree();
+    ISymbolTree IChildSymbolNode.SymbolTree() => SymbolTree();
     new SpecialTypeName Name { get; }
     SpecialTypeName IBuiltInTypeDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
@@ -14266,26 +14273,20 @@ file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
 {
     private IPackageSymbolNode Self { [Inline] get => this; }
 
-    public IdentifierName? AliasOrName { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
-    public PackageSymbol Symbol { [DebuggerStepThrough] get; }
-    public IPackageFacetSymbolNode MainFacet { [DebuggerStepThrough] get; }
-    public IPackageFacetSymbolNode TestingFacet { [DebuggerStepThrough] get; }
+    public IPackageReferenceNode PackageReference { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
+    public IPackageFacetSymbolNode MainFacet { [DebuggerStepThrough] get; }
+    public IPackageFacetSymbolNode TestingFacet { [DebuggerStepThrough] get; }
 
     public PackageSymbolNode(
-        IdentifierName? aliasOrName,
-        IdentifierName name,
-        PackageSymbol symbol,
-        IPackageFacetSymbolNode mainFacet,
-        IPackageFacetSymbolNode testingFacet)
+        IPackageReferenceNode packageReference)
     {
-        AliasOrName = aliasOrName;
-        Name = name;
-        Symbol = symbol;
-        MainFacet = Child.Attach(this, mainFacet);
-        TestingFacet = Child.Attach(this, testingFacet);
+        PackageReference = packageReference;
+        MainFacet = Child.Attach(this, SymbolNodeAspect.PackageSymbol_MainFacet(this));
+        TestingFacet = Child.Attach(this, SymbolNodeAspect.PackageSymbol_TestingFacet(this));
     }
 
     internal override IPackageDeclarationNode Inherited_Package(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -14328,11 +14329,18 @@ file class NamespaceSymbolNode : SemanticNode, INamespaceSymbolNode
     private INamespaceSymbolNode Self { [Inline] get => this; }
 
     public NamespaceSymbol Symbol { [DebuggerStepThrough] get; }
-    public IFixedList<INamespaceMemberSymbolNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
+    public IFixedList<INamespaceMemberSymbolNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                n => ChildList.Attach(this, SymbolNodeAspect.NamespaceSymbol_Members(n)));
+    private IFixedList<INamespaceMemberSymbolNode>? members;
+    private bool membersCached;
     public FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> MembersByName
         => GrammarAttribute.IsCached(in membersByNameCached) ? membersByName!
             : this.Synthetic(ref membersByNameCached, ref membersByName,
@@ -14353,11 +14361,9 @@ file class NamespaceSymbolNode : SemanticNode, INamespaceSymbolNode
     private bool nestedMembersCached;
 
     public NamespaceSymbolNode(
-        NamespaceSymbol symbol,
-        IEnumerable<INamespaceMemberSymbolNode> members)
+        NamespaceSymbol symbol)
     {
         Symbol = symbol;
-        Members = ChildList.Attach(this, members);
     }
 }
 
@@ -14366,18 +14372,17 @@ file class FunctionSymbolNode : SemanticNode, IFunctionSymbolNode
 {
     private IFunctionSymbolNode Self { [Inline] get => this; }
 
-    public StandardName Name { [DebuggerStepThrough] get; }
     public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
     public FunctionSymbolNode(
-        StandardName name,
         FunctionSymbol symbol)
     {
-        Name = name;
         Symbol = symbol;
     }
 }
@@ -14595,6 +14600,8 @@ file class GenericParameterSymbolNode : SemanticNode, IGenericParameterSymbolNod
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
     public GenericParameterSymbolNode(
         GenericParameterTypeSymbol symbol)
@@ -14613,6 +14620,8 @@ file class StandardMethodSymbolNode : SemanticNode, IStandardMethodSymbolNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
     public StandardMethodSymbolNode(
         MethodSymbol symbol)
@@ -14632,6 +14641,8 @@ file class GetterMethodSymbolNode : SemanticNode, IGetterMethodSymbolNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
     public GetterMethodSymbolNode(
         MethodSymbol symbol)
@@ -14651,6 +14662,8 @@ file class SetterMethodSymbolNode : SemanticNode, ISetterMethodSymbolNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
     public SetterMethodSymbolNode(
         MethodSymbol symbol)
@@ -14670,6 +14683,8 @@ file class ConstructorSymbolNode : SemanticNode, IConstructorSymbolNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
     public ConstructorSymbolNode(
         ConstructorSymbol symbol)
@@ -14688,6 +14703,8 @@ file class InitializerSymbolNode : SemanticNode, IInitializerSymbolNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
     public InitializerSymbolNode(
         InitializerSymbol symbol)
@@ -14706,6 +14723,8 @@ file class FieldSymbolNode : SemanticNode, IFieldSymbolNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
     public FieldSymbolNode(
         FieldSymbol symbol)
@@ -14725,6 +14744,8 @@ file class AssociatedFunctionSymbolNode : SemanticNode, IAssociatedFunctionSymbo
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolTree SymbolTree()
+        => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
     public AssociatedFunctionSymbolNode(
         StandardName name,

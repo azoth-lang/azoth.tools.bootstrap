@@ -1,5 +1,4 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree.SymbolNodes;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using ExhaustiveMatching;
@@ -11,7 +10,7 @@ internal static class SymbolBinder
     public static IChildDeclarationNode Symbol(Symbol symbol)
        => symbol switch
        {
-           NamespaceSymbol sym => new NamespaceSymbolNode(sym),
+           NamespaceSymbol sym => INamespaceSymbolNode.Create(sym),
            TypeSymbol sym => TypeSymbol(sym),
            InvocableSymbol sym => InvocableSymbol(sym),
            FieldSymbol sym => FieldSymbol(sym),
@@ -61,7 +60,7 @@ internal static class SymbolBinder
         };
 
     private static IFunctionDeclarationNode FunctionSymbol(FunctionSymbol sym)
-         => new FunctionSymbolNode(sym);
+         => IFunctionSymbolNode.Create(sym);
 
     private static IConstructorDeclarationNode ConstructorSymbol(ConstructorSymbol sym)
         => IConstructorSymbolNode.Create(sym);

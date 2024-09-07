@@ -57,6 +57,12 @@ internal static partial class SymbolNodeAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IPackageFacetSymbolNode PackageSymbol_MainFacet(IPackageSymbolNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IPackageFacetSymbolNode PackageSymbol_TestingFacet(IPackageSymbolNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFixedList<INamespaceMemberSymbolNode> NamespaceSymbol_Members(INamespaceSymbolNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<IClassMemberSymbolNode> ClassSymbol_Members(IClassSymbolNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedSet<IStructMemberSymbolNode> StructSymbol_Members(IStructSymbolNode node);
