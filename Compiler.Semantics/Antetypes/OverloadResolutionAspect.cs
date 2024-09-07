@@ -112,7 +112,7 @@ internal static partial class OverloadResolutionAspect
                                             .Where(c => c.Name is null).ToFixedSet();
 
         var initializerGroupName = new InitializerGroupNameNode(context.Syntax, context, null, referencedDeclarations);
-        return new UnresolvedInvocationExpressionNode(node.Syntax, initializerGroupName, node.CurrentArguments);
+        return IUnresolvedInvocationExpressionNode.Create(node.Syntax, initializerGroupName, node.CurrentArguments);
     }
 
     public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(

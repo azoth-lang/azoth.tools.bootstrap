@@ -78,6 +78,7 @@
 = ReturnExpression.↑.Diagnostics;
 
 // ---------- Invocation Expressions
+= UnresolvedInvocationExpression.Expression.ExpectedType => null;
 ↓ FunctionInvocationExpression.FlowStateBefore(): `IFlowState`;
 ↑ FunctionInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
 = FunctionInvocationExpression.↑.Diagnostics;

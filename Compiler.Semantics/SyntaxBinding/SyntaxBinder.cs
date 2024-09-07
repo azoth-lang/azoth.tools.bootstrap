@@ -562,7 +562,7 @@ internal static class SyntaxBinder
 
     #region Invocation Expressions
     private static IUnresolvedInvocationExpressionNode InvocationExpression(IInvocationExpressionSyntax syntax)
-        => new UnresolvedInvocationExpressionNode(syntax, Expression(syntax.Expression), Expressions(syntax.Arguments));
+        => IUnresolvedInvocationExpressionNode.Create(syntax, Expression(syntax.Expression), Expressions(syntax.Arguments));
     #endregion
 
     #region Name Expressions

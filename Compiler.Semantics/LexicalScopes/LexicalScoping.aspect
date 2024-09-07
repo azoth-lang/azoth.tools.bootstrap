@@ -96,6 +96,13 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 ↓ ForeachExpression.ContainingLexicalScope: `LexicalScope`;
 ↑ ForeachExpression.LexicalScope: `LexicalScope`;
 
+// ---------- Invocation Expressions
+= UnresolvedInvocationExpression.Expression.**.ContainingLexicalScope => ContainingLexicalScope();
+= UnresolvedInvocationExpression.Arguments[0].**.ContainingLexicalScope
+    => TempExpression.FlowLexicalScope().True;
+= UnresolvedInvocationExpression.Arguments[argumentIndex].**.ContainingLexicalScope
+    => TempArguments[argumentIndex - 1].FlowLexicalScope().True;
+
 // ---------- Ambiguous Name Expressions
 ↓ StandardNameExpression.ContainingLexicalScope: `LexicalScope`;
 ↓ MemberAccessExpression.PackageNameScope(): `PackageNameScope`;

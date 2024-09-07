@@ -10960,6 +10960,31 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentExpression))
+            return ContainingLexicalScope();
+        if (0 < Self.CurrentArguments.Count && ReferenceEquals(child, Self.CurrentArguments[0]))
+            return TempExpression.FlowLexicalScope().True;
+        if (IndexOfNode(Self.CurrentArguments, child) is { } argumentIndex)
+            return TempArguments[argumentIndex - 1].FlowLexicalScope().True;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentExpression))
+            return null;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentExpression))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     protected override IChildTreeNode Rewrite()
         => OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionGroupNameExpression(this)
         ?? OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_MethodGroupNameExpression(this)

@@ -31,6 +31,7 @@
 = PatternMatchExpression.Antetype => IAntetype.Bool;
 
 // ---------- Invocation Expressions
+= UnresolvedInvocationExpression.Expression.ExpectedAntetype => null;
 = UnknownInvocationExpression.Antetype => IAntetype.Unknown;
 
 // ---------- Name Expressions
