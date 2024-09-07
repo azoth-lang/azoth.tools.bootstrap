@@ -7,4 +7,4 @@
 // ---------- Ambiguous Name Expressions
 ↑ StandardNameExpression.ReferencedDeclarations: Declaration*;
 = StandardNameExpression.ReferencedDeclarations;
-//✎ IdentifierNameExpression;
+✎ IdentifierNameExpression;

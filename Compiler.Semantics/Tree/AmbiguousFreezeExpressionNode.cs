@@ -10,15 +10,15 @@ internal sealed class AmbiguousFreezeExpressionNode : AmbiguousExpressionNode, I
     protected override bool MayHaveRewrite => true;
 
     public override IFreezeExpressionSyntax Syntax { get; }
-    private RewritableChild<IUnresolvedSimpleNameNode> referent;
+    private RewritableChild<IAmbiguousNameExpressionNode> referent;
     private bool referentCached;
-    public IUnresolvedSimpleNameNode TempReferent
+    public IAmbiguousNameExpressionNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
-    public ISimpleNameExpressionNode? Referent => TempReferent as ISimpleNameExpressionNode;
-    public IUnresolvedSimpleNameNode CurrentReferent => referent.UnsafeValue;
+    public INameExpressionNode? Referent => TempReferent as INameExpressionNode;
+    public IAmbiguousNameExpressionNode CurrentReferent => referent.UnsafeValue;
 
-    public AmbiguousFreezeExpressionNode(IFreezeExpressionSyntax syntax, IUnresolvedSimpleNameNode referent)
+    public AmbiguousFreezeExpressionNode(IFreezeExpressionSyntax syntax, IAmbiguousNameExpressionNode referent)
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);

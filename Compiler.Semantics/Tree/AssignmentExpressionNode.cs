@@ -20,13 +20,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpressionNode
 {
     public override IAssignmentExpressionSyntax Syntax { get; }
-    private RewritableChild<IAmbiguousAssignableExpressionNode> leftOperand;
+    private RewritableChild<IAmbiguousExpressionNode> leftOperand;
     private bool leftOperandCached;
-    public IAmbiguousAssignableExpressionNode TempLeftOperand
+    public IAmbiguousExpressionNode TempLeftOperand
         => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
             : this.RewritableChild(ref leftOperandCached, ref leftOperand);
-    public IAmbiguousAssignableExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
-    public IAssignableExpressionNode? LeftOperand => TempLeftOperand as IAssignableExpressionNode;
+    public IAmbiguousExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
+    public IExpressionNode? LeftOperand => TempLeftOperand as IExpressionNode;
     public AssignmentOperator Operator => Syntax.Operator;
     private RewritableChild<IAmbiguousExpressionNode> rightOperand;
     private bool rightOperandCached;
@@ -75,7 +75,7 @@ internal sealed class AssignmentExpressionNode : ExpressionNode, IAssignmentExpr
 
     public AssignmentExpressionNode(
         IAssignmentExpressionSyntax syntax,
-        IAmbiguousAssignableExpressionNode leftOperand,
+        IAmbiguousExpressionNode leftOperand,
         IAmbiguousExpressionNode rightOperand)
     {
         Syntax = syntax;

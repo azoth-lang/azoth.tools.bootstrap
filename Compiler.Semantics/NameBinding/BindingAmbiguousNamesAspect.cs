@@ -14,7 +14,7 @@ internal static partial class BindingAmbiguousNamesAspect
     public static partial IFixedList<IDeclarationNode> StandardNameExpression_ReferencedDeclarations(IStandardNameExpressionNode node)
         => node.ContainingLexicalScope.Lookup(node.Name).ToFixedList();
 
-    public static IAmbiguousNameExpressionNode IdentifierNameExpression_Rewrite(IIdentifierNameExpressionNode node)
+    public static partial IAmbiguousNameExpressionNode? IdentifierNameExpression_Rewrite(IIdentifierNameExpressionNode node)
     {
         // If not all referenced declarations are namespaces, then this is not a namespace name.
         if (node.ReferencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))

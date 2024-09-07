@@ -1916,7 +1916,6 @@ public partial interface IOptionalPatternNode : IOptionalOrBindingPatternNode
 }
 
 [Closed(
-    typeof(IAmbiguousAssignableExpressionNode),
     typeof(IExpressionNode),
     typeof(IUnresolvedInvocationExpressionNode),
     typeof(IAmbiguousNameExpressionNode),
@@ -1936,21 +1935,6 @@ public partial interface IAmbiguousExpressionNode : ICodeNode
 }
 
 [Closed(
-    typeof(IAssignableExpressionNode),
-    typeof(IIdentifierNameExpressionNode),
-    typeof(IMemberAccessExpressionNode),
-    typeof(IPropertyNameNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAmbiguousAssignableExpressionNode : IAmbiguousExpressionNode
-{
-    new IAssignableExpressionSyntax Syntax { get; }
-    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
-    ICodeSyntax? ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
-}
-
-[Closed(
-    typeof(IAssignableExpressionNode),
     typeof(IBlockExpressionNode),
     typeof(IUnsafeExpressionNode),
     typeof(INeverTypedExpressionNode),
@@ -1985,17 +1969,6 @@ public partial interface IExpressionNode : IAmbiguousExpressionNode, IControlFlo
     IFlowState FlowStateAfter { get; }
     IMaybeExpressionAntetype? ExpectedAntetype { get; }
     IMaybeExpressionAntetype Antetype { get; }
-}
-
-[Closed(
-    typeof(IFieldAccessExpressionNode),
-    typeof(IVariableNameExpressionNode),
-    typeof(IMissingNameExpressionNode),
-    typeof(IUnknownIdentifierNameExpressionNode),
-    typeof(IUnknownMemberAccessExpressionNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAssignableExpressionNode : IExpressionNode, IAmbiguousAssignableExpressionNode
-{
 }
 
 // [Closed(typeof(BlockExpressionNode))]
@@ -2199,9 +2172,9 @@ public partial interface IAssignmentExpressionNode : IExpressionNode, IDataFlowN
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAmbiguousAssignableExpressionNode TempLeftOperand { get; }
-    IAssignableExpressionNode? LeftOperand { get; }
-    IAmbiguousAssignableExpressionNode CurrentLeftOperand { get; }
+    IAmbiguousExpressionNode TempLeftOperand { get; }
+    IExpressionNode? LeftOperand { get; }
+    IAmbiguousExpressionNode CurrentLeftOperand { get; }
     AssignmentOperator Operator { get; }
     IAmbiguousExpressionNode TempRightOperand { get; }
     IExpressionNode? RightOperand { get; }
@@ -2212,7 +2185,7 @@ public partial interface IAssignmentExpressionNode : IExpressionNode, IDataFlowN
     public static IAssignmentExpressionNode Create(
         ControlFlowSet controlFlowPrevious,
         IAssignmentExpressionSyntax syntax,
-        IAmbiguousAssignableExpressionNode leftOperand,
+        IAmbiguousExpressionNode leftOperand,
         AssignmentOperator @operator,
         IAmbiguousExpressionNode rightOperand)
         => new AssignmentExpressionNode(controlFlowPrevious, syntax, leftOperand, @operator, rightOperand);
@@ -2826,7 +2799,7 @@ public partial interface IStandardNameExpressionNode : IAmbiguousNameNode
 
 // [Closed(typeof(IdentifierNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIdentifierNameExpressionNode : IStandardNameExpressionNode, IUnresolvedSimpleNameNode, IAmbiguousAssignableExpressionNode
+public partial interface IIdentifierNameExpressionNode : IStandardNameExpressionNode, IUnresolvedSimpleNameNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
     IStandardNameExpressionSyntax IStandardNameExpressionNode.Syntax => Syntax;
@@ -2835,7 +2808,6 @@ public partial interface IIdentifierNameExpressionNode : IStandardNameExpression
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
-    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     StandardName IStandardNameExpressionNode.Name => Name;
 
@@ -2868,14 +2840,13 @@ public partial interface IGenericNameExpressionNode : IStandardNameExpressionNod
 
 // [Closed(typeof(MemberAccessExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMemberAccessExpressionNode : IAmbiguousNameNode, IAmbiguousAssignableExpressionNode
+public partial interface IMemberAccessExpressionNode : IAmbiguousNameNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     IAmbiguousExpressionNode TempContext { get; }
     IExpressionNode? Context { get; }
     IAmbiguousExpressionNode CurrentContext { get; }
@@ -2893,14 +2864,13 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameNode, IAmbi
 
 // [Closed(typeof(PropertyNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IPropertyNameNode : IAmbiguousNameNode, IAmbiguousAssignableExpressionNode
+public partial interface IPropertyNameNode : IAmbiguousNameNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
     StandardName PropertyName { get; }
@@ -2943,6 +2913,7 @@ public partial interface ILocalBindingNameExpressionNode : INameExpressionNode
 }
 
 [Closed(
+    typeof(IUnqualifiedNamespaceNameNode),
     typeof(IVariableNameExpressionNode),
     typeof(IInstanceExpressionNode),
     typeof(IMissingNameExpressionNode),
@@ -2968,13 +2939,14 @@ public partial interface INamespaceNameNode : INameExpressionNode
 
 // [Closed(typeof(UnqualifiedNamespaceNameNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnqualifiedNamespaceNameNode : INamespaceNameNode
+public partial interface IUnqualifiedNamespaceNameNode : INamespaceNameNode, ISimpleNameExpressionNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
     IdentifierName Name { get; }
 
     public static IUnqualifiedNamespaceNameNode Create(
@@ -3082,14 +3054,13 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
 
 // [Closed(typeof(FieldAccessExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFieldAccessExpressionNode : INameExpressionNode, IAssignableExpressionNode
+public partial interface IFieldAccessExpressionNode : INameExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
-    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
     IdentifierName FieldName { get; }
@@ -3106,14 +3077,13 @@ public partial interface IFieldAccessExpressionNode : INameExpressionNode, IAssi
 
 // [Closed(typeof(VariableNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressionNode, IAssignableExpressionNode, ISimpleNameExpressionNode
+public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressionNode, ISimpleNameExpressionNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
-    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
     IdentifierName Name { get; }
     new ILocalBindingNode ReferencedDefinition { get; }
@@ -3274,7 +3244,7 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
 
 // [Closed(typeof(MissingNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode, IAssignableExpressionNode
+public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode
 {
     new IMissingNameSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
@@ -3282,7 +3252,6 @@ public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode,
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
-    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     new UnknownType Type
         => DataType.Unknown;
     DataType IExpressionNode.Type => Type;
@@ -3325,7 +3294,7 @@ public partial interface IUnknownStandardNameExpressionNode : IUnknownNameExpres
 
 // [Closed(typeof(UnknownIdentifierNameExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnknownIdentifierNameExpressionNode : IUnknownStandardNameExpressionNode, ISimpleNameExpressionNode, IAssignableExpressionNode
+public partial interface IUnknownIdentifierNameExpressionNode : IUnknownStandardNameExpressionNode, ISimpleNameExpressionNode
 {
     new IIdentifierNameExpressionSyntax Syntax { get; }
     IStandardNameExpressionSyntax IUnknownStandardNameExpressionNode.Syntax => Syntax;
@@ -3334,7 +3303,6 @@ public partial interface IUnknownIdentifierNameExpressionNode : IUnknownStandard
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
-    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     new IdentifierName Name { get; }
     StandardName IUnknownStandardNameExpressionNode.Name => Name;
 
@@ -3371,14 +3339,13 @@ public partial interface IUnknownGenericNameExpressionNode : IUnknownStandardNam
 
 // [Closed(typeof(UnknownMemberAccessExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnknownMemberAccessExpressionNode : IUnknownNameExpressionNode, IAssignableExpressionNode
+public partial interface IUnknownMemberAccessExpressionNode : IUnknownNameExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
-    IAssignableExpressionSyntax IAmbiguousAssignableExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
     StandardName MemberName { get; }
@@ -3403,13 +3370,13 @@ public partial interface IAmbiguousMoveExpressionNode : IAmbiguousExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IUnresolvedSimpleNameNode TempReferent { get; }
-    ISimpleNameExpressionNode? Referent { get; }
-    IUnresolvedSimpleNameNode CurrentReferent { get; }
+    IAmbiguousNameExpressionNode TempReferent { get; }
+    INameExpressionNode? Referent { get; }
+    IAmbiguousNameExpressionNode CurrentReferent { get; }
 
     public static IAmbiguousMoveExpressionNode Create(
         IMoveExpressionSyntax syntax,
-        IUnresolvedSimpleNameNode referent)
+        IAmbiguousNameExpressionNode referent)
         => new AmbiguousMoveExpressionNode(syntax, referent);
 }
 
@@ -3487,13 +3454,13 @@ public partial interface IAmbiguousFreezeExpressionNode : IAmbiguousExpressionNo
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IUnresolvedSimpleNameNode TempReferent { get; }
-    ISimpleNameExpressionNode? Referent { get; }
-    IUnresolvedSimpleNameNode CurrentReferent { get; }
+    IAmbiguousNameExpressionNode TempReferent { get; }
+    INameExpressionNode? Referent { get; }
+    IAmbiguousNameExpressionNode CurrentReferent { get; }
 
     public static IAmbiguousFreezeExpressionNode Create(
         IFreezeExpressionSyntax syntax,
-        IUnresolvedSimpleNameNode referent)
+        IAmbiguousNameExpressionNode referent)
         => new AmbiguousFreezeExpressionNode(syntax, referent);
 }
 
@@ -9474,13 +9441,13 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
 
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    private RewritableChild<IAmbiguousAssignableExpressionNode> leftOperand;
+    private RewritableChild<IAmbiguousExpressionNode> leftOperand;
     private bool leftOperandCached;
-    public IAmbiguousAssignableExpressionNode TempLeftOperand
+    public IAmbiguousExpressionNode TempLeftOperand
         => GrammarAttribute.IsCached(in leftOperandCached) ? leftOperand.UnsafeValue
             : this.RewritableChild(ref leftOperandCached, ref leftOperand);
-    public IAssignableExpressionNode? LeftOperand => TempLeftOperand as IAssignableExpressionNode;
-    public IAmbiguousAssignableExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
+    public IExpressionNode? LeftOperand => TempLeftOperand as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
     public AssignmentOperator Operator { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> rightOperand;
     private bool rightOperandCached;
@@ -9571,7 +9538,7 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     public AssignmentExpressionNode(
         ControlFlowSet controlFlowPrevious,
         IAssignmentExpressionSyntax syntax,
-        IAmbiguousAssignableExpressionNode leftOperand,
+        IAmbiguousExpressionNode leftOperand,
         AssignmentOperator @operator,
         IAmbiguousExpressionNode rightOperand)
     {
@@ -11846,6 +11813,10 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
         Syntax = syntax;
         Name = name;
     }
+
+    protected override IChildTreeNode Rewrite()
+        => BindingAmbiguousNamesAspect.IdentifierNameExpression_Rewrite(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13384,13 +13355,13 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
     protected override bool MayHaveRewrite => true;
 
     public IMoveExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    private RewritableChild<IUnresolvedSimpleNameNode> referent;
+    private RewritableChild<IAmbiguousNameExpressionNode> referent;
     private bool referentCached;
-    public IUnresolvedSimpleNameNode TempReferent
+    public IAmbiguousNameExpressionNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
-    public ISimpleNameExpressionNode? Referent => TempReferent as ISimpleNameExpressionNode;
-    public IUnresolvedSimpleNameNode CurrentReferent => referent.UnsafeValue;
+    public INameExpressionNode? Referent => TempReferent as INameExpressionNode;
+    public IAmbiguousNameExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -13408,7 +13379,7 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
 
     public AmbiguousMoveExpressionNode(
         IMoveExpressionSyntax syntax,
-        IUnresolvedSimpleNameNode referent)
+        IAmbiguousNameExpressionNode referent)
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
@@ -13698,13 +13669,13 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
     protected override bool MayHaveRewrite => true;
 
     public IFreezeExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    private RewritableChild<IUnresolvedSimpleNameNode> referent;
+    private RewritableChild<IAmbiguousNameExpressionNode> referent;
     private bool referentCached;
-    public IUnresolvedSimpleNameNode TempReferent
+    public IAmbiguousNameExpressionNode TempReferent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
-    public ISimpleNameExpressionNode? Referent => TempReferent as ISimpleNameExpressionNode;
-    public IUnresolvedSimpleNameNode CurrentReferent => referent.UnsafeValue;
+    public INameExpressionNode? Referent => TempReferent as INameExpressionNode;
+    public IAmbiguousNameExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -13722,7 +13693,7 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
 
     public AmbiguousFreezeExpressionNode(
         IFreezeExpressionSyntax syntax,
-        IUnresolvedSimpleNameNode referent)
+        IAmbiguousNameExpressionNode referent)
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);

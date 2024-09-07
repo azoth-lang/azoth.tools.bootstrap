@@ -1238,7 +1238,7 @@ public class InterpreterProcess
     }
 
     private async ValueTask ExecuteAssignmentAsync(
-        IAssignableExpressionNode expression,
+        IExpressionNode expression,
         AzothValue value,
         LocalVariableScope variables)
     {

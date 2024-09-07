@@ -12,4 +12,5 @@ internal static partial class BindingAmbiguousNamesAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<IDeclarationNode> StandardNameExpression_ReferencedDeclarations(IStandardNameExpressionNode node);
+    public static partial IAmbiguousNameExpressionNode? IdentifierNameExpression_Rewrite(IIdentifierNameExpressionNode node);
 }
