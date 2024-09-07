@@ -142,6 +142,7 @@ public static class AspectParser
             '⮡' => ParsePreviousAttribute(statement),
             '+' => ParseIntertypeMethodAttribute(statement),
             '↗' => ParseAggregateAttribute(statement),
+            '→' => ParseCollectionAttribute(statement),
             _ => throw new($"Unknown attribute kind: {statement}"),
         };
 
@@ -242,6 +243,25 @@ public static class AspectParser
 
         var (node, attribute) = Bisect(statement, ".", "Should be exactly one `.` in: '{0}'");
         return new(ParseSymbol(node), attribute);
+    }
+
+    private static CollectionAttributeSyntax ParseCollectionAttribute(string statement)
+    {
+        if (!ParseOffStart(ref statement, "→*←"))
+            throw new ArgumentException("Not a collection attribute statement.", nameof(statement));
+
+        (var definition, statement) = Bisect(statement, ":", "Should be exactly one `:` in: '{0}'");
+        var (node, name) = Bisect(definition, ".", "Should be exactly one `.` in: '{0}'");
+        (statement, var doneMethod) = SplitOffEnd(statement, "Should end in done method: '{0}'");
+        (statement, var doneKeyword) = SplitOffEnd(statement, "Missing done keyword: '{0}'");
+        if (doneKeyword != "done") throw new FormatException($"Expected 'done', found: '{doneKeyword}'");
+        (statement, var constructExpression) = OptionalSplitOffEnd(statement, "=>");
+        (statement, var fromType) = Bisect(statement, "from", "Should be exactly one `from` in: '{0}'");
+        var (type, root) = OptionalSplitOffEnd(statement, "root");
+        var nodeSyntax = ParseSymbol(node);
+        var typeSyntax = ParseType(type);
+        var fromTypeSyntax = ParseType(fromType);
+        return new(nodeSyntax, name, typeSyntax, ParseSymbol(root), fromTypeSyntax, constructExpression, doneMethod);
     }
 
     private static EquationSyntax ParseEquation(string statement)

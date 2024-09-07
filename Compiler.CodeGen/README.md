@@ -163,20 +163,20 @@ second phase, values are collected from the nodes to contribute to the aggregate
 like regular synthetic and inherited attributes. Can be part of a circular attribute, but do not
 directly support cycles themselves.
 
-| Declaration                                                                                              | Meaning                                               |
-| -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Declaration                                                                                             | Meaning                                               |
+| ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | `↗↖` `*.`*Attribute*`:` *Type* `from` *Type* (`=>` *Expression*)? (`with` *Method*)? `done` *Method*`;` | An aggregate attribute family                         |
-| `↗↖` *Node*`.`*Attribute*`;`                                                                             | An aggregate attribute on a specific node             |
-| `=` *Node*`.↑.`*Attribute*`;`                                                                            | Equation contributing to a parent aggregate attribute |
+| `↗↖` *Node*`.`*Attribute*`;`                                                                            | An aggregate attribute on a specific node             |
+| `=` *Node*`.↑.`*Attribute*`;`                                                                           | Equation contributing to a parent aggregate attribute |
 
 ### Collection Attributes
 
 JastAdd style collection attributes.
 
-| Declaration                                                                                  | Meaning                                         |
-| -------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| Declaration                                                                                                 | Meaning                                         |
+| ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
 | `→*←` *Node*`.`*Attribute*`:` *Type* (`root` *Node*)? `from` *Type* (`=>` *Expression*)? `done` *Method*`;` | A collection attribute                          |
-| `=` *Node*`.→*.`*Node*`.`*Attribute* (`for` `each`? *target-exp*)?`;`               | Equation contributing to a collection attribute |
+| `=` *Node*`.→*.`*Node*`.`*Attribute* (`for` `each`? *target-exp*)?`;`                                       | Equation contributing to a collection attribute |
 
 ### Attribute Overriding
 

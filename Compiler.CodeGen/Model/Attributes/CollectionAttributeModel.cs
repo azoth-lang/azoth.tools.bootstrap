@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
@@ -10,7 +11,7 @@ public sealed class CollectionAttributeModel : AspectAttributeModel
     public override TypeModel Type { get; }
     public Symbol? RootSymbol { get; }
     public TypeModel FromType { get; }
-    public string? ConstructExpression => Syntax.ConstructExpression;
+    public string? ConstructExpression { get; }
     public string DoneMethod => Syntax.DoneMethod;
 
     public CollectionAttributeModel(AspectModel aspect, CollectionAttributeSyntax syntax)
@@ -20,6 +21,7 @@ public sealed class CollectionAttributeModel : AspectAttributeModel
         Type = TypeModel.CreateFromSyntax(aspect.Tree, syntax.Type);
         RootSymbol = Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Root);
         FromType = TypeModel.CreateFromSyntax(aspect.Tree, syntax.FromType);
+        ConstructExpression = Syntax.ConstructExpression ?? $"new {Emit.Type(FromType)}()";
     }
 
     public override string ToString()
