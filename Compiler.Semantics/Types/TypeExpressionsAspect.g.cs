@@ -20,6 +20,8 @@ internal static partial class TypeExpressionsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void CapabilityType_Contribute_Diagnostics(ICapabilityTypeNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void CapabilityViewpointType_Contribute_Diagnostics(ICapabilityViewpointTypeNode node, DiagnosticCollectionBuilder diagnostics);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void SelfViewpointType_Contribute_Diagnostics(ISelfViewpointTypeNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial DataType OptionalType_NamedType(IOptionalTypeNode node);

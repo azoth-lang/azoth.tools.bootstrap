@@ -8096,6 +8096,17 @@ file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeN
         Capability = Child.Attach(this, capability);
         Referent = Child.Attach(this, referent);
     }
+
+    internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
+    {
+        contributors.Add(this);
+        base.CollectContributors_Diagnostics(contributors);
+    }
+
+    internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
+    {
+        TypeExpressionsAspect.CapabilityViewpointType_Contribute_Diagnostics(this, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]

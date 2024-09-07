@@ -43,7 +43,7 @@ internal static partial class TypeExpressionsAspect
     public static partial DataType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node)
         => CapabilityViewpointType.Create(node.Capability.Capability, node.Referent.NamedType);
 
-    public static void CapabilityViewpointType_ContributeDiagnostics(
+    public static partial void CapabilityViewpointType_Contribute_Diagnostics(
         ICapabilityViewpointTypeNode node,
         DiagnosticCollectionBuilder diagnostics)
     {

@@ -327,7 +327,7 @@ internal static class SyntaxBinder
         => IIdentifierTypeNameNode.Create(syntax);
 
     private static IGenericTypeNameNode GenericTypeName(IGenericTypeNameSyntax syntax)
-        => new GenericTypeNameNode(syntax, Types(syntax.TypeArguments));
+        => IGenericTypeNameNode.Create(syntax, Types(syntax.TypeArguments));
 
     private static ISimpleTypeNameNode SimpleTypeName(ISimpleTypeNameSyntax syntax)
         => syntax switch
@@ -338,19 +338,19 @@ internal static class SyntaxBinder
         };
 
     private static ISpecialTypeNameNode SpecialTypeName(ISpecialTypeNameSyntax syntax)
-        => new SpecialTypeNameNode(syntax);
+        => ISpecialTypeNameNode.Create(syntax);
 
     private static IQualifiedTypeNameNode QualifiedTypeName(IQualifiedTypeNameSyntax syntax)
-        => new QualifiedTypeNameNode(syntax, TypeName(syntax.Context), StandardTypeName(syntax.QualifiedName));
+        => IQualifiedTypeNameNode.Create(syntax, TypeName(syntax.Context), StandardTypeName(syntax.QualifiedName));
 
     private static IOptionalTypeNode OptionalType(IOptionalTypeSyntax syntax)
-        => new OptionalTypeNode(syntax, Type(syntax.Referent));
+        => IOptionalTypeNode.Create(syntax, Type(syntax.Referent));
 
     private static ICapabilityTypeNode CapabilityType(ICapabilityTypeSyntax syntax)
-        => new CapabilityTypeNode(syntax, Capability(syntax.Capability), Type(syntax.Referent));
+        => ICapabilityTypeNode.Create(syntax, Capability(syntax.Capability), Type(syntax.Referent));
 
     private static IFunctionTypeNode FunctionType(IFunctionTypeSyntax syntax)
-        => new FunctionTypeNode(syntax, ParameterTypes(syntax.Parameters), Type(syntax.Return.Referent));
+        => IFunctionTypeNode.Create(syntax, ParameterTypes(syntax.Parameters), Type(syntax.Return.Referent));
 
     private static IEnumerable<IParameterTypeNode> ParameterTypes(IEnumerable<IParameterTypeSyntax> syntax)
         => syntax.Select(ParameterType);
@@ -367,10 +367,10 @@ internal static class SyntaxBinder
         };
 
     private static ICapabilityViewpointTypeNode CapabilityViewpointType(ICapabilityViewpointTypeSyntax syntax)
-        => new CapabilityViewpointTypeNode(syntax, Capability(syntax.Capability), Type(syntax.Referent));
+        => ICapabilityViewpointTypeNode.Create(syntax, Capability(syntax.Capability), Type(syntax.Referent));
 
     private static ISelfViewpointTypeNode SelfViewpointType(ISelfViewpointTypeSyntax syntax)
-        => new SelfViewpointTypeNode(syntax, Type(syntax.Referent));
+        => ISelfViewpointTypeNode.Create(syntax, Type(syntax.Referent));
     #endregion
 
     #region Statements

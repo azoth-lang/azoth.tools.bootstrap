@@ -15,5 +15,6 @@
 = TypeName.NamedType;
 ↑ ParameterType.Parameter: `ParameterType`;
 = CapabilityType.↑.Diagnostics;
+= CapabilityViewpointType.↑.Diagnostics;
 ↓ SelfViewpointType.MethodSelfType: `Pseudotype`?;
 = SelfViewpointType.↑.Diagnostics;
