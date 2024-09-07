@@ -9,7 +9,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
     typeof(InheritedAttributeSyntax),
     typeof(PreviousAttributeSyntax),
     typeof(IntertypeMethodAttributeSyntax),
-    typeof(AggregateAttributeSyntax))]
+    typeof(AggregateAttributeSyntax),
+    typeof(CollectionAttributeSyntax))]
 public abstract class AspectAttributeSyntax : AttributeSyntax
 {
     public bool IsChild { get; }

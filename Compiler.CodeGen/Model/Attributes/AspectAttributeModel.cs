@@ -14,7 +14,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
     typeof(LocalAttributeModel),
     typeof(ContextAttributeModel),
     typeof(IntertypeMethodAttributeModel),
-    typeof(AggregateAttributeModel))]
+    typeof(AggregateAttributeModel),
+    typeof(CollectionAttributeModel))]
 public abstract class AspectAttributeModel : AttributeModel
 {
     public static AspectAttributeModel Create(AspectModel aspect, AspectAttributeSyntax syntax)
@@ -26,6 +27,7 @@ public abstract class AspectAttributeModel : AttributeModel
             PreviousAttributeSyntax syn => new PreviousAttributeModel(aspect, syn),
             IntertypeMethodAttributeSyntax syn => new IntertypeMethodAttributeModel(aspect, syn),
             AggregateAttributeSyntax syn => new AggregateAttributeModel(aspect, syn),
+            CollectionAttributeSyntax syn => new CollectionAttributeModel(aspect, syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 

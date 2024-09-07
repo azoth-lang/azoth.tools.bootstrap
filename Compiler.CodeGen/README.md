@@ -165,7 +165,7 @@ directly support cycles themselves.
 
 | Declaration                                                                                              | Meaning                                               |
 | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| `↗↖` `*.`*Attribute*`:` *Type* `from` *Type* (`=>` *Expression*)? (`with` *Method*)? `done` *Method* `;` | An aggregate attribute family                         |
+| `↗↖` `*.`*Attribute*`:` *Type* `from` *Type* (`=>` *Expression*)? (`with` *Method*)? `done` *Method*`;` | An aggregate attribute family                         |
 | `↗↖` *Node*`.`*Attribute*`;`                                                                             | An aggregate attribute on a specific node             |
 | `=` *Node*`.↑.`*Attribute*`;`                                                                            | Equation contributing to a parent aggregate attribute |
 
@@ -175,8 +175,8 @@ JastAdd style collection attributes.
 
 | Declaration                                                                                  | Meaning                                         |
 | -------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| `→*←` *Node*`.`*Attribute*`:` *Type* (`root` *Node*)? `from` *Type* (`=>` *Expression*)? `;` | A collection attribute                          |
-| `=` *Node*`.→*.`*Node*`.`*Attribute* (`when` *cond*)? (`for` *target-exp*)?`;`               | Equation contributing to a collection attribute |
+| `→*←` *Node*`.`*Attribute*`:` *Type* (`root` *Node*)? `from` *Type* (`=>` *Expression*)? `done` *Method*`;` | A collection attribute                          |
+| `=` *Node*`.→*.`*Node*`.`*Attribute* (`for` `each`? *target-exp*)?`;`               | Equation contributing to a collection attribute |
 
 ### Attribute Overriding
 
