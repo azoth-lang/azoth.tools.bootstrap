@@ -274,14 +274,16 @@ public static class AspectParser
         var evaluationStrategy = ParseEvaluationStrategy(ref node);
         var parameters = TryParseOffParameters(ref definition);
         var isMethod = parameters is not null;
-        var segments = definition.Split('.', StringSplitOptions.TrimEntries);
         var nodeSymbol = ParseSymbol(node);
+        var segments = definition.Split('.', StringSplitOptions.TrimEntries);
         if (segments.Length == 1)
         {
             if (isMethod && parameters!.Length > 0)
                 return ParseIntertypeMethodEquation(evaluationStrategy, nodeSymbol, definition, parameters, typeOverride, expression);
             return ParseLocalEquation(evaluationStrategy, nodeSymbol, definition, isMethod, typeOverride, expression);
         }
+        if (segments[0] == "→*")
+            return ParseCollectionEquation(evaluationStrategy, nodeSymbol, definition, isMethod, typeOverride, expression);
         var name = segments[^1];
         segments = segments[..^1];
         if (segments.Length == 1)
@@ -384,6 +386,33 @@ public static class AspectParser
             throw new FormatException("Aggregate equations cannot have an expression.");
 
         return new(node, name);
+    }
+
+    private static CollectionAttributeEquationSyntax ParseCollectionEquation(
+        EvaluationStrategy? strategy,
+        SymbolSyntax node,
+        string definition,
+        bool isMethod,
+        string? typeOverride,
+        string? expression)
+    {
+        if (strategy is not null)
+            throw new FormatException("Collection equations cannot have evaluation strategies.");
+        if (isMethod)
+            throw new FormatException("Collection equations cannot be methods.");
+        if (typeOverride is not null)
+            throw new FormatException("Collection equations cannot have an types overrides.");
+        if (expression is not null)
+            throw new FormatException("Collection equations cannot have an expression.");
+
+        (var selector, definition) = SplitOffStart(definition, ".", "Missing `.` between selector and target in: '{0}");
+        if (selector != "→*")
+            throw new FormatException("Collection equations must start with `→*`.");
+        (definition, var targetExpression) = OptionalSplitOffEnd(definition, "for");
+        var isForEach = targetExpression is not null && ParseOffStart(ref targetExpression, "each");
+        var (target, name) = Bisect(definition, ".", "Should be exactly one `.` in: '{0}'");
+        var targetNode = ParseSymbol(target);
+        return new(node, targetNode, name, isForEach, targetExpression);
     }
 
     private static SelectorSyntax ParseSelector(string[] selector)
