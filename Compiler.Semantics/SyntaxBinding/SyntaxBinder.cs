@@ -596,10 +596,10 @@ internal static class SyntaxBinder
 
     #region Capability Expressions
     private static IAmbiguousMoveExpressionNode MoveExpression(IMoveExpressionSyntax syntax)
-        => new AmbiguousMoveExpressionNode(syntax, SimpleName(syntax.Referent));
+        => IAmbiguousMoveExpressionNode.Create(syntax, SimpleName(syntax.Referent));
 
     private static IAmbiguousFreezeExpressionNode FreezeExpression(IFreezeExpressionSyntax syntax)
-        => new AmbiguousFreezeExpressionNode(syntax, SimpleName(syntax.Referent));
+        => IAmbiguousFreezeExpressionNode.Create(syntax, SimpleName(syntax.Referent));
     #endregion
 
     #region Async Expressions

@@ -350,7 +350,7 @@ SpecialTypeNameExpression <: NameExpression
 InstanceExpression <: NameExpression, SimpleNameExpression = Syntax:`IInstanceExpressionSyntax`; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression, LocalBindingNameExpression
-    = Syntax:`ISelfExpressionSyntax` IsImplicit:`bool`;
+    = Syntax:`ISelfExpressionSyntax`;
 MissingNameExpression <: NameExpression, SimpleNameExpression
     = Syntax:`IMissingNameSyntax`;
 UnknownNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`;

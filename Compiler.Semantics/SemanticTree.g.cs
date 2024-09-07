@@ -3233,18 +3233,18 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
-    bool IsImplicit { get; }
     IFlowState FlowStateBefore();
     Pseudotype Pseudotype { get; }
     IExecutableDefinitionNode ContainingDeclaration { get; }
+    bool IsImplicit
+        => Syntax.IsImplicit;
     new ISelfParameterNode? ReferencedDefinition { get; }
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
 
     public static ISelfExpressionNode Create(
         ControlFlowSet controlFlowPrevious,
-        ISelfExpressionSyntax syntax,
-        bool isImplicit)
-        => new SelfExpressionNode(controlFlowPrevious, syntax, isImplicit);
+        ISelfExpressionSyntax syntax)
+        => new SelfExpressionNode(controlFlowPrevious, syntax);
 }
 
 // [Closed(typeof(MissingNameExpressionNode))]
@@ -12950,7 +12950,6 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
 
     public ControlFlowSet ControlFlowPrevious { [DebuggerStepThrough] get; }
     public ISelfExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public bool IsImplicit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -13032,12 +13031,10 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
 
     public SelfExpressionNode(
         ControlFlowSet controlFlowPrevious,
-        ISelfExpressionSyntax syntax,
-        bool isImplicit)
+        ISelfExpressionSyntax syntax)
     {
         ControlFlowPrevious = controlFlowPrevious;
         Syntax = syntax;
-        IsImplicit = isImplicit;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)

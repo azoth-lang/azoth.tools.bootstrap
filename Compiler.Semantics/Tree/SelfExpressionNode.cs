@@ -15,7 +15,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class SelfExpressionNode : NameExpressionNode, ISelfExpressionNode
 {
     public override ISelfExpressionSyntax Syntax { get; }
-    public bool IsImplicit => Syntax.IsImplicit;
     private IExecutableDefinitionNode? containingDeclaration;
     private bool containingDeclarationCached;
     public IExecutableDefinitionNode ContainingDeclaration
