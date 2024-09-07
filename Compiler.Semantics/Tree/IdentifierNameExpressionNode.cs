@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
@@ -18,7 +17,7 @@ internal sealed class IdentifierNameExpressionNode : AmbiguousNameExpressionNode
     public override LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
-                Inherited_ContainingLexicalScope, ReferenceEqualityComparer.Instance);
+                Inherited_ContainingLexicalScope);
     private ValueAttribute<IFixedList<IDeclarationNode>> referencedDeclarations;
     public IFixedList<IDeclarationNode> ReferencedDeclarations
         => referencedDeclarations.TryGetValue(out var value) ? value
@@ -31,5 +30,5 @@ internal sealed class IdentifierNameExpressionNode : AmbiguousNameExpressionNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.IdentifierName_Rewrite(this) ?? base.Rewrite();
+        => BindingAmbiguousNamesAspect.IdentifierNameExpression_Rewrite(this) ?? base.Rewrite();
 }

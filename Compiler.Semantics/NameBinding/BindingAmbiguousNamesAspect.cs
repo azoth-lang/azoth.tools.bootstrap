@@ -9,12 +9,12 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
-internal static class BindingAmbiguousNamesAspect
+internal static partial class BindingAmbiguousNamesAspect
 {
-    public static IFixedList<IDeclarationNode> StandardNameExpression_ReferencedDeclarations(IStandardNameExpressionNode node)
+    public static partial IFixedList<IDeclarationNode> StandardNameExpression_ReferencedDeclarations(IStandardNameExpressionNode node)
         => node.ContainingLexicalScope.Lookup(node.Name).ToFixedList();
 
-    public static IAmbiguousNameExpressionNode IdentifierName_Rewrite(IIdentifierNameExpressionNode node)
+    public static IAmbiguousNameExpressionNode IdentifierNameExpression_Rewrite(IIdentifierNameExpressionNode node)
     {
         // If not all referenced declarations are namespaces, then this is not a namespace name.
         if (node.ReferencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
@@ -35,7 +35,7 @@ internal static class BindingAmbiguousNamesAspect
         return new UnknownIdentifierNameExpressionNode(node.Syntax, node.ReferencedDeclarations);
     }
 
-    public static void UnknownIdentifierNameExpression_ContributeDiagnostics(
+    public static void UnknownIdentifierNameExpression_Contribute_Diagnostics(
         IUnknownIdentifierNameExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
@@ -85,13 +85,8 @@ internal static class BindingAmbiguousNamesAspect
             return new FunctionGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments,
                 referencedFunctions);
 
-        if (members.TrySingle() is not null and var referencedDeclaration)
-            switch (referencedDeclaration)
-            {
-                case ITypeDeclarationNode referencedType:
-                    return new QualifiedTypeNameExpression(node.Syntax, context, node.TypeArguments,
-                        referencedType);
-            }
+        if (members.TrySingle() is ITypeDeclarationNode referencedType)
+            return new QualifiedTypeNameExpression(node.Syntax, context, node.TypeArguments, referencedType);
 
         return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
     }
@@ -196,7 +191,7 @@ internal static class BindingAmbiguousNamesAspect
         return new FunctionNameNode(node.Syntax, node, node.ReferencedDeclarations.TrySingle());
     }
 
-    public static void FunctionGroupName_ContributeDiagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
+    public static void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO develop a better check that this node is ambiguous
         if (node.Parent is IFunctionNameNode or IUnresolvedInvocationExpressionNode or IFunctionInvocationExpressionNode)
@@ -210,7 +205,7 @@ internal static class BindingAmbiguousNamesAspect
             diagnostics.Add(TypeError.AmbiguousFunctionGroup(node.File, node.Syntax, DataType.Unknown));
     }
 
-    public static void UnknownMemberAccessExpression_ContributeDiagnostics(
+    public static void UnknownMemberAccessExpression_Contribute_Diagnostics(
         IUnknownMemberAccessExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {

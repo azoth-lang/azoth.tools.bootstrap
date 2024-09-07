@@ -46,7 +46,7 @@ internal sealed class FunctionGroupNameNode : NameExpressionNode, IFunctionGroup
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        BindingAmbiguousNamesAspect.FunctionGroupName_ContributeDiagnostics(this, diagnostics);
+        BindingAmbiguousNamesAspect.FunctionGroupName_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
@@ -28,7 +27,7 @@ internal sealed class UnknownIdentifierNameExpressionNode : UnknownStandardNameE
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        BindingAmbiguousNamesAspect.UnknownIdentifierNameExpression_ContributeDiagnostics(this, diagnostics);
+        BindingAmbiguousNamesAspect.UnknownIdentifierNameExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

@@ -305,7 +305,7 @@ temp AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyn
 temp AmbiguousName <: AmbiguousNameExpression;
 temp UnresolvedSimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
 temp StandardNameExpression <: AmbiguousName = Syntax:`IStandardNameExpressionSyntax`
-    Name:`StandardName` ReferencedDeclarations:`IDeclarationNode`*;
+    Name:`StandardName`;
 temp IdentifierNameExpression <: AmbiguousName, StandardNameExpression, UnresolvedSimpleName, AmbiguousAssignableExpression
     = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
 temp GenericNameExpression <: AmbiguousName, StandardNameExpression

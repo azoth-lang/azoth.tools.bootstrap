@@ -2819,9 +2819,9 @@ public partial interface IStandardNameExpressionNode : IAmbiguousNameNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     StandardName Name { get; }
-    IFixedList<IDeclarationNode> ReferencedDeclarations { get; }
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
+    IFixedList<IDeclarationNode> ReferencedDeclarations { get; }
 }
 
 // [Closed(typeof(IdentifierNameExpressionNode))]
@@ -2840,10 +2840,9 @@ public partial interface IIdentifierNameExpressionNode : IStandardNameExpression
     StandardName IStandardNameExpressionNode.Name => Name;
 
     public static IIdentifierNameExpressionNode Create(
-        IEnumerable<IDeclarationNode> referencedDeclarations,
         IIdentifierNameExpressionSyntax syntax,
         IdentifierName name)
-        => new IdentifierNameExpressionNode(referencedDeclarations, syntax, name);
+        => new IdentifierNameExpressionNode(syntax, name);
 }
 
 // [Closed(typeof(GenericNameExpressionNode))]
@@ -2861,11 +2860,10 @@ public partial interface IGenericNameExpressionNode : IStandardNameExpressionNod
     IFixedList<ITypeNode> TypeArguments { get; }
 
     public static IGenericNameExpressionNode Create(
-        IEnumerable<IDeclarationNode> referencedDeclarations,
         IGenericNameExpressionSyntax syntax,
         GenericName name,
         IEnumerable<ITypeNode> typeArguments)
-        => new GenericNameExpressionNode(referencedDeclarations, syntax, name, typeArguments);
+        => new GenericNameExpressionNode(syntax, name, typeArguments);
 }
 
 // [Closed(typeof(MemberAccessExpressionNode))]
@@ -11814,7 +11812,6 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IFixedList<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -11829,6 +11826,12 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public IFixedList<IDeclarationNode> ReferencedDeclarations
+        => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
+            : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
+                BindingAmbiguousNamesAspect.StandardNameExpression_ReferencedDeclarations);
+    private IFixedList<IDeclarationNode>? referencedDeclarations;
+    private bool referencedDeclarationsCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11837,11 +11840,9 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
     private bool valueIdCached;
 
     public IdentifierNameExpressionNode(
-        IEnumerable<IDeclarationNode> referencedDeclarations,
         IIdentifierNameExpressionSyntax syntax,
         IdentifierName name)
     {
-        ReferencedDeclarations = referencedDeclarations.ToFixedList();
         Syntax = syntax;
         Name = name;
     }
@@ -11854,7 +11855,6 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IFixedList<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IGenericNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public GenericName Name { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
@@ -11870,6 +11870,12 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public IFixedList<IDeclarationNode> ReferencedDeclarations
+        => GrammarAttribute.IsCached(in referencedDeclarationsCached) ? referencedDeclarations!
+            : this.Synthetic(ref referencedDeclarationsCached, ref referencedDeclarations,
+                BindingAmbiguousNamesAspect.StandardNameExpression_ReferencedDeclarations);
+    private IFixedList<IDeclarationNode>? referencedDeclarations;
+    private bool referencedDeclarationsCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11878,12 +11884,10 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
     private bool valueIdCached;
 
     public GenericNameExpressionNode(
-        IEnumerable<IDeclarationNode> referencedDeclarations,
         IGenericNameExpressionSyntax syntax,
         GenericName name,
         IEnumerable<ITypeNode> typeArguments)
     {
-        ReferencedDeclarations = referencedDeclarations.ToFixedList();
         Syntax = syntax;
         Name = name;
         TypeArguments = ChildList.Attach(this, typeArguments);

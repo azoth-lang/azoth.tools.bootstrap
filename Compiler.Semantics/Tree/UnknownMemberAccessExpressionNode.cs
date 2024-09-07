@@ -50,7 +50,7 @@ internal class UnknownMemberAccessExpressionNode : UnknownNameExpressionNode, IU
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        BindingAmbiguousNamesAspect.UnknownMemberAccessExpression_ContributeDiagnostics(this, diagnostics);
+        BindingAmbiguousNamesAspect.UnknownMemberAccessExpression_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }
 }

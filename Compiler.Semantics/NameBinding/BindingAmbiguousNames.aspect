@@ -1,0 +1,10 @@
+◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
+◊name BindingAmbiguousNamesAspect;
+◊using Azoth.Tools.Bootstrap.Framework;
+
+// ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Ambiguous Name Expressions
+↑ StandardNameExpression.ReferencedDeclarations: Declaration*;
+= StandardNameExpression.ReferencedDeclarations;
+//✎ IdentifierNameExpression;
