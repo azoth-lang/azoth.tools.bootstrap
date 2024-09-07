@@ -2,6 +2,7 @@ using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
@@ -26,6 +27,8 @@ internal static partial class TypeExpressionsAspect
     public static partial DataType CapabilityType_NamedType(ICapabilityTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial DataType FunctionType_NamedType(IFunctionTypeNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ParameterType ParameterType_Parameter(IParameterTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial DataType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

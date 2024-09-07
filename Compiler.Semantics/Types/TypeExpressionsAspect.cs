@@ -37,7 +37,7 @@ internal static partial class TypeExpressionsAspect
     public static partial DataType FunctionType_NamedType(IFunctionTypeNode node)
         => new FunctionType(node.Parameters.Select(p => p.Parameter), new(node.Return.NamedType));
 
-    public static ParameterType ParameterType_Parameter(IParameterTypeNode node)
+    public static partial ParameterType ParameterType_Parameter(IParameterTypeNode node)
         => new(node.IsLent, node.Referent.NamedType);
 
     public static partial DataType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node)

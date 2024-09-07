@@ -2,6 +2,7 @@
 ◊name TypeExpressionsAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
@@ -12,6 +13,7 @@
 // ---------- Types
 ↑ Type.NamedType: `DataType`;
 = TypeName.NamedType;
+↑ ParameterType.Parameter: `ParameterType`;
 = CapabilityType.↑.Diagnostics;
 ↓ SelfViewpointType.MethodSelfType: `Pseudotype`?;
 = SelfViewpointType.↑.Diagnostics;

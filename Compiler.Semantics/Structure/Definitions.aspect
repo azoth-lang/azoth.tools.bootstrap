@@ -104,6 +104,9 @@
 = BindingPattern.IsLentBinding => false;
 = BindingPattern.IsMutableBinding => Syntax.IsMutableBinding;
 
+// ---------- Types
+↑ ParameterType.IsLent: `bool` => Syntax.IsLent;
+
 // ---------- Control Flow Expressions
 = ForeachExpression.IsLentBinding => false;
 = ForeachExpression.Name => VariableName;

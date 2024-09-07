@@ -1570,16 +1570,15 @@ public partial interface IParameterTypeNode : ICodeNode
     new IParameterTypeSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    bool IsLent { get; }
     ITypeNode Referent { get; }
+    bool IsLent
+        => Syntax.IsLent;
     ParameterType Parameter { get; }
 
     public static IParameterTypeNode Create(
         IParameterTypeSyntax syntax,
-        bool isLent,
-        ITypeNode referent,
-        ParameterType parameter)
-        => new ParameterTypeNode(syntax, isLent, referent, parameter);
+        ITypeNode referent)
+        => new ParameterTypeNode(syntax, referent);
 }
 
 [Closed(
@@ -8050,26 +8049,27 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
 file class ParameterTypeNode : SemanticNode, IParameterTypeNode
 {
     private IParameterTypeNode Self { [Inline] get => this; }
+    private AttributeLock syncLock;
 
     public IParameterTypeSyntax Syntax { [DebuggerStepThrough] get; }
-    public bool IsLent { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
-    public ParameterType Parameter { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public ParameterType Parameter
+        => GrammarAttribute.IsCached(in parameterCached) ? parameter
+            : this.Synthetic(ref parameterCached, ref parameter, ref syncLock,
+                TypeExpressionsAspect.ParameterType_Parameter);
+    private ParameterType parameter;
+    private bool parameterCached;
 
     public ParameterTypeNode(
         IParameterTypeSyntax syntax,
-        bool isLent,
-        ITypeNode referent,
-        ParameterType parameter)
+        ITypeNode referent)
     {
         Syntax = syntax;
-        IsLent = isLent;
         Referent = Child.Attach(this, referent);
-        Parameter = parameter;
     }
 }
 

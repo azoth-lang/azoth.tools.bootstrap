@@ -356,7 +356,7 @@ internal static class SyntaxBinder
         => syntax.Select(ParameterType);
 
     private static IParameterTypeNode ParameterType(IParameterTypeSyntax syntax)
-        => new ParameterTypeNode(syntax, Type(syntax.Referent));
+        => IParameterTypeNode.Create(syntax, Type(syntax.Referent));
 
     private static IViewpointTypeNode ViewpointType(IViewpointTypeSyntax syntax)
         => syntax switch
