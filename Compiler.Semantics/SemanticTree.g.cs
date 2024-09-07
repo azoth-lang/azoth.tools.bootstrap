@@ -4121,7 +4121,8 @@ public partial interface IAssociatedFunctionDeclarationNode : IAssociatedMemberD
     typeof(IPackageFacetSymbolNode),
     typeof(INamespaceMemberSymbolNode),
     typeof(ITypeSymbolNode),
-    typeof(IGenericParameterSymbolNode))]
+    typeof(IGenericParameterSymbolNode),
+    typeof(ITypeMemberSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IChildSymbolNode : IChildDeclarationNode
 {
@@ -4359,7 +4360,7 @@ public partial interface IGenericParameterSymbolNode : IGenericParameterDeclarat
     typeof(ITraitMemberSymbolNode),
     typeof(IStructMemberSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ITypeMemberSymbolNode : ITypeMemberDeclarationNode
+public partial interface ITypeMemberSymbolNode : ITypeMemberDeclarationNode, IChildSymbolNode
 {
 }
 
@@ -4405,6 +4406,11 @@ public partial interface IAssociatedMemberSymbolNode : IAssociatedMemberDeclarat
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IMethodSymbolNode : IMethodDeclarationNode, IClassMemberSymbolNode, ITraitMemberSymbolNode, IStructMemberSymbolNode
 {
+    new IdentifierName Name
+        => Symbol.Name;
+    IdentifierName IMethodDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
 }
 
 // [Closed(typeof(StandardMethodSymbolNode))]
@@ -4417,10 +4423,8 @@ public partial interface IStandardMethodSymbolNode : IStandardMethodDeclarationN
         => Symbol.MethodGroupType;
 
     public static IStandardMethodSymbolNode Create(
-        ISyntax? syntax,
-        IdentifierName name,
         MethodSymbol symbol)
-        => new StandardMethodSymbolNode(syntax, name, symbol);
+        => new StandardMethodSymbolNode(symbol);
 }
 
 // [Closed(typeof(GetterMethodSymbolNode))]
@@ -4429,10 +4433,8 @@ public partial interface IGetterMethodSymbolNode : IGetterMethodDeclarationNode,
 {
 
     public static IGetterMethodSymbolNode Create(
-        ISyntax? syntax,
-        IdentifierName name,
         MethodSymbol symbol)
-        => new GetterMethodSymbolNode(syntax, name, symbol);
+        => new GetterMethodSymbolNode(symbol);
 }
 
 // [Closed(typeof(SetterMethodSymbolNode))]
@@ -4441,48 +4443,54 @@ public partial interface ISetterMethodSymbolNode : ISetterMethodDeclarationNode,
 {
 
     public static ISetterMethodSymbolNode Create(
-        ISyntax? syntax,
-        IdentifierName name,
         MethodSymbol symbol)
-        => new SetterMethodSymbolNode(syntax, name, symbol);
+        => new SetterMethodSymbolNode(symbol);
 }
 
 // [Closed(typeof(ConstructorSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, IClassMemberSymbolNode
 {
+    new IdentifierName? Name
+        => Symbol.Name;
+    IdentifierName? IConstructorDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
 
     public static IConstructorSymbolNode Create(
-        ISyntax? syntax,
-        IdentifierName? name,
         ConstructorSymbol symbol)
-        => new ConstructorSymbolNode(syntax, name, symbol);
+        => new ConstructorSymbolNode(symbol);
 }
 
 // [Closed(typeof(InitializerSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, IStructMemberSymbolNode
 {
+    new IdentifierName? Name
+        => Symbol.Name;
+    IdentifierName? IInitializerDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
 
     public static IInitializerSymbolNode Create(
-        ISyntax? syntax,
-        IdentifierName? name,
         InitializerSymbol symbol)
-        => new InitializerSymbolNode(syntax, name, symbol);
+        => new InitializerSymbolNode(symbol);
 }
 
 // [Closed(typeof(FieldSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFieldSymbolNode : IFieldDeclarationNode, IClassMemberSymbolNode, IStructMemberSymbolNode
 {
+    new IdentifierName Name
+        => Symbol.Name;
+    IdentifierName IFieldDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    IdentifierName INamedBindingDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
     DataType IFieldDeclarationNode.BindingType
         => Symbol.Type;
 
     public static IFieldSymbolNode Create(
-        ISyntax? syntax,
-        IdentifierName name,
         FieldSymbol symbol)
-        => new FieldSymbolNode(syntax, name, symbol);
+        => new FieldSymbolNode(symbol);
 }
 
 // [Closed(typeof(AssociatedFunctionSymbolNode))]
@@ -4493,10 +4501,9 @@ public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDecl
         => Symbol.Type;
 
     public static IAssociatedFunctionSymbolNode Create(
-        ISyntax? syntax,
         FunctionSymbol symbol,
         StandardName name)
-        => new AssociatedFunctionSymbolNode(syntax, symbol, name);
+        => new AssociatedFunctionSymbolNode(symbol, name);
 }
 
 // TODO switch back to `file` and not `partial` once fully transitioned
@@ -14591,8 +14598,6 @@ file class StandardMethodSymbolNode : SemanticNode, IStandardMethodSymbolNode
 {
     private IStandardMethodSymbolNode Self { [Inline] get => this; }
 
-    public ISyntax? Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public MethodSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -14600,12 +14605,9 @@ file class StandardMethodSymbolNode : SemanticNode, IStandardMethodSymbolNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
     public StandardMethodSymbolNode(
-        ISyntax? syntax,
-        IdentifierName name,
         MethodSymbol symbol)
     {
-        Syntax = syntax;
-        Name = name;
+        SymbolNodeAspect.Validate_StandardMethodSymbolNode(symbol);
         Symbol = symbol;
     }
 }
@@ -14615,8 +14617,6 @@ file class GetterMethodSymbolNode : SemanticNode, IGetterMethodSymbolNode
 {
     private IGetterMethodSymbolNode Self { [Inline] get => this; }
 
-    public ISyntax? Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public MethodSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -14624,12 +14624,9 @@ file class GetterMethodSymbolNode : SemanticNode, IGetterMethodSymbolNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
     public GetterMethodSymbolNode(
-        ISyntax? syntax,
-        IdentifierName name,
         MethodSymbol symbol)
     {
-        Syntax = syntax;
-        Name = name;
+        SymbolNodeAspect.Validate_GetterMethodSymbolNode(symbol);
         Symbol = symbol;
     }
 }
@@ -14639,8 +14636,6 @@ file class SetterMethodSymbolNode : SemanticNode, ISetterMethodSymbolNode
 {
     private ISetterMethodSymbolNode Self { [Inline] get => this; }
 
-    public ISyntax? Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public MethodSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -14648,12 +14643,9 @@ file class SetterMethodSymbolNode : SemanticNode, ISetterMethodSymbolNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
     public SetterMethodSymbolNode(
-        ISyntax? syntax,
-        IdentifierName name,
         MethodSymbol symbol)
     {
-        Syntax = syntax;
-        Name = name;
+        SymbolNodeAspect.Validate_SetterMethodSymbolNode(symbol);
         Symbol = symbol;
     }
 }
@@ -14663,8 +14655,6 @@ file class ConstructorSymbolNode : SemanticNode, IConstructorSymbolNode
 {
     private IConstructorSymbolNode Self { [Inline] get => this; }
 
-    public ISyntax? Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName? Name { [DebuggerStepThrough] get; }
     public ConstructorSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -14672,12 +14662,8 @@ file class ConstructorSymbolNode : SemanticNode, IConstructorSymbolNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
     public ConstructorSymbolNode(
-        ISyntax? syntax,
-        IdentifierName? name,
         ConstructorSymbol symbol)
     {
-        Syntax = syntax;
-        Name = name;
         Symbol = symbol;
     }
 }
@@ -14687,8 +14673,6 @@ file class InitializerSymbolNode : SemanticNode, IInitializerSymbolNode
 {
     private IInitializerSymbolNode Self { [Inline] get => this; }
 
-    public ISyntax? Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName? Name { [DebuggerStepThrough] get; }
     public InitializerSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -14696,12 +14680,8 @@ file class InitializerSymbolNode : SemanticNode, IInitializerSymbolNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
     public InitializerSymbolNode(
-        ISyntax? syntax,
-        IdentifierName? name,
         InitializerSymbol symbol)
     {
-        Syntax = syntax;
-        Name = name;
         Symbol = symbol;
     }
 }
@@ -14711,8 +14691,6 @@ file class FieldSymbolNode : SemanticNode, IFieldSymbolNode
 {
     private IFieldSymbolNode Self { [Inline] get => this; }
 
-    public ISyntax? Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public FieldSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -14720,12 +14698,8 @@ file class FieldSymbolNode : SemanticNode, IFieldSymbolNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
     public FieldSymbolNode(
-        ISyntax? syntax,
-        IdentifierName name,
         FieldSymbol symbol)
     {
-        Syntax = syntax;
-        Name = name;
         Symbol = symbol;
     }
 }
@@ -14735,7 +14709,6 @@ file class AssociatedFunctionSymbolNode : SemanticNode, IAssociatedFunctionSymbo
 {
     private IAssociatedFunctionSymbolNode Self { [Inline] get => this; }
 
-    public ISyntax? Syntax { [DebuggerStepThrough] get; }
     public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
     public StandardName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -14744,11 +14717,9 @@ file class AssociatedFunctionSymbolNode : SemanticNode, IAssociatedFunctionSymbo
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
     public AssociatedFunctionSymbolNode(
-        ISyntax? syntax,
         FunctionSymbol symbol,
         StandardName name)
     {
-        Syntax = syntax;
         Symbol = symbol;
         Name = name;
     }

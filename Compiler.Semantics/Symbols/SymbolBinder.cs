@@ -64,20 +64,20 @@ internal static class SymbolBinder
          => new FunctionSymbolNode(sym);
 
     private static IConstructorDeclarationNode ConstructorSymbol(ConstructorSymbol sym)
-        => new ConstructorSymbolNode(sym);
+        => IConstructorSymbolNode.Create(sym);
 
     private static IInitializerSymbolNode InitializerSymbol(InitializerSymbol sym)
-        => new InitializerSymbolNode(sym);
+        => IInitializerSymbolNode.Create(sym);
 
     private static IMethodDeclarationNode MethodSymbol(MethodSymbol sym)
         => sym.Kind switch
         {
-            MethodKind.Standard => new StandardMethodSymbolNode(sym),
-            MethodKind.Getter => new GetterMethodSymbolNode(sym),
-            MethodKind.Setter => new SetterMethodSymbolNode(sym),
+            MethodKind.Standard => IStandardMethodSymbolNode.Create(sym),
+            MethodKind.Getter => IGetterMethodSymbolNode.Create(sym),
+            MethodKind.Setter => ISetterMethodSymbolNode.Create(sym),
             _ => throw ExhaustiveMatch.Failed(sym.Kind),
         };
 
     private static IFieldSymbolNode FieldSymbol(FieldSymbol sym)
-        => new FieldSymbolNode(sym);
+        => IFieldSymbolNode.Create(sym);
 }

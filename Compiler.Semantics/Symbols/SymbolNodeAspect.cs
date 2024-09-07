@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
@@ -76,6 +77,47 @@ internal static partial class SymbolNodeAspect
     public static partial INamespaceDefinitionNode NamespaceBlockDefinition_Definition(INamespaceBlockDefinitionNode node)
         => FindNamespace(node.ContainingNamespace, node.DeclaredNames);
 
+    public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)
+    {
+        var symbolNode = LookupDeclarations(node).TrySingle();
+        if (node.IsAttributeType)
+            symbolNode ??= LookupDeclarations(node, withAttributeSuffix: true).TrySingle();
+        return symbolNode;
+    }
+
+    public static partial void StandardTypeName_Contribute_Diagnostics(
+        IStandardTypeNameNode node,
+        DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.ReferencedDeclaration is not null) return;
+        var symbolNodes = LookupDeclarations(node);
+        switch (symbolNodes.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
+                break;
+            case 1:
+                // If there is only one match, then ReferencedSymbol is not null
+                throw new UnreachableException();
+            default:
+                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.Span));
+                break;
+        }
+    }
+
+    private static IFixedSet<ITypeDeclarationNode> LookupDeclarations(
+        IStandardTypeNameNode node,
+        bool withAttributeSuffix = false)
+    {
+        var name = withAttributeSuffix ? node.Name + SpecialNames.AttributeSuffix : node.Name;
+        return node.ContainingLexicalScope.Lookup(name).OfType<ITypeDeclarationNode>().ToFixedSet();
+    }
+
+    public static partial IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node)
+        // TODO report error for field parameter without referenced field
+        => node.ContainingTypeDefinition.Members.OfType<IFieldDefinitionNode>()
+               .FirstOrDefault(f => f.Name == node.Name);
+
     #region Type Symbol Nodes
     public static partial IFixedList<IGenericParameterSymbolNode> UserTypeSymbol_GenericParameters(IUserTypeSymbolNode node)
         => node.SymbolTree().GetChildrenOf(node.Symbol).OfType<GenericParameterTypeSymbol>()
@@ -111,42 +153,17 @@ internal static partial class SymbolNodeAspect
                .Select(SymbolBinder.Symbol).WhereNotNull().OfType<T>().ToFixedSet();
     #endregion
 
-    public static partial ITypeDeclarationNode? StandardTypeName_ReferencedDeclaration(IStandardTypeNameNode node)
-    {
-        var symbolNode = LookupDeclarations(node).TrySingle();
-        if (node.IsAttributeType)
-            symbolNode ??= LookupDeclarations(node, withAttributeSuffix: true).TrySingle();
-        return symbolNode;
-    }
+    #region Member Symbol Nodes
+    public static partial void Validate_StandardMethodSymbolNode(MethodSymbol symbol)
+        => Requires.That(symbol.Kind == MethodKind.Standard, nameof(symbol),
+            "Must be a standard method symbol.");
 
-    public static partial void StandardTypeName_Contribute_Diagnostics(IStandardTypeNameNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.ReferencedDeclaration is not null)
-            return;
-        var symbolNodes = LookupDeclarations(node);
-        switch (symbolNodes.Count)
-        {
-            case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
-                break;
-            case 1:
-                // If there is only one match, then ReferencedSymbol is not null
-                throw new UnreachableException();
-            default:
-                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.Span));
-                break;
-        }
-    }
+    public static partial void Validate_GetterMethodSymbolNode(MethodSymbol symbol)
+        => Requires.That(symbol.Kind == MethodKind.Getter, nameof(symbol), "Must be a getter symbol.");
 
-    private static IFixedSet<ITypeDeclarationNode> LookupDeclarations(IStandardTypeNameNode node, bool withAttributeSuffix = false)
-    {
-        var name = withAttributeSuffix ? node.Name + SpecialNames.AttributeSuffix : node.Name;
-        return node.ContainingLexicalScope.Lookup(name).OfType<ITypeDeclarationNode>().ToFixedSet();
-    }
-
-    public static partial IFieldDefinitionNode? FieldParameter_ReferencedField(IFieldParameterNode node)
-        // TODO report error for field parameter without referenced field
-        => node.ContainingTypeDefinition.Members.OfType<IFieldDefinitionNode>().FirstOrDefault(f => f.Name == node.Name);
+    public static partial void Validate_SetterMethodSymbolNode(MethodSymbol symbol)
+        => Requires.That(symbol.Kind == MethodKind.Setter, nameof(symbol), "Must be a standard method symbol.");
+    #endregion
 
     #region Symbol Nodes
     public static partial INamespaceSymbolNode PackageFacetSymbol_GlobalNamespace(IPackageFacetSymbolNode node)

@@ -100,7 +100,14 @@
 = GenericParameterSymbol.InclusiveMembers => [];
 
 // ---------- Member Symbol Nodes
+↑ MethodSymbol.Name: `IdentifierName` => Symbol.Name;
++ StandardMethodSymbol.new.Validate;
 = StandardMethodSymbol.Arity => Symbol.Arity;
 = StandardMethodSymbol.MethodGroupType => Symbol.MethodGroupType;
++ GetterMethodSymbol.new.Validate;
++ SetterMethodSymbol.new.Validate;
+↑ ConstructorSymbol.Name: `IdentifierName`? => Symbol.Name;
+↑ InitializerSymbol.Name: `IdentifierName`? => Symbol.Name;
+↑ FieldSymbol.Name: `IdentifierName` => Symbol.Name;
 = FieldSymbol.BindingType => Symbol.Type;
 = AssociatedFunctionSymbol.Type => Symbol.Type;
