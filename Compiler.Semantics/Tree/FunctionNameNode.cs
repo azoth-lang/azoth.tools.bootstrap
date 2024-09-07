@@ -13,13 +13,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class FunctionNameNode : NameExpressionNode, IFunctionNameNode
 {
     public override INameExpressionSyntax Syntax { get; }
-    private RewritableChild<IFunctionGroupNameNode> functionGroup;
-    private bool functionGroupCached;
-    public IFunctionGroupNameNode FunctionGroup
-        => GrammarAttribute.IsCached(in functionGroupCached) ? functionGroup.UnsafeValue
-            : this.RewritableChild(ref functionGroupCached, ref functionGroup);
-    public StandardName FunctionName => FunctionGroup.FunctionName;
-    public IFixedList<ITypeNode> TypeArguments => FunctionGroup.TypeArguments;
+    private RewritableChild<INameExpressionNode?> context;
+    private bool contextCached;
+    public INameExpressionNode? Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public INameExpressionNode? CurrentContext => context.UnsafeValue;
+    public StandardName FunctionName { get; }
+    public IFixedList<ITypeNode> TypeArguments { get; }
+    public IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
     public IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
@@ -42,11 +44,17 @@ internal sealed class FunctionNameNode : NameExpressionNode, IFunctionNameNode
 
     public FunctionNameNode(
         INameExpressionSyntax syntax,
-        IFunctionGroupNameNode functionGroup,
+        INameExpressionNode? context,
+        StandardName functionName,
+        IFixedList<ITypeNode> typeArguments,
+        IFixedSet<IFunctionInvocableDeclarationNode> referencedDeclarations,
         IFunctionInvocableDeclarationNode? referencedDeclaration)
     {
         Syntax = syntax;
-        this.functionGroup = Child.Create(this, functionGroup);
+        this.context = Child.Create(this, context);
+        FunctionName = functionName;
+        TypeArguments = ChildList.Attach(this, typeArguments);
+        ReferencedDeclarations = referencedDeclarations;
         ReferencedDeclaration = referencedDeclaration;
     }
 

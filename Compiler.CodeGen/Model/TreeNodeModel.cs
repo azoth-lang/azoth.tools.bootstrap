@@ -74,8 +74,8 @@ public class TreeNodeModel
     public bool InheritsFromRootSupertype => inheritsFromRootSupertype.Value;
     private readonly Lazy<bool> inheritsFromRootSupertype;
 
-    public IFixedSet<TreeNodeModel> CandidateFinalNodes => candidateFinalTypes.Value;
-    private readonly Lazy<IFixedSet<TreeNodeModel>> candidateFinalTypes;
+    public IFixedSet<TreeNodeModel> CandidateFinalNodes => candidateFinalNodes.Value;
+    private readonly Lazy<IFixedSet<TreeNodeModel>> candidateFinalNodes;
 
     /// <summary>
     /// The node that this node will be transformed into in the final tree.
@@ -236,7 +236,7 @@ public class TreeNodeModel
         descendantNodes = new(() => ChildNodes.Concat(ChildNodes.SelectMany(r => r.DescendantNodes)).ToFixedSet());
         inheritsFromRootSupertype = new(() => Tree.RootSupertype is not null
             && (Defines == Tree.RootSupertype || SupertypeNodes.Any(s => s.InheritsFromRootSupertype)));
-        candidateFinalTypes = new(() => DescendantNodes.Where(n => !n.IsTemp)
+        candidateFinalNodes = new(() => DescendantNodes.Where(n => !n.IsTemp)
                                                        .Select(n => n.DefinesType)
                                                        .MostGeneralTypes()
                                                        .Select(t => t.ReferencedNode()!)

@@ -21,6 +21,7 @@ internal sealed class FunctionInvocationExpressionNode : ExpressionNode, IFuncti
     public IFunctionGroupNameNode FunctionGroup
         => GrammarAttribute.IsCached(in functionGroupCached) ? functionGroup.UnsafeValue
             : this.RewritableChild(ref functionGroupCached, ref functionGroup);
+    public IFunctionGroupNameNode CurrentFunctionGroup => functionGroup.UnsafeValue;
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;

@@ -13,7 +13,12 @@ internal sealed class FunctionGroupNameNode : NameExpressionNode, IFunctionGroup
     protected override bool MayHaveRewrite => true;
 
     public override INameExpressionSyntax Syntax { get; }
-    public INameExpressionNode? Context { get; }
+    private RewritableChild<INameExpressionNode?> context;
+    private bool contextCached;
+    public INameExpressionNode? Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public INameExpressionNode? CurrentContext => context.UnsafeValue;
     public StandardName FunctionName { get; }
     public IFixedList<ITypeNode> TypeArguments { get; }
     public IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
@@ -26,7 +31,7 @@ internal sealed class FunctionGroupNameNode : NameExpressionNode, IFunctionGroup
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         FunctionName = functionName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();

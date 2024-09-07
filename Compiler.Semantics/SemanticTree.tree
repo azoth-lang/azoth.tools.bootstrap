@@ -283,7 +283,7 @@ FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpres
     FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*;
 MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     MethodGroup:MethodGroupName Arguments:AmbiguousExpression*;
-GetterInvocationExpression <: InvocationExpression = Syntax:`IMemberAccessExpressionSyntax`
+GetterInvocationExpression <: InvocationExpression, NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression PropertyName:`StandardName`
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`IGetterMethodDeclarationNode`?;
 SetterInvocationExpression <: InvocationExpression = Syntax:`IAssignmentExpressionSyntax`
@@ -328,8 +328,8 @@ FunctionGroupName <: NameExpression
     = Syntax:`INameExpressionSyntax` Context:NameExpression? FunctionName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 FunctionName <: NameExpression
-    = Syntax:`INameExpressionSyntax` FunctionGroup:FunctionGroupName FunctionName:`StandardName` TypeArguments:`ITypeNode`*
-    ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
+    = Syntax:`INameExpressionSyntax` Context:NameExpression?  FunctionName:`StandardName` TypeArguments:`ITypeNode`*
+    ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`} ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
 MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IStandardMethodDeclarationNode`};

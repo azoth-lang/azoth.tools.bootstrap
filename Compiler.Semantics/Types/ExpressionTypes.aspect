@@ -84,6 +84,7 @@
 ↑ MethodInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
 = MethodInvocationExpression.↑.Diagnostics;
 ↑ GetterInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+= GetterInvocationExpression.FlowStateAfter;
 = GetterInvocationExpression.↑.Diagnostics;
 ↑ SetterInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
 = SetterInvocationExpression.↑.Diagnostics;

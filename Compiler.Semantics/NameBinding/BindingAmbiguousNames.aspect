@@ -1,10 +1,27 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 ◊name BindingAmbiguousNamesAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Operator Expressions
+✎ AssignmentExpression PropertyNameLeftOperand;
 
 // ---------- Ambiguous Name Expressions
 ↑ StandardNameExpression.ReferencedDeclarations: Declaration*;
 = StandardNameExpression.ReferencedDeclarations;
 ✎ IdentifierNameExpression;
+✎ MemberAccessExpression FunctionOrMethodGroupNameContext;
+✎ MemberAccessExpression NamespaceNameContext;
+✎ MemberAccessExpression TypeNameExpressionContext;
+✎ MemberAccessExpression ExpressionContext;
+✎ MemberAccessExpression UnknownNameExpressionContext;
+✎ PropertyName;
+
+
+// ---------- Name Expressions
+//✎ FunctionGroupName;
+= FunctionGroupName.↑.Diagnostics;
+= UnknownIdentifierNameExpression.↑.Diagnostics;
+= UnknownMemberAccessExpression.↑.Diagnostics;

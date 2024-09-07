@@ -405,7 +405,8 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IFunctionNameNode n:
-                yield return n.FunctionGroup;
+                if (n.Context is not null)
+                    yield return n.Context;
                 yield break;
             case IMethodGroupNameNode n:
                 yield return n.Context;

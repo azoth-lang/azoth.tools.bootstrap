@@ -35,7 +35,7 @@ internal static partial class BindingAmbiguousNamesAspect
         return new UnknownIdentifierNameExpressionNode(node.Syntax, node.ReferencedDeclarations);
     }
 
-    public static void UnknownIdentifierNameExpression_Contribute_Diagnostics(
+    public static partial void UnknownIdentifierNameExpression_Contribute_Diagnostics(
         IUnknownIdentifierNameExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
@@ -54,7 +54,7 @@ internal static partial class BindingAmbiguousNamesAspect
         }
     }
 
-    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_FunctionOrMethodGroupNameContext(
+    public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_FunctionOrMethodGroupNameContext(
         IMemberAccessExpressionNode node)
     {
         if (node.Context is not IExpressionNode context)
@@ -67,7 +67,7 @@ internal static partial class BindingAmbiguousNamesAspect
             FixedList.Empty<IDefinitionNode>());
     }
 
-    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_NamespaceNameContext(
+    public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_NamespaceNameContext(
         IMemberAccessExpressionNode node)
     {
         if (node.Context is not INamespaceNameNode context)
@@ -91,7 +91,7 @@ internal static partial class BindingAmbiguousNamesAspect
         return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
     }
 
-    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_TypeNameExpressionContext(
+    public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_TypeNameExpressionContext(
         IMemberAccessExpressionNode node)
     {
         if (node.Context is not ITypeNameExpressionNode { ReferencedDeclaration: IUserTypeDeclarationNode referencedDeclaration } context)
@@ -112,7 +112,7 @@ internal static partial class BindingAmbiguousNamesAspect
         return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
     }
 
-    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_ExpressionContext(
+    public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_ExpressionContext(
         IMemberAccessExpressionNode node)
     {
         if (node.Context is not IExpressionNode context)
@@ -147,7 +147,7 @@ internal static partial class BindingAmbiguousNamesAspect
         return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
     }
 
-    public static IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_UnknownNameExpressionContext(IMemberAccessExpressionNode node)
+    public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_UnknownNameExpressionContext(IMemberAccessExpressionNode node)
     {
         if (node.Context is not IUnknownNameExpressionNode context)
             return null;
@@ -155,7 +155,7 @@ internal static partial class BindingAmbiguousNamesAspect
         return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDeclarationNode>());
     }
 
-    public static IExpressionNode? PropertyName_Rewrite(IPropertyNameNode node)
+    public static partial IAmbiguousNameExpressionNode? PropertyName_Rewrite(IPropertyNameNode node)
     {
         if (node.Parent is IAssignmentExpressionNode assignmentExpression
             && assignmentExpression.TempLeftOperand == node)
@@ -169,7 +169,7 @@ internal static partial class BindingAmbiguousNamesAspect
             node.ReferencedPropertyAccessors, getter);
     }
 
-    public static IExpressionNode? AssignmentExpression_Rewrite_PropertyNameLeftOperand(IAssignmentExpressionNode node)
+    public static partial IExpressionNode? AssignmentExpression_Rewrite_PropertyNameLeftOperand(IAssignmentExpressionNode node)
     {
         if (node.TempLeftOperand is not IPropertyNameNode propertyName)
             return null;
@@ -188,10 +188,11 @@ internal static partial class BindingAmbiguousNamesAspect
             return null;
 
         // if there is only one declaration, then it isn't ambiguous
-        return new FunctionNameNode(node.Syntax, node, node.ReferencedDeclarations.TrySingle());
+        return new FunctionNameNode(node.Syntax, node.Context, node.FunctionName, node.TypeArguments,
+            node.ReferencedDeclarations, node.ReferencedDeclarations.TrySingle());
     }
 
-    public static void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO develop a better check that this node is ambiguous
         if (node.Parent is IFunctionNameNode or IUnresolvedInvocationExpressionNode or IFunctionInvocationExpressionNode)
@@ -205,7 +206,7 @@ internal static partial class BindingAmbiguousNamesAspect
             diagnostics.Add(TypeError.AmbiguousFunctionGroup(node.File, node.Syntax, DataType.Unknown));
     }
 
-    public static void UnknownMemberAccessExpression_Contribute_Diagnostics(
+    public static partial void UnknownMemberAccessExpression_Contribute_Diagnostics(
         IUnknownMemberAccessExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
