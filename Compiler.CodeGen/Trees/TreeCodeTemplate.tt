@@ -12,7 +12,7 @@
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types" #>
 <#@ import namespace="Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations" #>
 <#  foreach(var usingNamespace in Build.OrderedNamespaces(tree,
-    Build.Conditional(!tree.SimplifiedTree, "System", "System.Linq", "System.Threading", "Azoth.Tools.Bootstrap.Compiler.Core.Attributes"),
+    Build.Conditional(!tree.SimplifiedTree, "System", "System.Linq", "System.Threading", "System.Collections.Concurrent", "Azoth.Tools.Bootstrap.Compiler.Core.Attributes"),
     Build.Conditional(tree.GenerateClasses, "InlineMethod", "System.Collections.Generic"),
     ["ExhaustiveMatching", "System.CodeDom.Compiler", "System.Diagnostics"])) { #>
 using <#=usingNamespace #>;
@@ -188,6 +188,48 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
     internal virtual void Contribute_This_<#= family.Name #>(<#= Emit.Type(family.FromType) #> builder) { }
     internal virtual void Contribute_<#= family.Name #>(<#= Emit.Type(family.FromType) #> builder) { }
 <#                  break;#>
+<#              case CollectionAttributeFamilyModel family: #>
+    // <#= family.Name #> is a collection attribute family
+    protected IFixedSet<<#= Emit.BaseClassName(tree) #>> CollectContributors_<#= family.Name #><#= Emit.RootParam(family) #>(<#= Emit.BaseClassName(tree) #> target, IInheritanceContext ctx)
+    {
+<#                  if (family.HasRoot) { #>
+        if (this is TRoot) return CollectContributors_<#= family.Name #>(target);
+<#                  } #>
+        return GetParent(ctx)?.CollectContributors_<#= family.Name #><#= Emit.RootParam(family) #>(target, ctx)
+            ?? (InFinalTree ? CollectContributors_<#= family.Name #>(target)
+                : throw Child.ParentMissing(this));
+    }
+    // TODO avoid adding this to every node
+    private ContributorCollection<<#= Emit.BaseClassName(tree) #>>? contributors_<#= family.Name #>;
+    private IFixedSet<<#= Emit.BaseClassName(tree) #>> CollectContributors_<#= family.Name #>(<#= Emit.BaseClassName(tree) #> target)
+    {
+        var contributors = LazyInitializer.EnsureInitialized(ref contributors_<#= family.Name #>, CollectContributors);
+        return contributors.Remove(target).ToFixedSet();
+
+        ContributorCollection<<#= Emit.BaseClassName(tree) #>> CollectContributors()
+        {
+            using (ContributorCollection<<#= Emit.BaseClassName(tree) #>>.Create(out var contributors))
+            {
+                CollectContributors_<#= family.Name #>(contributors);
+                contributors.MarkComplete();
+                return contributors;
+            }
+        }
+    }
+    internal virtual void CollectContributors_<#= family.Name #>(ContributorCollection<<#= Emit.BaseClassName(tree) #>> contributors)
+    {
+        foreach (var child in Children().Cast<<#= Emit.BaseClassName(tree) #>>())
+            child.CollectContributors_<#= family.Name #>(contributors);
+    }
+    protected <#= Emit.Type(family.Type) #> Collect_<#= family.Name #>(<#= Emit.BaseClassName(tree) #> target, IFixedSet<<#= Emit.BaseClassName(tree) #>> contributors)
+    {
+        var builder = <#= family.ConstructExpression #>;
+        foreach (var contributor in contributors)
+            contributor.Contribute_<#= family.Name #>(target, builder);
+        return builder.<#= family.DoneMethod #>();
+    }
+    internal virtual void Contribute_<#= family.Name #>(<#= Emit.BaseClassName(tree) #> target, <#= Emit.Type(family.FromType) #> builder) { }
+<#                  break;#>
 <#          } #>
 <#      } #>
 }
@@ -224,10 +266,7 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
     public <#= Emit.Type(property.Type) #> <#= property.Name #> { [DebuggerStepThrough] get; }
 <#          } #>
 <#      } #>
-<#      foreach (var attr in node.ActualAttributes.OfType<ContextAttributeModel>()) { #>
-    public <#= Emit.Type(attr.Type) #> <#= attr.Name #><#= Emit.Parameters(attr) #><#= Emit.Body(attr) #>
-<#      } #>
-<#      foreach (var attr in node.ActualAttributes.OfType<AggregateAttributeModel>()) { #>
+<#      foreach (var attr in node.ActualAttributes.Where(ShouldEmit.OnClass)) { #>
     public <#= Emit.Type(attr.Type) #> <#= attr.Name #><#= Emit.Parameters(attr) #><#= Emit.Body(attr) #>
 <#      } #>
 <#      foreach (var equation in node.ActualEquations) { #>

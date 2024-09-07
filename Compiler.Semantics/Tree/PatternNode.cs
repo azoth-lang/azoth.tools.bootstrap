@@ -58,10 +58,10 @@ internal abstract class PatternNode : CodeNode, IPatternNode
     protected abstract ControlFlowSet ComputeControlFlow();
 
     protected override void CollectControlFlowPrevious(
-        IControlFlowNode before,
+        IControlFlowNode target,
         Dictionary<IControlFlowNode, ControlFlowKind> previous)
     {
-        ControlFlowAspect.ControlFlow_ContributeControlFlowPrevious(this, before, previous);
-        base.CollectControlFlowPrevious(before, previous);
+        ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, target, previous);
+        base.CollectControlFlowPrevious(target, previous);
     }
 }

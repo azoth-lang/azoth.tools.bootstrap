@@ -240,7 +240,16 @@ internal static class Emit
         return builder.ToString();
     }
 
-    public static string Body(ContextAttributeModel attribute)
+    public static string Body(AttributeModel attribute)
+        => attribute switch
+        {
+            ContextAttributeModel a => Body(a),
+            AggregateAttributeModel a => Body(a),
+            CollectionAttributeModel a => Body(a),
+            _ => throw new NotSupportedException()
+        };
+
+    private static string Body(ContextAttributeModel attribute)
     {
         switch (attribute.Strategy)
         {
@@ -281,7 +290,7 @@ internal static class Emit
         }
     }
 
-    public static string Body(AggregateAttributeModel attribute)
+    private static string Body(AggregateAttributeModel attribute)
     {
         var builder = new StringBuilder();
         builder.AppendLine();
@@ -301,6 +310,41 @@ internal static class Emit
         builder.Append($"    private IFixedSet<{BaseClassName(attribute.Aspect.Tree)}>? {contributors};");
         return builder.ToString();
     }
+
+    private static string Body(CollectionAttributeModel attribute)
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine();
+        var value = attribute.Name.ToCamelCase();
+        var cached = value + "Cached";
+        var contributors = value + "Contributors";
+        var isValueType = attribute.Type.IsValueType;
+        var notNull = attribute.Type is OptionalTypeModel || isValueType ? "" : "!";
+        // Remove any optional type that might be on it and then ensure there is one optional type
+        var fieldType = !isValueType ? attribute.Type.ToOptional() : attribute.Type;
+        var syncLock = isValueType ? " ref syncLock," : "";
+        var rootType = attribute.RootSymbol is not null ? $"<{TypeName(attribute.RootSymbol)}>" : "";
+        builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
+        builder.AppendLine($"            : this.Collection(ref {contributors}, ref {cached}, ref {value},{syncLock}");
+        builder.AppendLine($"                CollectContributors_{attribute.Name}{rootType}, Collect_{attribute.Name});");
+        builder.AppendLine($"    private {Type(fieldType)} {value};");
+        builder.AppendLine($"    private bool {cached};");
+        builder.Append($"    private IFixedSet<{BaseClassName(attribute.Aspect.Tree)}>? {contributors};");
+        return builder.ToString();
+    }
+    #endregion
+
+    #region Attribute Families
+    public static string ContributeMethodName(AggregateAttributeFamilyModel family, TreeNodeModel node)
+    {
+        var contributesToThis = node.ActualAttributes.OfType<AggregateAttributeModel>()
+                                    .Any(a => a.AttributeFamily == family);
+        var thisString = contributesToThis ? "This_" : "";
+        return $"Contribute_{thisString}{family.Name}";
+    }
+
+    public static string RootParam(CollectionAttributeFamilyModel family)
+        => family.HasRoot ? "<TRoot>" : "";
     #endregion
 
     #region Equations
@@ -524,13 +568,6 @@ internal static class Emit
     public static string EquationMethod(PreviousAttributeEquationModel equation)
         => $"{equation.NodeSymbol}_Next_{equation.Name}";
 
-    public static string ContributeMethodName(AggregateAttributeFamilyModel family, TreeNodeModel node)
-    {
-        var contributesToThis = node.ActualAttributes.OfType<AggregateAttributeModel>().Any(a => a.AttributeFamily == family);
-        var thisString = contributesToThis ? "This_" : "";
-        return $"Contribute_{thisString}{family.Name}";
-    }
-
     public static string EquationMethod(AggregateAttributeEquationModel equation)
         => $"{equation.NodeSymbol}_Contribute_{equation.Name}";
 
@@ -539,6 +576,12 @@ internal static class Emit
 
     public static string EquationMethodExtraParams(AggregateAttributeEquationModel equation)
         => $", {Type(equation.FromType)} {equation.Name.ToCamelCase()}";
+
+    public static string EquationMethod(CollectionAttributeEquationModel equation)
+        => $"{equation.NodeSymbol}_Contribute_{equation.TargetNodeSymbol}_{equation.Name}";
+
+    public static string EquationMethodExtraParams(CollectionAttributeEquationModel equation)
+        => $", {TypeName(equation.TargetNodeSymbol)} target, {Type(equation.FromType)} {equation.Name.ToCamelCase()}";
     #endregion
 
     #region Rewrite Rules

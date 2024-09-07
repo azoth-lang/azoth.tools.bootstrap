@@ -20,17 +20,17 @@ internal partial class SemanticNode
     }
 
     protected virtual void CollectControlFlowPrevious(
-        IControlFlowNode before,
+        IControlFlowNode target,
         Dictionary<IControlFlowNode, ControlFlowKind> previous)
     {
         foreach (var child in Children().Cast<SemanticNode>())
-            child.CollectControlFlowPrevious(before, previous);
+            child.CollectControlFlowPrevious(target, previous);
     }
 
-    internal ControlFlowSet CollectControlFlowPrevious(IControlFlowNode before, IInheritanceContext ctx)
+    protected ControlFlowSet CollectControlFlowPrevious(IControlFlowNode target, IInheritanceContext ctx)
     {
-        if (this is IExecutableDefinitionNode) return CollectControlFlowPrevious(before);
-        return GetParent(ctx)?.CollectControlFlowPrevious(before, ctx)
-            ?? throw Child.PreviousFailed("ControlFlowPrevious", before);
+        if (this is IExecutableDefinitionNode) return CollectControlFlowPrevious(target);
+        return GetParent(ctx)?.CollectControlFlowPrevious(target, ctx)
+            ?? throw Child.ParentMissing(target);
     }
 }

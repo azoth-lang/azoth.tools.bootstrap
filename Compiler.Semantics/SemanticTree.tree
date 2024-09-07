@@ -194,7 +194,7 @@ CapabilityViewpointType <: ViewpointType = Syntax:`ICapabilityViewpointTypeSynta
 SelfViewpointType <: ViewpointType = Syntax:`ISelfViewpointTypeSyntax` Referent:Type;
 
 // ---------- Control Flow
-ControlFlow <: Code = ControlFlowPrevious:`ControlFlowSet`;
+ControlFlow <: Code;
 Entry <: DataFlow;
 Exit <: DataFlow;
 

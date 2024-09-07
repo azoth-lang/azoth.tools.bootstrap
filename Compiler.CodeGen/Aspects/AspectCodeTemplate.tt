@@ -42,7 +42,9 @@ internal static partial class <#= aspect.Name #>
 <#              case AggregateAttributeEquationModel eq: #>
     public static partial void <#= Emit.EquationMethod(eq) #>(<#= Emit.TypeName(eq.Node.Defines) #> node<#= Emit.EquationMethodExtraParams(eq) #>);
 <#                  break; #>
-<#              case CollectionAttributeEquationModel _: /* do nothing */ break; #>
+<#              case CollectionAttributeEquationModel eq: #>
+    public static partial void <#= Emit.EquationMethod(eq) #>(<#= Emit.TypeName(eq.Node.Defines) #> node<#= Emit.EquationMethodExtraParams(eq) #>);
+<#                  break; #>
 <#              case IntertypeMethodEquationModel _: /* do nothing */ break; #>
 <#              default: #>
 <#                  throw ExhaustiveMatch.Failed(equation); #>

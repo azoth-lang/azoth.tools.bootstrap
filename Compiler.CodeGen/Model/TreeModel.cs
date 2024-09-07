@@ -36,8 +36,8 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     public IFixedSet<AttributeFamilyModel> DeclaredAttributeFamilies { get; }
 
-    public IFixedSet<ContextAttributeFamilyModel> ImplicitAttributeFamilies => implicitAttributeFamilies.Value;
-    private readonly Lazy<IFixedSet<ContextAttributeFamilyModel>> implicitAttributeFamilies;
+    public IFixedSet<AttributeFamilyModel> ImplicitAttributeFamilies => implicitAttributeFamilies.Value;
+    private readonly Lazy<IFixedSet<AttributeFamilyModel>> implicitAttributeFamilies;
 
     public IFixedSet<AttributeFamilyModel> AllAttributeFamilies => allAttributeFamilies.Value;
     private readonly Lazy<IFixedSet<AttributeFamilyModel>> allAttributeFamilies;
@@ -77,14 +77,26 @@ public sealed class TreeModel : IHasUsingNamespaces
 
     private readonly FixedDictionary<string, TreeNodeModel> nodesLookup;
 
-    private IFixedSet<ContextAttributeFamilyModel> ComputeImplicitAttributeFamilies()
+    private IFixedSet<AttributeFamilyModel> ComputeImplicitAttributeFamilies()
+    {
+        var implicitInheritedAttributeFamilies = ComputeImplicitInheritedAttributeFamilies();
+        var implicitCollectionAttributeFamilies = ComputeImplicitCollectionAttributeFamilies();
+        return implicitInheritedAttributeFamilies
+               .Concat<AttributeFamilyModel>(implicitCollectionAttributeFamilies).ToFixedSet();
+    }
+
+    private IEnumerable<InheritedAttributeFamilyModel> ComputeImplicitInheritedAttributeFamilies()
     {
         var declaredAttributeSupertypes = DeclaredAttributeFamilies.Select(s => s.Name).ToFixedSet();
-        var implicitInheritedAttributeSupertypes = ComputeGroupedDeclaredAttributes<InheritedAttributeModel>()
-                                                        .Where(g => !declaredAttributeSupertypes.Contains(g.Key))
-                                                        .Select(attrs => new InheritedAttributeFamilyModel(this, attrs));
-        return implicitInheritedAttributeSupertypes.ToFixedSet();
+        return ComputeGroupedDeclaredAttributes<InheritedAttributeModel>()
+               .Where(g => !declaredAttributeSupertypes.Contains(g.Key))
+               .Select(attrs => new InheritedAttributeFamilyModel(this, attrs));
     }
+
+    private IEnumerable<CollectionAttributeFamilyModel> ComputeImplicitCollectionAttributeFamilies()
+        => Nodes.SelectMany(n => n.DeclaredAttributes.OfType<CollectionAttributeModel>())
+                .GroupBy(a => (a.Name, a.Type))
+                .Select(attrs => new CollectionAttributeFamilyModel(this, attrs));
 
     private IEnumerable<IGrouping<string, T>> ComputeGroupedDeclaredAttributes<T>()
         where T : AttributeModel

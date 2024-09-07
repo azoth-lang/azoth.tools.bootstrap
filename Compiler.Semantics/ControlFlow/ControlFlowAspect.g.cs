@@ -1,4 +1,5 @@
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
@@ -15,6 +16,8 @@ internal static partial class ControlFlowAspect
     public static partial IExitNode ExecutableDefinition_Exit(IExecutableDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet ConcreteInvocableDefinition_Entry_ControlFlowFollowing(IConcreteInvocableDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(IControlFlowNode node, IControlFlowNode target, Dictionary<IControlFlowNode, ControlFlowKind> controlFlowPrevious);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet Expression_ControlFlowNext(IExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

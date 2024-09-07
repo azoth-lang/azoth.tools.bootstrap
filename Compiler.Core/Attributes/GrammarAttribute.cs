@@ -315,7 +315,7 @@ public static class GrammarAttribute
         where TNode : class, ITreeNode
         where T : class?
     {
-        var actualContributors = GetContributors(ref contributors, collectContributors, attributeName);
+        var actualContributors = GetAggregateContributors(ref contributors, collectContributors, attributeName);
         if (actualContributors is null)
             // Another thread has already computed the value
             return value!;
@@ -331,7 +331,7 @@ public static class GrammarAttribute
     }
 
     // Not null inference is wrong here. This can be null because another thread could null it out.
-    private static IFixedSet<T>? GetContributors<T>(
+    private static IFixedSet<T>? GetAggregateContributors<T>(
         ref IFixedSet<T>? contributors,
         Func<IFixedSet<T>> collectContributors,
         string attributeName)
@@ -351,6 +351,63 @@ public static class GrammarAttribute
         return actualContributors;
     }
     #endregion
+
+    #region Collection overloads
+    /// <summary>
+    /// Read the value of a collection attribute.
+    /// </summary>
+    [Inline]
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T Collection<TNode, T>(
+        this TNode node,
+        ref IFixedSet<TNode>? contributors,
+        ref bool cached,
+        ref T? value,
+        Func<TNode, IInheritanceContext, IFixedSet<TNode>> collectContributors,
+        Func<TNode, IFixedSet<TNode>, T> collect,
+        [CallerMemberName] string attributeName = "")
+        where TNode : class, ITreeNode
+        where T : class?
+    {
+        var actualContributors = GetCollectionContributors(node, ref contributors, collectContributors, attributeName);
+        if (actualContributors is null)
+            // Another thread has already computed the value
+            return value!;
+
+        var result = node.NonCircular(ref cached, ref value, AttributeFunction.Create<TNode, T>(Compute),
+            EqualityComparer<T>.Default, attributeName);
+
+        if (cached) contributors = null;
+
+        return result;
+
+        T Compute(TNode t) => collect(t, actualContributors);
+    }
+
+    // Not null inference is wrong here. This can be null because another thread could null it out.
+    private static IFixedSet<T>? GetCollectionContributors<T>(
+        T node,
+        ref IFixedSet<T>? contributors,
+        Func<T, IInheritanceContext, IFixedSet<T>> collectContributors,
+        string attributeName)
+        where T : class?
+    {
+        var actualContributors = Interlocked.CompareExchange(ref contributors, InProgressFixedSet<T>.Instance, null);
+        if (actualContributors is null)
+        {
+            actualContributors = collectContributors(node, ThreadState());
+            // Null inference is wrong here. This can be null because another thread could null it out.
+            IFixedSet<T>? previousValue = Interlocked.CompareExchange(ref contributors, actualContributors, InProgressFixedSet<T>.Instance);
+            if (!ReferenceEquals(previousValue, InProgressFixedSet<T>.Instance))
+                actualContributors = previousValue;
+        }
+        else if (ReferenceEquals(actualContributors, InProgressFixedSet<T>.Instance))
+            throw new InvalidOperationException($"Circular dependency in collecting contributors for collection attribute '{attributeName}'.");
+        return actualContributors;
+    }
+    #endregion
+
 
     #region Circular overloads
     /// <summary>

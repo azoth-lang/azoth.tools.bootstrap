@@ -11,7 +11,7 @@ public sealed class CollectionAttributeModel : AspectAttributeModel
     public override TypeModel Type { get; }
     public Symbol? RootSymbol { get; }
     public TypeModel FromType { get; }
-    public string? ConstructExpression { get; }
+    public string ConstructExpression { get; }
     public string DoneMethod => Syntax.DoneMethod;
 
     public CollectionAttributeModel(AspectModel aspect, CollectionAttributeSyntax syntax)
@@ -27,7 +27,6 @@ public sealed class CollectionAttributeModel : AspectAttributeModel
     public override string ToString()
     {
         var root = RootSymbol is not null ? $" root {RootSymbol}" : "";
-        var construct = ConstructExpression is not null ? $" => {ConstructExpression}" : "";
-        return $"→*← {NodeSymbol}.{Name}: {Type}{root} from {FromType}{construct} done {DoneMethod}";
+        return $"→*← {NodeSymbol}.{Name}: {Type}{root} from {FromType} => {ConstructExpression} done {DoneMethod}";
     }
 }

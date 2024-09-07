@@ -8,7 +8,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 /// <summary>
 /// A model for something that applies to all the attributes with a given name in the tree.
 /// </summary>
-[Closed(typeof(ContextAttributeFamilyModel), typeof(AggregateAttributeFamilyModel))]
+[Closed(
+    typeof(ContextAttributeFamilyModel),
+    typeof(AggregateAttributeFamilyModel),
+    typeof(CollectionAttributeFamilyModel))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class AttributeFamilyModel
 {

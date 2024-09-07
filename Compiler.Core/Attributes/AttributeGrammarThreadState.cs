@@ -99,7 +99,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
     }
 
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct CyclicScope : IDisposable
+    public readonly ref struct CyclicScope
     {
         private readonly AttributeGrammarThreadState state;
         private readonly AttributeId attribute;
@@ -277,7 +277,7 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
     }
 
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct NonCircularScope : IDisposable
+    public readonly ref struct NonCircularScope
     {
         private readonly AttributeGrammarThreadState state;
         private readonly AttributeId attribute;

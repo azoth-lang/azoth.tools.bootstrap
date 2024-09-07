@@ -1,5 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 ◊name ControlFlowAspect;
+◊using System.Collections.Generic;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -23,11 +24,11 @@
 // ---------- Control Flow
 ↓ ControlFlow.ControlFlowEntry(): Entry;
 ↑ ControlFlow.ControlFlowNext: `ControlFlowSet`;
-// →*← ControlFlow.ControlFlowPrevious: `ControlFlowSet`
-//    root ExecutableDefinition
-//    from `Dictionary<IControlFlowNode, ControlFlowKind>`
-//    done ToControlFlowSet;
-// = ControlFlow.→*.ControlFlow.ControlFlowPrevious for each ControlFlowNext.Keys;
+→*← ControlFlow.ControlFlowPrevious: `ControlFlowSet`
+    root ExecutableDefinition
+    from `Dictionary<IControlFlowNode, ControlFlowKind>`
+    done ToControlFlowSet;
+= ControlFlow.→*.ControlFlow.ControlFlowPrevious for each ControlFlowNext.Keys;
 = Exit.ControlFlowNext => ControlFlowSet.Empty;
 
 /// <summary>

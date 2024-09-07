@@ -154,12 +154,12 @@ internal static partial class ControlFlowAspect
     public static partial ControlFlowSet PrepareToReturnExpression_ControlFlowNext(IPrepareToReturnExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Value);
 
-    public static void ControlFlow_ContributeControlFlowPrevious(
+    public static partial void ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(
         IControlFlowNode node,
         IControlFlowNode target,
-        Dictionary<IControlFlowNode, ControlFlowKind> previous)
+        Dictionary<IControlFlowNode, ControlFlowKind> controlFlowPrevious)
     {
         if (node.ControlFlowNext.TryGetValue(target, out var kind))
-            previous.Add(node, kind);
+            controlFlowPrevious.Add(node, kind);
     }
 }
