@@ -72,14 +72,14 @@ ExecutableDefinition <: Definition, SymbolDeclaration = /Entry/ /Exit/;
 ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition
     = Parameters:ConstructorOrInitializerParameter* Body?;
 ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition, FunctionInvocableDeclaration
-    = Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body Symbol:`FunctionSymbol`;
+    = Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body;
 
 // ---------- Namespace Definitions
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceBlockDefinitionSyntax`
     UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*;
 NamespaceBlockMemberDefinition <: Definition;
 NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
-    = MemberNamespaces:NamespaceDefinition* PackageMembers:`IFacetMemberDefinitionNode`*;
+    = Symbol:`NamespaceSymbol` MemberNamespaces:NamespaceDefinition* PackageMembers:`IFacetMemberDefinitionNode`*;
 NamespaceMemberDefinition <: NamespaceMemberDeclaration;
 
 // ---------- Function Definition
@@ -394,17 +394,14 @@ AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax`
 Declaration;
 ChildDeclaration <: Declaration, Child;
 NamedDeclaration <: ChildDeclaration;
-SymbolDeclaration <: Declaration = Symbol:`Symbol`;
-InvocableDeclaration <: SymbolDeclaration, ChildDeclaration = Symbol:`InvocableSymbol`;
-FunctionInvocableDeclaration <: NamedDeclaration, InvocableDeclaration
-    = Symbol:`FunctionSymbol`;
+SymbolDeclaration <: Declaration;
 
 // ---------- Bindings
 BindingDeclaration <: ChildDeclaration;
 NamedBindingDeclaration <: BindingDeclaration, NamedDeclaration;
 
 // ---------- Package Declarations
-PackageDeclaration <: SymbolDeclaration = AliasOrName:`IdentifierName`? Name:`IdentifierName` Symbol:`PackageSymbol`
+PackageDeclaration <: SymbolDeclaration = AliasOrName:`IdentifierName`? Name:`IdentifierName`
     MainFacet:PackageFacetDeclaration TestingFacet:PackageFacetDeclaration;
 
 // ---------- Facet Declarations
@@ -416,8 +413,12 @@ PackageFacetDeclaration <: ChildDeclaration, SymbolDeclaration;
 // Any child declaration node of a facet (not just members)
 PackageFacetChildDeclaration <: ChildDeclaration;
 
+// ---------- Declarations
+InvocableDeclaration <: SymbolDeclaration, ChildDeclaration;
+FunctionInvocableDeclaration <: NamedDeclaration, InvocableDeclaration;
+
 // ---------- Namespace Declarations
-NamespaceDeclaration <: NamespaceMemberDeclaration = Symbol:`NamespaceSymbol`;
+NamespaceDeclaration <: NamespaceMemberDeclaration;
 NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, SymbolDeclaration
     = Name:`StandardName`;
 
@@ -425,17 +426,17 @@ NamespaceMemberDeclaration <: PackageFacetChildDeclaration, NamedDeclaration, Sy
 FunctionDeclaration <: NamespaceMemberDeclaration, FunctionInvocableDeclaration;
 
 // ---------- Type Declarations
-TypeDeclaration <: NamedDeclaration, SymbolDeclaration = Symbol:`TypeSymbol`;
+TypeDeclaration <: NamedDeclaration, SymbolDeclaration;
 BuiltInTypeDeclaration <: TypeDeclaration = Name:`SpecialTypeName` Members:{TypeMemberDeclaration};
 UserTypeDeclaration <: NamespaceMemberDeclaration, ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, TypeDeclaration, NamedDeclaration
-    = Name:`StandardName` GenericParameters:GenericParameterDeclaration* Symbol:`UserTypeSymbol` Members:{TypeMemberDeclaration};
+    = Name:`StandardName` GenericParameters:GenericParameterDeclaration* Members:{TypeMemberDeclaration};
 ClassDeclaration <: UserTypeDeclaration = Members:{ClassMemberDeclaration};
 StructDeclaration <: UserTypeDeclaration = Members:{StructMemberDeclaration};
 TraitDeclaration <: UserTypeDeclaration = Members:{TraitMemberDeclaration};
 
 // ---------- Type Declaration Parts
 GenericParameterDeclaration <: TypeDeclaration, AssociatedMemberDeclaration
-    = Name:`IdentifierName` Symbol:`GenericParameterTypeSymbol` Members:{`ITypeMemberDeclarationNode`};
+    = Name:`IdentifierName` Members:{TypeMemberDeclaration};
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration;
@@ -447,17 +448,17 @@ InstanceMemberDeclaration <: TypeMemberDeclaration;
 
 // ---------- Member Declarations
 MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration, InvocableDeclaration
-    = Name:`IdentifierName` Symbol:`MethodSymbol`;
+    = Name:`IdentifierName`;
 StandardMethodDeclaration <: MethodDeclaration;
 PropertyAccessorDeclaration <: MethodDeclaration;
 GetterMethodDeclaration <: PropertyAccessorDeclaration;
 SetterMethodDeclaration <: PropertyAccessorDeclaration;
 ConstructorDeclaration <: ClassMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration
-    = Name:`IdentifierName`? Symbol:`ConstructorSymbol`;
+    = Name:`IdentifierName`?;
 InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration
-    = Name:`IdentifierName`? Symbol:`InitializerSymbol`;
+    = Name:`IdentifierName`?;
 FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration, NamedBindingDeclaration
-    = Name:`IdentifierName` Symbol:`FieldSymbol`;
+    = Name:`IdentifierName`;
 AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableDeclaration, InvocableDeclaration
     = Name:`StandardName`;
 
@@ -472,31 +473,33 @@ AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableD
 ChildSymbol <: ChildDeclaration;
 
 // ---------- Package Symbol Nodes
-PackageSymbol <: PackageDeclaration, ChildSymbol = MainFacet:PackageFacetSymbol TestingFacet:PackageFacetSymbol;
+PackageSymbol <: PackageDeclaration, ChildSymbol
+    = Symbol:`PackageSymbol` MainFacet:PackageFacetSymbol TestingFacet:PackageFacetSymbol;
 
 // ---------- Facet Symbol Nodes
 // Facets separate the testing and non-testing aspects of a package. They do no have their own symbol.
 PackageFacetSymbol <: PackageFacetDeclaration, ChildSymbol = SymbolTree:`FixedSymbolTree`;
 
 // ---------- Namespace Symbol Nodes
-NamespaceSymbol <: NamespaceDeclaration, NamespaceMemberSymbol = Members:NamespaceMemberSymbol*;
+NamespaceSymbol <: NamespaceDeclaration, NamespaceMemberSymbol
+    = Symbol:`NamespaceSymbol` Members:NamespaceMemberSymbol*;
 NamespaceMemberSymbol <: NamespaceMemberDeclaration, ChildSymbol;
 
 // ---------- Function Symbol Nodes
-FunctionSymbol <: FunctionDeclaration, NamespaceMemberSymbol;
+FunctionSymbol <: FunctionDeclaration, NamespaceMemberSymbol = Symbol:`FunctionSymbol`;
 
 // ---------- Type Symbol Nodes
-TypeSymbol <: TypeDeclaration, ChildSymbol;
+TypeSymbol <: TypeDeclaration, ChildSymbol = Symbol:`TypeSymbol`;
 BuiltInTypeSymbol <: BuiltInTypeDeclaration, TypeSymbol;
 EmptyTypeSymbol <: BuiltInTypeSymbol = Symbol:`EmptyTypeSymbol`;
 PrimitiveTypeSymbol <: BuiltInTypeSymbol = Symbol:`PrimitiveTypeSymbol`;
-UserTypeSymbol <: UserTypeDeclaration, TypeSymbol, NamespaceMemberSymbol;
+UserTypeSymbol <: UserTypeDeclaration, TypeSymbol, NamespaceMemberSymbol = Symbol:`UserTypeSymbol`;
 ClassSymbol <: ClassDeclaration, UserTypeSymbol = /GenericParameters/ /Members/;
 StructSymbol <: StructDeclaration, UserTypeSymbol = /GenericParameters/ /Members/;
 TraitSymbol <: TraitDeclaration, UserTypeSymbol = /GenericParameters/ /Members/;
 
 // ---------- Type Declaration Parts
-GenericParameterSymbol <: GenericParameterDeclaration, ChildSymbol;
+GenericParameterSymbol <: GenericParameterDeclaration, ChildSymbol = Symbol:`GenericParameterTypeSymbol`;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberSymbol <: TypeMemberDeclaration, ChildSymbol;
@@ -506,11 +509,13 @@ StructMemberSymbol <: StructMemberDeclaration, TypeMemberSymbol;
 AssociatedMemberSymbol <: AssociatedMemberDeclaration, ClassMemberSymbol, TraitMemberSymbol, StructMemberSymbol;
 
 // ---------- Member Symbol Nodes
-MethodSymbol <: MethodDeclaration, ClassMemberSymbol, TraitMemberSymbol, StructMemberSymbol;
+MethodSymbol <: MethodDeclaration, ClassMemberSymbol, TraitMemberSymbol, StructMemberSymbol
+    = Symbol:`MethodSymbol`;
 StandardMethodSymbol <: StandardMethodDeclaration, MethodSymbol;
 GetterMethodSymbol <: GetterMethodDeclaration, MethodSymbol;
 SetterMethodSymbol <: SetterMethodDeclaration, MethodSymbol;
-ConstructorSymbol <: ConstructorDeclaration, ClassMemberSymbol;
-InitializerSymbol <: InitializerDeclaration, StructMemberSymbol;
-FieldSymbol <: FieldDeclaration, ClassMemberSymbol, StructMemberSymbol;
-AssociatedFunctionSymbol <: AssociatedFunctionDeclaration, AssociatedMemberSymbol;
+ConstructorSymbol <: ConstructorDeclaration, ClassMemberSymbol = Symbol:`ConstructorSymbol`;
+InitializerSymbol <: InitializerDeclaration, StructMemberSymbol = Symbol:`InitializerSymbol`;
+FieldSymbol <: FieldDeclaration, ClassMemberSymbol, StructMemberSymbol = Symbol:`FieldSymbol`;
+AssociatedFunctionSymbol <: AssociatedFunctionDeclaration, AssociatedMemberSymbol
+    = Symbol:`FunctionSymbol`;

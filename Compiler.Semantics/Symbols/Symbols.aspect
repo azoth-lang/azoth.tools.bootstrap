@@ -5,7 +5,7 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Packages
-↑ Package.Symbol: `PackageSymbol`;
+= Package.Symbol;
 ↑ Package.PackageSymbols: `IPackageSymbols`;
 
 // ---------- Code Files
@@ -20,10 +20,9 @@
 
 // ---------- Function Definition
 ↑ FunctionDefinition.ContainingSymbol: `NamespaceSymbol` => ContainingDeclaration.Symbol;
-↑ FunctionDefinition.Symbol:`FunctionSymbol`;
+= FunctionDefinition.Symbol;
 
 // ---------- Type Definitions
-↑ TypeDefinition.Symbol: `UserTypeSymbol`;
 = TypeDefinition.Symbol;
 
 // ---------- Type Member Definitions
@@ -31,15 +30,16 @@
 
 // ---------- Type Definition Parts
 ↑ GenericParameter.ContainingSymbol: `UserTypeSymbol` => ContainingDeclaration.Symbol;
-↑ GenericParameter.Symbol: `GenericParameterTypeSymbol`;
+= GenericParameter.Symbol;
 
 // ---------- Member Definitions
-↑ MethodDefinition.Symbol: `MethodSymbol`;
 = MethodDefinition.Symbol;
-↑ ConstructorDefinition.Symbol: `ConstructorSymbol`;
-↑ InitializerDefinition.Symbol: `InitializerSymbol`;
-↑ FieldDefinition.Symbol: `FieldSymbol`;
-↑ AssociatedFunctionDefinition.Symbol: `FunctionSymbol`;
+= DefaultConstructorDefinition.Symbol;
+= SourceConstructorDefinition.Symbol;
+= DefaultInitializerDefinition.Symbol;
+= SourceInitializerDefinition.Symbol;
+= FieldDefinition.Symbol;
+= AssociatedFunctionDefinition.Symbol;
 
 // ---------- Attributes
 ↑ Attribute.ReferencedSymbol: `ConstructorSymbol`?;

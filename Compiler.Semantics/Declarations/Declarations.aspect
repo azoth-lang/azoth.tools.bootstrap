@@ -5,10 +5,13 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 ↑ NamedDeclaration.Name: `TypeName`;
-↑ FunctionInvocableDeclaration.Type: `FunctionType`;
+↑ SymbolDeclaration.Symbol: `Symbol`;
 
 // ---------- Bindings
 ↑ NamedBindingDeclaration.Name: `IdentifierName`;
+
+// ---------- Package Declarations
+↑ PackageDeclaration.Symbol: `PackageSymbol`;
 
 // ---------- Facet Declarations
 ↑ PackageFacetDeclaration.PackageName: `IdentifierName` => Package.Name;
@@ -17,23 +20,42 @@
 ↑ PackageFacetDeclaration.Symbol: `PackageSymbol` => PackageSymbol;
 ↑ child PackageFacetDeclaration.GlobalNamespace: NamespaceDeclaration;
 
+// ---------- Declarations
+↑ InvocableDeclaration.Symbol: `InvocableSymbol`;
+↑ FunctionInvocableDeclaration.Symbol: `FunctionSymbol`;
+↑ FunctionInvocableDeclaration.Type: `FunctionType`;
+
 // ---------- Namespace Declarations
 ↑ NamespaceDeclaration.Name: `IdentifierName` => Symbol.Name;
+↑ NamespaceDeclaration.Symbol: `NamespaceSymbol`;
 ↑ NamespaceDeclaration.Members: NamespaceMemberDeclaration*;
 ↑ NamespaceDeclaration.NestedMembers: NamespaceMemberDeclaration*;
 = NamespaceDeclaration.NestedMembers;
 
+// ---------- Function Definition
+↑ FunctionDeclaration.Symbol: `FunctionSymbol`;
+
 // ---------- Type Declarations
 ↑ TypeDeclaration.Supertypes: {`BareReferenceType`};
+↑ TypeDeclaration.Symbol: `TypeSymbol`;
 ↑ TypeDeclaration.Members: {TypeMemberDeclaration};
 /// Members including ones inherited from supertypes
 ↑ TypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
+↑ UserTypeDeclaration.Symbol: `UserTypeSymbol`;
 ↑ UserTypeDeclaration.InclusiveMembers: {TypeMemberDeclaration};
 ↑ ClassDeclaration.InclusiveMembers: {ClassMemberDeclaration};
 ↑ StructDeclaration.InclusiveMembers: {StructMemberDeclaration};
 ↑ TraitDeclaration.InclusiveMembers: {TraitMemberDeclaration};
 
+// ---------- Type Declaration Parts
+↑ GenericParameterDeclaration.Symbol: `GenericParameterTypeSymbol`;
+
 // ---------- Member Declarations
+↑ MethodDeclaration.Symbol: `MethodSymbol`;
 ↑ StandardMethodDeclaration.Arity: `int`;
 ↑ StandardMethodDeclaration.MethodGroupType: `FunctionType`;
+↑ ConstructorDeclaration.Symbol: `ConstructorSymbol`;
+↑ InitializerDeclaration.Symbol: `InitializerSymbol`;
 ↑ FieldDeclaration.BindingType: `DataType`;
+↑ FieldDeclaration.Symbol: `FieldSymbol`;
+↑ AssociatedFunctionDeclaration.Symbol: `FunctionSymbol`;
