@@ -1101,13 +1101,13 @@ public partial interface ICapabilitySetNode : ICapabilityConstraintNode
     ICapabilityConstraintSyntax ICapabilityConstraintNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new CapabilitySet Constraint { get; }
+    new CapabilitySet Constraint
+        => Syntax.Constraint;
     ICapabilityConstraint ICapabilityConstraintNode.Constraint => Constraint;
 
     public static ICapabilitySetNode Create(
-        ICapabilitySetSyntax syntax,
-        CapabilitySet constraint)
-        => new CapabilitySetNode(syntax, constraint);
+        ICapabilitySetSyntax syntax)
+        => new CapabilitySetNode(syntax);
 }
 
 // [Closed(typeof(CapabilityNode))]
@@ -1118,13 +1118,14 @@ public partial interface ICapabilityNode : ICapabilityConstraintNode
     ICapabilityConstraintSyntax ICapabilityConstraintNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    Capability Capability { get; }
+    Capability Capability
+        => Syntax.Capability;
+    ICapabilityConstraint ICapabilityConstraintNode.Constraint
+        => Syntax.Capability;
 
     public static ICapabilityNode Create(
-        ICapabilityConstraint constraint,
-        ICapabilitySyntax syntax,
-        Capability capability)
-        => new CapabilityNode(constraint, syntax, capability);
+        ICapabilitySyntax syntax)
+        => new CapabilityNode(syntax);
 }
 
 [Closed(
@@ -7156,18 +7157,15 @@ file class CapabilitySetNode : SemanticNode, ICapabilitySetNode
     private ICapabilitySetNode Self { [Inline] get => this; }
 
     public ICapabilitySetSyntax Syntax { [DebuggerStepThrough] get; }
-    public CapabilitySet Constraint { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
     public CapabilitySetNode(
-        ICapabilitySetSyntax syntax,
-        CapabilitySet constraint)
+        ICapabilitySetSyntax syntax)
     {
         Syntax = syntax;
-        Constraint = constraint;
     }
 }
 
@@ -7176,22 +7174,16 @@ file class CapabilityNode : SemanticNode, ICapabilityNode
 {
     private ICapabilityNode Self { [Inline] get => this; }
 
-    public ICapabilityConstraint Constraint { [DebuggerStepThrough] get; }
     public ICapabilitySyntax Syntax { [DebuggerStepThrough] get; }
-    public Capability Capability { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
     public CapabilityNode(
-        ICapabilityConstraint constraint,
-        ICapabilitySyntax syntax,
-        Capability capability)
+        ICapabilitySyntax syntax)
     {
-        Constraint = constraint;
         Syntax = syntax;
-        Capability = capability;
     }
 }
 

@@ -231,11 +231,11 @@ internal static class SyntaxBinder
         };
 
     private static ICapabilitySetNode CapabilitySet(ICapabilitySetSyntax syntax)
-        => new CapabilitySetNode(syntax);
+        => ICapabilitySetNode.Create(syntax);
 
     [return: NotNullIfNotNull(nameof(syntax))]
     private static ICapabilityNode? Capability(ICapabilitySyntax? syntax)
-        => syntax is not null ? new CapabilityNode(syntax) : null;
+        => syntax is not null ? ICapabilityNode.Create(syntax) : null;
     #endregion
 
     #region Parameters

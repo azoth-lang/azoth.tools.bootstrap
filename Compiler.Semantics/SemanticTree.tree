@@ -154,9 +154,9 @@ AssociatedFunctionDefinition <: ConcreteFunctionInvocableDefinition, AlwaysTypeM
 Attribute <: Code = Syntax:`IAttributeSyntax` TypeName:StandardTypeName;
 
 // ---------- Capabilities
-CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax` Constraint:`ICapabilityConstraint`;
-CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax` Constraint:`CapabilitySet`;
-Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax` Capability:`Capability`;
+CapabilityConstraint <: Code = Syntax:`ICapabilityConstraintSyntax`;
+CapabilitySet <: CapabilityConstraint = Syntax:`ICapabilitySetSyntax`;
+Capability <: CapabilityConstraint = Syntax:`ICapabilitySyntax`;
 
 // ---------- Parameters
 Parameter <: Code = Syntax:`IParameterSyntax`;

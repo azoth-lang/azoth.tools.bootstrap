@@ -80,6 +80,12 @@
 ↑ FieldDefinition.Name: `IdentifierName` => Syntax.Name;
 ↑ AssociatedFunctionDefinition.Name:`IdentifierName` => Syntax.Name;
 
+// ---------- Capabilities
+↑ CapabilityConstraint.Constraint: `ICapabilityConstraint`;
+↑ CapabilitySet.Constraint: `CapabilitySet` => Syntax.Constraint;
+↑ Capability.Capability: `Capability` => Syntax.Capability;
+= Capability.Constraint => Syntax.Capability;
+
 // ---------- Parameters
 ↑ Parameter.Name: `IdentifierName`?;
 ↑ Parameter.Unused: `bool` => Name?.Text.StartsWith('_') ?? false;

@@ -1,14 +1,4 @@
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
-
-#region Capabilities
-public partial interface ICapabilityNode
-{
-    // TODO some way to code gen this hiding
-    ICapabilityConstraint ICapabilityConstraintNode.Constraint => Capability;
-}
-#endregion
 
 #region Expressions
 public partial interface IExpressionNode
