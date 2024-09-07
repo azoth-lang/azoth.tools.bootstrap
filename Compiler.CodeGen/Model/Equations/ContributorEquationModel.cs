@@ -16,7 +16,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 [Closed(
     typeof(InheritedAttributeEquationModel),
     typeof(PreviousAttributeEquationModel),
-    typeof(AggregateAttributeEquationModel))]
+    typeof(AggregateAttributeEquationModel),
+    typeof(CollectionAttributeEquationModel))]
 public abstract class ContributorEquationModel : EquationModel
 {
     protected ContributorEquationModel(

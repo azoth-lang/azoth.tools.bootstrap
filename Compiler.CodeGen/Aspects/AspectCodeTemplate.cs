@@ -289,64 +289,70 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Aspects
             #line hidden
             
             #line 45 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
-              case IntertypeMethodEquationModel _: /* do nothing */ break; 
+              case CollectionAttributeEquationModel _: /* do nothing */ break; 
             
             #line default
             #line hidden
             
             #line 46 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
-              default: 
+              case IntertypeMethodEquationModel _: /* do nothing */ break; 
             
             #line default
             #line hidden
             
             #line 47 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
-                  throw ExhaustiveMatch.Failed(equation); 
+              default: 
             
             #line default
             #line hidden
             
             #line 48 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
-          } 
+                  throw ExhaustiveMatch.Failed(equation); 
             
             #line default
             #line hidden
             
             #line 49 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
-  } 
+          } 
             
             #line default
             #line hidden
             
             #line 50 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+  } 
+            
+            #line default
+            #line hidden
+            
+            #line 51 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
   foreach (var rule in aspect.RewriteRules) { 
             
             #line default
             #line hidden
             this.Write("    public static partial ");
             
-            #line 51 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+            #line 52 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.Type(rule.RewriteToType)));
             
             #line default
             #line hidden
             this.Write("? ");
             
-            #line 51 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+            #line 52 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.RewriteRuleMethod(rule)));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 51 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+            #line 52 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Emit.TypeName(rule.Node.Defines)));
             
             #line default
             #line hidden
             this.Write(" node);\r\n");
             
-            #line 52 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
+            #line 53 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Aspects\AspectCodeTemplate.tt"
   } 
             
             #line default

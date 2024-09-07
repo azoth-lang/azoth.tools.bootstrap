@@ -8,7 +8,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Equations;
     typeof(InheritedAttributeEquationSyntax),
     typeof(PreviousAttributeEquationSyntax),
     typeof(IntertypeMethodEquationSyntax),
-    typeof(AggregateAttributeEquationSyntax))]
+    typeof(AggregateAttributeEquationSyntax),
+    typeof(CollectionAttributeEquationSyntax))]
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class EquationSyntax
 {

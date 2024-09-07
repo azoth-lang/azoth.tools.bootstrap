@@ -22,6 +22,7 @@ public abstract class EquationModel : IMemberModel
             PreviousAttributeEquationSyntax syn => new PreviousAttributeEquationModel(aspect, syn),
             IntertypeMethodEquationSyntax syn => new IntertypeMethodEquationModel(aspect, syn),
             AggregateAttributeEquationSyntax syn => new AggregateAttributeEquationModel(aspect, syn),
+            CollectionAttributeEquationSyntax syn => new CollectionAttributeEquationModel(aspect, syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
