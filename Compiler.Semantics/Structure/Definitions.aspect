@@ -116,6 +116,10 @@
 = ForeachExpression.IsLentBinding => false;
 = ForeachExpression.Name => VariableName;
 
+// ---------- Ambiguous Name Expressions
+↑ StandardNameExpression.Name: `StandardName` => Syntax.Name;
+↑ IdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;
+
 // -------------------------------------------------------------------------------------------------
 // Declarations
 // -------------------------------------------------------------------------------------------------

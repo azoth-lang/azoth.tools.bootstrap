@@ -302,10 +302,9 @@ UnknownInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
 temp AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
 temp AmbiguousName <: AmbiguousNameExpression;
 temp UnresolvedSimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
-temp StandardNameExpression <: AmbiguousName = Syntax:`IStandardNameExpressionSyntax`
-    Name:`StandardName`;
+temp StandardNameExpression <: AmbiguousName = Syntax:`IStandardNameExpressionSyntax`;
 temp IdentifierNameExpression <: AmbiguousName, StandardNameExpression, UnresolvedSimpleName
-    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
+    = Syntax:`IIdentifierNameExpressionSyntax`;
 temp GenericNameExpression <: AmbiguousName, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
 temp MemberAccessExpression <: AmbiguousName

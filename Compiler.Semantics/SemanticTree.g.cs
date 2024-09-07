@@ -2792,9 +2792,10 @@ public partial interface IStandardNameExpressionNode : IAmbiguousNameNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    StandardName Name { get; }
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
+    StandardName Name
+        => Syntax.Name;
     IFixedList<IDeclarationNode> ReferencedDeclarations { get; }
 }
 
@@ -2809,13 +2810,13 @@ public partial interface IIdentifierNameExpressionNode : IStandardNameExpression
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
-    new IdentifierName Name { get; }
+    new IdentifierName Name
+        => Syntax.Name;
     StandardName IStandardNameExpressionNode.Name => Name;
 
     public static IIdentifierNameExpressionNode Create(
-        IIdentifierNameExpressionSyntax syntax,
-        IdentifierName name)
-        => new IdentifierNameExpressionNode(syntax, name);
+        IIdentifierNameExpressionSyntax syntax)
+        => new IdentifierNameExpressionNode(syntax);
 }
 
 // [Closed(typeof(GenericNameExpressionNode))]
@@ -11789,7 +11790,6 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
     protected override bool MayHaveRewrite => true;
 
     public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -11816,11 +11816,9 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
     private bool valueIdCached;
 
     public IdentifierNameExpressionNode(
-        IIdentifierNameExpressionSyntax syntax,
-        IdentifierName name)
+        IIdentifierNameExpressionSyntax syntax)
     {
         Syntax = syntax;
-        Name = name;
     }
 
     protected override IChildTreeNode Rewrite()

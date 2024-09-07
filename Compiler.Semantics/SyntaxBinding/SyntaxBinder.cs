@@ -576,7 +576,7 @@ internal static class SyntaxBinder
         };
 
     private static IIdentifierNameExpressionNode IdentifierNameExpression(IIdentifierNameExpressionSyntax syntax)
-        => new IdentifierNameExpressionNode(syntax);
+        => IIdentifierNameExpressionNode.Create(syntax);
 
     private static ISpecialTypeNameExpressionNode SpecialTypeNameExpression(ISpecialTypeNameExpressionSyntax syntax)
         => new SpecialTypeNameExpressionNode(syntax);
