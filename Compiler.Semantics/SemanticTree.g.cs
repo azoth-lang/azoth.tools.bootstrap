@@ -1387,8 +1387,9 @@ public partial interface ITypeNameNode : ITypeNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    TypeName Name { get; }
     LexicalScope ContainingLexicalScope { get; }
+    TypeName Name
+        => Syntax.Name;
     TypeSymbol? ReferencedSymbol { get; }
     BareType? NamedBareType { get; }
 }
@@ -1404,10 +1405,11 @@ public partial interface IStandardTypeNameNode : ITypeNameNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new StandardName Name { get; }
-    TypeName ITypeNameNode.Name => Name;
     ITypeDeclarationNode? ReferencedDeclaration { get; }
     bool IsAttributeType { get; }
+    new StandardName Name
+        => Syntax.Name;
+    TypeName ITypeNameNode.Name => Name;
 }
 
 [Closed(
@@ -1434,14 +1436,14 @@ public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpl
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ISimpleTypeNameSyntax ISimpleTypeNameNode.Syntax => Syntax;
-    new IdentifierName Name { get; }
+    new IdentifierName Name
+        => Syntax.Name;
     StandardName IStandardTypeNameNode.Name => Name;
     TypeName ITypeNameNode.Name => Name;
 
     public static IIdentifierTypeNameNode Create(
-        IIdentifierTypeNameSyntax syntax,
-        IdentifierName name)
-        => new IdentifierTypeNameNode(syntax, name);
+        IIdentifierTypeNameSyntax syntax)
+        => new IdentifierTypeNameNode(syntax);
 }
 
 // [Closed(typeof(SpecialTypeNameNode))]
@@ -1454,15 +1456,15 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new SpecialTypeName Name { get; }
+    new SpecialTypeName Name
+        => Syntax.Name;
     TypeName ITypeNameNode.Name => Name;
     new TypeSymbol ReferencedSymbol { get; }
     TypeSymbol? ITypeNameNode.ReferencedSymbol => ReferencedSymbol;
 
     public static ISpecialTypeNameNode Create(
-        ISpecialTypeNameSyntax syntax,
-        SpecialTypeName name)
-        => new SpecialTypeNameNode(syntax, name);
+        ISpecialTypeNameSyntax syntax)
+        => new SpecialTypeNameNode(syntax);
 }
 
 // [Closed(typeof(GenericTypeNameNode))]
@@ -1475,16 +1477,16 @@ public partial interface IGenericTypeNameNode : IStandardTypeNameNode
     ITypeSyntax ITypeNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new GenericName Name { get; }
+    IFixedList<ITypeNode> TypeArguments { get; }
+    new GenericName Name
+        => Syntax.Name;
     StandardName IStandardTypeNameNode.Name => Name;
     TypeName ITypeNameNode.Name => Name;
-    IFixedList<ITypeNode> TypeArguments { get; }
 
     public static IGenericTypeNameNode Create(
         IGenericTypeNameSyntax syntax,
-        GenericName name,
         IEnumerable<ITypeNode> typeArguments)
-        => new GenericTypeNameNode(syntax, name, typeArguments);
+        => new GenericTypeNameNode(syntax, typeArguments);
 }
 
 // [Closed(typeof(QualifiedTypeNameNode))]
@@ -1504,11 +1506,10 @@ public partial interface IQualifiedTypeNameNode : ITypeNameNode
         => throw new NotImplementedException();
 
     public static IQualifiedTypeNameNode Create(
-        TypeName name,
         IQualifiedTypeNameSyntax syntax,
         ITypeNameNode context,
         IStandardTypeNameNode qualifiedName)
-        => new QualifiedTypeNameNode(name, syntax, context, qualifiedName);
+        => new QualifiedTypeNameNode(syntax, context, qualifiedName);
 }
 
 // [Closed(typeof(OptionalTypeNode))]
@@ -7687,7 +7688,6 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     private AttributeLock syncLock;
 
     public IIdentifierTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -7736,11 +7736,9 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     private bool namedTypeCached;
 
     public IdentifierTypeNameNode(
-        IIdentifierTypeNameSyntax syntax,
-        IdentifierName name)
+        IIdentifierTypeNameSyntax syntax)
     {
         Syntax = syntax;
-        Name = name;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -7761,7 +7759,6 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
     private ISpecialTypeNameNode Self { [Inline] get => this; }
 
     public ISpecialTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public SpecialTypeName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -7798,11 +7795,9 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
     private bool namedTypeCached;
 
     public SpecialTypeNameNode(
-        ISpecialTypeNameSyntax syntax,
-        SpecialTypeName name)
+        ISpecialTypeNameSyntax syntax)
     {
         Syntax = syntax;
-        Name = name;
     }
 }
 
@@ -7813,7 +7808,6 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
     private AttributeLock syncLock;
 
     public IGenericTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
-    public GenericName Name { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -7864,11 +7858,9 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
 
     public GenericTypeNameNode(
         IGenericTypeNameSyntax syntax,
-        GenericName name,
         IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
-        Name = name;
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
@@ -7889,7 +7881,6 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
 {
     private IQualifiedTypeNameNode Self { [Inline] get => this; }
 
-    public TypeName Name { [DebuggerStepThrough] get; }
     public IQualifiedTypeNameSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameNode Context { [DebuggerStepThrough] get; }
     public IStandardTypeNameNode QualifiedName { [DebuggerStepThrough] get; }
@@ -7917,12 +7908,10 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
     private bool namedTypeCached;
 
     public QualifiedTypeNameNode(
-        TypeName name,
         IQualifiedTypeNameSyntax syntax,
         ITypeNameNode context,
         IStandardTypeNameNode qualifiedName)
     {
-        Name = name;
         Syntax = syntax;
         Context = Child.Attach(this, context);
         QualifiedName = Child.Attach(this, qualifiedName);

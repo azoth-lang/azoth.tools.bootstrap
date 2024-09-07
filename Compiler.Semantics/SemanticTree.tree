@@ -178,12 +178,12 @@ ExpressionBody <: Body = Syntax:`IExpressionBodySyntax` ResultStatement;
 // ---------- Types
 Type <: Code = Syntax:`ITypeSyntax`;
 // TODO start from generalized names in syntax and rewrite to type names
-TypeName <: Type = Syntax:`ITypeNameSyntax` Name:`TypeName`;
-StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax` Name:`StandardName`;
+TypeName <: Type = Syntax:`ITypeNameSyntax`;
+StandardTypeName <: TypeName = Syntax:`IStandardTypeNameSyntax`;
 SimpleTypeName <: TypeName = Syntax:`ISimpleTypeNameSyntax`;
-IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax` Name:`IdentifierName`;
-SpecialTypeName <: SimpleTypeName = Syntax:`ISpecialTypeNameSyntax` Name:`SpecialTypeName`;
-GenericTypeName <: StandardTypeName = Syntax:`IGenericTypeNameSyntax` Name:`GenericName` TypeArguments:Type*;
+IdentifierTypeName <: StandardTypeName, SimpleTypeName = Syntax:`IIdentifierTypeNameSyntax`;
+SpecialTypeName <: SimpleTypeName = Syntax:`ISpecialTypeNameSyntax`;
+GenericTypeName <: StandardTypeName = Syntax:`IGenericTypeNameSyntax` TypeArguments:Type*;
 QualifiedTypeName <: TypeName = Syntax:`IQualifiedTypeNameSyntax` Context:TypeName QualifiedName:StandardTypeName;
 OptionalType <: Type = Syntax:`IOptionalTypeSyntax` Referent:Type;
 CapabilityType <: Type = Syntax:`ICapabilityTypeSyntax` Capability Referent:Type;

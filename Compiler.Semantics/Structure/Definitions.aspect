@@ -105,6 +105,11 @@
 = BindingPattern.IsMutableBinding => Syntax.IsMutableBinding;
 
 // ---------- Types
+↑ TypeName.Name: `TypeName` => Syntax.Name;
+↑ StandardTypeName.Name: `StandardName` => Syntax.Name;
+↑ IdentifierTypeName.Name: `IdentifierName` => Syntax.Name;
+↑ SpecialTypeName.Name: `SpecialTypeName` => Syntax.Name;
+↑ GenericTypeName.Name: `GenericName` => Syntax.Name;
 ↑ ParameterType.IsLent: `bool` => Syntax.IsLent;
 
 // ---------- Control Flow Expressions

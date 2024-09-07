@@ -324,7 +324,7 @@ internal static class SyntaxBinder
         };
 
     private static IIdentifierTypeNameNode IdentifierTypeName(IIdentifierTypeNameSyntax syntax)
-        => new IdentifierTypeNameNode(syntax);
+        => IIdentifierTypeNameNode.Create(syntax);
 
     private static IGenericTypeNameNode GenericTypeName(IGenericTypeNameSyntax syntax)
         => new GenericTypeNameNode(syntax, Types(syntax.TypeArguments));
