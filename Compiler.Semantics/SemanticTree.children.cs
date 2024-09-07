@@ -519,6 +519,8 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IGenericParameterSymbolNode n:
+                foreach (var child in n.Members)
+                    yield return child;
                 yield break;
             case IStandardMethodSymbolNode n:
                 yield break;

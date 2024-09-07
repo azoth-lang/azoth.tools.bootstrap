@@ -496,7 +496,7 @@ StructSymbol <: StructDeclaration, UserTypeSymbol = /GenericParameters/ /Members
 TraitSymbol <: TraitDeclaration, UserTypeSymbol = /GenericParameters/ /Members/;
 
 // ---------- Type Declaration Parts
-GenericParameterSymbol <: GenericParameterDeclaration, ChildSymbol = Members:{`ITypeMemberSymbolNode`};
+GenericParameterSymbol <: GenericParameterDeclaration, ChildSymbol;
 
 // ---------- Type Member Declarations (i.e. declarations that can be contained in a type)
 TypeMemberSymbol <: TypeMemberDeclaration, ChildSymbol;

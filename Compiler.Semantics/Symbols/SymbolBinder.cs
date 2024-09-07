@@ -48,7 +48,7 @@ internal static class SymbolBinder
         => IPrimitiveTypeSymbolNode.Create(sym);
 
     private static IGenericParameterSymbolNode GenericParameterTypeSymbol(GenericParameterTypeSymbol sym)
-        => new GenericParameterSymbolNode(sym);
+        => IGenericParameterSymbolNode.Create(sym);
 
     private static IPackageFacetChildDeclarationNode InvocableSymbol(InvocableSymbol symbol)
         => symbol switch

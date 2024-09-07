@@ -4340,7 +4340,13 @@ public partial interface ITraitSymbolNode : ITraitDeclarationNode, IUserTypeSymb
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IGenericParameterSymbolNode : IGenericParameterDeclarationNode, IChildSymbolNode
 {
-    new IFixedSet<ITypeMemberSymbolNode> Members { get; }
+    new IdentifierName Name
+        => Symbol.Name;
+    IdentifierName IGenericParameterDeclarationNode.Name => Name;
+    TypeName INamedDeclarationNode.Name => Name;
+    StandardName? IPackageFacetChildDeclarationNode.Name => Name;
+    new IFixedSet<ITypeMemberSymbolNode> Members
+        => [];
     IFixedSet<ITypeMemberDeclarationNode> IGenericParameterDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
     IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes
@@ -4349,10 +4355,8 @@ public partial interface IGenericParameterSymbolNode : IGenericParameterDeclarat
         => [];
 
     public static IGenericParameterSymbolNode Create(
-        IdentifierName name,
-        GenericParameterTypeSymbol symbol,
-        IEnumerable<ITypeMemberSymbolNode> members)
-        => new GenericParameterSymbolNode(name, symbol, members);
+        GenericParameterTypeSymbol symbol)
+        => new GenericParameterSymbolNode(symbol);
 }
 
 [Closed(
@@ -14574,22 +14578,16 @@ file class GenericParameterSymbolNode : SemanticNode, IGenericParameterSymbolNod
 {
     private IGenericParameterSymbolNode Self { [Inline] get => this; }
 
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public GenericParameterTypeSymbol Symbol { [DebuggerStepThrough] get; }
-    public IFixedSet<ITypeMemberSymbolNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
 
     public GenericParameterSymbolNode(
-        IdentifierName name,
-        GenericParameterTypeSymbol symbol,
-        IEnumerable<ITypeMemberSymbolNode> members)
+        GenericParameterTypeSymbol symbol)
     {
-        Name = name;
         Symbol = symbol;
-        Members = members.ToFixedSet();
     }
 }
 

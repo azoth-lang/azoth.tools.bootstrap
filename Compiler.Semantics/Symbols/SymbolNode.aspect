@@ -96,7 +96,9 @@
 = TraitSymbol.InclusiveMembers => Members;
 
 // ---------- Type Declaration Parts
+↑ GenericParameterSymbol.Name: `IdentifierName` => Symbol.Name;
 = GenericParameterSymbol.Supertypes => Symbol.GetDeclaredType()?.Supertypes ?? [];
+↑ child GenericParameterSymbol.Members: {TypeMemberSymbol} => [];
 = GenericParameterSymbol.InclusiveMembers => [];
 
 // ---------- Member Symbol Nodes
