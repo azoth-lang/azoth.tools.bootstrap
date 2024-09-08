@@ -254,11 +254,21 @@ public sealed class TreeModel : IHasUsingNamespaces
                                .OfType<LocalAttributeEquationModel>()
                                .Where(a => a.Attribute is CircularAttributeModel);
         foreach (var equation in equations)
+        {
             if (equation.Syntax?.Strategy is not null)
             {
                 errors = true;
-                Console.Error.WriteLine($"ERROR: Cannot specify strategy for '{equation}' because it is for a circular attribute.");
+                Console.Error.WriteLine(
+                    $"ERROR: Cannot specify strategy for '{equation}' because it is for a circular attribute.");
             }
+
+            if (equation.Expression is not null)
+            {
+                errors = true;
+                Console.Error.WriteLine(
+                    $"ERROR: Cannot specify expression for '{equation}' because it is for a circular attribute.");
+            }
+        }
         return errors;
     }
 }
