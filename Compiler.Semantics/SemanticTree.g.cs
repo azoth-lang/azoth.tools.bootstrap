@@ -1651,6 +1651,9 @@ public partial interface IControlFlowNode : ICodeNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IEntryNode : IDataFlowNode
 {
+    new IEntryNode ControlFlowEntry()
+        => this;
+    IEntryNode IControlFlowNode.ControlFlowEntry() => ControlFlowEntry();
     new ICodeSyntax? Syntax
         => null;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
@@ -8150,8 +8153,6 @@ file class EntryNode : SemanticNode, IEntryNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IEntryNode ControlFlowEntry()
-        => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
         => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
             : this.Collection(ref controlFlowPreviousContributors, ref controlFlowPreviousCached, ref controlFlowPrevious,

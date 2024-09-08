@@ -35,6 +35,7 @@
     from `Dictionary<IControlFlowNode, ControlFlowKind>`
     done ToControlFlowSet;
 = ControlFlow.→*.ControlFlow.ControlFlowPrevious for each Self.ControlFlowNext.Keys;
+↑ Entry.ControlFlowEntry(): Entry => this;
 = Exit.ControlFlowNext => ControlFlowSet.Empty;
 
 /// <summary>
