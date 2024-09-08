@@ -22,10 +22,13 @@ public static class ShouldEmit
         => !node.HasAttribute(family);
 
     private static bool HasAttribute(this TreeNodeModel node, AggregateAttributeFamilyModel family)
-        => node.ActualAttributes.OfType<AggregateAttributeModel>().Any(attr => attr.AttributeFamily == family);
+        => node.ActualAttributes.OfType<AggregateAttributeModel>().Any(attr => attr.Family == family);
 
     public static bool OverrideContribute(AggregateAttributeFamilyModel family, TreeNodeModel node)
         => node.ActualEquations.OfType<AggregateAttributeEquationModel>().Any(eq => eq.AttributeFamily == family);
+
+    public static bool Collect(CollectionAttributeFamilyModel family, TreeNodeModel node)
+        => node.ActualEquations.OfType<CollectionAttributeEquationModel>().Any(eq => eq.AttributeFamily == family);
 
     public static bool Initial(CircularAttributeModel attribute)
         => attribute.InitialExpression is null;

@@ -4683,18 +4683,9 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     private ContributorCollection<SemanticNode>? contributors_ControlFlowPrevious;
     private IFixedSet<SemanticNode> CollectContributors_ControlFlowPrevious(SemanticNode target)
     {
-        var contributors = LazyInitializer.EnsureInitialized(ref contributors_ControlFlowPrevious, CollectContributors);
+        var contributors = LazyInitializer.EnsureInitialized(ref contributors_ControlFlowPrevious);
+        contributors.EnsurePopulated(CollectContributors_ControlFlowPrevious);
         return contributors.Remove(target).ToFixedSet();
-
-        ContributorCollection<SemanticNode> CollectContributors()
-        {
-            using (ContributorCollection<SemanticNode>.Create(out var contributors))
-            {
-                CollectContributors_ControlFlowPrevious(contributors);
-                contributors.MarkComplete();
-                return contributors;
-            }
-        }
     }
     internal virtual void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
@@ -8155,6 +8146,18 @@ file class EntryNode : SemanticNode, IEntryNode
     {
         Syntax = syntax;
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -8203,6 +8206,18 @@ file class ExitNode : SemanticNode, IExitNode
         ICodeSyntax? syntax)
     {
         Syntax = syntax;
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -8281,6 +8296,18 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
         ResultType = resultType;
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -8411,6 +8438,18 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         ShadowingAspect.VariableBinding_Contribute_Diagnostics(this, builder);
         NameBindingAntetypesAspect.VariableDeclarationStatement_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -8470,6 +8509,18 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
         ResultType = resultType;
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -8541,6 +8592,18 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
         if (ReferenceEquals(descendant, Self.Pattern))
             return NameBindingTypesAspect.BindingContextPattern_Pattern_ContextBindingType(this);
         return base.Inherited_ContextBindingType(child, descendant, ctx);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -8656,6 +8719,18 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     {
         ShadowingAspect.VariableBinding_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -8731,6 +8806,18 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionAntetypesAspect.OptionalPattern_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -8835,6 +8922,18 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         InvalidStructureAspect.BlockExpression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -8981,6 +9080,18 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         ExpressionTypesAspect.NewObjectExpression_Contribute_Diagnostics(this, builder);
         OverloadResolutionAspect.NewObjectExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9081,6 +9192,18 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9176,6 +9299,18 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -9273,6 +9408,18 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9365,6 +9512,18 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -9466,6 +9625,18 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.StringLiteralExpression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -9602,6 +9773,18 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
         ExpressionTypesAspect.AssignmentExpression_Contribute_Diagnostics(this, builder);
     }
 
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
+
     protected override IChildTreeNode Rewrite()
         => BindingAmbiguousNamesAspect.AssignmentExpression_Rewrite_PropertyNameLeftOperand(this)
         ?? base.Rewrite();
@@ -9735,6 +9918,18 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.BinaryOperatorExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9842,6 +10037,18 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionAntetypesAspect.UnaryOperatorExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9936,6 +10143,18 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.IdExpression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -10044,6 +10263,18 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.ConversionExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10136,6 +10367,18 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -10241,6 +10484,18 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -10349,6 +10604,18 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.IfExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10442,6 +10709,18 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -10545,6 +10824,18 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -10736,6 +11027,18 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ShadowingAspect.VariableBinding_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10824,6 +11127,18 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10902,6 +11217,18 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -11000,6 +11327,18 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.ReturnExpression_Contribute_Diagnostics(this, builder);
         InvalidStructureAspect.ReturnExpression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -11208,6 +11547,18 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         ExpressionTypesAspect.FunctionInvocationExpression_Contribute_Diagnostics(this, builder);
         OverloadResolutionAspect.FunctionInvocationExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -11334,6 +11685,18 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         ExpressionTypesAspect.MethodInvocationExpression_Contribute_Diagnostics(this, builder);
         OverloadResolutionAspect.MethodInvocationExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -11454,6 +11817,18 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.GetterInvocationExpression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -11585,6 +11960,18 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.SetterInvocationExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -11705,6 +12092,18 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.FunctionReferenceInvocationExpression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -11832,6 +12231,18 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -11919,6 +12330,18 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -12189,6 +12612,18 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -12270,6 +12705,18 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -12356,6 +12803,18 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         BindingAmbiguousNamesAspect.FunctionGroupName_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -12465,6 +12924,18 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -12554,6 +13025,18 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -12660,6 +13143,18 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.FieldAccessExpression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -12769,6 +13264,18 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
         ShadowingAspect.VariableNameExpression_Contribute_Diagnostics(this, builder);
         SingleAssignmentAspect.VariableNameExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -12862,6 +13369,18 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -12960,6 +13479,18 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13045,6 +13576,18 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13123,6 +13666,18 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -13236,6 +13791,18 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         BindingNamesAspect.SelfExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13308,6 +13875,18 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -13388,6 +13967,18 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         BindingAmbiguousNamesAspect.UnknownIdentifierNameExpression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -13470,6 +14061,18 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -13567,6 +14170,18 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         BindingAmbiguousNamesAspect.UnknownMemberAccessExpression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -13704,6 +14319,18 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.MoveVariableExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13801,6 +14428,18 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.MoveValueExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13893,6 +14532,18 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -14033,6 +14684,18 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.FreezeVariableExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14133,6 +14796,18 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.FreezeValueExpression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14220,6 +14895,18 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14295,6 +14982,18 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 
@@ -14399,6 +15098,18 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
     }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14499,6 +15210,18 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionAntetypesAspect.AwaitExpression_Contribute_Diagnostics(this, builder);
+    }
+
+    internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
+    {
+        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        base.CollectContributors_ControlFlowPrevious(contributors);
+    }
+
+    internal override void Contribute_ControlFlowPrevious(SemanticNode target, Dictionary<IControlFlowNode, ControlFlowKind> builder)
+    {
+        if (target is IControlFlowNode t)
+            ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
 }
 

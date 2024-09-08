@@ -203,18 +203,9 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
     private ContributorCollection<<#= Emit.BaseClassName(tree) #>>? contributors_<#= family.Name #>;
     private IFixedSet<<#= Emit.BaseClassName(tree) #>> CollectContributors_<#= family.Name #>(<#= Emit.BaseClassName(tree) #> target)
     {
-        var contributors = LazyInitializer.EnsureInitialized(ref contributors_<#= family.Name #>, CollectContributors);
+        var contributors = LazyInitializer.EnsureInitialized(ref contributors_<#= family.Name #>);
+        contributors.EnsurePopulated(CollectContributors_<#= family.Name #>);
         return contributors.Remove(target).ToFixedSet();
-
-        ContributorCollection<<#= Emit.BaseClassName(tree) #>> CollectContributors()
-        {
-            using (ContributorCollection<<#= Emit.BaseClassName(tree) #>>.Create(out var contributors))
-            {
-                CollectContributors_<#= family.Name #>(contributors);
-                contributors.MarkComplete();
-                return contributors;
-            }
-        }
     }
     internal virtual void CollectContributors_<#= family.Name #>(ContributorCollection<<#= Emit.BaseClassName(tree) #>> contributors)
     {
@@ -339,8 +330,27 @@ file class <#= Emit.ClassName(node.Defines) #> : <#= Emit.BaseClass(tree) #><#= 
 
     internal override void <#= Emit.ContributeMethodName(family, node) #>(<#= Emit.Type(family.FromType) #> builder)
     {
-<#              foreach (var equation in node.ActualEquations.OfType<AggregateAttributeEquationModel>()) { #>
+<#              foreach (var equation in Build.Equations(node, family)) { #>
         <#= Emit.QualifiedEquationMethod(equation) #>(this, builder);
+<#              } #>
+    }
+<#          } #>
+<#      } #>
+<#      foreach (var family in tree.AllAttributeFamilies.OfType<CollectionAttributeFamilyModel>()) { #>
+<#          if (ShouldEmit.Collect(family, node)) { #>
+
+    internal override void CollectContributors_<#= family.Name #>(ContributorCollection<<#= Emit.BaseClassName(tree) #>> contributors)
+    {
+<#              foreach (var equation in Build.Equations(node, family)) { #>
+        <#= Emit.AddContributors(equation) #>
+<#              } #>
+        base.CollectContributors_<#= family.Name #>(contributors);
+    }
+
+    internal override void Contribute_<#= family.Name #>(<#= Emit.BaseClassName(tree) #> target, <#= Emit.Type(family.FromType) #> builder)
+    {
+<#              foreach (var equation in Build.Equations(node, family)) { #>
+        <#= Emit.Contribute(equation) #>
 <#              } #>
     }
 <#          } #>

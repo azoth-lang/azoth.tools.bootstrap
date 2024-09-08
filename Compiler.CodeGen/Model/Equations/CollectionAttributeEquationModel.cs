@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
@@ -13,6 +14,7 @@ public sealed class CollectionAttributeEquationModel : ContributorEquationModel
     public override CollectionAttributeEquationSyntax Syntax { get; }
     public CollectionAttributeModel Attribute => attribute.Value;
     private readonly Lazy<CollectionAttributeModel> attribute;
+    public CollectionAttributeFamilyModel AttributeFamily => Attribute.Family;
     public Symbol TargetNodeSymbol { get; }
     public TreeNodeModel TargetNode => targetNode.Value;
     private readonly Lazy<TreeNodeModel> targetNode;

@@ -1,4 +1,7 @@
+using System;
+using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.Attributes;
@@ -8,6 +11,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 public sealed class CollectionAttributeModel : AspectAttributeModel
 {
     public override CollectionAttributeSyntax Syntax { get; }
+    public CollectionAttributeFamilyModel Family => family.Value;
+    private readonly Lazy<CollectionAttributeFamilyModel> family;
     public override TypeModel Type { get; }
     public Symbol? RootSymbol { get; }
     public TypeModel FromType { get; }
@@ -22,7 +27,13 @@ public sealed class CollectionAttributeModel : AspectAttributeModel
         RootSymbol = Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Root);
         FromType = TypeModel.CreateFromSyntax(aspect.Tree, syntax.FromType);
         ConstructExpression = Syntax.ConstructExpression ?? $"new {Emit.Type(FromType)}()";
+        family = new(ComputeAttributeFamily);
     }
+
+    private CollectionAttributeFamilyModel ComputeAttributeFamily()
+        => Aspect.Tree.AllAttributeFamilies
+                 .OfType<CollectionAttributeFamilyModel>()
+                 .Single(f => f.Instances.Contains(this));
 
     public override string ToString()
     {

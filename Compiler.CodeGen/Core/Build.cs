@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Core;
@@ -45,4 +47,10 @@ internal static class Build
 
     public static IEnumerable<PropertyModel> PropertiesForClass(TreeNodeModel node)
         => node.ActualProperties.Where(p => node.EquationFor(p) is null);
+
+    public static IEnumerable<AggregateAttributeEquationModel> Equations(TreeNodeModel node, AggregateAttributeFamilyModel family)
+        => node.ActualEquations.OfType<AggregateAttributeEquationModel>().Where(eq => eq.AttributeFamily == family);
+
+    public static IEnumerable<CollectionAttributeEquationModel> Equations(TreeNodeModel node, CollectionAttributeFamilyModel family)
+        => node.ActualEquations.OfType<CollectionAttributeEquationModel>().Where(eq => eq.AttributeFamily == family);
 }

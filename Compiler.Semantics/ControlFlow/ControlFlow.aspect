@@ -28,7 +28,7 @@
     root ExecutableDefinition
     from `Dictionary<IControlFlowNode, ControlFlowKind>`
     done ToControlFlowSet;
-= ControlFlow.→*.ControlFlow.ControlFlowPrevious for each ControlFlowNext.Keys;
+= ControlFlow.→*.ControlFlow.ControlFlowPrevious for each Self.ControlFlowNext.Keys;
 = Exit.ControlFlowNext => ControlFlowSet.Empty;
 
 /// <summary>

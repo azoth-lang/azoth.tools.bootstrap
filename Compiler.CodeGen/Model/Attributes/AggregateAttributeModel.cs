@@ -9,17 +9,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 public sealed class AggregateAttributeModel : AspectAttributeModel
 {
     public override AggregateAttributeSyntax? Syntax { get; }
-    public override TypeModel Type => AttributeFamily.Type;
-    public TypeModel FromType => AttributeFamily.FromType;
-    public AggregateAttributeFamilyModel AttributeFamily => attributeFamily.Value;
-    private readonly Lazy<AggregateAttributeFamilyModel> attributeFamily;
-    public string AggregateMethod => AttributeFamily.AggregateMethod;
+    public override TypeModel Type => Family.Type;
+    public TypeModel FromType => Family.FromType;
+    public AggregateAttributeFamilyModel Family => family.Value;
+    private readonly Lazy<AggregateAttributeFamilyModel> family;
+    public string AggregateMethod => Family.AggregateMethod;
 
     public AggregateAttributeModel(AspectModel aspect, AggregateAttributeSyntax syntax)
         : base(aspect, Symbol.CreateInternalFromSyntax(aspect.Tree, syntax.Node), syntax.Name, false)
     {
         Syntax = syntax;
-        attributeFamily = new(ComputeAttributeFamily<AggregateAttributeFamilyModel>);
+        family = new(ComputeAttributeFamily<AggregateAttributeFamilyModel>);
     }
 
     public override string ToString() => $"↗↖ {Node}.{Name}";

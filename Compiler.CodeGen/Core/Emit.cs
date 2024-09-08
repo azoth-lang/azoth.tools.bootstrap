@@ -338,7 +338,7 @@ internal static class Emit
     public static string ContributeMethodName(AggregateAttributeFamilyModel family, TreeNodeModel node)
     {
         var contributesToThis = node.ActualAttributes.OfType<AggregateAttributeModel>()
-                                    .Any(a => a.AttributeFamily == family);
+                                    .Any(a => a.Family == family);
         var thisString = contributesToThis ? "This_" : "";
         return $"Contribute_{thisString}{family.Name}";
     }
@@ -582,6 +582,21 @@ internal static class Emit
 
     public static string EquationMethodExtraParams(CollectionAttributeEquationModel equation)
         => $", {TypeName(equation.TargetNodeSymbol)} target, {Type(equation.FromType)} {equation.Name.ToCamelCase()}";
+
+    public static string AddContributors(CollectionAttributeEquationModel equation)
+    {
+        var tree = equation.Aspect.Tree;
+        if (equation.TargetExpression is null)
+            // TODO perhaps this should be restricted based on the target type?
+            return $"contributors.AddToAll(({BaseClassName(tree)})this);";
+        var range = equation.IsForEach ? "Range" : "";
+        var cast = equation.IsForEach ? $".Cast<{BaseClassName(tree)}>()" : "";
+        return $"contributors.Add{range}ToAll({equation.TargetExpression}{cast});";
+    }
+
+    public static string Contribute(CollectionAttributeEquationModel equation)
+        => $"if (target is {TypeName(equation.TargetNodeSymbol)} t){Environment.NewLine}"
+           + $"            {equation.Aspect.Name}.{EquationMethod(equation)}(this, t, builder);";
     #endregion
 
     #region Rewrite Rules
