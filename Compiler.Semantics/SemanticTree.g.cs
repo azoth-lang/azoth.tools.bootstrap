@@ -1651,23 +1651,29 @@ public partial interface IControlFlowNode : ICodeNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IEntryNode : IDataFlowNode
 {
+    new ICodeSyntax? Syntax
+        => null;
+    ICodeSyntax? ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     FixedDictionary<IVariableBindingNode, int> VariableBindingsMap();
 
-    public static IEntryNode Create(
-        ICodeSyntax? syntax)
-        => new EntryNode(syntax);
+    public static IEntryNode Create()
+        => new EntryNode();
 }
 
 // [Closed(typeof(ExitNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExitNode : IDataFlowNode
 {
+    new ICodeSyntax? Syntax
+        => null;
+    ICodeSyntax? ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     ControlFlowSet IControlFlowNode.ControlFlowNext
         => ControlFlowSet.Empty;
 
-    public static IExitNode Create(
-        ICodeSyntax? syntax)
-        => new ExitNode(syntax);
+    public static IExitNode Create()
+        => new ExitNode();
 }
 
 [Closed(
@@ -8140,7 +8146,6 @@ file class EntryNode : SemanticNode, IEntryNode
 {
     private IEntryNode Self { [Inline] get => this; }
 
-    public ICodeSyntax? Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8185,10 +8190,8 @@ file class EntryNode : SemanticNode, IEntryNode
     private IFixedSet<IDataFlowNode>? dataFlowPrevious;
     private bool dataFlowPreviousCached;
 
-    public EntryNode(
-        ICodeSyntax? syntax)
+    public EntryNode()
     {
-        Syntax = syntax;
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -8209,7 +8212,6 @@ file class ExitNode : SemanticNode, IExitNode
 {
     private IExitNode Self { [Inline] get => this; }
 
-    public ICodeSyntax? Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8246,10 +8248,8 @@ file class ExitNode : SemanticNode, IExitNode
     private IFixedSet<IDataFlowNode>? dataFlowPrevious;
     private bool dataFlowPreviousCached;
 
-    public ExitNode(
-        ICodeSyntax? syntax)
+    public ExitNode()
     {
-        Syntax = syntax;
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)

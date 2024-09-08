@@ -101,6 +101,10 @@
 = SelfParameter.IsLentBinding => Syntax.IsLentBinding;
 = FieldParameter.Name => Syntax.Name;
 
+// ---------- Control Flow
+↑ Entry.Syntax: `ICodeSyntax`? => null;
+↑ Exit.Syntax: `ICodeSyntax`? => null;
+
 // ---------- Statements
 = VariableDeclarationStatement.IsLentBinding => false;
 = VariableDeclarationStatement.IsMutableBinding => Syntax.IsMutableBinding;
