@@ -172,11 +172,19 @@ internal static class Emit
 
     public static string Parameters(IEnumerable<PropertyModel> properties)
     {
-        var parameters = string.Join($",{Environment.NewLine}        ",
-            properties.Select(p => $"{ParameterType(p.Type)} {VariableName(p)}"));
-        if (string.IsNullOrWhiteSpace(parameters))
-            return "";
-        return $"{Environment.NewLine}        " + parameters;
+        var propertiesList = properties.ToList();
+        switch (propertiesList.Count)
+        {
+            case 0:
+                return "";
+            case 1:
+                var property = propertiesList[0];
+                return $"{ParameterType(property.Type)} {VariableName(property)}";
+            default:
+                return $"{Environment.NewLine}        "
+                       + string.Join($",{Environment.NewLine}        ",
+                           propertiesList.Select(p => $"{ParameterType(p.Type)} {VariableName(p)}"));
+        }
     }
 
     public static string Parameters(AttributeModel attribute)

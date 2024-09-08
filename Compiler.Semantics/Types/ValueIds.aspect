@@ -39,6 +39,7 @@ struct `ValueId`;
 // ---------- Patterns
 ⮡ Pattern.PreviousValueId();
 ↓ Pattern.MatchReferentValueId: `ValueId`?;
+= BindingPattern.⮡.PreviousValueId => BindingValueId;
 
 // ---------- Expressions
 ⮡ AmbiguousExpression.PreviousValueId();

@@ -417,7 +417,7 @@ internal static class SyntaxBinder
         };
 
     private static IBindingContextPatternNode BindingContextPattern(IBindingContextPatternSyntax syntax)
-        => new BindingContextPatternNode(syntax, Pattern(syntax.Pattern), Type(syntax.Type));
+        => IBindingContextPatternNode.Create(syntax, Pattern(syntax.Pattern), Type(syntax.Type));
 
     private static IOptionalOrBindingPatternNode OptionalOrBindingPattern(IOptionalOrBindingPatternSyntax syntax)
         => syntax switch
@@ -429,10 +429,10 @@ internal static class SyntaxBinder
         };
 
     private static IBindingPatternNode BindingPattern(IBindingPatternSyntax syntax)
-        => new BindingPatternNode(syntax);
+        => IBindingPatternNode.Create(syntax);
 
     private static IOptionalPatternNode OptionalPattern(IOptionalPatternSyntax syntax)
-        => new OptionalPatternNode(syntax, OptionalOrBindingPattern(syntax.Pattern));
+        => IOptionalPatternNode.Create(syntax, OptionalOrBindingPattern(syntax.Pattern));
     #endregion
 
     #region Expressions

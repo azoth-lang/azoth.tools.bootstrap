@@ -213,9 +213,9 @@ ExpressionStatement <: BodyStatement
 
 // ---------- Patterns
 Pattern <: ControlFlow = Syntax:`IPatternSyntax`;
-BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` IsMutableBinding:`bool` Pattern Type?;
+BindingContextPattern <: Pattern = Syntax:`IBindingContextPatternSyntax` Pattern Type?;
 OptionalOrBindingPattern <: Pattern = Syntax:`IOptionalOrBindingPatternSyntax`;
-BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPatternSyntax` Name:`IdentifierName`;
+BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPatternSyntax`;
 OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions

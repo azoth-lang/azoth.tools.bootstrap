@@ -204,8 +204,7 @@ public partial interface IStandardPackageReferenceNode : IPackageReferenceNode
     bool IPackageReferenceNode.IsTrusted
         => Syntax.IsTrusted;
 
-    public static IStandardPackageReferenceNode Create(
-        IPackageReferenceSyntax syntax)
+    public static IStandardPackageReferenceNode Create(IPackageReferenceSyntax syntax)
         => new StandardPackageReferenceNode(syntax);
 }
 
@@ -319,8 +318,7 @@ public partial interface IUsingDirectiveNode : ICodeNode
     NamespaceName Name
         => Syntax.Name;
 
-    public static IUsingDirectiveNode Create(
-        IUsingDirectiveSyntax syntax)
+    public static IUsingDirectiveNode Create(IUsingDirectiveSyntax syntax)
         => new UsingDirectiveNode(syntax);
 }
 
@@ -1106,8 +1104,7 @@ public partial interface ICapabilitySetNode : ICapabilityConstraintNode
         => Syntax.Constraint;
     ICapabilityConstraint ICapabilityConstraintNode.Constraint => Constraint;
 
-    public static ICapabilitySetNode Create(
-        ICapabilitySetSyntax syntax)
+    public static ICapabilitySetNode Create(ICapabilitySetSyntax syntax)
         => new CapabilitySetNode(syntax);
 }
 
@@ -1124,8 +1121,7 @@ public partial interface ICapabilityNode : ICapabilityConstraintNode
     ICapabilityConstraint ICapabilityConstraintNode.Constraint
         => Syntax.Capability;
 
-    public static ICapabilityNode Create(
-        ICapabilitySyntax syntax)
+    public static ICapabilityNode Create(ICapabilitySyntax syntax)
         => new CapabilityNode(syntax);
 }
 
@@ -1310,8 +1306,7 @@ public partial interface IFieldParameterNode : IConstructorOrInitializerParamete
     IdentifierName IConstructorOrInitializerParameterNode.Name
         => Syntax.Name;
 
-    public static IFieldParameterNode Create(
-        IFieldParameterSyntax syntax)
+    public static IFieldParameterNode Create(IFieldParameterSyntax syntax)
         => new FieldParameterNode(syntax);
 }
 
@@ -1446,8 +1441,7 @@ public partial interface IIdentifierTypeNameNode : IStandardTypeNameNode, ISimpl
     StandardName IStandardTypeNameNode.Name => Name;
     TypeName ITypeNameNode.Name => Name;
 
-    public static IIdentifierTypeNameNode Create(
-        IIdentifierTypeNameSyntax syntax)
+    public static IIdentifierTypeNameNode Create(IIdentifierTypeNameSyntax syntax)
         => new IdentifierTypeNameNode(syntax);
 }
 
@@ -1467,8 +1461,7 @@ public partial interface ISpecialTypeNameNode : ISimpleTypeNameNode
     new TypeSymbol ReferencedSymbol { get; }
     TypeSymbol? ITypeNameNode.ReferencedSymbol => ReferencedSymbol;
 
-    public static ISpecialTypeNameNode Create(
-        ISpecialTypeNameSyntax syntax)
+    public static ISpecialTypeNameNode Create(ISpecialTypeNameSyntax syntax)
         => new SpecialTypeNameNode(syntax);
 }
 
@@ -1851,21 +1844,21 @@ public partial interface IBindingContextPatternNode : IPatternNode
     IPatternSyntax IPatternNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    bool IsMutableBinding { get; }
     IPatternNode Pattern { get; }
     ITypeNode? Type { get; }
     new IFlowState FlowStateAfter
         => Pattern.FlowStateAfter;
     IFlowState IPatternNode.FlowStateAfter => FlowStateAfter;
+    bool IsMutableBinding
+        => Syntax.IsMutableBinding;
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => Pattern.FlowLexicalScope();
 
     public static IBindingContextPatternNode Create(
         IBindingContextPatternSyntax syntax,
-        bool isMutableBinding,
         IPatternNode pattern,
         ITypeNode? type)
-        => new BindingContextPatternNode(syntax, isMutableBinding, pattern, type);
+        => new BindingContextPatternNode(syntax, pattern, type);
 }
 
 [Closed(
@@ -1890,9 +1883,6 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
-    new IdentifierName Name { get; }
-    IdentifierName INamedBindingDeclarationNode.Name => Name;
-    TypeName INamedDeclarationNode.Name => Name;
     IFlowState FlowStateBefore();
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => LexicalScopingAspect.BindingPattern_FlowLexicalScope(this);
@@ -1900,11 +1890,11 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
         => false;
     bool INamedBindingNode.IsMutableBinding
         => Syntax.IsMutableBinding;
+    IdentifierName INamedBindingDeclarationNode.Name
+        => Syntax.Name;
 
-    public static IBindingPatternNode Create(
-        IBindingPatternSyntax syntax,
-        IdentifierName name)
-        => new BindingPatternNode(syntax, name);
+    public static IBindingPatternNode Create(IBindingPatternSyntax syntax)
+        => new BindingPatternNode(syntax);
 }
 
 // [Closed(typeof(OptionalPatternNode))]
@@ -2147,8 +2137,7 @@ public partial interface INoneLiteralExpressionNode : ILiteralExpressionNode
     new OptionalType Type { get; }
     DataType IExpressionNode.Type => Type;
 
-    public static INoneLiteralExpressionNode Create(
-        INoneLiteralExpressionSyntax syntax)
+    public static INoneLiteralExpressionNode Create(INoneLiteralExpressionSyntax syntax)
         => new NoneLiteralExpressionNode(syntax);
 }
 
@@ -2482,8 +2471,7 @@ public partial interface INextExpressionNode : INeverTypedExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
 
-    public static INextExpressionNode Create(
-        INextExpressionSyntax syntax)
+    public static INextExpressionNode Create(INextExpressionSyntax syntax)
         => new NextExpressionNode(syntax);
 }
 
@@ -2803,8 +2791,7 @@ public partial interface IIdentifierNameExpressionNode : IStandardNameExpression
         => Syntax.Name;
     StandardName IStandardNameExpressionNode.Name => Name;
 
-    public static IIdentifierNameExpressionNode Create(
-        IIdentifierNameExpressionSyntax syntax)
+    public static IIdentifierNameExpressionNode Create(IIdentifierNameExpressionSyntax syntax)
         => new IdentifierNameExpressionNode(syntax);
 }
 
@@ -3226,8 +3213,7 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
     IFlowState INameExpressionNode.FlowStateAfter
         => ExpressionTypesAspect.SelfExpression_FlowStateAfter(this);
 
-    public static ISelfExpressionNode Create(
-        ISelfExpressionSyntax syntax)
+    public static ISelfExpressionNode Create(ISelfExpressionSyntax syntax)
         => new SelfExpressionNode(syntax);
 }
 
@@ -3247,8 +3233,7 @@ public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 
-    public static IMissingNameExpressionNode Create(
-        IMissingNameSyntax syntax)
+    public static IMissingNameExpressionNode Create(IMissingNameSyntax syntax)
         => new MissingNameExpressionNode(syntax);
 }
 
@@ -4064,8 +4049,7 @@ public partial interface IPackageSymbolNode : IPackageDeclarationNode, IChildSym
     PackageSymbol IPackageDeclarationNode.Symbol
         => PackageReference.PackageSymbols.PackageSymbol;
 
-    public static IPackageSymbolNode Create(
-        IPackageReferenceNode packageReference)
+    public static IPackageSymbolNode Create(IPackageReferenceNode packageReference)
         => new PackageSymbolNode(packageReference);
 }
 
@@ -4078,8 +4062,7 @@ public partial interface IPackageFacetSymbolNode : IPackageFacetDeclarationNode,
     new INamespaceSymbolNode GlobalNamespace { get; }
     INamespaceDeclarationNode IPackageFacetDeclarationNode.GlobalNamespace => GlobalNamespace;
 
-    public static IPackageFacetSymbolNode Create(
-        FixedSymbolTree symbolTree)
+    public static IPackageFacetSymbolNode Create(FixedSymbolTree symbolTree)
         => new PackageFacetSymbolNode(symbolTree);
 }
 
@@ -4093,8 +4076,7 @@ public partial interface INamespaceSymbolNode : INamespaceDeclarationNode, IName
     new IFixedList<INamespaceMemberSymbolNode> Members { get; }
     IFixedList<INamespaceMemberDeclarationNode> INamespaceDeclarationNode.Members => Members;
 
-    public static INamespaceSymbolNode Create(
-        NamespaceSymbol symbol)
+    public static INamespaceSymbolNode Create(NamespaceSymbol symbol)
         => new NamespaceSymbolNode(symbol);
 }
 
@@ -4123,8 +4105,7 @@ public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamesp
     FunctionType IFunctionInvocableDeclarationNode.Type
         => Symbol.Type;
 
-    public static IFunctionSymbolNode Create(
-        FunctionSymbol symbol)
+    public static IFunctionSymbolNode Create(FunctionSymbol symbol)
         => new FunctionSymbolNode(symbol);
 }
 
@@ -4174,8 +4155,7 @@ public partial interface IEmptyTypeSymbolNode : IBuiltInTypeSymbolNode
     SpecialTypeName IBuiltInTypeSymbolNode.Name
         => Symbol.Name;
 
-    public static IEmptyTypeSymbolNode Create(
-        EmptyTypeSymbol symbol)
+    public static IEmptyTypeSymbolNode Create(EmptyTypeSymbol symbol)
         => new EmptyTypeSymbolNode(symbol);
 }
 
@@ -4190,8 +4170,7 @@ public partial interface IPrimitiveTypeSymbolNode : IBuiltInTypeSymbolNode
     SpecialTypeName IBuiltInTypeSymbolNode.Name
         => Symbol.Name;
 
-    public static IPrimitiveTypeSymbolNode Create(
-        PrimitiveTypeSymbol symbol)
+    public static IPrimitiveTypeSymbolNode Create(PrimitiveTypeSymbol symbol)
         => new PrimitiveTypeSymbolNode(symbol);
 }
 
@@ -4235,8 +4214,7 @@ public partial interface IClassSymbolNode : IClassDeclarationNode, IUserTypeSymb
     IFixedSet<IClassMemberDeclarationNode> IClassDeclarationNode.InclusiveMembers
         => Members;
 
-    public static IClassSymbolNode Create(
-        UserTypeSymbol symbol)
+    public static IClassSymbolNode Create(UserTypeSymbol symbol)
         => new ClassSymbolNode(symbol);
 }
 
@@ -4253,8 +4231,7 @@ public partial interface IStructSymbolNode : IStructDeclarationNode, IUserTypeSy
     IFixedSet<IStructMemberDeclarationNode> IStructDeclarationNode.InclusiveMembers
         => Members;
 
-    public static IStructSymbolNode Create(
-        UserTypeSymbol symbol)
+    public static IStructSymbolNode Create(UserTypeSymbol symbol)
         => new StructSymbolNode(symbol);
 }
 
@@ -4271,8 +4248,7 @@ public partial interface ITraitSymbolNode : ITraitDeclarationNode, IUserTypeSymb
     IFixedSet<ITraitMemberDeclarationNode> ITraitDeclarationNode.InclusiveMembers
         => Members;
 
-    public static ITraitSymbolNode Create(
-        UserTypeSymbol symbol)
+    public static ITraitSymbolNode Create(UserTypeSymbol symbol)
         => new TraitSymbolNode(symbol);
 }
 
@@ -4298,8 +4274,7 @@ public partial interface IGenericParameterSymbolNode : IGenericParameterDeclarat
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.InclusiveMembers
         => [];
 
-    public static IGenericParameterSymbolNode Create(
-        GenericParameterTypeSymbol symbol)
+    public static IGenericParameterSymbolNode Create(GenericParameterTypeSymbol symbol)
         => new GenericParameterSymbolNode(symbol);
 }
 
@@ -4374,8 +4349,7 @@ public partial interface IStandardMethodSymbolNode : IStandardMethodDeclarationN
     FunctionType IStandardMethodDeclarationNode.MethodGroupType
         => Symbol.MethodGroupType;
 
-    public static IStandardMethodSymbolNode Create(
-        MethodSymbol symbol)
+    public static IStandardMethodSymbolNode Create(MethodSymbol symbol)
         => new StandardMethodSymbolNode(symbol);
 }
 
@@ -4384,8 +4358,7 @@ public partial interface IStandardMethodSymbolNode : IStandardMethodDeclarationN
 public partial interface IGetterMethodSymbolNode : IGetterMethodDeclarationNode, IMethodSymbolNode
 {
 
-    public static IGetterMethodSymbolNode Create(
-        MethodSymbol symbol)
+    public static IGetterMethodSymbolNode Create(MethodSymbol symbol)
         => new GetterMethodSymbolNode(symbol);
 }
 
@@ -4394,8 +4367,7 @@ public partial interface IGetterMethodSymbolNode : IGetterMethodDeclarationNode,
 public partial interface ISetterMethodSymbolNode : ISetterMethodDeclarationNode, IMethodSymbolNode
 {
 
-    public static ISetterMethodSymbolNode Create(
-        MethodSymbol symbol)
+    public static ISetterMethodSymbolNode Create(MethodSymbol symbol)
         => new SetterMethodSymbolNode(symbol);
 }
 
@@ -4412,8 +4384,7 @@ public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, I
     IdentifierName? IConstructorDeclarationNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
 
-    public static IConstructorSymbolNode Create(
-        ConstructorSymbol symbol)
+    public static IConstructorSymbolNode Create(ConstructorSymbol symbol)
         => new ConstructorSymbolNode(symbol);
 }
 
@@ -4430,8 +4401,7 @@ public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, I
     IdentifierName? IInitializerDeclarationNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
 
-    public static IInitializerSymbolNode Create(
-        InitializerSymbol symbol)
+    public static IInitializerSymbolNode Create(InitializerSymbol symbol)
         => new InitializerSymbolNode(symbol);
 }
 
@@ -4451,8 +4421,7 @@ public partial interface IFieldSymbolNode : IFieldDeclarationNode, IClassMemberS
     DataType IFieldDeclarationNode.BindingType
         => Symbol.Type;
 
-    public static IFieldSymbolNode Create(
-        FieldSymbol symbol)
+    public static IFieldSymbolNode Create(FieldSymbol symbol)
         => new FieldSymbolNode(symbol);
 }
 
@@ -4832,8 +4801,7 @@ file class StandardPackageReferenceNode : SemanticNode, IStandardPackageReferenc
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageSymbolNode SymbolNode { [DebuggerStepThrough] get; }
 
-    public StandardPackageReferenceNode(
-        IPackageReferenceSyntax syntax)
+    public StandardPackageReferenceNode(IPackageReferenceSyntax syntax)
     {
         Syntax = syntax;
         SymbolNode = Child.Attach(this, SymbolNodeAspect.PackageReference_SymbolNode(this));
@@ -5004,8 +4972,7 @@ file class UsingDirectiveNode : SemanticNode, IUsingDirectiveNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public UsingDirectiveNode(
-        IUsingDirectiveSyntax syntax)
+    public UsingDirectiveNode(IUsingDirectiveSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -7165,8 +7132,7 @@ file class CapabilitySetNode : SemanticNode, ICapabilitySetNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public CapabilitySetNode(
-        ICapabilitySetSyntax syntax)
+    public CapabilitySetNode(ICapabilitySetSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -7183,8 +7149,7 @@ file class CapabilityNode : SemanticNode, ICapabilityNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public CapabilityNode(
-        ICapabilitySyntax syntax)
+    public CapabilityNode(ICapabilitySyntax syntax)
     {
         Syntax = syntax;
     }
@@ -7564,8 +7529,7 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
 
-    public FieldParameterNode(
-        IFieldParameterSyntax syntax)
+    public FieldParameterNode(IFieldParameterSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -7744,8 +7708,7 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
     private DataType? namedType;
     private bool namedTypeCached;
 
-    public IdentifierTypeNameNode(
-        IIdentifierTypeNameSyntax syntax)
+    public IdentifierTypeNameNode(IIdentifierTypeNameSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -7803,8 +7766,7 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
     private DataType? namedType;
     private bool namedTypeCached;
 
-    public SpecialTypeNameNode(
-        ISpecialTypeNameSyntax syntax)
+    public SpecialTypeNameNode(ISpecialTypeNameSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -8647,7 +8609,6 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
     private AttributeLock syncLock;
 
     public IBindingContextPatternSyntax Syntax { [DebuggerStepThrough] get; }
-    public bool IsMutableBinding { [DebuggerStepThrough] get; }
     public IPatternNode Pattern { [DebuggerStepThrough] get; }
     public ITypeNode? Type { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -8686,12 +8647,10 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
 
     public BindingContextPatternNode(
         IBindingContextPatternSyntax syntax,
-        bool isMutableBinding,
         IPatternNode pattern,
         ITypeNode? type)
     {
         Syntax = syntax;
-        IsMutableBinding = isMutableBinding;
         Pattern = Child.Attach(this, pattern);
         Type = Child.Attach(this, type);
     }
@@ -8730,7 +8689,6 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     private AttributeLock syncLock;
 
     public IBindingPatternSyntax Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -8817,13 +8775,13 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     private IFixedSet<IDataFlowNode>? dataFlowPrevious;
     private bool dataFlowPreviousCached;
 
-    public BindingPatternNode(
-        IBindingPatternSyntax syntax,
-        IdentifierName name)
+    public BindingPatternNode(IBindingPatternSyntax syntax)
     {
         Syntax = syntax;
-        Name = name;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => BindingValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -9663,8 +9621,7 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public NoneLiteralExpressionNode(
-        INoneLiteralExpressionSyntax syntax)
+    public NoneLiteralExpressionNode(INoneLiteralExpressionSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -11508,8 +11465,7 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public NextExpressionNode(
-        INextExpressionSyntax syntax)
+    public NextExpressionNode(INextExpressionSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -12768,8 +12724,7 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
     private ValueId valueId;
     private bool valueIdCached;
 
-    public IdentifierNameExpressionNode(
-        IIdentifierNameExpressionSyntax syntax)
+    public IdentifierNameExpressionNode(IIdentifierNameExpressionSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -14250,8 +14205,7 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public SelfExpressionNode(
-        ISelfExpressionSyntax syntax)
+    public SelfExpressionNode(ISelfExpressionSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -14346,8 +14300,7 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public MissingNameExpressionNode(
-        IMissingNameSyntax syntax)
+    public MissingNameExpressionNode(IMissingNameSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -15848,8 +15801,7 @@ file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
     public IPackageFacetSymbolNode MainFacet { [DebuggerStepThrough] get; }
     public IPackageFacetSymbolNode TestingFacet { [DebuggerStepThrough] get; }
 
-    public PackageSymbolNode(
-        IPackageReferenceNode packageReference)
+    public PackageSymbolNode(IPackageReferenceNode packageReference)
     {
         PackageReference = packageReference;
         MainFacet = Child.Attach(this, SymbolNodeAspect.PackageSymbol_MainFacet(this));
@@ -15872,8 +15824,7 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public INamespaceSymbolNode GlobalNamespace { [DebuggerStepThrough] get; }
 
-    public PackageFacetSymbolNode(
-        FixedSymbolTree symbolTree)
+    public PackageFacetSymbolNode(FixedSymbolTree symbolTree)
     {
         SymbolTree = symbolTree;
         GlobalNamespace = Child.Attach(this, SymbolNodeAspect.PackageFacetSymbol_GlobalNamespace(this));
@@ -15927,8 +15878,7 @@ file class NamespaceSymbolNode : SemanticNode, INamespaceSymbolNode
     private IFixedList<INamespaceMemberDeclarationNode>? nestedMembers;
     private bool nestedMembersCached;
 
-    public NamespaceSymbolNode(
-        NamespaceSymbol symbol)
+    public NamespaceSymbolNode(NamespaceSymbol symbol)
     {
         Symbol = symbol;
     }
@@ -15947,8 +15897,7 @@ file class FunctionSymbolNode : SemanticNode, IFunctionSymbolNode
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
-    public FunctionSymbolNode(
-        FunctionSymbol symbol)
+    public FunctionSymbolNode(FunctionSymbol symbol)
     {
         Symbol = symbol;
     }
@@ -15981,8 +15930,7 @@ file class EmptyTypeSymbolNode : SemanticNode, IEmptyTypeSymbolNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public EmptyTypeSymbolNode(
-        EmptyTypeSymbol symbol)
+    public EmptyTypeSymbolNode(EmptyTypeSymbol symbol)
     {
         Symbol = symbol;
     }
@@ -16015,8 +15963,7 @@ file class PrimitiveTypeSymbolNode : SemanticNode, IPrimitiveTypeSymbolNode
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
 
-    public PrimitiveTypeSymbolNode(
-        PrimitiveTypeSymbol symbol)
+    public PrimitiveTypeSymbolNode(PrimitiveTypeSymbol symbol)
     {
         Symbol = symbol;
     }
@@ -16059,8 +16006,7 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
     private IFixedList<IGenericParameterSymbolNode>? genericParameters;
     private bool genericParametersCached;
 
-    public ClassSymbolNode(
-        UserTypeSymbol symbol)
+    public ClassSymbolNode(UserTypeSymbol symbol)
     {
         SymbolNodeAspect.Validate_ClassSymbolNode(symbol);
         Symbol = symbol;
@@ -16104,8 +16050,7 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
     private IFixedList<IGenericParameterSymbolNode>? genericParameters;
     private bool genericParametersCached;
 
-    public StructSymbolNode(
-        UserTypeSymbol symbol)
+    public StructSymbolNode(UserTypeSymbol symbol)
     {
         SymbolNodeAspect.Validate_StructSymbolNode(symbol);
         Symbol = symbol;
@@ -16149,8 +16094,7 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
     private IFixedList<IGenericParameterSymbolNode>? genericParameters;
     private bool genericParametersCached;
 
-    public TraitSymbolNode(
-        UserTypeSymbol symbol)
+    public TraitSymbolNode(UserTypeSymbol symbol)
     {
         SymbolNodeAspect.Validate_TraitSymbolNode(symbol);
         Symbol = symbol;
@@ -16170,8 +16114,7 @@ file class GenericParameterSymbolNode : SemanticNode, IGenericParameterSymbolNod
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
-    public GenericParameterSymbolNode(
-        GenericParameterTypeSymbol symbol)
+    public GenericParameterSymbolNode(GenericParameterTypeSymbol symbol)
     {
         Symbol = symbol;
     }
@@ -16190,8 +16133,7 @@ file class StandardMethodSymbolNode : SemanticNode, IStandardMethodSymbolNode
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
-    public StandardMethodSymbolNode(
-        MethodSymbol symbol)
+    public StandardMethodSymbolNode(MethodSymbol symbol)
     {
         SymbolNodeAspect.Validate_StandardMethodSymbolNode(symbol);
         Symbol = symbol;
@@ -16211,8 +16153,7 @@ file class GetterMethodSymbolNode : SemanticNode, IGetterMethodSymbolNode
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
-    public GetterMethodSymbolNode(
-        MethodSymbol symbol)
+    public GetterMethodSymbolNode(MethodSymbol symbol)
     {
         SymbolNodeAspect.Validate_GetterMethodSymbolNode(symbol);
         Symbol = symbol;
@@ -16232,8 +16173,7 @@ file class SetterMethodSymbolNode : SemanticNode, ISetterMethodSymbolNode
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
-    public SetterMethodSymbolNode(
-        MethodSymbol symbol)
+    public SetterMethodSymbolNode(MethodSymbol symbol)
     {
         SymbolNodeAspect.Validate_SetterMethodSymbolNode(symbol);
         Symbol = symbol;
@@ -16253,8 +16193,7 @@ file class ConstructorSymbolNode : SemanticNode, IConstructorSymbolNode
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
-    public ConstructorSymbolNode(
-        ConstructorSymbol symbol)
+    public ConstructorSymbolNode(ConstructorSymbol symbol)
     {
         Symbol = symbol;
     }
@@ -16273,8 +16212,7 @@ file class InitializerSymbolNode : SemanticNode, IInitializerSymbolNode
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
-    public InitializerSymbolNode(
-        InitializerSymbol symbol)
+    public InitializerSymbolNode(InitializerSymbol symbol)
     {
         Symbol = symbol;
     }
@@ -16293,8 +16231,7 @@ file class FieldSymbolNode : SemanticNode, IFieldSymbolNode
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
-    public FieldSymbolNode(
-        FieldSymbol symbol)
+    public FieldSymbolNode(FieldSymbol symbol)
     {
         Symbol = symbol;
     }

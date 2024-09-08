@@ -111,8 +111,10 @@
 = VariableDeclarationStatement.Name => Syntax.Name;
 
 // ---------- Patterns
+↑ BindingContextPattern.IsMutableBinding: `bool` => Syntax.IsMutableBinding;
 = BindingPattern.IsLentBinding => false;
 = BindingPattern.IsMutableBinding => Syntax.IsMutableBinding;
+= BindingPattern.Name => Syntax.Name;
 
 // ---------- Types
 ↑ TypeName.Name: `TypeName` => Syntax.Name;

@@ -1242,8 +1242,7 @@ public partial interface IIntegerLiteralExpressionSyntax : ILiteralExpressionSyn
 public partial interface INoneLiteralExpressionSyntax : ILiteralExpressionSyntax
 {
 
-    public static INoneLiteralExpressionSyntax Create(
-        TextSpan span)
+    public static INoneLiteralExpressionSyntax Create(TextSpan span)
         => new NoneLiteralExpressionSyntax(span);
 }
 
@@ -1452,8 +1451,7 @@ public partial interface INextExpressionSyntax : IExpressionSyntax
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
         => OperatorPrecedence.Primary;
 
-    public static INextExpressionSyntax Create(
-        TextSpan span)
+    public static INextExpressionSyntax Create(TextSpan span)
         => new NextExpressionSyntax(span);
 }
 
@@ -1600,8 +1598,7 @@ public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, 
 public partial interface IMissingNameSyntax : ISimpleNameSyntax, IAssignableExpressionSyntax
 {
 
-    public static IMissingNameSyntax Create(
-        TextSpan span)
+    public static IMissingNameSyntax Create(TextSpan span)
         => new MissingNameSyntax(span);
 }
 
@@ -3043,8 +3040,7 @@ file class NoneLiteralExpressionSyntax : INoneLiteralExpressionSyntax
     public override string ToString()
         => FormattingAspect.NoneLiteralExpression_ToString(this);
 
-    public NoneLiteralExpressionSyntax(
-        TextSpan span)
+    public NoneLiteralExpressionSyntax(TextSpan span)
     {
         Span = span;
     }
@@ -3338,8 +3334,7 @@ file class NextExpressionSyntax : INextExpressionSyntax
     public override string ToString()
         => FormattingAspect.NextExpression_ToString(this);
 
-    public NextExpressionSyntax(
-        TextSpan span)
+    public NextExpressionSyntax(TextSpan span)
     {
         Span = span;
     }
@@ -3502,8 +3497,7 @@ file class MissingNameSyntax : IMissingNameSyntax
     public override string ToString()
         => FormattingAspect.MissingName_ToString(this);
 
-    public MissingNameSyntax(
-        TextSpan span)
+    public MissingNameSyntax(TextSpan span)
     {
         Span = span;
     }
