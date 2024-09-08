@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -19,26 +20,18 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
             ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 _ => ComputeControlFlowNext());
-    private ControlFlowSet? controlFlowPrevious;
-    private bool controlFlowPreviousCached;
     public ControlFlowSet ControlFlowPrevious
         => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
-            : this.Inherited(ref controlFlowPreviousCached, ref controlFlowPrevious,
-                ctx => CollectControlFlowPrevious(this, ctx));
-
+            : this.Collection(ref controlFlowPreviousContributors, ref controlFlowPreviousCached, ref controlFlowPrevious,
+                CollectContributors_ControlFlowPrevious<IExecutableDefinitionNode>, Collect_ControlFlowPrevious);
+    private ControlFlowSet? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
 
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-
-    protected override void CollectControlFlowPrevious(
-        IControlFlowNode target,
-        Dictionary<IControlFlowNode, ControlFlowKind> previous)
-    {
-        ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, target, previous);
-        base.CollectControlFlowPrevious(target, previous);
-    }
 
     protected virtual ControlFlowSet ComputeControlFlowNext()
         => ControlFlowAspect.Expression_ControlFlowNext(this);

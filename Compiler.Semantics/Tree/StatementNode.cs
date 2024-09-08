@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
@@ -18,12 +19,13 @@ internal abstract class StatementNode : CodeNode, IStatementNode
     public abstract ValueId? ResultValueId { get; }
     public abstract IFlowState FlowStateAfter { get; }
     public abstract ControlFlowSet ControlFlowNext { get; }
-    private ControlFlowSet? controlFlowPrevious;
-    private bool controlFlowPreviousCached;
     public ControlFlowSet ControlFlowPrevious
         => GrammarAttribute.IsCached(in controlFlowPreviousCached) ? controlFlowPrevious!
-            : this.Inherited(ref controlFlowPreviousCached, ref controlFlowPrevious,
-                ctx => CollectControlFlowPrevious(this, ctx));
+            : this.Collection(ref controlFlowPreviousContributors, ref controlFlowPreviousCached, ref controlFlowPrevious,
+                CollectContributors_ControlFlowPrevious<IExecutableDefinitionNode>, Collect_ControlFlowPrevious);
+    private ControlFlowSet? controlFlowPrevious;
+    private bool controlFlowPreviousCached;
+    private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public virtual LexicalScope LexicalScope
         => ((IStatementNode)this).ContainingLexicalScope();
 
@@ -43,14 +45,6 @@ internal abstract class StatementNode : CodeNode, IStatementNode
 
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-
-    protected override void CollectControlFlowPrevious(
-        IControlFlowNode target,
-        Dictionary<IControlFlowNode, ControlFlowKind> previous)
-    {
-        ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, target, previous);
-        base.CollectControlFlowPrevious(target, previous);
-    }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
