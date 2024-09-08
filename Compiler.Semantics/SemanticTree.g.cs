@@ -8472,6 +8472,37 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         this.initializer = Child.Create(this, initializer);
     }
 
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentInitializer))
+            return BindingType;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentInitializer))
+            return true;
+        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentInitializer))
+            return false;
+        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentInitializer))
+            return BindingAntetype;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => BindingValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -8548,6 +8579,34 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
     {
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
+    }
+
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentExpression))
+            return null;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentExpression))
+            return false;
+        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentExpression))
+            return false;
+        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentExpression))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)

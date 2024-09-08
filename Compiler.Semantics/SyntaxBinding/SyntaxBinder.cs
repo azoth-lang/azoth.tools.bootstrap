@@ -397,14 +397,14 @@ internal static class SyntaxBinder
         };
 
     private static IResultStatementNode ResultStatement(IResultStatementSyntax syntax)
-        => new ResultStatementNode(syntax, Expression(syntax.Expression));
+        => IResultStatementNode.Create(syntax, Expression(syntax.Expression));
 
-    private static IVariableDeclarationStatementNode VariableDeclarationStatement(
-        IVariableDeclarationStatementSyntax syntax)
-        => new VariableDeclarationStatementNode(syntax, Capability(syntax.Capability), Type(syntax.Type), Expression(syntax.Initializer));
+    private static IVariableDeclarationStatementNode VariableDeclarationStatement(IVariableDeclarationStatementSyntax syntax)
+        => IVariableDeclarationStatementNode.Create(syntax, Capability(syntax.Capability),
+            Type(syntax.Type), Expression(syntax.Initializer));
 
     private static IExpressionStatementNode ExpressionStatement(IExpressionStatementSyntax syntax)
-        => new ExpressionStatementNode(syntax, Expression(syntax.Expression));
+        => IExpressionStatementNode.Create(syntax, Expression(syntax.Expression));
     #endregion
 
     #region Patterns

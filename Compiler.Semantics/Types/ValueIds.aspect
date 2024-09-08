@@ -33,6 +33,7 @@ struct `ValueId`;
 = ResultStatement.ResultValueId => ValueId;
 = ResultStatement.ValueId => Expression?.ValueId ?? default;
 = VariableDeclarationStatement.ResultValueId => null;
+= VariableDeclarationStatement.⮡.PreviousValueId => BindingValueId;
 = ExpressionStatement.ResultValueId => null;
 
 // ---------- Patterns

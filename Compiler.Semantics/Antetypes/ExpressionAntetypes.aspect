@@ -17,6 +17,10 @@
 ↓ ResultStatement.ExpectedAntetype: `IMaybeExpressionAntetype`?;
 = ResultStatement.Expression.ExpectedAntetype => ExpectedAntetype;
 = ResultStatement.ResultAntetype => Antetype;
+// The expected antetype for the initializer is the binding antetype since it needs to
+// have any conversion (e.g. to non-const-value type) applied.
+= VariableDeclarationStatement.Initializer.ExpectedAntetype => BindingAntetype;
+= ExpressionStatement.Expression.ExpectedAntetype => null;
 
 // ---------- Patterns
 = OptionalPattern.↑.Diagnostics;

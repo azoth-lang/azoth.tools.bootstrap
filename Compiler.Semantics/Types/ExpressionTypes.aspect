@@ -34,6 +34,14 @@
 ↑ ResultStatement.FlowStateAfter: `IFlowState`
     => Expression?.FlowStateAfter ?? IFlowState.Empty;
 ↓ VariableDeclarationStatement.FlowStateBefore(): `IFlowState`;
+// The expected type for the initializer is the binding type since it needs to have any
+// Capability declared on the variable applied.
+= VariableDeclarationStatement.Initializer.ExpectedType => BindingType;
+= VariableDeclarationStatement.Initializer.ImplicitRecoveryAllowed() => true;
+= VariableDeclarationStatement.Initializer.ShouldPrepareToReturn() => false;
+= ExpressionStatement.Expression.ExpectedType => null;
+= ExpressionStatement.Expression.ImplicitRecoveryAllowed() => false;
+= ExpressionStatement.Expression.ShouldPrepareToReturn() => false;
 
 // ---------- Patterns
 ↑ Pattern.FlowStateAfter: `IFlowState`;
@@ -47,9 +55,10 @@
 /// Whether an implicit recovery (i.e. move or freeze) is allowed to convert this expression to
 /// the expected type.
 /// </summary>
-↓ Expression.ImplicitRecoveryAllowed(): `bool`;/// <summary>
+↓ Expression.ImplicitRecoveryAllowed(): `bool`;
 // By default, implicit recovery is not allowed
 = Expression.*.**.ImplicitRecoveryAllowed() => false;
+/// <summary>
 /// Whether this expression should be prepared for return.
 /// </summary>
 ↓ Expression.ShouldPrepareToReturn(): `bool`;
