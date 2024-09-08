@@ -20,13 +20,13 @@
 
 // ---------- Parameters
 ↓ Parameter.FlowStateBefore(): `IFlowState`;
-↑ Parameter.FlowStateAfter: `IFlowState`;
+⟳ Parameter.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 = SelfParameter.FlowStateAfter;
-= FieldParameter.FlowStateAfter => FlowStateBefore();
+↑ FieldParameter.FlowStateAfter: `IFlowState` => FlowStateBefore();
 
 // ---------- Statements
 ↑ Statement.ResultType: `DataType`? => null;
-↑ Statement.FlowStateAfter: `IFlowState`;
+⟳ Statement.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 ↓ ResultStatement.ExpectedType: `DataType`?;
 = ResultStatement.Expression.ExpectedType => ExpectedType;
 = ResultStatement.Type;
@@ -44,10 +44,10 @@
 = ExpressionStatement.Expression.ShouldPrepareToReturn() => false;
 
 // ---------- Patterns
-↑ Pattern.FlowStateAfter: `IFlowState`;
-= BindingContextPattern.FlowStateAfter => Pattern.FlowStateAfter;
+⟳ Pattern.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
+↑ BindingContextPattern.FlowStateAfter: `IFlowState` => Pattern.FlowStateAfter;
 ↓ BindingPattern.FlowStateBefore(): `IFlowState`;
-= OptionalPattern.FlowStateAfter => Pattern.FlowStateAfter;
+↑ OptionalPattern.FlowStateAfter: `IFlowState` => Pattern.FlowStateAfter;
 
 // ---------- Expressions
 ↓ Expression.ExpectedType:`DataType`?;
@@ -64,7 +64,7 @@
 ↓ Expression.ShouldPrepareToReturn(): `bool`;
 = Expression.*.**.ShouldPrepareToReturn() => false;
 ↑ Expression.Type: `DataType`;
-↑ Expression.FlowStateAfter: `IFlowState`;
+⟳ Expression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 = Expression.↑.Diagnostics;
 ✎ Expression ImplicitMove;
 ✎ Expression ImplicitFreeze;
@@ -72,7 +72,7 @@
 
 ↓ BlockExpression.FlowStateBefore(): `IFlowState`;
 ↑ BlockExpression.Type: `DataType`;
-↑ BlockExpression.FlowStateAfter: `IFlowState`;
+⟳ BlockExpression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 ↑ NewObjectExpression.ContextualizedOverload:`ContextualizedOverload`?;
 ↓ NewObjectExpression.FlowStateBefore(): `IFlowState`;
 = NewObjectExpression.↑.Diagnostics;
@@ -95,7 +95,7 @@
 = PatternMatchExpression.Type => DataType.Bool;
 
 // ---------- Control Flow Expressions
-↑ IfExpression.FlowStateAfter: `IFlowState`;
+⟳ IfExpression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 = IfExpression.↑.Diagnostics;
 = ReturnExpression.↑.Diagnostics;
 
@@ -116,18 +116,18 @@
 ↓ InitializerInvocationExpression.FlowStateBefore(): `IFlowState`;
 ↑ InitializerInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
 = UnknownInvocationExpression.Type => DataType.Unknown;
-= UnknownInvocationExpression.FlowStateAfter => throw new NotImplementedException();
+↑ UnknownInvocationExpression.FlowStateAfter: `IFlowState` => throw new NotImplementedException();
 
 // ---------- Name Expressions
 // TODO delete once all name expressions implement FlowStateAfter
-= NameExpression.FlowStateAfter
+↑ NameExpression.FlowStateAfter: `IFlowState`
     => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
 ↑ NamespaceName.Type: `UnknownType` => DataType.Unknown;
 ↓ FunctionName.FlowStateBefore(): `IFlowState`;
 = FunctionName.FlowStateAfter;
 = FunctionGroupName.Type => throw new NotImplementedException();
 = MethodGroupName.Type => throw new NotImplementedException();
-= MethodGroupName.FlowStateAfter => Context.FlowStateAfter;
+↑ MethodGroupName.FlowStateAfter: `IFlowState` => Context.FlowStateAfter;
 = FieldAccessExpression.FlowStateAfter;
 = FieldAccessExpression.↑.Diagnostics;
 = VariableNameExpression.FlowStateAfter;
@@ -153,4 +153,4 @@
 
 // ---------- Async Expressions
 = AsyncBlockExpression.Type => Block.Type;
-= AsyncBlockExpression.FlowStateAfter => throw new NotImplementedException();
+↑ AsyncBlockExpression.FlowStateAfter: `IFlowState` => throw new NotImplementedException();

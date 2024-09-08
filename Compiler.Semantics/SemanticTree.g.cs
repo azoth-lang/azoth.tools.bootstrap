@@ -1302,10 +1302,11 @@ public partial interface IFieldParameterNode : IConstructorOrInitializerParamete
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    new IFlowState FlowStateAfter
+        => FlowStateBefore();
+    IFlowState IParameterNode.FlowStateAfter => FlowStateAfter;
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IFieldDefinitionNode? ReferencedField { get; }
-    IFlowState IParameterNode.FlowStateAfter
-        => FlowStateBefore();
     IdentifierName IConstructorOrInitializerParameterNode.Name
         => Syntax.Name;
 
@@ -1332,8 +1333,9 @@ public partial interface IBlockBodyNode : IBodyNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     new IFixedList<IBodyStatementNode> Statements { get; }
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements => Statements;
-    IFlowState IBodyNode.FlowStateAfter
+    new IFlowState FlowStateAfter
         => throw new NotImplementedException();
+    IFlowState IBodyNode.FlowStateAfter => FlowStateAfter;
 
     public static IBlockBodyNode Create(
         IBlockBodySyntax syntax,
@@ -1350,11 +1352,12 @@ public partial interface IExpressionBodyNode : IBodyNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     IResultStatementNode ResultStatement { get; }
     DataType? ExpectedType { get; }
+    new IFlowState FlowStateAfter
+        => throw new NotImplementedException();
+    IFlowState IBodyNode.FlowStateAfter => FlowStateAfter;
     IMaybeExpressionAntetype? ExpectedAntetype { get; }
     IFixedList<IStatementNode> IBodyOrBlockNode.Statements
         => FixedList.Create(ResultStatement);
-    IFlowState IBodyNode.FlowStateAfter
-        => throw new NotImplementedException();
 
     public static IExpressionBodyNode Create(
         IExpressionBodySyntax syntax,
@@ -1851,10 +1854,11 @@ public partial interface IBindingContextPatternNode : IPatternNode
     bool IsMutableBinding { get; }
     IPatternNode Pattern { get; }
     ITypeNode? Type { get; }
+    new IFlowState FlowStateAfter
+        => Pattern.FlowStateAfter;
+    IFlowState IPatternNode.FlowStateAfter => FlowStateAfter;
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => Pattern.FlowLexicalScope();
-    IFlowState IPatternNode.FlowStateAfter
-        => Pattern.FlowStateAfter;
 
     public static IBindingContextPatternNode Create(
         IBindingContextPatternSyntax syntax,
@@ -1913,10 +1917,11 @@ public partial interface IOptionalPatternNode : IOptionalOrBindingPatternNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IOptionalOrBindingPatternNode Pattern { get; }
+    new IFlowState FlowStateAfter
+        => Pattern.FlowStateAfter;
+    IFlowState IPatternNode.FlowStateAfter => FlowStateAfter;
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => Pattern.FlowLexicalScope();
-    IFlowState IPatternNode.FlowStateAfter
-        => Pattern.FlowStateAfter;
 
     public static IOptionalPatternNode Create(
         IOptionalPatternSyntax syntax,
@@ -2605,6 +2610,8 @@ public partial interface IGetterInvocationExpressionNode : IInvocationExpression
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
+    IFlowState INameExpressionNode.FlowStateAfter
+        => ExpressionTypesAspect.GetterInvocationExpression_FlowStateAfter(this);
 
     public static IGetterInvocationExpressionNode Create(
         IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
@@ -2713,10 +2720,11 @@ public partial interface IUnknownInvocationExpressionNode : IExpressionNode
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
+    new IFlowState FlowStateAfter
+        => throw new NotImplementedException();
+    IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     DataType IExpressionNode.Type
         => DataType.Unknown;
-    IFlowState IExpressionNode.FlowStateAfter
-        => throw new NotImplementedException();
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 
@@ -2883,8 +2891,9 @@ public partial interface IPropertyNameNode : IAmbiguousNameNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface INameExpressionNode : IExpressionNode, IAmbiguousNameExpressionNode
 {
-    IFlowState IExpressionNode.FlowStateAfter
+    new IFlowState FlowStateAfter
         => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
+    IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
 }
 
 [Closed(
@@ -2992,6 +3001,8 @@ public partial interface IFunctionNameNode : INameExpressionNode
     IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
     IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
     IFlowState FlowStateBefore();
+    IFlowState INameExpressionNode.FlowStateAfter
+        => ExpressionTypesAspect.FunctionName_FlowStateAfter(this);
 
     public static IFunctionNameNode Create(
         INameExpressionSyntax syntax,
@@ -3019,8 +3030,6 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
     DataType IExpressionNode.Type
         => throw new NotImplementedException();
-    IFlowState IExpressionNode.FlowStateAfter
-        => Context.FlowStateAfter;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => throw new NotImplementedException();
 
@@ -3046,6 +3055,8 @@ public partial interface IFieldAccessExpressionNode : INameExpressionNode
     IExpressionNode CurrentContext { get; }
     IdentifierName FieldName { get; }
     IFieldDeclarationNode ReferencedDeclaration { get; }
+    IFlowState INameExpressionNode.FlowStateAfter
+        => ExpressionTypesAspect.FieldAccessExpression_FlowStateAfter(this);
 
     public static IFieldAccessExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
@@ -3070,6 +3081,8 @@ public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressi
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
     IFlowState FlowStateBefore();
     IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
+    IFlowState INameExpressionNode.FlowStateAfter
+        => ExpressionTypesAspect.VariableNameExpression_FlowStateAfter(this);
 
     public static IVariableNameExpressionNode Create(
         IIdentifierNameExpressionSyntax syntax,
@@ -3210,6 +3223,8 @@ public partial interface ISelfExpressionNode : IInstanceExpressionNode, ILocalBi
         => Syntax.IsImplicit;
     new ISelfParameterNode? ReferencedDefinition { get; }
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
+    IFlowState INameExpressionNode.FlowStateAfter
+        => ExpressionTypesAspect.SelfExpression_FlowStateAfter(this);
 
     public static ISelfExpressionNode Create(
         ISelfExpressionSyntax syntax)
@@ -3322,6 +3337,8 @@ public partial interface IUnknownMemberAccessExpressionNode : IUnknownNameExpres
     StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IDeclarationNode> ReferencedMembers { get; }
+    IFlowState INameExpressionNode.FlowStateAfter
+        => ExpressionTypesAspect.UnknownMemberAccessExpression_FlowStateAfter(this);
 
     public static IUnknownMemberAccessExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
@@ -3497,10 +3514,11 @@ public partial interface IAsyncBlockExpressionNode : IExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IBlockExpressionNode Block { get; }
+    new IFlowState FlowStateAfter
+        => throw new NotImplementedException();
+    IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     DataType IExpressionNode.Type
         => Block.Type;
-    IFlowState IExpressionNode.FlowStateAfter
-        => throw new NotImplementedException();
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => Block.Antetype;
 
@@ -7195,10 +7213,10 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.NamedParameter_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ParameterType ParameterType
         => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
@@ -7283,10 +7301,10 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
     private CapabilityType? bindingType;
     private bool bindingTypeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.SelfParameter_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeAntetype BindingAntetype
         => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
@@ -7365,10 +7383,10 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
     private CapabilityType? bindingType;
     private bool bindingTypeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.SelfParameter_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeAntetype BindingAntetype
         => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
@@ -7447,10 +7465,10 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
     private Pseudotype? bindingType;
     private bool bindingTypeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.SelfParameter_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeAntetype BindingAntetype
         => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
@@ -8404,10 +8422,10 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 NameBindingTypesAspect.VariableDeclarationStatement_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -8567,10 +8585,10 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ExpressionStatement_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
 
     public ExpressionStatementNode(
@@ -8749,10 +8767,10 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 NameBindingTypesAspect.BindingPattern_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -8977,10 +8995,10 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.BlockExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -9112,10 +9130,10 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.NewObjectExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -9274,10 +9292,10 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnsafeExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -9392,10 +9410,10 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     private BoolConstValueType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -9510,10 +9528,10 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
     private IntegerConstValueType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -9627,10 +9645,10 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
     private OptionalType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -9747,10 +9765,10 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -9879,10 +9897,10 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.AssignmentExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -10042,10 +10060,10 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.BinaryOperatorExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -10184,10 +10202,10 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.UnaryOperatorExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -10311,10 +10329,10 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.IdExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -10430,10 +10448,10 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ConversionExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -10552,10 +10570,10 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ImplicitConversionExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -10667,10 +10685,10 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.PatternMatchExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -10807,10 +10825,10 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.IfExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -10922,10 +10940,10 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.LoopExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -11045,10 +11063,10 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.WhileExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -11188,10 +11206,10 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ForeachExpressionTypeAspect.ForeachExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -11369,10 +11387,10 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.BreakExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -11472,10 +11490,10 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.NextExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -11594,10 +11612,10 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ReturnExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -11793,10 +11811,10 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.FunctionInvocationExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -11941,10 +11959,10 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.MethodInvocationExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -12080,12 +12098,6 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.GetterInvocationExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
-    private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -12243,10 +12255,10 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.SetterInvocationExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -12390,10 +12402,10 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.FunctionReferenceInvocationExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -12523,10 +12535,10 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.InitializerInvocationExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -13275,12 +13287,6 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.FunctionName_FlowStateAfter);
-    private IFlowState? flowStateAfter;
-    private bool flowStateAfterCached;
     public DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
@@ -13518,12 +13524,6 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.FieldAccessExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
-    private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -13642,12 +13642,6 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.VariableNameExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
-    private bool flowStateAfterCached;
     public DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
@@ -14219,12 +14213,6 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
                 (ctx) => (IExecutableDefinitionNode)Inherited_ContainingDeclaration(ctx));
     private IExecutableDefinitionNode? containingDeclaration;
     private bool containingDeclarationCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.SelfExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
-    private bool flowStateAfterCached;
     public DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
@@ -14655,12 +14643,6 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.UnknownMemberAccessExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
-    private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -14812,10 +14794,10 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.MoveVariableExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
@@ -14931,10 +14913,10 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.MoveValueExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
@@ -15061,10 +15043,10 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ImplicitTempMoveExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -15205,10 +15187,10 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.FreezeVariableExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
@@ -15327,10 +15309,10 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.FreezeValueExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
@@ -15453,10 +15435,10 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.PrepareToReturnExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
@@ -15662,10 +15644,10 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.AsyncStartExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
@@ -15792,10 +15774,10 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     private DataType? type;
     private bool typeCached;
     public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter!
-            : this.Synthetic(ref flowStateAfterCached, ref flowStateAfter,
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.AwaitExpression_FlowStateAfter);
-    private IFlowState? flowStateAfter;
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
