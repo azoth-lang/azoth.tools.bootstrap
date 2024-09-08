@@ -10,6 +10,13 @@
 
 // ---------- Function Parts
 ↓ ExpressionBody.ExpectedType: `DataType`?;
+= ExpressionBody.ResultStatement.ExpectedType => ExpectedType;
+// Really, only the expression immediately inside the result statement should inherit true. But
+// there is no way to select that. Instead broadcast, and rely on other expressions to override.
+= ExpressionBody.ResultStatement.**.ImplicitRecoveryAllowed() => true;
+// Really, only the expression immediately inside the result statement should inherit true. But
+// there is no way to select that. Instead broadcast, and rely on other expressions to override.
+= ExpressionBody.ResultStatement.**.ShouldPrepareToReturn() => true;
 
 // ---------- Parameters
 ↓ Parameter.FlowStateBefore(): `IFlowState`;
@@ -38,9 +45,12 @@
 /// the expected type.
 /// </summary>
 ↓ Expression.ImplicitRecoveryAllowed(): `bool`;/// <summary>
+// By default, implicit recovery is not allowed
+= Expression.*.**.ImplicitRecoveryAllowed() => false;
 /// Whether this expression should be prepared for return.
 /// </summary>
 ↓ Expression.ShouldPrepareToReturn(): `bool`;
+= Expression.*.**.ShouldPrepareToReturn() => false;
 ↑ Expression.Type: `DataType`;
 ↑ Expression.FlowStateAfter: `IFlowState`;
 = Expression.↑.Diagnostics;

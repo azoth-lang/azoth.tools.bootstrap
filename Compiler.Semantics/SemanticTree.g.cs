@@ -7569,6 +7569,22 @@ file class BlockBodyNode : SemanticNode, IBlockBodyNode
             return LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, statementIndex);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (IndexOfNode(Self.Statements, child) is { } index)
+            return index < Statements.Count - 1 ? ControlFlowSet.CreateNormal(Statements[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (0 < Self.Statements.Count && ReferenceEquals(child, Self.Statements[0]))
+            return base.Inherited_FlowStateBefore(child, descendant, ctx);
+        if (IndexOfNode(Self.Statements, child) is { } index)
+            return Statements[index - 1].FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -7610,6 +7626,34 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
         if (IndexOfNode(Self.Statements, child) is { } statementIndex)
             return LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, statementIndex);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.ResultStatement))
+            return ExpectedType;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.ResultStatement))
+            return true;
+        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.ResultStatement))
+            return true;
+        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.ResultStatement))
+            return ExpectedAntetype;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 }
 
@@ -8905,6 +8949,16 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         Statements = ChildList.Attach(this, statements);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.Statements, child) is { } statementIndex)
@@ -9068,6 +9122,16 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -9182,6 +9246,16 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
         this.expression = Child.Create(this, expression);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -9288,6 +9362,16 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     {
         Syntax = syntax;
         Value = value;
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -9398,6 +9482,16 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
         Value = value;
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -9501,6 +9595,16 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
         INoneLiteralExpressionSyntax syntax)
     {
         Syntax = syntax;
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -9613,6 +9717,16 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
     {
         Syntax = syntax;
         Value = value;
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -9761,6 +9875,16 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
         this.rightOperand = Child.Create(this, rightOperand);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -9900,6 +10024,16 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         this.rightOperand = Child.Create(this, rightOperand);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.CurrentRightOperand))
@@ -10026,6 +10160,16 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
         this.operand = Child.Create(this, operand);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10131,6 +10275,16 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -10252,6 +10406,16 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
         ConvertToType = Child.Attach(this, convertToType);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10358,6 +10522,16 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
         Type = type;
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10459,6 +10633,16 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
         Pattern = Child.Attach(this, pattern);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override IMaybeAntetype Inherited_ContextBindingAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -10593,6 +10777,16 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         ElseClause = Child.Attach(this, elseClause);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10698,6 +10892,16 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
     {
         Syntax = syntax;
         Block = Child.Attach(this, block);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -10813,6 +11017,16 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
         Syntax = syntax;
         this.condition = Child.Create(this, condition);
         Block = Child.Attach(this, block);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -11016,6 +11230,16 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         FlowStateBeforeBlock = flowStateBeforeBlock;
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11117,6 +11341,16 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
         this.value = Child.Create(this, value);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11206,6 +11440,16 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
         INextExpressionSyntax syntax)
     {
         Syntax = syntax;
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -11314,6 +11558,16 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
     {
         Syntax = syntax;
         this.value = Child.Create(this, value);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -11535,6 +11789,16 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11673,6 +11937,16 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11805,6 +12079,16 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
         PropertyName = propertyName;
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
         ReferencedDeclaration = referencedDeclaration;
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -11949,6 +12233,16 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         ReferencedDeclaration = referencedDeclaration;
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -12080,6 +12374,16 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
         this.expression = Child.Create(this, expression);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
         FunctionAntetype = functionAntetype;
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -12221,6 +12525,16 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -12319,6 +12633,16 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -12602,6 +12926,16 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
         Name = name;
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -12694,6 +13028,16 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
         Syntax = syntax;
         Context = Child.Attach(this, context);
         Name = name;
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -12791,6 +13135,16 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         FunctionName = functionName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -12914,6 +13268,16 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
         ReferencedDeclaration = referencedDeclaration;
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13014,6 +13378,16 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
         MethodName = methodName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -13131,6 +13505,16 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
         this.context = Child.Create(this, context);
         FieldName = fieldName;
         ReferencedDeclaration = referencedDeclaration;
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -13251,6 +13635,16 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
         ReferencedDefinition = referencedDefinition;
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13358,6 +13752,16 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
         ReferencedDeclaration = referencedDeclaration;
         Syntax = syntax;
         TypeArguments = ChildList.Attach(this, typeArguments);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -13469,6 +13873,16 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13566,6 +13980,16 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13655,6 +14079,16 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
         Syntax = syntax;
         Name = name;
         ReferencedSymbol = referencedSymbol;
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -13780,6 +14214,16 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
         Syntax = syntax;
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13864,6 +14308,16 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
         IMissingNameSyntax syntax)
     {
         Syntax = syntax;
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -13955,6 +14409,16 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
         Syntax = syntax;
         Name = name;
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -14050,6 +14514,16 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
         Syntax = syntax;
         Name = name;
         TypeArguments = ChildList.Attach(this, typeArguments);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -14158,6 +14632,16 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
         MemberName = memberName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedMembers = referencedMembers.ToFixedSet();
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -14308,6 +14792,16 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
         Referent = Child.Attach(this, referent);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14417,6 +14911,16 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
         this.referent = Child.Create(this, referent);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14521,6 +15025,16 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -14673,6 +15187,16 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
         Referent = Child.Attach(this, referent);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14785,6 +15309,16 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
         this.referent = Child.Create(this, referent);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14885,6 +15419,16 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
         this.value = Child.Create(this, value);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14971,6 +15515,16 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
     {
         Syntax = syntax;
         Block = Child.Attach(this, block);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -15088,6 +15642,16 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
         this.expression = Child.Create(this, expression);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -15198,6 +15762,16 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     {
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)

@@ -281,10 +281,10 @@ internal static class SyntaxBinder
         };
 
     private static IBlockBodyNode BlockBody(IBlockBodySyntax syntax)
-        => new BlockBodyNode(syntax, BodyStatements(syntax.Statements));
+        => IBlockBodyNode.Create(syntax, BodyStatements(syntax.Statements));
 
     private static IExpressionBodyNode ExpressionBody(IExpressionBodySyntax syntax)
-        => new ExpressionBodyNode(syntax, ResultStatement(syntax.ResultStatement));
+        => IExpressionBodyNode.Create(syntax, ResultStatement(syntax.ResultStatement));
     #endregion
 
     #region Types

@@ -10,6 +10,7 @@
 
 // ---------- Function Parts
 ↓ ExpressionBody.ExpectedAntetype: `IMaybeExpressionAntetype`?;
+= ExpressionBody.ResultStatement.ExpectedAntetype => ExpectedAntetype;
 
 // ---------- Statements
 ↓ ResultStatement.ExpectedAntetype: `IMaybeExpressionAntetype`?;
