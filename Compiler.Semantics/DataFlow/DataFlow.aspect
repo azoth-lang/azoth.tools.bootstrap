@@ -4,6 +4,9 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
+// ---------- Control Flow
+= Entry.DataFlowPrevious => [];
+
 // ---------- Data Flow
 ↑ DataFlow.DataFlowPrevious: {DataFlow};
 = DataFlow.DataFlowPrevious;

@@ -7,6 +7,7 @@
 
 // ---------- Data Flow
 ⟳ DataFlow.DefinitelyUnassigned: `BindingFlags<IVariableBindingNode>`;
+↑ Entry.DefinitelyUnassigned: `BindingFlags<IVariableBindingNode>`;
 
 // ---------- Name Expressions
 = VariableNameExpression.↑.Diagnostics;

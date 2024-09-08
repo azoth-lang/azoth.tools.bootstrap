@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 
@@ -19,10 +18,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 internal static partial class ControlFlowAspect
 {
     public static partial IEntryNode ExecutableDefinition_Entry(IExecutableDefinitionNode node)
-        => new EntryNode();
+        => IEntryNode.Create();
 
     public static partial IExitNode ExecutableDefinition_Exit(IExecutableDefinitionNode node)
-        => new ExitNode();
+        => IExitNode.Create();
 
     public static partial ControlFlowSet ConcreteInvocableDefinition_Entry_ControlFlowFollowing(IConcreteInvocableDefinitionNode node)
         => ControlFlowSet.CreateNormal(node.Body?.Statements.FirstOrDefault() ?? (IControlFlowNode)node.Exit);

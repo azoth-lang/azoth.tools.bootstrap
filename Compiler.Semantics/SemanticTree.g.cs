@@ -1659,6 +1659,12 @@ public partial interface IEntryNode : IDataFlowNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     FixedDictionary<IVariableBindingNode, int> VariableBindingsMap();
+    new BindingFlags<IVariableBindingNode> DefinitelyAssigned { get; }
+    BindingFlags<IVariableBindingNode> IDataFlowNode.DefinitelyAssigned => DefinitelyAssigned;
+    new BindingFlags<IVariableBindingNode> DefinitelyUnassigned { get; }
+    BindingFlags<IVariableBindingNode> IDataFlowNode.DefinitelyUnassigned => DefinitelyUnassigned;
+    IFixedSet<IDataFlowNode> IDataFlowNode.DataFlowPrevious
+        => [];
 
     public static IEntryNode Create()
         => new EntryNode();
@@ -8171,25 +8177,17 @@ file class EntryNode : SemanticNode, IEntryNode
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
-        => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
-            : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
-                DefiniteAssignmentAspect.Entry_DefinitelyAssigned,
-                DefiniteAssignmentAspect.DataFlow_DefinitelyAssigned_Initial);
-    private Circular<BindingFlags<IVariableBindingNode>> definitelyAssigned = Circular.Unset;
+        => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned!
+            : this.Synthetic(ref definitelyAssignedCached, ref definitelyAssigned,
+                DefiniteAssignmentAspect.Entry_DefinitelyAssigned);
+    private BindingFlags<IVariableBindingNode>? definitelyAssigned;
     private bool definitelyAssignedCached;
     public BindingFlags<IVariableBindingNode> DefinitelyUnassigned
-        => GrammarAttribute.IsCached(in definitelyUnassignedCached) ? definitelyUnassigned.UnsafeValue
-            : this.Circular(ref definitelyUnassignedCached, ref definitelyUnassigned,
-                SingleAssignmentAspect.Entry_DefinitelyUnassigned,
-                SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
-    private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
+        => GrammarAttribute.IsCached(in definitelyUnassignedCached) ? definitelyUnassigned!
+            : this.Synthetic(ref definitelyUnassignedCached, ref definitelyUnassigned,
+                SingleAssignmentAspect.Entry_DefinitelyUnassigned);
+    private BindingFlags<IVariableBindingNode>? definitelyUnassigned;
     private bool definitelyUnassignedCached;
-    public IFixedSet<IDataFlowNode> DataFlowPrevious
-        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
-            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
-                DataFlowAspect.DataFlow_DataFlowPrevious);
-    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
-    private bool dataFlowPreviousCached;
 
     public EntryNode()
     {
