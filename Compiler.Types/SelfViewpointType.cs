@@ -14,6 +14,9 @@ public sealed class SelfViewpointType : ViewpointType
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
+    public static Type Create(CapabilitySet capability, Type referent)
+        => new SelfViewpointType(capability, referent);
+
     public override CapabilitySet Capability { get; }
 
     public override Type Referent { get; }

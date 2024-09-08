@@ -17,21 +17,21 @@ public abstract class SimpleType : DeclaredValueType
 
     public override SpecialTypeName Name { get; }
 
-    public override IFixedSet<BareReferenceType> Supertypes => FixedSet.Empty<BareReferenceType>();
+    public override IFixedSet<BareReferenceType> Supertypes => [];
 
     public abstract BareValueType BareType { get; }
 
     public abstract CapabilityType Type { get; }
 
     private protected SimpleType(SpecialTypeName name)
-        : base(isConstType: true, FixedList.Empty<GenericParameter>())
+        : base(isConstType: true, [])
     {
         Name = name;
     }
 
-    public abstract override BareValueType With(IFixedList<DataType> typeArguments);
+    public abstract override BareValueType With(IFixedList<Type> typeArguments);
 
-    public abstract override CapabilityType With(Capability capability, IFixedList<DataType> typeArguments);
+    public abstract override CapabilityType With(Capability capability, IFixedList<Type> typeArguments);
 
     public abstract CapabilityType With(Capability capability);
 

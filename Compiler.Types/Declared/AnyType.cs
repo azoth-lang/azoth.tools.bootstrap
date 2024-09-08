@@ -13,26 +13,26 @@ public sealed class AnyType : DeclaredReferenceType
     internal static readonly AnyType Instance = new();
 
     private AnyType()
-        : base(isDeclaredConst: false, isAbstract: true, isClass: false, FixedList.Empty<GenericParameter>())
+        : base(isDeclaredConst: false, isAbstract: true, isClass: false, [])
     {
-        BareType = new(this, FixedList.Empty<DataType>());
+        BareType = new(this, []);
     }
     #endregion
 
     public override IdentifierName? ContainingPackage => null;
     public override NamespaceName ContainingNamespace => NamespaceName.Global;
     public override SpecialTypeName Name => SpecialTypeName.Any;
-    public override IFixedSet<BareReferenceType> Supertypes => FixedSet.Empty<BareReferenceType>();
+    public override IFixedSet<BareReferenceType> Supertypes => [];
 
     public BareReferenceType<AnyType> BareType { get; }
 
-    public override BareReferenceType<AnyType> With(IFixedList<DataType> typeArguments)
+    public override BareReferenceType<AnyType> With(IFixedList<Type> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;
     }
 
-    public override CapabilityType<AnyType> With(Capability capability, IFixedList<DataType> typeArguments)
+    public override CapabilityType<AnyType> With(Capability capability, IFixedList<Type> typeArguments)
         => With(typeArguments).With(capability);
 
     public CapabilityType<AnyType> With(Capability capability)

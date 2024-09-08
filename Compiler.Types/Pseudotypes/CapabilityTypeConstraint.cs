@@ -19,7 +19,7 @@ public sealed class CapabilityTypeConstraint : Pseudotype
         BareType = bareType;
     }
 
-    public override DataType ToUpperBound()
+    public override CapabilityType ToUpperBound()
         => BareType.With(Capability.UpperBound);
 
     public override IMaybeExpressionAntetype ToAntetype() => BareType.ToAntetype();

@@ -13,8 +13,6 @@ public interface IFixedSet<out T> : IReadOnlyCollection<T>
     bool IsEmpty { get; }
 
     bool Equals(IFixedSet<object?>? other);
-
-    static IEqualityComparer<IFixedSet<T>> EqualityComparer => EqualityComparer<IFixedSet<T>>.Default;
 }
 
 public static class FixedSet
@@ -84,7 +82,7 @@ public static class FixedSet
         }
 
         /// <summary>
-        /// CAUTION: This constructor is for internal use only. It does not copy the items.
+        /// CAUTION: This constructor is for internal use only. It does not copy the items to a new collection.
         /// </summary>
         [DebuggerStepThrough]
         internal Of(IReadOnlySet<T> items)

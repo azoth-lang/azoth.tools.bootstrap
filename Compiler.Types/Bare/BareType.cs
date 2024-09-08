@@ -34,14 +34,14 @@ public abstract class BareType : IEquatable<BareType>
     public static readonly BareValueType<FixedSizeIntegerType> UInt32 = DeclaredType.UInt32.BareType;
     public static readonly BareValueType<FixedSizeIntegerType> Int64 = DeclaredType.Int64.BareType;
     public static readonly BareValueType<FixedSizeIntegerType> UInt64 = DeclaredType.UInt64.BareType;
-    public static readonly BareValueType<PointerSizedIntegerType> Size = new(DeclaredType.Size, FixedList.Empty<DataType>());
-    public static readonly BareValueType<PointerSizedIntegerType> Offset = new(DeclaredType.Offset, FixedList.Empty<DataType>());
+    public static readonly BareValueType<PointerSizedIntegerType> Size = DeclaredType.Size.BareType;
+    public static readonly BareValueType<PointerSizedIntegerType> Offset = DeclaredType.Offset.BareType;
 
     public static readonly BareReferenceType<AnyType> Any = DeclaredType.Any.BareType;
     #endregion
 
     public abstract DeclaredType DeclaredType { get; }
-    public IFixedList<DataType> GenericTypeArguments { get; }
+    public IFixedList<Type> GenericTypeArguments { get; }
     public IEnumerable<GenericParameterArgument> GenericParameterArguments
         => DeclaredType.GenericParameters.EquiZip(GenericTypeArguments, (p, a) => new GenericParameterArgument(p, a));
     public bool AllowsVariance { get; }
@@ -62,15 +62,15 @@ public abstract class BareType : IEquatable<BareType>
 
     public static BareReferenceType<ObjectType> Create(
         ObjectType declaredType,
-        IFixedList<DataType> typeArguments)
+        IFixedList<Type> typeArguments)
         => new(declaredType, typeArguments);
 
     public static BareValueType<StructType> Create(
         StructType declaredType,
-        IFixedList<DataType> typeArguments)
+        IFixedList<Type> typeArguments)
         => new(declaredType, typeArguments);
 
-    private protected BareType(DeclaredType declaredType, IFixedList<DataType> genericTypeArguments)
+    private protected BareType(DeclaredType declaredType, IFixedList<Type> genericTypeArguments)
     {
         if (declaredType.GenericParameters.Count != genericTypeArguments.Count)
             throw new ArgumentException(
@@ -100,6 +100,9 @@ public abstract class BareType : IEquatable<BareType>
     private IFixedSet<BareReferenceType> GetSupertypes()
         => DeclaredType.Supertypes.Select(typeReplacements.Value.ReplaceTypeParametersIn).ToFixedSet();
 
+    public Type ReplaceTypeParametersIn(Type type)
+        => typeReplacements.Value.ReplaceTypeParametersIn(type);
+
     public DataType ReplaceTypeParametersIn(DataType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
@@ -111,9 +114,9 @@ public abstract class BareType : IEquatable<BareType>
 
     public abstract BareType AccessedVia(Capability capability);
 
-    protected IFixedList<DataType> TypeArgumentsAccessedVia(Capability capability)
+    protected IFixedList<Type> TypeArgumentsAccessedVia(Capability capability)
     {
-        var newTypeArguments = new List<DataType>(GenericTypeArguments.Count);
+        var newTypeArguments = new List<Type>(GenericTypeArguments.Count);
         var typesReplaced = false;
         foreach (var arg in GenericTypeArguments)
         {
@@ -124,7 +127,7 @@ public abstract class BareType : IEquatable<BareType>
         return typesReplaced ? newTypeArguments.ToFixedList() : GenericTypeArguments;
     }
 
-    public abstract BareType With(IFixedList<DataType> typeArguments);
+    public abstract BareType With(IFixedList<Type> typeArguments);
 
     public abstract CapabilityType With(Capability capability);
 

@@ -19,17 +19,17 @@ public sealed class BigIntegerType : IntegerType
     private BigIntegerType(SpecialTypeName name, bool isSigned)
         : base(name, isSigned)
     {
-        BareType = new(this, FixedList.Empty<DataType>());
+        BareType = new(this, []);
         Type = BareType.With(Capability.Constant);
     }
 
-    public override BareValueType<BigIntegerType> With(IFixedList<DataType> typeArguments)
+    public override BareValueType<BigIntegerType> With(IFixedList<Type> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;
     }
 
-    public override CapabilityType<BigIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
+    public override CapabilityType<BigIntegerType> With(Capability capability, IFixedList<Type> typeArguments)
         => With(typeArguments).With(capability);
 
     public override CapabilityType<BigIntegerType> With(Capability capability)

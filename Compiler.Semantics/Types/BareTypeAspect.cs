@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class BareTypeAspect
 {
     public static partial BareType? IdentifierTypeName_NamedBareType(IIdentifierTypeNameNode node)
-        => BuildBareType(node.ReferencedSymbol, FixedList.Empty<DataType>());
+        => BuildBareType(node.ReferencedSymbol, []);
 
     // TODO this should avoid using symbols and use referenced declarations instead
     private static BareType? BuildBareType(TypeSymbol? symbol, IFixedList<DataType> typeArguments)
@@ -21,7 +21,7 @@ internal static partial class BareTypeAspect
         return declaredType is not null ? BuildBareType(declaredType, typeArguments) : null;
     }
 
-    private static BareType BuildBareType(DeclaredType type, IFixedList<DataType> typeArguments)
+    private static BareType? BuildBareType(DeclaredType type, IFixedList<DataType> typeArguments)
         // The number of arguments will match the type because name binding will only pick a matching type
         => type.With(typeArguments);
 
@@ -29,7 +29,7 @@ internal static partial class BareTypeAspect
         => BuildBareType(node.ReferencedSymbol, node.TypeArguments.Select(t => t.NamedType).ToFixedList());
 
     public static partial BareType? SpecialTypeName_NamedBareType(ISpecialTypeNameNode node)
-        => BuildBareType(node.ReferencedSymbol, FixedList.Empty<DataType>());
+        => BuildBareType(node.ReferencedSymbol, []);
 
     public static partial BareType? TypeNameExpression_NamedBareType(ITypeNameExpressionNode node)
     {

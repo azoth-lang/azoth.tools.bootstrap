@@ -24,7 +24,7 @@ public static class Intrinsic
     public static readonly IDeclaredUserType PromiseType = Promise.DeclaresType;
     public static readonly IDeclaredAntetype PromiseAntetype = PromiseType.ToAntetype();
 
-    public static CapabilityType PromiseOf(DataType type)
+    public static DataType PromiseOf(DataType type)
         => PromiseType.WithRead(FixedList.Create(type));
     public static IMaybeAntetype PromiseOf(IMaybeExpressionAntetype antetype)
     {
@@ -84,7 +84,7 @@ public static class Intrinsic
         _ = BuildPromiseSymbol(azothNamespace, tree);
 
         var rawHybridBoundedListType = BuildSpecializedCollectionSymbols(azothNamespace, tree);
-        var readBytesType = rawHybridBoundedListType.WithRead(FixedList.Create<DataType>(DataType.Void, DataType.Byte));
+        var readBytesType = rawHybridBoundedListType.WithRead([DataType.Void, DataType.Byte]);
 
         // fn print_raw_utf8_bytes(bytes: Raw_Hybrid_Bounded_List[byte], start: size, byte_count: size)
         var print = Function(intrinsicsNamespace, "print_raw_utf8_bytes",

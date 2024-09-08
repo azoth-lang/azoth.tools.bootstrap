@@ -102,7 +102,6 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
                 case OptionalType { Referent: CapabilityType { IsConstantReference: true } }:
                 case OptionalType { Referent: CapabilityType { IsIsolatedReference: true } }:
                 case EmptyType:
-                case UnknownType:
                     continue;
                 default:
                     return With(Capability.Mutable, GenericParameterTypes);
@@ -112,13 +111,13 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     }
 
 
-    public override BareValueType<StructType> With(IFixedList<DataType> typeArguments)
+    public override BareValueType<StructType> With(IFixedList<Type> typeArguments)
         => BareType.Create(this, typeArguments);
 
-    public override CapabilityType<StructType> With(Capability capability, IFixedList<DataType> typeArguments)
+    public override CapabilityType<StructType> With(Capability capability, IFixedList<Type> typeArguments)
         => With(typeArguments).With(capability);
 
-    public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<DataType> typeArguments)
+    public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<Type> typeArguments)
         => With(typeArguments).With(capability);
 
     public override IDeclaredAntetype ToAntetype()

@@ -26,8 +26,7 @@ public abstract class CapabilityType : NonEmptyType
         bool isAbstract,
         bool isConst,
         string name)
-        => Create(capability, ObjectType.CreateClass(containingPackage, containingNamespace, isAbstract, isConst, name),
-            FixedList.Empty<DataType>());
+        => Create(capability, ObjectType.CreateClass(containingPackage, containingNamespace, isAbstract, isConst, name), []);
 
     /// <summary>
     /// Create a reference type for a trait.
@@ -38,8 +37,7 @@ public abstract class CapabilityType : NonEmptyType
         NamespaceName containingNamespace,
         bool isConst,
         string name)
-        => Create(capability, ObjectType.CreateTrait(containingPackage, containingNamespace, isConst, name),
-            FixedList.Empty<DataType>());
+        => Create(capability, ObjectType.CreateTrait(containingPackage, containingNamespace, isConst, name), []);
 
     /// <summary>
     /// Create a object type for a given class or trait.
@@ -47,7 +45,7 @@ public abstract class CapabilityType : NonEmptyType
     public static CapabilityType<ObjectType> Create(
         Capability capability,
         ObjectType declaredType,
-        IFixedList<DataType> typeArguments)
+        IFixedList<Type> typeArguments)
         => Create(capability, BareType.Create(declaredType, typeArguments));
 
     /// <summary>
@@ -124,6 +122,9 @@ public abstract class CapabilityType : NonEmptyType
     }
 
     public sealed override IMaybeExpressionAntetype ToAntetype() => BareType.ToAntetype();
+
+    public override Type ReplaceTypeParametersIn(Type type)
+        => BareType.ReplaceTypeParametersIn(type);
 
     public override DataType ReplaceTypeParametersIn(DataType type)
         => BareType.ReplaceTypeParametersIn(type);

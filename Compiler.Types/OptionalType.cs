@@ -22,6 +22,9 @@ public sealed class OptionalType : NonEmptyType
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
+    public static Type Create(Type referent)
+        => new OptionalType(referent);
+
     public Type Referent { get; }
 
     public override bool AllowsVariance => true;

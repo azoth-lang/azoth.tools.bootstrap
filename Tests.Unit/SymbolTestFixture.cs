@@ -72,7 +72,7 @@ public abstract class SymbolTestFixture
         return new MethodSymbol(
             containing,
             Name(name) ?? DefaultName("method"),
-            self ?? new SelfParameterType(false, containing.DeclaresType.With(Capability.Read, FixedList.Empty<DataType>())),
+            self ?? new SelfParameterType(false, containing.DeclaresType.With(Capability.Read, [])),
             @params ?? Params(),
             @return ?? ReturnType());
     }

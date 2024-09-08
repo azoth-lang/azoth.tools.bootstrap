@@ -34,10 +34,16 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
 
     DeclaredType AsDeclaredType();
 
-    BareType With(IFixedList<DataType> typeArguments);
-    CapabilityType With(Capability capability, IFixedList<DataType> typeArguments);
-    CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<DataType> typeArguments);
-    CapabilityType WithRead(IFixedList<DataType> typeArguments);
+    BareType With(IFixedList<Type> typeArguments);
+    CapabilityType With(Capability capability, IFixedList<Type> typeArguments);
+    CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<Type> typeArguments);
+    CapabilityType WithRead(IFixedList<Type> typeArguments);
+    public DataType WithRead(IFixedList<DataType> typeArguments)
+    {
+        var properTypeArguments = typeArguments.As<Type>();
+        if (properTypeArguments is null) return DataType.Unknown;
+        return WithRead(properTypeArguments);
+    }
 
     IDeclaredAntetype ToAntetype();
 }

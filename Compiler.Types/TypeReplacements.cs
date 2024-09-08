@@ -13,13 +13,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 internal sealed class TypeReplacements
 {
-    private readonly IDictionary<GenericParameterType, DataType> replacements;
+    private readonly IDictionary<GenericParameterType, Type> replacements;
 
     /// <summary>
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    public TypeReplacements(DeclaredType declaredType, IFixedList<DataType> typeArguments)
+    public TypeReplacements(DeclaredType declaredType, IFixedList<Type> typeArguments)
     {
         replacements = declaredType.GenericParameterTypes.EquiZip(typeArguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);
@@ -59,6 +59,16 @@ internal sealed class TypeReplacements
     }
 
     public DataType ReplaceTypeParametersIn(DataType type)
+    {
+        return type switch
+        {
+            Type t => ReplaceTypeParametersIn(t),
+            UnknownType _ => type,
+            _ => throw ExhaustiveMatch.Failed(type)
+        };
+    }
+
+    public Type ReplaceTypeParametersIn(Type type)
     {
         switch (type)
         {
@@ -106,7 +116,6 @@ internal sealed class TypeReplacements
                 break;
             }
             case EmptyType _:
-            case UnknownType _:
             case ConstValueType _:
                 break;
             default:
@@ -116,7 +125,7 @@ internal sealed class TypeReplacements
         return type;
     }
 
-    public DataType ReplaceTypeParametersIn(GenericParameterType type)
+    public Type ReplaceTypeParametersIn(GenericParameterType type)
     {
         if (replacements.TryGetValue(type, out var replacementType))
             return replacementType;
@@ -146,9 +155,9 @@ internal sealed class TypeReplacements
     public ReturnType ReplaceTypeParametersIn(ReturnType @return)
         => @return with { Type = ReplaceTypeParametersIn(@return.Type) };
 
-    private IFixedList<DataType> ReplaceTypeParametersIn(IFixedList<DataType> types)
+    private IFixedList<Type> ReplaceTypeParametersIn(IFixedList<Type> types)
     {
-        var replacementTypes = new List<DataType>();
+        var replacementTypes = new List<Type>();
         var typesReplaced = false;
         foreach (var type in types)
         {

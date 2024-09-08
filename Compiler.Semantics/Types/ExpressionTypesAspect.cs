@@ -81,7 +81,7 @@ internal static partial class ExpressionTypesAspect
            ?? IFlowState.Empty;
 
     public static partial DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
-        => node.ReferencedDeclaration?.Type.Return.Type ?? DataType.Unknown;
+        => node.ReferencedDeclaration?.Type.Return.Type ?? DataType.UnknownDataType;
 
     public static partial ContextualizedOverload? FunctionInvocationExpression_ContextualizedOverload(
         IFunctionInvocationExpressionNode node)
@@ -154,7 +154,7 @@ internal static partial class ExpressionTypesAspect
     public static partial DataType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
     {
         var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName).OfType<ITypeDeclarationNode>().TrySingle();
-        return typeSymbolNode?.Symbol.GetDeclaredType()?.With(Capability.Constant, FixedList.Empty<DataType>()) ?? DataType.UnknownDataType;
+        return typeSymbolNode?.Symbol.GetDeclaredType()?.With(Capability.Constant, []) ?? DataType.UnknownDataType;
     }
 
     public static partial IFlowState LiteralExpression_FlowStateAfter(ILiteralExpressionNode node)
@@ -388,7 +388,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial DataType NewObjectExpression_Type(INewObjectExpressionNode node)
         // TODO does this need to be modified by flow typing?
-        => node.ContextualizedOverload?.ReturnType.Type ?? DataType.Unknown;
+        => node.ContextualizedOverload?.ReturnType.Type ?? DataType.UnknownDataType;
 
     public static partial IFlowState NewObjectExpression_FlowStateAfter(INewObjectExpressionNode node)
     {
@@ -444,7 +444,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial DataType InitializerInvocationExpression_Type(IInitializerInvocationExpressionNode node)
         // TODO does this need to be modified by flow typing?
-        => node.ContextualizedOverload?.ReturnType.Type ?? DataType.Unknown;
+        => node.ContextualizedOverload?.ReturnType.Type ?? DataType.UnknownDataType;
 
     public static partial IFlowState InitializerInvocationExpression_FlowStateAfter(IInitializerInvocationExpressionNode node)
     {
@@ -529,7 +529,7 @@ internal static partial class ExpressionTypesAspect
         var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
             .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
             .OfType<ITypeDeclarationNode>().TrySingle();
-        var rangeAntetype = rangeTypeDeclaration?.Symbol.GetDeclaredType()?.With(Capability.Constant, FixedList.Empty<DataType>())
+        var rangeAntetype = rangeTypeDeclaration?.Symbol.GetDeclaredType()?.With(Capability.Constant, [])
                             ?? DataType.UnknownDataType;
         return rangeAntetype;
     }

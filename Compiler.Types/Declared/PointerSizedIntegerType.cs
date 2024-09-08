@@ -26,7 +26,7 @@ public sealed class PointerSizedIntegerType : IntegerType
     private PointerSizedIntegerType(SpecialTypeName name, bool signed)
         : base(name, signed)
     {
-        BareType = new(this, FixedList.Empty<DataType>());
+        BareType = new(this, []);
         Type = BareType.With(Capability.Constant);
     }
 
@@ -41,13 +41,13 @@ public sealed class PointerSizedIntegerType : IntegerType
         throw new UnreachableException("All types should be covered");
     }
 
-    public override BareValueType<PointerSizedIntegerType> With(IFixedList<DataType> typeArguments)
+    public override BareValueType<PointerSizedIntegerType> With(IFixedList<Type> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;
     }
 
-    public override CapabilityType<PointerSizedIntegerType> With(Capability capability, IFixedList<DataType> typeArguments)
+    public override CapabilityType<PointerSizedIntegerType> With(Capability capability, IFixedList<Type> typeArguments)
         => With(typeArguments).With(capability);
 
 

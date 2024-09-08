@@ -63,15 +63,22 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
         AllowsVariance = GenericParameters.Any(p => p.Variance != TypeParameterVariance.Invariant);
     }
 
-    public abstract BareType With(IFixedList<DataType> typeArguments);
+    public abstract BareType With(IFixedList<Type> typeArguments);
 
-    public abstract CapabilityType With(Capability capability, IFixedList<DataType> typeArguments);
+    public BareType? With(IFixedList<DataType> typeArguments)
+    {
+        var properTypeArguments = typeArguments.As<Type>();
+        if (properTypeArguments is null) return null;
+        return With(properTypeArguments);
+    }
+
+    public abstract CapabilityType With(Capability capability, IFixedList<Type> typeArguments);
 
     /// <summary>
     /// Make a version of this type that is the default read reference capability for the type. That
     /// is either read-only or constant.
     /// </summary>
-    public CapabilityType WithRead(IFixedList<DataType> typeArguments)
+    public CapabilityType WithRead(IFixedList<Type> typeArguments)
         => With(typeArguments).WithRead();
 
     public abstract IDeclaredAntetype ToAntetype();

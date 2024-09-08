@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Azoth.Tools.Bootstrap.Framework;
 
@@ -14,6 +15,7 @@ public interface IFixedList : IEnumerable
     object? this[int index] { get; }
 }
 
+[CollectionBuilder(typeof(FixedList), "Create")]
 public interface IFixedList<out T> : IFixedList, IReadOnlyList<T>
 {
     new int Count { get; }
@@ -22,6 +24,24 @@ public interface IFixedList<out T> : IFixedList, IReadOnlyList<T>
     new T this[int index] { get; }
     object? IFixedList.this[int index] => this[index];
     T IReadOnlyList<T>.this[int index] => this[index];
+
+    public IFixedList<TOther>? As<TOther>()
+        where TOther : class
+    {
+        if (this is IFixedList<TOther> other) return other;
+        var items = new TOther[Count];
+        for (int i = 0; i < Count; i++)
+        {
+            T item = this[i];
+            if (item is not null)
+            {
+                if (item is not TOther casted)
+                    return null;
+                items[i] = casted;
+            }
+        }
+        return FixedList.Create(items);
+    }
 
     protected static bool Equals(IFixedList<T> self, object? obj)
     {
@@ -66,11 +86,15 @@ public static class FixedList
     public static IFixedList<T> Empty<T>()
         => Of<T>.Empty;
 
+    public static IFixedList<T> Create<T>(ReadOnlySpan<T> items)
+        => items.IsEmpty ? Of<T>.Empty : new(items);
+
     public static IFixedList<T> Create<T>(IEnumerable<T> items)
         => new Of<T>(items);
 
     public static IFixedList<T> Create<T>(params T[] items)
-        => new Of<T>(items);
+        // Must use AsSpan in case the array was passed in so that a new array is allocated.
+        => new Of<T>(items.AsSpan());
 
     public static IEqualityComparer<IFixedList<T>> EqualityComparer<T>()
         where T : IEquatable<T>
@@ -98,11 +122,30 @@ public static class FixedList
         private int hashCode;
 
         [DebuggerStepThrough]
+        public Of(ReadOnlySpan<T> items)
+        {
+            // Don't use `AsReadOnly` because FixedList<T> is already a wrapper. Use `ToArray` to
+            // avoid allocating any more memory than necessary.
+            this.items = items.ToArray();
+        }
+
+        [DebuggerStepThrough]
         internal Of(IEnumerable<T> items)
         {
             // Don't use `AsReadOnly` because FixedList<T> is already a wrapper. Use `ToArray` to
             // avoid allocating any more memory than necessary.
             this.items = items.ToArray();
+        }
+
+        /// <summary>
+        /// CAUTION: This constructor is for internal use only. It does not copy the items to a new collection.
+        /// </summary>
+        [DebuggerStepThrough]
+        internal Of(T[] items)
+        {
+            // Don't use `AsReadOnly` because FixedList<T> is already a wrapper. Use `ToArray` to
+            // avoid allocating any more memory than necessary.
+            this.items = items;
         }
 
         [DebuggerStepThrough]
