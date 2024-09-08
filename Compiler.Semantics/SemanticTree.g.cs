@@ -1692,14 +1692,16 @@ public partial interface IStatementNode : IControlFlowNode
     new IStatementSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IMaybeAntetype? ResultAntetype { get; }
-    DataType? ResultType { get; }
     LexicalScope ContainingLexicalScope();
     LexicalScope LexicalScope()
         => ContainingLexicalScope();
     IPreviousValueId PreviousValueId();
     ValueId? ResultValueId { get; }
+    DataType? ResultType
+        => null;
     IFlowState FlowStateAfter { get; }
+    IMaybeAntetype? ResultAntetype
+        => null;
 }
 
 // [Closed(typeof(ResultStatementNode))]
@@ -1724,13 +1726,15 @@ public partial interface IResultStatementNode : IStatementNode, IBlockOrResultNo
         => ValueId;
     ValueId IElseClauseNode.ValueId
         => Expression?.ValueId ?? default;
+    DataType? IStatementNode.ResultType
+        => Type;
+    IMaybeAntetype? IStatementNode.ResultAntetype
+        => Antetype;
 
     public static IResultStatementNode Create(
-        IMaybeAntetype? resultAntetype,
-        DataType? resultType,
         IResultStatementSyntax syntax,
         IAmbiguousExpressionNode expression)
-        => new ResultStatementNode(resultAntetype, resultType, syntax, expression);
+        => new ResultStatementNode(syntax, expression);
 }
 
 [Closed(
@@ -1776,13 +1780,11 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
         => Syntax.Name;
 
     public static IVariableDeclarationStatementNode Create(
-        IMaybeAntetype? resultAntetype,
-        DataType? resultType,
         IVariableDeclarationStatementSyntax syntax,
         ICapabilityNode? capability,
         ITypeNode? type,
         IAmbiguousExpressionNode? initializer)
-        => new VariableDeclarationStatementNode(resultAntetype, resultType, syntax, capability, type, initializer);
+        => new VariableDeclarationStatementNode(syntax, capability, type, initializer);
 }
 
 // [Closed(typeof(ExpressionStatementNode))]
@@ -1801,11 +1803,9 @@ public partial interface IExpressionStatementNode : IBodyStatementNode
         => null;
 
     public static IExpressionStatementNode Create(
-        IMaybeAntetype? resultAntetype,
-        DataType? resultType,
         IExpressionStatementSyntax syntax,
         IAmbiguousExpressionNode expression)
-        => new ExpressionStatementNode(resultAntetype, resultType, syntax, expression);
+        => new ExpressionStatementNode(syntax, expression);
 }
 
 [Closed(
@@ -8193,7 +8193,7 @@ file class EntryNode : SemanticNode, IEntryNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -8254,7 +8254,7 @@ file class ExitNode : SemanticNode, IExitNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -8270,8 +8270,6 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
 {
     private IResultStatementNode Self { [Inline] get => this; }
 
-    public IMaybeAntetype? ResultAntetype { [DebuggerStepThrough] get; }
-    public DataType? ResultType { [DebuggerStepThrough] get; }
     public IResultStatementSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
@@ -8331,20 +8329,30 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
     private bool antetypeCached;
 
     public ResultStatementNode(
-        IMaybeAntetype? resultAntetype,
-        DataType? resultType,
         IResultStatementSyntax syntax,
         IAmbiguousExpressionNode expression)
     {
-        ResultAntetype = resultAntetype;
-        ResultType = resultType;
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
     }
 
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentExpression))
+            return ExpectedType;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentExpression))
+            return ExpectedAntetype;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -8361,8 +8369,6 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     private IVariableDeclarationStatementNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
 
-    public IMaybeAntetype? ResultAntetype { [DebuggerStepThrough] get; }
-    public DataType? ResultType { [DebuggerStepThrough] get; }
     public IVariableDeclarationStatementSyntax Syntax { [DebuggerStepThrough] get; }
     public ICapabilityNode? Capability { [DebuggerStepThrough] get; }
     public ITypeNode? Type { [DebuggerStepThrough] get; }
@@ -8456,15 +8462,11 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     private bool dataFlowPreviousCached;
 
     public VariableDeclarationStatementNode(
-        IMaybeAntetype? resultAntetype,
-        DataType? resultType,
         IVariableDeclarationStatementSyntax syntax,
         ICapabilityNode? capability,
         ITypeNode? type,
         IAmbiguousExpressionNode? initializer)
     {
-        ResultAntetype = resultAntetype;
-        ResultType = resultType;
         Syntax = syntax;
         Capability = Child.Attach(this, capability);
         Type = Child.Attach(this, type);
@@ -8485,7 +8487,7 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -8501,8 +8503,6 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
 {
     private IExpressionStatementNode Self { [Inline] get => this; }
 
-    public IMaybeAntetype? ResultAntetype { [DebuggerStepThrough] get; }
-    public DataType? ResultType { [DebuggerStepThrough] get; }
     public IExpressionStatementSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
@@ -8544,20 +8544,16 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
     private bool flowStateAfterCached;
 
     public ExpressionStatementNode(
-        IMaybeAntetype? resultAntetype,
-        DataType? resultType,
         IExpressionStatementSyntax syntax,
         IAmbiguousExpressionNode expression)
     {
-        ResultAntetype = resultAntetype;
-        ResultType = resultType;
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -8640,7 +8636,7 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -8766,7 +8762,7 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -8854,7 +8850,7 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -8980,7 +8976,7 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -9147,7 +9143,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -9269,7 +9265,7 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -9387,7 +9383,7 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -9505,7 +9501,7 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -9620,7 +9616,7 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -9743,7 +9739,7 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -9899,7 +9895,7 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -10055,7 +10051,7 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -10184,7 +10180,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -10301,7 +10297,7 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -10430,7 +10426,7 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -10545,7 +10541,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -10672,7 +10668,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -10801,7 +10797,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -10917,7 +10913,7 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -11042,7 +11038,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -11254,7 +11250,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -11364,7 +11360,7 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -11465,7 +11461,7 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -11585,7 +11581,7 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -11814,7 +11810,7 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -11962,7 +11958,7 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -12105,7 +12101,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -12257,7 +12253,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -12400,7 +12396,7 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -12548,7 +12544,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -12658,7 +12654,7 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -12949,7 +12945,7 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -13053,7 +13049,7 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -13161,7 +13157,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -13291,7 +13287,7 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -13403,7 +13399,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -13531,7 +13527,7 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -13661,7 +13657,7 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -13777,7 +13773,7 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -13896,7 +13892,7 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -14003,7 +13999,7 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -14104,7 +14100,7 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -14238,7 +14234,7 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -14333,7 +14329,7 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -14435,7 +14431,7 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -14539,7 +14535,7 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -14658,7 +14654,7 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -14816,7 +14812,7 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -14935,7 +14931,7 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -15050,7 +15046,7 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -15211,7 +15207,7 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -15333,7 +15329,7 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -15442,7 +15438,7 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -15540,7 +15536,7 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -15665,7 +15661,7 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 
@@ -15788,7 +15784,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
     {
-        contributors.AddRangeToAll(Self.ControlFlowNext.Keys.Cast<SemanticNode>());
+        contributors.AddToRange(Self.ControlFlowNext.Keys.Cast<SemanticNode>(), this);
         base.CollectContributors_ControlFlowPrevious(contributors);
     }
 

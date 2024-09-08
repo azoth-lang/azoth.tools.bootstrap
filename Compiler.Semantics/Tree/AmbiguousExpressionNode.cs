@@ -41,5 +41,4 @@ internal abstract class AmbiguousExpressionNode : CodeNode, IAmbiguousExpression
 
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => false;
-
 }

@@ -25,9 +25,12 @@
 = FieldParameter.FlowStateAfter => FlowStateBefore();
 
 // ---------- Statements
+↑ Statement.ResultType: `DataType`? => null;
 ↑ Statement.FlowStateAfter: `IFlowState`;
 ↓ ResultStatement.ExpectedType: `DataType`?;
+= ResultStatement.Expression.ExpectedType => ExpectedType;
 = ResultStatement.Type;
+= ResultStatement.ResultType => Type;
 ↑ ResultStatement.FlowStateAfter: `IFlowState`
     => Expression?.FlowStateAfter ?? IFlowState.Empty;
 ↓ VariableDeclarationStatement.FlowStateBefore(): `IFlowState`;

@@ -202,7 +202,7 @@ Exit <: DataFlow;
 DataFlow <: ControlFlow;
 
 // ---------- Statements
-Statement <: ControlFlow = Syntax:`IStatementSyntax` ResultAntetype:`IMaybeAntetype`? ResultType:`DataType`?;
+Statement <: ControlFlow = Syntax:`IStatementSyntax`;
 ResultStatement <: Statement, BlockOrResult
     = Syntax:`IResultStatementSyntax` Expression:AmbiguousExpression;
 BodyStatement <: Statement = Syntax:`IBodyStatementSyntax`;

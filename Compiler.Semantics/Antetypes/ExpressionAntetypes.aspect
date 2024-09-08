@@ -13,7 +13,10 @@
 = ExpressionBody.ResultStatement.ExpectedAntetype => ExpectedAntetype;
 
 // ---------- Statements
+↑ Statement.ResultAntetype: `IMaybeAntetype`? => null;
 ↓ ResultStatement.ExpectedAntetype: `IMaybeExpressionAntetype`?;
+= ResultStatement.Expression.ExpectedAntetype => ExpectedAntetype;
+= ResultStatement.ResultAntetype => Antetype;
 
 // ---------- Patterns
 = OptionalPattern.↑.Diagnostics;

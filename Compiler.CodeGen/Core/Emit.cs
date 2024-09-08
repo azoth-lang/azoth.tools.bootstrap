@@ -591,7 +591,7 @@ internal static class Emit
             return $"contributors.AddToAll(({BaseClassName(tree)})this);";
         var range = equation.IsForEach ? "Range" : "";
         var cast = equation.IsForEach ? $".Cast<{BaseClassName(tree)}>()" : "";
-        return $"contributors.Add{range}ToAll({equation.TargetExpression}{cast});";
+        return $"contributors.AddTo{range}({equation.TargetExpression}{cast}, this);";
     }
 
     public static string Contribute(CollectionAttributeEquationModel equation)

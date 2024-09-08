@@ -36,13 +36,6 @@ public sealed class ContributorCollection<T>
         }
     }
 
-    public void AddRangeToAll(IEnumerable<T> contributors)
-    {
-        if (state != CollectionState.InProgress)
-            throw new InvalidOperationException("Contributor collection must be in progress to add to it.");
-        contributorsToAll.UnionWith(contributors);
-    }
-
     public void AddToAll(T contributor)
     {
         if (state != CollectionState.InProgress)
@@ -50,12 +43,12 @@ public sealed class ContributorCollection<T>
         contributorsToAll.Add(contributor);
     }
 
-    public void AddRange(T target, IEnumerable<T> contributors)
+    public void AddToRange(IEnumerable<T> targets, T contributor)
     {
         if (state != CollectionState.InProgress)
             throw new InvalidOperationException("Contributor collection must be in progress to add to it.");
-        var contributorsToTarget = this.contributors.GetOrAdd(target, NewSet);
-        contributorsToTarget.UnionWith(contributors);
+        foreach (var target in targets)
+            contributors.GetOrAdd(target, NewSet).Add(contributor);
     }
 
     public void Add(T target, T contributor)
