@@ -139,6 +139,8 @@
 ↑ VariableNameExpression.Name: `IdentifierName` => Syntax.Name;
 ↑ SpecialTypeNameExpression.Name: `SpecialTypeName` => Syntax.Name;
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
+↑ UnknownIdentifierNameExpression.Name :`IdentifierName`=> Syntax.Name;
+↑ UnknownMemberAccessExpression.MemberName: `StandardName` => Syntax.MemberName;
 
 // -------------------------------------------------------------------------------------------------
 // Declarations

@@ -358,11 +358,11 @@ UnknownNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`;
 UnknownStandardNameExpression <: UnknownNameExpression
     = Syntax:`IStandardNameExpressionSyntax` Name:`StandardName` ReferencedDeclarations:{`IDeclarationNode`};
 UnknownIdentifierNameExpression <: UnknownStandardNameExpression, SimpleNameExpression
-    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
+    = Syntax:`IIdentifierNameExpressionSyntax` /ReferencedDeclarations/;
 UnknownGenericNameExpression <: UnknownStandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
 UnknownMemberAccessExpression <: UnknownNameExpression
-    = Syntax:`IMemberAccessExpressionSyntax` Context:Expression MemberName:`StandardName` TypeArguments:Type*
+    = Syntax:`IMemberAccessExpressionSyntax` Context:Expression TypeArguments:Type*
     ReferencedMembers:{`IDeclarationNode`};
 
 // ---------- Capability Expressions

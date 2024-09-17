@@ -3286,14 +3286,14 @@ public partial interface IUnknownIdentifierNameExpressionNode : IUnknownStandard
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
-    new IdentifierName Name { get; }
+    new IdentifierName Name
+        => Syntax.Name;
     StandardName IUnknownStandardNameExpressionNode.Name => Name;
 
     public static IUnknownIdentifierNameExpressionNode Create(
-        IEnumerable<IDeclarationNode> referencedDeclarations,
         IIdentifierNameExpressionSyntax syntax,
-        IdentifierName name)
-        => new UnknownIdentifierNameExpressionNode(referencedDeclarations, syntax, name);
+        IEnumerable<IDeclarationNode> referencedDeclarations)
+        => new UnknownIdentifierNameExpressionNode(syntax, referencedDeclarations);
 }
 
 // [Closed(typeof(UnknownGenericNameExpressionNode))]
@@ -3329,19 +3329,19 @@ public partial interface IUnknownMemberAccessExpressionNode : IUnknownNameExpres
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
-    StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IDeclarationNode> ReferencedMembers { get; }
+    StandardName MemberName
+        => Syntax.MemberName;
     IFlowState INameExpressionNode.FlowStateAfter
         => ExpressionTypesAspect.UnknownMemberAccessExpression_FlowStateAfter(this);
 
     public static IUnknownMemberAccessExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
-        StandardName memberName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IDeclarationNode> referencedMembers)
-        => new UnknownMemberAccessExpressionNode(syntax, context, memberName, typeArguments, referencedMembers);
+        => new UnknownMemberAccessExpressionNode(syntax, context, typeArguments, referencedMembers);
 }
 
 // [Closed(typeof(AmbiguousMoveExpressionNode))]
@@ -14843,9 +14843,8 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IFixedSet<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IFixedSet<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -14895,13 +14894,11 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
     private bool valueIdCached;
 
     public UnknownIdentifierNameExpressionNode(
-        IEnumerable<IDeclarationNode> referencedDeclarations,
         IIdentifierNameExpressionSyntax syntax,
-        IdentifierName name)
+        IEnumerable<IDeclarationNode> referencedDeclarations)
     {
-        ReferencedDeclarations = referencedDeclarations.ToFixedSet();
         Syntax = syntax;
-        Name = name;
+        ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -15078,7 +15075,6 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode CurrentContext => context.UnsafeValue;
-    public StandardName MemberName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IDeclarationNode> ReferencedMembers { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -15132,13 +15128,11 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
     public UnknownMemberAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
-        StandardName memberName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IDeclarationNode> referencedMembers)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
-        MemberName = memberName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedMembers = referencedMembers.ToFixedSet();
     }

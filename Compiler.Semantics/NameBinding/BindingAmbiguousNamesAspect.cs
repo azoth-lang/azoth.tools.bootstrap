@@ -32,7 +32,7 @@ internal static partial class BindingAmbiguousNamesAspect
                     return new StandardTypeNameExpressionNode(node.Syntax, FixedList.Empty<ITypeNode>(), referencedType);
             }
 
-        return new UnknownIdentifierNameExpressionNode(node.Syntax, node.ReferencedDeclarations);
+        return IUnknownIdentifierNameExpressionNode.Create(node.Syntax, node.ReferencedDeclarations);
     }
 
     public static partial void UnknownIdentifierNameExpression_Contribute_Diagnostics(
@@ -63,7 +63,7 @@ internal static partial class BindingAmbiguousNamesAspect
         if (context is not (IFunctionGroupNameNode or IMethodGroupNameNode))
             return null;
 
-        return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments,
+        return IUnknownMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments,
             FixedList.Empty<IDefinitionNode>());
     }
 
@@ -75,7 +75,7 @@ internal static partial class BindingAmbiguousNamesAspect
 
         var members = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
         if (members.Count == 0)
-            return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments,
+            return IUnknownMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments,
                 FixedList.Empty<IDefinitionNode>());
 
         if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
@@ -88,7 +88,7 @@ internal static partial class BindingAmbiguousNamesAspect
         if (members.TrySingle() is ITypeDeclarationNode referencedType)
             return new QualifiedTypeNameExpression(node.Syntax, context, node.TypeArguments, referencedType);
 
-        return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
+        return IUnknownMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
     public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_TypeNameExpressionContext(
@@ -99,7 +99,7 @@ internal static partial class BindingAmbiguousNamesAspect
 
         var members = referencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
         if (members.Count == 0)
-            return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDefinitionNode>());
+            return IUnknownMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDefinitionNode>());
 
         if (members.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
             return new FunctionGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments,
@@ -109,7 +109,7 @@ internal static partial class BindingAmbiguousNamesAspect
             // TODO handle type arguments (which are not allowed for initializers)
             return IInitializerGroupNameNode.Create(node.Syntax, context, context.Name, referencedInitializers);
 
-        return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
+        return IUnknownMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
     public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_ExpressionContext(
@@ -128,7 +128,7 @@ internal static partial class BindingAmbiguousNamesAspect
         var contextTypeDeclaration = node.PackageNameScope().Lookup(context.Antetype);
         var members = contextTypeDeclaration?.InclusiveInstanceMembersNamed(node.MemberName).ToFixedSet() ?? [];
         if (members.Count == 0)
-            return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDefinitionNode>());
+            return IUnknownMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDefinitionNode>());
 
         if (members.TryAllOfType<IStandardMethodDeclarationNode>(out var referencedMethods))
             return new MethodGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);
@@ -144,7 +144,7 @@ internal static partial class BindingAmbiguousNamesAspect
                     return new FieldAccessExpressionNode(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
             }
 
-        return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, members);
+        return IUnknownMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
     public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_UnknownNameExpressionContext(IMemberAccessExpressionNode node)
@@ -152,7 +152,7 @@ internal static partial class BindingAmbiguousNamesAspect
         if (node.Context is not IUnknownNameExpressionNode context)
             return null;
 
-        return new UnknownMemberAccessExpressionNode(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDeclarationNode>());
+        return IUnknownMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDeclarationNode>());
     }
 
     public static partial IAmbiguousNameExpressionNode? PropertyName_Rewrite(IPropertyNameNode node)
