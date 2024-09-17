@@ -72,6 +72,10 @@
 ✎ Expression PrepareToReturn;
 
 ↓ BlockExpression.FlowStateBefore(): `IFlowState`;
+// TODO it would be better to have a way to specify that this inherits and not emit any code
+= BlockExpression.Statements[0].**.FlowStateBefore()
+    => base.Inherited_FlowStateBefore(child, descendant, ctx);
+= BlockExpression.Statements[index].**.FlowStateBefore() => Statements[index - 1].FlowStateAfter;
 ↑ BlockExpression.Type: `DataType`;
 ⟳ BlockExpression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 ↑ NewObjectExpression.ContextualizedOverload:`ContextualizedOverload`?;

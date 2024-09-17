@@ -35,8 +35,9 @@
 
 // ---------- Function Parts
 ⟳ Body.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
-// TODO it would be better to have a way to specify that this inherits and not emit and code
-= BlockBody.Statements[0].**.FlowStateBefore() => base.Inherited_FlowStateBefore(child, descendant, ctx);
+// TODO it would be better to have a way to specify that this inherits and not emit any code
+= BlockBody.Statements[0].**.FlowStateBefore()
+    => base.Inherited_FlowStateBefore(child, descendant, ctx);
 = BlockBody.Statements[index].**.FlowStateBefore() => Statements[index - 1].FlowStateAfter;
 ↑ BlockBody.FlowStateAfter: `IFlowState` => throw new NotImplementedException();
 ↑ ExpressionBody.FlowStateAfter: `IFlowState` => throw new NotImplementedException();

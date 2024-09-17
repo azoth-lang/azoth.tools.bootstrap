@@ -9014,6 +9014,25 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (0 < Self.Statements.Count && ReferenceEquals(child, Self.Statements[0]))
+            return base.Inherited_FlowStateBefore(child, descendant, ctx);
+        if (IndexOfNode(Self.Statements, child) is { } index)
+            return Statements[index - 1].FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (IndexOfNode(Self.Statements, child) is { } index)
+            return index < Statements.Count - 1 ? ControlFlowSet.CreateNormal(Statements[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -9188,6 +9207,9 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -9320,6 +9342,9 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -9445,6 +9470,9 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -9572,6 +9600,9 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -9693,6 +9724,9 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -9823,6 +9857,9 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -9987,6 +10024,9 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10148,6 +10188,9 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10285,6 +10328,9 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10409,6 +10455,9 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -10547,6 +10596,9 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10670,6 +10722,9 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -10805,6 +10860,9 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
             return NameBindingTypesAspect.PatternMatchExpression_Pattern_ContextBindingType(this);
         return base.Inherited_ContextBindingType(child, descendant, ctx);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -10952,6 +11010,9 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11081,6 +11142,9 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -11219,6 +11283,9 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -11444,6 +11511,9 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11563,6 +11633,9 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11670,6 +11743,9 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -11797,6 +11873,9 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11908,6 +11987,9 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     protected override IChildTreeNode Rewrite()
         => OverloadResolutionAspect.UnresolvedInvocationExpression_Rewrite_FunctionGroupNameExpression(this)
@@ -12048,6 +12130,9 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -12209,6 +12294,9 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -12519,6 +12607,9 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -12669,6 +12760,9 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -12832,6 +12926,9 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -12949,6 +13046,9 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -15230,6 +15330,9 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     protected override IChildTreeNode Rewrite()
         => CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Variable(this)
         ?? CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Value(this)
@@ -15330,6 +15433,9 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -15458,6 +15564,9 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -15582,6 +15691,9 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -15660,6 +15772,9 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     protected override IChildTreeNode Rewrite()
         => CapabilityExpressionsAspect.AmbiguousFreezeExpression_Rewrite_Variable(this)
@@ -15764,6 +15879,9 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -15895,6 +16013,9 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -16013,6 +16134,9 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -16123,6 +16247,9 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -16257,6 +16384,9 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -16386,6 +16516,9 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {

@@ -484,7 +484,7 @@ internal static class SyntaxBinder
         };
 
     private static IBlockExpressionNode BlockExpression(IBlockExpressionSyntax syntax)
-        => new BlockExpressionNode(syntax, Statements(syntax.Statements));
+        => IBlockExpressionNode.Create(syntax, Statements(syntax.Statements));
 
     private static INewObjectExpressionNode NewObjectExpression(INewObjectExpressionSyntax syntax)
         => new NewObjectExpressionNode(syntax, TypeName(syntax.Type), Expressions(syntax.Arguments));

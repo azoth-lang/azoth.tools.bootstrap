@@ -23,7 +23,7 @@
 
 // ---------- Function Parts
 // TODO it would be better to have a way to specify that the last statement inherits and not emit any code
-// TODO supporting index from end (e.g. [^1]) would allso this to be split into two rules
+// TODO supporting index from end (e.g. [^1]) would allow this to be split into two rules
 = BlockBody.Statements[index].**.ControlFlowFollowing()
     => index < Statements.Count - 1 ? ControlFlowSet.CreateNormal(Statements[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
 
@@ -48,6 +48,10 @@
 // Default for expressions is just whatever the context says is the following node.
 = Expression.ControlFlowNext;
 = BlockExpression.ControlFlowNext;
+// TODO it would be better to have a way to specify that the last statement inherits and not emit any code
+// TODO supporting index from end (e.g. [^1]) would allow this to be split into two rules
+= BlockExpression.Statements[index].**.ControlFlowFollowing()
+    => index < Statements.Count - 1 ? ControlFlowSet.CreateNormal(Statements[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
 = NewObjectExpression.ControlFlowNext;
 = UnsafeExpression.ControlFlowNext;
 
