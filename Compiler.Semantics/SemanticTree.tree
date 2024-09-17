@@ -338,10 +338,11 @@ FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
 VariableNameExpression <: LocalBindingNameExpression, SimpleNameExpression
     = Syntax:`IIdentifierNameExpressionSyntax` ReferencedDefinition:`ILocalBindingNode`;
 TypeNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`
-    Name:`StandardName` TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
-StandardTypeNameExpression <: TypeNameExpression = Syntax:`IStandardNameExpressionSyntax` TypeArguments:Type*;
+    TypeArguments:Type* ReferencedDeclaration:`ITypeDeclarationNode`;
+StandardTypeNameExpression <: TypeNameExpression
+    = Syntax:`IStandardNameExpressionSyntax` /TypeArguments/ /ReferencedDeclaration/;
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
-    Context:NamespaceName TypeArguments:Type*;
+    Context:NamespaceName /TypeArguments/ /ReferencedDeclaration/;
 InitializerGroupName <: NameExpression = Syntax:`INameExpressionSyntax`
     Context:TypeNameExpression InitializerName:`StandardName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`};

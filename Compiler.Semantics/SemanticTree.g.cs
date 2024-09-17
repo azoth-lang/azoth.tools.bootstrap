@@ -3095,9 +3095,9 @@ public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressi
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface ITypeNameExpressionNode : INameExpressionNode
 {
-    StandardName Name { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     ITypeDeclarationNode ReferencedDeclaration { get; }
+    StandardName Name { get; }
     IMaybeAntetype NamedAntetype { get; }
     BareType? NamedBareType { get; }
     DataType IExpressionNode.Type
@@ -3115,13 +3115,14 @@ public partial interface IStandardTypeNameExpressionNode : ITypeNameExpressionNo
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
+    StandardName ITypeNameExpressionNode.Name
+        => Syntax.Name;
 
     public static IStandardTypeNameExpressionNode Create(
-        StandardName name,
-        ITypeDeclarationNode referencedDeclaration,
         IStandardNameExpressionSyntax syntax,
-        IEnumerable<ITypeNode> typeArguments)
-        => new StandardTypeNameExpressionNode(name, referencedDeclaration, syntax, typeArguments);
+        IEnumerable<ITypeNode> typeArguments,
+        ITypeDeclarationNode referencedDeclaration)
+        => new StandardTypeNameExpressionNode(syntax, typeArguments, referencedDeclaration);
 }
 
 // [Closed(typeof(QualifiedTypeNameExpressionNode))]
@@ -3135,14 +3136,15 @@ public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionN
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     INamespaceNameNode Context { get; }
     INamespaceNameNode CurrentContext { get; }
+    StandardName ITypeNameExpressionNode.Name
+        => Syntax.MemberName;
 
     public static IQualifiedTypeNameExpressionNode Create(
-        StandardName name,
-        ITypeDeclarationNode referencedDeclaration,
         IMemberAccessExpressionSyntax syntax,
         INamespaceNameNode context,
-        IEnumerable<ITypeNode> typeArguments)
-        => new QualifiedTypeNameExpressionNode(name, referencedDeclaration, syntax, context, typeArguments);
+        IEnumerable<ITypeNode> typeArguments,
+        ITypeDeclarationNode referencedDeclaration)
+        => new QualifiedTypeNameExpressionNode(syntax, context, typeArguments, referencedDeclaration);
 }
 
 // [Closed(typeof(InitializerGroupNameNode))]
@@ -14113,10 +14115,9 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public StandardName Name { [DebuggerStepThrough] get; }
-    public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IStandardNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -14178,15 +14179,13 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
     private bool valueIdCached;
 
     public StandardTypeNameExpressionNode(
-        StandardName name,
-        ITypeDeclarationNode referencedDeclaration,
         IStandardNameExpressionSyntax syntax,
-        IEnumerable<ITypeNode> typeArguments)
+        IEnumerable<ITypeNode> typeArguments,
+        ITypeDeclarationNode referencedDeclaration)
     {
-        Name = name;
-        ReferencedDeclaration = referencedDeclaration;
         Syntax = syntax;
         TypeArguments = ChildList.Attach(this, typeArguments);
+        ReferencedDeclaration = referencedDeclaration;
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -14240,8 +14239,6 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public StandardName Name { [DebuggerStepThrough] get; }
-    public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<INamespaceNameNode> context;
     private bool contextCached;
@@ -14250,6 +14247,7 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
             : this.RewritableChild(ref contextCached, ref context);
     public INamespaceNameNode CurrentContext => context.UnsafeValue;
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -14311,17 +14309,15 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     private bool valueIdCached;
 
     public QualifiedTypeNameExpressionNode(
-        StandardName name,
-        ITypeDeclarationNode referencedDeclaration,
         IMemberAccessExpressionSyntax syntax,
         INamespaceNameNode context,
-        IEnumerable<ITypeNode> typeArguments)
+        IEnumerable<ITypeNode> typeArguments,
+        ITypeDeclarationNode referencedDeclaration)
     {
-        Name = name;
-        ReferencedDeclaration = referencedDeclaration;
         Syntax = syntax;
         this.context = Child.Create(this, context);
         TypeArguments = ChildList.Attach(this, typeArguments);
+        ReferencedDeclaration = referencedDeclaration;
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

@@ -137,6 +137,9 @@
 ↑ UnqualifiedNamespaceName.Name: `IdentifierName` => Syntax.Name;
 ↑ QualifiedNamespaceName.Name: `IdentifierName` => (IdentifierName)Syntax.MemberName;
 ↑ VariableNameExpression.Name: `IdentifierName` => Syntax.Name;
+↑ TypeNameExpression.Name: `StandardName`;
+= StandardTypeNameExpression.Name => Syntax.Name;
+= QualifiedTypeNameExpression.Name => Syntax.MemberName;
 ↑ SpecialTypeNameExpression.Name: `SpecialTypeName` => Syntax.Name;
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
 ↑ UnknownIdentifierNameExpression.Name :`IdentifierName`=> Syntax.Name;

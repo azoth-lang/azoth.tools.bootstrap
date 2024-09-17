@@ -29,7 +29,7 @@ internal static partial class BindingAmbiguousNamesAspect
                 case ILocalBindingNode referencedVariable:
                     return IVariableNameExpressionNode.Create(node.Syntax, referencedVariable);
                 case ITypeDeclarationNode referencedType:
-                    return new StandardTypeNameExpressionNode(node.Syntax, FixedList.Empty<ITypeNode>(), referencedType);
+                    return IStandardTypeNameExpressionNode.Create(node.Syntax, FixedList.Empty<ITypeNode>(), referencedType);
             }
 
         return IUnknownIdentifierNameExpressionNode.Create(node.Syntax, node.ReferencedDeclarations);
@@ -86,7 +86,7 @@ internal static partial class BindingAmbiguousNamesAspect
                 referencedFunctions);
 
         if (members.TrySingle() is ITypeDeclarationNode referencedType)
-            return new QualifiedTypeNameExpression(node.Syntax, context, node.TypeArguments, referencedType);
+            return IQualifiedTypeNameExpressionNode.Create(node.Syntax, context, node.TypeArguments, referencedType);
 
         return IUnknownMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
