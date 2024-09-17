@@ -134,6 +134,8 @@
 ↑ GenericNameExpression.Name: `GenericName` => Syntax.Name;
 
 // ---------- Name Expressions
+↑ UnqualifiedNamespaceName.Name: `IdentifierName` => Syntax.Name;
+↑ QualifiedNamespaceName.Name: `IdentifierName` => (IdentifierName)Syntax.MemberName;
 ↑ VariableNameExpression.Name: `IdentifierName` => Syntax.Name;
 ↑ SpecialTypeNameExpression.Name: `SpecialTypeName` => Syntax.Name;
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;

@@ -321,8 +321,9 @@ SimpleNameExpression <: NameExpression, UnresolvedSimpleName
 // TODO Name <: NameExpression
 NamespaceName <: NameExpression = ReferencedDeclarations:`INamespaceDeclarationNode`*;
 UnqualifiedNamespaceName <: NamespaceName, SimpleNameExpression
-    = Syntax:`IIdentifierNameExpressionSyntax` Name:`IdentifierName`;
-QualifiedNamespaceName <: NamespaceName = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName Name:`IdentifierName`;
+    = Syntax:`IIdentifierNameExpressionSyntax` /ReferencedDeclarations/;
+QualifiedNamespaceName <: NamespaceName
+    = Syntax:`IMemberAccessExpressionSyntax` Context:NamespaceName /ReferencedDeclarations/;
 FunctionGroupName <: NameExpression
     = Syntax:`INameExpressionSyntax` Context:NameExpression? FunctionName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};

@@ -2935,13 +2935,13 @@ public partial interface IUnqualifiedNamespaceNameNode : INamespaceNameNode, ISi
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
-    IdentifierName Name { get; }
+    IdentifierName Name
+        => Syntax.Name;
 
     public static IUnqualifiedNamespaceNameNode Create(
-        IEnumerable<INamespaceDeclarationNode> referencedDeclarations,
         IIdentifierNameExpressionSyntax syntax,
-        IdentifierName name)
-        => new UnqualifiedNamespaceNameNode(referencedDeclarations, syntax, name);
+        IEnumerable<INamespaceDeclarationNode> referencedDeclarations)
+        => new UnqualifiedNamespaceNameNode(syntax, referencedDeclarations);
 }
 
 // [Closed(typeof(QualifiedNamespaceNameNode))]
@@ -2955,14 +2955,14 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     INamespaceNameNode Context { get; }
     INamespaceNameNode CurrentContext { get; }
-    IdentifierName Name { get; }
+    IdentifierName Name
+        => (IdentifierName)Syntax.MemberName;
 
     public static IQualifiedNamespaceNameNode Create(
-        IEnumerable<INamespaceDeclarationNode> referencedDeclarations,
         IMemberAccessExpressionSyntax syntax,
         INamespaceNameNode context,
-        IdentifierName name)
-        => new QualifiedNamespaceNameNode(referencedDeclarations, syntax, context, name);
+        IEnumerable<INamespaceDeclarationNode> referencedDeclarations)
+        => new QualifiedNamespaceNameNode(syntax, context, referencedDeclarations);
 }
 
 // [Closed(typeof(FunctionGroupNameNode))]
@@ -13225,9 +13225,8 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -13277,13 +13276,11 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
     private bool valueIdCached;
 
     public UnqualifiedNamespaceNameNode(
-        IEnumerable<INamespaceDeclarationNode> referencedDeclarations,
         IIdentifierNameExpressionSyntax syntax,
-        IdentifierName name)
+        IEnumerable<INamespaceDeclarationNode> referencedDeclarations)
     {
-        ReferencedDeclarations = referencedDeclarations.ToFixedList();
         Syntax = syntax;
-        Name = name;
+        ReferencedDeclarations = referencedDeclarations.ToFixedList();
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -13337,7 +13334,6 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<INamespaceNameNode> context;
     private bool contextCached;
@@ -13345,7 +13341,7 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
     public INamespaceNameNode CurrentContext => context.UnsafeValue;
-    public IdentifierName Name { [DebuggerStepThrough] get; }
+    public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -13395,15 +13391,13 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
     private bool valueIdCached;
 
     public QualifiedNamespaceNameNode(
-        IEnumerable<INamespaceDeclarationNode> referencedDeclarations,
         IMemberAccessExpressionSyntax syntax,
         INamespaceNameNode context,
-        IdentifierName name)
+        IEnumerable<INamespaceDeclarationNode> referencedDeclarations)
     {
-        ReferencedDeclarations = referencedDeclarations.ToFixedList();
         Syntax = syntax;
         this.context = Child.Create(this, context);
-        Name = name;
+        ReferencedDeclarations = referencedDeclarations.ToFixedList();
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

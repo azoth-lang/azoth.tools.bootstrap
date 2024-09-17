@@ -18,7 +18,7 @@ internal static partial class BindingAmbiguousNamesAspect
     {
         // If not all referenced declarations are namespaces, then this is not a namespace name.
         if (node.ReferencedDeclarations.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
-            return new UnqualifiedNamespaceNameNode(node.Syntax, referencedNamespaces);
+            return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespaces);
 
         if (node.ReferencedDeclarations.TryAllOfType<IFunctionInvocableDeclarationNode>(out var referencedFunctions))
             return new FunctionGroupNameNode(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(), referencedFunctions);
@@ -79,7 +79,7 @@ internal static partial class BindingAmbiguousNamesAspect
                 FixedList.Empty<IDefinitionNode>());
 
         if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
-            return new QualifiedNamespaceNameNode(node.Syntax, context, referencedNamespaces);
+            return IQualifiedNamespaceNameNode.Create(node.Syntax, context, referencedNamespaces);
 
         if (members.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
             return new FunctionGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments,
