@@ -591,7 +591,7 @@ internal static class SyntaxBinder
         => new SelfExpressionNode(syntax);
 
     private static IMissingNameExpressionNode MissingName(IMissingNameSyntax syn)
-        => new MissingNameExpressionNode(syn);
+        => IMissingNameExpressionNode.Create(syn);
     #endregion
 
     #region Capability Expressions
