@@ -346,7 +346,7 @@ InitializerGroupName <: NameExpression = Syntax:`INameExpressionSyntax`
     ReferencedDeclarations:{`IInitializerDeclarationNode`};
 // TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression
 SpecialTypeNameExpression <: NameExpression
-    = Syntax:`ISpecialTypeNameExpressionSyntax` Name:`SpecialTypeName` ReferencedSymbol:`TypeSymbol`;
+    = Syntax:`ISpecialTypeNameExpressionSyntax`;
 InstanceExpression <: NameExpression, SimpleNameExpression = Syntax:`IInstanceExpressionSyntax`; // i.e. `self` or `base`
 // TODO BaseExpression <: InstanceExpression
 SelfExpression <: InstanceExpression, LocalBindingNameExpression

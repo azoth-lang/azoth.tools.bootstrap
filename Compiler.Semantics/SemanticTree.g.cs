@@ -3177,19 +3177,16 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
-    SpecialTypeName Name { get; }
-    TypeSymbol ReferencedSymbol { get; }
     new UnknownType Type
         => DataType.Unknown;
     DataType IExpressionNode.Type => Type;
+    SpecialTypeName Name
+        => Syntax.Name;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 
-    public static ISpecialTypeNameExpressionNode Create(
-        ISpecialTypeNameExpressionSyntax syntax,
-        SpecialTypeName name,
-        TypeSymbol referencedSymbol)
-        => new SpecialTypeNameExpressionNode(syntax, name, referencedSymbol);
+    public static ISpecialTypeNameExpressionNode Create(ISpecialTypeNameExpressionSyntax syntax)
+        => new SpecialTypeNameExpressionNode(syntax);
 }
 
 [Closed(
@@ -14508,8 +14505,6 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
     protected override bool MayHaveRewrite => true;
 
     public ISpecialTypeNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public SpecialTypeName Name { [DebuggerStepThrough] get; }
-    public TypeSymbol ReferencedSymbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -14558,14 +14553,9 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
     private ValueId valueId;
     private bool valueIdCached;
 
-    public SpecialTypeNameExpressionNode(
-        ISpecialTypeNameExpressionSyntax syntax,
-        SpecialTypeName name,
-        TypeSymbol referencedSymbol)
+    public SpecialTypeNameExpressionNode(ISpecialTypeNameExpressionSyntax syntax)
     {
         Syntax = syntax;
-        Name = name;
-        ReferencedSymbol = referencedSymbol;
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

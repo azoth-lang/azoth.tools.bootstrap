@@ -134,7 +134,8 @@
 ↑ GenericNameExpression.Name: `GenericName` => Syntax.Name;
 
 // ---------- Name Expressions
-↑ SelfExpression.IsImplicit:`bool` => Syntax.IsImplicit;
+↑ SpecialTypeNameExpression.Name: `SpecialTypeName` => Syntax.Name;
+↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
 
 // -------------------------------------------------------------------------------------------------
 // Declarations

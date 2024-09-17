@@ -579,7 +579,7 @@ internal static class SyntaxBinder
         => IIdentifierNameExpressionNode.Create(syntax);
 
     private static ISpecialTypeNameExpressionNode SpecialTypeNameExpression(ISpecialTypeNameExpressionSyntax syntax)
-        => new SpecialTypeNameExpressionNode(syntax);
+        => ISpecialTypeNameExpressionNode.Create(syntax);
 
     private static IGenericNameExpressionNode GenericNameExpression(IGenericNameExpressionSyntax syntax)
         => IGenericNameExpressionNode.Create(syntax, Types(syntax.TypeArguments));
