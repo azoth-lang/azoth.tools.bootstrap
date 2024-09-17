@@ -2836,16 +2836,16 @@ public partial interface IMemberAccessExpressionNode : IAmbiguousNameNode
     IAmbiguousExpressionNode TempContext { get; }
     IExpressionNode? Context { get; }
     IAmbiguousExpressionNode CurrentContext { get; }
-    StandardName MemberName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     PackageNameScope PackageNameScope();
+    StandardName MemberName
+        => Syntax.MemberName;
 
     public static IMemberAccessExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
         IAmbiguousExpressionNode context,
-        StandardName memberName,
         IEnumerable<ITypeNode> typeArguments)
-        => new MemberAccessExpressionNode(syntax, context, memberName, typeArguments);
+        => new MemberAccessExpressionNode(syntax, context, typeArguments);
 }
 
 // [Closed(typeof(PropertyNameNode))]
@@ -13108,7 +13108,6 @@ file class MemberAccessExpressionNode : SemanticNode, IMemberAccessExpressionNod
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode? Context => TempContext as IExpressionNode;
     public IAmbiguousExpressionNode CurrentContext => context.UnsafeValue;
-    public StandardName MemberName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -13130,12 +13129,10 @@ file class MemberAccessExpressionNode : SemanticNode, IMemberAccessExpressionNod
     public MemberAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,
         IAmbiguousExpressionNode context,
-        StandardName memberName,
         IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
-        MemberName = memberName;
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
@@ -13147,6 +13144,11 @@ file class MemberAccessExpressionNode : SemanticNode, IMemberAccessExpressionNod
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return null;
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)

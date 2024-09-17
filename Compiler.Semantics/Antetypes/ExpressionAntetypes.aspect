@@ -42,6 +42,9 @@
 = UnresolvedInvocationExpression.Expression.ExpectedAntetype => null;
 = UnknownInvocationExpression.Antetype => IAntetype.Unknown;
 
+// ---------- Ambiguous Name Expressions
+= MemberAccessExpression.*.**.ExpectedAntetype => null;
+
 // ---------- Name Expressions
 = NamespaceName.Antetype => IAntetype.Unknown;
 = FunctionGroupName.Antetype => throw new NotImplementedException();

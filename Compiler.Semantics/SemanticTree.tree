@@ -308,7 +308,7 @@ temp IdentifierNameExpression <: AmbiguousName, StandardNameExpression, Unresolv
 temp GenericNameExpression <: AmbiguousName, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` TypeArguments:Type*;
 temp MemberAccessExpression <: AmbiguousName
-    = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression MemberName:`StandardName` TypeArguments:Type*;
+    = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression TypeArguments:Type*;
 temp PropertyName <: AmbiguousName
     = Syntax:`IMemberAccessExpressionSyntax` Context:Expression PropertyName:`StandardName`
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`};

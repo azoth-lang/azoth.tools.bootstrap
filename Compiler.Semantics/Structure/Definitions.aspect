@@ -132,6 +132,7 @@
 ↑ StandardNameExpression.Name: `StandardName` => Syntax.Name;
 ↑ IdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;
 ↑ GenericNameExpression.Name: `GenericName` => Syntax.Name;
+↑ MemberAccessExpression.MemberName: `StandardName` => Syntax.MemberName;
 
 // ---------- Name Expressions
 ↑ UnqualifiedNamespaceName.Name: `IdentifierName` => Syntax.Name;

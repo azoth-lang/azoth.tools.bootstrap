@@ -135,7 +135,7 @@ internal static partial class BindingAmbiguousNamesAspect
 
         if (members.TryAllOfType<IPropertyAccessorDeclarationNode>(out var referencedProperties)
             && node.TypeArguments.Count == 0)
-            return new PropertyNameNode(node.Syntax, context, node.MemberName, referencedProperties);
+            return IPropertyNameNode.Create(node.Syntax, context, node.MemberName, referencedProperties);
 
         if (members.TrySingle() is not null and var referencedDeclaration)
             switch (referencedDeclaration)
