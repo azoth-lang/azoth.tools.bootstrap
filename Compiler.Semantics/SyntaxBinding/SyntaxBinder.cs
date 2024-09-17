@@ -588,7 +588,7 @@ internal static class SyntaxBinder
         => new MemberAccessExpressionNode(syntax, Expression(syntax.Context), Types(syntax.TypeArguments));
 
     private static ISelfExpressionNode SelfExpression(ISelfExpressionSyntax syntax)
-        => new SelfExpressionNode(syntax);
+        => ISelfExpressionNode.Create(syntax);
 
     private static IMissingNameExpressionNode MissingName(IMissingNameSyntax syn)
         => IMissingNameExpressionNode.Create(syn);
