@@ -16,8 +16,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodInvocationExpressionNode
 {
     public override IInvocationExpressionSyntax Syntax { get; }
-    public IMethodGroupNameNode MethodGroup { get; }
-    public IMethodGroupNameNode CurrentMethodGroup => MethodGroup;
+    private RewritableChild<IMethodGroupNameNode> methodGroup;
+    private bool methodGroupCached;
+    public IMethodGroupNameNode MethodGroup
+        => GrammarAttribute.IsCached(in methodGroupCached)? methodGroup.UnsafeValue
+            : this.RewritableChild(ref methodGroupCached, ref methodGroup);
+    public IMethodGroupNameNode CurrentMethodGroup => methodGroup.UnsafeValue;
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
@@ -68,7 +72,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
-        MethodGroup = Child.Attach(this, methodGroup);
+        this.methodGroup = Child.Create(this, methodGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 

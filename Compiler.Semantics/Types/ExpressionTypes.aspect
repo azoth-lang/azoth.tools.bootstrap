@@ -129,7 +129,7 @@
 = FunctionName.FlowStateAfter;
 = FunctionName.*.**.ExpectedType => null;
 = MethodGroupName.Type => throw new NotImplementedException();
-↑ MethodGroupName.FlowStateAfter: `IFlowState` => Context.FlowStateAfter;
+= MethodGroupName.FlowStateAfter => Context.FlowStateAfter;
 = FieldAccessExpression.FlowStateAfter;
 = FieldAccessExpression.↑.Diagnostics;
 = VariableNameExpression.FlowStateAfter;

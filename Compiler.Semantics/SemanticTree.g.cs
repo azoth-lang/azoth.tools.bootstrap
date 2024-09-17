@@ -3028,6 +3028,8 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
     DataType IExpressionNode.Type
         => throw new NotImplementedException();
+    IFlowState INameExpressionNode.FlowStateAfter
+        => Context.FlowStateAfter;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => throw new NotImplementedException();
 
