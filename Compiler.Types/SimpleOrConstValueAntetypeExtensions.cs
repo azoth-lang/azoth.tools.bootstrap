@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public static class SimpleOrConstValueAntetypeExtensions
 {
-    public static DataType ToType(this ISimpleOrConstValueAntetype antetype)
+    public static Type ToType(this ISimpleOrConstValueAntetype antetype)
         => antetype switch
         {
             ConstValueAntetype t => t.ToType(),
@@ -16,7 +16,7 @@ public static class SimpleOrConstValueAntetypeExtensions
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 
-    public static DataType ToType(this ConstValueAntetype antetype)
+    public static Type ToType(this ConstValueAntetype antetype)
         => antetype switch
         {
             BoolConstValueAntetype t => (BoolConstValueType)t.Value,
@@ -24,7 +24,7 @@ public static class SimpleOrConstValueAntetypeExtensions
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 
-    public static DataType ToType(this SimpleAntetype antetype)
+    public static Type ToType(this SimpleAntetype antetype)
         => antetype switch
         {
             BoolAntetype _ => DataType.Bool,
@@ -34,7 +34,7 @@ public static class SimpleOrConstValueAntetypeExtensions
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 
-    public static DataType ToType(this PointerSizedIntegerAntetype antetype)
+    public static Type ToType(this PointerSizedIntegerAntetype antetype)
     {
         if (antetype.Equals((IMaybeExpressionAntetype)IAntetype.Size))
             return DataType.Size;
@@ -51,7 +51,7 @@ public static class SimpleOrConstValueAntetypeExtensions
         throw new UnreachableException();
     }
 
-    public static DataType ToType(this FixedSizeIntegerAntetype antetype)
+    public static Type ToType(this FixedSizeIntegerAntetype antetype)
         => antetype.Bits switch
         {
             8 => antetype.IsSigned ? DataType.Int8 : DataType.Byte,
