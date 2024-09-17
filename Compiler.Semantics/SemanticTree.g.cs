@@ -3152,8 +3152,9 @@ public partial interface IInitializerGroupNameNode : INameExpressionNode
     ITypeNameExpressionNode Context { get; }
     ITypeNameExpressionNode CurrentContext { get; }
     StandardName? InitializerName { get; }
-    IMaybeAntetype InitializingAntetype { get; }
     IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { get; }
+    IMaybeAntetype InitializingAntetype
+        => Context.NamedAntetype;
     DataType IExpressionNode.Type
         => throw new NotImplementedException();
     IMaybeExpressionAntetype IExpressionNode.Antetype
@@ -3163,9 +3164,8 @@ public partial interface IInitializerGroupNameNode : INameExpressionNode
         INameExpressionSyntax syntax,
         ITypeNameExpressionNode context,
         StandardName? initializerName,
-        IMaybeAntetype initializingAntetype,
         IEnumerable<IInitializerDeclarationNode> referencedDeclarations)
-        => new InitializerGroupNameNode(syntax, context, initializerName, initializingAntetype, referencedDeclarations);
+        => new InitializerGroupNameNode(syntax, context, initializerName, referencedDeclarations);
 }
 
 // [Closed(typeof(SpecialTypeNameExpressionNode))]
@@ -11873,6 +11873,16 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.CurrentExpression))
@@ -13008,6 +13018,16 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
         Syntax = syntax;
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => ValueId;
 
@@ -13058,6 +13078,16 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
         => ValueId;
 }
@@ -13106,6 +13136,16 @@ file class MemberAccessExpressionNode : SemanticNode, IMemberAccessExpressionNod
         this.context = Child.Create(this, context);
         MemberName = memberName;
         TypeArguments = ChildList.Attach(this, typeArguments);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -13161,6 +13201,16 @@ file class PropertyNameNode : SemanticNode, IPropertyNameNode
         this.context = Child.Create(this, context);
         PropertyName = propertyName;
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -14345,7 +14395,6 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
             : this.RewritableChild(ref contextCached, ref context);
     public ITypeNameExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName? InitializerName { [DebuggerStepThrough] get; }
-    public IMaybeAntetype InitializingAntetype { [DebuggerStepThrough] get; }
     public IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -14399,13 +14448,11 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
         INameExpressionSyntax syntax,
         ITypeNameExpressionNode context,
         StandardName? initializerName,
-        IMaybeAntetype initializingAntetype,
         IEnumerable<IInitializerDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
         InitializerName = initializerName;
-        InitializingAntetype = initializingAntetype;
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
@@ -15198,6 +15245,16 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
         this.referent = Child.Create(this, referent);
     }
 
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
     protected override IChildTreeNode Rewrite()
         => CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Variable(this)
         ?? CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Value(this)
@@ -15617,6 +15674,16 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     protected override IChildTreeNode Rewrite()

@@ -50,19 +50,20 @@
 ↑ OptionalPattern.FlowStateAfter: `IFlowState` => Pattern.FlowStateAfter;
 
 // ---------- Expressions
+// By default, implicit recovery is not allowed
+= AmbiguousExpression.*.**.ImplicitRecoveryAllowed() => false;
+// By default, don't need to prepare to return
+= AmbiguousExpression.*.**.ShouldPrepareToReturn() => false;
 ↓ Expression.ExpectedType:`DataType`?;
 /// <summary>
 /// Whether an implicit recovery (i.e. move or freeze) is allowed to convert this expression to
 /// the expected type.
 /// </summary>
 ↓ Expression.ImplicitRecoveryAllowed(): `bool`;
-// By default, implicit recovery is not allowed
-= Expression.*.**.ImplicitRecoveryAllowed() => false;
 /// <summary>
 /// Whether this expression should be prepared for return.
 /// </summary>
 ↓ Expression.ShouldPrepareToReturn(): `bool`;
-= Expression.*.**.ShouldPrepareToReturn() => false;
 ↑ Expression.Type: `DataType`;
 ⟳ Expression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 = Expression.↑.Diagnostics;

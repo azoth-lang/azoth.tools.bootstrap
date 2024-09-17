@@ -13,8 +13,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IInitializerInvocationExpressionNode
 {
     public override IInvocationExpressionSyntax Syntax { get; }
-    public IInitializerGroupNameNode InitializerGroup { get; }
-    public IInitializerGroupNameNode CurrentInitializerGroup => InitializerGroup;
+    private RewritableChild<IInitializerGroupNameNode> initializerGroup;
+    private bool initializerGroupCached;
+    public IInitializerGroupNameNode InitializerGroup
+        => GrammarAttribute.IsCached(in initializerGroupCached) ? initializerGroup.UnsafeValue
+            : this.RewritableChild(ref initializerGroupCached, ref initializerGroup);
+    public IInitializerGroupNameNode CurrentInitializerGroup => initializerGroup.UnsafeValue;
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
@@ -65,7 +69,7 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
-        InitializerGroup = Child.Attach(this, initializerGroup);
+        this.initializerGroup = Child.Create(this, initializerGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 

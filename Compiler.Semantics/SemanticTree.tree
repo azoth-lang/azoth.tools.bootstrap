@@ -342,7 +342,7 @@ StandardTypeNameExpression <: TypeNameExpression = Syntax:`IStandardNameExpressi
 QualifiedTypeNameExpression <: TypeNameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:NamespaceName TypeArguments:Type*;
 InitializerGroupName <: NameExpression = Syntax:`INameExpressionSyntax`
-    Context:TypeNameExpression InitializerName:`StandardName`? InitializingAntetype:`IMaybeAntetype`
+    Context:TypeNameExpression InitializerName:`StandardName`?
     ReferencedDeclarations:{`IInitializerDeclarationNode`};
 // TODO merge with SpecialTypeName and keep the name "SpecialTypeName" because it really isn't an expression
 SpecialTypeNameExpression <: NameExpression

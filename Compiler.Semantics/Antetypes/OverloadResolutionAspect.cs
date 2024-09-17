@@ -111,7 +111,7 @@ internal static partial class OverloadResolutionAspect
         var referencedDeclarations = context.ReferencedDeclaration.Members.OfType<IInitializerDeclarationNode>()
                                             .Where(c => c.Name is null).ToFixedSet();
 
-        var initializerGroupName = new InitializerGroupNameNode(context.Syntax, context, null, referencedDeclarations);
+        var initializerGroupName = IInitializerGroupNameNode.Create(context.Syntax, context, null, referencedDeclarations);
         return IUnresolvedInvocationExpressionNode.Create(node.Syntax, initializerGroupName, node.CurrentArguments);
     }
 

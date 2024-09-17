@@ -49,6 +49,7 @@
 = MethodGroupName.Antetype => throw new NotImplementedException();
 = TypeNameExpression.Antetype => IAntetype.Unknown;
 = InitializerGroupName.Antetype => throw new NotImplementedException();
+↑ InitializerGroupName.InitializingAntetype: `IMaybeAntetype` => Context.NamedAntetype;
 = SpecialTypeNameExpression.Antetype => IAntetype.Unknown;
 = MissingNameExpression.Antetype => IAntetype.Unknown;
 = UnknownNameExpression.Antetype => IAntetype.Unknown;
