@@ -27,7 +27,7 @@ internal static partial class BindingAmbiguousNamesAspect
             switch (referencedDeclaration)
             {
                 case ILocalBindingNode referencedVariable:
-                    return new VariableNameExpressionNode(node.Syntax, referencedVariable);
+                    return IVariableNameExpressionNode.Create(node.Syntax, referencedVariable);
                 case ITypeDeclarationNode referencedType:
                     return new StandardTypeNameExpressionNode(node.Syntax, FixedList.Empty<ITypeNode>(), referencedType);
             }

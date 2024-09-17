@@ -3074,19 +3074,19 @@ public partial interface IVariableNameExpressionNode : ILocalBindingNameExpressi
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
-    IdentifierName Name { get; }
     new ILocalBindingNode ReferencedDefinition { get; }
     IBindingNode? ILocalBindingNameExpressionNode.ReferencedDefinition => ReferencedDefinition;
     IFlowState FlowStateBefore();
+    IdentifierName Name
+        => Syntax.Name;
     IFixedSet<IDataFlowNode> DataFlowPrevious { get; }
     IFlowState INameExpressionNode.FlowStateAfter
         => ExpressionTypesAspect.VariableNameExpression_FlowStateAfter(this);
 
     public static IVariableNameExpressionNode Create(
         IIdentifierNameExpressionSyntax syntax,
-        IdentifierName name,
         ILocalBindingNode referencedDefinition)
-        => new VariableNameExpressionNode(syntax, name, referencedDefinition);
+        => new VariableNameExpressionNode(syntax, referencedDefinition);
 }
 
 [Closed(
@@ -13988,7 +13988,6 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
     protected override bool MayHaveRewrite => true;
 
     public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IdentifierName Name { [DebuggerStepThrough] get; }
     public ILocalBindingNode ReferencedDefinition { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -14060,11 +14059,9 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
 
     public VariableNameExpressionNode(
         IIdentifierNameExpressionSyntax syntax,
-        IdentifierName name,
         ILocalBindingNode referencedDefinition)
     {
         Syntax = syntax;
-        Name = name;
         ReferencedDefinition = referencedDefinition;
     }
 
