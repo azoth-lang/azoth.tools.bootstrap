@@ -14,6 +14,7 @@ internal sealed class InitializerInvocationExpressionNode : ExpressionNode, IIni
 {
     public override IInvocationExpressionSyntax Syntax { get; }
     public IInitializerGroupNameNode InitializerGroup { get; }
+    public IInitializerGroupNameNode CurrentInitializerGroup => InitializerGroup;
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;

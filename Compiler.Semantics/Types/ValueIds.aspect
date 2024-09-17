@@ -45,3 +45,6 @@ struct `ValueId`;
 ⮡ AmbiguousExpression.PreviousValueId();
 ↑ AmbiguousExpression.ValueId: `ValueId`;
 = AmbiguousExpression.ValueId;
+
+// ---------- Ambiguous Name Expressions
+= AmbiguousNameExpression.⮡.PreviousValueId => ValueId;

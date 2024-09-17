@@ -8,6 +8,9 @@
 // ---------- Operator Expressions
 ✎ AssignmentExpression PropertyNameLeftOperand;
 
+// ---------- Invocation Expressions
+// ✎ FunctionGroupName;
+
 // ---------- Ambiguous Name Expressions
 ↑ StandardNameExpression.ReferencedDeclarations: Declaration*;
 = StandardNameExpression.ReferencedDeclarations;

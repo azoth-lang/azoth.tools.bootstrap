@@ -17,6 +17,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
 {
     public override IInvocationExpressionSyntax Syntax { get; }
     public IMethodGroupNameNode MethodGroup { get; }
+    public IMethodGroupNameNode CurrentMethodGroup => MethodGroup;
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;

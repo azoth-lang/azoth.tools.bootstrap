@@ -175,6 +175,25 @@ internal sealed class AttributeGrammarThreadState : IInheritanceContext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void MarkFinal() => state.lowLink = null;
 
+        /// <summary>
+        /// Mark that this attribute is final because it cannot be rewritten further. It still may
+        /// be the case that it is part of a cycle that needs to be reevaluated.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void MarkRewritableFinal()
+        {
+            // If the low link is below the current attribute, then there may be a cycle below this
+            // attribute, but it doesn't matter. On the other hand, if the cycle links to a node
+            // above this one, then it could have seen this node in a previous state and need
+            // reevaluated. Do not set lowLink to null because that would be MarkFinal() and cause
+            // all attributes below this one to be marked final. That may not be correct. All we
+            // know is that this node is final. To handle this, we mark this node as having not
+            // changed. From the perspective of the caller, it didn't change, the final value was
+            // returned on the first request and no previous value was observed.
+            if (state.lowLink >= attributeIndex)
+                state.Changed = false;
+        }
+
         public void AddToRewriteContext(object current, object? next)
             => state.rewriteContexts.AddRewriteToContext((IChildTreeNode)current, (IChildTreeNode?)next);
 

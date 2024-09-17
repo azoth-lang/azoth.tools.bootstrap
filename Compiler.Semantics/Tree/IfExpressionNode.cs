@@ -28,6 +28,7 @@ internal sealed class IfExpressionNode : ExpressionNode, IIfExpressionNode
     public IBlockOrResultNode ThenBlock
         => GrammarAttribute.IsCached(in thenBlockCached) ? thenBlock.UnsafeValue
             : this.RewritableChild(ref thenBlockCached, ref thenBlock);
+    public IBlockOrResultNode CurrentThenBlock => thenBlock.UnsafeValue;
     private RewritableChild<IElseClauseNode?> elseClause;
     private bool elseClauseCached;
     public IElseClauseNode? ElseClause

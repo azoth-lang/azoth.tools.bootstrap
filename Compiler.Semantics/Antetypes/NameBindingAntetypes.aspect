@@ -21,7 +21,7 @@
 = OptionalPattern.Pattern.ContextBindingAntetype();
 
 // ---------- Expressions
-↑NewObjectExpression.ConstructingAntetype: `IMaybeAntetype`;
+↑ NewObjectExpression.ConstructingAntetype: `IMaybeAntetype`;
 
 // ---------- Operator Expressions
 = PatternMatchExpression.Pattern.ContextBindingAntetype();

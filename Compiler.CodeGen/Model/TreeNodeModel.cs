@@ -310,7 +310,7 @@ public class TreeNodeModel
 
         // Rewrite Rules
         declaredRewriteRules = new(() => Tree.Aspects.SelectMany(a => a.RewriteRules).Where(r => r.Node == this).ToFixedList());
-        inheritedRewriteRules = new(() => SupertypeNodes.SelectMany(r => r.InheritedRewriteRules).Distinct().ToFixedList());
+        inheritedRewriteRules = new(() => SupertypeNodes.SelectMany(r => r.ActualRewriteRules).Distinct().ToFixedList());
         actualRewriteRules = new(() => DeclaredRewriteRules.Concat(InheritedRewriteRules).ToFixedList());
     }
 

@@ -18,6 +18,7 @@ internal sealed class MoveVariableExpressionNode : ExpressionNode, IMoveVariable
     public ILocalBindingNameExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
+    public ILocalBindingNameExpressionNode CurrentReferent => referent.UnsafeValue;
     public bool IsImplicit { get; }
     public override IMaybeExpressionAntetype Antetype => Referent.Antetype;
     private DataType? type;

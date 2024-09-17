@@ -2337,7 +2337,9 @@ public partial interface IIfExpressionNode : IExpressionNode, IElseClauseNode
     IExpressionNode? Condition { get; }
     IAmbiguousExpressionNode CurrentCondition { get; }
     IBlockOrResultNode ThenBlock { get; }
+    IBlockOrResultNode CurrentThenBlock { get; }
     IElseClauseNode? ElseClause { get; }
+    IElseClauseNode? CurrentElseClause { get; }
     new IFlowState FlowStateAfter { get; }
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
     IFlowState IElseClauseNode.FlowStateAfter => FlowStateAfter;
@@ -2362,6 +2364,7 @@ public partial interface ILoopExpressionNode : IExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IBlockExpressionNode Block { get; }
+    IBlockExpressionNode CurrentBlock { get; }
 
     public static ILoopExpressionNode Create(
         ILoopExpressionSyntax syntax,
@@ -2381,6 +2384,7 @@ public partial interface IWhileExpressionNode : IExpressionNode
     IExpressionNode? Condition { get; }
     IAmbiguousExpressionNode CurrentCondition { get; }
     IBlockExpressionNode Block { get; }
+    IBlockExpressionNode CurrentBlock { get; }
 
     public static IWhileExpressionNode Create(
         IWhileExpressionSyntax syntax,
@@ -2406,6 +2410,7 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     IAmbiguousExpressionNode CurrentInExpression { get; }
     ITypeNode? DeclaredType { get; }
     IBlockExpressionNode Block { get; }
+    IBlockExpressionNode CurrentBlock { get; }
     ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
     IStandardMethodDeclarationNode? ReferencedIterateMethod { get; }
     IMaybeExpressionAntetype IteratorAntetype { get; }
@@ -2541,6 +2546,7 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IFunctionGroupNameNode FunctionGroup { get; }
+    IFunctionGroupNameNode CurrentFunctionGroup { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
@@ -2567,6 +2573,7 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IMethodGroupNameNode MethodGroup { get; }
+    IMethodGroupNameNode CurrentMethodGroup { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
@@ -2677,6 +2684,7 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IInitializerGroupNameNode InitializerGroup { get; }
+    IInitializerGroupNameNode CurrentInitializerGroup { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
@@ -2946,6 +2954,7 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     INamespaceNameNode Context { get; }
+    INamespaceNameNode CurrentContext { get; }
     IdentifierName Name { get; }
 
     public static IQualifiedNamespaceNameNode Create(
@@ -2961,6 +2970,7 @@ public partial interface IQualifiedNamespaceNameNode : INamespaceNameNode
 public partial interface IFunctionGroupNameNode : INameExpressionNode
 {
     INameExpressionNode? Context { get; }
+    INameExpressionNode? CurrentContext { get; }
     StandardName FunctionName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
@@ -2983,6 +2993,7 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
 public partial interface IFunctionNameNode : INameExpressionNode
 {
     INameExpressionNode? Context { get; }
+    INameExpressionNode? CurrentContext { get; }
     StandardName FunctionName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
@@ -3123,6 +3134,7 @@ public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionN
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     INamespaceNameNode Context { get; }
+    INamespaceNameNode CurrentContext { get; }
 
     public static IQualifiedTypeNameExpressionNode Create(
         StandardName name,
@@ -3138,6 +3150,7 @@ public partial interface IQualifiedTypeNameExpressionNode : ITypeNameExpressionN
 public partial interface IInitializerGroupNameNode : INameExpressionNode
 {
     ITypeNameExpressionNode Context { get; }
+    ITypeNameExpressionNode CurrentContext { get; }
     StandardName? InitializerName { get; }
     IMaybeAntetype InitializingAntetype { get; }
     IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { get; }
@@ -3378,8 +3391,9 @@ public partial interface IMoveExpressionNode : IRecoveryExpressionNode
 public partial interface IMoveVariableExpressionNode : IMoveExpressionNode
 {
     new ILocalBindingNameExpressionNode Referent { get; }
+    new ILocalBindingNameExpressionNode CurrentReferent { get; }
     IExpressionNode IRecoveryExpressionNode.Referent => Referent;
-    IExpressionNode IRecoveryExpressionNode.CurrentReferent => Referent;
+    IExpressionNode IRecoveryExpressionNode.CurrentReferent => CurrentReferent;
 
     public static IMoveVariableExpressionNode Create(
         IExpressionSyntax syntax,
@@ -3449,8 +3463,9 @@ public partial interface IFreezeExpressionNode : IRecoveryExpressionNode
 public partial interface IFreezeVariableExpressionNode : IFreezeExpressionNode
 {
     new ILocalBindingNameExpressionNode Referent { get; }
+    new ILocalBindingNameExpressionNode CurrentReferent { get; }
     IExpressionNode IRecoveryExpressionNode.Referent => Referent;
-    IExpressionNode IRecoveryExpressionNode.CurrentReferent => Referent;
+    IExpressionNode IRecoveryExpressionNode.CurrentReferent => CurrentReferent;
 
     public static IFreezeVariableExpressionNode Create(
         IExpressionSyntax syntax,
@@ -3499,6 +3514,7 @@ public partial interface IAsyncBlockExpressionNode : IExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     IBlockExpressionNode Block { get; }
+    IBlockExpressionNode CurrentBlock { get; }
     new IFlowState FlowStateAfter
         => throw new NotImplementedException();
     IFlowState IExpressionNode.FlowStateAfter => FlowStateAfter;
@@ -8900,6 +8916,7 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
 {
     private IBlockExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IBlockExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedList<IStatementNode> Statements { [DebuggerStepThrough] get; }
@@ -9019,6 +9036,13 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9026,6 +9050,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
 {
     private INewObjectExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
@@ -9186,6 +9211,13 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9193,6 +9225,7 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
 {
     private IUnsafeExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IUnsafeExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
@@ -9308,6 +9341,13 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9315,6 +9355,7 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
 {
     private IBoolLiteralExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IBoolLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool Value { [DebuggerStepThrough] get; }
@@ -9426,6 +9467,13 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9433,6 +9481,7 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
 {
     private IIntegerLiteralExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IIntegerLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public BigInteger Value { [DebuggerStepThrough] get; }
@@ -9544,6 +9593,13 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9551,6 +9607,7 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
 {
     private INoneLiteralExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public INoneLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -9658,6 +9715,13 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9665,6 +9729,7 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
 {
     private IStringLiteralExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IStringLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public string Value { [DebuggerStepThrough] get; }
@@ -9781,6 +9846,13 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -9940,6 +10012,10 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
 
     protected override IChildTreeNode Rewrite()
         => BindingAmbiguousNamesAspect.AssignmentExpression_Rewrite_PropertyNameLeftOperand(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 }
 
@@ -9948,6 +10024,7 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
 {
     private IBinaryOperatorExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IBinaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> leftOperand;
@@ -10093,6 +10170,13 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10100,6 +10184,7 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
 {
     private IUnaryOperatorExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IUnaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public UnaryOperatorFixity Fixity { [DebuggerStepThrough] get; }
@@ -10222,6 +10307,13 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10229,6 +10321,7 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
 {
     private IIdExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IIdExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
@@ -10339,6 +10432,13 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10346,6 +10446,7 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
 {
     private IConversionExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IConversionExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
@@ -10468,6 +10569,13 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10475,6 +10583,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
 {
     private IImplicitConversionExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
@@ -10583,6 +10692,13 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10590,6 +10706,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
 {
     private IPatternMatchExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IPatternMatchExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> referent;
@@ -10710,6 +10827,13 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10717,6 +10841,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
 {
     private IIfExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IIfExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> condition;
@@ -10726,8 +10851,18 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
             : this.RewritableChild(ref conditionCached, ref condition);
     public IExpressionNode? Condition => TempCondition as IExpressionNode;
     public IAmbiguousExpressionNode CurrentCondition => condition.UnsafeValue;
-    public IBlockOrResultNode ThenBlock { [DebuggerStepThrough] get; }
-    public IElseClauseNode? ElseClause { [DebuggerStepThrough] get; }
+    private RewritableChild<IBlockOrResultNode> thenBlock;
+    private bool thenBlockCached;
+    public IBlockOrResultNode ThenBlock
+        => GrammarAttribute.IsCached(in thenBlockCached) ? thenBlock.UnsafeValue
+            : this.RewritableChild(ref thenBlockCached, ref thenBlock);
+    public IBlockOrResultNode CurrentThenBlock => thenBlock.UnsafeValue;
+    private RewritableChild<IElseClauseNode?> elseClause;
+    private bool elseClauseCached;
+    public IElseClauseNode? ElseClause
+        => GrammarAttribute.IsCached(in elseClauseCached) ? elseClause.UnsafeValue
+            : this.RewritableChild(ref elseClauseCached, ref elseClause);
+    public IElseClauseNode? CurrentElseClause => elseClause.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -10802,8 +10937,8 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     {
         Syntax = syntax;
         this.condition = Child.Create(this, condition);
-        ThenBlock = Child.Attach(this, thenBlock);
-        ElseClause = Child.Attach(this, elseClause);
+        this.thenBlock = Child.Create(this, thenBlock);
+        this.elseClause = Child.Create(this, elseClause);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -10839,6 +10974,13 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10846,9 +10988,15 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
 {
     private ILoopExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public ILoopExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
+    private RewritableChild<IBlockExpressionNode> block;
+    private bool blockCached;
+    public IBlockExpressionNode Block
+        => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
+            : this.RewritableChild(ref blockCached, ref block);
+    public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -10920,7 +11068,7 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
         IBlockExpressionNode block)
     {
         Syntax = syntax;
-        Block = Child.Attach(this, block);
+        this.block = Child.Create(this, block);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -10955,6 +11103,13 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -10962,6 +11117,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
 {
     private IWhileExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IWhileExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> condition;
@@ -10971,7 +11127,12 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
             : this.RewritableChild(ref conditionCached, ref condition);
     public IExpressionNode? Condition => TempCondition as IExpressionNode;
     public IAmbiguousExpressionNode CurrentCondition => condition.UnsafeValue;
-    public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
+    private RewritableChild<IBlockExpressionNode> block;
+    private bool blockCached;
+    public IBlockExpressionNode Block
+        => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
+            : this.RewritableChild(ref blockCached, ref block);
+    public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -11045,7 +11206,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     {
         Syntax = syntax;
         this.condition = Child.Create(this, condition);
-        Block = Child.Attach(this, block);
+        this.block = Child.Create(this, block);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -11080,6 +11241,13 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -11087,6 +11255,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
 {
     private IForeachExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IForeachExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsMutableBinding { [DebuggerStepThrough] get; }
@@ -11099,7 +11268,12 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     public IExpressionNode? InExpression => TempInExpression as IExpressionNode;
     public IAmbiguousExpressionNode CurrentInExpression => inExpression.UnsafeValue;
     public ITypeNode? DeclaredType { [DebuggerStepThrough] get; }
-    public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
+    private RewritableChild<IBlockExpressionNode> block;
+    private bool blockCached;
+    public IBlockExpressionNode Block
+        => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
+            : this.RewritableChild(ref blockCached, ref block);
+    public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
     public ITypeDeclarationNode? ReferencedIterableDeclaration { [DebuggerStepThrough] get; }
     public IStandardMethodDeclarationNode? ReferencedIterateMethod { [DebuggerStepThrough] get; }
     public IMaybeExpressionAntetype IteratorAntetype { [DebuggerStepThrough] get; }
@@ -11247,7 +11421,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         VariableName = variableName;
         this.inExpression = Child.Create(this, inExpression);
         DeclaredType = Child.Attach(this, declaredType);
-        Block = Child.Attach(this, block);
+        this.block = Child.Create(this, block);
         ReferencedIterableDeclaration = referencedIterableDeclaration;
         ReferencedIterateMethod = referencedIterateMethod;
         IteratorAntetype = iteratorAntetype;
@@ -11292,6 +11466,13 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -11299,6 +11480,7 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
 {
     private IBreakExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IBreakExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode?> value;
@@ -11402,6 +11584,13 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -11409,6 +11598,7 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
 {
     private INextExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public INextExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -11502,6 +11692,13 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -11509,6 +11706,7 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
 {
     private IReturnExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IReturnExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode?> value;
@@ -11622,6 +11820,13 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -11708,11 +11913,17 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
 {
     private IFunctionInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IFunctionGroupNameNode FunctionGroup { [DebuggerStepThrough] get; }
+    private RewritableChild<IFunctionGroupNameNode> functionGroup;
+    private bool functionGroupCached;
+    public IFunctionGroupNameNode FunctionGroup
+        => GrammarAttribute.IsCached(in functionGroupCached) ? functionGroup.UnsafeValue
+            : this.RewritableChild(ref functionGroupCached, ref functionGroup);
+    public IFunctionGroupNameNode CurrentFunctionGroup => functionGroup.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
@@ -11813,7 +12024,7 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         TempAllArguments = tempAllArguments;
         AllArguments = allArguments;
         Syntax = syntax;
-        FunctionGroup = Child.Attach(this, functionGroup);
+        this.functionGroup = Child.Create(this, functionGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
@@ -11851,6 +12062,13 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -11858,11 +12076,17 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
 {
     private IMethodInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IMethodGroupNameNode MethodGroup { [DebuggerStepThrough] get; }
+    private RewritableChild<IMethodGroupNameNode> methodGroup;
+    private bool methodGroupCached;
+    public IMethodGroupNameNode MethodGroup
+        => GrammarAttribute.IsCached(in methodGroupCached) ? methodGroup.UnsafeValue
+            : this.RewritableChild(ref methodGroupCached, ref methodGroup);
+    public IMethodGroupNameNode CurrentMethodGroup => methodGroup.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
@@ -11961,7 +12185,7 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         TempAllArguments = tempAllArguments;
         AllArguments = allArguments;
         Syntax = syntax;
-        MethodGroup = Child.Attach(this, methodGroup);
+        this.methodGroup = Child.Create(this, methodGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
@@ -11999,6 +12223,13 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -12006,6 +12237,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
 {
     private IGetterInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
@@ -12113,6 +12345,9 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -12136,6 +12371,13 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -12143,6 +12385,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
 {
     private ISetterInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
@@ -12288,6 +12531,13 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -12295,6 +12545,7 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
 {
     private IFunctionReferenceInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
@@ -12431,6 +12682,13 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -12438,11 +12696,17 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
 {
     private IInitializerInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
     public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IInitializerGroupNameNode InitializerGroup { [DebuggerStepThrough] get; }
+    private RewritableChild<IInitializerGroupNameNode> initializerGroup;
+    private bool initializerGroupCached;
+    public IInitializerGroupNameNode InitializerGroup
+        => GrammarAttribute.IsCached(in initializerGroupCached) ? initializerGroup.UnsafeValue
+            : this.RewritableChild(ref initializerGroupCached, ref initializerGroup);
+    public IInitializerGroupNameNode CurrentInitializerGroup => initializerGroup.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
@@ -12543,7 +12807,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
         TempAllArguments = tempAllArguments;
         AllArguments = allArguments;
         Syntax = syntax;
-        InitializerGroup = Child.Attach(this, initializerGroup);
+        this.initializerGroup = Child.Create(this, initializerGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
@@ -12579,6 +12843,13 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -12586,6 +12857,7 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
 {
     private IUnknownInvocationExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
@@ -12689,6 +12961,13 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -12728,6 +13007,9 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
     {
         Syntax = syntax;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     protected override IChildTreeNode Rewrite()
         => BindingAmbiguousNamesAspect.IdentifierNameExpression_Rewrite(this)
@@ -12775,6 +13057,9 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
         Syntax = syntax;
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -12822,6 +13107,9 @@ file class MemberAccessExpressionNode : SemanticNode, IMemberAccessExpressionNod
         MemberName = memberName;
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     protected override IChildTreeNode Rewrite()
         => BindingAmbiguousNamesAspect.MemberAccessExpression_Rewrite_FunctionOrMethodGroupNameContext(this)
@@ -12875,6 +13163,9 @@ file class PropertyNameNode : SemanticNode, IPropertyNameNode
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     protected override IChildTreeNode Rewrite()
         => BindingAmbiguousNamesAspect.PropertyName_Rewrite(this)
         ?? base.Rewrite();
@@ -12885,6 +13176,7 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
 {
     private IUnqualifiedNamespaceNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -12957,6 +13249,9 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -12979,6 +13274,13 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -12986,10 +13288,16 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
 {
     private IQualifiedNamespaceNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public INamespaceNameNode Context { [DebuggerStepThrough] get; }
+    private RewritableChild<INamespaceNameNode> context;
+    private bool contextCached;
+    public INamespaceNameNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public INamespaceNameNode CurrentContext => context.UnsafeValue;
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -13047,7 +13355,7 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
     {
         ReferencedDeclarations = referencedDeclarations.ToFixedList();
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         Name = name;
     }
 
@@ -13060,6 +13368,9 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -13083,6 +13394,13 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13090,9 +13408,15 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
 {
     private IFunctionGroupNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public INameExpressionNode? Context { [DebuggerStepThrough] get; }
+    private RewritableChild<INameExpressionNode?> context;
+    private bool contextCached;
+    public INameExpressionNode? Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public INameExpressionNode? CurrentContext => context.UnsafeValue;
     public StandardName FunctionName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
@@ -13152,7 +13476,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         FunctionName = functionName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
@@ -13167,6 +13491,9 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -13191,6 +13518,13 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13198,9 +13532,15 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
 {
     private IFunctionNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public INameExpressionNode? Context { [DebuggerStepThrough] get; }
+    private RewritableChild<INameExpressionNode?> context;
+    private bool contextCached;
+    public INameExpressionNode? Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public INameExpressionNode? CurrentContext => context.UnsafeValue;
     public StandardName FunctionName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
@@ -13276,9 +13616,9 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
         IFunctionInvocableDeclarationNode? referencedDeclaration)
     {
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         FunctionName = functionName;
-        TypeArguments = typeArguments.ToFixedList();
+        TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
         ReferencedDeclaration = referencedDeclaration;
     }
@@ -13292,6 +13632,19 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     {
         return false;
     }
+
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return null;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return null;
+    }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -13315,6 +13668,13 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13322,6 +13682,7 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
 {
     private IMethodGroupNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
@@ -13405,6 +13766,9 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13427,6 +13791,13 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13434,6 +13805,7 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
 {
     private IFieldAccessExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
@@ -13526,6 +13898,9 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13549,6 +13924,13 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13556,6 +13938,7 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
 {
     private IVariableNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IdentifierName Name { [DebuggerStepThrough] get; }
@@ -13648,6 +14031,9 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13673,6 +14059,13 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13680,6 +14073,7 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
 {
     private IStandardTypeNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public StandardName Name { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
@@ -13767,6 +14161,9 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13789,6 +14186,13 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13796,11 +14200,17 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
 {
     private IQualifiedTypeNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public StandardName Name { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public INamespaceNameNode Context { [DebuggerStepThrough] get; }
+    private RewritableChild<INamespaceNameNode> context;
+    private bool contextCached;
+    public INamespaceNameNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public INamespaceNameNode CurrentContext => context.UnsafeValue;
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -13872,7 +14282,7 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
         Name = name;
         ReferencedDeclaration = referencedDeclaration;
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
@@ -13885,6 +14295,9 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -13908,6 +14321,13 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -13915,9 +14335,15 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
 {
     private IInitializerGroupNameNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public INameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public ITypeNameExpressionNode Context { [DebuggerStepThrough] get; }
+    private RewritableChild<ITypeNameExpressionNode> context;
+    private bool contextCached;
+    public ITypeNameExpressionNode Context
+        => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
+            : this.RewritableChild(ref contextCached, ref context);
+    public ITypeNameExpressionNode CurrentContext => context.UnsafeValue;
     public StandardName? InitializerName { [DebuggerStepThrough] get; }
     public IMaybeAntetype InitializingAntetype { [DebuggerStepThrough] get; }
     public IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
@@ -13977,7 +14403,7 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
         IEnumerable<IInitializerDeclarationNode> referencedDeclarations)
     {
         Syntax = syntax;
-        Context = Child.Attach(this, context);
+        this.context = Child.Create(this, context);
         InitializerName = initializerName;
         InitializingAntetype = initializingAntetype;
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
@@ -13992,6 +14418,9 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
     {
         return false;
     }
+
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -14015,6 +14444,13 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14022,6 +14458,7 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
 {
     private ISpecialTypeNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public ISpecialTypeNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public SpecialTypeName Name { [DebuggerStepThrough] get; }
@@ -14094,6 +14531,9 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14116,6 +14556,13 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14123,6 +14570,7 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
 {
     private ISelfExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public ISelfExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -14220,6 +14668,9 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14243,6 +14694,13 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14250,6 +14708,7 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
 {
     private IMissingNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IMissingNameSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -14315,6 +14774,9 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14337,6 +14799,13 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14344,6 +14813,7 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
 {
     private IUnknownIdentifierNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IFixedSet<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IIdentifierNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -14416,6 +14886,9 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14439,6 +14912,13 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14446,6 +14926,7 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
 {
     private IUnknownGenericNameExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IFixedSet<IDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
     public IGenericNameExpressionSyntax Syntax { [DebuggerStepThrough] get; }
@@ -14521,6 +15002,9 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14543,6 +15027,13 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14550,6 +15041,7 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
 {
     private IUnknownMemberAccessExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
@@ -14633,6 +15125,9 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
         return false;
     }
 
+    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
+        => ValueId;
+
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14656,6 +15151,13 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14707,10 +15209,16 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
 {
     private IMoveVariableExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
-    public ILocalBindingNameExpressionNode Referent { [DebuggerStepThrough] get; }
+    private RewritableChild<ILocalBindingNameExpressionNode> referent;
+    private bool referentCached;
+    public ILocalBindingNameExpressionNode Referent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
+    public ILocalBindingNameExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -14778,7 +15286,7 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
     {
         Syntax = syntax;
         IsImplicit = isImplicit;
-        Referent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -14814,6 +15322,13 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14821,6 +15336,7 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
 {
     private IMoveValueExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
@@ -14933,6 +15449,13 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14940,6 +15463,7 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
 {
     private IImplicitTempMoveExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
@@ -15048,6 +15572,13 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -15099,11 +15630,17 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
 {
     private IFreezeVariableExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
     public bool IsTemporary { [DebuggerStepThrough] get; }
-    public ILocalBindingNameExpressionNode Referent { [DebuggerStepThrough] get; }
+    private RewritableChild<ILocalBindingNameExpressionNode> referent;
+    private bool referentCached;
+    public ILocalBindingNameExpressionNode Referent
+        => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
+            : this.RewritableChild(ref referentCached, ref referent);
+    public ILocalBindingNameExpressionNode CurrentReferent => referent.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -15173,7 +15710,7 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
         Syntax = syntax;
         IsImplicit = isImplicit;
         IsTemporary = isTemporary;
-        Referent = Child.Attach(this, referent);
+        this.referent = Child.Create(this, referent);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -15209,6 +15746,13 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -15216,6 +15760,7 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
 {
     private IFreezeValueExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool IsImplicit { [DebuggerStepThrough] get; }
@@ -15331,6 +15876,13 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -15338,6 +15890,7 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
 {
     private IPrepareToReturnExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> value;
@@ -15440,6 +15993,13 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -15447,9 +16007,15 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
 {
     private IAsyncBlockExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IAsyncBlockExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IBlockExpressionNode Block { [DebuggerStepThrough] get; }
+    private RewritableChild<IBlockExpressionNode> block;
+    private bool blockCached;
+    public IBlockExpressionNode Block
+        => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
+            : this.RewritableChild(ref blockCached, ref block);
+    public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -15503,7 +16069,7 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
         IBlockExpressionNode block)
     {
         Syntax = syntax;
-        Block = Child.Attach(this, block);
+        this.block = Child.Create(this, block);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -15538,6 +16104,13 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -15545,6 +16118,7 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
 {
     private IAsyncStartExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IAsyncStartExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public bool Scheduled { [DebuggerStepThrough] get; }
@@ -15663,6 +16237,13 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -15670,6 +16251,7 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
 {
     private IAwaitExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
+    protected override bool MayHaveRewrite => true;
 
     public IAwaitExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
@@ -15786,6 +16368,13 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
         if (target is IControlFlowNode t)
             ControlFlowAspect.ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(this, t, builder);
     }
+
+    protected override IChildTreeNode Rewrite()
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
+        ?? base.Rewrite();
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]

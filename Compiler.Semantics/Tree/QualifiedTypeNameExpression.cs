@@ -14,6 +14,7 @@ internal sealed class QualifiedTypeNameExpression : NameExpressionNode, IQualifi
 {
     public override IMemberAccessExpressionSyntax Syntax { get; }
     public INamespaceNameNode Context { get; }
+    public INamespaceNameNode CurrentContext => Context;
     public StandardName Name => Syntax.MemberName;
     public IFixedList<ITypeNode> TypeArguments { get; }
     public ITypeDeclarationNode ReferencedDeclaration { get; }

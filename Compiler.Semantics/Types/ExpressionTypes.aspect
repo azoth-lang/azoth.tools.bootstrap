@@ -123,9 +123,10 @@
 ↑ NameExpression.FlowStateAfter: `IFlowState`
     => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
 ↑ NamespaceName.Type: `UnknownType` => DataType.Unknown;
+= FunctionGroupName.Type => throw new NotImplementedException();
 ↓ FunctionName.FlowStateBefore(): `IFlowState`;
 = FunctionName.FlowStateAfter;
-= FunctionGroupName.Type => throw new NotImplementedException();
+= FunctionName.*.**.ExpectedType => null;
 = MethodGroupName.Type => throw new NotImplementedException();
 ↑ MethodGroupName.FlowStateAfter: `IFlowState` => Context.FlowStateAfter;
 = FieldAccessExpression.FlowStateAfter;

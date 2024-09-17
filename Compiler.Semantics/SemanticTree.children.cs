@@ -407,6 +407,8 @@ public static class ISemanticNodeExtensions
             case IFunctionNameNode n:
                 if (n.Context is not null)
                     yield return n.Context;
+                foreach (var child in n.TypeArguments)
+                    yield return child;
                 yield break;
             case IMethodGroupNameNode n:
                 yield return n.Context;

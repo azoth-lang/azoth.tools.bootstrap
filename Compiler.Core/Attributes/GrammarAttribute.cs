@@ -600,7 +600,17 @@ public static class GrammarAttribute
             }
 
             if (TCyclic.IsRewritableAttribute)
+            {
+                // If the node gets rewritten into one that can't be rewritten, the value is final
+                if (TCyclic.IsFinalValue(next))
+                {
+                    attributeScope.MarkRewritableFinal();
+                    Volatile.Write(ref cached, true);
+                    attributeScope.Success();
+                    return current;
+                }
                 attributeScope.AddToRewriteContext(current!, next);
+            }
 
             current = next;
         } while (attributeScope.RootOfChangedComponent);

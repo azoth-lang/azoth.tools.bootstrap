@@ -18,6 +18,7 @@ internal sealed class FreezeVariableExpressionNode : ExpressionNode, IFreezeVari
     public ILocalBindingNameExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
+    public ILocalBindingNameExpressionNode CurrentReferent => referent.UnsafeValue;
     public bool IsTemporary { get; }
     public bool IsImplicit { get; }
     public override IMaybeExpressionAntetype Antetype => Referent.Antetype;

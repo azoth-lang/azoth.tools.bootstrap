@@ -327,7 +327,7 @@ FunctionGroupName <: NameExpression
     = Syntax:`INameExpressionSyntax` Context:NameExpression? FunctionName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 FunctionName <: NameExpression
-    = Syntax:`INameExpressionSyntax` Context:NameExpression?  FunctionName:`StandardName` TypeArguments:`ITypeNode`*
+    = Syntax:`INameExpressionSyntax` Context:NameExpression?  FunctionName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`} ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
 MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`StandardName` TypeArguments:Type*

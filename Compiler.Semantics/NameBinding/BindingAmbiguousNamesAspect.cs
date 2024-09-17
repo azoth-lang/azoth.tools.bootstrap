@@ -188,7 +188,7 @@ internal static partial class BindingAmbiguousNamesAspect
             return null;
 
         // if there is only one declaration, then it isn't ambiguous
-        return new FunctionNameNode(node.Syntax, node.Context, node.FunctionName, node.TypeArguments,
+        return IFunctionNameNode.Create(node.Syntax, node.Context, node.FunctionName, node.TypeArguments,
             node.ReferencedDeclarations, node.ReferencedDeclarations.TrySingle());
     }
 

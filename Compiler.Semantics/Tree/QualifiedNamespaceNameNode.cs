@@ -10,6 +10,7 @@ internal sealed class QualifiedNamespaceNameNode : NamespaceNameNode, IQualified
 {
     public override IMemberAccessExpressionSyntax Syntax { get; }
     public INamespaceNameNode Context { get; }
+    public INamespaceNameNode CurrentContext => Context;
     public IdentifierName Name => (IdentifierName)Syntax.MemberName;
     public override IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { get; }
 

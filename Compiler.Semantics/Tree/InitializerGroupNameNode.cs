@@ -11,6 +11,7 @@ internal sealed class InitializerGroupNameNode : NameExpressionNode, IInitialize
 {
     public override INameExpressionSyntax Syntax { get; }
     public ITypeNameExpressionNode Context { get; }
+    public ITypeNameExpressionNode CurrentContext => Context;
     public StandardName? InitializerName { get; }
     public IMaybeAntetype InitializingAntetype => Context.NamedAntetype;
     public IFixedSet<IInitializerDeclarationNode> ReferencedDeclarations { get; }

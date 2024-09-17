@@ -13,6 +13,7 @@ internal sealed class AsyncBlockExpressionNode : ExpressionNode, IAsyncBlockExpr
     public IBlockExpressionNode Block
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
+    public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
     public override IMaybeExpressionAntetype Antetype => Block.Antetype;
     public override DataType Type => Block.Type;
 

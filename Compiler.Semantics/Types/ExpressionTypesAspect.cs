@@ -194,7 +194,7 @@ internal static partial class ExpressionTypesAspect
 
         // TODO what if selfType is not a capability type?
 
-        var syntax = (IExpressionSyntax)node.Syntax;
+        var syntax = node.Syntax;
         var implicitMove = isTemporary
             ? new ImplicitTempMoveExpressionNode(syntax, node)
             : (IExpressionNode)(node is IVariableNameExpressionNode variableName

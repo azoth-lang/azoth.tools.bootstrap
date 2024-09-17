@@ -45,6 +45,7 @@
 // ---------- Name Expressions
 = NamespaceName.Antetype => IAntetype.Unknown;
 = FunctionGroupName.Antetype => throw new NotImplementedException();
+= FunctionName.*.**.ExpectedAntetype => null;
 = MethodGroupName.Antetype => throw new NotImplementedException();
 = TypeNameExpression.Antetype => IAntetype.Unknown;
 = InitializerGroupName.Antetype => throw new NotImplementedException();
