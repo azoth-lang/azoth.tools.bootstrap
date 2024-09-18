@@ -2198,12 +2198,13 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
     IAmbiguousExpressionNode TempLeftOperand { get; }
     IExpressionNode? LeftOperand { get; }
     IAmbiguousExpressionNode CurrentLeftOperand { get; }
-    BinaryOperator Operator { get; }
     IAmbiguousExpressionNode TempRightOperand { get; }
     IExpressionNode? RightOperand { get; }
     IAmbiguousExpressionNode CurrentRightOperand { get; }
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
+    BinaryOperator Operator
+        => Syntax.Operator;
     IAntetype? NumericOperatorCommonAntetype { get; }
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.BinaryOperatorExpression_FlowLexicalScope(this);
@@ -2211,9 +2212,8 @@ public partial interface IBinaryOperatorExpressionNode : IExpressionNode
     public static IBinaryOperatorExpressionNode Create(
         IBinaryOperatorExpressionSyntax syntax,
         IAmbiguousExpressionNode leftOperand,
-        BinaryOperator @operator,
         IAmbiguousExpressionNode rightOperand)
-        => new BinaryOperatorExpressionNode(syntax, leftOperand, @operator, rightOperand);
+        => new BinaryOperatorExpressionNode(syntax, leftOperand, rightOperand);
 }
 
 // [Closed(typeof(UnaryOperatorExpressionNode))]
@@ -2225,19 +2225,19 @@ public partial interface IUnaryOperatorExpressionNode : IExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     UnaryOperatorFixity Fixity { get; }
-    UnaryOperator Operator { get; }
     IAmbiguousExpressionNode TempOperand { get; }
     IExpressionNode? Operand { get; }
     IAmbiguousExpressionNode CurrentOperand { get; }
+    UnaryOperator Operator
+        => Syntax.Operator;
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.UnaryOperatorExpression_FlowLexicalScope(this);
 
     public static IUnaryOperatorExpressionNode Create(
         IUnaryOperatorExpressionSyntax syntax,
         UnaryOperatorFixity fixity,
-        UnaryOperator @operator,
         IAmbiguousExpressionNode operand)
-        => new UnaryOperatorExpressionNode(syntax, fixity, @operator, operand);
+        => new UnaryOperatorExpressionNode(syntax, fixity, operand);
 }
 
 // [Closed(typeof(IdExpressionNode))]
@@ -10225,7 +10225,6 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
             : this.RewritableChild(ref leftOperandCached, ref leftOperand);
     public IExpressionNode? LeftOperand => TempLeftOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
-    public BinaryOperator Operator { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> rightOperand;
     private bool rightOperandCached;
     public IAmbiguousExpressionNode TempRightOperand
@@ -10312,17 +10311,17 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     public BinaryOperatorExpressionNode(
         IBinaryOperatorExpressionSyntax syntax,
         IAmbiguousExpressionNode leftOperand,
-        BinaryOperator @operator,
         IAmbiguousExpressionNode rightOperand)
     {
         Syntax = syntax;
         this.leftOperand = Child.Create(this, leftOperand);
-        Operator = @operator;
         this.rightOperand = Child.Create(this, rightOperand);
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(child, Self.CurrentLeftOperand))
+            return ContainingLexicalScope;
         if (ReferenceEquals(child, Self.CurrentRightOperand))
             return LexicalScopingAspect.BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(this);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
@@ -10337,6 +10336,10 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentLeftOperand))
+            return NumericOperatorCommonAntetype;
+        if (ReferenceEquals(descendant, Self.CurrentRightOperand))
+            return NumericOperatorCommonAntetype;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -10347,6 +10350,13 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentRightOperand))
+            return LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -10403,7 +10413,6 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
 
     public IUnaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public UnaryOperatorFixity Fixity { [DebuggerStepThrough] get; }
-    public UnaryOperator Operator { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> operand;
     private bool operandCached;
     public IAmbiguousExpressionNode TempOperand
@@ -10480,12 +10489,10 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     public UnaryOperatorExpressionNode(
         IUnaryOperatorExpressionSyntax syntax,
         UnaryOperatorFixity fixity,
-        UnaryOperator @operator,
         IAmbiguousExpressionNode operand)
     {
         Syntax = syntax;
         Fixity = fixity;
-        Operator = @operator;
         this.operand = Child.Create(this, operand);
     }
 

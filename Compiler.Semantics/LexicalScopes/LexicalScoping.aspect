@@ -92,6 +92,7 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 // ---------- Operator Expressions
 = AssignmentExpression.FlowLexicalScope();
 ↓ BinaryOperatorExpression.ContainingLexicalScope: `LexicalScope`;
+= BinaryOperatorExpression.LeftOperand.**.ContainingLexicalScope => ContainingLexicalScope;
 = BinaryOperatorExpression.RightOperand.**.ContainingLexicalScope;
 = BinaryOperatorExpression.FlowLexicalScope();
 = UnaryOperatorExpression.FlowLexicalScope();

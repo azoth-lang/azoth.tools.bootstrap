@@ -240,11 +240,9 @@ StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionS
 AssignmentExpression <: Expression, DataFlow = Syntax:`IAssignmentExpressionSyntax`
     LeftOperand:AmbiguousExpression RightOperand:AmbiguousExpression;
 BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax`
-    LeftOperand:AmbiguousExpression
-    Operator:`BinaryOperator`
-    RightOperand:AmbiguousExpression;
+    LeftOperand:AmbiguousExpression RightOperand:AmbiguousExpression;
 UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax` Fixity:`UnaryOperatorFixity`
-    Operator:`UnaryOperator` Operand:AmbiguousExpression;
+     Operand:AmbiguousExpression;
 IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression;
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax`
     Referent:AmbiguousExpression Operator:`ConversionOperator` ConvertToType:Type;

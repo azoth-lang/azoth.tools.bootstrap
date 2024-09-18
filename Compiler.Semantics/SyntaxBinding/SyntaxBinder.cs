@@ -522,7 +522,7 @@ internal static class SyntaxBinder
         => IAssignmentExpressionNode.Create(syntax, AssignableExpression(syntax.LeftOperand), Expression(syntax.RightOperand));
 
     private static IBinaryOperatorExpressionNode BinaryOperatorExpression(IBinaryOperatorExpressionSyntax syntax)
-        => new BinaryOperatorExpressionNode(syntax, Expression(syntax.LeftOperand), Expression(syntax.RightOperand));
+        => IBinaryOperatorExpressionNode.Create(syntax, Expression(syntax.LeftOperand), Expression(syntax.RightOperand));
 
     private static IUnaryOperatorExpressionNode UnaryOperatorExpression(IUnaryOperatorExpressionSyntax syntax)
         => new UnaryOperatorExpressionNode(syntax, Expression(syntax.Operand));

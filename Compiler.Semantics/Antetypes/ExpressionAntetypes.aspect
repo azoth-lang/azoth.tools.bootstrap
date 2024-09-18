@@ -40,6 +40,8 @@
 // ---------- Operator Expressions
 = AssignmentExpression.RightOperand.ExpectedAntetype => LeftOperand?.Antetype;
 ↑ BinaryOperatorExpression.NumericOperatorCommonAntetype: `IAntetype`?;
+= BinaryOperatorExpression.LeftOperand.ExpectedAntetype => NumericOperatorCommonAntetype;
+= BinaryOperatorExpression.RightOperand.ExpectedAntetype => NumericOperatorCommonAntetype;
 = UnaryOperatorExpression.↑.Diagnostics;
 = IdExpression.Antetype => Referent?.Antetype ?? IAntetype.Unknown;
 = PatternMatchExpression.Antetype => IAntetype.Bool;

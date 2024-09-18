@@ -140,6 +140,8 @@
 
 // ---------- Operator Expressions
 ↑ AssignmentExpression.Operator: `AssignmentOperator` => Syntax.Operator;
+↑ BinaryOperatorExpression.Operator: `BinaryOperator` => Syntax.Operator;
+↑ UnaryOperatorExpression.Operator: `UnaryOperator` => Syntax.Operator;
 
 // ---------- Invocation Expressions
 ↑ InvocationExpression.TempAllArguments: IEnumerable<AmbiguousExpression>;

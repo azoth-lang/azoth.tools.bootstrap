@@ -106,6 +106,8 @@
     => LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
 = AssignmentExpression.RightOperand.ExpectedType => LeftOperand?.Type;
 = AssignmentExpression.↑.Diagnostics;
+= BinaryOperatorExpression.RightOperand.**.FlowStateBefore
+    => LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
 = BinaryOperatorExpression.↑.Diagnostics;
 = IdExpression.↑.Diagnostics;
 = ConversionExpression.↑.Diagnostics;
