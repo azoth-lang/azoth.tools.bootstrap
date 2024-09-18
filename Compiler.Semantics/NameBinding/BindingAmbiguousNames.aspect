@@ -1,15 +1,15 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 ◊name BindingAmbiguousNamesAspect;
+◊using System.Collections.Generic;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+◊using Azoth.Tools.Bootstrap.Compiler.Names;
+◊using Azoth.Tools.Bootstrap.Compiler.Syntax;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Operator Expressions
 ✎ AssignmentExpression PropertyNameLeftOperand;
-
-// ---------- Invocation Expressions
-// ✎ FunctionGroupName;
 
 // ---------- Ambiguous Name Expressions
 ↑ StandardNameExpression.ReferencedDeclarations: Declaration*;
@@ -24,7 +24,8 @@
 
 
 // ---------- Name Expressions
-//✎ FunctionGroupName;
++ FunctionGroupName.new.Validate;
+// ✎ FunctionGroupName;
 = FunctionGroupName.↑.Diagnostics;
 = UnknownIdentifierNameExpression.↑.Diagnostics;
 = UnknownMemberAccessExpression.↑.Diagnostics;

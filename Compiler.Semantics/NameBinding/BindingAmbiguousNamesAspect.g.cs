@@ -1,6 +1,9 @@
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
@@ -11,6 +14,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 [GeneratedCode("AzothCompilerCodeGen", null)]
 internal static partial class BindingAmbiguousNamesAspect
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void Validate_FunctionGroupNameNode(
+        INameExpressionSyntax syntax,
+        INameExpressionNode? context,
+        StandardName functionName,
+        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFixedList<IDeclarationNode> StandardNameExpression_ReferencedDeclarations(IStandardNameExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

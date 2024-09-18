@@ -14377,6 +14377,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
     {
+        BindingAmbiguousNamesAspect.Validate_FunctionGroupNameNode(syntax, context, functionName, typeArguments, referencedDeclarations);
         Syntax = syntax;
         this.context = Child.Create(this, context);
         FunctionName = functionName;

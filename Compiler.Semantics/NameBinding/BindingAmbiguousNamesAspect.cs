@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
+using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -179,6 +181,17 @@ internal static partial class BindingAmbiguousNamesAspect
             propertyName.PropertyName, node.CurrentRightOperand,
             propertyName.ReferencedPropertyAccessors, setter);
     }
+
+    public static partial void Validate_FunctionGroupNameNode(
+        INameExpressionSyntax syntax,
+        INameExpressionNode? context,
+        StandardName functionName,
+        IEnumerable<ITypeNode> typeArguments,
+        IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations)
+    { }
+    // TODO add this validation in somehow
+    //=> Requires.That(!ReferencedDeclarations.IsEmpty, nameof(referencedDeclarations),
+    //    "Must be at least one referenced declaration");
 
     public static IAmbiguousExpressionNode? FunctionGroupName_Rewrite(IFunctionGroupNameNode node)
     {
