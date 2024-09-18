@@ -551,13 +551,13 @@ internal static class SyntaxBinder
         => new ForeachExpressionNode(syntax, Expression(syntax.InExpression), Type(syntax.Type), BlockExpression(syntax.Block));
 
     private static IBreakExpressionNode BreakExpression(IBreakExpressionSyntax syntax)
-        => new BreakExpressionNode(syntax, Expression(syntax.Value));
+        => IBreakExpressionNode.Create(syntax, Expression(syntax.Value));
 
     private static INextExpressionNode NextExpression(INextExpressionSyntax syntax)
-        => new NextExpressionNode(syntax);
+        => INextExpressionNode.Create(syntax);
 
     private static IReturnExpressionNode ReturnExpression(IReturnExpressionSyntax syntax)
-        => new ReturnExpressionNode(syntax, Expression(syntax.Value));
+        => IReturnExpressionNode.Create(syntax, Expression(syntax.Value));
     #endregion
 
     #region Invocation Expressions

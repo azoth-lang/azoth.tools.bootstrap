@@ -89,6 +89,8 @@
     => ControlFlowSet.CreateLoop(Condition).Union(ControlFlowFollowing());
 = WhileExpression.ControlFlowNext;
 = ForeachExpression.ControlFlowNext;
+= ReturnExpression.Value.**.ControlFlowFollowing()
+    => ControlFlowSet.CreateNormal(ControlFlowExit());
 ↓ ReturnExpression.ControlFlowExit(): Exit;
 = ReturnExpression.ControlFlowNext;
 

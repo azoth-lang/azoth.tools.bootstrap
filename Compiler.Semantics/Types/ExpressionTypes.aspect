@@ -129,6 +129,9 @@
 = WhileExpression.Block.**.FlowStateBefore
     => Condition?.FlowStateAfter ?? IFlowState.Empty;
 = WhileExpression.Condition.ExpectedType => DataType.OptionalBool;
+= ReturnExpression.Value.ExpectedType => ExpectedReturnType;
+= ReturnExpression.Value.ImplicitRecoveryAllowed() => true;
+= ReturnExpression.Value.ShouldPrepareToReturn() => true;
 = ReturnExpression.↑.Diagnostics;
 
 // ---------- Invocation Expressions

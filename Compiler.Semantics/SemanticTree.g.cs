@@ -12294,8 +12294,17 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
         this.value = Child.Create(this, value);
     }
 
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentValue))
+            return ControlFlowSet.CreateNormal(ControlFlowExit());
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentValue))
+            return ExpectedReturnType?.ToAntetype();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -12303,6 +12312,8 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentValue))
+            return ExpectedReturnType;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -12310,11 +12321,15 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentValue))
+            return true;
         return false;
     }
 
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentValue))
+            return true;
         return false;
     }
 
