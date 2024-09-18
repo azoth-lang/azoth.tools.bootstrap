@@ -108,8 +108,18 @@
 // TODO it would be better to have a way to specify that the last statement inherits and not emit any code
 // TODO supporting index from end (e.g. [^1]) would allow this to be split into two rules
 = FunctionInvocationExpression.Arguments[index].**.ControlFlowFollowing()
-    => index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    => index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1])
+                                    : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
 = FunctionInvocationExpression.ControlFlowNext;
+= MethodInvocationExpression.MethodGroup.**.ControlFlowFollowing()
+    => !TempArguments.IsEmpty
+        ? ControlFlowSet.CreateNormal(Arguments[0])
+        : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+// TODO it would be better to have a way to specify that the last statement inherits and not emit any code
+// TODO supporting index from end (e.g. [^1]) would allow this to be split into two rules
+= MethodInvocationExpression.Arguments[index].**.ControlFlowFollowing()
+    => index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1])
+                                    : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
 = MethodInvocationExpression.ControlFlowNext;
 = GetterInvocationExpression.ControlFlowNext;
 = SetterInvocationExpression.ControlFlowNext;

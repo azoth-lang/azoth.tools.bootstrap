@@ -12819,6 +12819,15 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentMethodGroup))
+            return !TempArguments.IsEmpty ? ControlFlowSet.CreateNormal(Arguments[0]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
+            return index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
@@ -12831,6 +12840,15 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (0 < Self.CurrentArguments.Count && ReferenceEquals(child, Self.CurrentArguments[0]))
+            return MethodGroup.FlowStateAfter;
+        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
+            return Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -12978,6 +12996,8 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentContext))
+            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -12985,6 +13005,8 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentContext))
+            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);

@@ -165,7 +165,7 @@ internal static partial class BindingAmbiguousNamesAspect
         }
 
         var getter = node.ReferencedPropertyAccessors.OfType<IGetterMethodDeclarationNode>().TrySingle();
-        return new GetterInvocationExpressionNode(node.Syntax, node.Context, node.PropertyName,
+        return IGetterInvocationExpressionNode.Create(node.Syntax, node.Context, node.PropertyName,
             node.ReferencedPropertyAccessors, getter);
     }
 

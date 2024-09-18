@@ -145,9 +145,15 @@
 = FunctionInvocationExpression.Arguments[index].ExpectedType
     => ContextualizedOverload?.ParameterTypes[index].Type;
 = FunctionInvocationExpression.↑.Diagnostics;
+= MethodInvocationExpression.Arguments[0].**.FlowStateBefore()
+    => MethodGroup.FlowStateAfter;
+= MethodInvocationExpression.Arguments[index].**.FlowStateBefore()
+    => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
 ↑ MethodInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
 = MethodInvocationExpression.↑.Diagnostics;
 ↑ GetterInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+= GetterInvocationExpression.Context.ExpectedType
+    => ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
 = GetterInvocationExpression.FlowStateAfter;
 = GetterInvocationExpression.↑.Diagnostics;
 ↑ SetterInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
