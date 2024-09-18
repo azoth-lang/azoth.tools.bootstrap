@@ -198,8 +198,8 @@ internal static partial class ExpressionTypesAspect
         var implicitMove = isTemporary
             ? new ImplicitTempMoveExpressionNode(syntax, node)
             : (IExpressionNode)(node is IVariableNameExpressionNode variableName
-                ? new MoveVariableExpressionNode(syntax, variableName, isImplicit: true)
-                : new MoveValueExpressionNode(syntax, node, isImplicit: true));
+                ? IMoveVariableExpressionNode.Create(syntax, variableName, isImplicit: true)
+                : IMoveValueExpressionNode.Create(syntax, node, isImplicit: true));
         return implicitMove;
     }
 

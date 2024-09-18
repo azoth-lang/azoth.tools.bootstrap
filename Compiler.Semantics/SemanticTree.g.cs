@@ -3412,9 +3412,9 @@ public partial interface IMoveVariableExpressionNode : IMoveExpressionNode
 
     public static IMoveVariableExpressionNode Create(
         IExpressionSyntax syntax,
-        bool isImplicit,
-        ILocalBindingNameExpressionNode referent)
-        => new MoveVariableExpressionNode(syntax, isImplicit, referent);
+        ILocalBindingNameExpressionNode referent,
+        bool isImplicit)
+        => new MoveVariableExpressionNode(syntax, referent, isImplicit);
 }
 
 // [Closed(typeof(MoveValueExpressionNode))]
@@ -3424,9 +3424,9 @@ public partial interface IMoveValueExpressionNode : IMoveExpressionNode
 
     public static IMoveValueExpressionNode Create(
         IExpressionSyntax syntax,
-        bool isImplicit,
-        IExpressionNode referent)
-        => new MoveValueExpressionNode(syntax, isImplicit, referent);
+        IExpressionNode referent,
+        bool isImplicit)
+        => new MoveValueExpressionNode(syntax, referent, isImplicit);
 }
 
 // [Closed(typeof(ImplicitTempMoveExpressionNode))]
@@ -16291,13 +16291,13 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
     protected override bool MayHaveRewrite => true;
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public bool IsImplicit { [DebuggerStepThrough] get; }
     private RewritableChild<ILocalBindingNameExpressionNode> referent;
     private bool referentCached;
     public ILocalBindingNameExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public ILocalBindingNameExpressionNode CurrentReferent => referent.UnsafeValue;
+    public bool IsImplicit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -16360,12 +16360,12 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
 
     public MoveVariableExpressionNode(
         IExpressionSyntax syntax,
-        bool isImplicit,
-        ILocalBindingNameExpressionNode referent)
+        ILocalBindingNameExpressionNode referent,
+        bool isImplicit)
     {
         Syntax = syntax;
-        IsImplicit = isImplicit;
         this.referent = Child.Create(this, referent);
+        IsImplicit = isImplicit;
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -16435,13 +16435,13 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
     protected override bool MayHaveRewrite => true;
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public bool IsImplicit { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
     public IExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode CurrentReferent => referent.UnsafeValue;
+    public bool IsImplicit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -16504,12 +16504,12 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
 
     public MoveValueExpressionNode(
         IExpressionSyntax syntax,
-        bool isImplicit,
-        IExpressionNode referent)
+        IExpressionNode referent,
+        bool isImplicit)
     {
         Syntax = syntax;
-        IsImplicit = isImplicit;
         this.referent = Child.Create(this, referent);
+        IsImplicit = isImplicit;
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -16533,6 +16533,8 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
 
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentReferent))
+            return IsImplicit ? ShouldPrepareToReturn() : false;
         return false;
     }
 

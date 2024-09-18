@@ -358,8 +358,8 @@ UnknownMemberAccessExpression <: UnknownNameExpression
 temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:AmbiguousNameExpression;
 RecoveryExpression <: Expression = Referent:Expression IsImplicit:`bool`;
 MoveExpression <: RecoveryExpression = Referent:Expression;
-MoveVariableExpression <: MoveExpression = Referent:LocalBindingNameExpression;
-MoveValueExpression <: MoveExpression = Referent:Expression;
+MoveVariableExpression <: MoveExpression = Referent:LocalBindingNameExpression /IsImplicit/;
+MoveValueExpression <: MoveExpression = Referent:Expression  /IsImplicit/;
 ImplicitTempMoveExpression <: Expression = Referent:Expression;
 temp AmbiguousFreezeExpression <: AmbiguousExpression = Syntax:`IFreezeExpressionSyntax` Referent:AmbiguousNameExpression;
 FreezeExpression <: RecoveryExpression = Referent:Expression IsTemporary:`bool`;

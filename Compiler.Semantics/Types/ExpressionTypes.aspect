@@ -210,6 +210,9 @@
 // ---------- Capability Expressions
 = MoveExpression.Type;
 = MoveVariableExpression.↑.Diagnostics;
+// Pass along should prepare to return to the referent if this is an implicit move.
+= MoveValueExpression.Referent.ShouldPrepareToReturn()
+    => IsImplicit ? ShouldPrepareToReturn() : false;
 = MoveValueExpression.↑.Diagnostics;
 = FreezeExpression.Type;
 = FreezeVariableExpression.↑.Diagnostics;

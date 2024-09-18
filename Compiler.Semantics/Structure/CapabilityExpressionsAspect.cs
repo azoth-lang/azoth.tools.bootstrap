@@ -22,13 +22,13 @@ internal static partial class CapabilityExpressionsAspect
     {
         if (node.Referent is not ILocalBindingNameExpressionNode localBindingName) return null;
 
-        return new MoveVariableExpressionNode(node.Syntax, localBindingName, isImplicit: false);
+        return IMoveVariableExpressionNode.Create(node.Syntax, localBindingName, isImplicit: false);
     }
 
     public static partial IAmbiguousExpressionNode? AmbiguousMoveExpression_Rewrite_Value(IAmbiguousMoveExpressionNode node)
     {
         if (node.Referent is null) return null;
 
-        return new MoveValueExpressionNode(node.Syntax, node.Referent, isImplicit: false);
+        return IMoveValueExpressionNode.Create(node.Syntax, node.Referent, isImplicit: false);
     }
 }
