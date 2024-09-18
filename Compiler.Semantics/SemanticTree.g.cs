@@ -12616,8 +12616,28 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (0 < Self.CurrentArguments.Count && ReferenceEquals(child, Self.CurrentArguments[0]))
+            return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+        if (IndexOfNode(Self.CurrentArguments, child) is { } argumentIndex)
+            return TempArguments[argumentIndex - 1].FlowLexicalScope().True;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentFunctionGroup))
+            return !TempArguments.IsEmpty ? ControlFlowSet.CreateNormal(Arguments[0]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
+            return index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
+            return ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -12625,9 +12645,20 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
+            return ContextualizedOverload?.ParameterTypes[index].Type;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (0 < Self.CurrentArguments.Count && ReferenceEquals(child, Self.CurrentArguments[0]))
+            return base.Inherited_FlowStateBefore(child, descendant, ctx);
+        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
+            return Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

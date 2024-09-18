@@ -14,7 +14,7 @@ internal static partial class OverloadResolutionAspect
     {
         if (node.Expression is not IFunctionGroupNameNode function) return null;
 
-        return new FunctionInvocationExpressionNode(node.Syntax, function, node.CurrentArguments);
+        return IFunctionInvocationExpressionNode.Create(node.Syntax, function, node.CurrentArguments);
     }
 
     public static partial IFixedSet<IFunctionInvocableDeclarationNode> FunctionInvocationExpression_CompatibleDeclarations(

@@ -137,7 +137,13 @@
 // ---------- Invocation Expressions
 = UnresolvedInvocationExpression.Expression.ExpectedType => null;
 ↓ FunctionInvocationExpression.FlowStateBefore(): `IFlowState`;
+= FunctionInvocationExpression.Arguments[0].**.FlowStateBefore()
+    => base.Inherited_FlowStateBefore(child, descendant, ctx);
+= FunctionInvocationExpression.Arguments[index].**.FlowStateBefore()
+    => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
 ↑ FunctionInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+= FunctionInvocationExpression.Arguments[index].ExpectedType
+    => ContextualizedOverload?.ParameterTypes[index].Type;
 = FunctionInvocationExpression.↑.Diagnostics;
 ↑ MethodInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
 = MethodInvocationExpression.↑.Diagnostics;
