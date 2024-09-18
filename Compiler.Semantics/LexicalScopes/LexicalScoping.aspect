@@ -106,6 +106,8 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 // ---------- Control Flow Expressions
 = IfExpression.ThenBlock.**.ContainingLexicalScope => TempCondition.FlowLexicalScope().True;
 = IfExpression.ElseClause.**.ContainingLexicalScope => TempCondition.FlowLexicalScope().False;
+= WhileExpression.Block.**.ContainingLexicalScope()
+    => TempCondition.FlowLexicalScope().True;
 ↓ ForeachExpression.PackageNameScope(): `PackageNameScope`;
 ↓ ForeachExpression.ContainingLexicalScope: `LexicalScope`;
 ↑ ForeachExpression.LexicalScope: `LexicalScope`;

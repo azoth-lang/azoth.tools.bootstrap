@@ -542,10 +542,10 @@ internal static class SyntaxBinder
         => IIfExpressionNode.Create(syntax, Expression(syntax.Condition), BlockOrResult(syntax.ThenBlock), ElseClause(syntax.ElseClause));
 
     private static ILoopExpressionNode LoopExpression(ILoopExpressionSyntax syntax)
-        => new LoopExpressionNode(syntax, BlockExpression(syntax.Block));
+        => ILoopExpressionNode.Create(syntax, BlockExpression(syntax.Block));
 
     private static IWhileExpressionNode WhileExpression(IWhileExpressionSyntax syntax)
-        => new WhileExpressionNode(syntax, Expression(syntax.Condition), BlockExpression(syntax.Block));
+        => IWhileExpressionNode.Create(syntax, Expression(syntax.Condition), BlockExpression(syntax.Block));
 
     private static IForeachExpressionNode ForeachExpression(IForeachExpressionSyntax syntax)
         => new ForeachExpressionNode(syntax, Expression(syntax.InExpression), Type(syntax.Type), BlockExpression(syntax.Block));

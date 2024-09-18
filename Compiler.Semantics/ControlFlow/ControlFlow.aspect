@@ -80,7 +80,13 @@
         ? ControlFlowSet.CreateNormal(ThenBlock, ElseClause!)
         : ControlFlowSet.CreateNormal(ThenBlock).Union(ControlFlowFollowing());
 = IfExpression.ControlFlowNext;
+= LoopExpression.Block.**.ControlFlowFollowing()
+    => ControlFlowSet.CreateLoop(CurrentBlock).Union(ControlFlowFollowing());
 = LoopExpression.ControlFlowNext;
+= WhileExpression.Condition.**.ControlFlowFollowing()
+    => ControlFlowSet.CreateNormal(Block).Union(ControlFlowFollowing());
+= WhileExpression.Block.**.ControlFlowFollowing()
+    => ControlFlowSet.CreateLoop(Condition).Union(ControlFlowFollowing());
 = WhileExpression.ControlFlowNext;
 = ForeachExpression.ControlFlowNext;
 ↓ ReturnExpression.ControlFlowExit(): Exit;

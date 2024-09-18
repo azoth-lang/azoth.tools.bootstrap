@@ -11460,6 +11460,13 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
         this.block = Child.Create(this, block);
     }
 
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentBlock))
+            return ControlFlowSet.CreateLoop(CurrentBlock).Union(ControlFlowFollowing());
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
@@ -11615,8 +11622,26 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
         this.block = Child.Create(this, block);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentBlock))
+            return TempCondition.FlowLexicalScope().True;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentCondition))
+            return ControlFlowSet.CreateNormal(Block).Union(ControlFlowFollowing());
+        if (ReferenceEquals(child, Self.CurrentBlock))
+            return ControlFlowSet.CreateLoop(Condition).Union(ControlFlowFollowing());
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentCondition))
+            return IAntetype.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -11624,9 +11649,18 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentCondition))
+            return DataType.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentBlock))
+            return Condition?.FlowStateAfter ?? IFlowState.Empty;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

@@ -50,6 +50,7 @@
 
 // ---------- Control Flow Expressions
 = IfExpression.Condition.ExpectedAntetype => IAntetype.OptionalBool;
+= WhileExpression.Condition.ExpectedAntetype => IAntetype.OptionalBool;
 
 // ---------- Invocation Expressions
 = UnresolvedInvocationExpression.Expression.ExpectedAntetype => null;

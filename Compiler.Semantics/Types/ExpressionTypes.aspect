@@ -126,6 +126,9 @@
 = IfExpression.Condition.ExpectedType => DataType.OptionalBool;
 ⟳ IfExpression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 = IfExpression.↑.Diagnostics;
+= WhileExpression.Block.**.FlowStateBefore
+    => Condition?.FlowStateAfter ?? IFlowState.Empty;
+= WhileExpression.Condition.ExpectedType => DataType.OptionalBool;
 = ReturnExpression.↑.Diagnostics;
 
 // ---------- Invocation Expressions
