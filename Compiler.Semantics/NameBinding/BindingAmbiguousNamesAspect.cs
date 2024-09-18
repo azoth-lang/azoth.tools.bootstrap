@@ -141,7 +141,7 @@ internal static partial class BindingAmbiguousNamesAspect
             switch (referencedDeclaration)
             {
                 case IFieldDeclarationNode fieldDeclaration:
-                    return new FieldAccessExpressionNode(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
+                    return IFieldAccessExpressionNode.Create(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
             }
 
         return IUnknownMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);

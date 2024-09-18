@@ -9,7 +9,6 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -196,7 +195,7 @@ internal static partial class ExpressionTypesAspect
 
         var syntax = node.Syntax;
         var implicitMove = isTemporary
-            ? new ImplicitTempMoveExpressionNode(syntax, node)
+            ? IImplicitTempMoveExpressionNode.Create(syntax, node)
             : (IExpressionNode)(node is IVariableNameExpressionNode variableName
                 ? IMoveVariableExpressionNode.Create(syntax, variableName, isImplicit: true)
                 : IMoveValueExpressionNode.Create(syntax, node, isImplicit: true));
