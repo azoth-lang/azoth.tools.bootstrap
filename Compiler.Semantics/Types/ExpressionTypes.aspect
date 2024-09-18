@@ -172,7 +172,13 @@
     => FunctionType.Parameters[index].Type;
 = FunctionReferenceInvocationExpression.↑.Diagnostics;
 ↓ InitializerInvocationExpression.FlowStateBefore(): `IFlowState`;
+= InitializerInvocationExpression.Arguments[0].**.FlowStateBefore()
+    => base.Inherited_FlowStateBefore(child, descendant, ctx);
+= InitializerInvocationExpression.Arguments[index].**.FlowStateBefore()
+    => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
 ↑ InitializerInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+= InitializerInvocationExpression.Arguments[index].ExpectedType
+    => ContextualizedOverload?.ParameterTypes[index].Type;
 = UnknownInvocationExpression.Type => DataType.Unknown;
 ↑ UnknownInvocationExpression.FlowStateAfter: `IFlowState` => throw new NotImplementedException();
 

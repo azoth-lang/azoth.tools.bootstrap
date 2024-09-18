@@ -121,7 +121,7 @@ internal static partial class OverloadResolutionAspect
         if (node.Expression is not IInitializerGroupNameNode initializer)
             return null;
 
-        return new InitializerInvocationExpressionNode(node.Syntax, initializer, node.CurrentArguments);
+        return IInitializerInvocationExpressionNode.Create(node.Syntax, initializer, node.CurrentArguments);
     }
 
     public static partial IFixedSet<IInitializerDeclarationNode> InitializerInvocationExpression_CompatibleDeclarations(

@@ -71,6 +71,9 @@
 ↑ eager FunctionReferenceInvocationExpression.FunctionAntetype: `FunctionAntetype`;
 = FunctionInvocationExpression.Arguments[index].ExpectedAntetype
     => FunctionAntetype.Parameters[index];
+// TODO it would be better if this didn't depend on types, but only on antetypes
+= InitializerInvocationExpression.Arguments[index].ExpectedAntetype
+    => ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype();
 
 // ---------- Ambiguous Name Expressions
 = MemberAccessExpression.*.**.ExpectedAntetype => null;
