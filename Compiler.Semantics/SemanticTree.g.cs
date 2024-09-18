@@ -2018,26 +2018,28 @@ public partial interface INewObjectExpressionNode : IInvocationExpressionNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ITypeNameNode ConstructingType { get; }
-    IdentifierName? ConstructorName { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     PackageNameScope PackageNameScope();
-    ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState FlowStateBefore();
+    ContextualizedOverload? ContextualizedOverload { get; }
     IMaybeAntetype ConstructingAntetype { get; }
     IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
     IConstructorDeclarationNode? ReferencedConstructor { get; }
+    IdentifierName? ConstructorName
+        => Syntax.ConstructorName;
     IFixedSet<IConstructorDeclarationNode> ReferencedConstructors { get; }
+    IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
+        => TempArguments;
+    IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
+        => Arguments;
 
     public static INewObjectExpressionNode Create(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         INewObjectExpressionSyntax syntax,
         ITypeNameNode constructingType,
-        IdentifierName? constructorName,
         IEnumerable<IAmbiguousExpressionNode> arguments)
-        => new NewObjectExpressionNode(tempAllArguments, allArguments, syntax, constructingType, constructorName, arguments);
+        => new NewObjectExpressionNode(syntax, constructingType, arguments);
 }
 
 // [Closed(typeof(UnsafeExpressionNode))]
@@ -2554,14 +2556,16 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
     ContextualizedOverload? ContextualizedOverload { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations { get; }
     IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
+    IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
+        => TempArguments;
+    IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
+        => Arguments;
 
     public static IFunctionInvocationExpressionNode Create(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IFunctionGroupNameNode functionGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments)
-        => new FunctionInvocationExpressionNode(tempAllArguments, allArguments, syntax, functionGroup, arguments);
+        => new FunctionInvocationExpressionNode(syntax, functionGroup, arguments);
 }
 
 // [Closed(typeof(MethodInvocationExpressionNode))]
@@ -2580,14 +2584,16 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
     ContextualizedOverload? ContextualizedOverload { get; }
     IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
+    IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
+        => TempArguments.Prepend(MethodGroup.Context);
+    IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
+        => Arguments.Prepend(MethodGroup.Context);
 
     public static IMethodInvocationExpressionNode Create(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IMethodGroupNameNode methodGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments)
-        => new MethodInvocationExpressionNode(tempAllArguments, allArguments, syntax, methodGroup, arguments);
+        => new MethodInvocationExpressionNode(syntax, methodGroup, arguments);
 }
 
 // [Closed(typeof(GetterInvocationExpressionNode))]
@@ -2607,16 +2613,18 @@ public partial interface IGetterInvocationExpressionNode : IInvocationExpression
     ContextualizedOverload? ContextualizedOverload { get; }
     IFlowState INameExpressionNode.FlowStateAfter
         => ExpressionTypesAspect.GetterInvocationExpression_FlowStateAfter(this);
+    IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
+        => [Context];
+    IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
+        => [Context];
 
     public static IGetterInvocationExpressionNode Create(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         StandardName propertyName,
         IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors,
         IGetterMethodDeclarationNode? referencedDeclaration)
-        => new GetterInvocationExpressionNode(tempAllArguments, allArguments, syntax, context, propertyName, referencedPropertyAccessors, referencedDeclaration);
+        => new GetterInvocationExpressionNode(syntax, context, propertyName, referencedPropertyAccessors, referencedDeclaration);
 }
 
 // [Closed(typeof(SetterInvocationExpressionNode))]
@@ -2636,17 +2644,19 @@ public partial interface ISetterInvocationExpressionNode : IInvocationExpression
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
     ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
+    IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
+        => [Context, TempValue];
+    IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
+        => [Context, Value];
 
     public static ISetterInvocationExpressionNode Create(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         IAssignmentExpressionSyntax syntax,
         IExpressionNode context,
         StandardName propertyName,
         IAmbiguousExpressionNode value,
         IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors,
         ISetterMethodDeclarationNode? referencedDeclaration)
-        => new SetterInvocationExpressionNode(tempAllArguments, allArguments, syntax, context, propertyName, value, referencedPropertyAccessors, referencedDeclaration);
+        => new SetterInvocationExpressionNode(syntax, context, propertyName, value, referencedPropertyAccessors, referencedDeclaration);
 }
 
 // [Closed(typeof(FunctionReferenceInvocationExpressionNode))]
@@ -2664,15 +2674,17 @@ public partial interface IFunctionReferenceInvocationExpressionNode : IInvocatio
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     FunctionAntetype FunctionAntetype { get; }
     FunctionType FunctionType { get; }
+    IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
+        => TempArguments;
+    IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
+        => Arguments;
 
     public static IFunctionReferenceInvocationExpressionNode Create(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IExpressionNode expression,
         IEnumerable<IAmbiguousExpressionNode> arguments,
         FunctionAntetype functionAntetype)
-        => new FunctionReferenceInvocationExpressionNode(tempAllArguments, allArguments, syntax, expression, arguments, functionAntetype);
+        => new FunctionReferenceInvocationExpressionNode(syntax, expression, arguments, functionAntetype);
 }
 
 // [Closed(typeof(InitializerInvocationExpressionNode))]
@@ -2692,14 +2704,16 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
     ContextualizedOverload? ContextualizedOverload { get; }
     IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
     IInitializerDeclarationNode? ReferencedDeclaration { get; }
+    IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
+        => TempArguments;
+    IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
+        => Arguments;
 
     public static IInitializerInvocationExpressionNode Create(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IInitializerGroupNameNode initializerGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments)
-        => new InitializerInvocationExpressionNode(tempAllArguments, allArguments, syntax, initializerGroup, arguments);
+        => new InitializerInvocationExpressionNode(syntax, initializerGroup, arguments);
 }
 
 // [Closed(typeof(UnknownInvocationExpressionNode))]
@@ -4737,42 +4751,42 @@ file class PackageNode : SemanticNode, IPackageNode
     private DiagnosticCollection? diagnostics;
     private bool diagnosticsCached;
     private IFixedSet<SemanticNode>? diagnosticsContributors;
-    public PackageSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.Package_Symbol);
-    private PackageSymbol? symbol;
-    private bool symbolCached;
-    public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
-        => GrammarAttribute.IsCached(in packageDeclarationsCached) ? packageDeclarations!
-            : this.Synthetic(ref packageDeclarationsCached, ref packageDeclarations,
-                SymbolNodeAspect.Package_PackageDeclarations);
-    private FixedDictionary<IdentifierName, IPackageDeclarationNode>? packageDeclarations;
-    private bool packageDeclarationsCached;
     public IFunctionDefinitionNode? EntryPoint
         => GrammarAttribute.IsCached(in entryPointCached) ? entryPoint
             : this.Synthetic(ref entryPointCached, ref entryPoint,
                 DefinitionsAspect.Package_EntryPoint);
     private IFunctionDefinitionNode? entryPoint;
     private bool entryPointCached;
-    public IPackageSymbols PackageSymbols
-        => GrammarAttribute.IsCached(in packageSymbolsCached) ? packageSymbols!
-            : this.Synthetic(ref packageSymbolsCached, ref packageSymbols,
-                SymbolsAspect.Package_PackageSymbols);
-    private IPackageSymbols? packageSymbols;
-    private bool packageSymbolsCached;
     public IPackageReferenceNode IntrinsicsReference
         => GrammarAttribute.IsCached(in intrinsicsReferenceCached) ? intrinsicsReference!
             : this.Synthetic(ref intrinsicsReferenceCached, ref intrinsicsReference,
                 n => Child.Attach(this, BuiltInsAspect.Package_IntrinsicsReference(n)));
     private IPackageReferenceNode? intrinsicsReference;
     private bool intrinsicsReferenceCached;
+    public FixedDictionary<IdentifierName, IPackageDeclarationNode> PackageDeclarations
+        => GrammarAttribute.IsCached(in packageDeclarationsCached) ? packageDeclarations!
+            : this.Synthetic(ref packageDeclarationsCached, ref packageDeclarations,
+                SymbolNodeAspect.Package_PackageDeclarations);
+    private FixedDictionary<IdentifierName, IPackageDeclarationNode>? packageDeclarations;
+    private bool packageDeclarationsCached;
+    public IPackageSymbols PackageSymbols
+        => GrammarAttribute.IsCached(in packageSymbolsCached) ? packageSymbols!
+            : this.Synthetic(ref packageSymbolsCached, ref packageSymbols,
+                SymbolsAspect.Package_PackageSymbols);
+    private IPackageSymbols? packageSymbols;
+    private bool packageSymbolsCached;
     public IFixedSet<ITypeDeclarationNode> PrimitivesDeclarations
         => GrammarAttribute.IsCached(in primitivesDeclarationsCached) ? primitivesDeclarations!
             : this.Synthetic(ref primitivesDeclarationsCached, ref primitivesDeclarations,
                 n => ChildSet.Attach(this, BuiltInsAspect.Package_PrimitivesDeclarations(n)));
     private IFixedSet<ITypeDeclarationNode>? primitivesDeclarations;
     private bool primitivesDeclarationsCached;
+    public PackageSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.Package_Symbol);
+    private PackageSymbol? symbol;
+    private bool symbolCached;
 
     public PackageNode(
         IPackageSyntax syntax,
@@ -4855,18 +4869,18 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
                 Inherited_PackageNameScope);
     private PackageNameScope? packageNameScope;
     private bool packageNameScopeCached;
-    public INamespaceDefinitionNode GlobalNamespace
-        => GrammarAttribute.IsCached(in globalNamespaceCached) ? globalNamespace!
-            : this.Synthetic(ref globalNamespaceCached, ref globalNamespace,
-                SymbolNodeAspect.PackageFacet_GlobalNamespace);
-    private INamespaceDefinitionNode? globalNamespace;
-    private bool globalNamespaceCached;
     public IFixedSet<IFacetMemberDefinitionNode> Definitions
         => GrammarAttribute.IsCached(in definitionsCached) ? definitions!
             : this.Synthetic(ref definitionsCached, ref definitions,
                 DefinitionsAspect.PackageFacet_Definitions);
     private IFixedSet<IFacetMemberDefinitionNode>? definitions;
     private bool definitionsCached;
+    public INamespaceDefinitionNode GlobalNamespace
+        => GrammarAttribute.IsCached(in globalNamespaceCached) ? globalNamespace!
+            : this.Synthetic(ref globalNamespaceCached, ref globalNamespace,
+                SymbolNodeAspect.PackageFacet_GlobalNamespace);
+    private INamespaceDefinitionNode? globalNamespace;
+    private bool globalNamespaceCached;
 
     public PackageFacetNode(
         IPackageSyntax syntax,
@@ -4876,9 +4890,11 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
         CompilationUnits = ChildSet.Attach(this, compilationUnits);
     }
 
-    internal override PackageNameScope Inherited_PackageNameScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return PackageNameScope;
+        if (ReferenceEquals(child, descendant))
+            return Is.OfType<IPackageFacetNode>(this);
+        return base.Inherited_ContainingDeclaration(child, descendant, ctx);
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -4893,11 +4909,9 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
         return Is.OfType<IPackageFacetNode>(this);
     }
 
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override PackageNameScope Inherited_PackageNameScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(child, descendant))
-            return Is.OfType<IPackageFacetNode>(this);
-        return base.Inherited_ContainingDeclaration(child, descendant, ctx);
+        return PackageNameScope;
     }
 }
 
@@ -4926,18 +4940,18 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     private DiagnosticCollection? diagnostics;
     private bool diagnosticsCached;
     private IFixedSet<SemanticNode>? diagnosticsContributors;
-    public NamespaceSearchScope LexicalScope
-        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
-            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
-                LexicalScopingAspect.CompilationUnit_LexicalScope);
-    private NamespaceSearchScope? lexicalScope;
-    private bool lexicalScopeCached;
     public INamespaceDefinitionNode ImplicitNamespace
         => GrammarAttribute.IsCached(in implicitNamespaceCached) ? implicitNamespace!
             : this.Synthetic(ref implicitNamespaceCached, ref implicitNamespace,
                 SymbolNodeAspect.CompilationUnit_ImplicitNamespace);
     private INamespaceDefinitionNode? implicitNamespace;
     private bool implicitNamespaceCached;
+    public NamespaceSearchScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.CompilationUnit_LexicalScope);
+    private NamespaceSearchScope? lexicalScope;
+    private bool lexicalScopeCached;
 
     public CompilationUnitNode(
         ICompilationUnitSyntax syntax,
@@ -4949,6 +4963,13 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
         Definitions = ChildList.Attach(this, definitions);
     }
 
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return Is.OfType<INamespaceDefinitionNode>(ImplicitNamespace);
+        return base.Inherited_ContainingDeclaration(child, descendant, ctx);
+    }
+
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return Is.OfType<NamespaceSearchScope>(LexicalScope);
@@ -4957,13 +4978,6 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     internal override CodeFile Inherited_File(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return ContextAspect.CompilationUnit_Children_Broadcast_File(this);
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, descendant))
-            return Is.OfType<INamespaceDefinitionNode>(ImplicitNamespace);
-        return base.Inherited_ContainingDeclaration(child, descendant, ctx);
     }
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
@@ -5021,12 +5035,6 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
     private bool containingLexicalScopeCached;
     public INamespaceDefinitionNode ContainingDeclaration
         => (INamespaceDefinitionNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public NamespaceSearchScope LexicalScope
-        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
-            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
-                LexicalScopingAspect.NamespaceBlockDefinition_LexicalScope);
-    private NamespaceSearchScope? lexicalScope;
-    private bool lexicalScopeCached;
     public INamespaceDefinitionNode ContainingNamespace
         => GrammarAttribute.IsCached(in containingNamespaceCached) ? containingNamespace!
             : this.Synthetic(ref containingNamespaceCached, ref containingNamespace,
@@ -5039,6 +5047,12 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
                 SymbolNodeAspect.NamespaceBlockDefinition_Definition);
     private INamespaceDefinitionNode? definition;
     private bool definitionCached;
+    public NamespaceSearchScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.NamespaceBlockDefinition_LexicalScope);
+    private NamespaceSearchScope? lexicalScope;
+    private bool lexicalScopeCached;
 
     public NamespaceBlockDefinitionNode(
         INamespaceBlockDefinitionSyntax syntax,
@@ -5050,16 +5064,16 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
         Members = ChildList.Attach(this, members);
     }
 
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Is.OfType<NamespaceSearchScope>(LexicalScope);
-    }
-
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
             return ContextAspect.NamespaceBlockDefinition_Children_ContainingDeclaration(this);
         return base.Inherited_ContainingDeclaration(child, descendant, ctx);
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<NamespaceSearchScope>(LexicalScope);
     }
 }
 
@@ -5082,18 +5096,18 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
                 NameLookupAspect.NamespaceDeclaration_MembersByName);
     private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? membersByName;
     private bool membersByNameCached;
-    public FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> NestedMembersByName
-        => GrammarAttribute.IsCached(in nestedMembersByNameCached) ? nestedMembersByName!
-            : this.Synthetic(ref nestedMembersByNameCached, ref nestedMembersByName,
-                NameLookupAspect.NamespaceDeclaration_NestedMembersByName);
-    private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? nestedMembersByName;
-    private bool nestedMembersByNameCached;
     public IFixedList<INamespaceMemberDeclarationNode> NestedMembers
         => GrammarAttribute.IsCached(in nestedMembersCached) ? nestedMembers!
             : this.Synthetic(ref nestedMembersCached, ref nestedMembers,
                 DeclarationsAspect.NamespaceDeclaration_NestedMembers);
     private IFixedList<INamespaceMemberDeclarationNode>? nestedMembers;
     private bool nestedMembersCached;
+    public FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> NestedMembersByName
+        => GrammarAttribute.IsCached(in nestedMembersByNameCached) ? nestedMembersByName!
+            : this.Synthetic(ref nestedMembersByNameCached, ref nestedMembersByName,
+                NameLookupAspect.NamespaceDeclaration_NestedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? nestedMembersByName;
+    private bool nestedMembersByNameCached;
 
     public NamespaceDefinitionNode(
         NamespaceSymbol symbol,
@@ -5136,44 +5150,44 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     private bool facetCached;
     public INamespaceDeclarationNode ContainingDeclaration
         => (INamespaceDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public FunctionSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.FunctionDefinition_Symbol);
-    private FunctionSymbol? symbol;
-    private bool symbolCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
                 TypeModifiersAspect.FunctionDefinition_AccessModifier);
     private AccessModifier accessModifier;
     private bool accessModifierCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.FunctionDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public FunctionSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.FunctionDefinition_Symbol);
+    private FunctionSymbol? symbol;
+    private bool symbolCached;
     public FunctionType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
                 TypeMemberDeclarationsAspect.ConcreteFunctionInvocableDefinition_Type);
     private FunctionType? type;
     private bool typeCached;
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
-        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
-            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
-    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
-    private bool variableBindingsMapCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
 
     public FunctionDefinitionNode(
         IFunctionDefinitionSyntax syntax,
@@ -5191,6 +5205,13 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return Entry;
@@ -5199,20 +5220,6 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return Exit;
-    }
-
-    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return VariableBindingsMap;
-        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return LexicalScope;
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5224,9 +5231,25 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
-    internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return false;
+        if (ReferenceEquals(descendant, Self.Body))
+            return Type.Return.Type.ToAntetype();
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Type.Return.Type;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Type.Return.Type;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5240,25 +5263,16 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.Type;
-        return base.Inherited_ExpectedType(child, descendant, ctx);
+        return false;
     }
 
-    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(child, Self.Body))
-            return Type.Return.Type;
-        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
-    }
-
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.Type.ToAntetype();
-        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -5295,36 +5309,60 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     private bool facetCached;
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IFixedSet<IClassMemberDeclarationNode> InclusiveMembers
-        => GrammarAttribute.IsCached(in inclusiveMembersCached) ? inclusiveMembers!
-            : this.Synthetic(ref inclusiveMembersCached, ref inclusiveMembers,
-                InheritanceAspect.ClassDefinition_InclusiveMembers);
-    private IFixedSet<IClassMemberDeclarationNode>? inclusiveMembers;
-    private bool inclusiveMembersCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
     public ObjectType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
             : this.Synthetic(ref declaredTypeCached, ref declaredType,
                 TypeDefinitionsAspect.ClassDefinition_DeclaredType);
     private ObjectType? declaredType;
     private bool declaredTypeCached;
-    public IFixedSet<IClassMemberDefinitionNode> Members
-        => GrammarAttribute.IsCached(in membersCached) ? members!
-            : this.Synthetic(ref membersCached, ref members,
-                DefaultMembersAspect.ClassDefinition_Members);
-    private IFixedSet<IClassMemberDefinitionNode>? members;
-    private bool membersCached;
     public IDefaultConstructorDefinitionNode? DefaultConstructor
         => GrammarAttribute.IsCached(in defaultConstructorCached) ? defaultConstructor
             : this.Synthetic(ref defaultConstructorCached, ref defaultConstructor,
                 n => Child.Attach(this, DefaultMembersAspect.ClassDefinition_DefaultConstructor(n)));
     private IDefaultConstructorDefinitionNode? defaultConstructor;
     private bool defaultConstructorCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public IFixedSet<IClassMemberDeclarationNode> InclusiveMembers
+        => GrammarAttribute.IsCached(in inclusiveMembersCached) ? inclusiveMembers!
+            : this.Synthetic(ref inclusiveMembersCached, ref inclusiveMembers,
+                InheritanceAspect.ClassDefinition_InclusiveMembers);
+    private IFixedSet<IClassMemberDeclarationNode>? inclusiveMembers;
+    private bool inclusiveMembersCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.TypeDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedSet<IClassMemberDefinitionNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                DefaultMembersAspect.ClassDefinition_Members);
+    private IFixedSet<IClassMemberDefinitionNode>? members;
+    private bool membersCached;
+    public IFixedSet<BareReferenceType> Supertypes
+        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
+            : this.Circular(ref supertypesCached, ref supertypes,
+                TypeDefinitionsAspect.TypeDefinition_Supertypes);
+    private Circular<IFixedSet<BareReferenceType>> supertypes = new([]);
+    private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
             : this.Synthetic(ref supertypesLexicalScopeCached, ref supertypesLexicalScope,
@@ -5337,30 +5375,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private UserTypeSymbol? symbol;
     private bool symbolCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
-    public IFixedSet<BareReferenceType> Supertypes
-        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
-            : this.Circular(ref supertypesCached, ref supertypes,
-                TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<BareReferenceType>> supertypes = new([]);
-    private bool supertypesCached;
-    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
-        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
-            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
-                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
-    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
-    private bool inclusiveInstanceMembersByNameCached;
-    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
-        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
-            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
-                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
-    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
-    private bool associatedMembersByNameCached;
 
     public ClassDefinitionNode(
         IClassDefinitionSyntax syntax,
@@ -5378,6 +5392,16 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         SourceMembers = ChildList.Attach(this, sourceMembers);
     }
 
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IUserTypeDeclarationNode>(this);
+    }
+
+    internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
+    }
+
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ContainsNode(Self.GenericParameters, child))
@@ -5389,11 +5413,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Is.OfType<IUserTypeDeclarationNode>(this);
-    }
-
     internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return this;
@@ -5402,11 +5421,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
-    }
-
-    internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -5451,36 +5465,60 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     private bool facetCached;
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IFixedSet<IStructMemberDeclarationNode> InclusiveMembers
-        => GrammarAttribute.IsCached(in inclusiveMembersCached) ? inclusiveMembers!
-            : this.Synthetic(ref inclusiveMembersCached, ref inclusiveMembers,
-                InheritanceAspect.StructDefinition_InclusiveMembers);
-    private IFixedSet<IStructMemberDeclarationNode>? inclusiveMembers;
-    private bool inclusiveMembersCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
     public StructType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
             : this.Synthetic(ref declaredTypeCached, ref declaredType,
                 TypeDefinitionsAspect.StructDefinition_DeclaredType);
     private StructType? declaredType;
     private bool declaredTypeCached;
-    public IFixedSet<IStructMemberDefinitionNode> Members
-        => GrammarAttribute.IsCached(in membersCached) ? members!
-            : this.Synthetic(ref membersCached, ref members,
-                DefaultMembersAspect.StructDefinition_Members);
-    private IFixedSet<IStructMemberDefinitionNode>? members;
-    private bool membersCached;
     public IDefaultInitializerDefinitionNode? DefaultInitializer
         => GrammarAttribute.IsCached(in defaultInitializerCached) ? defaultInitializer
             : this.Synthetic(ref defaultInitializerCached, ref defaultInitializer,
                 n => Child.Attach(this, DefaultMembersAspect.StructDefinition_DefaultInitializer(n)));
     private IDefaultInitializerDefinitionNode? defaultInitializer;
     private bool defaultInitializerCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public IFixedSet<IStructMemberDeclarationNode> InclusiveMembers
+        => GrammarAttribute.IsCached(in inclusiveMembersCached) ? inclusiveMembers!
+            : this.Synthetic(ref inclusiveMembersCached, ref inclusiveMembers,
+                InheritanceAspect.StructDefinition_InclusiveMembers);
+    private IFixedSet<IStructMemberDeclarationNode>? inclusiveMembers;
+    private bool inclusiveMembersCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.TypeDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedSet<IStructMemberDefinitionNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                DefaultMembersAspect.StructDefinition_Members);
+    private IFixedSet<IStructMemberDefinitionNode>? members;
+    private bool membersCached;
+    public IFixedSet<BareReferenceType> Supertypes
+        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
+            : this.Circular(ref supertypesCached, ref supertypes,
+                TypeDefinitionsAspect.TypeDefinition_Supertypes);
+    private Circular<IFixedSet<BareReferenceType>> supertypes = new([]);
+    private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
             : this.Synthetic(ref supertypesLexicalScopeCached, ref supertypesLexicalScope,
@@ -5493,30 +5531,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private UserTypeSymbol? symbol;
     private bool symbolCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
-    public IFixedSet<BareReferenceType> Supertypes
-        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
-            : this.Circular(ref supertypesCached, ref supertypes,
-                TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<BareReferenceType>> supertypes = new([]);
-    private bool supertypesCached;
-    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
-        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
-            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
-                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
-    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
-    private bool inclusiveInstanceMembersByNameCached;
-    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
-        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
-            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
-                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
-    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
-    private bool associatedMembersByNameCached;
 
     public StructDefinitionNode(
         IStructDefinitionSyntax syntax,
@@ -5532,6 +5546,16 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         SourceMembers = ChildList.Attach(this, sourceMembers);
     }
 
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IUserTypeDeclarationNode>(this);
+    }
+
+    internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
+    }
+
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ContainsNode(Self.GenericParameters, child))
@@ -5543,11 +5567,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Is.OfType<IUserTypeDeclarationNode>(this);
-    }
-
     internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return this;
@@ -5556,11 +5575,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
-    }
-
-    internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -5604,24 +5618,48 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     private bool facetCached;
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers
-        => GrammarAttribute.IsCached(in inclusiveMembersCached) ? inclusiveMembers!
-            : this.Synthetic(ref inclusiveMembersCached, ref inclusiveMembers,
-                InheritanceAspect.TraitDefinition_InclusiveMembers);
-    private IFixedSet<ITraitMemberDeclarationNode>? inclusiveMembers;
-    private bool inclusiveMembersCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
+    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
+        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
+            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
+                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
+    private bool associatedMembersByNameCached;
     public ObjectType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
             : this.Synthetic(ref declaredTypeCached, ref declaredType,
                 TypeDefinitionsAspect.TraitDefinition_DeclaredType);
     private ObjectType? declaredType;
     private bool declaredTypeCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public IFixedSet<ITraitMemberDeclarationNode> InclusiveMembers
+        => GrammarAttribute.IsCached(in inclusiveMembersCached) ? inclusiveMembers!
+            : this.Synthetic(ref inclusiveMembersCached, ref inclusiveMembers,
+                InheritanceAspect.TraitDefinition_InclusiveMembers);
+    private IFixedSet<ITraitMemberDeclarationNode>? inclusiveMembers;
+    private bool inclusiveMembersCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.TypeDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public IFixedSet<BareReferenceType> Supertypes
+        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
+            : this.Circular(ref supertypesCached, ref supertypes,
+                TypeDefinitionsAspect.TypeDefinition_Supertypes);
+    private Circular<IFixedSet<BareReferenceType>> supertypes = new([]);
+    private bool supertypesCached;
     public LexicalScope SupertypesLexicalScope
         => GrammarAttribute.IsCached(in supertypesLexicalScopeCached) ? supertypesLexicalScope!
             : this.Synthetic(ref supertypesLexicalScopeCached, ref supertypesLexicalScope,
@@ -5634,30 +5672,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 SymbolsAspect.TypeDefinition_Symbol);
     private UserTypeSymbol? symbol;
     private bool symbolCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
-    public IFixedSet<BareReferenceType> Supertypes
-        => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
-            : this.Circular(ref supertypesCached, ref supertypes,
-                TypeDefinitionsAspect.TypeDefinition_Supertypes);
-    private Circular<IFixedSet<BareReferenceType>> supertypes = new([]);
-    private bool supertypesCached;
-    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
-        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
-            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
-                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
-    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
-    private bool inclusiveInstanceMembersByNameCached;
-    public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
-        => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
-            : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
-                NameLookupAspect.UserTypeDeclaration_AssociatedMembersByName);
-    private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
-    private bool associatedMembersByNameCached;
 
     public TraitDefinitionNode(
         ITraitDefinitionSyntax syntax,
@@ -5673,6 +5687,16 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         Members = ChildSet.Attach(this, members);
     }
 
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IUserTypeDeclarationNode>(this);
+    }
+
+    internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
+    }
+
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ContainsNode(Self.GenericParameters, child))
@@ -5684,11 +5708,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Is.OfType<IUserTypeDeclarationNode>(this);
-    }
-
     internal override ITypeDefinitionNode Inherited_ContainingTypeDefinition(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return this;
@@ -5697,11 +5716,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
     internal override bool Inherited_IsAttributeType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
-    }
-
-    internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return DefinitionTypesAspect.TypeDefinition_Children_Broadcast_ContainingDeclaredType(this);
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -5737,24 +5751,24 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
                 Inherited_ContainingDeclaredType);
     private IDeclaredUserType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
-    public GenericParameterTypeSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.GenericParameter_Symbol);
-    private GenericParameterTypeSymbol? symbol;
-    private bool symbolCached;
-    public GenericParameter Parameter
-        => GrammarAttribute.IsCached(in parameterCached) ? parameter!
-            : this.Synthetic(ref parameterCached, ref parameter,
-                TypeDefinitionsAspect.GenericParameter_Parameter);
-    private GenericParameter? parameter;
-    private bool parameterCached;
     public GenericParameterType DeclaredType
         => GrammarAttribute.IsCached(in declaredTypeCached) ? declaredType!
             : this.Synthetic(ref declaredTypeCached, ref declaredType,
                 TypeDefinitionsAspect.GenericParameter_DeclaredType);
     private GenericParameterType? declaredType;
     private bool declaredTypeCached;
+    public GenericParameter Parameter
+        => GrammarAttribute.IsCached(in parameterCached) ? parameter!
+            : this.Synthetic(ref parameterCached, ref parameter,
+                TypeDefinitionsAspect.GenericParameter_Parameter);
+    private GenericParameter? parameter;
+    private bool parameterCached;
+    public GenericParameterTypeSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.GenericParameter_Symbol);
+    private GenericParameterTypeSymbol? symbol;
+    private bool symbolCached;
 
     public GenericParameterNode(
         IGenericParameterSyntax syntax,
@@ -5799,6 +5813,12 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
                 Inherited_ContainingDeclaredType);
     private IDeclaredUserType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -5811,12 +5831,6 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
                 SymbolsAspect.MethodDefinition_Symbol);
     private MethodSymbol? symbol;
     private bool symbolCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -5881,6 +5895,14 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     private bool facetCached;
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -5893,12 +5915,6 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
                 SymbolsAspect.MethodDefinition_Symbol);
     private MethodSymbol? symbol;
     private bool symbolCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -5911,8 +5927,6 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
                 VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
 
     public StandardMethodDefinitionNode(
         IStandardMethodDefinitionSyntax syntax,
@@ -5930,6 +5944,18 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IExecutableDefinitionNode>(this);
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return Entry;
@@ -5940,20 +5966,6 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         return Exit;
     }
 
-    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return VariableBindingsMap;
-        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return LexicalScope;
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
-    }
-
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -5961,6 +5973,27 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Self.MethodGroupType.Return.Type.ToAntetype();
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Return?.NamedType ?? DataType.Void;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Self.MethodGroupType.Return.Type;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5976,35 +6009,16 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return Return?.NamedType ?? DataType.Void;
-        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Is.OfType<IExecutableDefinitionNode>(this);
-    }
-
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
 
-    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(child, Self.Body))
-            return Self.MethodGroupType.Return.Type;
-        return base.Inherited_ExpectedType(child, descendant, ctx);
-    }
-
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Body))
-            return Self.MethodGroupType.Return.Type.ToAntetype();
-        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -6051,6 +6065,14 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     private bool facetCached;
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -6063,12 +6085,6 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
                 SymbolsAspect.MethodDefinition_Symbol);
     private MethodSymbol? symbol;
     private bool symbolCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -6081,8 +6097,6 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
                 VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
 
     public GetterMethodDefinitionNode(
         IGetterMethodDefinitionSyntax syntax,
@@ -6100,6 +6114,18 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IExecutableDefinitionNode>(this);
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return Entry;
@@ -6110,20 +6136,6 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         return Exit;
     }
 
-    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return VariableBindingsMap;
-        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return LexicalScope;
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
-    }
-
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6131,6 +6143,13 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Return?.NamedType ?? DataType.Void;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6146,21 +6165,16 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return Return?.NamedType ?? DataType.Void;
-        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Is.OfType<IExecutableDefinitionNode>(this);
-    }
-
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
+    }
+
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -6207,6 +6221,14 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     private bool facetCached;
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
+    public AccessModifier AccessModifier
+        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
+            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
+                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
+    private AccessModifier accessModifier;
+    private bool accessModifierCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -6219,12 +6241,6 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
                 SymbolsAspect.MethodDefinition_Symbol);
     private MethodSymbol? symbol;
     private bool symbolCached;
-    public AccessModifier AccessModifier
-        => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
-            : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
-                TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
-    private AccessModifier accessModifier;
-    private bool accessModifierCached;
     public ValueIdScope ValueIdScope
         => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
             : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
@@ -6237,8 +6253,6 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
                 VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
 
     public SetterMethodDefinitionNode(
         ISetterMethodDefinitionSyntax syntax,
@@ -6256,6 +6270,18 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IExecutableDefinitionNode>(this);
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return Entry;
@@ -6266,20 +6292,6 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         return Exit;
     }
 
-    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return VariableBindingsMap;
-        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return LexicalScope;
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
-    }
-
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6287,6 +6299,13 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Return?.NamedType ?? DataType.Void;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6302,21 +6321,16 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return Return?.NamedType ?? DataType.Void;
-        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Is.OfType<IExecutableDefinitionNode>(this);
-    }
-
     internal override Pseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
+    }
+
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -6358,43 +6372,50 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     private bool facetCached;
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public ConstructorSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.DefaultConstructorDefinition_Symbol);
-    private ConstructorSymbol? symbol;
-    private bool symbolCached;
-    public LexicalScope LexicalScope
-        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
-            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
-                LexicalScopingAspect.ConstructorDefinition_LexicalScope);
-    private LexicalScope? lexicalScope;
-    private bool lexicalScopeCached;
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
-        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
-            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
-    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
-    private bool variableBindingsMapCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
                 TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
     private AccessModifier accessModifier;
     private bool accessModifierCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.ConstructorDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public ConstructorSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.DefaultConstructorDefinition_Symbol);
+    private ConstructorSymbol? symbol;
+    private bool symbolCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
 
     public DefaultConstructorDefinitionNode()
     {
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
     internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6407,20 +6428,6 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
         return Exit;
     }
 
-    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return VariableBindingsMap;
-        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return LexicalScope;
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
-    }
-
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6428,6 +6435,13 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -6462,38 +6476,38 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     private bool facetCached;
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public ConstructorSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.SourceConstructorDefinition_Symbol);
-    private ConstructorSymbol? symbol;
-    private bool symbolCached;
-    public LexicalScope LexicalScope
-        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
-            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
-                LexicalScopingAspect.ConstructorDefinition_LexicalScope);
-    private LexicalScope? lexicalScope;
-    private bool lexicalScopeCached;
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
-        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
-            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
-    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
-    private bool variableBindingsMapCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
                 TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
     private AccessModifier accessModifier;
     private bool accessModifierCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.ConstructorDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public ConstructorSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.SourceConstructorDefinition_Symbol);
+    private ConstructorSymbol? symbol;
+    private bool symbolCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
 
     public SourceConstructorDefinitionNode(
         IConstructorDefinitionSyntax syntax,
@@ -6509,6 +6523,18 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IExecutableDefinitionNode>(this);
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return Entry;
@@ -6519,20 +6545,6 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         return Exit;
     }
 
-    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return VariableBindingsMap;
-        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return LexicalScope;
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
-    }
-
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6540,6 +6552,13 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return DataType.Void;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6555,16 +6574,11 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(child, Self.Body))
-            return DataType.Void;
-        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Is.OfType<IExecutableDefinitionNode>(this);
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -6595,43 +6609,50 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     private bool facetCached;
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public InitializerSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.DefaultInitializerDefinition_Symbol);
-    private InitializerSymbol? symbol;
-    private bool symbolCached;
-    public LexicalScope LexicalScope
-        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
-            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
-                LexicalScopingAspect.InitializerDefinition_LexicalScope);
-    private LexicalScope? lexicalScope;
-    private bool lexicalScopeCached;
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
-        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
-            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
-    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
-    private bool variableBindingsMapCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
                 TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
     private AccessModifier accessModifier;
     private bool accessModifierCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.InitializerDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public InitializerSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.DefaultInitializerDefinition_Symbol);
+    private InitializerSymbol? symbol;
+    private bool symbolCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
 
     public DefaultInitializerDefinitionNode()
     {
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
     internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6644,20 +6665,6 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
         return Exit;
     }
 
-    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return VariableBindingsMap;
-        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return LexicalScope;
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
-    }
-
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6665,6 +6672,13 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -6699,38 +6713,38 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     private bool facetCached;
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public InitializerSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.SourceInitializerDefinition_Symbol);
-    private InitializerSymbol? symbol;
-    private bool symbolCached;
-    public LexicalScope LexicalScope
-        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
-            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
-                LexicalScopingAspect.InitializerDefinition_LexicalScope);
-    private LexicalScope? lexicalScope;
-    private bool lexicalScopeCached;
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
-        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
-            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
-    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
-    private bool variableBindingsMapCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
                 TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
     private AccessModifier accessModifier;
     private bool accessModifierCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.InitializerDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public InitializerSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.SourceInitializerDefinition_Symbol);
+    private InitializerSymbol? symbol;
+    private bool symbolCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
 
     public SourceInitializerDefinitionNode(
         IInitializerDefinitionSyntax syntax,
@@ -6746,6 +6760,18 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Is.OfType<IExecutableDefinitionNode>(this);
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return Entry;
@@ -6756,20 +6782,6 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         return Exit;
     }
 
-    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return VariableBindingsMap;
-        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return LexicalScope;
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
-    }
-
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6777,6 +6789,13 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return DataType.Void;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6792,16 +6811,11 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(child, Self.Body))
-            return DataType.Void;
-        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
-    }
-
-    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return Is.OfType<IExecutableDefinitionNode>(this);
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -6841,50 +6855,50 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public FieldSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.FieldDefinition_Symbol);
-    private FieldSymbol? symbol;
-    private bool symbolCached;
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
-        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
-            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.FieldDefinition_VariableBindingsMap);
-    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
-    private bool variableBindingsMapCached;
-    public IMaybeAntetype BindingAntetype
-        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
-            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
-                DefinitionAntetypesAspect.FieldDefinition_BindingAntetype);
-    private IMaybeAntetype? bindingAntetype;
-    private bool bindingAntetypeCached;
-    public ValueId BindingValueId
-        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
-            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
-                ValueIdsAspect.FieldDefinition_BindingValueId);
-    private ValueId bindingValueId;
-    private bool bindingValueIdCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.FieldDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
-    public DataType BindingType
-        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : this.Synthetic(ref bindingTypeCached, ref bindingType,
-                NameBindingTypesAspect.FieldDefinition_BindingType);
-    private DataType? bindingType;
-    private bool bindingTypeCached;
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
                 TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
     private AccessModifier accessModifier;
     private bool accessModifierCached;
+    public IMaybeAntetype BindingAntetype
+        => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
+            : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
+                DefinitionAntetypesAspect.FieldDefinition_BindingAntetype);
+    private IMaybeAntetype? bindingAntetype;
+    private bool bindingAntetypeCached;
+    public DataType BindingType
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                NameBindingTypesAspect.FieldDefinition_BindingType);
+    private DataType? bindingType;
+    private bool bindingTypeCached;
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.FieldDefinition_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
+    public FieldSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.FieldDefinition_Symbol);
+    private FieldSymbol? symbol;
+    private bool symbolCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.FieldDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.FieldDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
 
     public FieldDefinitionNode(
         IFieldDefinitionSyntax syntax,
@@ -6908,13 +6922,6 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
         return Exit;
     }
 
-    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return VariableBindingsMap;
-        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
-    }
-
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -6929,6 +6936,13 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
         if (ReferenceEquals(child, Self.CurrentInitializer))
             return null;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
+    }
+
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
@@ -6971,44 +6985,44 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     private bool facetCached;
     public IUserTypeDeclarationNode ContainingDeclaration
         => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
-    public FunctionSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
-            : this.Synthetic(ref symbolCached, ref symbol,
-                SymbolsAspect.AssociatedFunctionDefinition_Symbol);
-    private FunctionSymbol? symbol;
-    private bool symbolCached;
-    public LexicalScope LexicalScope
-        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
-            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
-                LexicalScopingAspect.AssociatedFunctionDefinition_LexicalScope);
-    private LexicalScope? lexicalScope;
-    private bool lexicalScopeCached;
-    public FunctionType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                TypeMemberDeclarationsAspect.ConcreteFunctionInvocableDefinition_Type);
-    private FunctionType? type;
-    private bool typeCached;
-    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
-        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
-            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
-    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
-    private bool variableBindingsMapCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
-    public IEntryNode Entry { [DebuggerStepThrough] get; }
-    public IExitNode Exit { [DebuggerStepThrough] get; }
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
                 TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
     private AccessModifier accessModifier;
     private bool accessModifierCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
+    public LexicalScope LexicalScope
+        => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
+            : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
+                LexicalScopingAspect.AssociatedFunctionDefinition_LexicalScope);
+    private LexicalScope? lexicalScope;
+    private bool lexicalScopeCached;
+    public FunctionSymbol Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+            : this.Synthetic(ref symbolCached, ref symbol,
+                SymbolsAspect.AssociatedFunctionDefinition_Symbol);
+    private FunctionSymbol? symbol;
+    private bool symbolCached;
+    public FunctionType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                TypeMemberDeclarationsAspect.ConcreteFunctionInvocableDefinition_Type);
+    private FunctionType? type;
+    private bool typeCached;
+    public ValueIdScope ValueIdScope
+        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
+            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
+                ValueIdsAspect.InvocableDefinition_ValueIdScope);
+    private ValueIdScope? valueIdScope;
+    private bool valueIdScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
 
     public AssociatedFunctionDefinitionNode(
         IAssociatedFunctionDefinitionSyntax syntax,
@@ -7024,6 +7038,13 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return Entry;
@@ -7034,20 +7055,6 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         return Exit;
     }
 
-    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Entry))
-            return VariableBindingsMap;
-        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return LexicalScope;
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
-    }
-
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
@@ -7055,6 +7062,27 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Type.Return.Type.ToAntetype();
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Type.Return.Type;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Type.Return.Type;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -7068,25 +7096,11 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.Type;
-        return base.Inherited_ExpectedType(child, descendant, ctx);
-    }
-
-    internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.Body))
-            return Type.Return.Type;
-        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
-    }
-
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.Type.ToAntetype();
-        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -7194,18 +7208,6 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.NamedParameter_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
-    public ParameterType ParameterType
-        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
-            : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
-                NameBindingTypesAspect.NamedParameter_ParameterType);
-    private ParameterType parameterType;
-    private bool parameterTypeCached;
     public IMaybeAntetype BindingAntetype
         => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
             : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
@@ -7224,6 +7226,18 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
                 ValueIdsAspect.Parameter_BindingValueId);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.NamedParameter_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public ParameterType ParameterType
+        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
+            : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
+                NameBindingTypesAspect.NamedParameter_ParameterType);
+    private ParameterType parameterType;
+    private bool parameterTypeCached;
 
     public NamedParameterNode(
         INamedParameterSyntax syntax,
@@ -7276,36 +7290,36 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
                 Inherited_ContainingDeclaredType);
     private IDeclaredUserType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
-    public CapabilityType BindingType
-        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : this.Synthetic(ref bindingTypeCached, ref bindingType,
-                NameBindingTypesAspect.ConstructorSelfParameter_BindingType);
-    private CapabilityType? bindingType;
-    private bool bindingTypeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.SelfParameter_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeAntetype BindingAntetype
         => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
             : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
                 NameBindingAntetypesAspect.SelfParameter_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public SelfParameterType ParameterType
-        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
-            : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
-                NameBindingTypesAspect.SelfParameter_ParameterType);
-    private SelfParameterType parameterType;
-    private bool parameterTypeCached;
+    public CapabilityType BindingType
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                NameBindingTypesAspect.ConstructorSelfParameter_BindingType);
+    private CapabilityType? bindingType;
+    private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
                 ValueIdsAspect.Parameter_BindingValueId);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.SelfParameter_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public SelfParameterType ParameterType
+        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
+            : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
+                NameBindingTypesAspect.SelfParameter_ParameterType);
+    private SelfParameterType parameterType;
+    private bool parameterTypeCached;
 
     public ConstructorSelfParameterNode(
         IConstructorSelfParameterSyntax syntax,
@@ -7358,36 +7372,36 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
                 Inherited_ContainingDeclaredType);
     private IDeclaredUserType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
-    public CapabilityType BindingType
-        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : this.Synthetic(ref bindingTypeCached, ref bindingType,
-                NameBindingTypesAspect.InitializerSelfParameter_BindingType);
-    private CapabilityType? bindingType;
-    private bool bindingTypeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.SelfParameter_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeAntetype BindingAntetype
         => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
             : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
                 NameBindingAntetypesAspect.SelfParameter_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public SelfParameterType ParameterType
-        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
-            : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
-                NameBindingTypesAspect.SelfParameter_ParameterType);
-    private SelfParameterType parameterType;
-    private bool parameterTypeCached;
+    public CapabilityType BindingType
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                NameBindingTypesAspect.InitializerSelfParameter_BindingType);
+    private CapabilityType? bindingType;
+    private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
                 ValueIdsAspect.Parameter_BindingValueId);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.SelfParameter_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public SelfParameterType ParameterType
+        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
+            : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
+                NameBindingTypesAspect.SelfParameter_ParameterType);
+    private SelfParameterType parameterType;
+    private bool parameterTypeCached;
 
     public InitializerSelfParameterNode(
         IInitializerSelfParameterSyntax syntax,
@@ -7440,36 +7454,36 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
                 Inherited_ContainingDeclaredType);
     private IDeclaredUserType? containingDeclaredType;
     private bool containingDeclaredTypeCached;
-    public Pseudotype BindingType
-        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
-            : this.Synthetic(ref bindingTypeCached, ref bindingType,
-                NameBindingTypesAspect.MethodSelfParameter_BindingType);
-    private Pseudotype? bindingType;
-    private bool bindingTypeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.SelfParameter_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeAntetype BindingAntetype
         => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
             : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
                 NameBindingAntetypesAspect.SelfParameter_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public SelfParameterType ParameterType
-        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
-            : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
-                NameBindingTypesAspect.SelfParameter_ParameterType);
-    private SelfParameterType parameterType;
-    private bool parameterTypeCached;
+    public Pseudotype BindingType
+        => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
+            : this.Synthetic(ref bindingTypeCached, ref bindingType,
+                NameBindingTypesAspect.MethodSelfParameter_BindingType);
+    private Pseudotype? bindingType;
+    private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
             : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
                 ValueIdsAspect.Parameter_BindingValueId);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.SelfParameter_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public SelfParameterType ParameterType
+        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
+            : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
+                NameBindingTypesAspect.SelfParameter_ParameterType);
+    private SelfParameterType parameterType;
+    private bool parameterTypeCached;
 
     public MethodSelfParameterNode(
         IMethodSelfParameterSyntax syntax,
@@ -7527,6 +7541,12 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
                 NameBindingTypesAspect.FieldParameter_BindingType);
     private DataType? bindingType;
     private bool bindingTypeCached;
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.Parameter_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
     public ParameterType ParameterType
         => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
             : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
@@ -7539,12 +7559,6 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
                 SymbolNodeAspect.FieldParameter_ReferencedField);
     private IFieldDefinitionNode? referencedField;
     private bool referencedFieldCached;
-    public ValueId BindingValueId
-        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
-            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
-                ValueIdsAspect.Parameter_BindingValueId);
-    private ValueId bindingValueId;
-    private bool bindingValueIdCached;
 
     public FieldParameterNode(IFieldParameterSyntax syntax)
     {
@@ -7642,6 +7656,13 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.ResultStatement))
+            return ExpectedAntetype;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.ResultStatement))
@@ -7661,13 +7682,6 @@ file class ExpressionBodyNode : SemanticNode, IExpressionBodyNode
         if (ReferenceEquals(child, Self.ResultStatement))
             return true;
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
-    }
-
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.ResultStatement))
-            return ExpectedAntetype;
-        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 }
 
@@ -7706,6 +7720,12 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
                 BareTypeAspect.IdentifierTypeName_NamedBareType);
     private BareType? namedBareType;
     private bool namedBareTypeCached;
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.TypeName_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
@@ -7718,12 +7738,6 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
                 SymbolsAspect.StandardTypeName_ReferencedSymbol);
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
-    public DataType NamedType
-        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : this.Synthetic(ref namedTypeCached, ref namedType,
-                TypeExpressionsAspect.TypeName_NamedType);
-    private DataType? namedType;
-    private bool namedTypeCached;
 
     public IdentifierTypeNameNode(IIdentifierTypeNameSyntax syntax)
     {
@@ -7770,18 +7784,18 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
                 BareTypeAspect.SpecialTypeName_NamedBareType);
     private BareType? namedBareType;
     private bool namedBareTypeCached;
-    public TypeSymbol ReferencedSymbol
-        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol!
-            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
-                SymbolsAspect.SpecialTypeName_ReferencedSymbol);
-    private TypeSymbol? referencedSymbol;
-    private bool referencedSymbolCached;
     public DataType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,
                 TypeExpressionsAspect.TypeName_NamedType);
     private DataType? namedType;
     private bool namedTypeCached;
+    public TypeSymbol ReferencedSymbol
+        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol!
+            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
+                SymbolsAspect.SpecialTypeName_ReferencedSymbol);
+    private TypeSymbol? referencedSymbol;
+    private bool referencedSymbolCached;
 
     public SpecialTypeNameNode(ISpecialTypeNameSyntax syntax)
     {
@@ -7825,6 +7839,12 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
                 BareTypeAspect.GenericTypeName_NamedBareType);
     private BareType? namedBareType;
     private bool namedBareTypeCached;
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.TypeName_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
@@ -7837,12 +7857,6 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
                 SymbolsAspect.StandardTypeName_ReferencedSymbol);
     private TypeSymbol? referencedSymbol;
     private bool referencedSymbolCached;
-    public DataType NamedType
-        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : this.Synthetic(ref namedTypeCached, ref namedType,
-                TypeExpressionsAspect.TypeName_NamedType);
-    private DataType? namedType;
-    private bool namedTypeCached;
 
     public GenericTypeNameNode(
         IGenericTypeNameSyntax syntax,
@@ -7882,18 +7896,18 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public TypeSymbol? ReferencedSymbol
-        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol
-            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
-                SymbolsAspect.QualifiedTypeName_ReferencedSymbol);
-    private TypeSymbol? referencedSymbol;
-    private bool referencedSymbolCached;
     public DataType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,
                 TypeExpressionsAspect.TypeName_NamedType);
     private DataType? namedType;
     private bool namedTypeCached;
+    public TypeSymbol? ReferencedSymbol
+        => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol
+            : this.Synthetic(ref referencedSymbolCached, ref referencedSymbol,
+                SymbolsAspect.QualifiedTypeName_ReferencedSymbol);
+    private TypeSymbol? referencedSymbol;
+    private bool referencedSymbolCached;
 
     public QualifiedTypeNameNode(
         IQualifiedTypeNameSyntax syntax,
@@ -7917,18 +7931,18 @@ file class OptionalTypeNode : SemanticNode, IOptionalTypeNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public DataType NamedType
-        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : this.Synthetic(ref namedTypeCached, ref namedType,
-                TypeExpressionsAspect.OptionalType_NamedType);
-    private DataType? namedType;
-    private bool namedTypeCached;
     public IMaybeAntetype NamedAntetype
         => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
             : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
                 TypeExpressionsAntetypesAspect.OptionalType_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.OptionalType_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
 
     public OptionalTypeNode(
         IOptionalTypeSyntax syntax,
@@ -7951,18 +7965,18 @@ file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public DataType NamedType
-        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : this.Synthetic(ref namedTypeCached, ref namedType,
-                TypeExpressionsAspect.CapabilityType_NamedType);
-    private DataType? namedType;
-    private bool namedTypeCached;
     public IMaybeAntetype NamedAntetype
         => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
             : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
                 TypeExpressionsAntetypesAspect.CapabilityType_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.CapabilityType_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
 
     public CapabilityTypeNode(
         ICapabilityTypeSyntax syntax,
@@ -7998,18 +8012,18 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public DataType NamedType
-        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : this.Synthetic(ref namedTypeCached, ref namedType,
-                TypeExpressionsAspect.FunctionType_NamedType);
-    private DataType? namedType;
-    private bool namedTypeCached;
     public IMaybeAntetype NamedAntetype
         => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
             : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
                 TypeExpressionsAntetypesAspect.FunctionType_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.FunctionType_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
 
     public FunctionTypeNode(
         IFunctionTypeSyntax syntax,
@@ -8062,18 +8076,18 @@ file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeN
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public DataType NamedType
-        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : this.Synthetic(ref namedTypeCached, ref namedType,
-                TypeExpressionsAspect.CapabilityViewpointType_NamedType);
-    private DataType? namedType;
-    private bool namedTypeCached;
     public IMaybeAntetype NamedAntetype
         => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
             : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
                 TypeExpressionsAntetypesAspect.ViewpointType_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.CapabilityViewpointType_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
 
     public CapabilityViewpointTypeNode(
         ICapabilityViewpointTypeSyntax syntax,
@@ -8114,18 +8128,18 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
                 Inherited_MethodSelfType);
     private Pseudotype? methodSelfType;
     private bool methodSelfTypeCached;
-    public DataType NamedType
-        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
-            : this.Synthetic(ref namedTypeCached, ref namedType,
-                TypeExpressionsAspect.SelfViewpointType_NamedType);
-    private DataType? namedType;
-    private bool namedTypeCached;
     public IMaybeAntetype NamedAntetype
         => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
             : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
                 TypeExpressionsAntetypesAspect.ViewpointType_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
+    public DataType NamedType
+        => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
+            : this.Synthetic(ref namedTypeCached, ref namedType,
+                TypeExpressionsAspect.SelfViewpointType_NamedType);
+    private DataType? namedType;
+    private bool namedTypeCached;
 
     public SelfViewpointTypeNode(
         ISelfViewpointTypeSyntax syntax,
@@ -8223,6 +8237,12 @@ file class ExitNode : SemanticNode, IExitNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.DataFlow_DataFlowPrevious);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
@@ -8237,12 +8257,6 @@ file class ExitNode : SemanticNode, IExitNode
                 SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
     private bool definitelyUnassignedCached;
-    public IFixedSet<IDataFlowNode> DataFlowPrevious
-        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
-            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
-                DataFlowAspect.DataFlow_DataFlowPrevious);
-    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
-    private bool dataFlowPreviousCached;
 
     public ExitNode()
     {
@@ -8305,24 +8319,24 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.ResultStatement_Type);
-    private DataType? type;
-    private bool typeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.ResultStatement_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
     public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.ResultStatement_Antetype);
     private IMaybeAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.ResultStatement_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.ResultStatement_Type);
+    private DataType? type;
+    private bool typeCached;
 
     public ResultStatementNode(
         IResultStatementSyntax syntax,
@@ -8332,18 +8346,18 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
         this.expression = Child.Create(this, expression);
     }
 
-    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.CurrentExpression))
-            return ExpectedType;
-        return base.Inherited_ExpectedType(child, descendant, ctx);
-    }
-
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentExpression))
             return ExpectedAntetype;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentExpression))
+            return ExpectedType;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -8400,24 +8414,6 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     private bool containingLexicalScopeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                NameBindingTypesAspect.VariableDeclarationStatement_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.VariableDeclarationStatement_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public ValueId BindingValueId
-        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
-            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
-                ValueIdsAspect.VariableDeclarationStatement_BindingValueId);
-    private ValueId bindingValueId;
-    private bool bindingValueIdCached;
     public IMaybeAntetype BindingAntetype
         => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
             : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
@@ -8430,6 +8426,24 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
                 NameBindingTypesAspect.VariableDeclarationStatement_BindingType);
     private DataType? bindingType;
     private bool bindingTypeCached;
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.VariableDeclarationStatement_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.VariableDeclarationStatement_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.DataFlow_DataFlowPrevious);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
@@ -8444,18 +8458,18 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
                 SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
     private bool definitelyUnassignedCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                NameBindingTypesAspect.VariableDeclarationStatement_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.VariableDeclarationStatement_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public IFixedSet<IDataFlowNode> DataFlowPrevious
-        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
-            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
-                DataFlowAspect.DataFlow_DataFlowPrevious);
-    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
-    private bool dataFlowPreviousCached;
 
     public VariableDeclarationStatementNode(
         IVariableDeclarationStatementSyntax syntax,
@@ -8467,6 +8481,13 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         Capability = Child.Attach(this, capability);
         Type = Child.Attach(this, type);
         this.initializer = Child.Create(this, initializer);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentInitializer))
+            return BindingAntetype;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -8488,13 +8509,6 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         if (ReferenceEquals(descendant, Self.CurrentInitializer))
             return false;
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
-    }
-
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.CurrentInitializer))
-            return BindingAntetype;
-        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -8578,6 +8592,13 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
         this.expression = Child.Create(this, expression);
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentExpression))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentExpression))
@@ -8597,13 +8618,6 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
         if (ReferenceEquals(descendant, Self.CurrentExpression))
             return false;
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
-    }
-
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(descendant, Self.CurrentExpression))
-            return null;
-        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -8741,24 +8755,6 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     private bool containingLexicalScopeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                NameBindingTypesAspect.BindingPattern_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.BindingPattern_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public ValueId BindingValueId
-        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
-            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
-                ValueIdsAspect.BindingPattern_BindingValueId);
-    private ValueId bindingValueId;
-    private bool bindingValueIdCached;
     public IMaybeAntetype BindingAntetype
         => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
             : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
@@ -8771,6 +8767,24 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
                 NameBindingTypesAspect.BindingPattern_BindingType);
     private DataType? bindingType;
     private bool bindingTypeCached;
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.BindingPattern_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.BindingPattern_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.DataFlow_DataFlowPrevious);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
@@ -8785,12 +8799,12 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
                 SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
     private bool definitelyUnassignedCached;
-    public IFixedSet<IDataFlowNode> DataFlowPrevious
-        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
-            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
-                DataFlowAspect.DataFlow_DataFlowPrevious);
-    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
-    private bool dataFlowPreviousCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                NameBindingTypesAspect.BindingPattern_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
 
     public BindingPatternNode(IBindingPatternSyntax syntax)
     {
@@ -8958,30 +8972,30 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.BlockExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.BlockExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.BlockExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.BlockExpression_Antetype);
     private IMaybeAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.BlockExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.BlockExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.BlockExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -8997,21 +9011,25 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         Statements = ChildList.Attach(this, statements);
     }
 
-    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return false;
-    }
-
-    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return false;
-    }
-
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.Statements, child) is { } statementIndex)
             return LexicalScopingAspect.BodyOrBlock_Statements_Broadcast_ContainingLexicalScope(this, statementIndex);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (IndexOfNode(Self.Statements, child) is { } index)
+            return index < Statements.Count - 1 ? ControlFlowSet.CreateNormal(Statements[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -9023,11 +9041,14 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
-    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (IndexOfNode(Self.Statements, child) is { } index)
-            return index < Statements.Count - 1 ? ControlFlowSet.CreateNormal(Statements[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
-        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -9072,11 +9093,8 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
-    public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public INewObjectExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNameNode ConstructingType { [DebuggerStepThrough] get; }
-    public IdentifierName? ConstructorName { [DebuggerStepThrough] get; }
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
@@ -9120,48 +9138,42 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         => Inherited_PackageNameScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.NewObjectExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.NewObjectExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.NewObjectExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.NewObjectExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public ContextualizedOverload? ContextualizedOverload
-        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
-            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
-                ExpressionTypesAspect.NewObjectExpression_ContextualizedOverload);
-    private ContextualizedOverload? contextualizedOverload;
-    private bool contextualizedOverloadCached;
-    public IMaybeAntetype ConstructingAntetype
-        => GrammarAttribute.IsCached(in constructingAntetypeCached) ? constructingAntetype!
-            : this.Synthetic(ref constructingAntetypeCached, ref constructingAntetype,
-                NameBindingAntetypesAspect.NewObjectExpression_ConstructingAntetype);
-    private IMaybeAntetype? constructingAntetype;
-    private bool constructingAntetypeCached;
     public IFixedSet<IConstructorDeclarationNode> CompatibleConstructors
         => GrammarAttribute.IsCached(in compatibleConstructorsCached) ? compatibleConstructors!
             : this.Synthetic(ref compatibleConstructorsCached, ref compatibleConstructors,
                 OverloadResolutionAspect.NewObjectExpression_CompatibleConstructors);
     private IFixedSet<IConstructorDeclarationNode>? compatibleConstructors;
     private bool compatibleConstructorsCached;
+    public IMaybeAntetype ConstructingAntetype
+        => GrammarAttribute.IsCached(in constructingAntetypeCached) ? constructingAntetype!
+            : this.Synthetic(ref constructingAntetypeCached, ref constructingAntetype,
+                NameBindingAntetypesAspect.NewObjectExpression_ConstructingAntetype);
+    private IMaybeAntetype? constructingAntetype;
+    private bool constructingAntetypeCached;
+    public ContextualizedOverload? ContextualizedOverload
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
+                ExpressionTypesAspect.NewObjectExpression_ContextualizedOverload);
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.NewObjectExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.NewObjectExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
     public IConstructorDeclarationNode? ReferencedConstructor
         => GrammarAttribute.IsCached(in referencedConstructorCached) ? referencedConstructor
             : this.Synthetic(ref referencedConstructorCached, ref referencedConstructor,
@@ -9174,6 +9186,12 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
                 BindingNamesAspect.NewObjectExpression_ReferencedConstructors);
     private IFixedSet<IConstructorDeclarationNode>? referencedConstructors;
     private bool referencedConstructorsCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.NewObjectExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -9182,19 +9200,56 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     private bool valueIdCached;
 
     public NewObjectExpressionNode(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         INewObjectExpressionSyntax syntax,
         ITypeNameNode constructingType,
-        IdentifierName? constructorName,
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
-        TempAllArguments = tempAllArguments;
-        AllArguments = allArguments;
         Syntax = syntax;
         ConstructingType = Child.Attach(this, constructingType);
-        ConstructorName = constructorName;
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.ConstructingType))
+            return ContainingLexicalScope();
+        if (0 < Self.CurrentArguments.Count && ReferenceEquals(child, Self.CurrentArguments[0]))
+            return ContainingLexicalScope();
+        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
+            return TempArguments[index - 1].FlowLexicalScope().True;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
+            return index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
+            return ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype();
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
+            return ContextualizedOverload?.ParameterTypes[index].Type;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (0 < Self.CurrentArguments.Count && ReferenceEquals(child, Self.CurrentArguments[0]))
+            return base.Inherited_FlowStateBefore(child, descendant, ctx);
+        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
+            return Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -9293,30 +9348,30 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.UnsafeExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.UnsafeExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.UnsafeExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.UnsafeExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.UnsafeExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.UnsafeExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.UnsafeExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -9330,6 +9385,13 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
     {
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -9428,24 +9490,24 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
                 ExpressionAntetypesAspect.BoolLiteralExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public BoolConstValueType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.BoolLiteralExpression_Type);
-    private BoolConstValueType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public BoolConstValueType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.BoolLiteralExpression_Type);
+    private BoolConstValueType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -9459,6 +9521,13 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     {
         Syntax = syntax;
         Value = value;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -9557,24 +9626,24 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
                 ExpressionAntetypesAspect.IntegerLiteralExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public IntegerConstValueType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.IntegerLiteralExpression_Type);
-    private IntegerConstValueType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public IntegerConstValueType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.IntegerLiteralExpression_Type);
+    private IntegerConstValueType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -9588,6 +9657,13 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
     {
         Syntax = syntax;
         Value = value;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -9685,24 +9761,24 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
                 ExpressionAntetypesAspect.NoneLiteralExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public OptionalType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.NoneLiteralExpression_Type);
-    private OptionalType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public OptionalType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.NoneLiteralExpression_Type);
+    private OptionalType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -9713,6 +9789,13 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
     public NoneLiteralExpressionNode(INoneLiteralExpressionSyntax syntax)
     {
         Syntax = syntax;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -9809,30 +9892,30 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.StringLiteralExpression_Type);
-    private DataType? type;
-    private bool typeCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.StringLiteralExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.LiteralExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.StringLiteralExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -9846,6 +9929,13 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
     {
         Syntax = syntax;
         Value = value;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -9951,30 +10041,24 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.AssignmentExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.AssignmentExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.AssignmentExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.AssignmentExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.AssignmentExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.DataFlow_DataFlowPrevious);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
@@ -9989,18 +10073,24 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
                 SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
     private bool definitelyUnassignedCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.AssignmentExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.AssignmentExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
                 ValueIdsAspect.AmbiguousExpression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
-    public IFixedSet<IDataFlowNode> DataFlowPrevious
-        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
-            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
-                DataFlowAspect.DataFlow_DataFlowPrevious);
-    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
-    private bool dataFlowPreviousCached;
 
     public AssignmentExpressionNode(
         IAssignmentExpressionSyntax syntax,
@@ -10012,6 +10102,13 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
         this.leftOperand = Child.Create(this, leftOperand);
         Operator = @operator;
         this.rightOperand = Child.Create(this, rightOperand);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -10122,36 +10219,36 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.BinaryOperatorExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.BinaryOperatorExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.BinaryOperatorExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.BinaryOperatorExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.BinaryOperatorExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.BinaryOperatorExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
     public IAntetype? NumericOperatorCommonAntetype
         => GrammarAttribute.IsCached(in numericOperatorCommonAntetypeCached) ? numericOperatorCommonAntetype
             : this.Synthetic(ref numericOperatorCommonAntetypeCached, ref numericOperatorCommonAntetype,
                 ExpressionAntetypesAspect.BinaryOperatorExpression_NumericOperatorCommonAntetype);
     private IAntetype? numericOperatorCommonAntetype;
     private bool numericOperatorCommonAntetypeCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.BinaryOperatorExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -10171,6 +10268,20 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         this.rightOperand = Child.Create(this, rightOperand);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentRightOperand))
+            return LexicalScopingAspect.BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(this);
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -10179,13 +10290,6 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
-    }
-
-    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        if (ReferenceEquals(child, Self.CurrentRightOperand))
-            return LexicalScopingAspect.BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(this);
-        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -10275,30 +10379,30 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.UnaryOperatorExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.UnaryOperatorExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.UnaryOperatorExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.UnaryOperatorExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.UnaryOperatorExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.UnaryOperatorExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.UnaryOperatorExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -10316,6 +10420,13 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
         Fixity = fixity;
         Operator = @operator;
         this.operand = Child.Create(this, operand);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -10419,18 +10530,18 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
                 ControlFlowAspect.IdExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.IdExpression_Type);
-    private DataType? type;
-    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.IdExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.IdExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -10444,6 +10555,13 @@ file class IdExpressionNode : SemanticNode, IIdExpressionNode
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -10543,30 +10661,30 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.ConversionExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.ConversionExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.ConversionExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.ConversionExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.ConversionExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.ConversionExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.ConversionExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -10584,6 +10702,13 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
         this.referent = Child.Create(this, referent);
         Operator = @operator;
         ConvertToType = Child.Attach(this, convertToType);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -10713,6 +10838,13 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
         Type = type;
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -10837,16 +10969,6 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         Pattern = Child.Attach(this, pattern);
     }
 
-    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return false;
-    }
-
-    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return false;
-    }
-
     internal override IMaybeAntetype Inherited_ContextBindingAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Pattern))
@@ -10859,6 +10981,23 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         if (ReferenceEquals(descendant, Self.Pattern))
             return NameBindingTypesAspect.PatternMatchExpression_Pattern_ContextBindingType(this);
         return base.Inherited_ContextBindingType(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -10957,30 +11096,30 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.IfExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.IfExpression_Type);
-    private DataType? type;
-    private bool typeCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.IfExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.IfExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.IfExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.IfExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -10998,6 +11137,13 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         this.condition = Child.Create(this, condition);
         this.thenBlock = Child.Create(this, thenBlock);
         this.elseClause = Child.Create(this, elseClause);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -11094,30 +11240,30 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.LoopExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.LoopExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.LoopExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.LoopExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.LoopExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.LoopExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.LoopExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11131,6 +11277,13 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
     {
         Syntax = syntax;
         this.block = Child.Create(this, block);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -11233,30 +11386,30 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.WhileExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.WhileExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.WhileExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.WhileExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.WhileExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.WhileExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.WhileExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11272,6 +11425,13 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
         Syntax = syntax;
         this.condition = Child.Create(this, condition);
         this.block = Child.Create(this, block);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -11392,36 +11552,12 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.ForeachExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ForeachExpressionTypeAspect.ForeachExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ForeachExpressionTypeAspect.ForeachExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.ForeachExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public ValueId BindingValueId
-        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
-            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
-                ValueIdsAspect.ForeachExpression_BindingValueId);
-    private ValueId bindingValueId;
-    private bool bindingValueIdCached;
     public IMaybeAntetype BindingAntetype
         => GrammarAttribute.IsCached(in bindingAntetypeCached) ? bindingAntetype!
             : this.Synthetic(ref bindingAntetypeCached, ref bindingAntetype,
@@ -11434,6 +11570,24 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 NameBindingTypesAspect.ForeachExpression_BindingType);
     private DataType? bindingType;
     private bool bindingTypeCached;
+    public ValueId BindingValueId
+        => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
+            : this.Synthetic(ref bindingValueIdCached, ref bindingValueId, ref syncLock,
+                ValueIdsAspect.ForeachExpression_BindingValueId);
+    private ValueId bindingValueId;
+    private bool bindingValueIdCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.ForeachExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.DataFlow_DataFlowPrevious);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
     public BindingFlags<IVariableBindingNode> DefinitelyAssigned
         => GrammarAttribute.IsCached(in definitelyAssignedCached) ? definitelyAssigned.UnsafeValue
             : this.Circular(ref definitelyAssignedCached, ref definitelyAssigned,
@@ -11448,24 +11602,30 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 SingleAssignmentAspect.DataFlow_DefinitelyUnassigned_Initial);
     private Circular<BindingFlags<IVariableBindingNode>> definitelyUnassigned = Circular.Unset;
     private bool definitelyUnassignedCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ForeachExpressionTypeAspect.ForeachExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
                 LexicalScopingAspect.ForeachExpression_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ForeachExpressionTypeAspect.ForeachExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
                 ValueIdsAspect.AmbiguousExpression_ValueId);
     private ValueId valueId;
     private bool valueIdCached;
-    public IFixedSet<IDataFlowNode> DataFlowPrevious
-        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
-            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
-                DataFlowAspect.DataFlow_DataFlowPrevious);
-    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
-    private bool dataFlowPreviousCached;
 
     public ForeachExpressionNode(
         IForeachExpressionSyntax syntax,
@@ -11499,6 +11659,13 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         IteratedAntetype = iteratedAntetype;
         IteratedType = iteratedType;
         FlowStateBeforeBlock = flowStateBeforeBlock;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -11596,18 +11763,18 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.BreakExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.BreakExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11621,6 +11788,13 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
     {
         Syntax = syntax;
         this.value = Child.Create(this, value);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -11710,18 +11884,18 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.NextExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.NextExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -11732,6 +11906,13 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
     public NextExpressionNode(INextExpressionSyntax syntax)
     {
         Syntax = syntax;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -11863,6 +12044,13 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
         this.value = Child.Create(this, value);
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -11953,16 +12141,6 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
-    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return false;
-    }
-
-    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return false;
-    }
-
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.CurrentExpression))
@@ -11974,6 +12152,13 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentExpression))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentExpression))
@@ -11981,11 +12166,14 @@ file class UnresolvedInvocationExpressionNode : SemanticNode, IUnresolvedInvocat
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(descendant, Self.CurrentExpression))
-            return null;
-        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+        return false;
+    }
+
+    internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return false;
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -12008,8 +12196,6 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
-    public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IFunctionGroupNameNode> functionGroup;
     private bool functionGroupCached;
@@ -12058,48 +12244,48 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.FunctionInvocationExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.FunctionInvocationExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.FunctionInvocationExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.FunctionInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public ContextualizedOverload? ContextualizedOverload
-        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
-            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
-                ExpressionTypesAspect.FunctionInvocationExpression_ContextualizedOverload);
-    private ContextualizedOverload? contextualizedOverload;
-    private bool contextualizedOverloadCached;
     public IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations
         => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
             : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
                 OverloadResolutionAspect.FunctionInvocationExpression_CompatibleDeclarations);
     private IFixedSet<IFunctionInvocableDeclarationNode>? compatibleDeclarations;
     private bool compatibleDeclarationsCached;
+    public ContextualizedOverload? ContextualizedOverload
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
+                ExpressionTypesAspect.FunctionInvocationExpression_ContextualizedOverload);
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.FunctionInvocationExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.FunctionInvocationExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
     public IFunctionInvocableDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
                 OverloadResolutionAspect.FunctionInvocationExpression_ReferencedDeclaration);
     private IFunctionInvocableDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.FunctionInvocationExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12108,17 +12294,20 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     private bool valueIdCached;
 
     public FunctionInvocationExpressionNode(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IFunctionGroupNameNode functionGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
-        TempAllArguments = tempAllArguments;
-        AllArguments = allArguments;
         Syntax = syntax;
         this.functionGroup = Child.Create(this, functionGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -12174,8 +12363,6 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
-    public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IMethodGroupNameNode> methodGroup;
     private bool methodGroupCached;
@@ -12222,48 +12409,48 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.MethodInvocationExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.MethodInvocationExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.MethodInvocationExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.MethodInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public ContextualizedOverload? ContextualizedOverload
-        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
-            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
-                ExpressionTypesAspect.MethodInvocationExpression_ContextualizedOverload);
-    private ContextualizedOverload? contextualizedOverload;
-    private bool contextualizedOverloadCached;
     public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations
         => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
             : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
                 OverloadResolutionAspect.MethodInvocationExpression_CompatibleDeclarations);
     private IFixedSet<IStandardMethodDeclarationNode>? compatibleDeclarations;
     private bool compatibleDeclarationsCached;
+    public ContextualizedOverload? ContextualizedOverload
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
+                ExpressionTypesAspect.MethodInvocationExpression_ContextualizedOverload);
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.MethodInvocationExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.MethodInvocationExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
     public IStandardMethodDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
             : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
                 OverloadResolutionAspect.MethodInvocationExpression_ReferencedDeclaration);
     private IStandardMethodDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.MethodInvocationExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12272,17 +12459,20 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     private bool valueIdCached;
 
     public MethodInvocationExpressionNode(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IMethodGroupNameNode methodGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
-        TempAllArguments = tempAllArguments;
-        AllArguments = allArguments;
         Syntax = syntax;
         this.methodGroup = Child.Create(this, methodGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -12338,8 +12528,6 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
-    public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
     private bool contextCached;
@@ -12385,18 +12573,6 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.GetterInvocationExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.GetterInvocationExpression_Type);
-    private DataType? type;
-    private bool typeCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
@@ -12409,6 +12585,18 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
                 ExpressionTypesAspect.GetterInvocationExpression_ContextualizedOverload);
     private ContextualizedOverload? contextualizedOverload;
     private bool contextualizedOverloadCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.GetterInvocationExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.GetterInvocationExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12417,21 +12605,24 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     private bool valueIdCached;
 
     public GetterInvocationExpressionNode(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         StandardName propertyName,
         IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors,
         IGetterMethodDeclarationNode? referencedDeclaration)
     {
-        TempAllArguments = tempAllArguments;
-        AllArguments = allArguments;
         Syntax = syntax;
         this.context = Child.Create(this, context);
         PropertyName = propertyName;
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
         ReferencedDeclaration = referencedDeclaration;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -12486,8 +12677,6 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
-    public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IAssignmentExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> context;
     private bool contextCached;
@@ -12540,24 +12729,6 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.SetterInvocationExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.SetterInvocationExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.SetterInvocationExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
@@ -12570,6 +12741,24 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
                 ExpressionTypesAspect.SetterInvocationExpression_ContextualizedOverload);
     private ContextualizedOverload? contextualizedOverload;
     private bool contextualizedOverloadCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.SetterInvocationExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.SetterInvocationExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.SetterInvocationExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12578,8 +12767,6 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     private bool valueIdCached;
 
     public SetterInvocationExpressionNode(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         IAssignmentExpressionSyntax syntax,
         IExpressionNode context,
         StandardName propertyName,
@@ -12587,14 +12774,19 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         IEnumerable<IPropertyAccessorDeclarationNode> referencedPropertyAccessors,
         ISetterMethodDeclarationNode? referencedDeclaration)
     {
-        TempAllArguments = tempAllArguments;
-        AllArguments = allArguments;
         Syntax = syntax;
         this.context = Child.Create(this, context);
         PropertyName = propertyName;
         this.value = Child.Create(this, value);
         ReferencedPropertyAccessors = referencedPropertyAccessors.ToFixedSet();
         ReferencedDeclaration = referencedDeclaration;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -12649,8 +12841,6 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
-    public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> expression;
     private bool expressionCached;
@@ -12698,36 +12888,36 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.FunctionReferenceInvocationExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.FunctionReferenceInvocationExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.FunctionReferenceInvocationExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.FunctionReferenceInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.FunctionReferenceInvocationExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.FunctionReferenceInvocationExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
     public FunctionType FunctionType
         => GrammarAttribute.IsCached(in functionTypeCached) ? functionType!
             : this.Synthetic(ref functionTypeCached, ref functionType,
                 ExpressionTypesAspect.FunctionReferenceInvocationExpression_FunctionType);
     private FunctionType? functionType;
     private bool functionTypeCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.FunctionReferenceInvocationExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12736,19 +12926,22 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     private bool valueIdCached;
 
     public FunctionReferenceInvocationExpressionNode(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IExpressionNode expression,
         IEnumerable<IAmbiguousExpressionNode> arguments,
         FunctionAntetype functionAntetype)
     {
-        TempAllArguments = tempAllArguments;
-        AllArguments = allArguments;
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
         FunctionAntetype = functionAntetype;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -12803,8 +12996,6 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments { [DebuggerStepThrough] get; }
-    public IEnumerable<IExpressionNode?> AllArguments { [DebuggerStepThrough] get; }
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IInitializerGroupNameNode> initializerGroup;
     private bool initializerGroupCached;
@@ -12853,48 +13044,48 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.InitializerInvocationExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.InitializerInvocationExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.InitializerInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public ContextualizedOverload? ContextualizedOverload
-        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
-            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
-                ExpressionTypesAspect.InitializerInvocationExpression_ContextualizedOverload);
-    private ContextualizedOverload? contextualizedOverload;
-    private bool contextualizedOverloadCached;
     public IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations
         => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
             : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
                 OverloadResolutionAspect.InitializerInvocationExpression_CompatibleDeclarations);
     private IFixedSet<IInitializerDeclarationNode>? compatibleDeclarations;
     private bool compatibleDeclarationsCached;
-    public IInitializerDeclarationNode? ReferencedDeclaration
-        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
-            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
-                OverloadResolutionAspect.InitializerInvocationExpression_ReferencedDeclaration);
-    private IInitializerDeclarationNode? referencedDeclaration;
-    private bool referencedDeclarationCached;
+    public ContextualizedOverload? ContextualizedOverload
+        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
+            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
+                ExpressionTypesAspect.InitializerInvocationExpression_ContextualizedOverload);
+    private ContextualizedOverload? contextualizedOverload;
+    private bool contextualizedOverloadCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.InitializerInvocationExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public IInitializerDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                OverloadResolutionAspect.InitializerInvocationExpression_ReferencedDeclaration);
+    private IInitializerDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.InitializerInvocationExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -12903,17 +13094,20 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     private bool valueIdCached;
 
     public InitializerInvocationExpressionNode(
-        IEnumerable<IAmbiguousExpressionNode> tempAllArguments,
-        IEnumerable<IExpressionNode?> allArguments,
         IInvocationExpressionSyntax syntax,
         IInitializerGroupNameNode initializerGroup,
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
-        TempAllArguments = tempAllArguments;
-        AllArguments = allArguments;
         Syntax = syntax;
         this.initializerGroup = Child.Create(this, initializerGroup);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -13035,6 +13229,13 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -13236,6 +13437,11 @@ file class MemberAccessExpressionNode : SemanticNode, IMemberAccessExpressionNod
         TypeArguments = ChildList.Attach(this, typeArguments);
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return null;
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -13244,11 +13450,6 @@ file class MemberAccessExpressionNode : SemanticNode, IMemberAccessExpressionNod
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
-    }
-
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return null;
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -13389,6 +13590,13 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
         ReferencedDeclarations = referencedDeclarations.ToFixedList();
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -13504,6 +13712,13 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
         Syntax = syntax;
         this.context = Child.Create(this, context);
         ReferencedDeclarations = referencedDeclarations.ToFixedList();
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -13629,6 +13844,13 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -13729,12 +13951,6 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.FunctionName_Type);
-    private DataType? type;
-    private bool typeCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
@@ -13747,6 +13963,12 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.FunctionName_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -13770,6 +13992,18 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
         ReferencedDeclaration = referencedDeclaration;
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
+    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return null;
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -13778,16 +14012,6 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
-    }
-
-    internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return null;
-    }
-
-    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        return null;
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -13903,6 +14127,13 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -13998,6 +14229,12 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public IMaybeExpressionAntetype Antetype
+        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
+            : this.Synthetic(ref antetypeCached, ref antetype,
+                ExpressionAntetypesAspect.FieldAccessExpression_Antetype);
+    private IMaybeExpressionAntetype? antetype;
+    private bool antetypeCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -14010,12 +14247,6 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
                 ExpressionTypesAspect.FieldAccessExpression_Type);
     private DataType? type;
     private bool typeCached;
-    public IMaybeExpressionAntetype Antetype
-        => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
-            : this.Synthetic(ref antetypeCached, ref antetype,
-                ExpressionAntetypesAspect.FieldAccessExpression_Antetype);
-    private IMaybeExpressionAntetype? antetype;
-    private bool antetypeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -14033,6 +14264,13 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
         this.context = Child.Create(this, context);
         FieldName = fieldName;
         ReferencedDeclaration = referencedDeclaration;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -14126,30 +14364,30 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.VariableNameExpression_Type);
-    private DataType? type;
-    private bool typeCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.VariableNameExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public IFixedSet<IDataFlowNode> DataFlowPrevious
-        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
-            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
-                DataFlowAspect.VariableNameExpression_DataFlowPrevious);
-    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
-    private bool dataFlowPreviousCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFixedSet<IDataFlowNode> DataFlowPrevious
+        => GrammarAttribute.IsCached(in dataFlowPreviousCached) ? dataFlowPrevious!
+            : this.Synthetic(ref dataFlowPreviousCached, ref dataFlowPrevious,
+                DataFlowAspect.VariableNameExpression_DataFlowPrevious);
+    private IFixedSet<IDataFlowNode>? dataFlowPrevious;
+    private bool dataFlowPreviousCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.VariableNameExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -14163,6 +14401,13 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
     {
         Syntax = syntax;
         ReferencedDefinition = referencedDefinition;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -14257,6 +14502,12 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public IMaybeAntetype NamedAntetype
         => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
             : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
@@ -14269,12 +14520,6 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
                 BareTypeAspect.TypeNameExpression_NamedBareType);
     private BareType? namedBareType;
     private bool namedBareTypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -14290,6 +14535,13 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
         Syntax = syntax;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclaration = referencedDeclaration;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -14387,6 +14639,12 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public IMaybeAntetype NamedAntetype
         => GrammarAttribute.IsCached(in namedAntetypeCached) ? namedAntetype!
             : this.Synthetic(ref namedAntetypeCached, ref namedAntetype,
@@ -14399,12 +14657,6 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
                 BareTypeAspect.TypeNameExpression_NamedBareType);
     private BareType? namedBareType;
     private bool namedBareTypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -14422,6 +14674,13 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
         this.context = Child.Create(this, context);
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclaration = referencedDeclaration;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -14544,6 +14803,13 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -14649,6 +14915,13 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
         Syntax = syntax;
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -14744,18 +15017,18 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
                 (ctx) => (IExecutableDefinitionNode)Inherited_ContainingDeclaration(ctx));
     private IExecutableDefinitionNode? containingDeclaration;
     private bool containingDeclarationCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.SelfExpression_Type);
-    private DataType? type;
-    private bool typeCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.SelfExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.Expression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public Pseudotype Pseudotype
         => GrammarAttribute.IsCached(in pseudotypeCached) ? pseudotype!
             : this.Synthetic(ref pseudotypeCached, ref pseudotype,
@@ -14768,12 +15041,12 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
                 BindingNamesAspect.SelfExpression_ReferencedDefinition);
     private ISelfParameterNode? referencedDefinition;
     private bool referencedDefinitionCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.SelfExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -14784,6 +15057,13 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
     public SelfExpressionNode(ISelfExpressionSyntax syntax)
     {
         Syntax = syntax;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -14890,6 +15170,13 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
     public MissingNameExpressionNode(IMissingNameSyntax syntax)
     {
         Syntax = syntax;
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -14999,6 +15286,13 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
     {
         Syntax = syntax;
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -15115,6 +15409,13 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
         Syntax = syntax;
         Name = name;
         TypeArguments = ChildList.Attach(this, typeArguments);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -15235,6 +15536,13 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
         this.context = Child.Create(this, context);
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedMembers = referencedMembers.ToFixedSet();
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -15389,6 +15697,12 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.RecoveryExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
@@ -15401,12 +15715,6 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
                 ExpressionTypesAspect.MoveExpression_Type);
     private DataType? type;
     private bool typeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.RecoveryExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -15422,6 +15730,13 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
         Syntax = syntax;
         IsImplicit = isImplicit;
         this.referent = Child.Create(this, referent);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -15519,6 +15834,12 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.RecoveryExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
@@ -15531,12 +15852,6 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
                 ExpressionTypesAspect.MoveExpression_Type);
     private DataType? type;
     private bool typeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.RecoveryExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -15552,6 +15867,13 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
         Syntax = syntax;
         IsImplicit = isImplicit;
         this.referent = Child.Create(this, referent);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -15654,18 +15976,18 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
                 ControlFlowAspect.ImplicitTempMoveExpression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.ImplicitTempMoveExpression_Type);
-    private DataType? type;
-    private bool typeCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
                 ExpressionTypesAspect.ImplicitTempMoveExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.ImplicitTempMoveExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -15679,6 +16001,13 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -15833,6 +16162,12 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.RecoveryExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
@@ -15845,12 +16180,6 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
                 ExpressionTypesAspect.FreezeExpression_Type);
     private DataType? type;
     private bool typeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.RecoveryExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -15868,6 +16197,13 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
         IsImplicit = isImplicit;
         IsTemporary = isTemporary;
         this.referent = Child.Create(this, referent);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -15966,6 +16302,12 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.RecoveryExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
@@ -15978,12 +16320,6 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
                 ExpressionTypesAspect.FreezeExpression_Type);
     private DataType? type;
     private bool typeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.RecoveryExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -16001,6 +16337,13 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
         IsImplicit = isImplicit;
         IsTemporary = isTemporary;
         this.referent = Child.Create(this, referent);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -16124,6 +16467,13 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
         this.value = Child.Create(this, value);
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -16238,6 +16588,13 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
         this.block = Child.Create(this, block);
     }
 
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -16333,18 +16690,6 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.AsyncStartExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.AsyncStartExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
@@ -16357,6 +16702,18 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
                 ControlFlowAspect.Expression_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.AsyncStartExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.AsyncStartExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -16372,6 +16729,13 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
         Syntax = syntax;
         Scheduled = scheduled;
         this.expression = Child.Create(this, expression);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -16468,30 +16832,30 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeExpressionAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
-    public ControlFlowSet ControlFlowNext
-        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
-            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.AwaitExpression_ControlFlowNext);
-    private ControlFlowSet? controlFlowNext;
-    private bool controlFlowNextCached;
-    public DataType Type
-        => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type,
-                ExpressionTypesAspect.AwaitExpression_Type);
-    private DataType? type;
-    private bool typeCached;
-    public IFlowState FlowStateAfter
-        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
-            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ExpressionTypesAspect.AwaitExpression_FlowStateAfter);
-    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
-    private bool flowStateAfterCached;
     public IMaybeExpressionAntetype Antetype
         => GrammarAttribute.IsCached(in antetypeCached) ? antetype!
             : this.Synthetic(ref antetypeCached, ref antetype,
                 ExpressionAntetypesAspect.AwaitExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
+    public ControlFlowSet ControlFlowNext
+        => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
+            : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
+                ControlFlowAspect.AwaitExpression_ControlFlowNext);
+    private ControlFlowSet? controlFlowNext;
+    private bool controlFlowNextCached;
+    public IFlowState FlowStateAfter
+        => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
+            : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
+                ExpressionTypesAspect.AwaitExpression_FlowStateAfter);
+    private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
+    private bool flowStateAfterCached;
+    public DataType Type
+        => GrammarAttribute.IsCached(in typeCached) ? type!
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.AwaitExpression_Type);
+    private DataType? type;
+    private bool typeCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -16505,6 +16869,13 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
     {
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
+    }
+
+    internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return null;
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -16629,18 +17000,18 @@ file class NamespaceSymbolNode : SemanticNode, INamespaceSymbolNode
                 NameLookupAspect.NamespaceDeclaration_MembersByName);
     private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? membersByName;
     private bool membersByNameCached;
-    public FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> NestedMembersByName
-        => GrammarAttribute.IsCached(in nestedMembersByNameCached) ? nestedMembersByName!
-            : this.Synthetic(ref nestedMembersByNameCached, ref nestedMembersByName,
-                NameLookupAspect.NamespaceDeclaration_NestedMembersByName);
-    private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? nestedMembersByName;
-    private bool nestedMembersByNameCached;
     public IFixedList<INamespaceMemberDeclarationNode> NestedMembers
         => GrammarAttribute.IsCached(in nestedMembersCached) ? nestedMembers!
             : this.Synthetic(ref nestedMembersCached, ref nestedMembers,
                 DeclarationsAspect.NamespaceDeclaration_NestedMembers);
     private IFixedList<INamespaceMemberDeclarationNode>? nestedMembers;
     private bool nestedMembersCached;
+    public FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>> NestedMembersByName
+        => GrammarAttribute.IsCached(in nestedMembersByNameCached) ? nestedMembersByName!
+            : this.Synthetic(ref nestedMembersByNameCached, ref nestedMembersByName,
+                NameLookupAspect.NamespaceDeclaration_NestedMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<INamespaceMemberDeclarationNode>>? nestedMembersByName;
+    private bool nestedMembersByNameCached;
 
     public NamespaceSymbolNode(NamespaceSymbol symbol)
     {
@@ -16675,24 +17046,24 @@ file class EmptyTypeSymbolNode : SemanticNode, IEmptyTypeSymbolNode
     public EmptyTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public IFixedSet<ITypeMemberSymbolNode> Members
-        => GrammarAttribute.IsCached(in membersCached) ? members!
-            : this.Synthetic(ref membersCached, ref members,
-                n => ChildSet.Attach(this, SymbolNodeAspect.BuiltInTypeSymbol_Members(n)));
-    private IFixedSet<ITypeMemberSymbolNode>? members;
-    private bool membersCached;
-    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
-        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
-            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
-                NameLookupAspect.BuiltInTypeDeclaration_InclusiveInstanceMembersByName);
-    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
-    private bool inclusiveInstanceMembersByNameCached;
     public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
         => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
             : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
                 NameLookupAspect.BuiltInTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.BuiltInTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public IFixedSet<ITypeMemberSymbolNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                n => ChildSet.Attach(this, SymbolNodeAspect.BuiltInTypeSymbol_Members(n)));
+    private IFixedSet<ITypeMemberSymbolNode>? members;
+    private bool membersCached;
 
     public EmptyTypeSymbolNode(EmptyTypeSymbol symbol)
     {
@@ -16708,24 +17079,24 @@ file class PrimitiveTypeSymbolNode : SemanticNode, IPrimitiveTypeSymbolNode
     public PrimitiveTypeSymbol Symbol { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
-    public IFixedSet<ITypeMemberSymbolNode> Members
-        => GrammarAttribute.IsCached(in membersCached) ? members!
-            : this.Synthetic(ref membersCached, ref members,
-                n => ChildSet.Attach(this, SymbolNodeAspect.BuiltInTypeSymbol_Members(n)));
-    private IFixedSet<ITypeMemberSymbolNode>? members;
-    private bool membersCached;
-    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
-        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
-            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
-                NameLookupAspect.BuiltInTypeDeclaration_InclusiveInstanceMembersByName);
-    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
-    private bool inclusiveInstanceMembersByNameCached;
     public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
         => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
             : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
                 NameLookupAspect.BuiltInTypeDeclaration_AssociatedMembersByName);
     private FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>>? associatedMembersByName;
     private bool associatedMembersByNameCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.BuiltInTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public IFixedSet<ITypeMemberSymbolNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                n => ChildSet.Attach(this, SymbolNodeAspect.BuiltInTypeSymbol_Members(n)));
+    private IFixedSet<ITypeMemberSymbolNode>? members;
+    private bool membersCached;
 
     public PrimitiveTypeSymbolNode(PrimitiveTypeSymbol symbol)
     {
@@ -16745,18 +17116,6 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
-    public IFixedSet<IClassMemberSymbolNode> Members
-        => GrammarAttribute.IsCached(in membersCached) ? members!
-            : this.Synthetic(ref membersCached, ref members,
-                n => ChildSet.Attach(this, SymbolNodeAspect.ClassSymbol_Members(n)));
-    private IFixedSet<IClassMemberSymbolNode>? members;
-    private bool membersCached;
-    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
-        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
-            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
-                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
-    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
-    private bool inclusiveInstanceMembersByNameCached;
     public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
         => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
             : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
@@ -16769,6 +17128,18 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
                 n => ChildList.Attach(this, SymbolNodeAspect.UserTypeSymbol_GenericParameters(n)));
     private IFixedList<IGenericParameterSymbolNode>? genericParameters;
     private bool genericParametersCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public IFixedSet<IClassMemberSymbolNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                n => ChildSet.Attach(this, SymbolNodeAspect.ClassSymbol_Members(n)));
+    private IFixedSet<IClassMemberSymbolNode>? members;
+    private bool membersCached;
 
     public ClassSymbolNode(UserTypeSymbol symbol)
     {
@@ -16789,18 +17160,6 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
-    public IFixedSet<IStructMemberSymbolNode> Members
-        => GrammarAttribute.IsCached(in membersCached) ? members!
-            : this.Synthetic(ref membersCached, ref members,
-                n => ChildSet.Attach(this, SymbolNodeAspect.StructSymbol_Members(n)));
-    private IFixedSet<IStructMemberSymbolNode>? members;
-    private bool membersCached;
-    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
-        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
-            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
-                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
-    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
-    private bool inclusiveInstanceMembersByNameCached;
     public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
         => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
             : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
@@ -16813,6 +17172,18 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
                 n => ChildList.Attach(this, SymbolNodeAspect.UserTypeSymbol_GenericParameters(n)));
     private IFixedList<IGenericParameterSymbolNode>? genericParameters;
     private bool genericParametersCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public IFixedSet<IStructMemberSymbolNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                n => ChildSet.Attach(this, SymbolNodeAspect.StructSymbol_Members(n)));
+    private IFixedSet<IStructMemberSymbolNode>? members;
+    private bool membersCached;
 
     public StructSymbolNode(UserTypeSymbol symbol)
     {
@@ -16833,18 +17204,6 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
-    public IFixedSet<ITraitMemberSymbolNode> Members
-        => GrammarAttribute.IsCached(in membersCached) ? members!
-            : this.Synthetic(ref membersCached, ref members,
-                n => ChildSet.Attach(this, SymbolNodeAspect.TraitSymbol_Members(n)));
-    private IFixedSet<ITraitMemberSymbolNode>? members;
-    private bool membersCached;
-    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
-        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
-            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
-                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
-    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
-    private bool inclusiveInstanceMembersByNameCached;
     public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
         => GrammarAttribute.IsCached(in associatedMembersByNameCached) ? associatedMembersByName!
             : this.Synthetic(ref associatedMembersByNameCached, ref associatedMembersByName,
@@ -16857,6 +17216,18 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
                 n => ChildList.Attach(this, SymbolNodeAspect.UserTypeSymbol_GenericParameters(n)));
     private IFixedList<IGenericParameterSymbolNode>? genericParameters;
     private bool genericParametersCached;
+    public FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>> InclusiveInstanceMembersByName
+        => GrammarAttribute.IsCached(in inclusiveInstanceMembersByNameCached) ? inclusiveInstanceMembersByName!
+            : this.Synthetic(ref inclusiveInstanceMembersByNameCached, ref inclusiveInstanceMembersByName,
+                NameLookupAspect.UserTypeDeclaration_InclusiveInstanceMembersByName);
+    private FixedDictionary<StandardName, IFixedSet<IInstanceMemberDeclarationNode>>? inclusiveInstanceMembersByName;
+    private bool inclusiveInstanceMembersByNameCached;
+    public IFixedSet<ITraitMemberSymbolNode> Members
+        => GrammarAttribute.IsCached(in membersCached) ? members!
+            : this.Synthetic(ref membersCached, ref members,
+                n => ChildSet.Attach(this, SymbolNodeAspect.TraitSymbol_Members(n)));
+    private IFixedSet<ITraitMemberSymbolNode>? members;
+    private bool membersCached;
 
     public TraitSymbolNode(UserTypeSymbol symbol)
     {

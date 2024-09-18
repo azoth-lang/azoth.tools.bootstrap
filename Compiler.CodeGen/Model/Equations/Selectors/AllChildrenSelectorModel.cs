@@ -20,6 +20,8 @@ public sealed class AllChildrenSelectorModel : SelectorModel
         Syntax = syntax;
     }
 
+    protected override bool CoversChildrenOf(SelectorModel selector) => true;
+
     public override bool Matches(AttributeModel attribute) => true;
 
     protected override string ToChildSelectorString() => "*";

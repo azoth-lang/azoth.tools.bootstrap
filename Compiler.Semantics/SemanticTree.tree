@@ -225,7 +225,7 @@ Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock
     = Syntax:`IBlockExpressionSyntax` Statements:Statement*;
 NewObjectExpression <: InvocationExpression = Syntax:`INewObjectExpressionSyntax`
-    ConstructingType:TypeName ConstructorName:`IdentifierName`? Arguments:AmbiguousExpression*;
+    ConstructingType:TypeName Arguments:AmbiguousExpression*;
 UnsafeExpression <: Expression = Syntax:`IUnsafeExpressionSyntax` Expression:AmbiguousExpression;
 NeverTypedExpression <: Expression;
 
@@ -277,8 +277,7 @@ ReturnExpression <: NeverTypedExpression
 // ---------- Invocation Expressions
 temp UnresolvedInvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
-InvocationExpression <: Expression =
-    TempAllArguments:`IEnumerable<IAmbiguousExpressionNode>` AllArguments:`IEnumerable<IExpressionNode?>`;
+InvocationExpression <: Expression;
 FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*;
 MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`

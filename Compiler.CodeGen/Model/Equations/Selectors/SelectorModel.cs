@@ -34,6 +34,11 @@ public abstract class SelectorModel
         IsBroadcast = isBroadcast;
     }
 
+    public bool Hides(SelectorModel selector)
+        => (IsBroadcast || !selector.IsBroadcast) && CoversChildrenOf(selector);
+
+    protected abstract bool CoversChildrenOf(SelectorModel selector);
+
     /// <summary>
     /// Whether this selector matches the given attribute.
     /// </summary>

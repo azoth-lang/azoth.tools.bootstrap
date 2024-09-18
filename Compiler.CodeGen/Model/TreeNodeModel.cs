@@ -4,11 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Attributes;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations;
+using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Equations.Selectors;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Snippets;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.Types;
 using Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
+using DotNet.Collections.Generic;
 using MoreLinq;
 
 namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model;
@@ -444,13 +446,43 @@ public class TreeNodeModel
                                      .AllExcept(declaredSoleEquations, SoleEquationModel.NameAndParametersComparer);
         var actualSoleEquations = declaredSoleEquations.Concat(inheritedSoleEquations);
 
-        // Contributor equations keep all inherited and declared equations.
-        // Inherited equations require that the inherited ones come before ones declared on this node.
+        // Inherited attribute equations require that the inherited ones come after the declared ones
+        // because the declared ones must be able to override the inherited ones.
+        var inherited = RemoveAfterAllChildren(declaredEquations.OfType<InheritedAttributeEquationModel>()
+                                              .Concat(InheritedEquations.OfType<InheritedAttributeEquationModel>()));
+
+        // Non-inherited contributor equations require that the inherited ones come before ones declared
+        // on this node because that is the logical order of inheritance.
         var contributorEquations = InheritedEquations.OfType<ContributorEquationModel>()
-            .Concat(declaredEquations.OfType<ContributorEquationModel>());
+            .Concat(declaredEquations.OfType<ContributorEquationModel>())
+            .Where(eq => eq is not InheritedAttributeEquationModel);
+
+        // TODO previous attribute equations should be distinct by name per node
 
         return actualSoleEquations
-               .Concat<EquationModel>(contributorEquations);
+               .Concat<EquationModel>(inherited)
+               .Concat(contributorEquations)
+               // Order by name to stabilize the order of inherited equations (stable sort preserves
+               // order within name)
+               .OrderBy(eq => eq.Name);
+    }
+
+    /// <summary>
+    /// Remove any inherited attribute equations that come after an equation for that attribute
+    /// that selects all children.
+    /// </summary>
+    private static IEnumerable<InheritedAttributeEquationModel> RemoveAfterAllChildren(IEnumerable<InheritedAttributeEquationModel> equations)
+    {
+        var selectors = new MultiMapHashSet<string, SelectorModel>();
+        foreach (var equation in equations)
+        {
+            if (selectors.TryGetValue(equation.Name, out var selectorsForAttribute)
+                && selectorsForAttribute.Any(s => s.Hides(equation.Selector)))
+                continue;
+
+            yield return equation;
+            selectors.TryToAddMapping(equation.Name, equation.Selector);
+        }
     }
 
     private LocalAttributeEquationModel ImplicitlyDeclaredEquation(LocalAttributeModel attribute)

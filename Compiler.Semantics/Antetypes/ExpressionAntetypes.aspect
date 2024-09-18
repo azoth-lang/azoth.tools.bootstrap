@@ -27,9 +27,14 @@
 
 // ---------- Expressions
 ↓ Expression.ExpectedAntetype: `IMaybeExpressionAntetype`?;
+// TODO remove once all nodes properly provide the expected antetype
+= Expression.*.ExpectedAntetype => null;
 ↑ Expression.Antetype: `IMaybeExpressionAntetype`;
 ✎ Expression ImplicitConversion;
 ↑ BlockExpression.Antetype: `IMaybeAntetype`;
+// TODO it would be better if this didn't depend on types, but only on antetypes
+= NewObjectExpression.Arguments[index].ExpectedAntetype
+    => ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype();
 = NeverTypedExpression.Antetype => IAntetype.Never;
 
 // ---------- Operator Expressions
@@ -48,7 +53,7 @@
 // ---------- Name Expressions
 = NamespaceName.Antetype => IAntetype.Unknown;
 = FunctionGroupName.Antetype => throw new NotImplementedException();
-= FunctionName.*.**.ExpectedAntetype => null;
+= FunctionName.*.ExpectedAntetype => null;
 = MethodGroupName.Antetype => throw new NotImplementedException();
 = TypeNameExpression.Antetype => IAntetype.Unknown;
 = InitializerGroupName.Antetype => throw new NotImplementedException();

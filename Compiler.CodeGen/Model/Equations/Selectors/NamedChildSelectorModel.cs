@@ -18,6 +18,12 @@ public abstract class NamedChildSelectorModel : SelectorModel
         Child = child;
     }
 
+    protected sealed override bool CoversChildrenOf(SelectorModel selector)
+        => selector is NamedChildSelectorModel otherSelector
+           && Child == otherSelector.Child && CoversRangeOf(otherSelector);
+
+    protected abstract bool CoversRangeOf(NamedChildSelectorModel selector);
+
     public override bool Matches(AttributeModel attribute)
         => attribute.Name == Child;
 }

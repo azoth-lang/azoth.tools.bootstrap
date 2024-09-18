@@ -1733,9 +1733,9 @@ file class PackageSyntax : IPackageSyntax
     public IFixedSet<ICompilationUnitSyntax> CompilationUnits { [DebuggerStepThrough] get; }
     public IFixedSet<ICompilationUnitSyntax> TestingCompilationUnits { [DebuggerStepThrough] get; }
     public IFixedSet<IPackageReferenceSyntax> References { [DebuggerStepThrough] get; }
+    public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.Package_ToString(this);
-    public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
 
     public PackageSyntax(
         IdentifierName name,
@@ -2545,9 +2545,9 @@ file class ExpressionBodySyntax : IExpressionBodySyntax
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public IResultStatementSyntax ResultStatement { [DebuggerStepThrough] get; }
+    public IFixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.ExpressionBody_ToString(this);
-    public IFixedList<IStatementSyntax> Statements { [DebuggerStepThrough] get; }
 
     public ExpressionBodySyntax(
         TextSpan span,

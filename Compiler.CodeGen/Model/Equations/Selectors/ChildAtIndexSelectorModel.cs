@@ -13,5 +13,8 @@ public sealed class ChildAtIndexSelectorModel : NamedChildSelectorModel
         Syntax = syntax;
     }
 
+    protected override bool CoversRangeOf(NamedChildSelectorModel selector)
+        => selector is ChildAtIndexSelectorModel { Index: var otherIndex } && Index == otherIndex;
+
     protected override string ToChildSelectorString() => $"{Child}[{Index}]";
 }

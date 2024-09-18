@@ -13,5 +13,7 @@ public sealed class ChildAtVariableSelectorModel : NamedChildSelectorModel
         Syntax = syntax;
     }
 
+    protected override bool CoversRangeOf(NamedChildSelectorModel selector) => true;
+
     protected override string ToChildSelectorString() => $"{Child}[{Variable}]";
 }

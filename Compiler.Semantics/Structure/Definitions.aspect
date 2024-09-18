@@ -128,6 +128,27 @@
 = ForeachExpression.IsLentBinding => false;
 = ForeachExpression.Name => VariableName;
 
+// ---------- Expressions
+↑ NewObjectExpression.ConstructorName: `IdentifierName`? => Syntax.ConstructorName;
+= NewObjectExpression.TempAllArguments => TempArguments;
+= NewObjectExpression.AllArguments => Arguments;
+
+// ---------- Invocation Expressions
+↑ InvocationExpression.TempAllArguments: IEnumerable<AmbiguousExpression>;
+↑ InvocationExpression.AllArguments: IEnumerable<Expression?>;
+= FunctionInvocationExpression.TempAllArguments => TempArguments;
+= FunctionInvocationExpression.AllArguments => Arguments;
+= MethodInvocationExpression.TempAllArguments => TempArguments.Prepend(MethodGroup.Context);
+= MethodInvocationExpression.AllArguments => Arguments.Prepend(MethodGroup.Context);
+= GetterInvocationExpression.TempAllArguments => [Context];
+= GetterInvocationExpression.AllArguments => [Context];
+= SetterInvocationExpression.TempAllArguments => [Context, TempValue];
+= SetterInvocationExpression.AllArguments => [Context, Value];
+= FunctionReferenceInvocationExpression.TempAllArguments => TempArguments;
+= FunctionReferenceInvocationExpression.AllArguments => Arguments;
+= InitializerInvocationExpression.TempAllArguments => TempArguments;
+= InitializerInvocationExpression.AllArguments => Arguments;
+
 // ---------- Ambiguous Name Expressions
 ↑ StandardNameExpression.Name: `StandardName` => Syntax.Name;
 ↑ IdentifierNameExpression.Name: `IdentifierName` => Syntax.Name;

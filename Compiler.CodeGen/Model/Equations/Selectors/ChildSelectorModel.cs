@@ -13,5 +13,8 @@ public sealed class ChildSelectorModel : NamedChildSelectorModel
         Syntax = syntax;
     }
 
+    protected override bool CoversRangeOf(NamedChildSelectorModel selector)
+        => true;
+
     protected override string ToChildSelectorString() => Child;
 }
