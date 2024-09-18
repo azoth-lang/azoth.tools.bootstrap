@@ -5,9 +5,9 @@ using Azoth.Tools.Bootstrap.Compiler.Types;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-internal static partial class ForeachExpressionTypeAspect
+internal static partial class ForeachExpressionTypesAspect
 {
-    public static DataType ForeachExpression_IteratorType(IForeachExpressionNode node)
+    public static partial DataType ForeachExpression_IteratorType(IForeachExpressionNode node)
     {
         var iterableType = node.InExpression?.Type ?? DataType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
@@ -17,7 +17,7 @@ internal static partial class ForeachExpressionTypeAspect
         return iteratorType;
     }
 
-    public static DataType ForeachExpression_IteratedType(IForeachExpressionNode node)
+    public static partial DataType ForeachExpression_IteratedType(IForeachExpressionNode node)
     {
         var nextMethodReturnType = node.ReferencedNextMethod?.MethodGroupType.Return.Type;
         if (nextMethodReturnType is not OptionalType { Referent: var iteratedType })
@@ -29,7 +29,7 @@ internal static partial class ForeachExpressionTypeAspect
         return nonEmptyIteratorType.ReplaceTypeParametersIn(iteratedType).ToNonConstValueType();
     }
 
-    public static IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)
+    public static partial IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)
     {
         var flowState = node.InExpression?.FlowStateAfter ?? IFlowState.Empty;
         // This uses the node.BindingValueId so it doesn't conflict with the `foreach` expression result
@@ -46,7 +46,7 @@ internal static partial class ForeachExpressionTypeAspect
             // TODO when the `foreach` has a type other than void, correctly handle the value id
             .Constant(node.ValueId);
 
-    public static void ForeachExpression_Contribute_Diagnostics(IForeachExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void ForeachExpression_Contribute_Diagnostics(IForeachExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var iterableType = node.InExpression?.Type ?? DataType.Unknown;
         if (iterableType is UnknownType)

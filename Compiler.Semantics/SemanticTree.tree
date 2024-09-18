@@ -260,10 +260,9 @@ ForeachExpression <: Expression, VariableBinding = Syntax:`IForeachExpressionSyn
     IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:AmbiguousExpression
     DeclaredType:Type? Block:BlockExpression
     ReferencedIterableDeclaration:`ITypeDeclarationNode`? ReferencedIterateMethod:`IStandardMethodDeclarationNode`?
-    IteratorAntetype:`IMaybeExpressionAntetype` IteratorType:`DataType`
+    IteratorAntetype:`IMaybeExpressionAntetype`
     ReferencedIteratorDeclaration:`ITypeDeclarationNode`? ReferencedNextMethod:`IStandardMethodDeclarationNode`?
-    IteratedAntetype:`IMaybeAntetype` IteratedType:`DataType`
-    FlowStateBeforeBlock:`IFlowState`;
+    IteratedAntetype:`IMaybeAntetype`;
 BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax`
     Value:AmbiguousExpression?;
 NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;

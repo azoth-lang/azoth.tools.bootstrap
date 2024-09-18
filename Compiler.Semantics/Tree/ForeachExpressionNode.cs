@@ -51,37 +51,37 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     private ValueAttribute<ITypeDeclarationNode?> referencedIterableDeclaration;
     public ITypeDeclarationNode? ReferencedIterableDeclaration
         => referencedIterableDeclaration.TryGetValue(out var value) ? value
-            : referencedIterableDeclaration.GetValue(this, ForeachExpressionAntetypeAspect.ForeachExpression_ReferencedIterableDeclaration);
+            : referencedIterableDeclaration.GetValue(this, ForeachExpressionAntetypesAspect.ForeachExpression_ReferencedIterableDeclaration);
     private ValueAttribute<IStandardMethodDeclarationNode?> referencedIterateMethod;
     public IStandardMethodDeclarationNode? ReferencedIterateMethod
         => referencedIterateMethod.TryGetValue(out var value) ? value
-            : referencedIterateMethod.GetValue(this, ForeachExpressionAntetypeAspect.ForeachExpression_ReferencedIterateMethod);
+            : referencedIterateMethod.GetValue(this, ForeachExpressionAntetypesAspect.ForeachExpression_ReferencedIterateMethod);
     private ValueAttribute<IMaybeExpressionAntetype> iteratorAntetype;
     public IMaybeExpressionAntetype IteratorAntetype
         => iteratorAntetype.TryGetValue(out var value) ? value
-            : iteratorAntetype.GetValue(this, ForeachExpressionAntetypeAspect.ForeachExpression_IteratorAntetype);
+            : iteratorAntetype.GetValue(this, ForeachExpressionAntetypesAspect.ForeachExpression_IteratorAntetype);
     private DataType? iteratorType;
     private bool iteratorTypeCached;
     public DataType IteratorType
         => GrammarAttribute.IsCached(in iteratorTypeCached) ? iteratorType!
-            : this.Synthetic(ref iteratorTypeCached, ref iteratorType, ForeachExpressionTypeAspect.ForeachExpression_IteratorType);
+            : this.Synthetic(ref iteratorTypeCached, ref iteratorType, ForeachExpressionTypesAspect.ForeachExpression_IteratorType);
     private ValueAttribute<ITypeDeclarationNode?> referencedIteratorDeclaration;
     public ITypeDeclarationNode? ReferencedIteratorDeclaration
         => referencedIteratorDeclaration.TryGetValue(out var value) ? value
-            : referencedIteratorDeclaration.GetValue(this, ForeachExpressionAntetypeAspect.ForeachExpression_ReferencedIteratorDeclaration);
+            : referencedIteratorDeclaration.GetValue(this, ForeachExpressionAntetypesAspect.ForeachExpression_ReferencedIteratorDeclaration);
     private ValueAttribute<IStandardMethodDeclarationNode?> referencedNextMethod;
     public IStandardMethodDeclarationNode? ReferencedNextMethod
         => referencedNextMethod.TryGetValue(out var value) ? value
-            : referencedNextMethod.GetValue(this, ForeachExpressionAntetypeAspect.ForeachExpression_ReferencedNextMethod);
+            : referencedNextMethod.GetValue(this, ForeachExpressionAntetypesAspect.ForeachExpression_ReferencedNextMethod);
     private ValueAttribute<IMaybeAntetype> iteratedAntetype;
     public IMaybeAntetype IteratedAntetype
         => iteratedAntetype.TryGetValue(out var value) ? value
-            : iteratedAntetype.GetValue(this, ForeachExpressionAntetypeAspect.ForeachExpression_IteratedAntetype);
+            : iteratedAntetype.GetValue(this, ForeachExpressionAntetypesAspect.ForeachExpression_IteratedAntetype);
     private DataType? iteratedType;
     private bool iteratedTypeCached;
     public DataType IteratedType
         => GrammarAttribute.IsCached(in iteratedTypeCached) ? iteratedType!
-            : this.Synthetic(ref iteratedTypeCached, ref iteratedType, ForeachExpressionTypeAspect.ForeachExpression_IteratedType);
+            : this.Synthetic(ref iteratedTypeCached, ref iteratedType, ForeachExpressionTypesAspect.ForeachExpression_IteratedType);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
     public ValueId BindingValueId
@@ -104,7 +104,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     public IFlowState FlowStateBeforeBlock
         => GrammarAttribute.IsCached(in flowStateBeforeBlockCached) ? flowStateBeforeBlock.UnsafeValue
             : this.Circular(ref flowStateBeforeBlockCached, ref flowStateBeforeBlock,
-                ForeachExpressionTypeAspect.ForeachExpression_FlowStateBeforeBlock);
+                ForeachExpressionTypesAspect.ForeachExpression_FlowStateBeforeBlock);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
     public override IMaybeExpressionAntetype Antetype
@@ -115,13 +115,13 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type, ForeachExpressionTypeAspect.ForeachExpression_Type);
+            : this.Synthetic(ref typeCached, ref type, ForeachExpressionTypesAspect.ForeachExpression_Type);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ForeachExpressionTypeAspect.ForeachExpression_FlowStateAfter);
+                ForeachExpressionTypesAspect.ForeachExpression_FlowStateAfter);
     private IFixedSet<IDataFlowNode>? dataFlowPrevious;
     private bool dataFlowPreviousCached;
     public IFixedSet<IDataFlowNode> DataFlowPrevious
@@ -184,7 +184,7 @@ internal sealed class ForeachExpressionNode : ExpressionNode, IForeachExpression
 
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder diagnostics)
     {
-        ForeachExpressionTypeAspect.ForeachExpression_Contribute_Diagnostics(this, diagnostics);
+        ForeachExpressionTypesAspect.ForeachExpression_Contribute_Diagnostics(this, diagnostics);
         ShadowingAspect.VariableBinding_Contribute_Diagnostics(this, diagnostics);
         base.Contribute_Diagnostics(diagnostics);
     }

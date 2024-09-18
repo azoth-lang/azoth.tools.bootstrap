@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
-internal static class ForeachExpressionAntetypeAspect
+internal static partial class ForeachExpressionAntetypesAspect
 {
     public static ITypeDeclarationNode? ForeachExpression_ReferencedIterableDeclaration(IForeachExpressionNode node)
         => node.PackageNameScope().Lookup(node.InExpression?.Antetype ?? IAntetype.Unknown);

@@ -2427,17 +2427,17 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
     IStandardMethodDeclarationNode? ReferencedIterateMethod { get; }
     IMaybeExpressionAntetype IteratorAntetype { get; }
-    DataType IteratorType { get; }
     ITypeDeclarationNode? ReferencedIteratorDeclaration { get; }
     IStandardMethodDeclarationNode? ReferencedNextMethod { get; }
     IMaybeAntetype IteratedAntetype { get; }
-    DataType IteratedType { get; }
-    IFlowState FlowStateBeforeBlock { get; }
     PackageNameScope PackageNameScope();
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope LexicalScope { get; }
+    DataType IteratorType { get; }
+    DataType IteratedType { get; }
+    IFlowState FlowStateBeforeBlock { get; }
     bool IBindingNode.IsLentBinding
         => false;
     IdentifierName INamedBindingDeclarationNode.Name
@@ -2453,13 +2453,10 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
         ITypeDeclarationNode? referencedIterableDeclaration,
         IStandardMethodDeclarationNode? referencedIterateMethod,
         IMaybeExpressionAntetype iteratorAntetype,
-        DataType iteratorType,
         ITypeDeclarationNode? referencedIteratorDeclaration,
         IStandardMethodDeclarationNode? referencedNextMethod,
-        IMaybeAntetype iteratedAntetype,
-        DataType iteratedType,
-        IFlowState flowStateBeforeBlock)
-        => new ForeachExpressionNode(syntax, isMutableBinding, variableName, inExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, iteratorType, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype, iteratedType, flowStateBeforeBlock);
+        IMaybeAntetype iteratedAntetype)
+        => new ForeachExpressionNode(syntax, isMutableBinding, variableName, inExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype);
 }
 
 // [Closed(typeof(BreakExpressionNode))]
@@ -11734,12 +11731,9 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     public ITypeDeclarationNode? ReferencedIterableDeclaration { [DebuggerStepThrough] get; }
     public IStandardMethodDeclarationNode? ReferencedIterateMethod { [DebuggerStepThrough] get; }
     public IMaybeExpressionAntetype IteratorAntetype { [DebuggerStepThrough] get; }
-    public DataType IteratorType { [DebuggerStepThrough] get; }
     public ITypeDeclarationNode? ReferencedIteratorDeclaration { [DebuggerStepThrough] get; }
     public IStandardMethodDeclarationNode? ReferencedNextMethod { [DebuggerStepThrough] get; }
     public IMaybeAntetype IteratedAntetype { [DebuggerStepThrough] get; }
-    public DataType IteratedType { [DebuggerStepThrough] get; }
-    public IFlowState FlowStateBeforeBlock { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -11834,9 +11828,27 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     public IFlowState FlowStateAfter
         => GrammarAttribute.IsCached(in flowStateAfterCached) ? flowStateAfter.UnsafeValue
             : this.Circular(ref flowStateAfterCached, ref flowStateAfter,
-                ForeachExpressionTypeAspect.ForeachExpression_FlowStateAfter);
+                ForeachExpressionTypesAspect.ForeachExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
+    public IFlowState FlowStateBeforeBlock
+        => GrammarAttribute.IsCached(in flowStateBeforeBlockCached) ? flowStateBeforeBlock!
+            : this.Synthetic(ref flowStateBeforeBlockCached, ref flowStateBeforeBlock,
+                ForeachExpressionTypesAspect.ForeachExpression_FlowStateBeforeBlock);
+    private IFlowState? flowStateBeforeBlock;
+    private bool flowStateBeforeBlockCached;
+    public DataType IteratedType
+        => GrammarAttribute.IsCached(in iteratedTypeCached) ? iteratedType!
+            : this.Synthetic(ref iteratedTypeCached, ref iteratedType,
+                ForeachExpressionTypesAspect.ForeachExpression_IteratedType);
+    private DataType? iteratedType;
+    private bool iteratedTypeCached;
+    public DataType IteratorType
+        => GrammarAttribute.IsCached(in iteratorTypeCached) ? iteratorType!
+            : this.Synthetic(ref iteratorTypeCached, ref iteratorType,
+                ForeachExpressionTypesAspect.ForeachExpression_IteratorType);
+    private DataType? iteratorType;
+    private bool iteratorTypeCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -11846,7 +11858,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     public DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
-                ForeachExpressionTypeAspect.ForeachExpression_Type);
+                ForeachExpressionTypesAspect.ForeachExpression_Type);
     private DataType? type;
     private bool typeCached;
     public ValueId ValueId
@@ -11866,12 +11878,9 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         ITypeDeclarationNode? referencedIterableDeclaration,
         IStandardMethodDeclarationNode? referencedIterateMethod,
         IMaybeExpressionAntetype iteratorAntetype,
-        DataType iteratorType,
         ITypeDeclarationNode? referencedIteratorDeclaration,
         IStandardMethodDeclarationNode? referencedNextMethod,
-        IMaybeAntetype iteratedAntetype,
-        DataType iteratedType,
-        IFlowState flowStateBeforeBlock)
+        IMaybeAntetype iteratedAntetype)
     {
         Syntax = syntax;
         IsMutableBinding = isMutableBinding;
@@ -11882,12 +11891,9 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         ReferencedIterableDeclaration = referencedIterableDeclaration;
         ReferencedIterateMethod = referencedIterateMethod;
         IteratorAntetype = iteratorAntetype;
-        IteratorType = iteratorType;
         ReferencedIteratorDeclaration = referencedIteratorDeclaration;
         ReferencedNextMethod = referencedNextMethod;
         IteratedAntetype = iteratedAntetype;
-        IteratedType = iteratedType;
-        FlowStateBeforeBlock = flowStateBeforeBlock;
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -11927,6 +11933,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ShadowingAspect.VariableBinding_Contribute_Diagnostics(this, builder);
+        ForeachExpressionTypesAspect.ForeachExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
