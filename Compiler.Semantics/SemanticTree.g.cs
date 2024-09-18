@@ -3555,16 +3555,16 @@ public partial interface IAsyncStartExpressionNode : IExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    bool Scheduled { get; }
     IAmbiguousExpressionNode TempExpression { get; }
     IExpressionNode? Expression { get; }
     IAmbiguousExpressionNode CurrentExpression { get; }
+    bool Scheduled
+        => Syntax.Scheduled;
 
     public static IAsyncStartExpressionNode Create(
         IAsyncStartExpressionSyntax syntax,
-        bool scheduled,
         IAmbiguousExpressionNode expression)
-        => new AsyncStartExpressionNode(syntax, scheduled, expression);
+        => new AsyncStartExpressionNode(syntax, expression);
 }
 
 // [Closed(typeof(AwaitExpressionNode))]
@@ -3578,6 +3578,8 @@ public partial interface IAwaitExpressionNode : IExpressionNode
     IAmbiguousExpressionNode TempExpression { get; }
     IExpressionNode? Expression { get; }
     IAmbiguousExpressionNode CurrentExpression { get; }
+    ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
+        => TempExpression.FlowLexicalScope();
 
     public static IAwaitExpressionNode Create(
         IAwaitExpressionSyntax syntax,
@@ -17349,7 +17351,6 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
     protected override bool MayHaveRewrite => true;
 
     public IAsyncStartExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public bool Scheduled { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> expression;
     private bool expressionCached;
     public IAmbiguousExpressionNode TempExpression
@@ -17425,11 +17426,9 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
 
     public AsyncStartExpressionNode(
         IAsyncStartExpressionSyntax syntax,
-        bool scheduled,
         IAmbiguousExpressionNode expression)
     {
         Syntax = syntax;
-        Scheduled = scheduled;
         this.expression = Child.Create(this, expression);
     }
 

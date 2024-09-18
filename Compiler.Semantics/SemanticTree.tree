@@ -369,10 +369,9 @@ PrepareToReturnExpression <: Expression = Value:Expression;
 
 // ---------- Async Expressions
 AsyncBlockExpression <: Expression = Syntax:`IAsyncBlockExpressionSyntax` Block:BlockExpression;
-AsyncStartExpression <: Expression = Syntax:`IAsyncStartExpressionSyntax` Scheduled:`bool`
-    Expression:AmbiguousExpression;
-AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax`
-    Expression:AmbiguousExpression;
+AsyncStartExpression <: Expression
+    = Syntax:`IAsyncStartExpressionSyntax` Expression:AmbiguousExpression;
+AwaitExpression <: Expression = Syntax:`IAwaitExpressionSyntax` Expression:AmbiguousExpression;
 
 // -------------------------------------------------------------------------------------------------
 // Declarations

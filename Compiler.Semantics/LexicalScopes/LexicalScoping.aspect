@@ -130,3 +130,6 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 // ---------- Ambiguous Name Expressions
 ↓ StandardNameExpression.ContainingLexicalScope: `LexicalScope`;
 ↓ MemberAccessExpression.PackageNameScope(): `PackageNameScope`;
+
+// ---------- Async Expressions
+= AwaitExpression.FlowLexicalScope() => TempExpression.FlowLexicalScope();

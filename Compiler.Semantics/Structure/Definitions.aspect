@@ -185,6 +185,9 @@
 // ---------- Capability Expressions
 ↑ PrepareToReturnExpression.Syntax: `IExpressionSyntax` => Value.Syntax;
 
+// ---------- Async Expressions
+↑ AsyncStartExpression.Scheduled: `bool` => Syntax.Scheduled;
+
 // -------------------------------------------------------------------------------------------------
 // Declarations
 // -------------------------------------------------------------------------------------------------
