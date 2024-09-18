@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 public sealed class ContributorCollection<T>
     where T : notnull
 {
-    private readonly HashSet<T> contributorsToAll = new();
+    private readonly HashSet<T> contributorsToAll = [];
     private readonly ConcurrentDictionary<T, HashSet<T>> contributors = new();
     private CollectionState state = CollectionState.Unpopulated;
 
@@ -59,7 +59,7 @@ public sealed class ContributorCollection<T>
         contributorsToTarget.Add(contributor);
     }
 
-    private static HashSet<T> NewSet(T _) => new();
+    private static HashSet<T> NewSet(T _) => [];
 
     public IEnumerable<T> Remove(T target)
     {
