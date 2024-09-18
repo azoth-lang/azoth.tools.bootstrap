@@ -73,6 +73,7 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 = NewObjectExpression.Arguments[0].**.ContainingLexicalScope => ContainingLexicalScope();
 = NewObjectExpression.Arguments[index].**.ContainingLexicalScope
     => TempArguments[index - 1].FlowLexicalScope().True;
+= UnsafeExpression.FlowLexicalScope() => TempExpression.FlowLexicalScope();
 
 // ---------- Patterns
 ↓ BindingPattern.ContainingLexicalScope: `LexicalScope`;

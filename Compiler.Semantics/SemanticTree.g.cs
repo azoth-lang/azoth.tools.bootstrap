@@ -2053,6 +2053,8 @@ public partial interface IUnsafeExpressionNode : IExpressionNode
     IAmbiguousExpressionNode TempExpression { get; }
     IExpressionNode? Expression { get; }
     IAmbiguousExpressionNode CurrentExpression { get; }
+    ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
+        => TempExpression.FlowLexicalScope();
 
     public static IUnsafeExpressionNode Create(
         IUnsafeExpressionSyntax syntax,

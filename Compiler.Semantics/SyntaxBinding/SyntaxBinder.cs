@@ -490,7 +490,7 @@ internal static class SyntaxBinder
         => INewObjectExpressionNode.Create(syntax, TypeName(syntax.Type), Expressions(syntax.Arguments));
 
     private static IUnsafeExpressionNode UnsafeExpression(IUnsafeExpressionSyntax syntax)
-        => new UnsafeExpressionNode(syntax, Expression(syntax.Expression));
+        => IUnsafeExpressionNode.Create(syntax, Expression(syntax.Expression));
     #endregion
 
     #region Literal Expressions
