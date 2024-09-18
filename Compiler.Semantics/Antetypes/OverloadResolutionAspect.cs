@@ -149,7 +149,7 @@ internal static partial class OverloadResolutionAspect
     }
 
     public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_ToUnknown(IUnresolvedInvocationExpressionNode node)
-        => new UnknownInvocationExpressionNode(node.Syntax, node.CurrentExpression, node.CurrentArguments);
+        => IUnknownInvocationExpressionNode.Create(node.Syntax, node.CurrentExpression, node.CurrentArguments);
 
     public static partial IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(
         INewObjectExpressionNode node)
