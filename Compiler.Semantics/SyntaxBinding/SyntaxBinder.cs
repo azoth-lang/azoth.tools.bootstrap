@@ -531,7 +531,7 @@ internal static class SyntaxBinder
         => IIdExpressionNode.Create(syntax, Expression(syntax.Referent));
 
     private static IConversionExpressionNode ConversionExpression(IConversionExpressionSyntax syntax)
-        => new ConversionExpressionNode(syntax, Expression(syntax.Referent), Type(syntax.ConvertToType));
+        => IConversionExpressionNode.Create(syntax, Expression(syntax.Referent), Type(syntax.ConvertToType));
 
     private static IPatternMatchExpressionNode PatternMatchExpression(IPatternMatchExpressionSyntax syntax)
         => new PatternMatchExpressionNode(syntax, Expression(syntax.Referent), Pattern(syntax.Pattern));

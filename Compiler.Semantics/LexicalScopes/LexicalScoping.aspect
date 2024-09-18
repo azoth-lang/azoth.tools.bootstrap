@@ -97,6 +97,7 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 = BinaryOperatorExpression.FlowLexicalScope();
 = UnaryOperatorExpression.FlowLexicalScope();
 = IdExpression.FlowLexicalScope() => TempReferent.FlowLexicalScope();
+= ConversionExpression.FlowLexicalScope() => TempReferent.FlowLexicalScope();
 
 // ---------- Control Flow Expressions
 ↓ ForeachExpression.PackageNameScope(): `PackageNameScope`;

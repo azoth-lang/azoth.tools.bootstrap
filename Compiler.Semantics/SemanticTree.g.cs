@@ -2273,15 +2273,17 @@ public partial interface IConversionExpressionNode : IExpressionNode
     IAmbiguousExpressionNode TempReferent { get; }
     IExpressionNode? Referent { get; }
     IAmbiguousExpressionNode CurrentReferent { get; }
-    ConversionOperator Operator { get; }
     ITypeNode ConvertToType { get; }
+    ConversionOperator Operator
+        => Syntax.Operator;
+    ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
+        => TempReferent.FlowLexicalScope();
 
     public static IConversionExpressionNode Create(
         IConversionExpressionSyntax syntax,
         IAmbiguousExpressionNode referent,
-        ConversionOperator @operator,
         ITypeNode convertToType)
-        => new ConversionExpressionNode(syntax, referent, @operator, convertToType);
+        => new ConversionExpressionNode(syntax, referent, convertToType);
 }
 
 // [Closed(typeof(ImplicitConversionExpressionNode))]
@@ -10711,7 +10713,6 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode? Referent => TempReferent as IExpressionNode;
     public IAmbiguousExpressionNode CurrentReferent => referent.UnsafeValue;
-    public ConversionOperator Operator { [DebuggerStepThrough] get; }
     public ITypeNode ConvertToType { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -10782,12 +10783,10 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
     public ConversionExpressionNode(
         IConversionExpressionSyntax syntax,
         IAmbiguousExpressionNode referent,
-        ConversionOperator @operator,
         ITypeNode convertToType)
     {
         Syntax = syntax;
         this.referent = Child.Create(this, referent);
-        Operator = @operator;
         ConvertToType = Child.Attach(this, convertToType);
     }
 

@@ -245,7 +245,7 @@ UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax`
      Operand:AmbiguousExpression;
 IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression;
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax`
-    Referent:AmbiguousExpression Operator:`ConversionOperator` ConvertToType:Type;
+    Referent:AmbiguousExpression ConvertToType:Type;
 ImplicitConversionExpression <: Expression = Referent:Expression Antetype:`SimpleAntetype` Type:`DataType`;
 PatternMatchExpression <: Expression
     = Syntax:`IPatternMatchExpressionSyntax` Referent:AmbiguousExpression Pattern;
