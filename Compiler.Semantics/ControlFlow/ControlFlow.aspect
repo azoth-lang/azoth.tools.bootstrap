@@ -122,6 +122,8 @@
                                     : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
 = MethodInvocationExpression.ControlFlowNext;
 = GetterInvocationExpression.ControlFlowNext;
+= SetterInvocationExpression.Context.**.ControlFlowFollowing()
+    => ControlFlowSet.CreateNormal(Value);
 = SetterInvocationExpression.ControlFlowNext;
 = FunctionReferenceInvocationExpression.ControlFlowNext;
 

@@ -50,7 +50,8 @@ internal sealed class SetterInvocationExpressionNode : ExpressionNode, ISetterIn
     private bool typeCached;
     public override DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
-            : this.Synthetic(ref typeCached, ref type, ExpressionTypesAspect.SetterInvocationExpression_Type);
+            : this.Synthetic(ref typeCached, ref type,
+                ExpressionTypesAspect.SetterInvocationExpression_Type);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
     public override IFlowState FlowStateAfter

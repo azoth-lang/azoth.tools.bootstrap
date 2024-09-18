@@ -62,6 +62,12 @@
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = GetterInvocationExpression.Context.ExpectedAntetype
     => ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype();
+// TODO it would be better if this didn't depend on types, but only on antetypes
+= SetterInvocationExpression.Context.ExpectedAntetype
+    => ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype();
+// TODO it would be better if this didn't depend on types, but only on antetypes
+= SetterInvocationExpression.Value.ExpectedAntetype
+    => ContextualizedOverload?.ParameterTypes[0].Type.ToAntetype();
 
 // ---------- Ambiguous Name Expressions
 = MemberAccessExpression.*.**.ExpectedAntetype => null;

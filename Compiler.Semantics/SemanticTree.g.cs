@@ -13169,8 +13169,19 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         ReferencedDeclaration = referencedDeclaration;
     }
 
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentContext))
+            return ControlFlowSet.CreateNormal(Value);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentContext))
+            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype();
+        if (ReferenceEquals(descendant, Self.CurrentValue))
+            return ContextualizedOverload?.ParameterTypes[0].Type.ToAntetype();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -13178,9 +13189,20 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentContext))
+            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
+        if (ReferenceEquals(descendant, Self.CurrentValue))
+            return ContextualizedOverload?.ParameterTypes[0].Type;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.CurrentValue))
+            return Context.FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
