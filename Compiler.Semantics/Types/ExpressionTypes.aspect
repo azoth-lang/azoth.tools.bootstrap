@@ -5,6 +5,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
+◊using Type = Azoth.Tools.Bootstrap.Compiler.Types.Type;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -111,6 +112,9 @@
 = BinaryOperatorExpression.↑.Diagnostics;
 = IdExpression.↑.Diagnostics;
 = ConversionExpression.↑.Diagnostics;
+↑ eager ImplicitConversionExpression.Type: `Type`;
+// No expected type for the referent. If one were given, it could cause another implicit conversion.
+= ImplicitConversionExpression.Referent.ExpectedType => null;
 = PatternMatchExpression.Type => DataType.Bool;
 
 // ---------- Control Flow Expressions

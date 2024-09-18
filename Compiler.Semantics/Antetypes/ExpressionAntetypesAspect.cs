@@ -354,7 +354,7 @@ internal static partial class ExpressionAntetypesAspect
         if (node.ShouldNotBeExpression()) return null;
 
         if (ImplicitlyConvertToType(node.ExpectedAntetype, node.Antetype) is SimpleAntetype convertToAntetype)
-            return new ImplicitConversionExpressionNode(node, convertToAntetype);
+            return IImplicitConversionExpressionNode.Create(node, convertToAntetype);
 
         return null;
     }

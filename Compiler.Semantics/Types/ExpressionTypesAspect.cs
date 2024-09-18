@@ -19,6 +19,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -649,6 +650,9 @@ internal static partial class ExpressionTypesAspect
         if (!convertFromType.CanBeExplicitlyConvertedTo(convertToType, node.Operator == ConversionOperator.Safe))
             diagnostics.Add(TypeError.CannotExplicitlyConvert(node.File, node.Referent.Syntax, convertFromType, convertToType));
     }
+
+    public static partial Type ImplicitConversionExpression_Type(IImplicitConversionExpressionNode node)
+        => node.Antetype.ToType();
 
     public static partial IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node)
         => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);

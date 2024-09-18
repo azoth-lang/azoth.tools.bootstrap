@@ -98,6 +98,7 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 = UnaryOperatorExpression.FlowLexicalScope();
 = IdExpression.FlowLexicalScope() => TempReferent.FlowLexicalScope();
 = ConversionExpression.FlowLexicalScope() => TempReferent.FlowLexicalScope();
+= ImplicitConversionExpression.FlowLexicalScope() => Referent.FlowLexicalScope();
 
 // ---------- Control Flow Expressions
 ↓ ForeachExpression.PackageNameScope(): `PackageNameScope`;

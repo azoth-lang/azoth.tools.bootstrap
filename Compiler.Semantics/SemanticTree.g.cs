@@ -38,6 +38,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using InlineMethod;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 
@@ -2294,15 +2295,20 @@ public partial interface IImplicitConversionExpressionNode : IExpressionNode
     IExpressionNode CurrentReferent { get; }
     new SimpleAntetype Antetype { get; }
     IMaybeExpressionAntetype IExpressionNode.Antetype => Antetype;
-    new DataType Type { get; }
+    new Type Type { get; }
     DataType IExpressionNode.Type => Type;
+    new IExpressionSyntax Syntax
+        => Referent.Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    ICodeSyntax? ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
+    ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
+        => Referent.FlowLexicalScope();
 
     public static IImplicitConversionExpressionNode Create(
-        IExpressionSyntax syntax,
         IExpressionNode referent,
-        SimpleAntetype antetype,
-        DataType type)
-        => new ImplicitConversionExpressionNode(syntax, referent, antetype, type);
+        SimpleAntetype antetype)
+        => new ImplicitConversionExpressionNode(referent, antetype);
 }
 
 // [Closed(typeof(PatternMatchExpressionNode))]
@@ -10856,7 +10862,6 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
     public IExpressionNode Referent
@@ -10864,7 +10869,6 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode CurrentReferent => referent.UnsafeValue;
     public SimpleAntetype Antetype { [DebuggerStepThrough] get; }
-    public DataType Type { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -10912,6 +10916,7 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
                 ExpressionTypesAspect.ImplicitConversionExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
+    public Type Type { [DebuggerStepThrough] get; }
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -10920,19 +10925,18 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
     private bool valueIdCached;
 
     public ImplicitConversionExpressionNode(
-        IExpressionSyntax syntax,
         IExpressionNode referent,
-        SimpleAntetype antetype,
-        DataType type)
+        SimpleAntetype antetype)
     {
-        Syntax = syntax;
         this.referent = Child.Create(this, referent);
         Antetype = antetype;
-        Type = type;
+        Type = ExpressionTypesAspect.ImplicitConversionExpression_Type(this);
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentReferent))
+            return null;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -10940,6 +10944,8 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentReferent))
+            return null;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);

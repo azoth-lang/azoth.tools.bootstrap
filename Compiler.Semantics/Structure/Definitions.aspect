@@ -144,6 +144,7 @@
 ↑ UnaryOperatorExpression.Operator: `UnaryOperator` => Syntax.Operator;
 ↑ UnaryOperatorExpression.Fixity: `UnaryOperatorFixity` => Syntax.Fixity;
 ↑ ConversionExpression.Operator: `ConversionOperator` => Syntax.Operator;
+↑ ImplicitConversionExpression.Syntax: `IExpressionSyntax` => Referent.Syntax;
 
 // ---------- Invocation Expressions
 ↑ InvocationExpression.TempAllArguments: IEnumerable<AmbiguousExpression>;

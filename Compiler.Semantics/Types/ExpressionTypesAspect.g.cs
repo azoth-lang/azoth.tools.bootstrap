@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
+using Type = Azoth.Tools.Bootstrap.Compiler.Types.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -122,6 +123,8 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState ConversionExpression_FlowStateAfter(IConversionExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial Type ImplicitConversionExpression_Type(IImplicitConversionExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState PatternMatchExpression_FlowStateAfter(IPatternMatchExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

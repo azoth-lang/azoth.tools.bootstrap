@@ -44,6 +44,8 @@
 = BinaryOperatorExpression.RightOperand.ExpectedAntetype => NumericOperatorCommonAntetype;
 = UnaryOperatorExpression.↑.Diagnostics;
 = IdExpression.Antetype => Referent?.Antetype ?? IAntetype.Unknown;
+// No expected antetype for the referent. If one were given, it could cause another implicit conversion.
+= ImplicitConversionExpression.Referent.ExpectedAntetype => null;
 = PatternMatchExpression.Antetype => IAntetype.Bool;
 
 // ---------- Invocation Expressions
