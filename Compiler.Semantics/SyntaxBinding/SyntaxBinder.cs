@@ -487,7 +487,7 @@ internal static class SyntaxBinder
         => IBlockExpressionNode.Create(syntax, Statements(syntax.Statements));
 
     private static INewObjectExpressionNode NewObjectExpression(INewObjectExpressionSyntax syntax)
-        => new NewObjectExpressionNode(syntax, TypeName(syntax.Type), Expressions(syntax.Arguments));
+        => INewObjectExpressionNode.Create(syntax, TypeName(syntax.Type), Expressions(syntax.Arguments));
 
     private static IUnsafeExpressionNode UnsafeExpression(IUnsafeExpressionSyntax syntax)
         => new UnsafeExpressionNode(syntax, Expression(syntax.Expression));

@@ -54,6 +54,8 @@
 = AmbiguousExpression.*.**.ImplicitRecoveryAllowed() => false;
 // By default, don't need to prepare to return
 = AmbiguousExpression.*.**.ShouldPrepareToReturn() => false;
+// TODO remove once all nodes properly provide the expected type
+= AmbiguousExpression.*.ExpectedType => null;
 ↓ Expression.ExpectedType:`DataType`?;
 /// <summary>
 /// Whether an implicit recovery (i.e. move or freeze) is allowed to convert this expression to

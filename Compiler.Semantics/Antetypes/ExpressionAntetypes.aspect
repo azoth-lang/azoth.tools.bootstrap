@@ -26,9 +26,9 @@
 = OptionalPattern.↑.Diagnostics;
 
 // ---------- Expressions
-↓ Expression.ExpectedAntetype: `IMaybeExpressionAntetype`?;
 // TODO remove once all nodes properly provide the expected antetype
-= Expression.*.ExpectedAntetype => null;
+= AmbiguousExpression.*.ExpectedAntetype => null;
+↓ Expression.ExpectedAntetype: `IMaybeExpressionAntetype`?;
 ↑ Expression.Antetype: `IMaybeExpressionAntetype`;
 ✎ Expression ImplicitConversion;
 ↑ BlockExpression.Antetype: `IMaybeAntetype`;
