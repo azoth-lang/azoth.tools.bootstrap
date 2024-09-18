@@ -99,6 +99,9 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 = IdExpression.FlowLexicalScope() => TempReferent.FlowLexicalScope();
 = ConversionExpression.FlowLexicalScope() => TempReferent.FlowLexicalScope();
 = ImplicitConversionExpression.FlowLexicalScope() => Referent.FlowLexicalScope();
+= PatternMatchExpression.Referent.**.ContainingLexicalScope => ContainingLexicalScope();
+= PatternMatchExpression.Pattern.**.ContainingLexicalScope => TempReferent.FlowLexicalScope().True;
+= PatternMatchExpression.FlowLexicalScope() => Pattern.FlowLexicalScope();
 
 // ---------- Control Flow Expressions
 ↓ ForeachExpression.PackageNameScope(): `PackageNameScope`;

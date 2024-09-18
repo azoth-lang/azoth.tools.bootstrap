@@ -534,7 +534,7 @@ internal static class SyntaxBinder
         => IConversionExpressionNode.Create(syntax, Expression(syntax.Referent), Type(syntax.ConvertToType));
 
     private static IPatternMatchExpressionNode PatternMatchExpression(IPatternMatchExpressionSyntax syntax)
-        => new PatternMatchExpressionNode(syntax, Expression(syntax.Referent), Pattern(syntax.Pattern));
+        => IPatternMatchExpressionNode.Create(syntax, Expression(syntax.Referent), Pattern(syntax.Pattern));
     #endregion
 
     #region Control Flow Expressions

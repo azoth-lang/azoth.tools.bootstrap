@@ -70,6 +70,8 @@
 = IdExpression.ControlFlowNext;
 = ConversionExpression.ControlFlowNext;
 = ImplicitConversionExpression.ControlFlowNext;
+= PatternMatchExpression.Referent.**.ControlFlowFollowing()
+    => ControlFlowSet.CreateNormal(Pattern);
 = PatternMatchExpression.ControlFlowNext;
 
 // ---------- Control Flow Expressions

@@ -115,6 +115,7 @@
 ↑ eager ImplicitConversionExpression.Type: `Type`;
 // No expected type for the referent. If one were given, it could cause another implicit conversion.
 = ImplicitConversionExpression.Referent.ExpectedType => null;
+= PatternMatchExpression.Pattern.**.FlowStateBefore => Referent?.FlowStateAfter ?? IFlowState.Empty;
 = PatternMatchExpression.Type => DataType.Bool;
 
 // ---------- Control Flow Expressions

@@ -46,3 +46,6 @@ struct `ValueId`;
 ↑ AmbiguousExpression.ValueId: `ValueId`;
 = AmbiguousExpression.ValueId;
 = AmbiguousExpression.⮡.PreviousValueId => ValueId;
+
+// ---------- Operator Expressions
+= PatternMatchExpression.Pattern.**.MatchReferentValueId => Referent?.ValueId;

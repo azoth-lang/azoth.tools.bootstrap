@@ -2323,6 +2323,8 @@ public partial interface IPatternMatchExpressionNode : IExpressionNode
     IExpressionNode? Referent { get; }
     IAmbiguousExpressionNode CurrentReferent { get; }
     IPatternNode Pattern { get; }
+    ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
+        => Pattern.FlowLexicalScope();
     DataType IExpressionNode.Type
         => DataType.Bool;
     IMaybeExpressionAntetype IExpressionNode.Antetype
@@ -11075,6 +11077,15 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         Pattern = Child.Attach(this, pattern);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentReferent))
+            return ContainingLexicalScope();
+        if (ReferenceEquals(child, Self.Pattern))
+            return TempReferent.FlowLexicalScope().True;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
     internal override IMaybeAntetype Inherited_ContextBindingAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Pattern))
@@ -11087,6 +11098,13 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         if (ReferenceEquals(descendant, Self.Pattern))
             return NameBindingTypesAspect.PatternMatchExpression_Pattern_ContextBindingType(this);
         return base.Inherited_ContextBindingType(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentReferent))
+            return ControlFlowSet.CreateNormal(Pattern);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -11103,9 +11121,23 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Pattern))
+            return Referent?.FlowStateAfter ?? IFlowState.Empty;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
+    }
+
+    internal override ValueId? Inherited_MatchReferentValueId(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Pattern))
+            return Referent?.ValueId;
+        return base.Inherited_MatchReferentValueId(child, descendant, ctx);
     }
 
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
