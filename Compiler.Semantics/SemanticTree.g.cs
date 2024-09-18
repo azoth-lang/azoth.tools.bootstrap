@@ -13325,7 +13325,12 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
                 ExpressionTypesAspect.FunctionReferenceInvocationExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public FunctionAntetype FunctionAntetype { [DebuggerStepThrough] get; }
+    public FunctionAntetype FunctionAntetype
+        => GrammarAttribute.IsCached(in functionAntetypeCached) ? functionAntetype!
+            : this.Synthetic(ref functionAntetypeCached, ref functionAntetype,
+                ExpressionAntetypesAspect.FunctionReferenceInvocationExpression_FunctionAntetype);
+    private FunctionAntetype? functionAntetype;
+    private bool functionAntetypeCached;
     public FunctionType FunctionType
         => GrammarAttribute.IsCached(in functionTypeCached) ? functionType!
             : this.Synthetic(ref functionTypeCached, ref functionType,
@@ -13353,7 +13358,6 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
-        FunctionAntetype = ExpressionAntetypesAspect.FunctionReferenceInvocationExpression_FunctionAntetype(this);
     }
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

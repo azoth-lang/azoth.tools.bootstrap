@@ -145,7 +145,7 @@ internal static partial class OverloadResolutionAspect
         if (node.Expression is not { Antetype: FunctionAntetype } expression)
             return null;
 
-        return new FunctionReferenceInvocationExpressionNode(node.Syntax, expression, node.CurrentArguments);
+        return IFunctionReferenceInvocationExpressionNode.Create(node.Syntax, expression, node.CurrentArguments);
     }
 
     public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_ToUnknown(IUnresolvedInvocationExpressionNode node)

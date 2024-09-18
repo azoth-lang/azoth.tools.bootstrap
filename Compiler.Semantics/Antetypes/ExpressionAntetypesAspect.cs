@@ -337,6 +337,8 @@ internal static partial class ExpressionAntetypesAspect
     public static partial IMaybeExpressionAntetype FunctionReferenceInvocationExpression_Antetype(IFunctionReferenceInvocationExpressionNode node)
         => node.FunctionAntetype.Return;
 
+    /// <remarks>Can't be an eager attribute because accessing <see cref="IFunctionReferenceInvocationExpressionNode.Expression"/>
+    /// requires checking the parent of the <paramref name="node"/>.</remarks>
     public static partial FunctionAntetype FunctionReferenceInvocationExpression_FunctionAntetype(IFunctionReferenceInvocationExpressionNode node)
         => (FunctionAntetype)node.Expression.Antetype;
 
