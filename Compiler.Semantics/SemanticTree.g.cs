@@ -2673,8 +2673,8 @@ public partial interface IFunctionReferenceInvocationExpressionNode : IInvocatio
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
-    FunctionAntetype FunctionAntetype { get; }
     FunctionType FunctionType { get; }
+    FunctionAntetype FunctionAntetype { get; }
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
         => TempArguments;
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
@@ -2683,9 +2683,8 @@ public partial interface IFunctionReferenceInvocationExpressionNode : IInvocatio
     public static IFunctionReferenceInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,
         IExpressionNode expression,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
-        FunctionAntetype functionAntetype)
-        => new FunctionReferenceInvocationExpressionNode(syntax, expression, arguments, functionAntetype);
+        IEnumerable<IAmbiguousExpressionNode> arguments)
+        => new FunctionReferenceInvocationExpressionNode(syntax, expression, arguments);
 }
 
 // [Closed(typeof(InitializerInvocationExpressionNode))]
@@ -13268,7 +13267,6 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public FunctionAntetype FunctionAntetype { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -13322,6 +13320,7 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
                 ExpressionTypesAspect.FunctionReferenceInvocationExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
+    public FunctionAntetype FunctionAntetype { [DebuggerStepThrough] get; }
     public FunctionType FunctionType
         => GrammarAttribute.IsCached(in functionTypeCached) ? functionType!
             : this.Synthetic(ref functionTypeCached, ref functionType,
@@ -13344,13 +13343,21 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
     public FunctionReferenceInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
         IExpressionNode expression,
-        IEnumerable<IAmbiguousExpressionNode> arguments,
-        FunctionAntetype functionAntetype)
+        IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
         this.expression = Child.Create(this, expression);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
-        FunctionAntetype = functionAntetype;
+        FunctionAntetype = ExpressionAntetypesAspect.FunctionReferenceInvocationExpression_FunctionAntetype(this);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentExpression))
+            return !TempArguments.IsEmpty ? ControlFlowSet.CreateNormal(Arguments[0]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
+            return index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -13362,9 +13369,20 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
+            return FunctionType.Parameters[index].Type;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (0 < Self.CurrentArguments.Count && ReferenceEquals(child, Self.CurrentArguments[0]))
+            return base.Inherited_FlowStateBefore(child, descendant, ctx);
+        if (IndexOfNode(Self.CurrentArguments, child) is { } index)
+            return Arguments[index - 1]?.FlowStateAfter ?? Expression.FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

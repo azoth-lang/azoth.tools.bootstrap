@@ -68,6 +68,9 @@
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = SetterInvocationExpression.Value.ExpectedAntetype
     => ContextualizedOverload?.ParameterTypes[0].Type.ToAntetype();
+↑ eager FunctionReferenceInvocationExpression.FunctionAntetype: `FunctionAntetype`;
+= FunctionInvocationExpression.Arguments[index].ExpectedAntetype
+    => FunctionAntetype.Parameters[index];
 
 // ---------- Ambiguous Name Expressions
 = MemberAccessExpression.*.**.ExpectedAntetype => null;

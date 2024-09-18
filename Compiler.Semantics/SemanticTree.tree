@@ -279,8 +279,7 @@ SetterInvocationExpression <: InvocationExpression = Syntax:`IAssignmentExpressi
     Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`ISetterMethodDeclarationNode`?;
 FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
-    Expression:Expression Arguments:AmbiguousExpression*
-    FunctionAntetype:`FunctionAntetype`;
+    Expression:Expression Arguments:AmbiguousExpression*;
 InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression*;
 UnknownInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`

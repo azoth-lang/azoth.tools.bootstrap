@@ -158,5 +158,8 @@
     <Compile Update="Antetypes\ForeachExpressionAntetypesAspect.g.cs">
       <DependentUpon>ForeachExpressionAntetypes.aspect</DependentUpon>
     </Compile>
+    <Compile Update="Types\ForeachExpressionTypesAspect.g.cs">
+      <DependentUpon>ForeachExpressionTypes.aspect</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>
