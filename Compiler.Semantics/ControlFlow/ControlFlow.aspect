@@ -88,6 +88,12 @@
 = WhileExpression.Block.**.ControlFlowFollowing()
     => ControlFlowSet.CreateLoop(Condition).Union(ControlFlowFollowing());
 = WhileExpression.ControlFlowNext;
+= ForeachExpression.InExpression.**.ControlFlowFollowing()
+    => ControlFlowSet.CreateNormal(Block);
+// Technically, `next()` is called on the iterator before the block is looped. But there
+// is no node that corresponds to that and it has no effect on the control flow.
+= ForeachExpression.Block.**.ControlFlowFollowing()
+    => ControlFlowSet.CreateLoop(Block).Union(ControlFlowFollowing());
 = ForeachExpression.ControlFlowNext;
 = ReturnExpression.Value.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(ControlFlowExit());

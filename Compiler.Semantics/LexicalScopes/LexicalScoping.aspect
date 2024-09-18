@@ -110,6 +110,10 @@ type `NamespaceSearchScope` <: `LexicalScope`;
     => TempCondition.FlowLexicalScope().True;
 ↓ ForeachExpression.PackageNameScope(): `PackageNameScope`;
 ↓ ForeachExpression.ContainingLexicalScope: `LexicalScope`;
+= ForeachExpression.InExpression.**.ContainingLexicalScope
+    => ContainingLexicalScope;
+= ForeachExpression.Block.**.ContainingLexicalScope
+    => LexicalScope;
 ↑ ForeachExpression.LexicalScope: `LexicalScope`;
 
 // ---------- Invocation Expressions

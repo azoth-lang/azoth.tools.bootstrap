@@ -11,5 +11,6 @@
 ↑ ForeachExpression.IteratedType: `DataType`;
 ↑ ForeachExpression.FlowStateBeforeBlock: `IFlowState`;
 = ForeachExpression.Type;
+= ForeachExpression.Block.**.FlowStateBefore => FlowStateBeforeBlock;
 = ForeachExpression.FlowStateAfter;
 = ForeachExpression.↑.Diagnostics;

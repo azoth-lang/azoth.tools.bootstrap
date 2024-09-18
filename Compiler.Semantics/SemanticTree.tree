@@ -257,12 +257,7 @@ LoopExpression <: Expression = Syntax:`ILoopExpressionSyntax` Block:BlockExpress
 WhileExpression <: Expression = Syntax:`IWhileExpressionSyntax`
     Condition:AmbiguousExpression Block:BlockExpression;
 ForeachExpression <: Expression, VariableBinding = Syntax:`IForeachExpressionSyntax`
-    IsMutableBinding:`bool` VariableName:`IdentifierName` InExpression:AmbiguousExpression
-    DeclaredType:Type? Block:BlockExpression
-    ReferencedIterableDeclaration:`ITypeDeclarationNode`? ReferencedIterateMethod:`IStandardMethodDeclarationNode`?
-    IteratorAntetype:`IMaybeExpressionAntetype`
-    ReferencedIteratorDeclaration:`ITypeDeclarationNode`? ReferencedNextMethod:`IStandardMethodDeclarationNode`?
-    IteratedAntetype:`IMaybeAntetype`;
+    InExpression:AmbiguousExpression DeclaredType:Type? Block:BlockExpression;
 BreakExpression <: NeverTypedExpression = Syntax:`IBreakExpressionSyntax`
     Value:AmbiguousExpression?;
 NextExpression <: NeverTypedExpression = Syntax:`INextExpressionSyntax`;

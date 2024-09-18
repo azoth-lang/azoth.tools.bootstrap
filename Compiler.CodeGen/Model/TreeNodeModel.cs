@@ -451,16 +451,23 @@ public class TreeNodeModel
         var inherited = RemoveAfterAllChildren(declaredEquations.OfType<InheritedAttributeEquationModel>()
                                               .Concat(InheritedEquations.OfType<InheritedAttributeEquationModel>()));
 
+        // Previous attribute equations are distinct by name per node.
+        var declaredPreviousEquations = declaredEquations.OfType<PreviousAttributeEquationModel>().ToList();
+        var inheritedPreviousEquations = InheritedEquations
+                                         .OfType<PreviousAttributeEquationModel>()
+                                         .AllExcept<PreviousAttributeEquationModel>(declaredPreviousEquations, IMemberModel.NameComparer);
+        var previous = declaredPreviousEquations
+                      .Concat(inheritedPreviousEquations);
+
         // Non-inherited contributor equations require that the inherited ones come before ones declared
         // on this node because that is the logical order of inheritance.
         var contributorEquations = InheritedEquations.OfType<ContributorEquationModel>()
             .Concat(declaredEquations.OfType<ContributorEquationModel>())
-            .Where(eq => eq is not InheritedAttributeEquationModel);
-
-        // TODO previous attribute equations should be distinct by name per node
+            .Where(eq => eq is not InheritedAttributeEquationModel and not PreviousAttributeEquationModel);
 
         return actualSoleEquations
                .Concat<EquationModel>(inherited)
+               .Concat(previous)
                .Concat(contributorEquations)
                // Order by name to stabilize the order of inherited equations (stable sort preserves
                // order within name)

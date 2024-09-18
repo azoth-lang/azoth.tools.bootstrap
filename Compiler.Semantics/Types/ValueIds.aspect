@@ -49,3 +49,7 @@ struct `ValueId`;
 
 // ---------- Operator Expressions
 = PatternMatchExpression.Pattern.**.MatchReferentValueId => Referent?.ValueId;
+
+// ---------- Control Flow Expressions
+// Include the BindingValueId in the value id flow
+= ForeachExpression.⮡.PreviousValueId => BindingValueId;

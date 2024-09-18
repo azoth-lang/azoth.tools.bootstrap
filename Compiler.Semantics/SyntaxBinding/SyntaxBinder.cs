@@ -539,7 +539,8 @@ internal static class SyntaxBinder
 
     #region Control Flow Expressions
     private static IIfExpressionNode IfExpression(IIfExpressionSyntax syntax)
-        => IIfExpressionNode.Create(syntax, Expression(syntax.Condition), BlockOrResult(syntax.ThenBlock), ElseClause(syntax.ElseClause));
+        => IIfExpressionNode.Create(syntax, Expression(syntax.Condition),
+            BlockOrResult(syntax.ThenBlock), ElseClause(syntax.ElseClause));
 
     private static ILoopExpressionNode LoopExpression(ILoopExpressionSyntax syntax)
         => ILoopExpressionNode.Create(syntax, BlockExpression(syntax.Block));
@@ -548,7 +549,8 @@ internal static class SyntaxBinder
         => IWhileExpressionNode.Create(syntax, Expression(syntax.Condition), BlockExpression(syntax.Block));
 
     private static IForeachExpressionNode ForeachExpression(IForeachExpressionSyntax syntax)
-        => new ForeachExpressionNode(syntax, Expression(syntax.InExpression), Type(syntax.Type), BlockExpression(syntax.Block));
+        => IForeachExpressionNode.Create(syntax, Expression(syntax.InExpression), Type(syntax.Type),
+            BlockExpression(syntax.Block));
 
     private static IBreakExpressionNode BreakExpression(IBreakExpressionSyntax syntax)
         => IBreakExpressionNode.Create(syntax, Expression(syntax.Value));

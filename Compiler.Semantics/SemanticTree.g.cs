@@ -2415,48 +2415,41 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
-    new bool IsMutableBinding { get; }
-    bool INamedBindingNode.IsMutableBinding => IsMutableBinding;
-    IdentifierName VariableName { get; }
     IAmbiguousExpressionNode TempInExpression { get; }
     IExpressionNode? InExpression { get; }
     IAmbiguousExpressionNode CurrentInExpression { get; }
     ITypeNode? DeclaredType { get; }
     IBlockExpressionNode Block { get; }
     IBlockExpressionNode CurrentBlock { get; }
+    PackageNameScope PackageNameScope();
+    new LexicalScope ContainingLexicalScope { get; }
+    LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
+    LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
+    LexicalScope LexicalScope { get; }
+    IdentifierName VariableName
+        => Syntax.VariableName;
+    DataType IteratorType { get; }
+    DataType IteratedType { get; }
+    IFlowState FlowStateBeforeBlock { get; }
     ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
     IStandardMethodDeclarationNode? ReferencedIterateMethod { get; }
     IMaybeExpressionAntetype IteratorAntetype { get; }
     ITypeDeclarationNode? ReferencedIteratorDeclaration { get; }
     IStandardMethodDeclarationNode? ReferencedNextMethod { get; }
     IMaybeAntetype IteratedAntetype { get; }
-    PackageNameScope PackageNameScope();
-    new LexicalScope ContainingLexicalScope { get; }
-    LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
-    LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
-    LexicalScope LexicalScope { get; }
-    DataType IteratorType { get; }
-    DataType IteratedType { get; }
-    IFlowState FlowStateBeforeBlock { get; }
     bool IBindingNode.IsLentBinding
         => false;
+    bool INamedBindingNode.IsMutableBinding
+        => Syntax.IsMutableBinding;
     IdentifierName INamedBindingDeclarationNode.Name
         => VariableName;
 
     public static IForeachExpressionNode Create(
         IForeachExpressionSyntax syntax,
-        bool isMutableBinding,
-        IdentifierName variableName,
         IAmbiguousExpressionNode inExpression,
         ITypeNode? declaredType,
-        IBlockExpressionNode block,
-        ITypeDeclarationNode? referencedIterableDeclaration,
-        IStandardMethodDeclarationNode? referencedIterateMethod,
-        IMaybeExpressionAntetype iteratorAntetype,
-        ITypeDeclarationNode? referencedIteratorDeclaration,
-        IStandardMethodDeclarationNode? referencedNextMethod,
-        IMaybeAntetype iteratedAntetype)
-        => new ForeachExpressionNode(syntax, isMutableBinding, variableName, inExpression, declaredType, block, referencedIterableDeclaration, referencedIterateMethod, iteratorAntetype, referencedIteratorDeclaration, referencedNextMethod, iteratedAntetype);
+        IBlockExpressionNode block)
+        => new ForeachExpressionNode(syntax, inExpression, declaredType, block);
 }
 
 // [Closed(typeof(BreakExpressionNode))]
@@ -11712,8 +11705,6 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     protected override bool MayHaveRewrite => true;
 
     public IForeachExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public bool IsMutableBinding { [DebuggerStepThrough] get; }
-    public IdentifierName VariableName { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> inExpression;
     private bool inExpressionCached;
     public IAmbiguousExpressionNode TempInExpression
@@ -11728,12 +11719,6 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         => GrammarAttribute.IsCached(in blockCached) ? block.UnsafeValue
             : this.RewritableChild(ref blockCached, ref block);
     public IBlockExpressionNode CurrentBlock => block.UnsafeValue;
-    public ITypeDeclarationNode? ReferencedIterableDeclaration { [DebuggerStepThrough] get; }
-    public IStandardMethodDeclarationNode? ReferencedIterateMethod { [DebuggerStepThrough] get; }
-    public IMaybeExpressionAntetype IteratorAntetype { [DebuggerStepThrough] get; }
-    public ITypeDeclarationNode? ReferencedIteratorDeclaration { [DebuggerStepThrough] get; }
-    public IStandardMethodDeclarationNode? ReferencedNextMethod { [DebuggerStepThrough] get; }
-    public IMaybeAntetype IteratedAntetype { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -11837,12 +11822,24 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 ForeachExpressionTypesAspect.ForeachExpression_FlowStateBeforeBlock);
     private IFlowState? flowStateBeforeBlock;
     private bool flowStateBeforeBlockCached;
+    public IMaybeAntetype IteratedAntetype
+        => GrammarAttribute.IsCached(in iteratedAntetypeCached) ? iteratedAntetype!
+            : this.Synthetic(ref iteratedAntetypeCached, ref iteratedAntetype,
+                ForeachExpressionAntetypesAspect.ForeachExpression_IteratedAntetype);
+    private IMaybeAntetype? iteratedAntetype;
+    private bool iteratedAntetypeCached;
     public DataType IteratedType
         => GrammarAttribute.IsCached(in iteratedTypeCached) ? iteratedType!
             : this.Synthetic(ref iteratedTypeCached, ref iteratedType,
                 ForeachExpressionTypesAspect.ForeachExpression_IteratedType);
     private DataType? iteratedType;
     private bool iteratedTypeCached;
+    public IMaybeExpressionAntetype IteratorAntetype
+        => GrammarAttribute.IsCached(in iteratorAntetypeCached) ? iteratorAntetype!
+            : this.Synthetic(ref iteratorAntetypeCached, ref iteratorAntetype,
+                ForeachExpressionAntetypesAspect.ForeachExpression_IteratorAntetype);
+    private IMaybeExpressionAntetype? iteratorAntetype;
+    private bool iteratorAntetypeCached;
     public DataType IteratorType
         => GrammarAttribute.IsCached(in iteratorTypeCached) ? iteratorType!
             : this.Synthetic(ref iteratorTypeCached, ref iteratorType,
@@ -11855,6 +11852,30 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 LexicalScopingAspect.ForeachExpression_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public ITypeDeclarationNode? ReferencedIterableDeclaration
+        => GrammarAttribute.IsCached(in referencedIterableDeclarationCached) ? referencedIterableDeclaration
+            : this.Synthetic(ref referencedIterableDeclarationCached, ref referencedIterableDeclaration,
+                ForeachExpressionAntetypesAspect.ForeachExpression_ReferencedIterableDeclaration);
+    private ITypeDeclarationNode? referencedIterableDeclaration;
+    private bool referencedIterableDeclarationCached;
+    public IStandardMethodDeclarationNode? ReferencedIterateMethod
+        => GrammarAttribute.IsCached(in referencedIterateMethodCached) ? referencedIterateMethod
+            : this.Synthetic(ref referencedIterateMethodCached, ref referencedIterateMethod,
+                ForeachExpressionAntetypesAspect.ForeachExpression_ReferencedIterateMethod);
+    private IStandardMethodDeclarationNode? referencedIterateMethod;
+    private bool referencedIterateMethodCached;
+    public ITypeDeclarationNode? ReferencedIteratorDeclaration
+        => GrammarAttribute.IsCached(in referencedIteratorDeclarationCached) ? referencedIteratorDeclaration
+            : this.Synthetic(ref referencedIteratorDeclarationCached, ref referencedIteratorDeclaration,
+                ForeachExpressionAntetypesAspect.ForeachExpression_ReferencedIteratorDeclaration);
+    private ITypeDeclarationNode? referencedIteratorDeclaration;
+    private bool referencedIteratorDeclarationCached;
+    public IStandardMethodDeclarationNode? ReferencedNextMethod
+        => GrammarAttribute.IsCached(in referencedNextMethodCached) ? referencedNextMethod
+            : this.Synthetic(ref referencedNextMethodCached, ref referencedNextMethod,
+                ForeachExpressionAntetypesAspect.ForeachExpression_ReferencedNextMethod);
+    private IStandardMethodDeclarationNode? referencedNextMethod;
+    private bool referencedNextMethodCached;
     public DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
@@ -11870,30 +11891,32 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
 
     public ForeachExpressionNode(
         IForeachExpressionSyntax syntax,
-        bool isMutableBinding,
-        IdentifierName variableName,
         IAmbiguousExpressionNode inExpression,
         ITypeNode? declaredType,
-        IBlockExpressionNode block,
-        ITypeDeclarationNode? referencedIterableDeclaration,
-        IStandardMethodDeclarationNode? referencedIterateMethod,
-        IMaybeExpressionAntetype iteratorAntetype,
-        ITypeDeclarationNode? referencedIteratorDeclaration,
-        IStandardMethodDeclarationNode? referencedNextMethod,
-        IMaybeAntetype iteratedAntetype)
+        IBlockExpressionNode block)
     {
         Syntax = syntax;
-        IsMutableBinding = isMutableBinding;
-        VariableName = variableName;
         this.inExpression = Child.Create(this, inExpression);
         DeclaredType = Child.Attach(this, declaredType);
         this.block = Child.Create(this, block);
-        ReferencedIterableDeclaration = referencedIterableDeclaration;
-        ReferencedIterateMethod = referencedIterateMethod;
-        IteratorAntetype = iteratorAntetype;
-        ReferencedIteratorDeclaration = referencedIteratorDeclaration;
-        ReferencedNextMethod = referencedNextMethod;
-        IteratedAntetype = iteratedAntetype;
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentInExpression))
+            return ContainingLexicalScope;
+        if (ReferenceEquals(child, Self.CurrentBlock))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentInExpression))
+            return ControlFlowSet.CreateNormal(Block);
+        if (ReferenceEquals(child, Self.CurrentBlock))
+            return ControlFlowSet.CreateLoop(Block).Union(ControlFlowFollowing());
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -11910,6 +11933,13 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentBlock))
+            return FlowStateBeforeBlock;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return false;
@@ -11921,7 +11951,7 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
+        => BindingValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {

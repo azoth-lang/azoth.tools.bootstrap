@@ -1,4 +1,13 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 ◊name ForeachExpressionAntetypesAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
+
+// ---------- Control Flow Expressions
+↑ ForeachExpression.ReferencedIterableDeclaration: TypeDeclaration?;
+↑ ForeachExpression.ReferencedIterateMethod: StandardMethodDeclaration?;
+↑ ForeachExpression.IteratorAntetype:`IMaybeExpressionAntetype`;
+↑ ForeachExpression.ReferencedIteratorDeclaration: TypeDeclaration?;
+↑ ForeachExpression.ReferencedNextMethod: StandardMethodDeclaration?;
+↑ ForeachExpression.IteratedAntetype: `IMaybeAntetype`;

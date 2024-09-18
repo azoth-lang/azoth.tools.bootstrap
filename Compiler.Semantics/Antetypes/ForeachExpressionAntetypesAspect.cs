@@ -6,15 +6,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
 internal static partial class ForeachExpressionAntetypesAspect
 {
-    public static ITypeDeclarationNode? ForeachExpression_ReferencedIterableDeclaration(IForeachExpressionNode node)
+    public static partial ITypeDeclarationNode? ForeachExpression_ReferencedIterableDeclaration(IForeachExpressionNode node)
         => node.PackageNameScope().Lookup(node.InExpression?.Antetype ?? IAntetype.Unknown);
 
-    public static IStandardMethodDeclarationNode? ForeachExpression_ReferencedIterateMethod(IForeachExpressionNode node)
+    public static partial IStandardMethodDeclarationNode? ForeachExpression_ReferencedIterateMethod(IForeachExpressionNode node)
         => node.ReferencedIterableDeclaration?.InclusiveInstanceMembersNamed("iterate").OfType<IStandardMethodDeclarationNode>()
                .Where(m => m.Arity == 0 && m.MethodGroupType.Return.Type.ToAntetype() is INonVoidAntetype)
                .TrySingle();
 
-    public static IMaybeExpressionAntetype ForeachExpression_IteratorAntetype(IForeachExpressionNode node)
+    public static partial IMaybeExpressionAntetype ForeachExpression_IteratorAntetype(IForeachExpressionNode node)
     {
         var iterableType = node.InExpression?.Antetype ?? IAntetype.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
@@ -24,15 +24,15 @@ internal static partial class ForeachExpressionAntetypesAspect
         return iteratorAntetype;
     }
 
-    public static ITypeDeclarationNode? ForeachExpression_ReferencedIteratorDeclaration(IForeachExpressionNode node)
+    public static partial ITypeDeclarationNode? ForeachExpression_ReferencedIteratorDeclaration(IForeachExpressionNode node)
         => node.PackageNameScope().Lookup(node.IteratorAntetype);
 
-    public static IStandardMethodDeclarationNode? ForeachExpression_ReferencedNextMethod(IForeachExpressionNode node)
+    public static partial IStandardMethodDeclarationNode? ForeachExpression_ReferencedNextMethod(IForeachExpressionNode node)
         => node.ReferencedIteratorDeclaration?.InclusiveInstanceMembersNamed("next").OfType<IStandardMethodDeclarationNode>()
                .Where(m => m.Arity == 0 && m.MethodGroupType.Return.Type.ToAntetype() is OptionalAntetype)
                .TrySingle();
 
-    public static IMaybeAntetype ForeachExpression_IteratedAntetype(IForeachExpressionNode node)
+    public static partial IMaybeAntetype ForeachExpression_IteratedAntetype(IForeachExpressionNode node)
     {
         var nextMethodReturnType = node.ReferencedNextMethod?.MethodGroupType.Return.Type.ToAntetype();
         if (nextMethodReturnType is OptionalAntetype { Referent: var iteratedType })

@@ -126,7 +126,9 @@
 
 // ---------- Control Flow Expressions
 = ForeachExpression.IsLentBinding => false;
+= ForeachExpression.IsMutableBinding => Syntax.IsMutableBinding;
 = ForeachExpression.Name => VariableName;
+↑ ForeachExpression.VariableName: `IdentifierName` => Syntax.VariableName;
 
 // ---------- Expressions
 ↑ NewObjectExpression.ConstructorName: `IdentifierName`? => Syntax.ConstructorName;
