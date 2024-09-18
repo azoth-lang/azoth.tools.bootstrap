@@ -13204,7 +13204,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(descendant, Self.CurrentValue))
+        if (ReferenceEquals(child, Self.CurrentValue))
             return Context.FlowStateAfter;
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }

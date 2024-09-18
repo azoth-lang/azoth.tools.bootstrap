@@ -175,7 +175,7 @@ internal static partial class BindingAmbiguousNamesAspect
             return null;
 
         var setter = propertyName.ReferencedPropertyAccessors.OfType<ISetterMethodDeclarationNode>().TrySingle();
-        return new SetterInvocationExpressionNode(node.Syntax, propertyName.Context,
+        return ISetterInvocationExpressionNode.Create(node.Syntax, propertyName.Context,
             propertyName.PropertyName, node.CurrentRightOperand,
             propertyName.ReferencedPropertyAccessors, setter);
     }
