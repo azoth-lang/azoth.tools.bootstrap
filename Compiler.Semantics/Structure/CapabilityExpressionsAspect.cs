@@ -1,5 +1,3 @@
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
-
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Structure;
 
 internal static partial class CapabilityExpressionsAspect
@@ -8,14 +6,14 @@ internal static partial class CapabilityExpressionsAspect
     {
         if (node.Referent is not ILocalBindingNameExpressionNode localBindingName) return null;
 
-        return new FreezeVariableExpressionNode(node.Syntax, localBindingName, isTemporary: false, isImplicit: false);
+        return IFreezeVariableExpressionNode.Create(node.Syntax, localBindingName, isTemporary: false, isImplicit: false);
     }
 
     public static partial IAmbiguousExpressionNode? AmbiguousFreezeExpression_Rewrite_Value(IAmbiguousFreezeExpressionNode node)
     {
         if (node.Referent is null) return null;
 
-        return new FreezeValueExpressionNode(node.Syntax, node.Referent, isTemporary: false, isImplicit: false);
+        return IFreezeValueExpressionNode.Create(node.Syntax, node.Referent, isTemporary: false, isImplicit: false);
     }
 
     public static partial IAmbiguousExpressionNode? AmbiguousMoveExpression_Rewrite_Variable(IAmbiguousMoveExpressionNode node)

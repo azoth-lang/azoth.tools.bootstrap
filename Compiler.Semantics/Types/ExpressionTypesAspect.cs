@@ -223,8 +223,8 @@ internal static partial class ExpressionTypesAspect
 
         var syntax = node.Syntax;
         IFreezeExpressionNode implicitFreeze = node is IVariableNameExpressionNode variableName
-            ? new FreezeVariableExpressionNode(syntax, variableName, isTemporary, isImplicit: true)
-            : new FreezeValueExpressionNode(syntax, node, isTemporary, isImplicit: true);
+            ? IFreezeVariableExpressionNode.Create(syntax, variableName, isTemporary, isImplicit: true)
+            : IFreezeValueExpressionNode.Create(syntax, node, isTemporary, isImplicit: true);
         return implicitFreeze;
     }
 

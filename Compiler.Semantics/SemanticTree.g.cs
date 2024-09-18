@@ -3484,10 +3484,10 @@ public partial interface IFreezeVariableExpressionNode : IFreezeExpressionNode
 
     public static IFreezeVariableExpressionNode Create(
         IExpressionSyntax syntax,
-        bool isImplicit,
+        ILocalBindingNameExpressionNode referent,
         bool isTemporary,
-        ILocalBindingNameExpressionNode referent)
-        => new FreezeVariableExpressionNode(syntax, isImplicit, isTemporary, referent);
+        bool isImplicit)
+        => new FreezeVariableExpressionNode(syntax, referent, isTemporary, isImplicit);
 }
 
 // [Closed(typeof(FreezeValueExpressionNode))]
@@ -3497,10 +3497,10 @@ public partial interface IFreezeValueExpressionNode : IFreezeExpressionNode
 
     public static IFreezeValueExpressionNode Create(
         IExpressionSyntax syntax,
-        bool isImplicit,
+        IExpressionNode referent,
         bool isTemporary,
-        IExpressionNode referent)
-        => new FreezeValueExpressionNode(syntax, isImplicit, isTemporary, referent);
+        bool isImplicit)
+        => new FreezeValueExpressionNode(syntax, referent, isTemporary, isImplicit);
 }
 
 // [Closed(typeof(PrepareToReturnExpressionNode))]
@@ -16792,14 +16792,14 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
     protected override bool MayHaveRewrite => true;
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public bool IsImplicit { [DebuggerStepThrough] get; }
-    public bool IsTemporary { [DebuggerStepThrough] get; }
     private RewritableChild<ILocalBindingNameExpressionNode> referent;
     private bool referentCached;
     public ILocalBindingNameExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public ILocalBindingNameExpressionNode CurrentReferent => referent.UnsafeValue;
+    public bool IsTemporary { [DebuggerStepThrough] get; }
+    public bool IsImplicit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -16862,14 +16862,14 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
 
     public FreezeVariableExpressionNode(
         IExpressionSyntax syntax,
-        bool isImplicit,
+        ILocalBindingNameExpressionNode referent,
         bool isTemporary,
-        ILocalBindingNameExpressionNode referent)
+        bool isImplicit)
     {
         Syntax = syntax;
-        IsImplicit = isImplicit;
-        IsTemporary = isTemporary;
         this.referent = Child.Create(this, referent);
+        IsTemporary = isTemporary;
+        IsImplicit = isImplicit;
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -16939,14 +16939,14 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
     protected override bool MayHaveRewrite => true;
 
     public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public bool IsImplicit { [DebuggerStepThrough] get; }
-    public bool IsTemporary { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> referent;
     private bool referentCached;
     public IExpressionNode Referent
         => GrammarAttribute.IsCached(in referentCached) ? referent.UnsafeValue
             : this.RewritableChild(ref referentCached, ref referent);
     public IExpressionNode CurrentReferent => referent.UnsafeValue;
+    public bool IsTemporary { [DebuggerStepThrough] get; }
+    public bool IsImplicit { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -17009,14 +17009,14 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
 
     public FreezeValueExpressionNode(
         IExpressionSyntax syntax,
-        bool isImplicit,
+        IExpressionNode referent,
         bool isTemporary,
-        IExpressionNode referent)
+        bool isImplicit)
     {
         Syntax = syntax;
-        IsImplicit = isImplicit;
-        IsTemporary = isTemporary;
         this.referent = Child.Create(this, referent);
+        IsTemporary = isTemporary;
+        IsImplicit = isImplicit;
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -17040,6 +17040,8 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
 
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentReferent))
+            return IsImplicit ? ShouldPrepareToReturn() : false;
         return false;
     }
 
