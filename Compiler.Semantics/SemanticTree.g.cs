@@ -2224,20 +2224,20 @@ public partial interface IUnaryOperatorExpressionNode : IExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    UnaryOperatorFixity Fixity { get; }
     IAmbiguousExpressionNode TempOperand { get; }
     IExpressionNode? Operand { get; }
     IAmbiguousExpressionNode CurrentOperand { get; }
     UnaryOperator Operator
         => Syntax.Operator;
+    UnaryOperatorFixity Fixity
+        => Syntax.Fixity;
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.UnaryOperatorExpression_FlowLexicalScope(this);
 
     public static IUnaryOperatorExpressionNode Create(
         IUnaryOperatorExpressionSyntax syntax,
-        UnaryOperatorFixity fixity,
         IAmbiguousExpressionNode operand)
-        => new UnaryOperatorExpressionNode(syntax, fixity, operand);
+        => new UnaryOperatorExpressionNode(syntax, operand);
 }
 
 // [Closed(typeof(IdExpressionNode))]
@@ -10412,7 +10412,6 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
     protected override bool MayHaveRewrite => true;
 
     public IUnaryOperatorExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public UnaryOperatorFixity Fixity { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> operand;
     private bool operandCached;
     public IAmbiguousExpressionNode TempOperand
@@ -10488,11 +10487,9 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
 
     public UnaryOperatorExpressionNode(
         IUnaryOperatorExpressionSyntax syntax,
-        UnaryOperatorFixity fixity,
         IAmbiguousExpressionNode operand)
     {
         Syntax = syntax;
-        Fixity = fixity;
         this.operand = Child.Create(this, operand);
     }
 
