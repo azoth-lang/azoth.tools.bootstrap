@@ -234,7 +234,7 @@ internal static partial class ExpressionTypesAspect
             || !node.ShouldPrepareToReturn())
             return null;
 
-        return new PrepareToReturnExpressionNode(node);
+        return IPrepareToReturnExpressionNode.Create(node);
     }
 
     public static partial DataType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)

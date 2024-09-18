@@ -182,6 +182,9 @@
 ↑ UnknownIdentifierNameExpression.Name :`IdentifierName`=> Syntax.Name;
 ↑ UnknownMemberAccessExpression.MemberName: `StandardName` => Syntax.MemberName;
 
+// ---------- Capability Expressions
+↑ PrepareToReturnExpression.Syntax: `IExpressionSyntax` => Value.Syntax;
+
 // -------------------------------------------------------------------------------------------------
 // Declarations
 // -------------------------------------------------------------------------------------------------

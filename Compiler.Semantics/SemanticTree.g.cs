@@ -3509,15 +3509,18 @@ public partial interface IPrepareToReturnExpressionNode : IExpressionNode
 {
     IExpressionNode Value { get; }
     IExpressionNode CurrentValue { get; }
+    new IExpressionSyntax Syntax
+        => Value.Syntax;
+    IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
+    ICodeSyntax? ICodeNode.Syntax => Syntax;
+    ISyntax? ISemanticNode.Syntax => Syntax;
     DataType IExpressionNode.Type
         => Value.Type;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => Value.Antetype;
 
-    public static IPrepareToReturnExpressionNode Create(
-        IExpressionSyntax syntax,
-        IExpressionNode value)
-        => new PrepareToReturnExpressionNode(syntax, value);
+    public static IPrepareToReturnExpressionNode Create(IExpressionNode value)
+        => new PrepareToReturnExpressionNode(value);
 }
 
 // [Closed(typeof(AsyncBlockExpressionNode))]
@@ -17087,7 +17090,6 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
-    public IExpressionSyntax Syntax { [DebuggerStepThrough] get; }
     private RewritableChild<IExpressionNode> value;
     private bool valueCached;
     public IExpressionNode Value
@@ -17148,11 +17150,8 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
     private ValueId valueId;
     private bool valueIdCached;
 
-    public PrepareToReturnExpressionNode(
-        IExpressionSyntax syntax,
-        IExpressionNode value)
+    public PrepareToReturnExpressionNode(IExpressionNode value)
     {
-        Syntax = syntax;
         this.value = Child.Create(this, value);
     }
 
