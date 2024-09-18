@@ -48,6 +48,9 @@
 = ImplicitConversionExpression.Referent.ExpectedAntetype => null;
 = PatternMatchExpression.Antetype => IAntetype.Bool;
 
+// ---------- Control Flow Expressions
+= IfExpression.Condition.ExpectedAntetype => IAntetype.OptionalBool;
+
 // ---------- Invocation Expressions
 = UnresolvedInvocationExpression.Expression.ExpectedAntetype => null;
 = UnknownInvocationExpression.Antetype => IAntetype.Unknown;

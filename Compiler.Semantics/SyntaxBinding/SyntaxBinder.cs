@@ -539,7 +539,7 @@ internal static class SyntaxBinder
 
     #region Control Flow Expressions
     private static IIfExpressionNode IfExpression(IIfExpressionSyntax syntax)
-        => new IfExpressionNode(syntax, Expression(syntax.Condition), BlockOrResult(syntax.ThenBlock), ElseClause(syntax.ElseClause));
+        => IIfExpressionNode.Create(syntax, Expression(syntax.Condition), BlockOrResult(syntax.ThenBlock), ElseClause(syntax.ElseClause));
 
     private static ILoopExpressionNode LoopExpression(ILoopExpressionSyntax syntax)
         => new LoopExpressionNode(syntax, BlockExpression(syntax.Block));

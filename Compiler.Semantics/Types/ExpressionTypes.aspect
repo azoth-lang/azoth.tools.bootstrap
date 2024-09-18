@@ -119,6 +119,11 @@
 = PatternMatchExpression.Type => DataType.Bool;
 
 // ---------- Control Flow Expressions
+= IfExpression.ThenBlock.**.FlowStateBefore
+    => Condition?.FlowStateAfter ?? IFlowState.Empty;
+= IfExpression.ElseClause.**.FlowStateBefore
+    => Condition?.FlowStateAfter ?? IFlowState.Empty;
+= IfExpression.Condition.ExpectedType => DataType.OptionalBool;
 ⟳ IfExpression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 = IfExpression.↑.Diagnostics;
 = ReturnExpression.↑.Diagnostics;

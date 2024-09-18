@@ -75,6 +75,10 @@
 = PatternMatchExpression.ControlFlowNext;
 
 // ---------- Control Flow Expressions
+= IfExpression.Condition.**.ControlFlowFollowing()
+    => CurrentElseClause is not null
+        ? ControlFlowSet.CreateNormal(ThenBlock, ElseClause!)
+        : ControlFlowSet.CreateNormal(ThenBlock).Union(ControlFlowFollowing());
 = IfExpression.ControlFlowNext;
 = LoopExpression.ControlFlowNext;
 = WhileExpression.ControlFlowNext;

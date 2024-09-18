@@ -11284,8 +11284,26 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         this.elseClause = Child.Create(this, elseClause);
     }
 
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentThenBlock))
+            return TempCondition.FlowLexicalScope().True;
+        if (ReferenceEquals(child, Self.CurrentElseClause))
+            return TempCondition.FlowLexicalScope().False;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentCondition))
+            return CurrentElseClause is not null ? ControlFlowSet.CreateNormal(ThenBlock, ElseClause!) : ControlFlowSet.CreateNormal(ThenBlock).Union(ControlFlowFollowing());
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentCondition))
+            return IAntetype.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -11293,9 +11311,20 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentCondition))
+            return DataType.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentThenBlock))
+            return Condition?.FlowStateAfter ?? IFlowState.Empty;
+        if (ReferenceEquals(child, Self.CurrentElseClause))
+            return Condition?.FlowStateAfter ?? IFlowState.Empty;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
