@@ -505,16 +505,16 @@ internal static class SyntaxBinder
         };
 
     private static IBoolLiteralExpressionNode BoolLiteralExpression(IBoolLiteralExpressionSyntax syntax)
-        => new BoolLiteralExpressionNode(syntax);
+        => IBoolLiteralExpressionNode.Create(syntax);
 
     private static IIntegerLiteralExpressionNode IntegerLiteralExpression(IIntegerLiteralExpressionSyntax syntax)
-        => new IntegerLiteralExpressionNode(syntax);
+        => IIntegerLiteralExpressionNode.Create(syntax);
 
     private static INoneLiteralExpressionNode NoneLiteralExpression(INoneLiteralExpressionSyntax syntax)
-        => new NoneLiteralExpressionNode(syntax);
+        => INoneLiteralExpressionNode.Create(syntax);
 
     private static IStringLiteralExpressionNode StringLiteralExpression(IStringLiteralExpressionSyntax syntax)
-        => new StringLiteralExpressionNode(syntax);
+        => IStringLiteralExpressionNode.Create(syntax);
     #endregion
 
     #region Operator Expressions

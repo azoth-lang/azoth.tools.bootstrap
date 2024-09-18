@@ -11,7 +11,6 @@ using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
-using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
@@ -188,7 +187,7 @@ internal static partial class ExpressionTypesAspect
 
         var isTemporary = expectedCapability == Capability.TemporarilyIsolated;
 
-        var type = node.Type;
+        var type = node.Type.ToNonConstValueType();
         if (type is CapabilityType { Capability: var capability } && capability == expectedCapability)
             return null;
 
@@ -215,13 +214,13 @@ internal static partial class ExpressionTypesAspect
 
         var isTemporary = expectedCapability == Capability.TemporarilyConstant;
 
-        var type = node.Type;
+        var type = node.Type.ToNonConstValueType();
         if (type is CapabilityType { Capability: var capability } && capability == expectedCapability)
             return null;
 
         // TODO what if type is not a capability type?
 
-        var syntax = (IExpressionSyntax)node.Syntax;
+        var syntax = node.Syntax;
         IFreezeExpressionNode implicitFreeze = node is IVariableNameExpressionNode variableName
             ? new FreezeVariableExpressionNode(syntax, variableName, isTemporary, isImplicit: true)
             : new FreezeValueExpressionNode(syntax, node, isTemporary, isImplicit: true);

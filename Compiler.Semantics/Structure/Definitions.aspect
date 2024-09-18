@@ -133,6 +133,11 @@
 = NewObjectExpression.TempAllArguments => TempArguments;
 = NewObjectExpression.AllArguments => Arguments;
 
+// ---------- Literal Expressions
+↑ BoolLiteralExpression.Value: `bool` => Syntax.Value;
+↑ IntegerLiteralExpression.Value: `BigInteger` => Syntax.Value;
+↑ StringLiteralExpression.Value: `string` => Syntax.Value;
+
 // ---------- Invocation Expressions
 ↑ InvocationExpression.TempAllArguments: IEnumerable<AmbiguousExpression>;
 ↑ InvocationExpression.AllArguments: IEnumerable<Expression?>;

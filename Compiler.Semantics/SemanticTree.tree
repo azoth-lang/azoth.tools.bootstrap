@@ -231,10 +231,10 @@ NeverTypedExpression <: Expression;
 
 // ---------- Literal Expressions
 LiteralExpression <: Expression = Syntax:`ILiteralExpressionSyntax`;
-BoolLiteralExpression <: LiteralExpression = Syntax:`IBoolLiteralExpressionSyntax` Value:`bool`;
-IntegerLiteralExpression <: LiteralExpression = Syntax:`IIntegerLiteralExpressionSyntax` Value:`BigInteger`;
+BoolLiteralExpression <: LiteralExpression = Syntax:`IBoolLiteralExpressionSyntax`;
+IntegerLiteralExpression <: LiteralExpression = Syntax:`IIntegerLiteralExpressionSyntax`;
 NoneLiteralExpression <: LiteralExpression = Syntax:`INoneLiteralExpressionSyntax`;
-StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionSyntax` Value:`string`;
+StringLiteralExpression <: LiteralExpression = Syntax:`IStringLiteralExpressionSyntax`;
 
 // ---------- Operator Expressions
 AssignmentExpression <: Expression, DataFlow = Syntax:`IAssignmentExpressionSyntax`

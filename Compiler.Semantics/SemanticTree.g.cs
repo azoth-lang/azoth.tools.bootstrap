@@ -2100,14 +2100,13 @@ public partial interface IBoolLiteralExpressionNode : ILiteralExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    bool Value { get; }
     new BoolConstValueType Type { get; }
     DataType IExpressionNode.Type => Type;
+    bool Value
+        => Syntax.Value;
 
-    public static IBoolLiteralExpressionNode Create(
-        IBoolLiteralExpressionSyntax syntax,
-        bool value)
-        => new BoolLiteralExpressionNode(syntax, value);
+    public static IBoolLiteralExpressionNode Create(IBoolLiteralExpressionSyntax syntax)
+        => new BoolLiteralExpressionNode(syntax);
 }
 
 // [Closed(typeof(IntegerLiteralExpressionNode))]
@@ -2119,14 +2118,13 @@ public partial interface IIntegerLiteralExpressionNode : ILiteralExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    BigInteger Value { get; }
     new IntegerConstValueType Type { get; }
     DataType IExpressionNode.Type => Type;
+    BigInteger Value
+        => Syntax.Value;
 
-    public static IIntegerLiteralExpressionNode Create(
-        IIntegerLiteralExpressionSyntax syntax,
-        BigInteger value)
-        => new IntegerLiteralExpressionNode(syntax, value);
+    public static IIntegerLiteralExpressionNode Create(IIntegerLiteralExpressionSyntax syntax)
+        => new IntegerLiteralExpressionNode(syntax);
 }
 
 // [Closed(typeof(NoneLiteralExpressionNode))]
@@ -2154,14 +2152,13 @@ public partial interface IStringLiteralExpressionNode : ILiteralExpressionNode
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    string Value { get; }
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IAmbiguousExpressionNode.ContainingLexicalScope() => ContainingLexicalScope;
+    string Value
+        => Syntax.Value;
 
-    public static IStringLiteralExpressionNode Create(
-        IStringLiteralExpressionSyntax syntax,
-        string value)
-        => new StringLiteralExpressionNode(syntax, value);
+    public static IStringLiteralExpressionNode Create(IStringLiteralExpressionSyntax syntax)
+        => new StringLiteralExpressionNode(syntax);
 }
 
 // [Closed(typeof(AssignmentExpressionNode))]
@@ -9464,7 +9461,6 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     protected override bool MayHaveRewrite => true;
 
     public IBoolLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public bool Value { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -9533,12 +9529,9 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
     private ValueId valueId;
     private bool valueIdCached;
 
-    public BoolLiteralExpressionNode(
-        IBoolLiteralExpressionSyntax syntax,
-        bool value)
+    public BoolLiteralExpressionNode(IBoolLiteralExpressionSyntax syntax)
     {
         Syntax = syntax;
-        Value = value;
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -9607,7 +9600,6 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
     protected override bool MayHaveRewrite => true;
 
     public IIntegerLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public BigInteger Value { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -9676,12 +9668,9 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
     private ValueId valueId;
     private bool valueIdCached;
 
-    public IntegerLiteralExpressionNode(
-        IIntegerLiteralExpressionSyntax syntax,
-        BigInteger value)
+    public IntegerLiteralExpressionNode(IIntegerLiteralExpressionSyntax syntax)
     {
         Syntax = syntax;
-        Value = value;
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -9889,7 +9878,6 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
     protected override bool MayHaveRewrite => true;
 
     public IStringLiteralExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    public string Value { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -9962,12 +9950,9 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
     private ValueId valueId;
     private bool valueIdCached;
 
-    public StringLiteralExpressionNode(
-        IStringLiteralExpressionSyntax syntax,
-        string value)
+    public StringLiteralExpressionNode(IStringLiteralExpressionSyntax syntax)
     {
         Syntax = syntax;
-        Value = value;
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
