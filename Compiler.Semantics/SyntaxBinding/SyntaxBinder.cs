@@ -528,7 +528,7 @@ internal static class SyntaxBinder
         => IUnaryOperatorExpressionNode.Create(syntax, Expression(syntax.Operand));
 
     private static IIdExpressionNode IdExpression(IIdExpressionSyntax syntax)
-        => new IdExpressionNode(syntax, Expression(syntax.Referent));
+        => IIdExpressionNode.Create(syntax, Expression(syntax.Referent));
 
     private static IConversionExpressionNode ConversionExpression(IConversionExpressionSyntax syntax)
         => new ConversionExpressionNode(syntax, Expression(syntax.Referent), Type(syntax.ConvertToType));

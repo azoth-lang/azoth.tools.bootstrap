@@ -2251,6 +2251,8 @@ public partial interface IIdExpressionNode : IExpressionNode
     IAmbiguousExpressionNode TempReferent { get; }
     IExpressionNode? Referent { get; }
     IAmbiguousExpressionNode CurrentReferent { get; }
+    ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
+        => TempReferent.FlowLexicalScope();
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => Referent?.Antetype ?? IAntetype.Unknown;
 
