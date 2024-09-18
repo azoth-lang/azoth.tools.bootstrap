@@ -61,7 +61,11 @@
 
 // ---------- Operator Expressions
 = AssignmentExpression.ControlFlowNext;
+= AssignmentExpression.LeftOperand.**.ControlFlowFollowing()
+    => ControlFlowSet.CreateNormal(RightOperand);
 = BinaryOperatorExpression.ControlFlowNext;
+= BinaryOperatorExpression.LeftOperand.**.ControlFlowFollowing()
+    => ControlFlowSet.CreateNormal(RightOperand);
 = UnaryOperatorExpression.ControlFlowNext;
 = IdExpression.ControlFlowNext;
 = ConversionExpression.ControlFlowNext;

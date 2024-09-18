@@ -519,7 +519,7 @@ internal static class SyntaxBinder
 
     #region Operator Expressions
     private static IAssignmentExpressionNode AssignmentExpression(IAssignmentExpressionSyntax syntax)
-        => new AssignmentExpressionNode(syntax, AssignableExpression(syntax.LeftOperand), Expression(syntax.RightOperand));
+        => IAssignmentExpressionNode.Create(syntax, AssignableExpression(syntax.LeftOperand), Expression(syntax.RightOperand));
 
     private static IBinaryOperatorExpressionNode BinaryOperatorExpression(IBinaryOperatorExpressionSyntax syntax)
         => new BinaryOperatorExpressionNode(syntax, Expression(syntax.LeftOperand), Expression(syntax.RightOperand));

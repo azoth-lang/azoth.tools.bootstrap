@@ -38,6 +38,7 @@
 = NeverTypedExpression.Antetype => IAntetype.Never;
 
 // ---------- Operator Expressions
+= AssignmentExpression.RightOperand.ExpectedAntetype => LeftOperand?.Antetype;
 ↑ BinaryOperatorExpression.NumericOperatorCommonAntetype: `IAntetype`?;
 = UnaryOperatorExpression.↑.Diagnostics;
 = IdExpression.Antetype => Referent?.Antetype ?? IAntetype.Unknown;

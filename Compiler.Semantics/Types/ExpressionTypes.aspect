@@ -102,6 +102,9 @@
 = StringLiteralExpression.↑.Diagnostics;
 
 // ---------- Operator Expressions
+= AssignmentExpression.RightOperand.**.FlowStateBefore
+    => LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
+= AssignmentExpression.RightOperand.ExpectedType => LeftOperand?.Type;
 = AssignmentExpression.↑.Diagnostics;
 = BinaryOperatorExpression.↑.Diagnostics;
 = IdExpression.↑.Diagnostics;

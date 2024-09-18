@@ -2172,19 +2172,19 @@ public partial interface IAssignmentExpressionNode : IExpressionNode, IDataFlowN
     IAmbiguousExpressionNode TempLeftOperand { get; }
     IExpressionNode? LeftOperand { get; }
     IAmbiguousExpressionNode CurrentLeftOperand { get; }
-    AssignmentOperator Operator { get; }
     IAmbiguousExpressionNode TempRightOperand { get; }
     IExpressionNode? RightOperand { get; }
     IAmbiguousExpressionNode CurrentRightOperand { get; }
+    AssignmentOperator Operator
+        => Syntax.Operator;
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => LexicalScopingAspect.AssignmentExpression_FlowLexicalScope(this);
 
     public static IAssignmentExpressionNode Create(
         IAssignmentExpressionSyntax syntax,
         IAmbiguousExpressionNode leftOperand,
-        AssignmentOperator @operator,
         IAmbiguousExpressionNode rightOperand)
-        => new AssignmentExpressionNode(syntax, leftOperand, @operator, rightOperand);
+        => new AssignmentExpressionNode(syntax, leftOperand, rightOperand);
 }
 
 // [Closed(typeof(BinaryOperatorExpressionNode))]
@@ -10029,7 +10029,6 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
             : this.RewritableChild(ref leftOperandCached, ref leftOperand);
     public IExpressionNode? LeftOperand => TempLeftOperand as IExpressionNode;
     public IAmbiguousExpressionNode CurrentLeftOperand => leftOperand.UnsafeValue;
-    public AssignmentOperator Operator { [DebuggerStepThrough] get; }
     private RewritableChild<IAmbiguousExpressionNode> rightOperand;
     private bool rightOperandCached;
     public IAmbiguousExpressionNode TempRightOperand
@@ -10126,17 +10125,24 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
     public AssignmentExpressionNode(
         IAssignmentExpressionSyntax syntax,
         IAmbiguousExpressionNode leftOperand,
-        AssignmentOperator @operator,
         IAmbiguousExpressionNode rightOperand)
     {
         Syntax = syntax;
         this.leftOperand = Child.Create(this, leftOperand);
-        Operator = @operator;
         this.rightOperand = Child.Create(this, rightOperand);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentLeftOperand))
+            return ControlFlowSet.CreateNormal(RightOperand);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentRightOperand))
+            return LeftOperand?.Antetype;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -10144,9 +10150,18 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentRightOperand))
+            return LeftOperand?.Type;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentRightOperand))
+            return LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -10311,6 +10326,13 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         if (ReferenceEquals(child, Self.CurrentRightOperand))
             return LexicalScopingAspect.BinaryOperatorExpression_RightOperand_Broadcast_ContainingLexicalScope(this);
         return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.CurrentLeftOperand))
+            return ControlFlowSet.CreateNormal(RightOperand);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

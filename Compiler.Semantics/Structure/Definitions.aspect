@@ -138,6 +138,9 @@
 ↑ IntegerLiteralExpression.Value: `BigInteger` => Syntax.Value;
 ↑ StringLiteralExpression.Value: `string` => Syntax.Value;
 
+// ---------- Operator Expressions
+↑ AssignmentExpression.Operator: `AssignmentOperator` => Syntax.Operator;
+
 // ---------- Invocation Expressions
 ↑ InvocationExpression.TempAllArguments: IEnumerable<AmbiguousExpression>;
 ↑ InvocationExpression.AllArguments: IEnumerable<Expression?>;
