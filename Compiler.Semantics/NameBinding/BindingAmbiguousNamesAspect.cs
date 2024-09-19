@@ -223,24 +223,34 @@ internal static partial class BindingAmbiguousNamesAspect
         IUnknownMemberAccessExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.Context is IFunctionGroupNameNode or IMethodGroupNameNode)
-            diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "No member accessible from function or method."));
-
-        if (node.Context is INamespaceNameNode)
+        switch (node.Context)
         {
-            switch (node.ReferencedMembers.Count)
-            {
-                case 0:
-                    diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.MemberNameSpan));
-                    break;
-                case 1:
-                    // If there is only one match, then it would not be an unknown member access expression
-                    throw new UnreachableException();
-                default:
-                    // TODO better errors explaining. For example, are they different kinds of declarations?
-                    diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.MemberNameSpan));
-                    break;
-            }
+            case IFunctionGroupNameNode or IFunctionNameNode or IMethodGroupNameNode:
+                diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "No member accessible from function or method."));
+                break;
+            case INamespaceNameNode:
+                switch (node.ReferencedMembers.Count)
+                {
+                    case 0:
+                        diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.MemberNameSpan));
+                        break;
+                    case 1:
+                        // If there is only one match, then it would not be an unknown member access expression
+                        throw new UnreachableException();
+                    default:
+                        // TODO better errors explaining. For example, are they different kinds of declarations?
+                        diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.MemberNameSpan));
+                        break;
+                }
+                break;
+            case IUnknownNameExpressionNode:
+            case IUnknownInvocationExpressionNode:
+                // These presumably report their own errors and should be ignored here
+                break;
+            default:
+                diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span,
+                    $"Could not access `{node.MemberName}` on `{node.Context.Syntax}` (Unknown member)."));
+                break;
         }
     }
 
