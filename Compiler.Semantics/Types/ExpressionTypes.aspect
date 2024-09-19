@@ -191,12 +191,13 @@
 ↑ UnknownInvocationExpression.FlowStateAfter: `IFlowState` => throw new NotImplementedException();
 
 // ---------- Name Expressions
+↓ NameExpression.FlowStateBefore(): `IFlowState`;
 // TODO delete once all name expressions implement FlowStateAfter
 ↑ NameExpression.FlowStateAfter: `IFlowState`
     => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
 ↑ NamespaceName.Type: `UnknownType` => DataType.Unknown;
-= FunctionGroupName.Type => throw new NotImplementedException();
-↓ FunctionName.FlowStateBefore(): `IFlowState`;
+↑ FunctionGroupName.Type: `UnknownType` => DataType.Unknown;
+= FunctionGroupName.FlowStateAfter => FlowStateBefore();
 = FunctionName.FlowStateAfter;
 = FunctionName.*.**.ExpectedType => null;
 = MethodGroupName.Type => throw new NotImplementedException();

@@ -80,11 +80,11 @@
 
 // ---------- Name Expressions
 = NamespaceName.Antetype => IAntetype.Unknown;
-= FunctionGroupName.Antetype => throw new NotImplementedException();
+= FunctionGroupName.Antetype => IAntetype.Unknown;
 = FunctionName.*.ExpectedAntetype => null;
-= MethodGroupName.Antetype => throw new NotImplementedException();
+= MethodGroupName.Antetype => IAntetype.Unknown;
 = TypeNameExpression.Antetype => IAntetype.Unknown;
-= InitializerGroupName.Antetype => throw new NotImplementedException();
+= InitializerGroupName.Antetype => IAntetype.Unknown;
 ↑ InitializerGroupName.InitializingAntetype: `IMaybeAntetype` => Context.NamedAntetype;
 = SpecialTypeNameExpression.Antetype => IAntetype.Unknown;
 = MissingNameExpression.Antetype => IAntetype.Unknown;

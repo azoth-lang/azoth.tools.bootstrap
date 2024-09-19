@@ -188,10 +188,10 @@ internal static partial class ExpressionTypesAspect
         var isTemporary = expectedCapability == Capability.TemporarilyIsolated;
 
         var type = node.Type.ToNonConstValueType();
-        if (type is CapabilityType { Capability: var capability } && capability == expectedCapability)
+        if (type is not CapabilityType { Capability: var capability } || capability == expectedCapability)
             return null;
 
-        // TODO what if selfType is not a capability type?
+        // TODO what about optional types and possible other movable types?
 
         var syntax = node.Syntax;
         var implicitMove = isTemporary
@@ -215,10 +215,10 @@ internal static partial class ExpressionTypesAspect
         var isTemporary = expectedCapability == Capability.TemporarilyConstant;
 
         var type = node.Type.ToNonConstValueType();
-        if (type is CapabilityType { Capability: var capability } && capability == expectedCapability)
+        if (type is not CapabilityType { Capability: var capability } || capability == expectedCapability)
             return null;
 
-        // TODO what if type is not a capability type?
+        // TODO what about optional types and possible other movable types?
 
         var syntax = node.Syntax;
         IFreezeExpressionNode implicitFreeze = node is IVariableNameExpressionNode variableName

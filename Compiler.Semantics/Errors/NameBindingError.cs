@@ -8,6 +8,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 /// <remarks><see cref="ErrorCodeRange"/> for the ranges of various kinds of error codes.</remarks>
 public static class NameBindingError
 {
+    public static Diagnostic NotImplemented(CodeFile file, TextSpan span, string message)
+    {
+        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            5000, message);
+    }
+
     public static Diagnostic CouldNotBindName(CodeFile file, TextSpan span)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,

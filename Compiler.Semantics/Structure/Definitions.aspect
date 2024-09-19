@@ -151,6 +151,8 @@
 // ---------- Invocation Expressions
 ↑ InvocationExpression.TempAllArguments: IEnumerable<AmbiguousExpression>;
 ↑ InvocationExpression.AllArguments: IEnumerable<Expression?>;
+= UnknownInvocationExpression.TempAllArguments => TempArguments;
+= UnknownInvocationExpression.AllArguments => Arguments;
 = FunctionInvocationExpression.TempAllArguments => TempArguments;
 = FunctionInvocationExpression.AllArguments => Arguments;
 = MethodInvocationExpression.TempAllArguments => TempArguments.Prepend(MethodGroup.Context);

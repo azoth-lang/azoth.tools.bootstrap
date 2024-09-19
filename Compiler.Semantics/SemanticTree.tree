@@ -282,7 +282,7 @@ FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocat
     Expression:Expression Arguments:AmbiguousExpression*;
 InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression*;
-UnknownInvocationExpression <: Expression = Syntax:`IInvocationExpressionSyntax`
+UnknownInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 
 // ---------- Ambiguous Name Expressions

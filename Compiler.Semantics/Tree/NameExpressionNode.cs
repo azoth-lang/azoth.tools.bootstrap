@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.ControlFlow;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
+using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
@@ -75,4 +76,6 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
         ?? base.Rewrite();
+
+    public IFlowState FlowStateBefore() => throw new System.NotImplementedException();
 }
