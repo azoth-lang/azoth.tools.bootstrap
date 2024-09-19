@@ -91,16 +91,16 @@ internal static partial class BindingAmbiguousNamesAspect
         if (members.TrySingle() is ITypeDeclarationNode referencedType)
             return IQualifiedTypeNameExpressionNode.Create(node.Syntax, context, node.TypeArguments, referencedType);
 
-        return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
+        return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
     public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_TypeNameExpressionContext(
         IMemberAccessExpressionNode node)
     {
-        if (node.Context is not ITypeNameExpressionNode { ReferencedDeclaration: IUserTypeDeclarationNode referencedDeclaration } context)
+        if (node.Context is not ITypeNameExpressionNode context)
             return null;
 
-        var members = referencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
+        var members = context.ReferencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
         if (members.Count == 0)
             return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDefinitionNode>());
 
@@ -112,19 +112,23 @@ internal static partial class BindingAmbiguousNamesAspect
             // TODO handle type arguments (which are not allowed for initializers)
             return IInitializerGroupNameNode.Create(node.Syntax, context, context.Name, referencedInitializers);
 
-        return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
+        return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
     public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_ExpressionContext(
         IMemberAccessExpressionNode node)
     {
+        // TODO a better way to expression the condition for this rewrite. Introduce a new node type?
+
         if (node.Context is not IExpressionNode context)
             return null;
+        // Ignore contexts that have special handling for member access (i.e. separate rewrite rules)
+        if (node.Context is INamespaceNameNode or ITypeNameExpressionNode)
+            return null;
+
         // Ignore names that are still treated as expressions right now
-        if (context is INamespaceNameNode
-            or IFunctionGroupNameNode
+        if (context is IFunctionGroupNameNode
             or IMethodGroupNameNode
-            or ITypeNameExpressionNode
             or IInitializerGroupNameNode)
             return null;
 
@@ -147,7 +151,7 @@ internal static partial class BindingAmbiguousNamesAspect
                     return IFieldAccessExpressionNode.Create(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
             }
 
-        return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
+        return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
     public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_UnknownNameExpressionContext(IMemberAccessExpressionNode node)
@@ -246,10 +250,35 @@ internal static partial class BindingAmbiguousNamesAspect
                 break;
             case IUnknownNameExpressionNode:
             case IUnknownInvocationExpressionNode:
+            case { Type: UnknownType }:
                 // These presumably report their own errors and should be ignored here
                 break;
             default:
-                diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span,
+                diagnostics.Add(NameBindingError.NotImplemented(node.File, node.Syntax.Span,
+                    $"Could not access `{node.MemberName}` on `{node.Context.Syntax}` (Unknown member)."));
+                break;
+        }
+    }
+
+    public static partial void AmbiguousMemberAccessExpression_Contribute_Diagnostics(
+        IAmbiguousMemberAccessExpressionNode node,
+        DiagnosticCollectionBuilder diagnostics)
+    {
+        switch (node.Context)
+        {
+            case INamespaceNameNode:
+            case ITypeNameExpressionNode:
+                // TODO better errors explaining. For example, are they different kinds of declarations?
+                diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.MemberNameSpan));
+                break;
+            case IUnknownNameExpressionNode:
+            case IUnknownInvocationExpressionNode:
+            case { Type: UnknownType }:
+                // These presumably report their own errors and should be ignored here
+                break;
+            default:
+                // TODO aren't regular expression contexts falling into this case right now?
+                diagnostics.Add(NameBindingError.NotImplemented(node.File, node.Syntax.Span,
                     $"Could not access `{node.MemberName}` on `{node.Context.Syntax}` (Unknown member)."));
                 break;
         }
@@ -262,7 +291,7 @@ internal static partial class BindingAmbiguousNamesAspect
     {
         if (declarations.Count == 0)
         {
-            referencedNamespaces = FixedList.Empty<T>();
+            referencedNamespaces = [];
             return false;
         }
         referencedNamespaces = declarations.OfType<T>().ToFixedList();

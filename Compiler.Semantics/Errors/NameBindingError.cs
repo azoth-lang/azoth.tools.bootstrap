@@ -74,10 +74,4 @@ public static class NameBindingError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             5010, $"Using directive refers to namespace `{ns}` which does not exist");
     }
-
-    public static Diagnostic CouldNotBindParameterName(CodeFile file, TextSpan span)
-    {
-        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            5011, $"Could not find parameter with the name `{file.Code[span]}`.");
-    }
 }

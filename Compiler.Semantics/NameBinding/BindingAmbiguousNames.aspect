@@ -28,3 +28,5 @@
 = FunctionGroupName.↑.Diagnostics;
 = UnknownIdentifierNameExpression.↑.Diagnostics;
 = UnresolvedMemberAccessExpression.↑.Diagnostics;
+// TODO validate that AmbiguousMemberAccessExpression.ReferencedMembers is not empty
+= AmbiguousMemberAccessExpression.↑.Diagnostics;

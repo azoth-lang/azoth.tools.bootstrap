@@ -449,6 +449,11 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
+            case IAmbiguousMemberAccessExpressionNode n:
+                yield return n.Context;
+                foreach (var child in n.TypeArguments)
+                    yield return child;
+                yield break;
             case IAmbiguousMoveExpressionNode n:
                 yield return n.TempReferent;
                 yield break;

@@ -353,6 +353,9 @@ UnknownGenericNameExpression <: UnknownStandardNameExpression
 UnresolvedMemberAccessExpression <: UnknownNameExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:Expression TypeArguments:Type*
     ReferencedMembers:{`IDeclarationNode`};
+AmbiguousMemberAccessExpression <: UnknownNameExpression
+    = Syntax:`IMemberAccessExpressionSyntax` Context:Expression TypeArguments:Type*
+    ReferencedMembers:{`IDeclarationNode`};
 
 // ---------- Capability Expressions
 temp AmbiguousMoveExpression <: AmbiguousExpression = Syntax:`IMoveExpressionSyntax` Referent:AmbiguousNameExpression;

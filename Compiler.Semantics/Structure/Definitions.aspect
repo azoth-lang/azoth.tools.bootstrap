@@ -183,6 +183,7 @@
 ↑ SelfExpression.IsImplicit: `bool` => Syntax.IsImplicit;
 ↑ UnknownIdentifierNameExpression.Name :`IdentifierName`=> Syntax.Name;
 ↑ UnresolvedMemberAccessExpression.MemberName: `StandardName` => Syntax.MemberName;
+↑ AmbiguousMemberAccessExpression.MemberName: `StandardName` => Syntax.MemberName;
 
 // ---------- Capability Expressions
 ↑ PrepareToReturnExpression.Syntax: `IExpressionSyntax` => Value.Syntax;
