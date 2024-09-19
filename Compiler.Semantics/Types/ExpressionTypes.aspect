@@ -12,12 +12,12 @@
 // ---------- Function Parts
 ↓ ExpressionBody.ExpectedType: `DataType`?;
 = ExpressionBody.ResultStatement.ExpectedType => ExpectedType;
-// It is really the expression inside the result statement that should this applies to, but the
+// It is really the expression inside the result statement that this should apply to, but the
 // ResultStatement will forward it to the expression.
 = ExpressionBody.ResultStatement.ImplicitRecoveryAllowed() => true;
-// Really, only the expression immediately inside the result statement should inherit true. But
-// there is no way to select that. Instead broadcast, and rely on other expressions to override.
-= ExpressionBody.ResultStatement.**.ShouldPrepareToReturn() => true;
+// It is really the expression inside the result statement that this should apply to, but the
+// ResultStatement will forward it to the expression.
+= ExpressionBody.ResultStatement.ShouldPrepareToReturn() => true;
 
 // ---------- Parameters
 ↓ Parameter.FlowStateBefore(): `IFlowState`;
@@ -28,9 +28,12 @@
 // ---------- Statements
 ↑ Statement.ResultType: `DataType`? => null;
 ⟳ Statement.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
-// Foward ImplicitRecoveryAllowed() to the expression 
+// Forward ImplicitRecoveryAllowed() to the expression
 ↓ ResultStatement.ImplicitRecoveryAllowed(): `bool`;
 = ResultStatement.Expression.ImplicitRecoveryAllowed() => ImplicitRecoveryAllowed();
+// Forward ShouldPrepareToReturn() to the expression
+↓ ResultStatement.ShouldPrepareToReturn(): `bool`;
+= ResultStatement.Expression.ShouldPrepareToReturn() => ShouldPrepareToReturn();
 ↓ ResultStatement.ExpectedType: `DataType`?;
 = ResultStatement.Expression.ExpectedType => ExpectedType;
 = ResultStatement.Type;
@@ -57,8 +60,9 @@
 // By default, implicit recovery is not allowed. Avoiding broadcast ensures that this never requires
 // traversing multiple layers up the tree (except for ResultStatement)
 = AmbiguousExpression.*.ImplicitRecoveryAllowed() => false;
-// By default, don't need to prepare to return
-= AmbiguousExpression.*.**.ShouldPrepareToReturn() => false;
+// By default, don't need to prepare to return. Avoiding broadcast ensures that this never requires
+// traversing multiple layers up the tree (except for ResultStatement and recovery expressions)
+= AmbiguousExpression.*.ShouldPrepareToReturn() => false;
 // TODO remove once all nodes properly provide the expected type
 = AmbiguousExpression.*.ExpectedType => null;
 ↓ Expression.ExpectedType:`DataType`?;
