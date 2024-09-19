@@ -357,6 +357,11 @@ internal static partial class ExpressionAntetypesAspect
     {
         if (node.ShouldNotBeExpression()) return null;
 
+        // TODO to minimize outstanding rewrites, first check whether node.Antetype could possibly
+        // support conversion. If node.ExpectedAntetype is checked, that is inherited and if a
+        // rewrite is in progress, that can't be cached. Note: this may require thoroughly treating
+        // T <: T? as a subtype and not an implicit conversion.
+
         if (ImplicitlyConvertToType(node.ExpectedAntetype, node.Antetype) is SimpleAntetype convertToAntetype)
             return IImplicitConversionExpressionNode.Create(node, convertToAntetype);
 

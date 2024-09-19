@@ -12,9 +12,9 @@
 // ---------- Function Parts
 ↓ ExpressionBody.ExpectedType: `DataType`?;
 = ExpressionBody.ResultStatement.ExpectedType => ExpectedType;
-// Really, only the expression immediately inside the result statement should inherit true. But
-// there is no way to select that. Instead broadcast, and rely on other expressions to override.
-= ExpressionBody.ResultStatement.**.ImplicitRecoveryAllowed() => true;
+// It is really the expression inside the result statement that should this applies to, but the
+// ResultStatement will forward it to the expression.
+= ExpressionBody.ResultStatement.ImplicitRecoveryAllowed() => true;
 // Really, only the expression immediately inside the result statement should inherit true. But
 // there is no way to select that. Instead broadcast, and rely on other expressions to override.
 = ExpressionBody.ResultStatement.**.ShouldPrepareToReturn() => true;
@@ -28,6 +28,9 @@
 // ---------- Statements
 ↑ Statement.ResultType: `DataType`? => null;
 ⟳ Statement.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
+// Foward ImplicitRecoveryAllowed() to the expression 
+↓ ResultStatement.ImplicitRecoveryAllowed(): `bool`;
+= ResultStatement.Expression.ImplicitRecoveryAllowed() => ImplicitRecoveryAllowed();
 ↓ ResultStatement.ExpectedType: `DataType`?;
 = ResultStatement.Expression.ExpectedType => ExpectedType;
 = ResultStatement.Type;
@@ -51,8 +54,9 @@
 ↑ OptionalPattern.FlowStateAfter: `IFlowState` => Pattern.FlowStateAfter;
 
 // ---------- Expressions
-// By default, implicit recovery is not allowed
-= AmbiguousExpression.*.**.ImplicitRecoveryAllowed() => false;
+// By default, implicit recovery is not allowed. Avoiding broadcast ensures that this never requires
+// traversing multiple layers up the tree (except for ResultStatement)
+= AmbiguousExpression.*.ImplicitRecoveryAllowed() => false;
 // By default, don't need to prepare to return
 = AmbiguousExpression.*.**.ShouldPrepareToReturn() => false;
 // TODO remove once all nodes properly provide the expected type
