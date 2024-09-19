@@ -3356,7 +3356,6 @@ public partial interface IUnresolvedMemberAccessExpressionNode : IUnknownNameExp
     IExpressionNode Context { get; }
     IExpressionNode CurrentContext { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
-    IFixedSet<IDeclarationNode> ReferencedMembers { get; }
     StandardName MemberName
         => Syntax.MemberName;
     IFlowState INameExpressionNode.FlowStateAfter
@@ -3365,9 +3364,8 @@ public partial interface IUnresolvedMemberAccessExpressionNode : IUnknownNameExp
     public static IUnresolvedMemberAccessExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
-        IEnumerable<ITypeNode> typeArguments,
-        IEnumerable<IDeclarationNode> referencedMembers)
-        => new UnresolvedMemberAccessExpressionNode(syntax, context, typeArguments, referencedMembers);
+        IEnumerable<ITypeNode> typeArguments)
+        => new UnresolvedMemberAccessExpressionNode(syntax, context, typeArguments);
 }
 
 // [Closed(typeof(AmbiguousMemberAccessExpressionNode))]
@@ -16370,7 +16368,6 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
             : this.RewritableChild(ref contextCached, ref context);
     public IExpressionNode CurrentContext => context.UnsafeValue;
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
-    public IFixedSet<IDeclarationNode> ReferencedMembers { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -16424,13 +16421,11 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
     public UnresolvedMemberAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
-        IEnumerable<ITypeNode> typeArguments,
-        IEnumerable<IDeclarationNode> referencedMembers)
+        IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;
         this.context = Child.Create(this, context);
         TypeArguments = ChildList.Attach(this, typeArguments);
-        ReferencedMembers = referencedMembers.ToFixedSet();
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)

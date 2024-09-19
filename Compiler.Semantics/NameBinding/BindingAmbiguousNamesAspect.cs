@@ -66,8 +66,7 @@ internal static partial class BindingAmbiguousNamesAspect
         if (context is not (IFunctionGroupNameNode or IMethodGroupNameNode))
             return null;
 
-        return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments,
-            FixedList.Empty<IDefinitionNode>());
+        return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments);
     }
 
     public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_NamespaceNameContext(
@@ -78,8 +77,7 @@ internal static partial class BindingAmbiguousNamesAspect
 
         var members = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
         if (members.Count == 0)
-            return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments,
-                FixedList.Empty<IDefinitionNode>());
+            return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments);
 
         if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
             return IQualifiedNamespaceNameNode.Create(node.Syntax, context, referencedNamespaces);
@@ -102,7 +100,7 @@ internal static partial class BindingAmbiguousNamesAspect
 
         var members = context.ReferencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
         if (members.Count == 0)
-            return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDefinitionNode>());
+            return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments);
 
         if (members.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
             return new FunctionGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments,
@@ -135,7 +133,7 @@ internal static partial class BindingAmbiguousNamesAspect
         var contextTypeDeclaration = node.PackageNameScope().Lookup(context.Antetype);
         var members = contextTypeDeclaration?.InclusiveInstanceMembersNamed(node.MemberName).ToFixedSet() ?? [];
         if (members.Count == 0)
-            return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDefinitionNode>());
+            return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments);
 
         if (members.TryAllOfType<IStandardMethodDeclarationNode>(out var referencedMethods))
             return new MethodGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);
@@ -159,7 +157,7 @@ internal static partial class BindingAmbiguousNamesAspect
         if (node.Context is not IUnknownNameExpressionNode context)
             return null;
 
-        return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, FixedList.Empty<IDeclarationNode>());
+        return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments);
     }
 
     public static partial IAmbiguousNameExpressionNode? PropertyName_Rewrite(IPropertyNameNode node)
@@ -234,19 +232,8 @@ internal static partial class BindingAmbiguousNamesAspect
                 diagnostics.Add(TypeError.NotImplemented(node.File, node.Syntax.Span, "No member accessible from function or method."));
                 break;
             case INamespaceNameNode:
-                switch (node.ReferencedMembers.Count)
-                {
-                    case 0:
-                        diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.MemberNameSpan));
-                        break;
-                    case 1:
-                        // If there is only one match, then it would not be an unknown member access expression
-                        throw new UnreachableException();
-                    default:
-                        // TODO better errors explaining. For example, are they different kinds of declarations?
-                        diagnostics.Add(NameBindingError.AmbiguousName(node.File, node.Syntax.MemberNameSpan));
-                        break;
-                }
+            case ITypeNameExpressionNode:
+                diagnostics.Add(NameBindingError.CouldNotBindMember(node.File, node.Syntax.MemberNameSpan));
                 break;
             case IUnknownNameExpressionNode:
             case IUnknownInvocationExpressionNode:

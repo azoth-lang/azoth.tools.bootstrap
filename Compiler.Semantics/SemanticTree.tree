@@ -351,8 +351,7 @@ UnknownIdentifierNameExpression <: UnknownStandardNameExpression, SimpleNameExpr
 UnknownGenericNameExpression <: UnknownStandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
 UnresolvedMemberAccessExpression <: UnknownNameExpression
-    = Syntax:`IMemberAccessExpressionSyntax` Context:Expression TypeArguments:Type*
-    ReferencedMembers:{`IDeclarationNode`};
+    = Syntax:`IMemberAccessExpressionSyntax` Context:Expression TypeArguments:Type*;
 AmbiguousMemberAccessExpression <: UnknownNameExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:Expression TypeArguments:Type*
     ReferencedMembers:{`IDeclarationNode`};
