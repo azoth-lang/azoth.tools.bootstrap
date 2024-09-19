@@ -214,7 +214,7 @@
 = SelfExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => DataType.Unknown;
 ↑ UnknownNameExpression.Type: `UnknownType` => DataType.Unknown;
-= UnknownMemberAccessExpression.FlowStateAfter;
+= UnresolvedMemberAccessExpression.FlowStateAfter;
 
 // ---------- Capability Expressions
 = MoveExpression.Type;

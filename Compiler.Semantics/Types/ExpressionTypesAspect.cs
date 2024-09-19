@@ -840,7 +840,7 @@ internal static partial class ExpressionTypesAspect
         // Constant for the boolean result of the pattern match
         => node.Pattern.FlowStateAfter.Constant(node.ValueId);
 
-    public static partial IFlowState UnknownMemberAccessExpression_FlowStateAfter(IUnknownMemberAccessExpressionNode node)
+    public static partial IFlowState UnresolvedMemberAccessExpression_FlowStateAfter(IUnresolvedMemberAccessExpressionNode node)
         => node.Context.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type);
 
     public static partial IFlowState PrepareToReturnExpression_FlowStateAfter(IPrepareToReturnExpressionNode node)

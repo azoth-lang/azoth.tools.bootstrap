@@ -27,4 +27,4 @@
 // ✎ FunctionGroupName;
 = FunctionGroupName.↑.Diagnostics;
 = UnknownIdentifierNameExpression.↑.Diagnostics;
-= UnknownMemberAccessExpression.↑.Diagnostics;
+= UnresolvedMemberAccessExpression.↑.Diagnostics;

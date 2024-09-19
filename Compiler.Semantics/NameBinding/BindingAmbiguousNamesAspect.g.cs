@@ -28,7 +28,7 @@ internal static partial class BindingAmbiguousNamesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void UnknownIdentifierNameExpression_Contribute_Diagnostics(IUnknownIdentifierNameExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial void UnknownMemberAccessExpression_Contribute_Diagnostics(IUnknownMemberAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics);
+    public static partial void UnresolvedMemberAccessExpression_Contribute_Diagnostics(IUnresolvedMemberAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     public static partial IExpressionNode? AssignmentExpression_Rewrite_PropertyNameLeftOperand(IAssignmentExpressionNode node);
     public static partial IAmbiguousNameExpressionNode? IdentifierNameExpression_Rewrite(IIdentifierNameExpressionNode node);
     public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_FunctionOrMethodGroupNameContext(IMemberAccessExpressionNode node);

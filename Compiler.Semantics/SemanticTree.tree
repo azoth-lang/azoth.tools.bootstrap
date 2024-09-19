@@ -219,7 +219,7 @@ BindingPattern <: OptionalOrBindingPattern, VariableBinding = Syntax:`IBindingPa
 OptionalPattern <: OptionalOrBindingPattern = Syntax:`IOptionalPatternSyntax` Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
-// TODO rename Ambiguous to `Unresolved` or `Unbound` because it is not ambiguous, it is just not bound
+// TODO rename Ambiguous to `Unresolved` because it is not ambiguous, it is just not bound (avoid unbound because the issue is more than just name binding)
 temp AmbiguousExpression <: Code = Syntax:`IExpressionSyntax`;
 Expression <: AmbiguousExpression, ControlFlow = Syntax:`IExpressionSyntax`;
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock
@@ -286,7 +286,7 @@ UnknownInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpress
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 
 // ---------- Ambiguous Name Expressions
-// TODO consider renaming to `UnboundNameExpression` because the final tree could have a bound name that is still ambigous (e.g. could not determine what it refers to)
+// TODO consider renaming to `UnresolvedNameExpression` because the final tree could have a bound name that is still ambigous (e.g. could not determine what it refers to)
 temp AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
 temp AmbiguousName <: AmbiguousNameExpression;
 temp UnresolvedSimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
@@ -350,7 +350,7 @@ UnknownIdentifierNameExpression <: UnknownStandardNameExpression, SimpleNameExpr
     = Syntax:`IIdentifierNameExpressionSyntax` /ReferencedDeclarations/;
 UnknownGenericNameExpression <: UnknownStandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
-UnknownMemberAccessExpression <: UnknownNameExpression
+UnresolvedMemberAccessExpression <: UnknownNameExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:Expression TypeArguments:Type*
     ReferencedMembers:{`IDeclarationNode`};
 

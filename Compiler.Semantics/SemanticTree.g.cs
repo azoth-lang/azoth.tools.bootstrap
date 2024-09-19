@@ -3274,7 +3274,7 @@ public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode
 
 [Closed(
     typeof(IUnknownStandardNameExpressionNode),
-    typeof(IUnknownMemberAccessExpressionNode))]
+    typeof(IUnresolvedMemberAccessExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUnknownNameExpressionNode : INameExpressionNode
 {
@@ -3343,9 +3343,9 @@ public partial interface IUnknownGenericNameExpressionNode : IUnknownStandardNam
         => new UnknownGenericNameExpressionNode(referencedDeclarations, syntax, name, typeArguments);
 }
 
-// [Closed(typeof(UnknownMemberAccessExpressionNode))]
+// [Closed(typeof(UnresolvedMemberAccessExpressionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUnknownMemberAccessExpressionNode : IUnknownNameExpressionNode
+public partial interface IUnresolvedMemberAccessExpressionNode : IUnknownNameExpressionNode
 {
     new IMemberAccessExpressionSyntax Syntax { get; }
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
@@ -3359,14 +3359,14 @@ public partial interface IUnknownMemberAccessExpressionNode : IUnknownNameExpres
     StandardName MemberName
         => Syntax.MemberName;
     IFlowState INameExpressionNode.FlowStateAfter
-        => ExpressionTypesAspect.UnknownMemberAccessExpression_FlowStateAfter(this);
+        => ExpressionTypesAspect.UnresolvedMemberAccessExpression_FlowStateAfter(this);
 
-    public static IUnknownMemberAccessExpressionNode Create(
+    public static IUnresolvedMemberAccessExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IDeclarationNode> referencedMembers)
-        => new UnknownMemberAccessExpressionNode(syntax, context, typeArguments, referencedMembers);
+        => new UnresolvedMemberAccessExpressionNode(syntax, context, typeArguments, referencedMembers);
 }
 
 // [Closed(typeof(AmbiguousMoveExpressionNode))]
@@ -16331,9 +16331,9 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAccessExpressionNode
+file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMemberAccessExpressionNode
 {
-    private IUnknownMemberAccessExpressionNode Self { [Inline] get => this; }
+    private IUnresolvedMemberAccessExpressionNode Self { [Inline] get => this; }
     private AttributeLock syncLock;
     protected override bool MayHaveRewrite => true;
 
@@ -16396,7 +16396,7 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
     private ValueId valueId;
     private bool valueIdCached;
 
-    public UnknownMemberAccessExpressionNode(
+    public UnresolvedMemberAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,
         IExpressionNode context,
         IEnumerable<ITypeNode> typeArguments,
@@ -16448,7 +16448,7 @@ file class UnknownMemberAccessExpressionNode : SemanticNode, IUnknownMemberAcces
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
-        BindingAmbiguousNamesAspect.UnknownMemberAccessExpression_Contribute_Diagnostics(this, builder);
+        BindingAmbiguousNamesAspect.UnresolvedMemberAccessExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
