@@ -286,7 +286,9 @@ UnknownInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpress
     Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 
 // ---------- Ambiguous Name Expressions
-// TODO consider renaming to `UnresolvedNameExpression` because the final tree could have a bound name that is still ambigous (e.g. could not determine what it refers to)
+// TODO consider renaming to `UnresolvedNameExpression` because the final tree could have a bound
+// name that is still ambigous (e.g. could not determine what it refers to). However, perhaps another
+// name is needed to distinguish between unresolved nodes and temp nodes.
 temp AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
 temp AmbiguousName <: AmbiguousNameExpression;
 temp UnresolvedSimpleName <: AmbiguousName = Syntax:`ISimpleNameSyntax`;
@@ -303,6 +305,10 @@ temp PropertyName <: AmbiguousName
 
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression = Syntax:`INameExpressionSyntax`;
+// TODO rename UnknownNameExpression to UnresolvedNameExpression (note these are non-temp)
+UnknownNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`;
+UnresolvedMemberAccessExpression <: UnknownNameExpression
+    = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression TypeArguments:Type*;
 LocalBindingNameExpression <: NameExpression = ReferencedDefinition:`IBindingNode`?;
 SimpleNameExpression <: NameExpression, UnresolvedSimpleName
     = Syntax:`ISimpleNameSyntax`;
@@ -343,15 +349,12 @@ SelfExpression <: InstanceExpression, LocalBindingNameExpression
     = Syntax:`ISelfExpressionSyntax`;
 MissingNameExpression <: NameExpression, SimpleNameExpression
     = Syntax:`IMissingNameSyntax`;
-UnknownNameExpression <: NameExpression = Syntax:`INameExpressionSyntax`;
 UnknownStandardNameExpression <: UnknownNameExpression
     = Syntax:`IStandardNameExpressionSyntax` Name:`StandardName` ReferencedDeclarations:{`IDeclarationNode`};
 UnknownIdentifierNameExpression <: UnknownStandardNameExpression, SimpleNameExpression
     = Syntax:`IIdentifierNameExpressionSyntax` /ReferencedDeclarations/;
 UnknownGenericNameExpression <: UnknownStandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` Name:`GenericName` TypeArguments:Type*;
-UnresolvedMemberAccessExpression <: UnknownNameExpression
-    = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression TypeArguments:Type*;
 AmbiguousMemberAccessExpression <: UnknownNameExpression
     = Syntax:`IMemberAccessExpressionSyntax` Context:Expression TypeArguments:Type*
     ReferencedMembers:{`IDeclarationNode`};

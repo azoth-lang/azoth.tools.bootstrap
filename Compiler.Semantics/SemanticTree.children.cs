@@ -393,6 +393,11 @@ public static class ISemanticNodeExtensions
             case IPropertyNameNode n:
                 yield return n.Context;
                 yield break;
+            case IUnresolvedMemberAccessExpressionNode n:
+                yield return n.TempContext;
+                foreach (var child in n.TypeArguments)
+                    yield return child;
+                yield break;
             case IUnqualifiedNamespaceNameNode n:
                 yield break;
             case IQualifiedNamespaceNameNode n:
@@ -441,11 +446,6 @@ public static class ISemanticNodeExtensions
             case IUnknownIdentifierNameExpressionNode n:
                 yield break;
             case IUnknownGenericNameExpressionNode n:
-                foreach (var child in n.TypeArguments)
-                    yield return child;
-                yield break;
-            case IUnresolvedMemberAccessExpressionNode n:
-                yield return n.TempContext;
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
