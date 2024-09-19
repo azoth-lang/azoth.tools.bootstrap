@@ -445,7 +445,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IUnresolvedMemberAccessExpressionNode n:
-                yield return n.Context;
+                yield return n.TempContext;
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;

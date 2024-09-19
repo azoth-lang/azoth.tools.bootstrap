@@ -242,7 +242,7 @@ internal static partial class BindingAmbiguousNamesAspect
                 break;
             default:
                 diagnostics.Add(NameBindingError.NotImplemented(node.File, node.Syntax.Span,
-                    $"Could not access `{node.MemberName}` on `{node.Context.Syntax}` (Unknown member)."));
+                    $"Could not access `{node.MemberName}` on `{node.Context!.Syntax}` (Unknown member)."));
                 break;
         }
     }

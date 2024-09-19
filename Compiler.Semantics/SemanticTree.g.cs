@@ -3353,8 +3353,9 @@ public partial interface IUnresolvedMemberAccessExpressionNode : IUnknownNameExp
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
-    IExpressionNode Context { get; }
-    IExpressionNode CurrentContext { get; }
+    IAmbiguousExpressionNode TempContext { get; }
+    IExpressionNode? Context { get; }
+    IAmbiguousExpressionNode CurrentContext { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     StandardName MemberName
         => Syntax.MemberName;
@@ -3363,7 +3364,7 @@ public partial interface IUnresolvedMemberAccessExpressionNode : IUnknownNameExp
 
     public static IUnresolvedMemberAccessExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,
-        IExpressionNode context,
+        IAmbiguousExpressionNode context,
         IEnumerable<ITypeNode> typeArguments)
         => new UnresolvedMemberAccessExpressionNode(syntax, context, typeArguments);
 }
@@ -16361,12 +16362,13 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
     protected override bool MayHaveRewrite => true;
 
     public IMemberAccessExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    private RewritableChild<IExpressionNode> context;
+    private RewritableChild<IAmbiguousExpressionNode> context;
     private bool contextCached;
-    public IExpressionNode Context
+    public IAmbiguousExpressionNode TempContext
         => GrammarAttribute.IsCached(in contextCached) ? context.UnsafeValue
             : this.RewritableChild(ref contextCached, ref context);
-    public IExpressionNode CurrentContext => context.UnsafeValue;
+    public IExpressionNode? Context => TempContext as IExpressionNode;
+    public IAmbiguousExpressionNode CurrentContext => context.UnsafeValue;
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -16420,7 +16422,7 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
 
     public UnresolvedMemberAccessExpressionNode(
         IMemberAccessExpressionSyntax syntax,
-        IExpressionNode context,
+        IAmbiguousExpressionNode context,
         IEnumerable<ITypeNode> typeArguments)
     {
         Syntax = syntax;

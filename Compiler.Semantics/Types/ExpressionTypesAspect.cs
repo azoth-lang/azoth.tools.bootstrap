@@ -841,7 +841,7 @@ internal static partial class ExpressionTypesAspect
         => node.Pattern.FlowStateAfter.Constant(node.ValueId);
 
     public static partial IFlowState UnresolvedMemberAccessExpression_FlowStateAfter(IUnresolvedMemberAccessExpressionNode node)
-        => node.Context.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type);
+        => node.Context?.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
 
     public static partial IFlowState PrepareToReturnExpression_FlowStateAfter(IPrepareToReturnExpressionNode node)
     {
