@@ -178,7 +178,7 @@ internal static partial class ExpressionAntetypesAspect
     }
 
     private static IMaybeExpressionAntetype InferNumericOperatorType(IAntetype? commonAntetype)
-        => commonAntetype ?? IAntetype.UnknownMaybeAntetype;
+        => commonAntetype ?? IMaybeAntetype.Unknown;
 
     private static IMaybeExpressionAntetype InferComparisonOperatorType(IAntetype? commonAntetype)
     {
@@ -193,7 +193,7 @@ internal static partial class ExpressionAntetypesAspect
             .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
             .OfType<ITypeDeclarationNode>().TrySingle();
         var rangeAntetype = (IAntetype?)rangeTypeDeclaration?.Symbol.GetDeclaredType()?.ToAntetype()
-                            ?? IAntetype.UnknownMaybeAntetype;
+                            ?? IMaybeAntetype.Unknown;
         return rangeAntetype;
     }
 

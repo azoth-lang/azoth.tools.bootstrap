@@ -8,8 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public interface IType : IMaybeType
 {
     #region Standard Types
-    public static readonly UnknownType Unknown = UnknownType.Instance;
-    public static readonly DataType UnknownDataType = UnknownType.Instance;
+    public new static readonly UnknownType Unknown = UnknownType.Instance;
     public static readonly VoidType Void = VoidType.Instance;
     public static readonly NeverType Never = NeverType.Instance;
     public static readonly CapabilityType<BoolType> Bool = DeclaredType.Bool.Type;
