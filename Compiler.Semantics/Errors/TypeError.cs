@@ -233,15 +233,15 @@ public static class TypeError
             3034, $"Supertype `{typeSyntax.ToString()}` does not maintain independence.");
     }
 
-    public static Diagnostic NoFunctionInGroupMatchesExpectedType(CodeFile file, INameExpressionSyntax nameSyntax, FunctionType functionType)
-    {
-        return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3035, $"No function in group `{nameSyntax.ToString()}` matches the expected type `{functionType.ToSourceCodeString()}`.");
-    }
-
     public static Diagnostic AmbiguousFunctionGroup(CodeFile file, INameExpressionSyntax nameSyntax, DataType functionType)
     {
         return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
-            3036, $"Function group `{nameSyntax.ToString()}` has multiple functions that match the expected type `{functionType.ToSourceCodeString()}`.");
+            3035, $"Function group `{nameSyntax.ToString()}` has multiple functions that match the expected type `{functionType.ToSourceCodeString()}`.");
+    }
+
+    public static Diagnostic AmbiguousMethodGroup(CodeFile file, INameExpressionSyntax nameSyntax, DataType functionType)
+    {
+        return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            3036, $"Method group `{nameSyntax.ToString()}` has multiple methods that match the expected type `{functionType.ToSourceCodeString()}`.");
     }
 }

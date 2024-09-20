@@ -271,7 +271,7 @@ UnknownInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpress
 FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Function:FunctionName Arguments:AmbiguousExpression*;
 MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
-    MethodGroup:MethodGroupName Arguments:AmbiguousExpression*;
+    Method:MethodName Arguments:AmbiguousExpression*;
 GetterInvocationExpression <: InvocationExpression, NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression PropertyName:`StandardName`
     ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`};

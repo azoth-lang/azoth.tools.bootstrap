@@ -712,15 +712,15 @@ public class InterpreterProcess
                 };
             case IMethodInvocationExpressionNode exp:
             {
-                var self = await ExecuteAsync(exp.MethodGroup.Context, variables).ConfigureAwait(false);
+                var self = await ExecuteAsync(exp.Method.Context, variables).ConfigureAwait(false);
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
-                var methodSymbol = exp.ReferencedDeclaration!.Symbol;
+                var methodSymbol = exp.Method.ReferencedDeclaration!.Symbol;
                 if (methodSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(methodSymbol, self, arguments);
                 if (methodSymbol == Primitive.IdentityHash)
                     return IdentityHash(self);
 
-                var selfType = exp.MethodGroup.Context.Type;
+                var selfType = exp.Method.Context.Type;
                 return await CallMethodAsync(methodSymbol, selfType, self, arguments);
             }
             case IGetterInvocationExpressionNode exp:

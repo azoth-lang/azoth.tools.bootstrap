@@ -2585,24 +2585,22 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
     IExpressionSyntax IAmbiguousExpressionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IMethodGroupNameNode MethodGroup { get; }
-    IMethodGroupNameNode CurrentMethodGroup { get; }
+    IMethodNameNode Method { get; }
+    IMethodNameNode CurrentMethod { get; }
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     ContextualizedOverload? ContextualizedOverload { get; }
-    IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
-    IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
-        => TempArguments.Prepend(MethodGroup.Context);
+        => TempArguments.Prepend(Method.Context);
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
-        => Arguments.Prepend(MethodGroup.Context);
+        => Arguments.Prepend(Method.Context);
 
     public static IMethodInvocationExpressionNode Create(
         IInvocationExpressionSyntax syntax,
-        IMethodGroupNameNode methodGroup,
+        IMethodNameNode method,
         IEnumerable<IAmbiguousExpressionNode> arguments)
-        => new MethodInvocationExpressionNode(syntax, methodGroup, arguments);
+        => new MethodInvocationExpressionNode(syntax, method, arguments);
 }
 
 // [Closed(typeof(GetterInvocationExpressionNode))]
@@ -3020,6 +3018,8 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     new UnknownType Type
         => DataType.Unknown;
     DataType IExpressionNode.Type => Type;
+    IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
+    IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
     IFlowState INameExpressionNode.FlowStateAfter
         => Context.FlowStateAfter;
     IMaybeExpressionAntetype IExpressionNode.Antetype
@@ -3051,7 +3051,7 @@ public partial interface IMethodNameNode : INameExpressionNode
     IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
     IFlowState INameExpressionNode.FlowStateAfter
-        => ExpressionTypesAspect.MethodName_FlowStateAfter(this);
+        => Context.FlowStateAfter;
 
     public static IMethodNameNode Create(
         IMemberAccessExpressionSyntax syntax,
@@ -12669,7 +12669,7 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
 
     protected override IChildTreeNode Rewrite()
         => OverloadResolutionAspect.UnknownInvocationExpression_Rewrite_FunctionNameExpression(this)
-        ?? OverloadResolutionAspect.UnknownInvocationExpression_Rewrite_MethodGroupNameExpression(this)
+        ?? OverloadResolutionAspect.UnknownInvocationExpression_Rewrite_MethodNameExpression(this)
         ?? OverloadResolutionAspect.UnknownInvocationExpression_Rewrite_TypeNameExpression(this)
         ?? OverloadResolutionAspect.UnknownInvocationExpression_Rewrite_InitializerGroupNameExpression(this)
         ?? OverloadResolutionAspect.UnknownInvocationExpression_Rewrite_FunctionReferenceExpression(this)
@@ -12885,12 +12885,12 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     protected override bool MayHaveRewrite => true;
 
     public IInvocationExpressionSyntax Syntax { [DebuggerStepThrough] get; }
-    private RewritableChild<IMethodGroupNameNode> methodGroup;
-    private bool methodGroupCached;
-    public IMethodGroupNameNode MethodGroup
-        => GrammarAttribute.IsCached(in methodGroupCached) ? methodGroup.UnsafeValue
-            : this.RewritableChild(ref methodGroupCached, ref methodGroup);
-    public IMethodGroupNameNode CurrentMethodGroup => methodGroup.UnsafeValue;
+    private RewritableChild<IMethodNameNode> method;
+    private bool methodCached;
+    public IMethodNameNode Method
+        => GrammarAttribute.IsCached(in methodCached) ? method.UnsafeValue
+            : this.RewritableChild(ref methodCached, ref method);
+    public IMethodNameNode CurrentMethod => method.UnsafeValue;
     private IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
@@ -12936,12 +12936,6 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
                 ExpressionAntetypesAspect.MethodInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations
-        => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
-            : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
-                OverloadResolutionAspect.MethodInvocationExpression_CompatibleDeclarations);
-    private IFixedSet<IStandardMethodDeclarationNode>? compatibleDeclarations;
-    private bool compatibleDeclarationsCached;
     public ContextualizedOverload? ContextualizedOverload
         => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
             : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
@@ -12960,12 +12954,6 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
                 ExpressionTypesAspect.MethodInvocationExpression_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public IStandardMethodDeclarationNode? ReferencedDeclaration
-        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
-            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
-                OverloadResolutionAspect.MethodInvocationExpression_ReferencedDeclaration);
-    private IStandardMethodDeclarationNode? referencedDeclaration;
-    private bool referencedDeclarationCached;
     public DataType Type
         => GrammarAttribute.IsCached(in typeCached) ? type!
             : this.Synthetic(ref typeCached, ref type,
@@ -12981,17 +12969,17 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
 
     public MethodInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
-        IMethodGroupNameNode methodGroup,
+        IMethodNameNode method,
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
-        this.methodGroup = Child.Create(this, methodGroup);
+        this.method = Child.Create(this, method);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(Arguments), arguments);
     }
 
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(child, Self.CurrentMethodGroup))
+        if (ReferenceEquals(child, Self.CurrentMethod))
             return !TempArguments.IsEmpty ? ControlFlowSet.CreateNormal(Arguments[0]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
         if (IndexOfNode(Self.CurrentArguments, child) is { } index)
             return index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1]) : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
@@ -13015,7 +13003,7 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (0 < Self.CurrentArguments.Count && ReferenceEquals(child, Self.CurrentArguments[0]))
-            return MethodGroup.FlowStateAfter;
+            return Method.FlowStateAfter;
         if (IndexOfNode(Self.CurrentArguments, child) is { } index)
             return Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
@@ -14519,7 +14507,7 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => BindingAmbiguousNamesAspect.FunctionGroupName_Rewrite_FunctionName(this)
+        => BindingAmbiguousNamesAspect.FunctionGroupName_Rewrite_ToFunctionName(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
@@ -14742,12 +14730,24 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations
+        => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
+            : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
+                OverloadResolutionAspect.MethodGroupName_CompatibleDeclarations);
+    private IFixedSet<IStandardMethodDeclarationNode>? compatibleDeclarations;
+    private bool compatibleDeclarationsCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
                 ControlFlowAspect.MethodGroupName_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
+    public IStandardMethodDeclarationNode? ReferencedDeclaration
+        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
+            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
+                OverloadResolutionAspect.MethodGroupName_ReferencedDeclaration);
+    private IStandardMethodDeclarationNode? referencedDeclaration;
+    private bool referencedDeclarationCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -14809,6 +14809,8 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        OverloadResolutionAspect.MethodGroupName_Contribute_Diagnostics(this, builder);
+        BindingAmbiguousNamesAspect.MethodGroupName_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -14824,7 +14826,8 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
     }
 
     protected override IChildTreeNode Rewrite()
-        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        => BindingAmbiguousNamesAspect.MethodGroupName_Rewrite_ToMethodName(this)
+        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
         ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
@@ -14896,7 +14899,7 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
-                ControlFlowAspect.Expression_ControlFlowNext);
+                ControlFlowAspect.MethodName_ControlFlowNext);
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
     public DataType Type
@@ -14932,6 +14935,8 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentContext))
+            return ExpressionAntetypesAspect.MethodName_Context_ExpectedAntetype(this);
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -14939,6 +14944,8 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentContext))
+            return ExpressionTypesAspect.MethodName_Context_ExpectedType(this);
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -14946,6 +14953,8 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (ReferenceEquals(descendant, Self.CurrentContext))
+            return true;
         if (ReferenceEquals(child, descendant))
             return false;
         return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);

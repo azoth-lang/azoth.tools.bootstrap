@@ -155,8 +155,8 @@
 = UnknownInvocationExpression.AllArguments => Arguments;
 = FunctionInvocationExpression.TempAllArguments => TempArguments;
 = FunctionInvocationExpression.AllArguments => Arguments;
-= MethodInvocationExpression.TempAllArguments => TempArguments.Prepend(MethodGroup.Context);
-= MethodInvocationExpression.AllArguments => Arguments.Prepend(MethodGroup.Context);
+= MethodInvocationExpression.TempAllArguments => TempArguments.Prepend(Method.Context);
+= MethodInvocationExpression.AllArguments => Arguments.Prepend(Method.Context);
 = GetterInvocationExpression.TempAllArguments => [Context];
 = GetterInvocationExpression.AllArguments => [Context];
 = SetterInvocationExpression.TempAllArguments => [Context, TempValue];

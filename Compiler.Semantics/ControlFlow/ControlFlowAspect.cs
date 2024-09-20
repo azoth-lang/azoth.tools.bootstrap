@@ -52,9 +52,8 @@ internal static partial class ControlFlowAspect
     public static partial ControlFlowSet FunctionReferenceInvocationExpression_ControlFlowNext(IFunctionReferenceInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
 
-    public static partial ControlFlowSet MethodInvocationExpression_ControlFlowNext(
-        IMethodInvocationExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.MethodGroup);
+    public static partial ControlFlowSet MethodInvocationExpression_ControlFlowNext(IMethodInvocationExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Method);
 
     public static partial ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Context);
@@ -71,8 +70,10 @@ internal static partial class ControlFlowAspect
     public static partial ControlFlowSet UnsafeExpression_ControlFlowNext(IUnsafeExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
 
-    public static partial ControlFlowSet MethodGroupName_ControlFlowNext(
-        IMethodGroupNameNode node)
+    public static partial ControlFlowSet MethodGroupName_ControlFlowNext(IMethodGroupNameNode node)
+        => ControlFlowSet.CreateNormal(node.Context);
+
+    public static partial ControlFlowSet MethodName_ControlFlowNext(IMethodNameNode node)
         => ControlFlowSet.CreateNormal(node.Context);
 
     public static partial ControlFlowSet NewObjectExpression_ControlFlowNext(

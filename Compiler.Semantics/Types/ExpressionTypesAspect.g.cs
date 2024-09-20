@@ -54,7 +54,7 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFlowState MethodName_FlowStateAfter(IMethodNameNode node);
+    public static partial DataType? MethodName_Context_ExpectedType(IMethodNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -28,6 +28,8 @@ internal static partial class BindingAmbiguousNamesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void UnknownIdentifierNameExpression_Contribute_Diagnostics(IUnknownIdentifierNameExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void AmbiguousMemberAccessExpression_Contribute_Diagnostics(IAmbiguousMemberAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics);
@@ -36,5 +38,6 @@ internal static partial class BindingAmbiguousNamesAspect
     public static partial INameExpressionNode? UnresolvedMemberAccessExpression_Rewrite_TypeNameExpressionContext(IUnresolvedMemberAccessExpressionNode node);
     public static partial INameExpressionNode? UnresolvedMemberAccessExpression_Rewrite_ExpressionContext(IUnresolvedMemberAccessExpressionNode node);
     public static partial IAmbiguousNameExpressionNode? IdentifierNameExpression_Rewrite(IIdentifierNameExpressionNode node);
-    public static partial INameExpressionNode? FunctionGroupName_Rewrite_FunctionName(IFunctionGroupNameNode node);
+    public static partial INameExpressionNode? FunctionGroupName_Rewrite_ToFunctionName(IFunctionGroupNameNode node);
+    public static partial INameExpressionNode? MethodGroupName_Rewrite_ToMethodName(IMethodGroupNameNode node);
 }

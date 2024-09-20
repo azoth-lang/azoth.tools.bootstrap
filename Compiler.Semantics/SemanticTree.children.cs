@@ -353,7 +353,7 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case IMethodInvocationExpressionNode n:
-                yield return n.MethodGroup;
+                yield return n.Method;
                 foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;

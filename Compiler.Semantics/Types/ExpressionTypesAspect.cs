@@ -171,8 +171,8 @@ internal static partial class ExpressionTypesAspect
 
     public static partial ContextualizedOverload? MethodInvocationExpression_ContextualizedOverload(
         IMethodInvocationExpressionNode node)
-        => node.ReferencedDeclaration is not null
-            ? ContextualizedOverload.Create(node.MethodGroup.Context.Type, node.ReferencedDeclaration)
+        => node.Method.ReferencedDeclaration is not null
+            ? ContextualizedOverload.Create(node.Method.Context.Type, node.Method.ReferencedDeclaration)
             : null;
 
     public static partial IExpressionNode? Expression_Rewrite_ImplicitMove(IExpressionNode node)
@@ -238,7 +238,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial DataType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
     {
-        var selfType = node.MethodGroup.Context.Type;
+        var selfType = node.Method.Context.Type;
         // TODO does this need to be modified by flow typing?
         var unboundType = node.ContextualizedOverload?.ReturnType.Type;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
@@ -248,15 +248,15 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState MethodInvocationExpression_FlowStateAfter(IMethodInvocationExpressionNode node)
     {
         // The flow state just before the method is called is the state after all arguments have evaluated
-        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.MethodGroup.Context.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.MethodGroup.Context, node.Arguments);
+        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Method.Context.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Method.Context, node.Arguments);
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
     public static partial void MethodInvocationExpression_Contribute_Diagnostics(IMethodInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.MethodGroup.Context.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.MethodGroup.Context, node.Arguments);
+        var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Method.Context.FlowStateAfter;
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Method.Context, node.Arguments);
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
@@ -704,8 +704,9 @@ internal static partial class ExpressionTypesAspect
     public static partial DataType MethodName_Type(IMethodNameNode node)
         => node.ReferencedDeclaration?.MethodGroupType ?? DataType.UnknownDataType;
 
-    public static partial IFlowState MethodName_FlowStateAfter(IMethodNameNode node)
-        => node.FlowStateBefore().Constant(node.ValueId);
+    // TODO this is strange and maybe a hack
+    public static partial DataType? MethodName_Context_ExpectedType(IMethodNameNode node)
+        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
 
     public static partial DataType FreezeExpression_Type(IFreezeExpressionNode node)
     {

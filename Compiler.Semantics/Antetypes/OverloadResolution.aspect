@@ -14,7 +14,7 @@
 // ---------- Invocation Expressions
 = UnknownInvocationExpression.Expression.ExpectedAntetype;
 ✎ UnknownInvocationExpression FunctionNameExpression;
-✎ UnknownInvocationExpression MethodGroupNameExpression;
+✎ UnknownInvocationExpression MethodNameExpression;
 ✎ UnknownInvocationExpression TypeNameExpression;
 ✎ UnknownInvocationExpression InitializerGroupNameExpression;
 ✎ UnknownInvocationExpression FunctionReferenceExpression;
@@ -22,8 +22,6 @@
 
 = FunctionInvocationExpression.↑.Diagnostics;
 
-↑ MethodInvocationExpression.CompatibleDeclarations: {StandardMethodDeclaration};
-↑ MethodInvocationExpression.ReferencedDeclaration: StandardMethodDeclaration?;
 = MethodInvocationExpression.↑.Diagnostics;
 
 ↑ InitializerInvocationExpression.CompatibleDeclarations: {InitializerDeclaration};
@@ -33,3 +31,6 @@
 ↑ FunctionGroupName.CompatibleDeclarations: {FunctionInvocableDeclaration};
 ↑ FunctionGroupName.ReferencedDeclaration: FunctionInvocableDeclaration?;
 = FunctionGroupName.↑.Diagnostics;
+↑ MethodGroupName.CompatibleDeclarations: {StandardMethodDeclaration};
+↑ MethodGroupName.ReferencedDeclaration: StandardMethodDeclaration?;
+= MethodGroupName.↑.Diagnostics;

@@ -95,10 +95,13 @@ internal static partial class OverloadResolutionAspect
         return IFunctionInvocationExpressionNode.Create(node.Syntax, function, node.CurrentArguments);
     }
 
-    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_MethodGroupNameExpression(IUnknownInvocationExpressionNode node)
+    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_MethodNameExpression(IUnknownInvocationExpressionNode node)
     {
-        if (node.Expression is not IMethodGroupNameNode method) return null;
+        if (node.Expression is not IMethodNameNode method) return null;
 
+        // TODO maybe the MethodInvocationExpression should not contain a MethodName. Instead, it
+        // could directly contain the context and the method name identifier. That way, weirdness
+        // about passing things through the MethodName layer could be avoided.
         return new MethodInvocationExpressionNode(node.Syntax, method, node.CurrentArguments);
     }
 
@@ -184,25 +187,13 @@ internal static partial class OverloadResolutionAspect
             function.CompatibleDeclarations, node.File, node.Syntax, diagnostics);
     }
 
-    public static partial IFixedSet<IStandardMethodDeclarationNode> MethodInvocationExpression_CompatibleDeclarations(IMethodInvocationExpressionNode node)
-    {
-        var contextAntetype = node.MethodGroup.Context.Antetype;
-        var arguments = node.Arguments.Select(AntetypeIfKnown);
-        var argumentAntetypes = ArgumentAntetypes.ForMethod(contextAntetype, arguments);
-        return node.MethodGroup.ReferencedDeclarations
-                   .Select(d => AntetypeContextualizedOverload.Create(contextAntetype, d))
-                   .Where(o => o.CompatibleWith(argumentAntetypes)).Select(o => o.Declaration).ToFixedSet();
-    }
-
-    public static partial IStandardMethodDeclarationNode? MethodInvocationExpression_ReferencedDeclaration(IMethodInvocationExpressionNode node)
-        => node.CompatibleDeclarations.TrySingle();
-
     public static partial void MethodInvocationExpression_Contribute_Diagnostics(IMethodInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.ReferencedDeclaration is not null)
+        var method = node.Method;
+        if (method.ReferencedDeclaration is not null)
             return;
 
-        switch (node.CompatibleDeclarations.Count)
+        switch (method.CompatibleDeclarations.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindMethod(node.File, node.Syntax));
@@ -243,12 +234,8 @@ internal static partial class OverloadResolutionAspect
     public static partial IFunctionInvocableDeclarationNode? FunctionGroupName_ReferencedDeclaration(IFunctionGroupNameNode node)
         => node.CompatibleDeclarations.TrySingle();
 
-    public static partial void FunctionGroupName_Contribute_Diagnostics(
-        IFunctionGroupNameNode node,
-        DiagnosticCollectionBuilder diagnostics)
+    public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.FunctionName == "non_optional_parameter") Debugger.Break();
-
         if (node.ReferencedDeclaration is not null
             // errors will be reported by the parent in this case
             || node.Parent is IUnknownInvocationExpressionNode)
@@ -263,6 +250,39 @@ internal static partial class OverloadResolutionAspect
                 throw new UnreachableException("ReferencedDeclaration would not be null");
             default:
                 diagnostics.Add(NameBindingError.AmbiguousFunctionName(node.File, node.Syntax));
+                break;
+        }
+    }
+
+    public static partial IFixedSet<IStandardMethodDeclarationNode> MethodGroupName_CompatibleDeclarations(IMethodGroupNameNode node)
+    {
+        if (node.ExpectedAntetype is not FunctionAntetype expectedAntetype) return [];
+
+        var contextAntetype = node.Context.Antetype;
+        var argumentAntetypes = ArgumentAntetypes.ForMethod(contextAntetype, expectedAntetype.Parameters);
+        return node.ReferencedDeclarations.Select(m => AntetypeContextualizedOverload.Create(contextAntetype, m))
+                   .Where(o => o.CompatibleWith(argumentAntetypes)).Select(o => o.Declaration).ToFixedSet();
+    }
+
+    public static partial IStandardMethodDeclarationNode? MethodGroupName_ReferencedDeclaration(IMethodGroupNameNode node)
+        => node.CompatibleDeclarations.TrySingle();
+
+    public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.ReferencedDeclaration is not null
+            // errors will be reported by the parent in this case
+            || node.Parent is IUnknownInvocationExpressionNode)
+            return;
+
+        switch (node.CompatibleDeclarations.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindMethodName(node.File, node.Syntax));
+                break;
+            case 1:
+                throw new UnreachableException("ReferencedDeclaration would not be null");
+            default:
+                diagnostics.Add(NameBindingError.AmbiguousMethodName(node.File, node.Syntax));
                 break;
         }
     }

@@ -24,8 +24,8 @@ internal static partial class ExpressionAntetypesAspect
     public static partial IMaybeExpressionAntetype MethodInvocationExpression_Antetype(IMethodInvocationExpressionNode node)
     {
         // TODO should probably use Antetype on the declaration
-        var unboundAntetype = node.ReferencedDeclaration?.MethodGroupType.Return.Type.ToAntetype() ?? IAntetype.Unknown;
-        var boundAntetype = node.MethodGroup.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
+        var unboundAntetype = node.Method.ReferencedDeclaration?.MethodGroupType.Return.Type.ToAntetype() ?? IAntetype.Unknown;
+        var boundAntetype = node.Method.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
@@ -356,6 +356,11 @@ internal static partial class ExpressionAntetypesAspect
     public static partial IMaybeExpressionAntetype MethodName_Antetype(IMethodNameNode node)
         // TODO should probably use Antetype on the declaration
         => node.ReferencedDeclaration?.MethodGroupType.ToAntetype() ?? IAntetype.Unknown;
+
+    // TODO this is strange and maybe a hack
+    public static partial IMaybeExpressionAntetype? MethodName_Context_ExpectedAntetype(IMethodNameNode node)
+        // TODO it would be better if this didn't depend on types, but only on antetypes
+        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype();
 
     public static partial IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node)
     {

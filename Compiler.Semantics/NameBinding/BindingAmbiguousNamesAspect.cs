@@ -159,7 +159,7 @@ internal static partial class BindingAmbiguousNamesAspect
     //=> Requires.That(!ReferencedDeclarations.IsEmpty, nameof(referencedDeclarations),
     //    "Must be at least one referenced declaration");
 
-    public static partial INameExpressionNode? FunctionGroupName_Rewrite_FunctionName(IFunctionGroupNameNode node)
+    public static partial INameExpressionNode? FunctionGroupName_Rewrite_ToFunctionName(IFunctionGroupNameNode node)
     {
         if (node.CompatibleDeclarations.Count > 1)
             // TODO should this be used instead?
@@ -177,12 +177,35 @@ internal static partial class BindingAmbiguousNamesAspect
         if (node.Parent is IUnknownInvocationExpressionNode)
             return;
 
-        // TODO this should be based on how many compatible declarations there are
-        if (node.ReferencedDeclarations.Count == 0)
+        if (node.CompatibleDeclarations.Count == 0)
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
-        else if (node.ReferencedDeclarations.Count > 1)
+        else if (node.CompatibleDeclarations.Count > 1)
             // TODO provide the expected function type that didn't match
             diagnostics.Add(TypeError.AmbiguousFunctionGroup(node.File, node.Syntax, DataType.Unknown));
+    }
+
+    public static partial INameExpressionNode? MethodGroupName_Rewrite_ToMethodName(IMethodGroupNameNode node)
+    {
+        if (node.CompatibleDeclarations.Count > 1)
+            // TODO should this be used instead?
+            //if (node.ReferencedDeclaration is not null)
+            return null;
+
+        // if there is only one declaration, then it isn't ambiguous
+        return IMethodNameNode.Create(node.Syntax, node.Context, node.MethodName, node.TypeArguments,
+            node.ReferencedDeclarations, node.CompatibleDeclarations, node.ReferencedDeclaration);
+    }
+
+    public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        // TODO develop a better check that this node is ambiguous
+        if (node.Parent is IUnknownInvocationExpressionNode) return;
+
+        if (node.CompatibleDeclarations.Count == 0)
+            diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
+        else if (node.CompatibleDeclarations.Count > 1)
+            // TODO provide the expected method type that didn't match
+            diagnostics.Add(TypeError.AmbiguousMethodGroup(node.File, node.Syntax, DataType.Unknown));
     }
 
     public static partial void UnresolvedMemberAccessExpression_Contribute_Diagnostics(
@@ -227,7 +250,7 @@ internal static partial class BindingAmbiguousNamesAspect
                 // These presumably report their own errors and should be ignored here
                 break;
             default:
-                // TODO aren't regular expression contexts falling into this case right now?
+                // TODO aren't normal expression contexts falling into this case right now?
                 diagnostics.Add(NameBindingError.NotImplemented(node.File, node.Syntax.Span,
                     $"Could not access `{node.MemberName}` on `{node.Context.Syntax}` (Unknown member)."));
                 break;

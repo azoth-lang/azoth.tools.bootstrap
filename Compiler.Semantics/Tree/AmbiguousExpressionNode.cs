@@ -31,16 +31,7 @@ internal abstract class AmbiguousExpressionNode : CodeNode, IAmbiguousExpression
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-    {
-        //if (ReferenceEquals(child, descendant)) return false;
-        //return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
-
-        //// Avoid issues with a hack that affects MethodGroupName
-        if (this is not IMethodGroupNameNode)
-            // By default, implicit recovery is not allowed
-            return false;
-        return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
-    }
+        => false;
 
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => false;

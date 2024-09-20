@@ -111,7 +111,7 @@
     => index < Arguments.Count - 1 ? ControlFlowSet.CreateNormal(Arguments[index + 1])
                                     : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
 = FunctionInvocationExpression.ControlFlowNext;
-= MethodInvocationExpression.MethodGroup.**.ControlFlowFollowing()
+= MethodInvocationExpression.Method.**.ControlFlowFollowing()
     => !TempArguments.IsEmpty
         ? ControlFlowSet.CreateNormal(Arguments[0])
         : base.Inherited_ControlFlowFollowing(child, descendant, ctx);
@@ -138,6 +138,7 @@
 
 // ---------- Name Expressions
 = MethodGroupName.ControlFlowNext;
+= MethodName.ControlFlowNext;
 = FieldAccessExpression.ControlFlowNext;
 
 // ---------- Capability Expressions

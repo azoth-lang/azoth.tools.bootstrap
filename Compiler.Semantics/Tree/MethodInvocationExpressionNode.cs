@@ -16,32 +16,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodInvocationExpressionNode
 {
     public override IInvocationExpressionSyntax Syntax { get; }
-    private RewritableChild<IMethodGroupNameNode> methodGroup;
-    private bool methodGroupCached;
-    public IMethodGroupNameNode MethodGroup
-        => GrammarAttribute.IsCached(in methodGroupCached) ? methodGroup.UnsafeValue
-            : this.RewritableChild(ref methodGroupCached, ref methodGroup);
-    public IMethodGroupNameNode CurrentMethodGroup => methodGroup.UnsafeValue;
+    private RewritableChild<IMethodNameNode> method;
+    private bool methodCached;
+    public IMethodNameNode Method
+        => GrammarAttribute.IsCached(in methodCached) ? method.UnsafeValue
+            : this.RewritableChild(ref methodCached, ref method);
+    public IMethodNameNode CurrentMethod => method.UnsafeValue;
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;
     public IFixedList<IAmbiguousExpressionNode> TempArguments => arguments;
     public IFixedList<IAmbiguousExpressionNode> CurrentArguments => arguments.Current;
-    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => TempArguments.Prepend(MethodGroup.Context);
+    public IEnumerable<IAmbiguousExpressionNode> TempAllArguments => TempArguments.Prepend(Method.Context);
     public IFixedList<IExpressionNode?> Arguments => arguments.AsFinalType;
-    public IEnumerable<IExpressionNode?> AllArguments => Arguments.Prepend(MethodGroup.Context);
-    private IFixedSet<IStandardMethodDeclarationNode>? compatibleDeclarations;
-    private bool compatibleDeclarationsCached;
-    public IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations
-        => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
-            : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
-                OverloadResolutionAspect.MethodInvocationExpression_CompatibleDeclarations,
-                FixedSet.ObjectEqualityComparer);
-    private IStandardMethodDeclarationNode? referencedDeclaration;
-    private bool referencedDeclarationCached;
-    public IStandardMethodDeclarationNode? ReferencedDeclaration
-        => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration!
-            : this.Synthetic(ref referencedDeclarationCached, ref referencedDeclaration,
-                OverloadResolutionAspect.MethodInvocationExpression_ReferencedDeclaration,
-                ReferenceEqualityComparer.Instance);
+    public IEnumerable<IExpressionNode?> AllArguments => Arguments.Prepend(Method.Context);
     private ContextualizedOverload? contextualizedOverload;
     private bool contextualizedOverloadCached;
     public ContextualizedOverload? ContextualizedOverload
@@ -68,11 +54,11 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
 
     public MethodInvocationExpressionNode(
         IInvocationExpressionSyntax syntax,
-        IMethodGroupNameNode methodGroup,
+        IMethodNameNode method,
         IEnumerable<IAmbiguousExpressionNode> arguments)
     {
         Syntax = syntax;
-        this.methodGroup = Child.Create(this, methodGroup);
+        this.method = Child.Create(this, method);
         this.arguments = ChildList<IExpressionNode>.Create(this, nameof(TempArguments), arguments);
     }
 
@@ -85,7 +71,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
             && CurrentArguments.IndexOf(ambiguousExpression) is int index)
         {
             if (index == 0)
-                return MethodGroup.FlowStateAfter;
+                return Method.FlowStateAfter;
             return Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
         }
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
@@ -99,7 +85,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
         SemanticNode descendant,
         IInheritanceContext ctx)
     {
-        if (child == MethodGroup)
+        if (child == Method)
         {
             if (!TempArguments.IsEmpty)
                 return ControlFlowSet.CreateNormal(Arguments[0]);
@@ -112,17 +98,13 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        // TODO this is a hack that is working only because method group nodes aren't getting the default expression Inherited_ImplicitRecoveryAllowed applied
-        if (child == MethodGroup && descendant == MethodGroup.CurrentContext)
-            return true;
+        if (child == descendant)
+            return false;
         return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
     }
 
     internal override IMaybeExpressionAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (descendant == MethodGroup.CurrentContext)
-            // TODO it would be better if this didn't depend on types, but only on antetypes
-            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype();
         if (descendant is IAmbiguousExpressionNode ambiguousExpression
             && CurrentArguments.IndexOf(ambiguousExpression) is int index)
             // TODO it would be better if this didn't depend on types, but only on antetypes
@@ -132,8 +114,6 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (descendant == MethodGroup.CurrentContext)
-            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
         if (descendant is IAmbiguousExpressionNode ambiguousExpression
             && CurrentArguments.IndexOf(ambiguousExpression) is int index)
             return ContextualizedOverload?.ParameterTypes[index].Type;

@@ -63,6 +63,8 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet MethodGroupName_ControlFlowNext(IMethodGroupNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial ControlFlowSet MethodName_ControlFlowNext(IMethodNameNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet FieldAccessExpression_ControlFlowNext(IFieldAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ControlFlowSet RecoveryExpression_ControlFlowNext(IRecoveryExpressionNode node);
