@@ -274,10 +274,10 @@ MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressi
     MethodGroup:MethodGroupName Arguments:AmbiguousExpression*;
 GetterInvocationExpression <: InvocationExpression, NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression PropertyName:`StandardName`
-    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`IGetterMethodDeclarationNode`?;
+    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`};
 SetterInvocationExpression <: InvocationExpression = Syntax:`IAssignmentExpressionSyntax`
     Context:Expression PropertyName:`StandardName` Value:AmbiguousExpression
-    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`} ReferencedDeclaration:`ISetterMethodDeclarationNode`?;
+    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`};
 FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     Expression:Expression Arguments:AmbiguousExpression*;
 InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
@@ -297,11 +297,6 @@ temp IdentifierNameExpression <: AmbiguousName, StandardNameExpression, Unresolv
     = Syntax:`IIdentifierNameExpressionSyntax`;
 temp GenericNameExpression <: AmbiguousName, StandardNameExpression
     = Syntax:`IGenericNameExpressionSyntax` TypeArguments:Type*;
-temp MemberAccessExpression <: AmbiguousName
-    = Syntax:`IMemberAccessExpressionSyntax` Context:AmbiguousExpression TypeArguments:Type*;
-temp PropertyName <: AmbiguousName
-    = Syntax:`IMemberAccessExpressionSyntax` Context:Expression PropertyName:`StandardName`
-    ReferencedPropertyAccessors:{`IPropertyAccessorDeclarationNode`};
 
 // ---------- Name Expressions
 NameExpression <: Expression, AmbiguousNameExpression = Syntax:`INameExpressionSyntax`;

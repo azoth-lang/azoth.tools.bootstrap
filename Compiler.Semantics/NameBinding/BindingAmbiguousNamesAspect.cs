@@ -57,27 +57,14 @@ internal static partial class BindingAmbiguousNamesAspect
         }
     }
 
-    public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_FunctionOrMethodGroupNameContext(
-        IMemberAccessExpressionNode node)
-    {
-        if (node.Context is not IExpressionNode context)
-            return null;
-
-        if (context is not (IFunctionGroupNameNode or IMethodGroupNameNode))
-            return null;
-
-        return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments);
-    }
-
-    public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_NamespaceNameContext(
-        IMemberAccessExpressionNode node)
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_Rewrite_NamespaceNameContext(IUnresolvedMemberAccessExpressionNode node)
     {
         if (node.Context is not INamespaceNameNode context)
             return null;
 
         var members = context.ReferencedDeclarations.SelectMany(d => d.MembersNamed(node.MemberName)).ToFixedSet();
         if (members.Count == 0)
-            return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments);
+            return null;
 
         if (members.TryAllOfType<INamespaceDeclarationNode>(out var referencedNamespaces))
             return IQualifiedNamespaceNameNode.Create(node.Syntax, context, referencedNamespaces);
@@ -92,15 +79,14 @@ internal static partial class BindingAmbiguousNamesAspect
         return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
-    public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_TypeNameExpressionContext(
-        IMemberAccessExpressionNode node)
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_Rewrite_TypeNameExpressionContext(IUnresolvedMemberAccessExpressionNode node)
     {
         if (node.Context is not ITypeNameExpressionNode context)
             return null;
 
         var members = context.ReferencedDeclaration.AssociatedMembersNamed(node.MemberName).ToFixedSet();
         if (members.Count == 0)
-            return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments);
+            return null;
 
         if (members.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
             return new FunctionGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments,
@@ -113,18 +99,17 @@ internal static partial class BindingAmbiguousNamesAspect
         return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
-    public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_ExpressionContext(
-        IMemberAccessExpressionNode node)
+    public static partial INameExpressionNode? UnresolvedMemberAccessExpression_Rewrite_ExpressionContext(IUnresolvedMemberAccessExpressionNode node)
     {
-        // TODO a better way to expression the condition for this rewrite. Introduce a new node type?
-
-        if (node.Context is not IExpressionNode context)
+        if (node.Context is not { } context)
             return null;
+
+        // TODO a better way to expression the condition for this rewrite. Introduce a new node type?
         // Ignore contexts that have special handling for member access (i.e. separate rewrite rules)
         if (node.Context is INamespaceNameNode or ITypeNameExpressionNode)
             return null;
 
-        // Ignore names that are still treated as expressions right now
+        // Ignore names that never have members
         if (context is IFunctionGroupNameNode
             or IMethodGroupNameNode
             or IInitializerGroupNameNode)
@@ -133,14 +118,15 @@ internal static partial class BindingAmbiguousNamesAspect
         var contextTypeDeclaration = node.PackageNameScope().Lookup(context.Antetype);
         var members = contextTypeDeclaration?.InclusiveInstanceMembersNamed(node.MemberName).ToFixedSet() ?? [];
         if (members.Count == 0)
-            return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments);
+            return null;
 
         if (members.TryAllOfType<IStandardMethodDeclarationNode>(out var referencedMethods))
             return new MethodGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);
 
         if (members.TryAllOfType<IPropertyAccessorDeclarationNode>(out var referencedProperties)
             && node.TypeArguments.Count == 0)
-            return IPropertyNameNode.Create(node.Syntax, context, node.MemberName, referencedProperties);
+            // We don't really know that it is a getter, but if it isn't then it will be rewritten to a setter
+            return IGetterInvocationExpressionNode.Create(node.Syntax, context, node.MemberName, referencedProperties);
 
         if (members.TrySingle() is not null and var referencedDeclaration)
             switch (referencedDeclaration)
@@ -152,37 +138,14 @@ internal static partial class BindingAmbiguousNamesAspect
         return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }
 
-    public static partial IAmbiguousNameExpressionNode? MemberAccessExpression_Rewrite_UnknownNameExpressionContext(IMemberAccessExpressionNode node)
-    {
-        if (node.Context is not IUnknownNameExpressionNode context)
-            return null;
-
-        return IUnresolvedMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments);
-    }
-
-    public static partial IAmbiguousNameExpressionNode? PropertyName_Rewrite(IPropertyNameNode node)
-    {
-        if (node.Parent is IAssignmentExpressionNode assignmentExpression
-            && assignmentExpression.TempLeftOperand == node)
-        {
-            // Property on left hand of assignment will be rewritten by the assignment expression
-            return null;
-        }
-
-        var getter = node.ReferencedPropertyAccessors.OfType<IGetterMethodDeclarationNode>().TrySingle();
-        return IGetterInvocationExpressionNode.Create(node.Syntax, node.Context, node.PropertyName,
-            node.ReferencedPropertyAccessors, getter);
-    }
-
     public static partial IExpressionNode? AssignmentExpression_Rewrite_PropertyNameLeftOperand(IAssignmentExpressionNode node)
     {
-        if (node.TempLeftOperand is not IPropertyNameNode propertyName)
+        if (node.TempLeftOperand is not IGetterInvocationExpressionNode getterInvocation)
             return null;
 
-        var setter = propertyName.ReferencedPropertyAccessors.OfType<ISetterMethodDeclarationNode>().TrySingle();
-        return ISetterInvocationExpressionNode.Create(node.Syntax, propertyName.Context,
-            propertyName.PropertyName, node.CurrentRightOperand,
-            propertyName.ReferencedPropertyAccessors, setter);
+        return ISetterInvocationExpressionNode.Create(node.Syntax, getterInvocation.Context,
+            getterInvocation.PropertyName, node.CurrentRightOperand,
+            getterInvocation.ReferencedPropertyAccessors);
     }
 
     public static partial void Validate_FunctionGroupNameNode(

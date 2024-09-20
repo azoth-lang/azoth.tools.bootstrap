@@ -385,14 +385,6 @@ public static class ISemanticNodeExtensions
                 foreach (var child in n.TypeArguments)
                     yield return child;
                 yield break;
-            case IMemberAccessExpressionNode n:
-                yield return n.TempContext;
-                foreach (var child in n.TypeArguments)
-                    yield return child;
-                yield break;
-            case IPropertyNameNode n:
-                yield return n.Context;
-                yield break;
             case IUnresolvedMemberAccessExpressionNode n:
                 yield return n.TempContext;
                 foreach (var child in n.TypeArguments)

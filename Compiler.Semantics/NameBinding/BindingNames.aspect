@@ -11,6 +11,10 @@
 // ---------- Expressions
 ↑ NewObjectExpression.ReferencedConstructors: {ConstructorDeclaration};
 
+// ---------- Invocation Expressions
+↑ eager GetterInvocationExpression.ReferencedDeclaration: `IGetterMethodDeclarationNode`?;
+↑ eager SetterInvocationExpression.ReferencedDeclaration: `ISetterMethodDeclarationNode`?;
+
 // ---------- Name Expressions
 ↑ SelfExpression.ReferencedDefinition: SelfParameter?;
 = SelfExpression.↑.Diagnostics;

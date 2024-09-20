@@ -12,21 +12,18 @@
 ✎ AssignmentExpression PropertyNameLeftOperand;
 
 // ---------- Ambiguous Name Expressions
+✎ UnresolvedMemberAccessExpression NamespaceNameContext;
+✎ UnresolvedMemberAccessExpression TypeNameExpressionContext;
+✎ UnresolvedMemberAccessExpression ExpressionContext;
 ↑ StandardNameExpression.ReferencedDeclarations: Declaration*;
 = StandardNameExpression.ReferencedDeclarations;
 ✎ IdentifierNameExpression;
-✎ MemberAccessExpression FunctionOrMethodGroupNameContext;
-✎ MemberAccessExpression NamespaceNameContext;
-✎ MemberAccessExpression TypeNameExpressionContext;
-✎ MemberAccessExpression ExpressionContext;
-✎ MemberAccessExpression UnknownNameExpressionContext;
-✎ PropertyName;
 
 // ---------- Name Expressions
+= UnresolvedMemberAccessExpression.↑.Diagnostics;
 + FunctionGroupName.new.Validate;
 // ✎ FunctionGroupName;
 = FunctionGroupName.↑.Diagnostics;
 = UnknownIdentifierNameExpression.↑.Diagnostics;
-= UnresolvedMemberAccessExpression.↑.Diagnostics;
 // TODO validate that AmbiguousMemberAccessExpression.ReferencedMembers is not empty
 = AmbiguousMemberAccessExpression.↑.Diagnostics;

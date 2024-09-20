@@ -585,8 +585,8 @@ internal static class SyntaxBinder
     private static IGenericNameExpressionNode GenericNameExpression(IGenericNameExpressionSyntax syntax)
         => IGenericNameExpressionNode.Create(syntax, Types(syntax.TypeArguments));
 
-    private static IMemberAccessExpressionNode MemberAccessExpression(IMemberAccessExpressionSyntax syntax)
-        => IMemberAccessExpressionNode.Create(syntax, Expression(syntax.Context), Types(syntax.TypeArguments));
+    private static IUnresolvedMemberAccessExpressionNode MemberAccessExpression(IMemberAccessExpressionSyntax syntax)
+        => IUnresolvedMemberAccessExpressionNode.Create(syntax, Expression(syntax.Context), Types(syntax.TypeArguments));
 
     private static ISelfExpressionNode SelfExpression(ISelfExpressionSyntax syntax)
         => ISelfExpressionNode.Create(syntax);

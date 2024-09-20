@@ -9,6 +9,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.NameBinding;
 
 internal static partial class BindingNamesAspect
 {
+    #region Invocation Expressions
+    public static partial IGetterMethodDeclarationNode? GetterInvocationExpression_ReferencedDeclaration(IGetterInvocationExpressionNode node)
+        => node.ReferencedPropertyAccessors.OfType<IGetterMethodDeclarationNode>().TrySingle();
+
+    public static partial ISetterMethodDeclarationNode? SetterInvocationExpression_ReferencedDeclaration(ISetterInvocationExpressionNode node)
+        => node.ReferencedPropertyAccessors.OfType<ISetterMethodDeclarationNode>().TrySingle();
+    #endregion
+
+    #region Name Expressions
     public static partial ISelfParameterNode? SelfExpression_ReferencedDefinition(ISelfExpressionNode node)
         => node.ContainingDeclaration switch
         {
@@ -32,6 +41,7 @@ internal static partial class BindingNamesAspect
                 ? OtherSemanticError.ImplicitSelfOutsideMethod(node.File, node.Syntax.Span)
                 : OtherSemanticError.SelfOutsideMethod(node.File, node.Syntax.Span));
     }
+    #endregion
 
     public static partial IFixedSet<IConstructorDeclarationNode> NewObjectExpression_ReferencedConstructors(INewObjectExpressionNode node)
     {
