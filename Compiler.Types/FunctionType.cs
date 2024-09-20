@@ -10,8 +10,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// <summary>
 /// A type for a function, closure, or method.
 /// </summary>
-public sealed class FunctionType : NonEmptyType
+public sealed class FunctionType : NonEmptyType, IMaybeFunctionType
 {
+    public static IMaybeFunctionType Create(IEnumerable<ParameterType> parameters, DataType @return)
+    => @return is Type returnType ? new FunctionType(parameters, returnType) : Unknown;
+
     public FunctionType(IEnumerable<ParameterType> parameters, DataType @return)
     {
         Parameters = parameters.ToFixedList();

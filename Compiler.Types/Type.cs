@@ -4,7 +4,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 [Closed(typeof(NonEmptyType), typeof(EmptyType))]
-public abstract class Type : DataType
+public abstract class Type : DataType, IType
 {
     public override Type AccessedVia(ICapabilityConstraint capability) => this;
 }

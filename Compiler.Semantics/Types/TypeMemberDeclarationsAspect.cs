@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
@@ -15,12 +14,9 @@ internal static partial class TypeMemberDeclarationsAspect
 {
     // TODO maybe this should be moved to definition types aspect?
     public static partial FunctionType ConcreteFunctionInvocableDefinition_Type(IConcreteFunctionInvocableDefinitionNode node)
-        => FunctionType(node.Parameters, node.Return);
-
-    private static FunctionType FunctionType(IEnumerable<INamedParameterNode> parameters, ITypeNode? @return)
     {
-        var parameterTypes = parameters.Select(p => p.ParameterType).ToFixedList();
-        var returnType = @return?.NamedType ?? DataType.Void;
+        var parameterTypes = node.Parameters.Select(p => p.ParameterType).ToFixedList();
+        var returnType = node.Return?.NamedType ?? DataType.Void;
         return new FunctionType(parameterTypes, returnType);
     }
 

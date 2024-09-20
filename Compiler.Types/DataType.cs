@@ -16,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(Type),
     typeof(UnknownType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public abstract class DataType : Pseudotype, IEquatable<DataType>
+public abstract class DataType : Pseudotype, IEquatable<DataType>, IMaybeType
 {
     // TODO move these to `Type`
     #region Standard Types
@@ -70,8 +70,7 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>
     public virtual bool AllowsWrite => false;
 
     /// <summary>
-    /// Whether this type in some way allows there to be write aliases to the to reachable object
-    /// graph.
+    /// Whether this type in some way allows there to be write-aliases to the reachable object graph.
     /// </summary>
     public virtual bool AllowsWriteAliases => false;
 

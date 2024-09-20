@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// `throw`, `return` and `break` which never produce a result. It is also
 /// used as the type of a `loop` statement with no breaks in it.
 /// </summary>
-public sealed class NeverType : EmptyType
+public sealed class NeverType : EmptyType, INonVoidType
 {
     #region Singleton
 

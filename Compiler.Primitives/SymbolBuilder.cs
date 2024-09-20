@@ -17,8 +17,8 @@ internal static class SymbolBuilder
     public static DataType Return(DataType type) => type;
 
     public static FunctionSymbol Function(Symbol containingSymbol, IdentifierName name, IFixedList<ParameterType> @params)
-        => new(containingSymbol, name, new FunctionType(@params, (DataType)DataType.Void));
+        => new(containingSymbol, name, new FunctionType(@params, DataType.Void));
 
-    public static FunctionSymbol Function(Symbol containingSymbol, IdentifierName name, IFixedList<ParameterType> @params, DataType @return)
+    public static FunctionSymbol Function(Symbol containingSymbol, IdentifierName name, IFixedList<ParameterType> @params, Type @return)
         => new(containingSymbol, name, new FunctionType(@params, @return));
 }

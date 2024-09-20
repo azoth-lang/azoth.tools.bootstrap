@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// was somehow invalid. The unknown type can't be directly used in code.
 /// No well typed program contains any expression with an unknown type.
 /// </summary>
-public sealed class UnknownType : DataType
+public sealed class UnknownType : DataType, IMaybeFunctionType
 {
     #region Singleton
     internal static readonly UnknownType Instance = new();
@@ -20,13 +20,6 @@ public sealed class UnknownType : DataType
 
     public override IMaybeExpressionAntetype ToAntetype() => IAntetype.Unknown;
 
-    /// <remarks><see cref="ToSourceCodeString"/> is used to format error messages. As such, it
-    /// is necessary to provide some output for the unknown type in case it appears in an error
-    /// message.</remarks>
-    public override string ToSourceCodeString() => "⧼unknown⧽";
-
-    public override string ToILString() => "⧼unknown⧽";
-
     #region Equals
     public override bool Equals(DataType? other)
         // The unknown type is a singleton, so reference equality suffices
@@ -34,4 +27,11 @@ public sealed class UnknownType : DataType
 
     public override int GetHashCode() => HashCode.Combine(typeof(UnknownType));
     #endregion
+
+    /// <remarks><see cref="ToSourceCodeString"/> is used to format error messages. As such, it
+    /// is necessary to provide some output for the unknown type in case it appears in an error
+    /// message.</remarks>
+    public override string ToSourceCodeString() => "⧼unknown⧽";
+
+    public override string ToILString() => "⧼unknown⧽";
 }
