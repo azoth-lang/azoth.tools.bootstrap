@@ -68,6 +68,8 @@ internal static partial class ExpressionAntetypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeExpressionAntetype FunctionName_Antetype(IFunctionNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IMaybeExpressionAntetype MethodName_Antetype(IMethodNameNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeExpressionAntetype FieldAccessExpression_Antetype(IFieldAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeExpressionAntetype VariableNameExpression_Antetype(IVariableNameExpressionNode node);

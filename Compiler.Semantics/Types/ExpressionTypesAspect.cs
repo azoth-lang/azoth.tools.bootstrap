@@ -701,6 +701,12 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node)
         => node.FlowStateBefore().Constant(node.ValueId);
 
+    public static partial DataType MethodName_Type(IMethodNameNode node)
+        => node.ReferencedDeclaration?.MethodGroupType ?? DataType.UnknownDataType;
+
+    public static partial IFlowState MethodName_FlowStateAfter(IMethodNameNode node)
+        => node.FlowStateBefore().Constant(node.ValueId);
+
     public static partial DataType FreezeExpression_Type(IFreezeExpressionNode node)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)

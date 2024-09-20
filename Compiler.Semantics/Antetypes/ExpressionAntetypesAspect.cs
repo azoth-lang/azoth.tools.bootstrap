@@ -353,6 +353,10 @@ internal static partial class ExpressionAntetypesAspect
         // TODO should probably use Antetype on the declaration
         => node.ReferencedDeclaration?.Type.ToAntetype() ?? IAntetype.Unknown;
 
+    public static partial IMaybeExpressionAntetype MethodName_Antetype(IMethodNameNode node)
+        // TODO should probably use Antetype on the declaration
+        => node.ReferencedDeclaration?.MethodGroupType.ToAntetype() ?? IAntetype.Unknown;
+
     public static partial IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node)
     {
         if (node.ShouldNotBeExpression()) return null;

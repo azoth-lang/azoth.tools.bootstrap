@@ -322,6 +322,11 @@ FunctionName <: NameExpression
 MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IStandardMethodDeclarationNode`};
+MethodName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
+    Context:Expression MethodName:`StandardName` TypeArguments:Type*
+    ReferencedDeclarations:{`IStandardMethodDeclarationNode`}
+    CompatibleDeclarations:{`IStandardMethodDeclarationNode`}
+    ReferencedDeclaration:`IStandardMethodDeclarationNode`?;
 FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;
 VariableNameExpression <: LocalBindingNameExpression, SimpleNameExpression

@@ -54,6 +54,8 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFlowState MethodName_FlowStateAfter(IMethodNameNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState FieldAccessExpression_FlowStateAfter(IFieldAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void FieldAccessExpression_Contribute_Diagnostics(IFieldAccessExpressionNode node, DiagnosticCollectionBuilder diagnostics);
@@ -183,6 +185,8 @@ internal static partial class ExpressionTypesAspect
     public static partial ContextualizedOverload? InitializerInvocationExpression_ContextualizedOverload(IInitializerInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial DataType FunctionName_Type(IFunctionNameNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial DataType MethodName_Type(IMethodNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial DataType FieldAccessExpression_Type(IFieldAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
