@@ -22,7 +22,7 @@
 // ---------- Name Expressions
 = UnresolvedMemberAccessExpression.↑.Diagnostics;
 + FunctionGroupName.new.Validate;
-// ✎ FunctionGroupName;
+✎ FunctionGroupName FunctionName;
 = FunctionGroupName.↑.Diagnostics;
 = UnknownIdentifierNameExpression.↑.Diagnostics;
 // TODO validate that AmbiguousMemberAccessExpression.ReferencedMembers is not empty

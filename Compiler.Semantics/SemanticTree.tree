@@ -265,11 +265,11 @@ ReturnExpression <: NeverTypedExpression
     = Syntax:`IReturnExpressionSyntax` Value:AmbiguousExpression?;
 
 // ---------- Invocation Expressions
-temp UnresolvedInvocationExpression <: AmbiguousExpression = Syntax:`IInvocationExpressionSyntax`
-    Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 InvocationExpression <: Expression;
+UnknownInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
+    Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 FunctionInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
-    FunctionGroup:FunctionGroupName Arguments:AmbiguousExpression*;
+    Function:FunctionName Arguments:AmbiguousExpression*;
 MethodInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     MethodGroup:MethodGroupName Arguments:AmbiguousExpression*;
 GetterInvocationExpression <: InvocationExpression, NameExpression = Syntax:`IMemberAccessExpressionSyntax`
@@ -282,8 +282,6 @@ FunctionReferenceInvocationExpression <: InvocationExpression = Syntax:`IInvocat
     Expression:Expression Arguments:AmbiguousExpression*;
 InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
     InitializerGroup:InitializerGroupName Arguments:AmbiguousExpression*;
-UnknownInvocationExpression <: InvocationExpression = Syntax:`IInvocationExpressionSyntax`
-    Expression:AmbiguousExpression Arguments:AmbiguousExpression*;
 
 // ---------- Ambiguous Name Expressions
 // TODO consider renaming to `UnresolvedNameExpression` because the final tree could have a bound
@@ -318,7 +316,9 @@ FunctionGroupName <: NameExpression
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`};
 FunctionName <: NameExpression
     = Syntax:`INameExpressionSyntax` Context:NameExpression?  FunctionName:`StandardName` TypeArguments:Type*
-    ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`} ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
+    ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`}
+    CompatibleDeclarations:{`IFunctionInvocableDeclarationNode`}
+    ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
 MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IStandardMethodDeclarationNode`};

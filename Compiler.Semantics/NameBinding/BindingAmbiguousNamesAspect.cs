@@ -23,7 +23,7 @@ internal static partial class BindingAmbiguousNamesAspect
             return IUnqualifiedNamespaceNameNode.Create(node.Syntax, referencedNamespaces);
 
         if (node.ReferencedDeclarations.TryAllOfType<IFunctionInvocableDeclarationNode>(out var referencedFunctions))
-            return new FunctionGroupNameNode(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(), referencedFunctions);
+            return IFunctionGroupNameNode.Create(node.Syntax, null, node.Name, FixedList.Empty<ITypeNode>(), referencedFunctions);
 
         if (node.ReferencedDeclarations.TrySingle() is not null and var referencedDeclaration)
             switch (referencedDeclaration)
@@ -70,7 +70,7 @@ internal static partial class BindingAmbiguousNamesAspect
             return IQualifiedNamespaceNameNode.Create(node.Syntax, context, referencedNamespaces);
 
         if (members.TryAllOfType<IFunctionDeclarationNode>(out var referencedFunctions))
-            return new FunctionGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments,
+            return IFunctionGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments,
                 referencedFunctions);
 
         if (members.TrySingle() is ITypeDeclarationNode referencedType)
@@ -89,7 +89,7 @@ internal static partial class BindingAmbiguousNamesAspect
             return null;
 
         if (members.TryAllOfType<IAssociatedFunctionDeclarationNode>(out var referencedFunctions))
-            return new FunctionGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments,
+            return IFunctionGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments,
                 referencedFunctions);
 
         if (members.TryAllOfType<IInitializerDeclarationNode>(out var referencedInitializers))
@@ -159,22 +159,22 @@ internal static partial class BindingAmbiguousNamesAspect
     //=> Requires.That(!ReferencedDeclarations.IsEmpty, nameof(referencedDeclarations),
     //    "Must be at least one referenced declaration");
 
-    public static IAmbiguousExpressionNode? FunctionGroupName_Rewrite(IFunctionGroupNameNode node)
+    public static partial INameExpressionNode? FunctionGroupName_Rewrite_FunctionName(IFunctionGroupNameNode node)
     {
-        // TODO develop a better check for names that don't need resolved
-        if (node.Parent is IFunctionNameNode or IUnresolvedInvocationExpressionNode or IFunctionInvocationExpressionNode
-           || node.ReferencedDeclarations.Count > 1)
+        if (node.CompatibleDeclarations.Count > 1)
+            // TODO should this be used instead?
+            //if (node.ReferencedDeclaration is not null)
             return null;
 
         // if there is only one declaration, then it isn't ambiguous
         return IFunctionNameNode.Create(node.Syntax, node.Context, node.FunctionName, node.TypeArguments,
-            node.ReferencedDeclarations, node.ReferencedDeclarations.TrySingle());
+            node.ReferencedDeclarations, node.CompatibleDeclarations, node.ReferencedDeclaration);
     }
 
     public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO develop a better check that this node is ambiguous
-        if (node.Parent is IFunctionNameNode or IUnresolvedInvocationExpressionNode or IFunctionInvocationExpressionNode)
+        if (node.Parent is IUnknownInvocationExpressionNode)
             return;
 
         // TODO this should be based on how many compatible declarations there are

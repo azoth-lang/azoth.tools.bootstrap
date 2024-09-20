@@ -342,13 +342,13 @@ public static class ISemanticNodeExtensions
                 if (n.TempValue is not null)
                     yield return n.TempValue;
                 yield break;
-            case IUnresolvedInvocationExpressionNode n:
+            case IUnknownInvocationExpressionNode n:
                 yield return n.TempExpression;
                 foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
             case IFunctionInvocationExpressionNode n:
-                yield return n.FunctionGroup;
+                yield return n.Function;
                 foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;
@@ -371,11 +371,6 @@ public static class ISemanticNodeExtensions
                 yield break;
             case IInitializerInvocationExpressionNode n:
                 yield return n.InitializerGroup;
-                foreach (var child in n.TempArguments)
-                    yield return child;
-                yield break;
-            case IUnknownInvocationExpressionNode n:
-                yield return n.TempExpression;
                 foreach (var child in n.TempArguments)
                     yield return child;
                 yield break;

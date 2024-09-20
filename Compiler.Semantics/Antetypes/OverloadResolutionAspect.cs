@@ -1,156 +1,25 @@
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
+using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
+// TODO there are a lot of places where binding errors need to be reported. It seems like that should be consolidated
 internal static partial class OverloadResolutionAspect
 {
-    public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionGroupNameExpression(IUnresolvedInvocationExpressionNode node)
-    {
-        if (node.Expression is not IFunctionGroupNameNode function) return null;
-
-        return IFunctionInvocationExpressionNode.Create(node.Syntax, function, node.CurrentArguments);
-    }
-
-    public static partial IFixedSet<IFunctionInvocableDeclarationNode> FunctionInvocationExpression_CompatibleDeclarations(
-        IFunctionInvocationExpressionNode node)
-    {
-        var arguments = node.Arguments.Select(AntetypeIfKnown);
-        var argumentAntetypes = ArgumentAntetypes.ForFunction(arguments);
-        return node.FunctionGroup.ReferencedDeclarations
-                   .Select(AntetypeContextualizedOverload.Create)
-                   .Where(o => o.CompatibleWith(argumentAntetypes))
-                   .Select(o => o.Declaration).ToFixedSet();
-    }
-
-    public static partial IFunctionInvocableDeclarationNode? FunctionInvocationExpression_ReferencedDeclaration(
-        IFunctionInvocationExpressionNode node)
-        => node.CompatibleDeclarations.TrySingle();
-
-    public static partial void FunctionInvocationExpression_Contribute_Diagnostics(
-        IFunctionInvocationExpressionNode node,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.ReferencedDeclaration is not null)
-            return;
-
-        switch (node.CompatibleDeclarations.Count)
-        {
-            case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindFunction(node.File, node.Syntax));
-                break;
-            case 1:
-                throw new UnreachableException("ReferencedDeclaration would not be null");
-            default:
-                diagnostics.Add(NameBindingError.AmbiguousFunctionCall(node.File, node.Syntax));
-                break;
-        }
-    }
-
-    public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_MethodGroupNameExpression(IUnresolvedInvocationExpressionNode node)
-    {
-        if (node.Expression is not IMethodGroupNameNode method) return null;
-
-        return new MethodInvocationExpressionNode(node.Syntax, method, node.CurrentArguments);
-    }
-
-    public static partial IFixedSet<IStandardMethodDeclarationNode> MethodInvocationExpression_CompatibleDeclarations(
-        IMethodInvocationExpressionNode node)
-    {
-        var contextAntetype = node.MethodGroup.Context.Antetype;
-        var arguments = node.Arguments.Select(AntetypeIfKnown);
-        var argumentAntetypes = ArgumentAntetypes.ForMethod(contextAntetype, arguments);
-        return node.MethodGroup.ReferencedDeclarations
-                   .Select(d => AntetypeContextualizedOverload.Create(contextAntetype, d))
-                   .Where(o => o.CompatibleWith(argumentAntetypes))
-                   .Select(o => o.Declaration).ToFixedSet();
-    }
-
     private static IMaybeExpressionAntetype AntetypeIfKnown(IExpressionNode? node)
     {
-        if (node is not null && !node.ShouldNotBeExpression())
-            return node.Antetype;
+        if (node is not null && !node.ShouldNotBeExpression()) return node.Antetype;
         return IAntetype.Unknown;
     }
 
-    public static partial IStandardMethodDeclarationNode? MethodInvocationExpression_ReferencedDeclaration(
-        IMethodInvocationExpressionNode node)
-        => node.CompatibleDeclarations.TrySingle();
-
-    public static partial void MethodInvocationExpression_Contribute_Diagnostics(
-        IMethodInvocationExpressionNode node,
-        DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.ReferencedDeclaration is not null) return;
-
-        switch (node.CompatibleDeclarations.Count)
-        {
-            case 0:
-                diagnostics.Add(NameBindingError.CouldNotBindMethod(node.File, node.Syntax));
-                break;
-            case 1:
-                throw new UnreachableException("ReferencedDeclaration would not be null");
-            default:
-                diagnostics.Add(NameBindingError.AmbiguousMethodCall(node.File, node.Syntax));
-                break;
-        }
-    }
-
-    public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_TypeNameExpression(
-        IUnresolvedInvocationExpressionNode node)
-    {
-        if (node.Expression is not ITypeNameExpressionNode context) return null;
-
-        // Rewrite to insert an initializer group name node between the type name expression and the
-        // invocation expression.
-        var referencedDeclarations = context.ReferencedDeclaration.Members.OfType<IInitializerDeclarationNode>()
-                                            .Where(c => c.Name is null).ToFixedSet();
-
-        var initializerGroupName = IInitializerGroupNameNode.Create(context.Syntax, context, null, referencedDeclarations);
-        return IUnresolvedInvocationExpressionNode.Create(node.Syntax, initializerGroupName, node.CurrentArguments);
-    }
-
-    public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_InitializerGroupNameExpression(
-        IUnresolvedInvocationExpressionNode node)
-    {
-        if (node.Expression is not IInitializerGroupNameNode initializer)
-            return null;
-
-        return IInitializerInvocationExpressionNode.Create(node.Syntax, initializer, node.CurrentArguments);
-    }
-
-    public static partial IFixedSet<IInitializerDeclarationNode> InitializerInvocationExpression_CompatibleDeclarations(
-        IInitializerInvocationExpressionNode node)
-    {
-        var initializingAntetype = node.InitializerGroup.InitializingAntetype;
-        var arguments = node.Arguments.Select(AntetypeIfKnown);
-        var argumentAntetypes = ArgumentAntetypes.ForInitializer(arguments);
-        return node.InitializerGroup.ReferencedDeclarations
-                   .Select(d => AntetypeContextualizedOverload.Create(initializingAntetype, d))
-                   .Where(o => o.CompatibleWith(argumentAntetypes))
-                   .Select(o => o.Declaration).ToFixedSet();
-    }
-
-    public static partial IInitializerDeclarationNode? InitializerInvocationExpression_ReferencedDeclaration(
-        IInitializerInvocationExpressionNode node)
-        => node.CompatibleDeclarations.TrySingle();
-
-    public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_FunctionReferenceExpression(IUnresolvedInvocationExpressionNode node)
-    {
-        if (node.Expression is not { Antetype: FunctionAntetype } expression)
-            return null;
-
-        return IFunctionReferenceInvocationExpressionNode.Create(node.Syntax, expression, node.CurrentArguments);
-    }
-
-    public static partial IAmbiguousExpressionNode? UnresolvedInvocationExpression_Rewrite_ToUnknown(IUnresolvedInvocationExpressionNode node)
-        => IUnknownInvocationExpressionNode.Create(node.Syntax, node.CurrentExpression, node.CurrentArguments);
-
+    #region Expressions
     public static partial IFixedSet<IConstructorDeclarationNode> NewObjectExpression_CompatibleConstructors(
         INewObjectExpressionNode node)
     {
@@ -166,7 +35,9 @@ internal static partial class OverloadResolutionAspect
     public static partial IConstructorDeclarationNode? NewObjectExpression_ReferencedConstructor(INewObjectExpressionNode node)
         => node.CompatibleConstructors.TrySingle();
 
-    public static partial void NewObjectExpression_Contribute_Diagnostics(INewObjectExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    public static partial void NewObjectExpression_Contribute_Diagnostics(
+        INewObjectExpressionNode node,
+        DiagnosticCollectionBuilder diagnostics)
     {
         switch (node.ConstructingAntetype)
         {
@@ -174,7 +45,8 @@ internal static partial class OverloadResolutionAspect
                 // Error should be reported elsewhere
                 return;
             case NominalAntetype { DeclaredAntetype.IsAbstract: true }:
-                diagnostics.Add(OtherSemanticError.CannotConstructAbstractType(node.File, node.ConstructingType.Syntax));
+                diagnostics.Add(
+                    OtherSemanticError.CannotConstructAbstractType(node.File, node.ConstructingType.Syntax));
                 return;
         }
 
@@ -193,4 +65,206 @@ internal static partial class OverloadResolutionAspect
                 break;
         }
     }
+    #endregion
+
+    #region Invocation Expressions
+    public static partial IMaybeExpressionAntetype? UnknownInvocationExpression_Expression_ExpectedAntetype(IUnknownInvocationExpressionNode node)
+    {
+        var expectedReturnAntetype = node.ExpectedAntetype?.ToNonConstValueType() ?? IAntetype.Unknown;
+        return new FunctionAntetype(node.Arguments.Select(NonVoidAntetypeIfKnown),
+            // TODO this is odd, but the return antetype will be ignored
+            NonVoidAntetypeIfKnown(expectedReturnAntetype));
+    }
+
+    private static INonVoidAntetype NonVoidAntetypeIfKnown(IExpressionNode? node)
+        => NonVoidAntetypeIfKnown(AntetypeIfKnown(node));
+
+    private static INonVoidAntetype NonVoidAntetypeIfKnown(IMaybeExpressionAntetype maybeExpressionAntetype)
+    {
+        if (maybeExpressionAntetype is INonVoidAntetype antetype) return antetype;
+        // This is a little odd, but if the parameter type is not known, then using `never` will
+        // cause nothing to match except for `never` itself.
+        return IAntetype.Never;
+    }
+
+    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_FunctionNameExpression(IUnknownInvocationExpressionNode node)
+    {
+        if (node.Expression is not IFunctionNameNode function)
+            return null;
+
+        return IFunctionInvocationExpressionNode.Create(node.Syntax, function, node.CurrentArguments);
+    }
+
+    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_MethodGroupNameExpression(IUnknownInvocationExpressionNode node)
+    {
+        if (node.Expression is not IMethodGroupNameNode method) return null;
+
+        return new MethodInvocationExpressionNode(node.Syntax, method, node.CurrentArguments);
+    }
+
+    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_TypeNameExpression(IUnknownInvocationExpressionNode node)
+    {
+        if (node.Expression is not ITypeNameExpressionNode context) return null;
+
+        // Rewrite to insert an initializer group name node between the type name expression and the
+        // invocation expression.
+        var referencedDeclarations = context.ReferencedDeclaration.Members.OfType<IInitializerDeclarationNode>()
+                                            .Where(c => c.Name is null).ToFixedSet();
+
+        var initializerGroupName = IInitializerGroupNameNode.Create(context.Syntax, context, null, referencedDeclarations);
+        return IUnknownInvocationExpressionNode.Create(node.Syntax, initializerGroupName, node.CurrentArguments);
+    }
+
+    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_InitializerGroupNameExpression(IUnknownInvocationExpressionNode node)
+    {
+        if (node.Expression is not IInitializerGroupNameNode initializer)
+            return null;
+
+        return IInitializerInvocationExpressionNode.Create(node.Syntax, initializer, node.CurrentArguments);
+    }
+
+    public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_FunctionReferenceExpression(IUnknownInvocationExpressionNode node)
+    {
+        if (node.Expression is not { Antetype: FunctionAntetype } expression)
+            return null;
+
+        return IFunctionReferenceInvocationExpressionNode.Create(node.Syntax, expression, node.CurrentArguments);
+    }
+
+    public static partial void UnknownInvocationExpression_Contribute_Diagnostics(IUnknownInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        switch (node.Expression)
+        {
+            case IFunctionGroupNameNode functionGroup:
+                ContributeFunctionBindingDiagnostics(functionGroup.ReferencedDeclaration,
+                    functionGroup.CompatibleDeclarations, node.File, node.Syntax, diagnostics);
+                break;
+            case IFunctionNameNode function:
+                ContributeFunctionBindingDiagnostics(function.ReferencedDeclaration,
+                    function.CompatibleDeclarations, node.File, node.Syntax, diagnostics);
+                break;
+            case IUnknownNameExpressionNode:
+            case IUnknownInvocationExpressionNode:
+                // These presumably report their own errors and should be ignored here
+                break;
+            // TODO other cases
+            default:
+                diagnostics.Add(NameBindingError.NotImplemented(node.File, node.Syntax.Span,
+                    "Invocation not properly bound. Unknown call."));
+                break;
+        }
+    }
+
+    private static void ContributeFunctionBindingDiagnostics(
+        IFunctionInvocableDeclarationNode? referencedDeclaration,
+        IFixedSet<IFunctionInvocableDeclarationNode> compatibleDeclarations,
+        CodeFile file,
+        IInvocationExpressionSyntax syntax,
+        DiagnosticCollectionBuilder diagnostics)
+    {
+        if (referencedDeclaration is not null) return;
+
+        switch (compatibleDeclarations.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindFunction(file, syntax));
+                break;
+            case 1:
+                throw new UnreachableException("ReferencedDeclaration would not be null");
+            default:
+                diagnostics.Add(NameBindingError.AmbiguousFunctionCall(file, syntax));
+                break;
+        }
+    }
+
+    public static partial void FunctionInvocationExpression_Contribute_Diagnostics(IFunctionInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        var function = node.Function;
+        ContributeFunctionBindingDiagnostics(function.ReferencedDeclaration,
+            function.CompatibleDeclarations, node.File, node.Syntax, diagnostics);
+    }
+
+    public static partial IFixedSet<IStandardMethodDeclarationNode> MethodInvocationExpression_CompatibleDeclarations(IMethodInvocationExpressionNode node)
+    {
+        var contextAntetype = node.MethodGroup.Context.Antetype;
+        var arguments = node.Arguments.Select(AntetypeIfKnown);
+        var argumentAntetypes = ArgumentAntetypes.ForMethod(contextAntetype, arguments);
+        return node.MethodGroup.ReferencedDeclarations
+                   .Select(d => AntetypeContextualizedOverload.Create(contextAntetype, d))
+                   .Where(o => o.CompatibleWith(argumentAntetypes)).Select(o => o.Declaration).ToFixedSet();
+    }
+
+    public static partial IStandardMethodDeclarationNode? MethodInvocationExpression_ReferencedDeclaration(IMethodInvocationExpressionNode node)
+        => node.CompatibleDeclarations.TrySingle();
+
+    public static partial void MethodInvocationExpression_Contribute_Diagnostics(IMethodInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.ReferencedDeclaration is not null)
+            return;
+
+        switch (node.CompatibleDeclarations.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindMethod(node.File, node.Syntax));
+                break;
+            case 1:
+                throw new UnreachableException("ReferencedDeclaration would not be null");
+            default:
+                diagnostics.Add(NameBindingError.AmbiguousMethodCall(node.File, node.Syntax));
+                break;
+        }
+    }
+
+    public static partial IFixedSet<IInitializerDeclarationNode> InitializerInvocationExpression_CompatibleDeclarations(IInitializerInvocationExpressionNode node)
+    {
+        var initializingAntetype = node.InitializerGroup.InitializingAntetype;
+        var arguments = node.Arguments.Select(AntetypeIfKnown);
+        var argumentAntetypes = ArgumentAntetypes.ForInitializer(arguments);
+        return node.InitializerGroup.ReferencedDeclarations
+                   .Select(d => AntetypeContextualizedOverload.Create(initializingAntetype, d))
+                   .Where(o => o.CompatibleWith(argumentAntetypes))
+                   .Select(o => o.Declaration).ToFixedSet();
+    }
+
+    public static partial IInitializerDeclarationNode? InitializerInvocationExpression_ReferencedDeclaration(IInitializerInvocationExpressionNode node)
+        => node.CompatibleDeclarations.TrySingle();
+    #endregion
+
+    #region Name Expressions
+    public static partial IFixedSet<IFunctionInvocableDeclarationNode> FunctionGroupName_CompatibleDeclarations(IFunctionGroupNameNode node)
+    {
+        if (node.ExpectedAntetype is not FunctionAntetype expectedAntetype) return [];
+
+        var argumentAntetypes = ArgumentAntetypes.ForFunction(expectedAntetype.Parameters);
+        return node.ReferencedDeclarations.Select(AntetypeContextualizedOverload.Create)
+                   .Where(o => o.CompatibleWith(argumentAntetypes)).Select(o => o.Declaration).ToFixedSet();
+    }
+
+    public static partial IFunctionInvocableDeclarationNode? FunctionGroupName_ReferencedDeclaration(IFunctionGroupNameNode node)
+        => node.CompatibleDeclarations.TrySingle();
+
+    public static partial void FunctionGroupName_Contribute_Diagnostics(
+        IFunctionGroupNameNode node,
+        DiagnosticCollectionBuilder diagnostics)
+    {
+        if (node.FunctionName == "non_optional_parameter") Debugger.Break();
+
+        if (node.ReferencedDeclaration is not null
+            // errors will be reported by the parent in this case
+            || node.Parent is IUnknownInvocationExpressionNode)
+            return;
+
+        switch (node.CompatibleDeclarations.Count)
+        {
+            case 0:
+                diagnostics.Add(NameBindingError.CouldNotBindFunctionName(node.File, node.Syntax));
+                break;
+            case 1:
+                throw new UnreachableException("ReferencedDeclaration would not be null");
+            default:
+                diagnostics.Add(NameBindingError.AmbiguousFunctionName(node.File, node.Syntax));
+                break;
+        }
+    }
+    #endregion
 }

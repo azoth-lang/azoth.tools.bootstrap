@@ -54,7 +54,6 @@
 = ReturnExpression.Value.ExpectedAntetype => ExpectedReturnType?.ToAntetype();
 
 // ---------- Invocation Expressions
-= UnresolvedInvocationExpression.Expression.ExpectedAntetype => null;
 = UnknownInvocationExpression.Antetype => IAntetype.Unknown;
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = FunctionInvocationExpression.Arguments[index].ExpectedAntetype

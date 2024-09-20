@@ -117,10 +117,10 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 ↑ ForeachExpression.LexicalScope: `LexicalScope`;
 
 // ---------- Invocation Expressions
-= UnresolvedInvocationExpression.Expression.**.ContainingLexicalScope => ContainingLexicalScope();
-= UnresolvedInvocationExpression.Arguments[0].**.ContainingLexicalScope
+= UnknownInvocationExpression.Expression.**.ContainingLexicalScope => ContainingLexicalScope();
+= UnknownInvocationExpression.Arguments[0].**.ContainingLexicalScope
     => TempExpression.FlowLexicalScope().True;
-= UnresolvedInvocationExpression.Arguments[argumentIndex].**.ContainingLexicalScope
+= UnknownInvocationExpression.Arguments[argumentIndex].**.ContainingLexicalScope
     => TempArguments[argumentIndex - 1].FlowLexicalScope().True;
 = FunctionInvocationExpression.Arguments[0].**.ContainingLexicalScope
     => base.Inherited_ContainingLexicalScope(child, descendant, ctx);

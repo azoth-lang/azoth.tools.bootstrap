@@ -101,7 +101,7 @@
 = ReturnExpression.ControlFlowNext;
 
 // ---------- Invocation Expressions
-= FunctionInvocationExpression.FunctionGroup.**.ControlFlowFollowing()
+= FunctionInvocationExpression.Function.**.ControlFlowFollowing()
     => !TempArguments.IsEmpty
         ? ControlFlowSet.CreateNormal(Arguments[0])
         : base.Inherited_ControlFlowFollowing(child, descendant, ctx);

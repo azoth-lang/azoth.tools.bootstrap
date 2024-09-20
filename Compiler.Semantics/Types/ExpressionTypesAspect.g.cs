@@ -146,6 +146,8 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState ReturnExpression_FlowStateAfter(IReturnExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFlowState UnknownInvocationExpression_FlowStateAfter(IUnknownInvocationExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState FunctionInvocationExpression_FlowStateAfter(IFunctionInvocationExpressionNode node);

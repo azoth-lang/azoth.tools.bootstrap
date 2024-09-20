@@ -80,12 +80,12 @@ internal static partial class ExpressionTypesAspect
            ?? IFlowState.Empty;
 
     public static partial DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
-        => node.ReferencedDeclaration?.Type.Return.Type ?? DataType.UnknownDataType;
+        => node.Function.ReferencedDeclaration?.Type.Return.Type ?? DataType.UnknownDataType;
 
     public static partial ContextualizedOverload? FunctionInvocationExpression_ContextualizedOverload(
         IFunctionInvocationExpressionNode node)
-        => node.ReferencedDeclaration is not null
-            ? ContextualizedOverload.Create(node.ReferencedDeclaration)
+        => node.Function.ReferencedDeclaration is not null
+            ? ContextualizedOverload.Create(node.Function.ReferencedDeclaration)
             : null;
 
     public static partial IFlowState FunctionInvocationExpression_FlowStateAfter(IFunctionInvocationExpressionNode node)
@@ -450,6 +450,14 @@ internal static partial class ExpressionTypesAspect
         // The flow state just before the initializer is called is the state after all arguments have evaluated
         var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
         var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.Arguments);
+        return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
+    }
+
+    public static partial IFlowState UnknownInvocationExpression_FlowStateAfter(IUnknownInvocationExpressionNode node)
+    {
+        // The flow state just before the invocation happens is the state after all arguments have evaluated
+        var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
+        var argumentValueIds = ArgumentValueIds(null, null, node.Arguments);
         return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 

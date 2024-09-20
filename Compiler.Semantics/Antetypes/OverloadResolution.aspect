@@ -1,5 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 ◊name OverloadResolutionAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
@@ -11,15 +12,14 @@
 = NewObjectExpression.↑.Diagnostics;
 
 // ---------- Invocation Expressions
-✎ UnresolvedInvocationExpression FunctionGroupNameExpression;
-✎ UnresolvedInvocationExpression MethodGroupNameExpression;
-✎ UnresolvedInvocationExpression TypeNameExpression;
-✎ UnresolvedInvocationExpression InitializerGroupNameExpression;
-✎ UnresolvedInvocationExpression FunctionReferenceExpression;
-✎ UnresolvedInvocationExpression ToUnknown;
+= UnknownInvocationExpression.Expression.ExpectedAntetype;
+✎ UnknownInvocationExpression FunctionNameExpression;
+✎ UnknownInvocationExpression MethodGroupNameExpression;
+✎ UnknownInvocationExpression TypeNameExpression;
+✎ UnknownInvocationExpression InitializerGroupNameExpression;
+✎ UnknownInvocationExpression FunctionReferenceExpression;
+= UnknownInvocationExpression.↑.Diagnostics;
 
-↑ FunctionInvocationExpression.CompatibleDeclarations: {FunctionInvocableDeclaration};
-↑ FunctionInvocationExpression.ReferencedDeclaration: FunctionInvocableDeclaration?;
 = FunctionInvocationExpression.↑.Diagnostics;
 
 ↑ MethodInvocationExpression.CompatibleDeclarations: {StandardMethodDeclaration};
@@ -27,4 +27,9 @@
 = MethodInvocationExpression.↑.Diagnostics;
 
 ↑ InitializerInvocationExpression.CompatibleDeclarations: {InitializerDeclaration};
-↑ InitializerInvocationExpression.ReferencedDeclaration: InitializerDeclaration?
+↑ InitializerInvocationExpression.ReferencedDeclaration: InitializerDeclaration?;
+
+// ---------- Name Expressions
+↑ FunctionGroupName.CompatibleDeclarations: {FunctionInvocableDeclaration};
+↑ FunctionGroupName.ReferencedDeclaration: FunctionInvocableDeclaration?;
+= FunctionGroupName.↑.Diagnostics;

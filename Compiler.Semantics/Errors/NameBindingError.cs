@@ -74,4 +74,16 @@ public static class NameBindingError
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             5010, $"Using directive refers to namespace `{ns}` which does not exist");
     }
+
+    public static Diagnostic CouldNotBindFunctionName(CodeFile file, INameExpressionSyntax groupName)
+    {
+        return new(file, groupName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 5006,
+            $"Could not find function with the name `{groupName}` and compatible arguments.");
+    }
+
+    public static Diagnostic AmbiguousFunctionName(CodeFile file, INameExpressionSyntax groupName)
+    {
+        return new(file, groupName.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis, 5007,
+            $"Function name `{groupName}` is ambiguous.");
+    }
 }

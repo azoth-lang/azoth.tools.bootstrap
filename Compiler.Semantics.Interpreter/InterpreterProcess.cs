@@ -534,7 +534,7 @@ public class InterpreterProcess
             case IFunctionInvocationExpressionNode exp:
             {
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
-                var functionSymbol = exp.ReferencedDeclaration!.Symbol;
+                var functionSymbol = exp.Function.ReferencedDeclaration!.Symbol;
                 if (functionSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(functionSymbol, arguments).ConfigureAwait(false);
                 return await CallFunctionAsync(functions[functionSymbol], arguments).ConfigureAwait(false);

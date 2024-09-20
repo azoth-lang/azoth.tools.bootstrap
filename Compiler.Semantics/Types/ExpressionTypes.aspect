@@ -143,7 +143,7 @@
 = ReturnExpression.↑.Diagnostics;
 
 // ---------- Invocation Expressions
-= UnresolvedInvocationExpression.Expression.ExpectedType => null;
+= UnknownInvocationExpression.Expression.ExpectedType => null;
 ↓ FunctionInvocationExpression.FlowStateBefore(): `IFlowState`;
 = FunctionInvocationExpression.Arguments[0].**.FlowStateBefore()
     => base.Inherited_FlowStateBefore(child, descendant, ctx);
@@ -187,8 +187,12 @@
 ↑ InitializerInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
 = InitializerInvocationExpression.Arguments[index].ExpectedType
     => ContextualizedOverload?.ParameterTypes[index].Type;
+↓ UnknownInvocationExpression.FlowStateBefore(): `IFlowState`;
+= UnknownInvocationExpression.Arguments[0].**.FlowStateBefore()
+    => Expression?.FlowStateAfter ?? base.Inherited_FlowStateBefore(child, descendant, ctx);
+= UnknownInvocationExpression.Arguments[index].**.FlowStateBefore()
+    => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
 = UnknownInvocationExpression.Type => DataType.Unknown;
-↑ UnknownInvocationExpression.FlowStateAfter: `IFlowState` => throw new NotImplementedException();
 
 // ---------- Name Expressions
 ↓ NameExpression.FlowStateBefore(): `IFlowState`;
@@ -205,11 +209,9 @@
 = FieldAccessExpression.FlowStateAfter;
 = FieldAccessExpression.↑.Diagnostics;
 = VariableNameExpression.FlowStateAfter;
-↓ VariableNameExpression.FlowStateBefore(): `IFlowState`;
 = TypeNameExpression.Type => DataType.Unknown;
 = InitializerGroupName.Type => throw new NotImplementedException();
 ↑ SpecialTypeNameExpression.Type:`UnknownType` => DataType.Unknown;
-↓ SelfExpression.FlowStateBefore(): `IFlowState`;
 ↑ SelfExpression.Pseudotype: `Pseudotype`;
 = SelfExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => DataType.Unknown;

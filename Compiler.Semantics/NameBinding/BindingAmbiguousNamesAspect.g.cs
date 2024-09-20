@@ -36,4 +36,5 @@ internal static partial class BindingAmbiguousNamesAspect
     public static partial INameExpressionNode? UnresolvedMemberAccessExpression_Rewrite_TypeNameExpressionContext(IUnresolvedMemberAccessExpressionNode node);
     public static partial INameExpressionNode? UnresolvedMemberAccessExpression_Rewrite_ExpressionContext(IUnresolvedMemberAccessExpressionNode node);
     public static partial IAmbiguousNameExpressionNode? IdentifierNameExpression_Rewrite(IIdentifierNameExpressionNode node);
+    public static partial INameExpressionNode? FunctionGroupName_Rewrite_FunctionName(IFunctionGroupNameNode node);
 }

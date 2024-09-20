@@ -46,13 +46,10 @@ internal static partial class ControlFlowAspect
     public static partial ControlFlowSet Expression_ControlFlowNext(IExpressionNode node)
         => node.ControlFlowFollowing();
 
-    public static partial ControlFlowSet FunctionInvocationExpression_ControlFlowNext(
-        IFunctionInvocationExpressionNode node)
-        // TODO this shouldn't just be a function group, but instead a function name.
-        => ControlFlowSet.CreateNormal(node.FunctionGroup);
+    public static partial ControlFlowSet FunctionInvocationExpression_ControlFlowNext(IFunctionInvocationExpressionNode node)
+        => ControlFlowSet.CreateNormal(node.Function);
 
-    public static partial ControlFlowSet FunctionReferenceInvocationExpression_ControlFlowNext(
-        IFunctionReferenceInvocationExpressionNode node)
+    public static partial ControlFlowSet FunctionReferenceInvocationExpression_ControlFlowNext(IFunctionReferenceInvocationExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
 
     public static partial ControlFlowSet MethodInvocationExpression_ControlFlowNext(
