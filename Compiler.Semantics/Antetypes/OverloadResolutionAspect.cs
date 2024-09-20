@@ -67,7 +67,7 @@ internal static partial class OverloadResolutionAspect
     #endregion
 
     #region Invocation Expressions
-    public static partial IMaybeExpressionAntetype? UnknownInvocationExpression_Expression_ExpectedAntetype(IUnknownInvocationExpressionNode node)
+    public static partial IMaybeAntetype? UnknownInvocationExpression_Expression_ExpectedAntetype(IUnknownInvocationExpressionNode node)
     {
         var expectedReturnAntetype = node.ExpectedAntetype?.ToNonConstValueType() ?? IAntetype.Unknown;
         return new FunctionAntetype(node.Arguments.Select(NonVoidAntetypeIfKnown),

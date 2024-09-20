@@ -358,9 +358,10 @@ internal static partial class ExpressionAntetypesAspect
         => node.ReferencedDeclaration?.MethodGroupType.ToAntetype() ?? IAntetype.Unknown;
 
     // TODO this is strange and maybe a hack
-    public static partial IMaybeExpressionAntetype? MethodName_Context_ExpectedAntetype(IMethodNameNode node)
+    public static partial IMaybeAntetype? MethodName_Context_ExpectedAntetype(IMethodNameNode node)
         // TODO it would be better if this didn't depend on types, but only on antetypes
-        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype();
+        => (node.Parent as IMethodInvocationExpressionNode)
+           ?.ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype().ToNonConstValueType();
 
     public static partial IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node)
     {

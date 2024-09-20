@@ -16,7 +16,7 @@ internal static partial class ExpressionAntetypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void UnaryOperatorExpression_Contribute_Diagnostics(IUnaryOperatorExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeExpressionAntetype? MethodName_Context_ExpectedAntetype(IMethodNameNode node);
+    public static partial IMaybeAntetype? MethodName_Context_ExpectedAntetype(IMethodNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void AwaitExpression_Contribute_Diagnostics(IAwaitExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

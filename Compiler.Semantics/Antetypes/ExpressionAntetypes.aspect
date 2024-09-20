@@ -5,16 +5,18 @@
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
+// TODO ExpectedAntetype could really be INonVoidAntetype?, but regular types need to be made more strict first.
+
 // ---------- Special Parts
 ↑ BlockOrResult.Antetype: `IMaybeAntetype`;
 
 // ---------- Function Parts
-↓ ExpressionBody.ExpectedAntetype: `IMaybeExpressionAntetype`?;
+↓ ExpressionBody.ExpectedAntetype: `IMaybeAntetype`?;
 = ExpressionBody.ResultStatement.ExpectedAntetype => ExpectedAntetype;
 
 // ---------- Statements
 ↑ Statement.ResultAntetype: `IMaybeAntetype`? => null;
-↓ ResultStatement.ExpectedAntetype: `IMaybeExpressionAntetype`?;
+↓ ResultStatement.ExpectedAntetype: `IMaybeAntetype`?;
 = ResultStatement.Expression.ExpectedAntetype => ExpectedAntetype;
 = ResultStatement.ResultAntetype => Antetype;
 // The expected antetype for the initializer is the binding antetype since it needs to
@@ -28,17 +30,17 @@
 // ---------- Expressions
 // TODO remove once all nodes properly provide the expected antetype
 = AmbiguousExpression.*.ExpectedAntetype => null;
-↓ Expression.ExpectedAntetype: `IMaybeExpressionAntetype`?;
+↓ Expression.ExpectedAntetype: `IMaybeAntetype`?;
 ↑ Expression.Antetype: `IMaybeExpressionAntetype`;
 ✎ Expression ImplicitConversion;
 ↑ BlockExpression.Antetype: `IMaybeAntetype`;
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = NewObjectExpression.Arguments[index].ExpectedAntetype
-    => ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype();
+    => ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
 = NeverTypedExpression.Antetype => IAntetype.Never;
 
 // ---------- Operator Expressions
-= AssignmentExpression.RightOperand.ExpectedAntetype => LeftOperand?.Antetype;
+= AssignmentExpression.RightOperand.ExpectedAntetype => LeftOperand?.Antetype.ToNonConstValueType();
 ↑ BinaryOperatorExpression.NumericOperatorCommonAntetype: `IAntetype`?;
 = BinaryOperatorExpression.LeftOperand.ExpectedAntetype => NumericOperatorCommonAntetype;
 = BinaryOperatorExpression.RightOperand.ExpectedAntetype => NumericOperatorCommonAntetype;
@@ -51,28 +53,28 @@
 // ---------- Control Flow Expressions
 = IfExpression.Condition.ExpectedAntetype => IAntetype.OptionalBool;
 = WhileExpression.Condition.ExpectedAntetype => IAntetype.OptionalBool;
-= ReturnExpression.Value.ExpectedAntetype => ExpectedReturnType?.ToAntetype();
+= ReturnExpression.Value.ExpectedAntetype => ExpectedReturnType?.ToAntetype().ToNonConstValueType();
 
 // ---------- Invocation Expressions
 = UnknownInvocationExpression.Antetype => IAntetype.Unknown;
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = FunctionInvocationExpression.Arguments[index].ExpectedAntetype
-    => ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype();
+    => ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = GetterInvocationExpression.Context.ExpectedAntetype
-    => ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype();
+    => ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype().ToNonConstValueType();
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = SetterInvocationExpression.Context.ExpectedAntetype
-    => ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype();
+    => ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype().ToNonConstValueType();
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = SetterInvocationExpression.Value.ExpectedAntetype
-    => ContextualizedOverload?.ParameterTypes[0].Type.ToAntetype();
+    => ContextualizedOverload?.ParameterTypes[0].Type.ToAntetype().ToNonConstValueType();
 ↑ FunctionReferenceInvocationExpression.FunctionAntetype: `FunctionAntetype`;
 = FunctionInvocationExpression.Arguments[index].ExpectedAntetype
     => FunctionAntetype.Parameters[index];
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = InitializerInvocationExpression.Arguments[index].ExpectedAntetype
-    => ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype();
+    => ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
 
 // ---------- Ambiguous Name Expressions
 = UnresolvedMemberAccessExpression.*.ExpectedAntetype => null;
