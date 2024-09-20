@@ -366,15 +366,33 @@ internal static partial class ExpressionAntetypesAspect
     {
         if (node.ShouldNotBeExpression()) return null;
 
-        // TODO to minimize outstanding rewrites, first check whether node.Antetype could possibly
+        // To minimize outstanding rewrites, first check whether node.Antetype could possibly
         // support conversion. If node.ExpectedAntetype is checked, that is inherited and if a
-        // rewrite is in progress, that can't be cached. Note: this may require thoroughly treating
+        // rewrite is in progress, that can't be cached. Note: this requires thoroughly treating
         // T <: T? as a subtype and not an implicit conversion.
+        if (!CanPossiblyImplicitlyConvertFrom(node.Antetype))
+            return null;
 
         if (ImplicitlyConvertToType(node.ExpectedAntetype, node.Antetype) is SimpleAntetype convertToAntetype)
             return IImplicitConversionExpressionNode.Create(node, convertToAntetype);
 
         return null;
+    }
+
+    private static bool CanPossiblyImplicitlyConvertFrom(IMaybeExpressionAntetype fromType)
+    {
+        return fromType switch
+        {
+            UnknownAntetype => false,
+            BoolConstValueAntetype => true,
+            IntegerConstValueAntetype => true,
+            // Can't convert from signed because there is not larger type to convert to
+            BigIntegerAntetype t => !t.IsSigned,
+            PointerSizedIntegerAntetype => true,
+            FixedSizeIntegerAntetype => true,
+            OptionalAntetype { Referent: var referent } => CanPossiblyImplicitlyConvertFrom(referent),
+            _ => false,
+        };
     }
 
     private static SimpleAntetype? ImplicitlyConvertToType(IMaybeExpressionAntetype? toType, IMaybeExpressionAntetype fromType)
@@ -405,6 +423,7 @@ internal static partial class ExpressionAntetypesAspect
                 // Must fit in 32 bits so that it will fit on all platforms
                 return bits <= 32 && (!requireSigned || to.IsSigned) ? to : null;
             }
+            // Note: Both signed BigIntegerAntetype has already been covered
             case (BigIntegerAntetype { IsSigned: true }, IntegerAntetype):
             case (BigIntegerAntetype { IsSigned: true }, IntegerConstValueAntetype):
                 return IAntetype.Int;
