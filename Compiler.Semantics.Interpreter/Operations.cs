@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 
 internal static class Operations
 {
-    public static AzothValue Convert(this AzothValue value, DataType from, CapabilityType to, bool isOptional)
+    public static AzothValue Convert(this AzothValue value, IType from, CapabilityType to, bool isOptional)
     {
         if (from is IntegerConstValueType)
         {
@@ -49,7 +49,7 @@ internal static class Operations
             if (to == IType.Bool) return value;
         }
 
-        if (from == IType.Byte)
+        if (from.Equals(IType.Byte))
         {
             if (to == IType.Int16) return AzothValue.I16(value.ByteValue);
             if (to == IType.UInt16) return AzothValue.U16(value.ByteValue);
@@ -63,7 +63,7 @@ internal static class Operations
             if (to == IType.UInt) return AzothValue.Int(value.ByteValue);
         }
 
-        if (from == IType.Size)
+        if (from.Equals(IType.Size))
         {
             if (to == IType.Offset) return AzothValue.Offset((nint)value.SizeValue);
             if (to == IType.Size) return AzothValue.Size(value.SizeValue);
@@ -73,13 +73,13 @@ internal static class Operations
             if (to == IType.UInt) return AzothValue.Int(value.SizeValue);
         }
 
-        if (from == IType.Offset)
+        if (from.Equals(IType.Offset))
         {
             if (to == IType.NInt) return AzothValue.NInt((nint)value.SizeValue);
             if (to == IType.Int) return AzothValue.Int(value.OffsetValue);
         }
 
-        if (from == IType.Int || from == IType.UInt)
+        if (from.Equals(IType.Int) || from.Equals(IType.UInt))
         {
             if (to == IType.Int) return value;
 

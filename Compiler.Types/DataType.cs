@@ -86,6 +86,9 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>, IMaybeType
     public override bool Equals(Pseudotype? other)
         => ReferenceEquals(this, other) || other is DataType dataType && Equals(dataType);
 
+    public bool Equals(IMaybeType? other)
+        => ReferenceEquals(this, other) || Equals((DataType?)other);
+
     public sealed override bool Equals(object? obj)
     {
         if (obj is null) return false;

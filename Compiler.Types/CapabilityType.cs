@@ -123,8 +123,8 @@ public abstract class CapabilityType : NonEmptyType
 
     public sealed override IMaybeExpressionAntetype ToAntetype() => BareType.ToAntetype();
 
-    public override Type ReplaceTypeParametersIn(Type type)
-        => BareType.ReplaceTypeParametersIn(type);
+    public override Type ReplaceTypeParametersIn(IType type)
+        => BareType.ReplaceTypeParametersIn((Type)type);
 
     public override DataType ReplaceTypeParametersIn(DataType type)
         => BareType.ReplaceTypeParametersIn(type);

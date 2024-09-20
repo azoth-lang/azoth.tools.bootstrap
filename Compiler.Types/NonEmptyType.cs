@@ -25,7 +25,7 @@ public abstract class NonEmptyType : Type, INonVoidType
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
-    public virtual Type ReplaceTypeParametersIn(Type type) => type;
+    public virtual Type ReplaceTypeParametersIn(IType type) => (Type)type;
 
     /// <summary>
     /// Replace any <see cref="GenericParameterType"/> from this type that appear in the given type

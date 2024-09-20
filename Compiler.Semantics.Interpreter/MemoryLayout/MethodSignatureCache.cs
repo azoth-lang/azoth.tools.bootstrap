@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
@@ -17,6 +18,6 @@ internal class MethodSignatureCache
             symbol.Name,
             symbol.SelfParameterType,
             symbol.Parameters,
-            symbol.Return);
+            (IType)symbol.Return);
     }
 }

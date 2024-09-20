@@ -12,14 +12,14 @@ internal class MethodSignature : IEquatable<MethodSignature>
     public IdentifierName Name { get; }
     public SelfParameterType SelfType { get; }
     public IFixedList<ParameterType> ParameterTypes { get; }
-    public DataType ReturnType { get; }
+    public IType ReturnType { get; }
     private readonly int hashCode;
 
     public MethodSignature(
         IdentifierName name,
         SelfParameterType selfType,
         IFixedList<ParameterType> parameterTypes,
-        DataType returnType)
+        IType returnType)
     {
         Name = name;
         SelfType = selfType;

@@ -125,7 +125,7 @@ public class InterpreterProcess
             var entryPoint = package.EntryPoint!;
             var arguments = new List<AzothValue>();
             foreach (var parameterType in entryPoint.Symbol.Parameters)
-                arguments.Add(await ConstructMainParameterAsync(parameterType.Type));
+                arguments.Add(await ConstructMainParameterAsync((IType)parameterType.Type));
 
             var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
             // Flush any buffered output
@@ -192,7 +192,7 @@ public class InterpreterProcess
     private static bool IsTestAttribute(IAttributeNode attribute)
         => attribute.TypeName.ReferencedDeclaration!.Name.Text == "Test_Attribute";
 
-    private async Task<AzothValue> ConstructMainParameterAsync(DataType parameterType)
+    private async Task<AzothValue> ConstructMainParameterAsync(IType parameterType)
     {
         if (parameterType is not CapabilityType { TypeArguments.Count: 0 } type)
             throw new InvalidOperationException(
@@ -376,14 +376,13 @@ public class InterpreterProcess
 
     private async ValueTask<AzothValue> CallMethodAsync(
         MethodSymbol methodSymbol,
-        DataType selfType,
+        IType selfType,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
     {
         switch (selfType)
         {
             case EmptyType _:
-            case UnknownType _:
             case OptionalType _:
             case GenericParameterType _:
             case FunctionType _:
@@ -522,12 +521,12 @@ public class InterpreterProcess
             case IConversionExpressionNode exp:
             {
                 var value = await ExecuteAsync(exp.Referent!, variables).ConfigureAwait(false);
-                return value.Convert(exp.Referent!.Type, (CapabilityType)exp.ConvertToType.NamedType, false);
+                return value.Convert((IType)exp.Referent!.Type, (CapabilityType)exp.ConvertToType.NamedType, false);
             }
             case IImplicitConversionExpressionNode exp:
             {
                 var value = await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
-                return value.Convert(exp.Referent.Type, (CapabilityType)exp.Type, true);
+                return value.Convert((IType)exp.Referent.Type, (CapabilityType)exp.Type, true);
             }
             case IIntegerLiteralExpressionNode exp:
                 return AzothValue.Int(exp.Value);
@@ -720,7 +719,7 @@ public class InterpreterProcess
                 if (methodSymbol == Primitive.IdentityHash)
                     return IdentityHash(self);
 
-                var selfType = exp.Method.Context.Type;
+                var selfType = (IType)exp.Method.Context.Type;
                 return await CallMethodAsync(methodSymbol, selfType, self, arguments);
             }
             case IGetterInvocationExpressionNode exp:
@@ -729,7 +728,7 @@ public class InterpreterProcess
                 var getterSymbol = exp.ReferencedDeclaration!.Symbol;
                 if (getterSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(getterSymbol, self, []);
-                var selfType = exp.Context.Type;
+                var selfType = (IType)exp.Context.Type;
                 return await CallMethodAsync(getterSymbol, selfType, self, []).ConfigureAwait(false);
             }
             case ISetterInvocationExpressionNode exp:
@@ -739,7 +738,7 @@ public class InterpreterProcess
                 var setterSymbol = exp.ReferencedDeclaration!.Symbol;
                 if (setterSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(setterSymbol, self, [value]);
-                var selfType = exp.Context.Type;
+                var selfType = (IType)exp.Context.Type;
                 return await CallMethodAsync(setterSymbol, selfType, self, [value]);
             }
             case INewObjectExpressionNode exp:
@@ -1090,7 +1089,7 @@ public class InterpreterProcess
                 $"Can't compare expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()} for equality.");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var type = leftExp.Type;
+        var type = (IType)leftExp.Type;
         if (type is OptionalType optionalType)
         {
             if (left.IsNone && right.IsNone) return true;
@@ -1101,22 +1100,22 @@ public class InterpreterProcess
         return EqualsAsync(type, left, right);
     }
 
-    private static bool EqualsAsync(DataType type, AzothValue left, AzothValue right)
+    private static bool EqualsAsync(IType type, AzothValue left, AzothValue right)
     {
-        if (type == IType.Int) return left.IntValue.Equals(right.IntValue);
-        if (type == IType.UInt) return left.IntValue.Equals(right.IntValue);
-        if (type == IType.Int8) return left.I8Value.Equals(right.I8Value);
-        if (type == IType.Byte) return left.ByteValue.Equals(right.ByteValue);
-        if (type == IType.Int16) return left.I16Value.Equals(right.I16Value);
-        if (type == IType.UInt16) return left.U16Value.Equals(right.U16Value);
-        if (type == IType.Int32) return left.I32Value.Equals(right.I32Value);
-        if (type == IType.UInt32) return left.U32Value.Equals(right.U32Value);
-        if (type == IType.Int64) return left.I64Value.Equals(right.I64Value);
-        if (type == IType.UInt64) return left.U64Value.Equals(right.U64Value);
-        if (type == IType.Offset) return left.OffsetValue.Equals(right.OffsetValue);
-        if (type == IType.Size) return left.SizeValue.Equals(right.SizeValue);
-        if (type == IType.NInt) return left.NIntValue.Equals(right.NIntValue);
-        if (type == IType.NUInt) return left.NUIntValue.Equals(right.NUIntValue);
+        if (type.Equals(IType.Int)) return left.IntValue.Equals(right.IntValue);
+        if (type.Equals(IType.UInt)) return left.IntValue.Equals(right.IntValue);
+        if (type.Equals(IType.Int8)) return left.I8Value.Equals(right.I8Value);
+        if (type.Equals(IType.Byte)) return left.ByteValue.Equals(right.ByteValue);
+        if (type.Equals(IType.Int16)) return left.I16Value.Equals(right.I16Value);
+        if (type.Equals(IType.UInt16)) return left.U16Value.Equals(right.U16Value);
+        if (type.Equals(IType.Int32)) return left.I32Value.Equals(right.I32Value);
+        if (type.Equals(IType.UInt32)) return left.U32Value.Equals(right.U32Value);
+        if (type.Equals(IType.Int64)) return left.I64Value.Equals(right.I64Value);
+        if (type.Equals(IType.UInt64)) return left.U64Value.Equals(right.U64Value);
+        if (type.Equals(IType.Offset)) return left.OffsetValue.Equals(right.OffsetValue);
+        if (type.Equals(IType.Size)) return left.SizeValue.Equals(right.SizeValue);
+        if (type.Equals(IType.NInt)) return left.NIntValue.Equals(right.NIntValue);
+        if (type.Equals(IType.NUInt)) return left.NUIntValue.Equals(right.NUIntValue);
         if (type is CapabilityType { IsIdentityReference: true })
             return ReferenceEquals(left.ObjectValue, right.ObjectValue);
         throw new NotImplementedException($"Compare equality of `{type.ToILString()}`.");
@@ -1129,7 +1128,7 @@ public class InterpreterProcess
                 $"Can't compare expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()}.");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var type = leftExp.Type;
+        var type = (IType)leftExp.Type;
         if (type is OptionalType optionalType)
         {
             if (left.IsNone && right.IsNone) return 0;
@@ -1139,22 +1138,22 @@ public class InterpreterProcess
         return CompareAsync(type, left, right);
     }
 
-    private static int CompareAsync(DataType type, AzothValue left, AzothValue right)
+    private static int CompareAsync(IType type, AzothValue left, AzothValue right)
     {
-        if (type == IType.Int) return left.IntValue.CompareTo(right.IntValue);
-        if (type == IType.UInt) return left.IntValue.CompareTo(right.IntValue);
-        if (type == IType.Int8) return left.I8Value.CompareTo(right.I8Value);
-        if (type == IType.Byte) return left.ByteValue.CompareTo(right.ByteValue);
-        if (type == IType.Int16) return left.I16Value.CompareTo(right.I16Value);
-        if (type == IType.UInt16) return left.U16Value.CompareTo(right.U16Value);
-        if (type == IType.Int32) return left.I32Value.CompareTo(right.I32Value);
-        if (type == IType.UInt32) return left.U32Value.CompareTo(right.U32Value);
-        if (type == IType.Int64) return left.I64Value.CompareTo(right.I64Value);
-        if (type == IType.UInt64) return left.U64Value.CompareTo(right.U64Value);
-        if (type == IType.Offset) return left.OffsetValue.CompareTo(right.OffsetValue);
-        if (type == IType.Size) return left.SizeValue.CompareTo(right.SizeValue);
-        if (type == IType.NInt) return left.NIntValue.CompareTo(right.NIntValue);
-        if (type == IType.NUInt) return left.NUIntValue.CompareTo(right.NUIntValue);
+        if (type.Equals(IType.Int)) return left.IntValue.CompareTo(right.IntValue);
+        if (type.Equals(IType.UInt)) return left.IntValue.CompareTo(right.IntValue);
+        if (type.Equals(IType.Int8)) return left.I8Value.CompareTo(right.I8Value);
+        if (type.Equals(IType.Byte)) return left.ByteValue.CompareTo(right.ByteValue);
+        if (type.Equals(IType.Int16)) return left.I16Value.CompareTo(right.I16Value);
+        if (type.Equals(IType.UInt16)) return left.U16Value.CompareTo(right.U16Value);
+        if (type.Equals(IType.Int32)) return left.I32Value.CompareTo(right.I32Value);
+        if (type.Equals(IType.UInt32)) return left.U32Value.CompareTo(right.U32Value);
+        if (type.Equals(IType.Int64)) return left.I64Value.CompareTo(right.I64Value);
+        if (type.Equals(IType.UInt64)) return left.U64Value.CompareTo(right.U64Value);
+        if (type.Equals(IType.Offset)) return left.OffsetValue.CompareTo(right.OffsetValue);
+        if (type.Equals(IType.Size)) return left.SizeValue.CompareTo(right.SizeValue);
+        if (type.Equals(IType.NInt)) return left.NIntValue.CompareTo(right.NIntValue);
+        if (type.Equals(IType.NUInt)) return left.NUIntValue.CompareTo(right.NUIntValue);
         throw new NotImplementedException($"Compare `{type.ToILString()}`.");
     }
 
