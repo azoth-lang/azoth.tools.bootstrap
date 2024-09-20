@@ -2,7 +2,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
-public sealed class FunctionAntetype : INonVoidAntetype
+public sealed class FunctionAntetype : INonVoidAntetype, IMaybeFunctionAntetype
 {
     public IFixedList<INonVoidAntetype> Parameters { get; }
     public IAntetype Return { get; }

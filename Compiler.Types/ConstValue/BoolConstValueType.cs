@@ -1,6 +1,7 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 
@@ -29,7 +30,7 @@ public sealed class BoolConstValueType : ConstValueType
 
     public static implicit operator BoolConstValueType(bool value) => value ? True : False;
 
-    public override DataType ToNonConstValueType() => IType.Bool;
+    public override CapabilityType<BoolType> ToNonConstValueType() => IType.Bool;
 
     public override IMaybeExpressionAntetype ToAntetype()
         => Value ? IExpressionAntetype.True : IExpressionAntetype.False;

@@ -252,7 +252,7 @@ internal sealed class FlowState : IFlowState
         if (binding is null) return IType.Unknown;
         if (!binding.SharingIsTracked())
             // Other types don't have capabilities and don't need to be tracked
-            return binding.BindingType.ToUpperBound();
+            return binding.BindingType.ToUpperBound().AsType;
 
         var bindingValue = BindingValue.CreateTopLevel(binding);
         var current = values[bindingValue].Current;
@@ -400,7 +400,7 @@ internal sealed class FlowState : IFlowState
         var memberType = node.Type;
         var builder = ToBuilder();
         var contextType = (CapabilityType)node.Context.Type;
-        var containingDeclaredType = node.ReferencedDeclaration.Symbol.ContainingSymbol.DeclaresType.AsDeclaredType();
+        var containingDeclaredType = node.ReferencedDeclaration.Symbol.ContainingSymbol.DeclaresType.AsDeclaredType;
         var bindingType = node.ReferencedDeclaration.BindingType;
 
         var newValueCapabilities = CapabilityValue.ForType(valueId, memberType);

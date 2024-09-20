@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// <summary>
 /// A type that has a capability applied.
 /// </summary>
-public abstract class CapabilityType : NonEmptyType
+public abstract class CapabilityType : NonEmptyType, INonVoidType
 {
     /// <summary>
     /// Create a reference type for a class.
@@ -121,10 +121,10 @@ public abstract class CapabilityType : NonEmptyType
         Capability = capability;
     }
 
-    public sealed override IMaybeExpressionAntetype ToAntetype() => BareType.ToAntetype();
+    public sealed override IMaybeAntetype ToAntetype() => BareType.ToAntetype();
 
-    public override Type ReplaceTypeParametersIn(IType type)
-        => BareType.ReplaceTypeParametersIn((Type)type);
+    public override IType ReplaceTypeParametersIn(IType type)
+        => (IType)BareType.ReplaceTypeParametersIn((Type)type);
 
     public override DataType ReplaceTypeParametersIn(DataType type)
         => BareType.ReplaceTypeParametersIn(type);
@@ -170,7 +170,7 @@ public abstract class CapabilityType : NonEmptyType
     }
 
     #region Equality
-    public override bool Equals(DataType? other)
+    public override bool Equals(IMaybeExpressionType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

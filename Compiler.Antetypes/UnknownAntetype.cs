@@ -1,6 +1,6 @@
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
-public sealed class UnknownAntetype : IMaybeNonVoidAntetype
+public sealed class UnknownAntetype : IMaybeFunctionAntetype
 {
     #region Singleton
     internal static readonly UnknownAntetype Instance = new();

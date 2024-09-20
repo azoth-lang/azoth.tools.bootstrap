@@ -126,7 +126,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
 
     private IDeclaredAntetype? antetype;
 
-    DeclaredType IDeclaredUserType.AsDeclaredType() => this;
+    DeclaredType IDeclaredUserType.AsDeclaredType => this;
 
     /// <summary>
     /// Make a version of this type for use as the default constructor parameter.

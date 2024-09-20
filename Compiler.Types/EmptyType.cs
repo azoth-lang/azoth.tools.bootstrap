@@ -1,4 +1,5 @@
 using System;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using ExhaustiveMatching;
 
@@ -11,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 [Closed(
     typeof(VoidType),
     typeof(NeverType))]
-public abstract class EmptyType : Type
+public abstract class EmptyType : Type, IType
 {
     public SpecialTypeName Name { get; }
 
@@ -24,12 +25,15 @@ public abstract class EmptyType : Type
         Name = name;
     }
 
+    public abstract override EmptyAntetype ToAntetype();
+    IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
+
     public override string ToSourceCodeString() => Name.ToString();
 
     public override string ToILString() => ToSourceCodeString();
 
     #region Equals
-    public override bool Equals(DataType? other)
+    public override bool Equals(IMaybeExpressionType? other)
         // Empty types are all fixed instances, so a reference equality suffices
         => ReferenceEquals(this, other);
 

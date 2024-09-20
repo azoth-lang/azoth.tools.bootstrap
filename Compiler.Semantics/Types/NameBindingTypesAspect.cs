@@ -57,7 +57,7 @@ internal static partial class NameBindingTypesAspect
         => node.FlowStateBefore().Declare(node, node.MatchReferentValueId);
 
     public static partial DataType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node)
-        => node.Referent?.Type.ToNonConstValueType() ?? IType.Unknown;
+        => node.Referent?.Type.ToNonConstValueType().AsType ?? IType.Unknown;
 
     public static partial DataType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node)
     {

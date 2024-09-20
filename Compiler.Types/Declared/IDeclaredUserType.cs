@@ -32,7 +32,7 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     bool IsGeneric { get; }
     IFixedSet<BareReferenceType> Supertypes { get; }
 
-    DeclaredType AsDeclaredType();
+    public DeclaredType AsDeclaredType { get; }
 
     BareType With(IFixedList<Type> typeArguments);
     CapabilityType With(Capability capability, IFixedList<Type> typeArguments);

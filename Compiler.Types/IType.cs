@@ -4,8 +4,8 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-[Closed(typeof(Type))]
-public interface IType : IMaybeType
+[Closed(typeof(INonVoidType), typeof(EmptyType))]
+public interface IType : IExpressionType, IMaybeType
 {
     #region Standard Types
     public new static readonly UnknownType Unknown = UnknownType.Instance;

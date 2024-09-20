@@ -16,7 +16,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(FunctionType),
     typeof(OptionalType),
     typeof(ConstValueType))]
-public abstract class NonEmptyType : Type, INonVoidType
+public abstract class NonEmptyType : Type
 {
     private protected NonEmptyType() { }
 
@@ -25,7 +25,7 @@ public abstract class NonEmptyType : Type, INonVoidType
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
-    public virtual Type ReplaceTypeParametersIn(IType type) => (Type)type;
+    public virtual IType ReplaceTypeParametersIn(IType type) => type;
 
     /// <summary>
     /// Replace any <see cref="GenericParameterType"/> from this type that appear in the given type

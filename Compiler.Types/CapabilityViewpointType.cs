@@ -29,7 +29,7 @@ public sealed class CapabilityViewpointType : ViewpointType
     }
 
     #region Equals
-    public override bool Equals(DataType? other)
+    public override bool Equals(IMaybeExpressionType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

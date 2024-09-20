@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 [Closed(
     typeof(BoolConstValueType),
     typeof(IntegerConstValueType))]
-public abstract class ConstValueType : NonEmptyType
+public abstract class ConstValueType : NonEmptyType, IExpressionType
 {
     public SpecialTypeName Name { get; }
 
@@ -24,7 +24,7 @@ public abstract class ConstValueType : NonEmptyType
     }
 
     #region Equals
-    public override bool Equals(DataType? other)
+    public override bool Equals(IMaybeExpressionType? other)
         // Most constant value types are fixed instances, so a reference comparision suffices
         => ReferenceEquals(this, other);
 

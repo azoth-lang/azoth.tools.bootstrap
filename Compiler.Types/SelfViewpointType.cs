@@ -21,6 +21,7 @@ public sealed class SelfViewpointType : ViewpointType
 
     public override Type Referent { get; }
 
+    // TODO do not allow self viewpoint of constant value types
     public SelfViewpointType(CapabilitySet capability, Type referent)
     {
         Capability = capability;
@@ -28,7 +29,7 @@ public sealed class SelfViewpointType : ViewpointType
     }
 
     #region Equals
-    public override bool Equals(DataType? other)
+    public override bool Equals(IMaybeExpressionType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

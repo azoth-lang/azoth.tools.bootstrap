@@ -5,7 +5,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 [Closed(typeof(CapabilityViewpointType), typeof(SelfViewpointType))]
-public abstract class ViewpointType : NonEmptyType
+public abstract class ViewpointType : NonEmptyType, INonVoidType
 {
     public abstract ICapabilityConstraint Capability { get; }
 
@@ -16,4 +16,5 @@ public abstract class ViewpointType : NonEmptyType
     private protected ViewpointType() { }
 
     public sealed override IMaybeExpressionAntetype ToAntetype() => Referent.ToAntetype();
+    IMaybeAntetype IMaybeType.ToAntetype() => (IMaybeAntetype)ToAntetype();
 }

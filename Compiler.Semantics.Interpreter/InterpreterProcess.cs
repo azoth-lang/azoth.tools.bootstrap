@@ -376,7 +376,7 @@ public class InterpreterProcess
 
     private async ValueTask<AzothValue> CallMethodAsync(
         MethodSymbol methodSymbol,
-        IType selfType,
+        IExpressionType selfType,
         AzothValue self,
         IEnumerable<AzothValue> arguments)
     {
@@ -521,12 +521,12 @@ public class InterpreterProcess
             case IConversionExpressionNode exp:
             {
                 var value = await ExecuteAsync(exp.Referent!, variables).ConfigureAwait(false);
-                return value.Convert((IType)exp.Referent!.Type, (CapabilityType)exp.ConvertToType.NamedType, false);
+                return value.Convert(exp.Referent!.Type.Known(), (CapabilityType)exp.ConvertToType.NamedType, false);
             }
             case IImplicitConversionExpressionNode exp:
             {
                 var value = await ExecuteAsync(exp.Referent, variables).ConfigureAwait(false);
-                return value.Convert((IType)exp.Referent.Type, (CapabilityType)exp.Type, true);
+                return value.Convert(exp.Referent.Type.Known(), (CapabilityType)exp.Type, true);
             }
             case IIntegerLiteralExpressionNode exp:
                 return AzothValue.Int(exp.Value);
@@ -719,7 +719,7 @@ public class InterpreterProcess
                 if (methodSymbol == Primitive.IdentityHash)
                     return IdentityHash(self);
 
-                var selfType = (IType)exp.Method.Context.Type;
+                var selfType = exp.Method.Context.Type.Known();
                 return await CallMethodAsync(methodSymbol, selfType, self, arguments);
             }
             case IGetterInvocationExpressionNode exp:
@@ -728,7 +728,7 @@ public class InterpreterProcess
                 var getterSymbol = exp.ReferencedDeclaration!.Symbol;
                 if (getterSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(getterSymbol, self, []);
-                var selfType = (IType)exp.Context.Type;
+                var selfType = exp.Context.Type.Known();
                 return await CallMethodAsync(getterSymbol, selfType, self, []).ConfigureAwait(false);
             }
             case ISetterInvocationExpressionNode exp:
@@ -738,7 +738,7 @@ public class InterpreterProcess
                 var setterSymbol = exp.ReferencedDeclaration!.Symbol;
                 if (setterSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(setterSymbol, self, [value]);
-                var selfType = (IType)exp.Context.Type;
+                var selfType = exp.Context.Type.Known();
                 return await CallMethodAsync(setterSymbol, selfType, self, [value]);
             }
             case INewObjectExpressionNode exp:
@@ -1100,7 +1100,7 @@ public class InterpreterProcess
         return EqualsAsync(type, left, right);
     }
 
-    private static bool EqualsAsync(IType type, AzothValue left, AzothValue right)
+    private static bool EqualsAsync(IExpressionType type, AzothValue left, AzothValue right)
     {
         if (type.Equals(IType.Int)) return left.IntValue.Equals(right.IntValue);
         if (type.Equals(IType.UInt)) return left.IntValue.Equals(right.IntValue);
@@ -1138,7 +1138,7 @@ public class InterpreterProcess
         return CompareAsync(type, left, right);
     }
 
-    private static int CompareAsync(IType type, AzothValue left, AzothValue right)
+    private static int CompareAsync(IExpressionType type, AzothValue left, AzothValue right)
     {
         if (type.Equals(IType.Int)) return left.IntValue.CompareTo(right.IntValue);
         if (type.Equals(IType.UInt)) return left.IntValue.CompareTo(right.IntValue);

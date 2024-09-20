@@ -23,8 +23,8 @@ public static class TypeError
         CodeFile file,
         TextSpan span,
         BinaryOperator @operator,
-        DataType leftOperandType,
-        DataType rightOperandType)
+        IMaybeExpressionType leftOperandType,
+        IMaybeExpressionType rightOperandType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3001, $"Operator `{@operator.ToSymbolString()}` cannot be applied to operands of type `{leftOperandType.ToNonConstValueType().ToSourceCodeString()}` and `{rightOperandType.ToNonConstValueType().ToSourceCodeString()}`.");
@@ -34,7 +34,7 @@ public static class TypeError
         CodeFile file,
         TextSpan span,
         UnaryOperator @operator,
-        DataType operandType)
+        IMaybeExpressionType operandType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3002, $"Operator `{@operator}` cannot be applied to operand of type `{operandType.ToSourceCodeString()}`.");
@@ -58,7 +58,7 @@ public static class TypeError
             3005, "Expression must be of type `bool`");
     }
 
-    public static Diagnostic CannotImplicitlyConvert(CodeFile file, ICodeSyntax expression, DataType ofType, DataType toType)
+    public static Diagnostic CannotImplicitlyConvert(CodeFile file, ICodeSyntax expression, IMaybeExpressionType ofType, IMaybeNonVoidType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3006, $"Cannot convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstValueType().ToSourceCodeString()}` to type `{toType.ToNonConstValueType().ToSourceCodeString()}`");
@@ -70,7 +70,7 @@ public static class TypeError
             3007, $"Expression must be of callable type to be invoked `{file.Code[expression.Span]}`");
     }
 
-    public static Diagnostic MustReturnCorrectType(CodeFile file, in TextSpan span, DataType returnType)
+    public static Diagnostic MustReturnCorrectType(CodeFile file, in TextSpan span, IMaybeType returnType)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3008, $"The return expression must return a value of type `{returnType}`");
@@ -88,13 +88,13 @@ public static class TypeError
             3010, $"Cannot assign into a field through a read only `{contextType.ToSourceCodeString()}`");
     }
 
-    public static Diagnostic CannotIdNonReferenceType(CodeFile file, in TextSpan span, DataType type)
+    public static Diagnostic CannotIdNonReferenceType(CodeFile file, in TextSpan span, IMaybeExpressionType type)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3011, $"Taking the `id` of the type `{type.ToSourceCodeString()}` is not supported, because it is not a reference type");
     }
 
-    public static Diagnostic CannotExplicitlyConvert(CodeFile file, ICodeSyntax expression, DataType ofType, DataType toType)
+    public static Diagnostic CannotExplicitlyConvert(CodeFile file, ICodeSyntax expression, IMaybeExpressionType ofType, IMaybeType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3012, $"Cannot explicitly convert expression `{file.Code[expression.Span]}` of type `{ofType.ToNonConstValueType().ToSourceCodeString()}` to type `{toType.ToNonConstValueType().ToSourceCodeString()}`");
@@ -119,7 +119,7 @@ public static class TypeError
             3015, $"Cannot apply `lent` to `{type.ToSourceCodeString()}` because it is a fully `const` or `id` type");
     }
 
-    public static Diagnostic OptionalPatternOnNonOptionalType(CodeFile file, IOptionalPatternSyntax pattern, DataType type)
+    public static Diagnostic OptionalPatternOnNonOptionalType(CodeFile file, IOptionalPatternSyntax pattern, IMaybeExpressionType type)
     {
         return new(file, pattern.Span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3016, $"Optional pattern `{pattern}` cannot be applied to value of non-optional type `{type.ToSourceCodeString()}`");
@@ -131,7 +131,7 @@ public static class TypeError
             3017, $"Self parameter `{self}` must be `const` or `id` because it is in a `const` class.");
     }
 
-    public static Diagnostic CannotAwaitType(CodeFile file, TextSpan span, DataType type)
+    public static Diagnostic CannotAwaitType(CodeFile file, TextSpan span, IMaybeExpressionType type)
     {
         return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3018, $"Cannot await non-awaitable type `{type.ToSourceCodeString()}`.");
@@ -179,31 +179,31 @@ public static class TypeError
             3025, $"Supertype `{typeSyntax.ToString()}` is not output safe.");
     }
 
-    public static Diagnostic ParameterMustBeInputSafe(CodeFile file, IParameterSyntax parameterSyntax, DataType type)
+    public static Diagnostic ParameterMustBeInputSafe(CodeFile file, IParameterSyntax parameterSyntax, IMaybeType type)
     {
         return new(file, parameterSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3026, $"Parameter `{parameterSyntax.ToString()}` with type `{type.ToSourceCodeString()}` is not input safe.");
     }
 
-    public static Diagnostic ReturnTypeMustBeOutputSafe(CodeFile file, ITypeSyntax typeSyntax, DataType type)
+    public static Diagnostic ReturnTypeMustBeOutputSafe(CodeFile file, ITypeSyntax typeSyntax, IMaybeType type)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3027, $"Return type `{type.ToSourceCodeString()}` is not output safe.");
     }
 
-    public static Diagnostic VarFieldMustBeInputAndOutputSafe(CodeFile file, IFieldDefinitionSyntax fieldSyntax, DataType type)
+    public static Diagnostic VarFieldMustBeInputAndOutputSafe(CodeFile file, IFieldDefinitionSyntax fieldSyntax, IMaybeType type)
     {
         return new(file, fieldSyntax.Type.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3028, $"The field `{fieldSyntax.Name}` declared with `var` of type `{type.ToSourceCodeString()}` is not input and output safe.");
     }
 
-    public static Diagnostic LetFieldMustBeOutputSafe(CodeFile file, IFieldDefinitionSyntax fieldSyntax, DataType type)
+    public static Diagnostic LetFieldMustBeOutputSafe(CodeFile file, IFieldDefinitionSyntax fieldSyntax, IMaybeType type)
     {
         return new(file, fieldSyntax.Type.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3029, $"The field `{fieldSyntax.Name}` declared with `let` of type `{type.ToSourceCodeString()}` is not output safe.");
     }
 
-    public static Diagnostic FieldMustMaintainIndependence(CodeFile file, IFieldDefinitionSyntax fieldSyntax, DataType type)
+    public static Diagnostic FieldMustMaintainIndependence(CodeFile file, IFieldDefinitionSyntax fieldSyntax, IMaybeType type)
     {
         return new(file, fieldSyntax.Type.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3030, $"The field `{fieldSyntax.Name}` of type `{type.ToSourceCodeString()}` does not maintain the independence of the type parameters.");
@@ -221,7 +221,7 @@ public static class TypeError
             3032, $"Special type `{typeSyntax}` cannot be used here.");
     }
 
-    public static Diagnostic CapabilityNotCompatibleWithConstraint(CodeFile file, ICodeSyntax typeSyntax, GenericParameter parameter, DataType arg)
+    public static Diagnostic CapabilityNotCompatibleWithConstraint(CodeFile file, ICodeSyntax typeSyntax, GenericParameter parameter, IType arg)
     {
         return new(file, typeSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3033, $"In `{typeSyntax}` the capability of `{arg.ToSourceCodeString()}` is not compatible with the capability constraint on `{parameter}`.");
@@ -233,13 +233,13 @@ public static class TypeError
             3034, $"Supertype `{typeSyntax.ToString()}` does not maintain independence.");
     }
 
-    public static Diagnostic AmbiguousFunctionGroup(CodeFile file, INameExpressionSyntax nameSyntax, DataType functionType)
+    public static Diagnostic AmbiguousFunctionGroup(CodeFile file, INameExpressionSyntax nameSyntax, IMaybeFunctionType functionType)
     {
         return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3035, $"Function group `{nameSyntax.ToString()}` has multiple functions that match the expected type `{functionType.ToSourceCodeString()}`.");
     }
 
-    public static Diagnostic AmbiguousMethodGroup(CodeFile file, INameExpressionSyntax nameSyntax, DataType functionType)
+    public static Diagnostic AmbiguousMethodGroup(CodeFile file, INameExpressionSyntax nameSyntax, IMaybeFunctionType functionType)
     {
         return new(file, nameSyntax.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3036, $"Method group `{nameSyntax.ToString()}` has multiple methods that match the expected type `{functionType.ToSourceCodeString()}`.");

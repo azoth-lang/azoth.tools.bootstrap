@@ -18,7 +18,7 @@ public readonly record struct SelfParameterType(bool IsLent, Pseudotype Type) : 
     public bool CanOverride(SelfParameterType baseParameterType)
         => (!baseParameterType.IsLent || IsLent) && baseParameterType.Type.IsAssignableFrom(Type);
 
-    public ParameterType ToUpperBound() => new(IsLent, Type.ToUpperBound());
+    public ParameterType ToUpperBound() => new(IsLent, Type.ToUpperBound().AsType);
 
     public bool ReferenceEquals(ParameterType other)
         => IsLent == other.IsLent && ReferenceEquals(Type, other.Type);

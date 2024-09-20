@@ -4,7 +4,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 [Closed(
     typeof(INonVoidAntetype),
-    typeof(UnknownAntetype))]
+    typeof(IMaybeFunctionAntetype))]
 public interface IMaybeNonVoidAntetype : IMaybeAntetype
 {
 }

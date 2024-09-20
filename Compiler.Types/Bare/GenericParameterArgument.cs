@@ -3,6 +3,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
+// TODO change Argument to IType
 public readonly record struct GenericParameterArgument(GenericParameter Parameter, Type Argument)
 {
     public bool ParameterHasIndependence => Parameter.HasIndependence;

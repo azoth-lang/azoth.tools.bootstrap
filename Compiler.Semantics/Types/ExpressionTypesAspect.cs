@@ -26,11 +26,11 @@ internal static partial class ExpressionTypesAspect
 {
     public static partial void Expression_Contribute_Diagnostics(IExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.ExpectedType is not DataType expectedType)
+        if (node.ExpectedType is not { } expectedType)
             return;
 
         if (!expectedType.IsAssignableFrom(node.Type))
-            diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, expectedType));
+            diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type.ToUpperBound(), (IMaybeNonVoidType)expectedType));
     }
 
     public static partial DataType IdExpression_Type(IIdExpressionNode node)
@@ -431,8 +431,7 @@ internal static partial class ExpressionTypesAspect
 
         foreach (GenericParameterArgument arg in bareType.GenericParameterArguments)
             if (!arg.IsConstructable())
-                diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax, arg.Parameter,
-                    arg.Argument));
+                diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax, arg.Parameter, (IType)arg.Argument));
     }
 
     public static partial ContextualizedOverload? InitializerInvocationExpression_ContextualizedOverload(IInitializerInvocationExpressionNode node)
@@ -563,7 +562,7 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial DataType ResultStatement_Type(IResultStatementNode node)
-        => node.Expression?.Type.ToNonConstValueType() ?? IType.Unknown;
+        => node.Expression?.Type.ToNonConstValueType().AsType ?? IType.Unknown;
 
     public static partial IFlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
     {
@@ -655,7 +654,7 @@ internal static partial class ExpressionTypesAspect
         var convertFromType = node.Referent!.Type;
         var convertToType = node.ConvertToType.NamedType;
         if (!convertFromType.CanBeExplicitlyConvertedTo(convertToType, node.Operator == ConversionOperator.Safe))
-            diagnostics.Add(TypeError.CannotExplicitlyConvert(node.File, node.Referent.Syntax, convertFromType, convertToType));
+            diagnostics.Add(TypeError.CannotExplicitlyConvert(node.File, node.Referent.Syntax, convertFromType, (IMaybeType)convertToType));
     }
 
     public static partial Type ImplicitConversionExpression_Type(IImplicitConversionExpressionNode node)
@@ -706,7 +705,7 @@ internal static partial class ExpressionTypesAspect
 
     // TODO this is strange and maybe a hack
     public static partial DataType? MethodName_Context_ExpectedType(IMethodNameNode node)
-        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
+        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().AsType;
 
     public static partial DataType FreezeExpression_Type(IFreezeExpressionNode node)
     {

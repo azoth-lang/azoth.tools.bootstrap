@@ -1,10 +1,10 @@
-using System;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-[Closed(typeof(IType), typeof(DataType))]
-public interface IMaybeType : IEquatable<IMaybeType>
+[Closed(typeof(IType), typeof(IMaybeNonVoidType))]
+public interface IMaybeType : IMaybeExpressionType
 {
     #region Standard Types
     /// <summary>
@@ -15,13 +15,6 @@ public interface IMaybeType : IEquatable<IMaybeType>
     public static readonly DataType Unknown = UnknownType.Instance;
     #endregion
 
-    /// <summary>
-    /// How this type would be written in source code.
-    /// </summary>
-    string ToSourceCodeString();
-
-    /// <summary>
-    /// How this type would be written in IL.
-    /// </summary>
-    string ToILString();
+    public new IMaybeAntetype ToAntetype();
+    IMaybeExpressionAntetype IMaybeExpressionType.ToAntetype() => ToAntetype();
 }

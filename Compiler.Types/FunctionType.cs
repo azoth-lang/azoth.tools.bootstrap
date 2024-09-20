@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// <summary>
 /// A type for a function, closure, or method.
 /// </summary>
-public sealed class FunctionType : NonEmptyType, IMaybeFunctionType
+public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidType
 {
     public static IMaybeFunctionType Create(IEnumerable<ParameterType> parameters, DataType @return)
     => @return is Type returnType ? new FunctionType(parameters, returnType) : IType.Unknown;
@@ -29,7 +29,7 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType
     public override bool IsFullyKnown { get; }
 
     #region Equality
-    public override bool Equals(DataType? other)
+    public override bool Equals(IMaybeExpressionType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -41,7 +41,7 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType
     public override int GetHashCode() => HashCode.Combine(Parameters, Return);
     #endregion
 
-    public override IMaybeExpressionAntetype ToAntetype()
+    public override IMaybeFunctionAntetype ToAntetype()
     {
         var parameters = Parameters.Select(p => p.Type.ToAntetype()).OfType<INonVoidAntetype>().ToFixedList();
         if (parameters.Count != Parameters.Count)
@@ -53,6 +53,7 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType
 
         return new FunctionAntetype(parameters, returnAntetype);
     }
+    IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
 
     public override string ToSourceCodeString()
         => $"({string.Join(", ", Parameters.Select(t => t.ToSourceCodeString()))}) -> {Return.ToSourceCodeString()}";

@@ -18,10 +18,11 @@ public sealed class UnknownType : DataType, IMaybeFunctionType
 
     public override bool IsFullyKnown => false;
 
-    public override IMaybeExpressionAntetype ToAntetype() => IAntetype.Unknown;
+    public override UnknownAntetype ToAntetype() => IAntetype.Unknown;
+    IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
 
     #region Equals
-    public override bool Equals(DataType? other)
+    public override bool Equals(IMaybeExpressionType? other)
         // The unknown type is a singleton, so reference equality suffices
         => ReferenceEquals(this, other);
 

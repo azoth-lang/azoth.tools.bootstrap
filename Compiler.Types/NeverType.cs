@@ -23,5 +23,5 @@ public sealed class NeverType : EmptyType, INonVoidType
 
     #endregion
 
-    public override IMaybeExpressionAntetype ToAntetype() => IAntetype.Never;
+    public override NeverAntetype ToAntetype() => IAntetype.Never;
 }

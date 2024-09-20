@@ -4,7 +4,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
 [Closed(typeof(NeverAntetype), typeof(VoidAntetype))]
-public abstract class EmptyAntetype : NonGenericNominalAntetype
+public abstract class EmptyAntetype : NonGenericNominalAntetype, IAntetype
 {
     public override bool IsAbstract => false;
     public override SpecialTypeName Name { get; }

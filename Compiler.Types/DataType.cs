@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -14,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(Type),
     typeof(UnknownType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public abstract class DataType : Pseudotype, IEquatable<DataType>, IMaybeType
+public abstract class DataType : Pseudotype, IMaybeExpressionType
 {
     /// <summary>
     /// The `never` and `void` types are the only empty types. This means
@@ -47,12 +46,12 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>, IMaybeType
 
     private protected DataType() { }
 
-    public sealed override DataType ToUpperBound() => this;
+    public sealed override IMaybeExpressionType ToUpperBound() => this;
 
     /// <summary>
     /// Convert types for constant values to their corresponding types.
     /// </summary>
-    public virtual DataType ToNonConstValueType() => this;
+    public virtual IMaybeType ToNonConstValueType() => (IMaybeType)this;
 
     /// <summary>
     /// The same type except with any mutability removed.
@@ -79,15 +78,12 @@ public abstract class DataType : Pseudotype, IEquatable<DataType>, IMaybeType
     public virtual DataType AccessedVia(ICapabilityConstraint capability) => this;
 
     #region Equality
-    public abstract bool Equals(DataType? other);
+    public abstract bool Equals(IMaybeExpressionType? other);
 
     public abstract override int GetHashCode();
 
     public override bool Equals(Pseudotype? other)
         => ReferenceEquals(this, other) || other is DataType dataType && Equals(dataType);
-
-    public bool Equals(IMaybeType? other)
-        => ReferenceEquals(this, other) || Equals((DataType?)other);
 
     public sealed override bool Equals(object? obj)
     {

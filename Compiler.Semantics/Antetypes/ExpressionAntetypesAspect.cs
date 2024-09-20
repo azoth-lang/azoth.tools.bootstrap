@@ -7,6 +7,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -445,8 +446,8 @@ internal static partial class ExpressionAntetypesAspect
 
     public static partial void OptionalPattern_Contribute_Diagnostics(IOptionalPatternNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.ContextBindingAntetype() is not OptionalAntetype)
-            diagnostics.Add(TypeError.OptionalPatternOnNonOptionalType(node.File, node.Syntax, node.ContextBindingType()));
+        if (node.ContextBindingType() is not OptionalType and var type)
+            diagnostics.Add(TypeError.OptionalPatternOnNonOptionalType(node.File, node.Syntax, type));
     }
 
     public static partial IMaybeExpressionAntetype IntegerLiteralExpression_Antetype(IIntegerLiteralExpressionNode node)

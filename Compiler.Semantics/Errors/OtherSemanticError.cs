@@ -101,13 +101,13 @@ public static class OtherSemanticError
             6017, $"Type `{typeName}` cannot be constructed because it is abstract");
     }
 
-    public static Diagnostic ForeachNoIterateOrNextMethod(CodeFile file, IExpressionSyntax inExpression, DataType type)
+    public static Diagnostic ForeachNoIterateOrNextMethod(CodeFile file, IExpressionSyntax inExpression, IMaybeType type)
     {
         return new(file, inExpression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6018, $"`foreach` cannot operate on value of type `{type.ToILString()}` because it does not have an `iterate()` nor `next()` method.");
     }
 
-    public static Diagnostic ForeachNoNextMethod(CodeFile file, IExpressionSyntax inExpression, DataType type)
+    public static Diagnostic ForeachNoNextMethod(CodeFile file, IExpressionSyntax inExpression, IMaybeType type)
     {
         return new(file, inExpression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6018, $"`foreach` cannot operate on value of type `{type.ToILString()}` because its iterator does not have a `next()` method.");

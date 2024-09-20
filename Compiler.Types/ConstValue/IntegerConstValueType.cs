@@ -48,7 +48,7 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     /// <remarks>It might be thought this should return the smallest integer type that contains
     /// the value. However, that would lead to unexpected behavior in some cases because small
     /// integer constants might produce small fixed size integers leading to overflow.</remarks>
-    public override DataType ToNonConstValueType() => IType.Int;
+    public override CapabilityType<BigIntegerType> ToNonConstValueType() => IType.Int;
 
     public NumericType ToSmallestSignedIntegerType()
     {
@@ -75,7 +75,7 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     }
 
     #region Equals
-    public override bool Equals(DataType? other)
+    public override bool Equals(IMaybeExpressionType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

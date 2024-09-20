@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 
 internal static class Operations
 {
-    public static AzothValue Convert(this AzothValue value, IType from, CapabilityType to, bool isOptional)
+    public static AzothValue Convert(this AzothValue value, IExpressionType from, CapabilityType to, bool isOptional)
     {
         if (from is IntegerConstValueType)
         {

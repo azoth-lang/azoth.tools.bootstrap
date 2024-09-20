@@ -23,7 +23,7 @@ public interface ICapabilityValue : IValue
     {
         var index = new Stack<int>();
         var values = new Dictionary<T, FlowCapability>();
-        ForType(id, type.ToUpperBound(), index, true, values, create);
+        ForType(id, type.ToUpperBound().AsType, index, true, values, create);
         return values.AsReadOnly();
     }
 

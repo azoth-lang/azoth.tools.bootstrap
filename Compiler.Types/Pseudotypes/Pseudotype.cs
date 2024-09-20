@@ -15,7 +15,7 @@ public abstract class Pseudotype : IEquatable<Pseudotype>
     /// <summary>
     /// Create a type with the upper bound of the capability constraint.
     /// </summary>
-    public abstract DataType ToUpperBound();
+    public abstract IMaybeExpressionType ToUpperBound();
 
     /// <summary>
     /// Convert this type to the equivalent antetype.

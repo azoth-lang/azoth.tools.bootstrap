@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// The type introduced by a generic parameter. This is not the concrete type it is substituted with.
 /// Rather this is the type variable (e.g. <c>T</c>) that can be used as a type name in type expressions.
 /// </summary>
-public sealed class GenericParameterType : NonEmptyType
+public sealed class GenericParameterType : NonEmptyType, INonVoidType
 {
     public IDeclaredUserType DeclaringType { get; }
 
@@ -42,7 +42,7 @@ public sealed class GenericParameterType : NonEmptyType
     }
 
     #region Equals
-    public override bool Equals(DataType? other)
+    public override bool Equals(IMaybeExpressionType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -55,11 +55,12 @@ public sealed class GenericParameterType : NonEmptyType
         => HashCode.Combine(DeclaringType, Parameter);
     #endregion
 
-    public override IMaybeExpressionAntetype ToAntetype()
+    public override GenericParameterAntetype ToAntetype()
     {
         var declaringAntetype = DeclaringType.ToAntetype();
         return new GenericParameterAntetype((UserDeclaredGenericAntetype)declaringAntetype, declaringAntetype.GenericParameters.Single(p => p.Name == Name));
     }
+    IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
 
     public override string ToSourceCodeString() => $"{DeclaringType}.{Parameter.Name}";
 

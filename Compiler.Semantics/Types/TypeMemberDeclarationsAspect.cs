@@ -39,12 +39,12 @@ internal static partial class TypeMemberDeclarationsAspect
         {
             var type = parameter.BindingType;
             if (!type.IsInputSafe(nonwritableSelf))
-                diagnostics.Add(TypeError.ParameterMustBeInputSafe(node.File, parameter.Syntax, type));
+                diagnostics.Add(TypeError.ParameterMustBeInputSafe(node.File, parameter.Syntax, (IMaybeType)type));
         }
 
         var returnType = methodSymbol.Return;
         if (!returnType.IsOutputSafe(nonwritableSelf))
-            diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(node.File, node.Return!.Syntax, returnType));
+            diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(node.File, node.Return!.Syntax, (IMaybeType)returnType));
     }
 
     public static partial void FieldDefinition_Contribute_Diagnostics(IFieldDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
@@ -73,13 +73,13 @@ internal static partial class TypeMemberDeclarationsAspect
                 // safe (i.e. invariant). Self is nonwritable for the output case which is where
                 // self writable matters.
                 if (!type.IsInputAndOutputSafe(nonwriteableSelf: true))
-                    diagnostics.Add(TypeError.VarFieldMustBeInputAndOutputSafe(node.File, node.Syntax, type));
+                    diagnostics.Add(TypeError.VarFieldMustBeInputAndOutputSafe(node.File, node.Syntax, (IMaybeType)type));
             }
             else
             {
                 // Immutable bindings can only be read, so they must be output safe.
                 if (!type.IsOutputSafe(nonwritableSelf: true))
-                    diagnostics.Add(TypeError.LetFieldMustBeOutputSafe(node.File, node.Syntax, type));
+                    diagnostics.Add(TypeError.LetFieldMustBeOutputSafe(node.File, node.Syntax, (IMaybeType)type));
             }
         }
     }
@@ -89,6 +89,6 @@ internal static partial class TypeMemberDeclarationsAspect
         var type = ((IFieldDeclarationNode)node).BindingType;
         // Fields must also maintain the independence of independent type parameters
         if (!type.FieldMaintainsIndependence())
-            diagnostics.Add(TypeError.FieldMustMaintainIndependence(node.File, node.Syntax, type));
+            diagnostics.Add(TypeError.FieldMustMaintainIndependence(node.File, node.Syntax, (IMaybeType)type));
     }
 }

@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// types are like an immutable struct type `Optional[T]`. However, the value
 /// semantics are strange. They depend on the referent type.
 /// </summary>
-public sealed class OptionalType : NonEmptyType
+public sealed class OptionalType : NonEmptyType, INonVoidType
 {
     public static DataType Create(DataType referent)
         => referent switch
@@ -42,12 +42,12 @@ public sealed class OptionalType : NonEmptyType
         Referent = referent;
     }
 
-    public override IMaybeExpressionAntetype ToAntetype()
+    public override IMaybeAntetype ToAntetype()
         => Referent.ToAntetype() is INonVoidAntetype referent
             ? new OptionalAntetype(referent) : IAntetype.Unknown;
 
     #region Equals
-    public override bool Equals(DataType? other)
+    public override bool Equals(IMaybeExpressionType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

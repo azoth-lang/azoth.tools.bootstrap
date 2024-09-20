@@ -26,7 +26,7 @@ internal static partial class ForeachExpressionTypesAspect
         if (node.IteratorType is not NonEmptyType nonEmptyIteratorType)
             return iteratedType;
 
-        return nonEmptyIteratorType.ReplaceTypeParametersIn((IType)iteratedType).ToNonConstValueType();
+        return nonEmptyIteratorType.ReplaceTypeParametersIn((IType)iteratedType).ToNonConstValueType().AsType;
     }
 
     public static partial IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)
@@ -54,8 +54,8 @@ internal static partial class ForeachExpressionTypesAspect
             return;
 
         if (node.IteratorType is UnknownType)
-            diagnostics.Add(OtherSemanticError.ForeachNoIterateOrNextMethod(node.File, node.TempInExpression.Syntax, iterableType));
+            diagnostics.Add(OtherSemanticError.ForeachNoIterateOrNextMethod(node.File, node.TempInExpression.Syntax, iterableType.ToNonConstValueType()));
         else if (node.ReferencedNextMethod is null)
-            diagnostics.Add(OtherSemanticError.ForeachNoNextMethod(node.File, node.TempInExpression.Syntax, iterableType));
+            diagnostics.Add(OtherSemanticError.ForeachNoNextMethod(node.File, node.TempInExpression.Syntax, iterableType.ToNonConstValueType()));
     }
 }
