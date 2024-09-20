@@ -18,8 +18,8 @@
     => Parameters[index - 1].FlowStateAfter;
 = FunctionDefinition.Body.**.FlowStateBefore()
     => Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
-= FunctionDefinition.Body.ExpectedType => Type.Return.Type;
-= FunctionDefinition.Body.**.ExpectedReturnType => Type.Return.Type;
+= FunctionDefinition.Body.ExpectedType => Type.Return;
+= FunctionDefinition.Body.**.ExpectedReturnType => Type.Return;
 
 // ---------- Type Definitions
 = TypeDefinition.*.**.ContainingDeclaredType;

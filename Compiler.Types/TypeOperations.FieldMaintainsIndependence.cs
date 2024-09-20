@@ -88,7 +88,7 @@ public static partial class TypeOperations
             if (!parameter.Type.FieldMaintainsIndependence(Independence.Blocked))
                 return false;
 
-        if (!type.Return.Type.FieldMaintainsIndependence(Independence.Blocked))
+        if (!type.Return.FieldMaintainsIndependence(Independence.Blocked))
             return false;
 
         return true;

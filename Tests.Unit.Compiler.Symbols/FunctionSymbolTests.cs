@@ -21,7 +21,7 @@ public class FunctionSymbolTests : SymbolTestFixture
     public void Functions_with_same_parameters_and_return_type_are_equal()
     {
         var parameters = Params(DataType("T1"), DataType("T2"));
-        var funcA = Func("A", @params: parameters, @return: ReturnType("T3"));
+        var funcA = Func("A", @params: parameters, @return: DataType("T3"));
         var funcACopy = Func(funcA);
 
         Assert.Equal(funcA, funcACopy);
@@ -41,8 +41,8 @@ public class FunctionSymbolTests : SymbolTestFixture
     [Fact]
     public void Functions_with_different_return_types_are_not_equal()
     {
-        var funcA1 = Func("A", @return: ReturnType("T1"));
-        var funcA2 = Func(funcA1, @return: ReturnType("T2"));
+        var funcA1 = Func("A", @return: DataType("T1"));
+        var funcA2 = Func(funcA1, @return: DataType("T2"));
 
         Assert.NotEqual(funcA1, funcA2);
     }
@@ -54,10 +54,10 @@ public class FunctionSymbolTests : SymbolTestFixture
         // but, just in case, we need to check method vs. function in equality.
         var ns = Namespace();
         var parameters = Params(DataType("T1"), DataType("T2"));
-        var funcA = Func("A", ns, parameters, ReturnType("T3"));
+        var funcA = Func("A", ns, parameters, DataType("T3"));
         var selfDataType = DataType("Class");
         var selfType = Type(ns, selfDataType.DeclaredType);
-        var methodA = Method("A", selfType, SelfParam(selfDataType), parameters, ReturnType("T3"));
+        var methodA = Method("A", selfType, SelfParam(selfDataType), parameters, DataType("T3"));
 
         // Note: assert false used to ensure which object Equals is called on
         Assert.False(funcA.Equals(methodA));

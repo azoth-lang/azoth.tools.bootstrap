@@ -98,7 +98,7 @@ public static class Primitive
 
         var idAnyType = DeclaredType.Any.With(Capability.Identity);
         // fn identity_hash(value: Any) -> nuint
-        var identityHash = new MethodSymbol(symbol, "identity_hash", SelfParam(idAnyType), Params(), ReturnType.NUInt);
+        var identityHash = new MethodSymbol(symbol, "identity_hash", SelfParam(idAnyType), Params(), DataType.NUInt);
         tree.Add(identityHash);
     }
 }

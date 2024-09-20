@@ -55,7 +55,7 @@ public static partial class TypeOperations
             if (!parameter.Type.SupertypeMaintainsIndependence(false, TypeParameterIndependence.None))
                 return false;
 
-        if (!type.Return.Type.SupertypeMaintainsIndependence(false, TypeParameterIndependence.None))
+        if (!type.Return.SupertypeMaintainsIndependence(false, TypeParameterIndependence.None))
             return false;
 
         return true;

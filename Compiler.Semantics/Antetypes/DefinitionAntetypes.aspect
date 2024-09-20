@@ -6,12 +6,12 @@
 
 // ---------- Function Definition
 // TODO it would be good to refactor to not depend on Type
-= FunctionDefinition.Body.ExpectedAntetype => Type.Return.Type.ToAntetype().ToNonConstValueType();
+= FunctionDefinition.Body.ExpectedAntetype => Type.Return.ToAntetype().ToNonConstValueType();
 
 // ---------- Member Definitions
 = StandardMethodDefinition.Body.ExpectedAntetype
-    => Self.MethodGroupType.Return.Type.ToAntetype().ToNonConstValueType();
+    => Self.MethodGroupType.Return.ToAntetype().ToNonConstValueType();
 = FieldDefinition.BindingAntetype;
 // TODO it would be good to refactor to not depend on Type
 = AssociatedFunctionDefinition.Body.ExpectedAntetype
-    => Type.Return.Type.ToAntetype().ToNonConstValueType();
+    => Type.Return.ToAntetype().ToNonConstValueType();

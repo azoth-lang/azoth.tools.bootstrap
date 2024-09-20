@@ -81,18 +81,18 @@ public sealed class ContextualizedOverload
     private static ParameterType CreateParameterType(NonEmptyType contextType, ParameterType parameter)
         => contextType.ReplaceTypeParametersIn(parameter);
 
-    private static ReturnType CreateReturnType(NonEmptyType contextType, InvocableSymbol symbol)
+    private static DataType CreateReturnType(NonEmptyType contextType, InvocableSymbol symbol)
         => contextType.ReplaceTypeParametersIn(symbol.Return);
 
     public SelfParameterType? SelfParameterType { get; }
     public IFixedList<ParameterType> ParameterTypes { get; }
     public int Arity => ParameterTypes.Count;
-    public ReturnType ReturnType { get; }
+    public DataType ReturnType { get; }
 
     private ContextualizedOverload(
         SelfParameterType? selfParameterType,
         IEnumerable<ParameterType> parameterTypes,
-        ReturnType returnType)
+        DataType returnType)
     {
         SelfParameterType = selfParameterType;
         ParameterTypes = parameterTypes.ToFixedList();

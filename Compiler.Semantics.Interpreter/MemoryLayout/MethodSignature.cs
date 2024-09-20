@@ -12,14 +12,14 @@ internal class MethodSignature : IEquatable<MethodSignature>
     public IdentifierName Name { get; }
     public SelfParameterType SelfType { get; }
     public IFixedList<ParameterType> ParameterTypes { get; }
-    public ReturnType ReturnType { get; }
+    public DataType ReturnType { get; }
     private readonly int hashCode;
 
     public MethodSignature(
         IdentifierName name,
         SelfParameterType selfType,
         IFixedList<ParameterType> parameterTypes,
-        ReturnType returnType)
+        DataType returnType)
     {
         Name = name;
         SelfType = selfType;
@@ -35,7 +35,7 @@ internal class MethodSignature : IEquatable<MethodSignature>
         return Name.Equals(other.Name)
                && SelfType.CanOverride(selfType.ReplaceTypeParametersIn(other.SelfType))
                && ParametersCompatible(selfType, other)
-               && ReturnType.Type.ReturnCanOverride(selfType.ReplaceTypeParametersIn(other.ReturnType).Type);
+               && ReturnType.ReturnCanOverride(selfType.ReplaceTypeParametersIn(other.ReturnType));
     }
 
     private bool ParametersCompatible(NonEmptyType selfType, MethodSignature other)

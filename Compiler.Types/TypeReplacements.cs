@@ -93,7 +93,7 @@ internal sealed class TypeReplacements
                 var replacementParameterTypes = ReplaceTypeParametersIn(functionType.Parameters);
                 var replacementReturnType = ReplaceTypeParametersIn(functionType.Return);
                 if (!ReferenceEquals(functionType.Parameters, replacementParameterTypes)
-                    || !functionType.Return.ReferenceEquals(replacementReturnType))
+                    || !ReferenceEquals(functionType.Return, replacementReturnType))
                     return new FunctionType(replacementParameterTypes, replacementReturnType);
                 break;
             }
@@ -151,9 +151,6 @@ internal sealed class TypeReplacements
 
     public ParameterType ReplaceTypeParametersIn(ParameterType type)
         => type with { Type = ReplaceTypeParametersIn(type.Type) };
-
-    public ReturnType ReplaceTypeParametersIn(ReturnType @return)
-        => @return with { Type = ReplaceTypeParametersIn(@return.Type) };
 
     private IFixedList<Type> ReplaceTypeParametersIn(IFixedList<Type> types)
     {

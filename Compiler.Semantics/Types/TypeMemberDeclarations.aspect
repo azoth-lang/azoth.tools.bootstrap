@@ -25,7 +25,7 @@
 = ConcreteMethodDefinition.Body.**.ExpectedReturnType => Return?.NamedType ?? DataType.Void;
 
 = StandardMethodDefinition.MethodGroupType => Symbol.MethodGroupType;
-= StandardMethodDefinition.Body.**.ExpectedType => Self.MethodGroupType.Return.Type;
+= StandardMethodDefinition.Body.**.ExpectedType => Self.MethodGroupType.Return;
 
 = SourceConstructorDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
 = SourceConstructorDefinition.Parameters[0].**.FlowStateBefore()
@@ -55,8 +55,8 @@
     => Parameters[index - 1].FlowStateAfter;
 = AssociatedFunctionDefinition.Body.**.FlowStateBefore()
     => Parameters.LastOrDefault()?.FlowStateAfter ?? Self.FlowStateBefore();
-= AssociatedFunctionDefinition.Body.ExpectedType => Type.Return.Type;
-= AssociatedFunctionDefinition.Body.**.ExpectedReturnType => Type.Return.Type;
+= AssociatedFunctionDefinition.Body.ExpectedType => Type.Return;
+= AssociatedFunctionDefinition.Body.**.ExpectedReturnType => Type.Return;
 
 // ---------- Control Flow Expressions
 ↓ ReturnExpression.ExpectedReturnType: `DataType`?;

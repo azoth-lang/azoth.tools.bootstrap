@@ -80,7 +80,7 @@ internal static partial class ExpressionTypesAspect
            ?? IFlowState.Empty;
 
     public static partial DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
-        => node.Function.ReferencedDeclaration?.Type.Return.Type ?? DataType.UnknownDataType;
+        => node.Function.ReferencedDeclaration?.Type.Return ?? DataType.UnknownDataType;
 
     public static partial ContextualizedOverload? FunctionInvocationExpression_ContextualizedOverload(
         IFunctionInvocationExpressionNode node)
@@ -121,7 +121,7 @@ internal static partial class ExpressionTypesAspect
         => (FunctionType)node.Expression.Type;
 
     public static partial DataType FunctionReferenceInvocationExpression_Type(IFunctionReferenceInvocationExpressionNode node)
-        => node.FunctionType.Return.Type;
+        => node.FunctionType.Return;
 
     public static partial IFlowState FunctionReferenceInvocationExpression_FlowStateAfter(IFunctionReferenceInvocationExpressionNode node)
     {
@@ -240,7 +240,7 @@ internal static partial class ExpressionTypesAspect
     {
         var selfType = node.Method.Context.Type;
         // TODO does this need to be modified by flow typing?
-        var unboundType = node.ContextualizedOverload?.ReturnType.Type;
+        var unboundType = node.ContextualizedOverload?.ReturnType;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
         return boundType ?? DataType.Unknown;
     }
@@ -268,7 +268,7 @@ internal static partial class ExpressionTypesAspect
     public static partial DataType GetterInvocationExpression_Type(IGetterInvocationExpressionNode node)
     {
         var selfType = node.Context.Type;
-        var unboundType = node.ContextualizedOverload?.ReturnType.Type;
+        var unboundType = node.ContextualizedOverload?.ReturnType;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
         return boundType ?? DataType.Unknown;
     }
@@ -387,7 +387,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial DataType NewObjectExpression_Type(INewObjectExpressionNode node)
         // TODO does this need to be modified by flow typing?
-        => node.ContextualizedOverload?.ReturnType.Type ?? DataType.UnknownDataType;
+        => node.ContextualizedOverload?.ReturnType ?? DataType.UnknownDataType;
 
     public static partial IFlowState NewObjectExpression_FlowStateAfter(INewObjectExpressionNode node)
     {
@@ -443,7 +443,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial DataType InitializerInvocationExpression_Type(IInitializerInvocationExpressionNode node)
         // TODO does this need to be modified by flow typing?
-        => node.ContextualizedOverload?.ReturnType.Type ?? DataType.UnknownDataType;
+        => node.ContextualizedOverload?.ReturnType ?? DataType.UnknownDataType;
 
     public static partial IFlowState InitializerInvocationExpression_FlowStateAfter(IInitializerInvocationExpressionNode node)
     {

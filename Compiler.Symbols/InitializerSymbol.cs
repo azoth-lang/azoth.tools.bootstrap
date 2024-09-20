@@ -24,13 +24,13 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         CapabilityType selfParameterType,
         IFixedList<ParameterType> parameterTypes)
         : base(parameterTypes,
-            new ReturnType(((StructType)containingTypeSymbol.DeclaresType).ToInitializerReturn(selfParameterType, parameterTypes)))
+            ((StructType)containingTypeSymbol.DeclaresType).ToInitializerReturn(selfParameterType, parameterTypes))
     {
         ContextTypeSymbol = containingTypeSymbol;
         ContainingSymbol = containingTypeSymbol;
         Name = initializerName;
         SelfParameterType = selfParameterType;
-        ReturnType = (CapabilityType)Return.Type;
+        ReturnType = (CapabilityType)Return;
         InitializerGroupType = new FunctionType(parameterTypes, Return);
     }
 

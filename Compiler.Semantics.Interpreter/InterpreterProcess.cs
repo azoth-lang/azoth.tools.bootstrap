@@ -131,9 +131,9 @@ public class InterpreterProcess
             // Flush any buffered output
             await standardOutputWriter.FlushAsync().ConfigureAwait(false);
             var returnType = entryPoint.Symbol.Return;
-            if (returnType == ReturnType.Void)
+            if (returnType == DataType.Void)
                 exitCode = 0;
-            else if (returnType.Type == DataType.Byte)
+            else if (returnType == DataType.Byte)
                 exitCode = returnValue.ByteValue;
             else
                 throw new InvalidOperationException($"Main function cannot have return type {returnType.ToILString()}");
@@ -781,7 +781,7 @@ public class InterpreterProcess
                     var selfType = (CapabilityType)exp.InExpression!.Type;
                     var iterateMethod = exp.ReferencedIterateMethod!.Symbol;
                     iterator = await CallMethodAsync(iterateMethod, selfType, iterable, []).ConfigureAwait(false);
-                    iteratorType = (CapabilityType)iterateMethod.Return.Type;
+                    iteratorType = (CapabilityType)iterateMethod.Return;
                 }
                 else
                 {

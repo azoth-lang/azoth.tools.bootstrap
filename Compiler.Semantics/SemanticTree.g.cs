@@ -5230,21 +5230,21 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.Type.ToAntetype().ToNonConstValueType();
+            return Type.Return.ToAntetype().ToNonConstValueType();
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return Type.Return.Type;
+            return Type.Return;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.Type;
+            return Type.Return;
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
@@ -5974,7 +5974,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Self.MethodGroupType.Return.Type.ToAntetype().ToNonConstValueType();
+            return Self.MethodGroupType.Return.ToAntetype().ToNonConstValueType();
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
@@ -5988,7 +5988,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return Self.MethodGroupType.Return.Type;
+            return Self.MethodGroupType.Return;
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
@@ -7063,21 +7063,21 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.Type.ToAntetype().ToNonConstValueType();
+            return Type.Return.ToAntetype().ToNonConstValueType();
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
     internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return Type.Return.Type;
+            return Type.Return;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Type.Return.Type;
+            return Type.Return;
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 

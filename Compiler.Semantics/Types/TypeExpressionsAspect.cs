@@ -35,7 +35,7 @@ internal static partial class TypeExpressionsAspect
         => node.Referent.NamedType.MakeOptional();
 
     public static partial DataType FunctionType_NamedType(IFunctionTypeNode node)
-        => new FunctionType(node.Parameters.Select(p => p.Parameter), new(node.Return.NamedType));
+        => new FunctionType(node.Parameters.Select(p => p.Parameter), node.Return.NamedType);
 
     public static partial ParameterType ParameterType_Parameter(IParameterTypeNode node)
         => new(node.IsLent, node.Referent.NamedType);

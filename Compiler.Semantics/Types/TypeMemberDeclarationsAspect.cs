@@ -21,7 +21,7 @@ internal static partial class TypeMemberDeclarationsAspect
     {
         var parameterTypes = parameters.Select(p => p.ParameterType).ToFixedList();
         var returnType = @return?.NamedType ?? DataType.Void;
-        return new FunctionType(parameterTypes, new ReturnType(returnType));
+        return new FunctionType(parameterTypes, returnType);
     }
 
     public static partial void MethodDefinition_Contribute_Diagnostics(IMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
@@ -46,7 +46,7 @@ internal static partial class TypeMemberDeclarationsAspect
                 diagnostics.Add(TypeError.ParameterMustBeInputSafe(node.File, parameter.Syntax, type));
         }
 
-        var returnType = methodSymbol.Return.Type;
+        var returnType = methodSymbol.Return;
         if (!returnType.IsOutputSafe(nonwritableSelf))
             diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(node.File, node.Return!.Syntax, returnType));
     }

@@ -40,12 +40,12 @@ public abstract class SymbolTestFixture
         string? name = null,
         NamespaceSymbol? ns = null,
         IFixedList<ParameterType>? @params = null,
-        ReturnType? @return = null)
+        DataType? @return = null)
     {
         return new FunctionSymbol(
             ns ?? Namespace(),
             Name(name) ?? DefaultName("func"),
-            new FunctionType(@params ?? Params(), @return ?? ReturnType()));
+            new FunctionType(@params ?? Params(), @return ?? DataType()));
     }
 
     protected static FunctionSymbol Func(
@@ -53,7 +53,7 @@ public abstract class SymbolTestFixture
         string? name = null,
         NamespaceSymbol? ns = null,
         IFixedList<ParameterType>? @params = null,
-        ReturnType? @return = null)
+        DataType? @return = null)
     {
         return new FunctionSymbol(
             ns ?? mother.ContainingSymbol,
@@ -66,7 +66,7 @@ public abstract class SymbolTestFixture
         UserTypeSymbol? containing = null,
         SelfParameterType? self = null,
         IFixedList<ParameterType>? @params = null,
-        ReturnType? @return = null)
+        DataType? @return = null)
     {
         containing ??= Type();
         return new MethodSymbol(
@@ -74,7 +74,7 @@ public abstract class SymbolTestFixture
             Name(name) ?? DefaultName("method"),
             self ?? new SelfParameterType(false, containing.DeclaresType.With(Capability.Read, [])),
             @params ?? Params(),
-            @return ?? ReturnType());
+            @return ?? DataType());
     }
 
     protected static MethodSymbol Method(
@@ -83,7 +83,7 @@ public abstract class SymbolTestFixture
         UserTypeSymbol? containing = null,
         SelfParameterType? self = null,
         IFixedList<ParameterType>? @params = null,
-        ReturnType? @return = null)
+        DataType? @return = null)
     {
         return new MethodSymbol(
             containing ?? mother.ContainingSymbol,
@@ -108,16 +108,6 @@ public abstract class SymbolTestFixture
             isAbstract: false,
             isConst ?? false,
             finalName.Text);
-    }
-
-    protected ReturnType ReturnType(
-        string? name = null,
-        IdentifierName? containingPackage = null,
-        NamespaceName? containingNamespace = null,
-        bool? isConst = null,
-        Capability? referenceCapability = null)
-    {
-        return new(DataType(name, containingPackage, containingNamespace, isConst, referenceCapability));
     }
 
     protected UserTypeSymbol Type(

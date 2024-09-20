@@ -22,12 +22,12 @@ public sealed class ConstructorSymbol : InvocableSymbol
         CapabilityType selfParameterType,
         IFixedList<ParameterType> parameterTypes)
         : base(parameterTypes,
-            new ReturnType(((ObjectType)containingSymbol.DeclaresType).ToConstructorReturn(selfParameterType, parameterTypes)))
+            ((ObjectType)containingSymbol.DeclaresType).ToConstructorReturn(selfParameterType, parameterTypes))
     {
         ContainingSymbol = containingSymbol;
         Name = name;
         SelfParameterType = selfParameterType;
-        ReturnType = (CapabilityType)Return.Type;
+        ReturnType = (CapabilityType)Return;
     }
 
     public static ConstructorSymbol CreateDefault(UserTypeSymbol containingSymbol)

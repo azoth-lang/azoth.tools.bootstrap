@@ -53,7 +53,7 @@ public static partial class TypeOperations
                 return false;
 
         // The return type is `out` (covariant)
-        if (!type.Return.Type.IsVarianceSafe(context, nonwritableSelf))
+        if (!type.Return.IsVarianceSafe(context, nonwritableSelf))
             return false;
 
         return true;

@@ -19,12 +19,12 @@ internal static partial class ExpressionAntetypesAspect
 
     public static partial IMaybeExpressionAntetype FunctionInvocationExpression_Antetype(IFunctionInvocationExpressionNode node)
         // TODO should probably use Antetype on the declaration
-        => node.Function.ReferencedDeclaration?.Type.Return.Type.ToAntetype() ?? IAntetype.Unknown;
+        => node.Function.ReferencedDeclaration?.Type.Return.ToAntetype() ?? IAntetype.Unknown;
 
     public static partial IMaybeExpressionAntetype MethodInvocationExpression_Antetype(IMethodInvocationExpressionNode node)
     {
         // TODO should probably use Antetype on the declaration
-        var unboundAntetype = node.Method.ReferencedDeclaration?.MethodGroupType.Return.Type.ToAntetype() ?? IAntetype.Unknown;
+        var unboundAntetype = node.Method.ReferencedDeclaration?.MethodGroupType.Return.ToAntetype() ?? IAntetype.Unknown;
         var boundAntetype = node.Method.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
@@ -322,7 +322,7 @@ internal static partial class ExpressionAntetypesAspect
 
     public static partial IMaybeExpressionAntetype GetterInvocationExpression_Antetype(IGetterInvocationExpressionNode node)
     {
-        var unboundAntetype = node.ReferencedDeclaration?.Symbol.Return.Type.ToAntetype() ?? IAntetype.Unknown;
+        var unboundAntetype = node.ReferencedDeclaration?.Symbol.Return.ToAntetype() ?? IAntetype.Unknown;
         var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
@@ -344,7 +344,7 @@ internal static partial class ExpressionAntetypesAspect
 
     public static partial IMaybeExpressionAntetype InitializerInvocationExpression_Antetype(IInitializerInvocationExpressionNode node)
     {
-        var unboundAntetype = node.ReferencedDeclaration?.Symbol.Return.Type.ToAntetype() ?? IAntetype.Unknown;
+        var unboundAntetype = node.ReferencedDeclaration?.Symbol.Return.ToAntetype() ?? IAntetype.Unknown;
         var boundAntetype = node.InitializerGroup.InitializingAntetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }

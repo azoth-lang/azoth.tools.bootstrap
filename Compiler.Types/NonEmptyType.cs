@@ -82,12 +82,4 @@ public abstract class NonEmptyType : Type
             return ReplaceTypeParametersIn(parameterType);
         return null;
     }
-
-    /// <summary>
-    /// Replace any <see cref="GenericParameterType"/> from this type that appear in the given type
-    /// with the type arguments from this type (assuming it has them).
-    /// </summary>
-    /// <remarks>Has no effect if this is not a generic type.</remarks>
-    public ReturnType ReplaceTypeParametersIn(ReturnType @return)
-        => new(ReplaceTypeParametersIn(@return.Type));
 }

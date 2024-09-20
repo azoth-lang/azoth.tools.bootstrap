@@ -54,7 +54,7 @@ internal static class AntetypeContextualizedOverload
         var symbol = function.Symbol;
         var parameterAntetypes = symbol.Parameters.Select(p => p.Type.ToAntetype().ToNonConstValueType())
                                        .Cast<IMaybeNonVoidAntetype>().ToFixedList();
-        var returnAntetype = symbol.Return.Type.ToAntetype().ToNonConstValueType();
+        var returnAntetype = symbol.Return.ToAntetype().ToNonConstValueType();
         return new(function, null, parameterAntetypes, returnAntetype);
     }
 
@@ -110,5 +110,5 @@ internal static class AntetypeContextualizedOverload
         => contextAntetype.ReplaceTypeParametersIn(parameter.Type.ToAntetype()).ToNonConstValueType();
 
     private static IMaybeAntetype ReturnAntetype(IMaybeExpressionAntetype contextAntetype, InvocableSymbol symbol)
-        => contextAntetype.ReplaceTypeParametersIn(symbol.Return.Type.ToAntetype()).ToNonConstValueType();
+        => contextAntetype.ReplaceTypeParametersIn(symbol.Return.ToAntetype()).ToNonConstValueType();
 }

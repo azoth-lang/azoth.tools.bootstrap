@@ -12,14 +12,14 @@ internal static partial class ForeachExpressionTypesAspect
         var iterableType = node.InExpression?.Type ?? DataType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
         var iteratorType = iterableType is NonEmptyType nonEmptyIterableType && iterateMethod is not null
-            ? nonEmptyIterableType.ReplaceTypeParametersIn(iterateMethod.MethodGroupType.Return.Type)
+            ? nonEmptyIterableType.ReplaceTypeParametersIn(iterateMethod.MethodGroupType.Return)
             : iterableType;
         return iteratorType;
     }
 
     public static partial DataType ForeachExpression_IteratedType(IForeachExpressionNode node)
     {
-        var nextMethodReturnType = node.ReferencedNextMethod?.MethodGroupType.Return.Type;
+        var nextMethodReturnType = node.ReferencedNextMethod?.MethodGroupType.Return;
         if (nextMethodReturnType is not OptionalType { Referent: var iteratedType })
             return DataType.Unknown;
 
