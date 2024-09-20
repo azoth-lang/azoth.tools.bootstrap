@@ -35,7 +35,7 @@ internal class MethodSignature : IEquatable<MethodSignature>
         return Name.Equals(other.Name)
                && SelfType.CanOverride(selfType.ReplaceTypeParametersIn(other.SelfType))
                && ParametersCompatible(selfType, other)
-               && ReturnType.CanOverride(selfType.ReplaceTypeParametersIn(other.ReturnType));
+               && ReturnType.Type.ReturnCanOverride(selfType.ReplaceTypeParametersIn(other.ReturnType).Type);
     }
 
     private bool ParametersCompatible(NonEmptyType selfType, MethodSignature other)

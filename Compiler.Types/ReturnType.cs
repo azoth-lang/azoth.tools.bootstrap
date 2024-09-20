@@ -21,9 +21,6 @@ public readonly record struct ReturnType(DataType Type)
 
     public bool IsFullyKnown => Type.IsFullyKnown;
 
-    public bool CanOverride(ReturnType baseReturn)
-        => baseReturn.Type.IsAssignableFrom(Type);
-
     public bool ReferenceEquals(ReturnType other)
         => ReferenceEquals(Type, other.Type);
 
