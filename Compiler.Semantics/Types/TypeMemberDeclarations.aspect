@@ -22,7 +22,7 @@
     => Parameters[index - 1].FlowStateAfter;
 = ConcreteMethodDefinition.Body.**.FlowStateBefore()
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
-= ConcreteMethodDefinition.Body.**.ExpectedReturnType => Return?.NamedType ?? DataType.Void;
+= ConcreteMethodDefinition.Body.**.ExpectedReturnType => Return?.NamedType ?? IType.Void;
 
 = StandardMethodDefinition.MethodGroupType => Symbol.MethodGroupType;
 = StandardMethodDefinition.Body.**.ExpectedType => Self.MethodGroupType.Return;
@@ -34,7 +34,7 @@
     => Parameters[index - 1].FlowStateAfter;
 = SourceConstructorDefinition.Body.**.FlowStateBefore()
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
-= SourceConstructorDefinition.Body.**.ExpectedReturnType => DataType.Void;
+= SourceConstructorDefinition.Body.**.ExpectedReturnType => IType.Void;
 
 = SourceInitializerDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
 = SourceInitializerDefinition.Parameters[0].**.FlowStateBefore()
@@ -43,7 +43,7 @@
     => Parameters[index - 1].FlowStateAfter;
 = SourceInitializerDefinition.Body.**.FlowStateBefore()
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
-= SourceInitializerDefinition.Body.**.ExpectedReturnType => DataType.Void;
+= SourceInitializerDefinition.Body.**.ExpectedReturnType => IType.Void;
 
 = FieldDefinition.↑.Diagnostics;
 // Null is the signal that this is a field initializer and not a method body

@@ -249,10 +249,10 @@ public static class DataTypeExtensions
     public static DataType? NumericOperatorCommonType(this DataType leftType, DataType rightType)
         => (leftType, rightType) switch
         {
-            (_, NeverType) => DataType.Never,
-            (NeverType, _) => DataType.Never,
-            ({ IsFullyKnown: false }, _) => DataType.Unknown,
-            (_, { IsFullyKnown: false }) => DataType.Unknown,
+            (_, NeverType) => IType.Never,
+            (NeverType, _) => IType.Never,
+            ({ IsFullyKnown: false }, _) => IType.Unknown,
+            (_, { IsFullyKnown: false }) => IType.Unknown,
             (OptionalType { Referent: var left }, OptionalType { Referent: var right })
                 => left.NumericOperatorCommonType(right)?.MakeOptional(),
             (OptionalType { Referent: var left }, _) => left.NumericOperatorCommonType(rightType)?.MakeOptional(),
@@ -269,25 +269,25 @@ public static class DataTypeExtensions
         => (leftType, rightType) switch
         {
             (BigIntegerType left, IntegerType right)
-                => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
+                => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
             (IntegerType left, BigIntegerType right)
-                => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
+                => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
             (BigIntegerType left, IntegerConstValueType right)
-                => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
+                => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
             (IntegerConstValueType left, BigIntegerType right)
-                => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
+                => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
             (PointerSizedIntegerType left, PointerSizedIntegerType right)
-                => left.IsSigned || right.IsSigned ? DataType.Offset : DataType.Size,
+                => left.IsSigned || right.IsSigned ? IType.Offset : IType.Size,
             (PointerSizedIntegerType { IsSigned: true }, IntegerConstValueType { IsInt16: true })
                 or (PointerSizedIntegerType { IsSigned: false }, IntegerConstValueType { IsUInt16: true })
                 => leftType.Type,
             (PointerSizedIntegerType left, IntegerConstValueType right)
-                => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
+                => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
             (IntegerConstValueType { IsInt16: true }, PointerSizedIntegerType { IsSigned: true })
                 or (IntegerConstValueType { IsUInt16: true }, PointerSizedIntegerType { IsSigned: false })
                 => rightType.Type,
             (IntegerConstValueType left, PointerSizedIntegerType right)
-                => left.IsSigned || right.IsSigned ? DataType.Int : DataType.UInt,
+                => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
             (FixedSizeIntegerType left, FixedSizeIntegerType right)
                 when left.IsSigned == right.IsSigned
                 => (left.Bits >= right.Bits ? left : right).Type,

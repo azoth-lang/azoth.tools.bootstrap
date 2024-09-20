@@ -49,7 +49,7 @@ internal static partial class SymbolsAspect
         => new(node.ContainingSymbol, node.Kind, node.Name,
             node.SelfParameter.ParameterType,
             node.Parameters.Select(p => p.ParameterType).ToFixedList(),
-            node.Return?.NamedType ?? DataType.Void);
+            node.Return?.NamedType ?? IType.Void);
 
     public static partial ConstructorSymbol SourceConstructorDefinition_Symbol(ISourceConstructorDefinitionNode node)
         => new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType,

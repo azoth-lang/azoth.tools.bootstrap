@@ -100,7 +100,7 @@
 ↑ NewObjectExpression.ContextualizedOverload:`ContextualizedOverload`?;
 = NewObjectExpression.↑.Diagnostics;
 
-↑ NeverTypedExpression.Type: `NeverType` => DataType.Never;
+↑ NeverTypedExpression.Type: `NeverType` => IType.Never;
 
 // ---------- Literal Expressions
 ↓ LiteralExpression.FlowStateBefore(): `IFlowState`;
@@ -124,19 +124,19 @@
 // No expected type for the referent. If one were given, it could cause another implicit conversion.
 = ImplicitConversionExpression.Referent.ExpectedType => null;
 = PatternMatchExpression.Pattern.**.FlowStateBefore => Referent?.FlowStateAfter ?? IFlowState.Empty;
-= PatternMatchExpression.Type => DataType.Bool;
+= PatternMatchExpression.Type => IType.Bool;
 
 // ---------- Control Flow Expressions
 = IfExpression.ThenBlock.**.FlowStateBefore
     => Condition?.FlowStateAfter ?? IFlowState.Empty;
 = IfExpression.ElseClause.**.FlowStateBefore
     => Condition?.FlowStateAfter ?? IFlowState.Empty;
-= IfExpression.Condition.ExpectedType => DataType.OptionalBool;
+= IfExpression.Condition.ExpectedType => IType.OptionalBool;
 ⟳ IfExpression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 = IfExpression.↑.Diagnostics;
 = WhileExpression.Block.**.FlowStateBefore
     => Condition?.FlowStateAfter ?? IFlowState.Empty;
-= WhileExpression.Condition.ExpectedType => DataType.OptionalBool;
+= WhileExpression.Condition.ExpectedType => IType.OptionalBool;
 = ReturnExpression.Value.ExpectedType => ExpectedReturnType;
 = ReturnExpression.Value.ImplicitRecoveryAllowed() => true;
 = ReturnExpression.Value.ShouldPrepareToReturn() => true;
@@ -192,19 +192,19 @@
     => Expression?.FlowStateAfter ?? base.Inherited_FlowStateBefore(child, descendant, ctx);
 = UnknownInvocationExpression.Arguments[index].**.FlowStateBefore()
     => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
-= UnknownInvocationExpression.Type => DataType.Unknown;
+= UnknownInvocationExpression.Type => IType.Unknown;
 
 // ---------- Name Expressions
 ↓ NameExpression.FlowStateBefore(): `IFlowState`;
 // TODO delete once all name expressions implement FlowStateAfter
 ↑ NameExpression.FlowStateAfter: `IFlowState`
     => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
-↑ NamespaceName.Type: `UnknownType` => DataType.Unknown;
-↑ FunctionGroupName.Type: `UnknownType` => DataType.Unknown;
+↑ NamespaceName.Type: `UnknownType` => IType.Unknown;
+↑ FunctionGroupName.Type: `UnknownType` => IType.Unknown;
 = FunctionGroupName.FlowStateAfter => FlowStateBefore();
 = FunctionName.FlowStateAfter;
 = FunctionName.*.ExpectedType => null;
-↑ MethodGroupName.Type: `UnknownType` => DataType.Unknown;
+↑ MethodGroupName.Type: `UnknownType` => IType.Unknown;
 = MethodGroupName.FlowStateAfter => Context.FlowStateAfter;
 = MethodName.Context.ExpectedType;
 = MethodName.Context.ImplicitRecoveryAllowed() => true;
@@ -214,13 +214,13 @@
 = FieldAccessExpression.FlowStateAfter;
 = FieldAccessExpression.↑.Diagnostics;
 = VariableNameExpression.FlowStateAfter;
-= TypeNameExpression.Type => DataType.Unknown;
+= TypeNameExpression.Type => IType.Unknown;
 = InitializerGroupName.Type => throw new NotImplementedException();
-↑ SpecialTypeNameExpression.Type:`UnknownType` => DataType.Unknown;
+↑ SpecialTypeNameExpression.Type:`UnknownType` => IType.Unknown;
 ↑ SelfExpression.Pseudotype: `Pseudotype`;
 = SelfExpression.FlowStateAfter;
-↑ MissingNameExpression.Type: `UnknownType` => DataType.Unknown;
-↑ UnknownNameExpression.Type: `UnknownType` => DataType.Unknown;
+↑ MissingNameExpression.Type: `UnknownType` => IType.Unknown;
+↑ UnknownNameExpression.Type: `UnknownType` => IType.Unknown;
 = UnresolvedMemberAccessExpression.FlowStateAfter;
 
 // ---------- Capability Expressions

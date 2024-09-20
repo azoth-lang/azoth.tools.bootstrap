@@ -18,7 +18,7 @@ public class OptionalTypeTests
     [Fact]
     public void Cannot_have_optional_void_type()
     {
-        Assert.Throws<ArgumentException>(() => new OptionalType(DataType.Void));
+        Assert.Throws<ArgumentException>(() => new OptionalType(IType.Void));
     }
 
     [Fact]

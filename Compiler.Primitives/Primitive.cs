@@ -54,8 +54,8 @@ public static class Primitive
         BuildIntegerTypeSymbol(tree, DeclaredType.NInt, stringType);
         BuildIntegerTypeSymbol(tree, DeclaredType.NUInt, stringType);
 
-        BuildEmptyTypeSymbol(tree, DataType.Void);
-        BuildEmptyTypeSymbol(tree, DataType.Never);
+        BuildEmptyTypeSymbol(tree, IType.Void);
+        BuildEmptyTypeSymbol(tree, IType.Never);
 
         BuildAnyTypeSymbol(tree);
 
@@ -98,7 +98,7 @@ public static class Primitive
 
         var idAnyType = DeclaredType.Any.With(Capability.Identity);
         // fn identity_hash(value: Any) -> nuint
-        var identityHash = new MethodSymbol(symbol, "identity_hash", SelfParam(idAnyType), Params(), DataType.NUInt);
+        var identityHash = new MethodSymbol(symbol, "identity_hash", SelfParam(idAnyType), Params(), IType.NUInt);
         tree.Add(identityHash);
     }
 }

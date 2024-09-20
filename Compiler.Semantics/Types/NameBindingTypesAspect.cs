@@ -15,7 +15,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class NameBindingTypesAspect
 {
     public static partial DataType VariableDeclarationStatement_BindingType(IVariableDeclarationStatementNode node)
-        => node.Type?.NamedType ?? InferDeclarationType(node, node.Capability) ?? DataType.Unknown;
+        => node.Type?.NamedType ?? InferDeclarationType(node, node.Capability) ?? IType.Unknown;
 
     private static DataType? InferDeclarationType(
         IVariableDeclarationStatementNode node,
@@ -57,7 +57,7 @@ internal static partial class NameBindingTypesAspect
         => node.FlowStateBefore().Declare(node, node.MatchReferentValueId);
 
     public static partial DataType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node)
-        => node.Referent?.Type.ToNonConstValueType() ?? DataType.Unknown;
+        => node.Referent?.Type.ToNonConstValueType() ?? IType.Unknown;
 
     public static partial DataType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node)
     {
@@ -110,7 +110,7 @@ internal static partial class NameBindingTypesAspect
 
     // TODO this is strange because a FieldParameter isn't a binding
     public static partial DataType FieldParameter_BindingType(IFieldParameterNode node)
-        => node.ReferencedField?.BindingType ?? DataType.Unknown;
+        => node.ReferencedField?.BindingType ?? IType.Unknown;
 
     public static partial CapabilityType InitializerSelfParameter_BindingType(IInitializerSelfParameterNode node)
     {

@@ -2071,7 +2071,7 @@ public partial interface IUnsafeExpressionNode : IExpressionNode
 public partial interface INeverTypedExpressionNode : IExpressionNode
 {
     new NeverType Type
-        => DataType.Never;
+        => IType.Never;
     DataType IExpressionNode.Type => Type;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Never;
@@ -2326,7 +2326,7 @@ public partial interface IPatternMatchExpressionNode : IExpressionNode
     ConditionalLexicalScope IAmbiguousExpressionNode.FlowLexicalScope()
         => Pattern.FlowLexicalScope();
     DataType IExpressionNode.Type
-        => DataType.Bool;
+        => IType.Bool;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Bool;
 
@@ -2535,7 +2535,7 @@ public partial interface IUnknownInvocationExpressionNode : IInvocationExpressio
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     IFlowState FlowStateBefore();
     DataType IExpressionNode.Type
-        => DataType.Unknown;
+        => IType.Unknown;
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
         => TempArguments;
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
@@ -2842,7 +2842,7 @@ public partial interface INameExpressionNode : IExpressionNode, IAmbiguousNameEx
 public partial interface IUnknownNameExpressionNode : INameExpressionNode
 {
     new UnknownType Type
-        => DataType.Unknown;
+        => IType.Unknown;
     DataType IExpressionNode.Type => Type;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
@@ -2902,7 +2902,7 @@ public partial interface INamespaceNameNode : INameExpressionNode
 {
     IFixedList<INamespaceDeclarationNode> ReferencedDeclarations { get; }
     new UnknownType Type
-        => DataType.Unknown;
+        => IType.Unknown;
     DataType IExpressionNode.Type => Type;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
@@ -2958,7 +2958,7 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
     new UnknownType Type
-        => DataType.Unknown;
+        => IType.Unknown;
     DataType IExpressionNode.Type => Type;
     IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations { get; }
     IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
@@ -3016,7 +3016,7 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
     new UnknownType Type
-        => DataType.Unknown;
+        => IType.Unknown;
     DataType IExpressionNode.Type => Type;
     IFixedSet<IStandardMethodDeclarationNode> CompatibleDeclarations { get; }
     IStandardMethodDeclarationNode? ReferencedDeclaration { get; }
@@ -3124,7 +3124,7 @@ public partial interface ITypeNameExpressionNode : INameExpressionNode
     IMaybeAntetype NamedAntetype { get; }
     BareType? NamedBareType { get; }
     DataType IExpressionNode.Type
-        => DataType.Unknown;
+        => IType.Unknown;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
 }
@@ -3203,7 +3203,7 @@ public partial interface ISpecialTypeNameExpressionNode : INameExpressionNode
     ISyntax? ISemanticNode.Syntax => Syntax;
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     new UnknownType Type
-        => DataType.Unknown;
+        => IType.Unknown;
     DataType IExpressionNode.Type => Type;
     SpecialTypeName Name
         => Syntax.Name;
@@ -3262,7 +3262,7 @@ public partial interface IMissingNameExpressionNode : ISimpleNameExpressionNode
     INameExpressionSyntax IAmbiguousNameExpressionNode.Syntax => Syntax;
     ISimpleNameSyntax IUnresolvedSimpleNameNode.Syntax => Syntax;
     new UnknownType Type
-        => DataType.Unknown;
+        => IType.Unknown;
     DataType IExpressionNode.Type => Type;
     IMaybeExpressionAntetype IExpressionNode.Antetype
         => IAntetype.Unknown;
@@ -5981,7 +5981,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return Return?.NamedType ?? DataType.Void;
+            return Return?.NamedType ?? IType.Void;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
@@ -6144,7 +6144,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return Return?.NamedType ?? DataType.Void;
+            return Return?.NamedType ?? IType.Void;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
@@ -6300,7 +6300,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return Return?.NamedType ?? DataType.Void;
+            return Return?.NamedType ?? IType.Void;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
@@ -6553,7 +6553,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return DataType.Void;
+            return IType.Void;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
@@ -6790,7 +6790,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     internal override DataType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
-            return DataType.Void;
+            return IType.Void;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
     }
 
@@ -11371,7 +11371,7 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentCondition))
-            return DataType.OptionalBool;
+            return IType.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -11717,7 +11717,7 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
     internal override DataType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentCondition))
-            return DataType.OptionalBool;
+            return IType.OptionalBool;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);

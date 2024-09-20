@@ -43,12 +43,12 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
 
     /// <summary>
     /// The default non-constant type to places values of this type in. For
-    /// <see cref="IntegerConstValueType"/>, that is <see cref="DataType.Int"/>.
+    /// <see cref="IntegerConstValueType"/>, that is <see cref="IType.Int"/>.
     /// </summary>
     /// <remarks>It might be thought this should return the smallest integer type that contains
     /// the value. However, that would lead to unexpected behavior in some cases because small
     /// integer constants might produce small fixed size integers leading to overflow.</remarks>
-    public override DataType ToNonConstValueType() => Int;
+    public override DataType ToNonConstValueType() => IType.Int;
 
     public NumericType ToSmallestSignedIntegerType()
     {

@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public sealed class FunctionType : NonEmptyType, IMaybeFunctionType
 {
     public static IMaybeFunctionType Create(IEnumerable<ParameterType> parameters, DataType @return)
-    => @return is Type returnType ? new FunctionType(parameters, returnType) : Unknown;
+    => @return is Type returnType ? new FunctionType(parameters, returnType) : IType.Unknown;
 
     public FunctionType(IEnumerable<ParameterType> parameters, DataType @return)
     {

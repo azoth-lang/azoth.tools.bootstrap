@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public readonly record struct SelfParameterType(bool IsLent, Pseudotype Type) : IParameterType
 {
-    public static readonly ParameterType Int = new(false, DataType.Int);
+    public static readonly ParameterType Int = new(false, IType.Int);
 
     public bool IsFullyKnown => Type.IsFullyKnown;
 

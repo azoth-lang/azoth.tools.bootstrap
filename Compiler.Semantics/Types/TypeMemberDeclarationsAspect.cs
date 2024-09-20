@@ -16,7 +16,7 @@ internal static partial class TypeMemberDeclarationsAspect
     public static partial FunctionType ConcreteFunctionInvocableDefinition_Type(IConcreteFunctionInvocableDefinitionNode node)
     {
         var parameterTypes = node.Parameters.Select(p => p.ParameterType).ToFixedList();
-        var returnType = node.Return?.NamedType ?? DataType.Void;
+        var returnType = node.Return?.NamedType ?? IType.Void;
         return new FunctionType(parameterTypes, returnType);
     }
 

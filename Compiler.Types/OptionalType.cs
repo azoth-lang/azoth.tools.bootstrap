@@ -18,7 +18,7 @@ public sealed class OptionalType : NonEmptyType
         => referent switch
         {
             Type t => new OptionalType(t),
-            UnknownType _ => Unknown,
+            UnknownType _ => IType.Unknown,
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 

@@ -23,7 +23,7 @@ public class DataTypeExtensionsTests
     {
         var constType = new IntegerConstValueType(value);
 
-        var assignable = DataType.Int32.IsAssignableFrom(constType);
+        var assignable = IType.Int32.IsAssignableFrom(constType);
 
         Assert.False(assignable);
     }
@@ -52,7 +52,7 @@ public class DataTypeExtensionsTests
     [Fact]
     public void No_underlying_reference_type_for_optional_value_type()
     {
-        var optionalType = new OptionalType(DataType.Bool);
+        var optionalType = new OptionalType(IType.Bool);
 
         var underlyingType = optionalType.UnderlyingReferenceType();
 
@@ -62,7 +62,7 @@ public class DataTypeExtensionsTests
     [Fact]
     public void No_underlying_reference_type_for_value_type()
     {
-        var valueType = DataType.Int32;
+        var valueType = IType.Int32;
 
         var underlyingType = valueType.UnderlyingReferenceType();
 

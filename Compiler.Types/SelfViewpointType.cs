@@ -10,7 +10,7 @@ public sealed class SelfViewpointType : ViewpointType
         => referent switch
         {
             Type t => new SelfViewpointType(capability, t),
-            UnknownType _ => Unknown,
+            UnknownType _ => IType.Unknown,
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 

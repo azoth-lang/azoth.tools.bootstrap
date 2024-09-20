@@ -10,8 +10,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 /// </summary>
 public sealed class BoolConstValueType : ConstValueType
 {
-    internal new static readonly BoolConstValueType True = new(true);
-    internal new static readonly BoolConstValueType False = new(false);
+    internal static readonly BoolConstValueType True = new(true);
+    internal static readonly BoolConstValueType False = new(false);
 
     public bool Value { get; }
 
@@ -29,7 +29,7 @@ public sealed class BoolConstValueType : ConstValueType
 
     public static implicit operator BoolConstValueType(bool value) => value ? True : False;
 
-    public override DataType ToNonConstValueType() => Bool;
+    public override DataType ToNonConstValueType() => IType.Bool;
 
     public override IMaybeExpressionAntetype ToAntetype()
         => Value ? IExpressionAntetype.True : IExpressionAntetype.False;

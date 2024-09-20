@@ -41,7 +41,7 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     public DataType WithRead(IFixedList<DataType> typeArguments)
     {
         var properTypeArguments = typeArguments.As<Type>();
-        if (properTypeArguments is null) return DataType.Unknown;
+        if (properTypeArguments is null) return IType.Unknown;
         return WithRead(properTypeArguments);
     }
 

@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
 public readonly record struct ParameterType(bool IsLent, DataType Type) : IParameterType
 {
-    public static readonly ParameterType Int = new(false, DataType.Int);
+    public static readonly ParameterType Int = new(false, IType.Int);
 
     Pseudotype IParameterType.Type => Type;
 
