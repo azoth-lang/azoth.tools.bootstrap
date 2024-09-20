@@ -204,7 +204,10 @@
 = FunctionGroupName.FlowStateAfter => FlowStateBefore();
 = FunctionName.FlowStateAfter;
 = FunctionName.*.**.ExpectedType => null;
-= MethodGroupName.Type => throw new NotImplementedException();
+// Avoid issues with a hack that affects MethodGroupName
+// TODO remove this hack
+//= MethodGroupName.Context.ImplicitRecoveryAllowed() => ImplicitRecoveryAllowed();
+↑ MethodGroupName.Type: `UnknownType` => DataType.Unknown;
 = MethodGroupName.FlowStateAfter => Context.FlowStateAfter;
 = FieldAccessExpression.FlowStateAfter;
 = FieldAccessExpression.↑.Diagnostics;

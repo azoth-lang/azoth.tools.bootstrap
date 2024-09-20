@@ -3016,8 +3016,9 @@ public partial interface IMethodGroupNameNode : INameExpressionNode
     StandardName MethodName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IStandardMethodDeclarationNode> ReferencedDeclarations { get; }
-    DataType IExpressionNode.Type
-        => throw new NotImplementedException();
+    new UnknownType Type
+        => DataType.Unknown;
+    DataType IExpressionNode.Type => Type;
     IFlowState INameExpressionNode.FlowStateAfter
         => Context.FlowStateAfter;
     IMaybeExpressionAntetype IExpressionNode.Antetype

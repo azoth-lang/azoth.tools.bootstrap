@@ -32,7 +32,10 @@ internal abstract class AmbiguousExpressionNode : CodeNode, IAmbiguousExpression
 
     internal override bool Inherited_ImplicitRecoveryAllowed(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        // Avoid issues with a hack that affects MethodGroupName
+        //if (ReferenceEquals(child, descendant)) return false;
+        //return base.Inherited_ImplicitRecoveryAllowed(child, descendant, ctx);
+
+        //// Avoid issues with a hack that affects MethodGroupName
         if (this is not IMethodGroupNameNode)
             // By default, implicit recovery is not allowed
             return false;

@@ -19,7 +19,7 @@ internal sealed class MethodInvocationExpressionNode : ExpressionNode, IMethodIn
     private RewritableChild<IMethodGroupNameNode> methodGroup;
     private bool methodGroupCached;
     public IMethodGroupNameNode MethodGroup
-        => GrammarAttribute.IsCached(in methodGroupCached)? methodGroup.UnsafeValue
+        => GrammarAttribute.IsCached(in methodGroupCached) ? methodGroup.UnsafeValue
             : this.RewritableChild(ref methodGroupCached, ref methodGroup);
     public IMethodGroupNameNode CurrentMethodGroup => methodGroup.UnsafeValue;
     private readonly IRewritableChildList<IAmbiguousExpressionNode, IExpressionNode> arguments;

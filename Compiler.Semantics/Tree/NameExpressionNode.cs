@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 
 internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameExpressionNode
 {
-    protected override bool MayHaveRewrite => !((IExpressionNode)this).ShouldNotBeExpression();
+    protected override bool MayHaveRewrite => true;
 
     private ControlFlowSet? controlFlowNext;
     private bool controlFlowNextCached;
@@ -44,7 +44,10 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
         => Inherited_ShouldPrepareToReturn(GrammarAttribute.CurrentInheritanceContext());
 
     internal override bool Inherited_ShouldPrepareToReturn(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
-        => false;
+    {
+        if (ReferenceEquals(child, descendant)) return false;
+        return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
+    }
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -71,10 +74,10 @@ internal abstract class NameExpressionNode : AmbiguousNameExpressionNode, INameE
     }
 
     protected override IChildTreeNode Rewrite()
-        => ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
-        ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
+        => ExpressionTypesAspect.Expression_Rewrite_ImplicitMove(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_ImplicitFreeze(this)
         ?? ExpressionTypesAspect.Expression_Rewrite_PrepareToReturn(this)
+        ?? ExpressionAntetypesAspect.Expression_Rewrite_ImplicitConversion(this)
         ?? base.Rewrite();
 
     public IFlowState FlowStateBefore() => throw new System.NotImplementedException();
