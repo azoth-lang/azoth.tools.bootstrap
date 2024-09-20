@@ -4,7 +4,6 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -102,7 +101,7 @@ internal static partial class OverloadResolutionAspect
         // TODO maybe the MethodInvocationExpression should not contain a MethodName. Instead, it
         // could directly contain the context and the method name identifier. That way, weirdness
         // about passing things through the MethodName layer could be avoided.
-        return new MethodInvocationExpressionNode(node.Syntax, method, node.CurrentArguments);
+        return IMethodInvocationExpressionNode.Create(node.Syntax, method, node.CurrentArguments);
     }
 
     public static partial IExpressionNode? UnknownInvocationExpression_Rewrite_TypeNameExpression(IUnknownInvocationExpressionNode node)

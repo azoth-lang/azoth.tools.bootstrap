@@ -4,7 +4,6 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
-using Azoth.Tools.Bootstrap.Compiler.Semantics.Tree;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Framework;
@@ -121,7 +120,7 @@ internal static partial class BindingAmbiguousNamesAspect
             return null;
 
         if (members.TryAllOfType<IStandardMethodDeclarationNode>(out var referencedMethods))
-            return new MethodGroupNameNode(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);
+            return IMethodGroupNameNode.Create(node.Syntax, context, node.MemberName, node.TypeArguments, referencedMethods);
 
         if (members.TryAllOfType<IPropertyAccessorDeclarationNode>(out var referencedProperties)
             && node.TypeArguments.Count == 0)
