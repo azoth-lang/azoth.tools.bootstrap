@@ -56,6 +56,6 @@
 ↑ StandardMethodDeclaration.MethodGroupType: `FunctionType`;
 ↑ ConstructorDeclaration.Symbol: `ConstructorSymbol`;
 ↑ InitializerDeclaration.Symbol: `InitializerSymbol`;
-↑ FieldDeclaration.BindingType: `DataType`;
+↑ FieldDeclaration.BindingType: `IMaybeExpressionType`;
 ↑ FieldDeclaration.Symbol: `FieldSymbol`;
 ↑ AssociatedFunctionDeclaration.Symbol: `FunctionSymbol`;

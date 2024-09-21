@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public static partial class TypeOperations
 {
-    public static bool CanBeExplicitlyConvertedTo(this DataType fromType, DataType toType, bool safeOnly)
+    public static bool CanBeExplicitlyConvertedTo(this IMaybeExpressionType fromType, IMaybeExpressionType toType, bool safeOnly)
     {
         return (fromType, toType) switch
         {

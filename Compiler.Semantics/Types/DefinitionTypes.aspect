@@ -6,7 +6,7 @@
 
 // ---------- Special Parts
 ⟳ ElseClause.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
-↑ BlockOrResult.Type: `DataType`;
+↑ BlockOrResult.Type: `IMaybeExpressionType`;
 
 // ---------- Definitions
 ↑ ConcreteFunctionInvocableDefinition.Type: `FunctionType`;

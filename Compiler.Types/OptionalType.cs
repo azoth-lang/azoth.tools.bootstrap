@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class OptionalType : NonEmptyType, INonVoidType
 {
-    public static DataType Create(DataType referent)
+    public static IMaybeExpressionType Create(IMaybeExpressionType referent)
         => referent switch
         {
             Type t => new OptionalType(t),

@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public sealed class SelfViewpointType : ViewpointType
 {
-    public static DataType Create(CapabilitySet capability, DataType referent)
+    public static IMaybeExpressionType Create(CapabilitySet capability, IMaybeExpressionType referent)
         => referent switch
         {
             Type t => new SelfViewpointType(capability, t),

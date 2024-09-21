@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class ForeachExpressionTypesAspect
 {
-    public static partial DataType ForeachExpression_IteratorType(IForeachExpressionNode node)
+    public static partial IMaybeExpressionType ForeachExpression_IteratorType(IForeachExpressionNode node)
     {
         var iterableType = node.InExpression?.Type ?? IType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
@@ -17,7 +17,7 @@ internal static partial class ForeachExpressionTypesAspect
         return iteratorType;
     }
 
-    public static partial DataType ForeachExpression_IteratedType(IForeachExpressionNode node)
+    public static partial IMaybeExpressionType ForeachExpression_IteratedType(IForeachExpressionNode node)
     {
         var nextMethodReturnType = node.ReferencedNextMethod?.MethodGroupType.Return;
         if (nextMethodReturnType is not OptionalType { Referent: var iteratedType })
@@ -36,7 +36,7 @@ internal static partial class ForeachExpressionTypesAspect
         return flowState.Declare(node, node.InExpression?.ValueId);
     }
 
-    public static partial DataType ForeachExpression_Type(IForeachExpressionNode node)
+    public static partial IMaybeExpressionType ForeachExpression_Type(IForeachExpressionNode node)
         // TODO assign correct type to the expression
         => IType.Void;
 

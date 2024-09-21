@@ -65,7 +65,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
 
     public abstract BareType With(IFixedList<Type> typeArguments);
 
-    public BareType? With(IFixedList<DataType> typeArguments)
+    public BareType? With(IFixedList<IMaybeExpressionType> typeArguments)
     {
         var properTypeArguments = typeArguments.As<Type>();
         if (properTypeArguments is null) return null;

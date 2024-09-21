@@ -11,10 +11,10 @@ internal static class SymbolBuilder
 {
     public static SelfParameterType SelfParam(DataType type) => new(false, type);
 
-    public static IFixedList<ParameterType> Params(params DataType[] types)
+    public static IFixedList<ParameterType> Params(params IMaybeExpressionType[] types)
         => types.Select(t => new ParameterType(false, t)).ToFixedList();
 
-    public static DataType Return(DataType type) => type;
+    public static IMaybeExpressionType Return(IMaybeExpressionType type) => type;
 
     public static FunctionSymbol Function(Symbol containingSymbol, IdentifierName name, IFixedList<ParameterType> @params)
         => new(containingSymbol, name, new FunctionType(@params, IType.Void));

@@ -13,15 +13,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class ForeachExpressionTypesAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial DataType ForeachExpression_Type(IForeachExpressionNode node);
+    public static partial IMaybeExpressionType ForeachExpression_Type(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState ForeachExpression_FlowStateAfter(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void ForeachExpression_Contribute_Diagnostics(IForeachExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial DataType ForeachExpression_IteratorType(IForeachExpressionNode node);
+    public static partial IMaybeExpressionType ForeachExpression_IteratorType(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial DataType ForeachExpression_IteratedType(IForeachExpressionNode node);
+    public static partial IMaybeExpressionType ForeachExpression_IteratedType(IForeachExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node);
 }

@@ -18,7 +18,7 @@ public static class DataTypeExtensions
     /// This does not account for implicit conversions, but does allow for borrowing
     /// and sharing. It also allows for isolated upgrading to mutable.
     /// </summary>
-    public static bool IsAssignableFrom(this DataType target, DataType source)
+    public static bool IsAssignableFrom(this IMaybeExpressionType target, IMaybeExpressionType source)
     {
         return (target, source) switch
         {
@@ -179,7 +179,7 @@ public static class DataTypeExtensions
     /// <summary>
     /// Replace self viewpoint types using the given type as self.
     /// </summary>
-    public static DataType ReplaceSelfWith(this DataType type, DataType selfType)
+    public static IMaybeExpressionType ReplaceSelfWith(this IMaybeExpressionType type, IMaybeExpressionType selfType)
     {
         if (selfType is not CapabilityType selfReferenceType)
             return type;
@@ -189,7 +189,7 @@ public static class DataTypeExtensions
     /// <summary>
     /// Replace self viewpoint types using the given type as self.
     /// </summary>
-    public static DataType ReplaceSelfWith(this DataType type, Capability capability)
+    public static IMaybeExpressionType ReplaceSelfWith(this IMaybeExpressionType type, Capability capability)
     {
         return type switch
         {
@@ -233,7 +233,7 @@ public static class DataTypeExtensions
     /// If this is a reference type or an optional reference type, the underlying reference type.
     /// Otherwise, <see langword="null"/>.
     /// </summary>
-    public static CapabilityType? UnderlyingReferenceType(this DataType type)
+    public static CapabilityType? UnderlyingReferenceType(this IMaybeExpressionType type)
     {
         return type switch
         {
@@ -246,7 +246,7 @@ public static class DataTypeExtensions
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
-    public static DataType? NumericOperatorCommonType(this DataType leftType, DataType rightType)
+    public static IMaybeExpressionType? NumericOperatorCommonType(this IMaybeExpressionType leftType, IMaybeExpressionType rightType)
         => (leftType, rightType) switch
         {
             (_, NeverType) => IType.Never,
@@ -265,7 +265,7 @@ public static class DataTypeExtensions
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
-    internal static DataType? NumericOperatorCommonType(this INumericType? leftType, INumericType? rightType)
+    internal static IMaybeExpressionType? NumericOperatorCommonType(this INumericType? leftType, INumericType? rightType)
         => (leftType, rightType) switch
         {
             (BigIntegerType left, IntegerType right)

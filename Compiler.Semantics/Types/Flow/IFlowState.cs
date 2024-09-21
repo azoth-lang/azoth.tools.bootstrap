@@ -42,14 +42,14 @@ public interface IFlowState : IEquatable<IFlowState>
     /// Gives the current flow type of the symbol.
     /// </summary>
     /// <remarks>This is named for it to be used as <c>flow.Type(symbol)</c></remarks>
-    DataType Type(IBindingNode? binding);
+    IMaybeExpressionType Type(IBindingNode? binding);
 
 
     /// <summary>
     /// Gives the type of an alias to the symbol
     /// </summary>
     /// <remarks>This is named for it to be used as <c>flow.AliasType(symbol)</c></remarks>
-    DataType AliasType(IBindingNode? binding);
+    IMaybeExpressionType AliasType(IBindingNode? binding);
 
     bool IsIsolated(IBindingNode? binding);
     bool IsIsolated(ValueId valueId);
@@ -62,13 +62,13 @@ public interface IFlowState : IEquatable<IFlowState>
     /// Combine the non-lent values representing the arguments into one sharing set with the return
     /// value id and drop the values for all arguments.
     /// </summary>
-    IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId, DataType returnType);
+    IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId, IMaybeExpressionType returnType);
 
     IEnumerable<ValueId> CombineArgumentsDisallowedDueToLent(IEnumerable<ArgumentValueId> arguments);
 
     IFlowState AccessField(IFieldAccessExpressionNode node);
     IFlowState Merge(IFlowState? other);
-    IFlowState Transform(ValueId? valueId, ValueId toValueId, DataType withType);
+    IFlowState Transform(ValueId? valueId, ValueId toValueId, IMaybeExpressionType withType);
 
     // TODO make parameters non-nullable?
     IFlowState Combine(ValueId left, ValueId? right, ValueId intoValueId);

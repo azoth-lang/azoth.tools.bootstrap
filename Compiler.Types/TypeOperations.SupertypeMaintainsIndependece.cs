@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public static partial class TypeOperations
 {
-    private static bool SupertypeMaintainsIndependence(this DataType type, bool exact, TypeParameterIndependence context)
+    private static bool SupertypeMaintainsIndependence(this IMaybeExpressionType type, bool exact, TypeParameterIndependence context)
         => type switch
         {
             GenericParameterType t => t.SupertypeMaintainsIndependence(exact, context),

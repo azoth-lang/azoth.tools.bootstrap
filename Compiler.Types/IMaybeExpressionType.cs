@@ -1,4 +1,3 @@
-using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -7,9 +6,14 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 [Closed(typeof(IExpressionType), typeof(IMaybeType))]
-public interface IMaybeExpressionType : IEquatable<IMaybeExpressionType>
+public interface IMaybeExpressionType : IMaybePseudotype
 {
-    public sealed DataType AsType => (DataType)this;
+    public new sealed DataType AsType => (DataType)this;
+
+    /// <summary>
+    /// A known type is one that has no unknown parts.
+    /// </summary>
+    bool IsFullyKnown { get; }
 
     bool AllowsVariance { get; }
 

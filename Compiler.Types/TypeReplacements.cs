@@ -44,7 +44,7 @@ internal sealed class TypeReplacements
     {
         return pseudotype switch
         {
-            DataType type => ReplaceTypeParametersIn(type),
+            DataType type => ReplaceTypeParametersIn(type).AsType,
             CapabilityTypeConstraint type => ReplaceTypeParametersIn(type),
             _ => throw ExhaustiveMatch.Failed(pseudotype)
         };
@@ -58,7 +58,10 @@ internal sealed class TypeReplacements
         return pseudotype;
     }
 
-    public DataType ReplaceTypeParametersIn(DataType type)
+    public IMaybeExpressionType ReplaceTypeParametersIn(DataType type)
+    => ReplaceTypeParametersIn(type as IMaybeExpressionType);
+
+    public IMaybeExpressionType ReplaceTypeParametersIn(IMaybeExpressionType type)
     {
         return type switch
         {

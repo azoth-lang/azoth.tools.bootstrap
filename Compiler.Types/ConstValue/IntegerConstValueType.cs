@@ -17,7 +17,7 @@ public sealed class IntegerConstValueType : ConstValueType, INumericType
     public BigInteger Value { get; }
     public bool IsSigned { get; }
     public override bool IsFullyKnown => true;
-    DataType INumericType.Type => this;
+    IMaybeExpressionType INumericType.Type => this;
 
     public IntegerConstValueType(BigInteger value)
         : base(SpecialTypeName.ConstInt)

@@ -16,9 +16,10 @@ internal static class CapabilityIndexExtensions
     /// <remarks>The given type must be either the type that the index was created on or the basis
     /// for that type. For example, the index could be from a type constructed by substituting type
     /// parameters into the given type.</remarks>
-    public static DataType TypeAt(this DataType type, CapabilityIndex index) => type.TypeAt(index, 0);
+    public static IMaybeExpressionType TypeAt(this IMaybeExpressionType type, CapabilityIndex index)
+        => type.TypeAt(index, 0);
 
-    private static DataType TypeAt(this DataType type, CapabilityIndex index, int depth)
+    private static IMaybeExpressionType TypeAt(this IMaybeExpressionType type, CapabilityIndex index, int depth)
         => type switch
         {
             OptionalType t => t.Referent.TypeAt(index, depth),

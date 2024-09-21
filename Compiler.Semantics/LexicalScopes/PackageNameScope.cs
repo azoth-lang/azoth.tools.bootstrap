@@ -71,7 +71,7 @@ public sealed class PackageNameScope
     }
 
     #region Loopkup(DataType)
-    public ITypeDeclarationNode? Lookup(DataType type)
+    public ITypeDeclarationNode? Lookup(IMaybeExpressionType type)
         => type switch
         {
             UnknownType _ => null,

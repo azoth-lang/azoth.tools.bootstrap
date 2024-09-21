@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public sealed class CapabilityViewpointType : ViewpointType
 {
-    public static DataType Create(Capability capability, DataType referent)
+    public static IMaybeExpressionType Create(Capability capability, IMaybeExpressionType referent)
         => referent switch
         {
             GenericParameterType t => Create(capability, t),

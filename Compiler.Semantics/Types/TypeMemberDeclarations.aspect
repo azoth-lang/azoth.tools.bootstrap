@@ -59,4 +59,4 @@
 = AssociatedFunctionDefinition.Body.**.ExpectedReturnType => Type.Return;
 
 // ---------- Control Flow Expressions
-↓ ReturnExpression.ExpectedReturnType: `DataType`?;
+↓ ReturnExpression.ExpectedReturnType: `IMaybeExpressionType`?;

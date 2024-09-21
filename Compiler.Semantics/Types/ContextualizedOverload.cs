@@ -18,7 +18,7 @@ public sealed class ContextualizedOverload
     }
 
     public static ContextualizedOverload Create(
-        DataType constructingType,
+        IMaybeExpressionType constructingType,
         IConstructorDeclarationNode constructor)
     {
         var symbol = constructor.Symbol;
@@ -26,14 +26,14 @@ public sealed class ContextualizedOverload
     }
 
     public static ContextualizedOverload Create(
-        DataType initializingAntetype, IInitializerDeclarationNode initializer)
+        IMaybeExpressionType initializingAntetype, IInitializerDeclarationNode initializer)
     {
         var symbol = initializer.Symbol;
         return Create(initializingAntetype, symbol, new(false, symbol.SelfParameterType));
     }
 
     public static ContextualizedOverload Create(
-        DataType contextType,
+        IMaybeExpressionType contextType,
         IStandardMethodDeclarationNode method)
     {
         var symbol = method.Symbol;
@@ -41,7 +41,7 @@ public sealed class ContextualizedOverload
     }
 
     public static ContextualizedOverload Create<T>(
-        DataType contextType,
+        IMaybeExpressionType contextType,
         T propertyAccessor)
         where T : IPropertyAccessorDeclarationNode
     {
@@ -53,7 +53,7 @@ public sealed class ContextualizedOverload
         => new(null, functionType.Parameters, functionType.Return);
 
     private static ContextualizedOverload Create(
-        DataType contextType,
+        IMaybeExpressionType contextType,
         InvocableSymbol symbol,
         SelfParameterType selfParameterType)
     {
@@ -81,18 +81,18 @@ public sealed class ContextualizedOverload
     private static ParameterType CreateParameterType(NonEmptyType contextType, ParameterType parameter)
         => contextType.ReplaceTypeParametersIn(parameter);
 
-    private static DataType CreateReturnType(NonEmptyType contextType, InvocableSymbol symbol)
+    private static IMaybeExpressionType CreateReturnType(NonEmptyType contextType, InvocableSymbol symbol)
         => contextType.ReplaceTypeParametersIn(symbol.Return);
 
     public SelfParameterType? SelfParameterType { get; }
     public IFixedList<ParameterType> ParameterTypes { get; }
     public int Arity => ParameterTypes.Count;
-    public DataType ReturnType { get; }
+    public IMaybeExpressionType ReturnType { get; }
 
     private ContextualizedOverload(
         SelfParameterType? selfParameterType,
         IEnumerable<ParameterType> parameterTypes,
-        DataType returnType)
+        IMaybeExpressionType returnType)
     {
         SelfParameterType = selfParameterType;
         ParameterTypes = parameterTypes.ToFixedList();

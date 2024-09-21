@@ -14,10 +14,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class NameBindingTypesAspect
 {
-    public static partial DataType VariableDeclarationStatement_BindingType(IVariableDeclarationStatementNode node)
+    public static partial IMaybeExpressionType VariableDeclarationStatement_BindingType(IVariableDeclarationStatementNode node)
         => node.Type?.NamedType ?? InferDeclarationType(node, node.Capability) ?? IType.Unknown;
 
-    private static DataType? InferDeclarationType(
+    private static IMaybeExpressionType? InferDeclarationType(
         IVariableDeclarationStatementNode node,
         ICapabilityNode? capability)
     {
@@ -46,20 +46,20 @@ internal static partial class NameBindingTypesAspect
         return flowStateBefore.Declare(node, node.Initializer?.ValueId);
     }
 
-    public static partial DataType ForeachExpression_BindingType(IForeachExpressionNode node)
+    public static partial IMaybeExpressionType ForeachExpression_BindingType(IForeachExpressionNode node)
         => node.DeclaredType?.NamedType ?? node.IteratedType;
 
-    public static partial DataType BindingPattern_BindingType(IBindingPatternNode node)
+    public static partial IMaybeExpressionType BindingPattern_BindingType(IBindingPatternNode node)
         => node.ContextBindingType();
 
     public static partial IFlowState BindingPattern_FlowStateAfter(IBindingPatternNode node)
         // TODO the match referent value id could be used multiple times and perhaps shouldn't be removed here
         => node.FlowStateBefore().Declare(node, node.MatchReferentValueId);
 
-    public static partial DataType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node)
+    public static partial IMaybeExpressionType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node)
         => node.Referent?.Type.ToNonConstValueType().AsType ?? IType.Unknown;
 
-    public static partial DataType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node)
+    public static partial IMaybeExpressionType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node)
     {
         var inheritedBindingType = node.ContextBindingType();
         if (inheritedBindingType is OptionalType optionalType)
@@ -67,10 +67,10 @@ internal static partial class NameBindingTypesAspect
         return inheritedBindingType;
     }
 
-    public static partial DataType BindingContextPattern_Pattern_ContextBindingType(IBindingContextPatternNode node)
+    public static partial IMaybeExpressionType BindingContextPattern_Pattern_ContextBindingType(IBindingContextPatternNode node)
         => node.Type?.NamedType ?? node.ContextBindingType();
 
-    public static partial DataType NamedParameter_BindingType(INamedParameterNode node)
+    public static partial IMaybeExpressionType NamedParameter_BindingType(INamedParameterNode node)
         => node.TypeNode.NamedType;
 
     public static partial ParameterType NamedParameter_ParameterType(INamedParameterNode node)
@@ -79,7 +79,7 @@ internal static partial class NameBindingTypesAspect
         return new(isLent, node.BindingType);
     }
 
-    public static partial Pseudotype MethodSelfParameter_BindingType(IMethodSelfParameterNode node)
+    public static partial IMaybePseudotype MethodSelfParameter_BindingType(IMethodSelfParameterNode node)
     {
         var declaredType = node.ContainingDeclaredType;
         var genericParameterTypes = declaredType.GenericParameterTypes;
@@ -98,7 +98,7 @@ internal static partial class NameBindingTypesAspect
         var isLent = node.IsLentBinding;
         var selfType = ((IParameterNode)node).BindingType;
         if (isLent && !selfType.CanBeLent())
-            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, selfType));
+            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, selfType.AsType));
     }
 
     public static partial CapabilityType ConstructorSelfParameter_BindingType(IConstructorSelfParameterNode node)
@@ -109,7 +109,7 @@ internal static partial class NameBindingTypesAspect
     }
 
     // TODO this is strange because a FieldParameter isn't a binding
-    public static partial DataType FieldParameter_BindingType(IFieldParameterNode node)
+    public static partial IMaybeExpressionType FieldParameter_BindingType(IFieldParameterNode node)
         => node.ReferencedField?.BindingType ?? IType.Unknown;
 
     public static partial CapabilityType InitializerSelfParameter_BindingType(IInitializerSelfParameterNode node)
@@ -146,7 +146,7 @@ internal static partial class NameBindingTypesAspect
     public static partial SelfParameterType SelfParameter_ParameterType(ISelfParameterNode node)
     {
         bool isLent = node.IsLentBinding && node.BindingType.CanBeLent();
-        return new(isLent, node.BindingType);
+        return new(isLent, node.BindingType.AsType);
     }
 
     public static partial void MethodSelfParameter_Contribute_Diagnostics(IMethodSelfParameterNode node, DiagnosticCollectionBuilder diagnostics)
@@ -198,8 +198,8 @@ internal static partial class NameBindingTypesAspect
     {
         var type = node.BindingType;
         if (node.IsLentBinding && !type.CanBeLent())
-            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, type));
+            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, type.AsType));
     }
 
-    public static partial DataType FieldDefinition_BindingType(IFieldDefinitionNode node) => node.TypeNode.NamedType;
+    public static partial IMaybeExpressionType FieldDefinition_BindingType(IFieldDefinitionNode node) => node.TypeNode.NamedType;
 }

@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
     typeof(IntegerType))]
 public abstract class NumericType : SimpleType, INumericType
 {
-    DataType INumericType.Type => Type;
+    IMaybeExpressionType INumericType.Type => Type;
 
     private protected NumericType(SpecialTypeName name)
         : base(name)

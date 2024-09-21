@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public static partial class TypeOperations
 {
-    public static string ToILString(this IFixedList<DataType> types)
+    public static string ToILString(this IFixedList<IMaybeExpressionType> types)
         => string.Join(", ", types.Select(t => t.ToILString()));
 
     /// <summary>
@@ -18,7 +18,7 @@ public static partial class TypeOperations
     /// <remarks>Unknown and empty types (i.e. `void` and `never`) are not changed.</remarks>
     // TODO give a better name, this isn't really a conversion
     [return: NotNullIfNotNull(nameof(type))]
-    public static DataType? MakeOptional(this DataType? type)
+    public static IMaybeExpressionType? MakeOptional(this IMaybeExpressionType? type)
         => type switch
         {
             null => null,

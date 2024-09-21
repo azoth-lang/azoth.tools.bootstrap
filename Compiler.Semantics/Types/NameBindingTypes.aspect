@@ -12,15 +12,15 @@ struct `ParameterType`;
 struct `SelfParameterType`;
 
 // ---------- Bindings
-↑ Binding.BindingType: `Pseudotype`;
-↑ NamedBinding.BindingType: `DataType`;
+↑ Binding.BindingType: `IMaybePseudotype`;
+↑ NamedBinding.BindingType: `IMaybeExpressionType`;
 
 // ---------- Member Definitions
-↑ FieldDefinition.BindingType: `DataType`;
+↑ FieldDefinition.BindingType: `IMaybeExpressionType`;
 
 // ---------- Parameters
-↑ Parameter.BindingType: `Pseudotype`;
-↑ ConstructorOrInitializerParameter.BindingType: `DataType`;
+↑ Parameter.BindingType: `IMaybePseudotype`;
+↑ ConstructorOrInitializerParameter.BindingType: `IMaybeExpressionType`;
 ↑ ConstructorOrInitializerParameter.ParameterType: `ParameterType`;
 = NamedParameter.↑.Diagnostics;
 ↑ SelfParameter.ParameterType:`SelfParameterType`;
@@ -35,7 +35,7 @@ struct `SelfParameterType`;
 = VariableDeclarationStatement.FlowStateAfter;
 
 // ---------- Patterns
-↓ Pattern.ContextBindingType(): `DataType`;
+↓ Pattern.ContextBindingType(): `IMaybeExpressionType`;
 = BindingContextPattern.Pattern.ContextBindingType();
 = BindingPattern.FlowStateAfter;
 = OptionalPattern.Pattern.ContextBindingType();

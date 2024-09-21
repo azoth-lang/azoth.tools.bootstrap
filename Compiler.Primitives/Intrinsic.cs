@@ -24,7 +24,7 @@ public static class Intrinsic
     public static readonly IDeclaredUserType PromiseType = Promise.DeclaresType;
     public static readonly IDeclaredAntetype PromiseAntetype = PromiseType.ToAntetype();
 
-    public static DataType PromiseOf(DataType type)
+    public static IMaybeExpressionType PromiseOf(IMaybeExpressionType type)
         => PromiseType.WithRead(FixedList.Create(type));
     public static IMaybeAntetype PromiseOf(IMaybeExpressionAntetype antetype)
     {

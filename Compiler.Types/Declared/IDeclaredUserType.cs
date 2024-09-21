@@ -38,7 +38,7 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
     CapabilityType With(Capability capability, IFixedList<Type> typeArguments);
     CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<Type> typeArguments);
     CapabilityType WithRead(IFixedList<Type> typeArguments);
-    public DataType WithRead(IFixedList<DataType> typeArguments)
+    public IMaybeExpressionType WithRead(IFixedList<IMaybeExpressionType> typeArguments)
     {
         var properTypeArguments = typeArguments.As<Type>();
         if (properTypeArguments is null) return IType.Unknown;

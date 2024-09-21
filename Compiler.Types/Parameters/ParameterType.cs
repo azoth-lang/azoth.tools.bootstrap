@@ -9,11 +9,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 /// was declared `lent`. This type packages those to values.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public readonly record struct ParameterType(bool IsLent, DataType Type) : IParameterType
+public readonly record struct ParameterType(bool IsLent, IMaybeExpressionType Type) : IParameterType
 {
     public static readonly ParameterType Int = new(false, IType.Int);
 
-    Pseudotype IParameterType.Type => Type;
+    Pseudotype IParameterType.Type => Type.AsType;
 
     public bool IsFullyKnown => Type.IsFullyKnown;
 

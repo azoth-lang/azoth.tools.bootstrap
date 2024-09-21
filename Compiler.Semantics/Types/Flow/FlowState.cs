@@ -143,7 +143,7 @@ internal sealed class FlowState : IFlowState
     private FlowState Declare(IParameterNode parameter, bool isLent)
     {
         var builder = ToBuilder();
-        var bindingValuePairs = BindingValue.ForType(parameter.BindingValueId, parameter.BindingType);
+        var bindingValuePairs = BindingValue.ForType(parameter.BindingValueId, parameter.BindingType.AsType);
         builder.AddValueId(parameter.BindingValueId, bindingValuePairs.Keys);
         foreach (var (value, flowCapability) in bindingValuePairs)
         {
@@ -171,7 +171,7 @@ internal sealed class FlowState : IFlowState
     public IFlowState Declare(INamedBindingNode binding, ValueId? initializerValueId)
     {
         var builder = ToBuilder();
-        var bindingValuePairs = BindingValue.ForType(binding.BindingValueId, binding.BindingType);
+        var bindingValuePairs = BindingValue.ForType(binding.BindingValueId, binding.BindingType.AsType);
         builder.AddValueId(binding.BindingValueId, bindingValuePairs.Keys);
         foreach (var (value, flowCapability) in bindingValuePairs)
         {
@@ -243,11 +243,11 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public DataType Type(IBindingNode? binding) => Type(binding, Functions.Identity);
+    public IMaybeExpressionType Type(IBindingNode? binding) => Type(binding, Functions.Identity);
 
-    public DataType AliasType(IBindingNode? binding) => Type(binding, c => c.OfAlias());
+    public IMaybeExpressionType AliasType(IBindingNode? binding) => Type(binding, c => c.OfAlias());
 
-    private DataType Type(IBindingNode? binding, Func<Capability, Capability> transform)
+    private IMaybeExpressionType Type(IBindingNode? binding, Func<Capability, Capability> transform)
     {
         if (binding is null) return IType.Unknown;
         if (!binding.SharingIsTracked())
@@ -334,7 +334,7 @@ internal sealed class FlowState : IFlowState
     public bool IsLent(ValueId valueId)
         => TrackedValues(valueId).Select(value => values.Sets[value]).Any(set => set.Data.IsLent);
 
-    public IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId, DataType returnType)
+    public IFlowState CombineArguments(IEnumerable<ArgumentValueId> arguments, ValueId returnValueId, IMaybeExpressionType returnType)
     {
         var argumentsList = arguments.ToFixedList();
 
@@ -344,7 +344,7 @@ internal sealed class FlowState : IFlowState
         int? set = builder.Union(TrackedValues(argumentsList.Where(a => !a.IsLent)));
 
         // Add the return value(s) to the unioned set
-        var capabilityValuePairs = CapabilityValue.ForType(returnValueId, returnType);
+        var capabilityValuePairs = CapabilityValue.ForType(returnValueId, returnType.AsType);
         foreach (var (returnValue, flowCapability) in capabilityValuePairs)
         {
             if (flowCapability.Original.SharingIsTracked())
@@ -403,7 +403,7 @@ internal sealed class FlowState : IFlowState
         var containingDeclaredType = node.ReferencedDeclaration.Symbol.ContainingSymbol.DeclaresType.AsDeclaredType;
         var bindingType = node.ReferencedDeclaration.BindingType;
 
-        var newValueCapabilities = CapabilityValue.ForType(valueId, memberType);
+        var newValueCapabilities = CapabilityValue.ForType(valueId, memberType.AsType);
         var valueMap = AccessFieldValueMapping(contextValueId, contextType, containingDeclaredType,
             bindingType, valueId, newValueCapabilities.Keys);
         foreach (var (newValue, flowCapability) in newValueCapabilities)
@@ -428,7 +428,7 @@ internal sealed class FlowState : IFlowState
         ValueId contextValueId,
         CapabilityType contextType,
         DeclaredType containingDeclaredType,
-        DataType bindingType,
+        IMaybeExpressionType bindingType,
         ValueId valueId,
         IEnumerable<CapabilityValue> newValues)
     {
@@ -501,7 +501,7 @@ internal sealed class FlowState : IFlowState
         return builder.ToImmutable();
     }
 
-    public IFlowState Transform(ValueId? valueId, ValueId toValueId, DataType withType)
+    public IFlowState Transform(ValueId? valueId, ValueId toValueId, IMaybeExpressionType withType)
     {
         if (valueId is not ValueId fromValueId) return this;
 

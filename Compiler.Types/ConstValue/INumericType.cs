@@ -6,5 +6,5 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 [Closed(typeof(NumericType), typeof(IntegerConstValueType))]
 internal interface INumericType
 {
-    DataType Type { get; }
+    IMaybeExpressionType Type { get; }
 }

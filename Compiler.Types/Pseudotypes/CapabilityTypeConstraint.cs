@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
-public sealed class CapabilityTypeConstraint : Pseudotype
+public sealed class CapabilityTypeConstraint : Pseudotype, IPseudotype
 {
     public BareType BareType { get; }
 
@@ -25,7 +25,7 @@ public sealed class CapabilityTypeConstraint : Pseudotype
     public override IMaybeExpressionAntetype ToAntetype() => BareType.ToAntetype();
 
     #region Equality
-    public override bool Equals(Pseudotype? other)
+    public override bool Equals(IMaybePseudotype? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -36,7 +36,6 @@ public sealed class CapabilityTypeConstraint : Pseudotype
 
     public override int GetHashCode() => HashCode.Combine(Capability, BareType);
     #endregion
-
 
     public override string ToILString() => $"{Capability} {BareType.ToILString()}";
 

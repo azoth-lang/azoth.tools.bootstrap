@@ -5,7 +5,7 @@ using ExhaustiveMatching;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 [Closed(typeof(DataType), typeof(CapabilityTypeConstraint))]
-public abstract class Pseudotype : IEquatable<Pseudotype>
+public abstract class Pseudotype : IMaybePseudotype
 {
     /// <summary>
     /// A known type is one that has no unknown parts.
@@ -23,10 +23,10 @@ public abstract class Pseudotype : IEquatable<Pseudotype>
     public abstract IMaybeExpressionAntetype ToAntetype();
 
     #region Equality
-    public abstract bool Equals(Pseudotype? other);
+    public abstract bool Equals(IMaybePseudotype? other);
 
     public override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is Pseudotype other && Equals(other);
+        => ReferenceEquals(this, obj) || obj is IMaybePseudotype other && Equals(other);
 
     public abstract override int GetHashCode();
     #endregion

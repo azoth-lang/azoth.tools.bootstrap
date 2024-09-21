@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 public sealed class FieldSymbol : Symbol
 {
     public override IdentifierName Name { get; }
-    public DataType Type { get; }
+    public IMaybeExpressionType Type { get; }
     public override UserTypeSymbol ContainingSymbol { get; }
     public override UserTypeSymbol ContextTypeSymbol => ContainingSymbol;
     public override PackageSymbol Package { get; }
@@ -17,7 +17,7 @@ public sealed class FieldSymbol : Symbol
         UserTypeSymbol containingSymbol,
         IdentifierName name,
         bool isMutableBinding,
-        DataType dataType)
+        IMaybeExpressionType dataType)
     {
         Name = name;
         Type = dataType;

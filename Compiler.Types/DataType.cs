@@ -60,14 +60,14 @@ public abstract class DataType : Pseudotype, IMaybeExpressionType
 
     public abstract override int GetHashCode();
 
-    public override bool Equals(Pseudotype? other)
-        => ReferenceEquals(this, other) || other is DataType dataType && Equals(dataType);
+    public override bool Equals(IMaybePseudotype? other)
+        => ReferenceEquals(this, other) || other is IMaybeExpressionType dataType && Equals(dataType);
 
     public sealed override bool Equals(object? obj)
     {
         if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;
-        return obj.GetType() == GetType() && Equals((DataType)obj);
+        return obj.GetType() == GetType() && Equals((IMaybeExpressionType)obj);
     }
     #endregion
 }

@@ -11,10 +11,10 @@
 = ConcreteMethodDefinition.*.**.MethodSelfType;
 
 // ---------- Types
-↑ Type.NamedType: `DataType`;
+↑ Type.NamedType: `IMaybeExpressionType`;
 = TypeName.NamedType;
 ↑ ParameterType.Parameter: `ParameterType`;
 = CapabilityType.↑.Diagnostics;
 = CapabilityViewpointType.↑.Diagnostics;
-↓ SelfViewpointType.MethodSelfType: `Pseudotype`?;
+↓ SelfViewpointType.MethodSelfType: `IMaybePseudotype`?;
 = SelfViewpointType.↑.Diagnostics;

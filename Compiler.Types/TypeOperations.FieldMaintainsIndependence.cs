@@ -12,11 +12,11 @@ public static partial class TypeOperations
     /// <summary>
     /// Does this type (of a field) maintain the independence of independent type parameters?
     /// </summary>
-    public static bool FieldMaintainsIndependence(this DataType type)
+    public static bool FieldMaintainsIndependence(this IMaybeExpressionType type)
         // Independent types can be used directly as fields, so the top level is an independent context
         => type.FieldMaintainsIndependence(Independence.BothAllowed);
 
-    private static bool FieldMaintainsIndependence(this DataType type, Independence context)
+    private static bool FieldMaintainsIndependence(this IMaybeExpressionType type, Independence context)
     {
         return type switch
         {

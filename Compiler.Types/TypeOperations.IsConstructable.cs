@@ -13,7 +13,7 @@ public static partial class TypeOperations
 
         return Check(param, arg);
 
-        static bool Check(GenericParameter param, DataType arg)
+        static bool Check(GenericParameter param, IMaybeExpressionType arg)
         {
             switch (arg)
             {

@@ -10,7 +10,7 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Function Parts
-↓ ExpressionBody.ExpectedType: `DataType`?;
+↓ ExpressionBody.ExpectedType: `IMaybeExpressionType`?;
 = ExpressionBody.ResultStatement.ExpectedType => ExpectedType;
 // It is really the expression inside the result statement that this should apply to, but the
 // ResultStatement will forward it to the expression.
@@ -26,7 +26,7 @@
 ↑ FieldParameter.FlowStateAfter: `IFlowState` => FlowStateBefore();
 
 // ---------- Statements
-↑ Statement.ResultType: `DataType`? => null;
+↑ Statement.ResultType: `IMaybeExpressionType`? => null;
 ⟳ Statement.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 // Forward ImplicitRecoveryAllowed() to the expression
 ↓ ResultStatement.ImplicitRecoveryAllowed(): `bool`;
@@ -34,7 +34,7 @@
 // Forward ShouldPrepareToReturn() to the expression
 ↓ ResultStatement.ShouldPrepareToReturn(): `bool`;
 = ResultStatement.Expression.ShouldPrepareToReturn() => ShouldPrepareToReturn();
-↓ ResultStatement.ExpectedType: `DataType`?;
+↓ ResultStatement.ExpectedType: `IMaybeExpressionType`?;
 = ResultStatement.Expression.ExpectedType => ExpectedType;
 = ResultStatement.Type;
 = ResultStatement.ResultType => Type;
@@ -65,7 +65,7 @@
 = AmbiguousExpression.*.ShouldPrepareToReturn() => false;
 // TODO remove once all nodes properly provide the expected type
 = AmbiguousExpression.*.ExpectedType => null;
-↓ Expression.ExpectedType:`DataType`?;
+↓ Expression.ExpectedType:`IMaybeExpressionType`?;
 /// <summary>
 /// Whether an implicit recovery (i.e. move or freeze) is allowed to convert this expression to
 /// the expected type.
@@ -75,7 +75,7 @@
 /// Whether this expression should be prepared for return.
 /// </summary>
 ↓ Expression.ShouldPrepareToReturn(): `bool`;
-↑ Expression.Type: `DataType`;
+↑ Expression.Type: `IMaybeExpressionType`;
 ⟳ Expression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 = Expression.↑.Diagnostics;
 ✎ Expression ImplicitMove;
@@ -87,7 +87,7 @@
 = BlockExpression.Statements[0].**.FlowStateBefore()
     => base.Inherited_FlowStateBefore(child, descendant, ctx);
 = BlockExpression.Statements[index].**.FlowStateBefore() => Statements[index - 1].FlowStateAfter;
-↑ BlockExpression.Type: `DataType`;
+↑ BlockExpression.Type: `IMaybeExpressionType`;
 ⟳ BlockExpression.FlowStateAfter: `IFlowState` initial => IFlowState.Empty;
 ↓ NewObjectExpression.FlowStateBefore(): `IFlowState`;
 // TODO it would be better to have a way to specify that this inherits and not emit any code
@@ -120,7 +120,7 @@
 = BinaryOperatorExpression.↑.Diagnostics;
 = IdExpression.↑.Diagnostics;
 = ConversionExpression.↑.Diagnostics;
-↑ eager ImplicitConversionExpression.Type: `Type`;
+↑ eager ImplicitConversionExpression.Type: `IMaybeType`;
 // No expected type for the referent. If one were given, it could cause another implicit conversion.
 = ImplicitConversionExpression.Referent.ExpectedType => null;
 = PatternMatchExpression.Pattern.**.FlowStateBefore => Referent?.FlowStateAfter ?? IFlowState.Empty;
@@ -217,7 +217,7 @@
 = TypeNameExpression.Type => IType.Unknown;
 = InitializerGroupName.Type => throw new NotImplementedException();
 ↑ SpecialTypeNameExpression.Type:`UnknownType` => IType.Unknown;
-↑ SelfExpression.Pseudotype: `Pseudotype`;
+↑ SelfExpression.Pseudotype: `IMaybePseudotype`;
 = SelfExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => IType.Unknown;
 ↑ UnknownNameExpression.Type: `UnknownType` => IType.Unknown;

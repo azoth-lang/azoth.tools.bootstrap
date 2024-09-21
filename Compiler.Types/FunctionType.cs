@@ -12,10 +12,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidType
 {
-    public static IMaybeFunctionType Create(IEnumerable<ParameterType> parameters, DataType @return)
+    public static IMaybeFunctionType Create(IEnumerable<ParameterType> parameters, IMaybeExpressionType @return)
     => @return is Type returnType ? new FunctionType(parameters, returnType) : IType.Unknown;
 
-    public FunctionType(IEnumerable<ParameterType> parameters, DataType @return)
+    public FunctionType(IEnumerable<ParameterType> parameters, IMaybeExpressionType @return)
     {
         Parameters = parameters.ToFixedList();
         Return = @return;
@@ -24,7 +24,7 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
 
     public int Arity => Parameters.Count;
     public IFixedList<ParameterType> Parameters { get; }
-    public DataType Return { get; }
+    public IMaybeExpressionType Return { get; }
 
     public override bool IsFullyKnown { get; }
 

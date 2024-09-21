@@ -29,18 +29,18 @@ public abstract class SymbolTestFixture
     protected IFixedList<ParameterType> Params(int? count = null)
         => Enumerable.Range(1, count ?? ++unique).Select(_ => Compiler.Types.Parameters.ParameterType.Int).ToFixedList();
 
-    protected static IFixedList<ParameterType> Params(DataType param, params DataType[] @params)
+    protected static IFixedList<ParameterType> Params(DataType param, params IMaybeExpressionType[] @params)
         => @params.Prepend(param).Select(t => new ParameterType(false, t)).ToFixedList();
 
     protected static SelfParameterType SelfParam(Pseudotype param) => new SelfParameterType(false, param);
 
-    protected static ParameterType Param(DataType param) => new ParameterType(false, param);
+    protected static ParameterType Param(IMaybeExpressionType param) => new ParameterType(false, param);
 
     protected FunctionSymbol Func(
         string? name = null,
         NamespaceSymbol? ns = null,
         IFixedList<ParameterType>? @params = null,
-        DataType? @return = null)
+        IMaybeExpressionType? @return = null)
     {
         return new FunctionSymbol(
             ns ?? Namespace(),
@@ -53,7 +53,7 @@ public abstract class SymbolTestFixture
         string? name = null,
         NamespaceSymbol? ns = null,
         IFixedList<ParameterType>? @params = null,
-        DataType? @return = null)
+        IMaybeExpressionType? @return = null)
     {
         return new FunctionSymbol(
             ns ?? mother.ContainingSymbol,
@@ -66,7 +66,7 @@ public abstract class SymbolTestFixture
         UserTypeSymbol? containing = null,
         SelfParameterType? self = null,
         IFixedList<ParameterType>? @params = null,
-        DataType? @return = null)
+        IMaybeExpressionType? @return = null)
     {
         containing ??= Type();
         return new MethodSymbol(
@@ -83,7 +83,7 @@ public abstract class SymbolTestFixture
         UserTypeSymbol? containing = null,
         SelfParameterType? self = null,
         IFixedList<ParameterType>? @params = null,
-        DataType? @return = null)
+        IMaybeExpressionType? @return = null)
     {
         return new MethodSymbol(
             containing ?? mother.ContainingSymbol,

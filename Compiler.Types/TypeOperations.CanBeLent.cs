@@ -15,7 +15,7 @@ public static partial class TypeOperations
     public static bool CanBeLent(this CapabilitySet capability)
         => capability == CapabilitySet.Readable;
 
-    public static bool CanBeLent(this Pseudotype type)
+    public static bool CanBeLent(this IMaybePseudotype type)
         => type switch
         {
             CapabilityTypeConstraint t => t.CanBeLent(),
@@ -26,7 +26,9 @@ public static partial class TypeOperations
     public static bool CanBeLent(this CapabilityTypeConstraint type)
         => type.Capability.CanBeLent() || type.BareType.ArgumentsCanBeLent();
 
-    public static bool CanBeLent(this DataType type)
+    public static bool CanBeLent(this DataType type) => (type as IMaybeExpressionType).CanBeLent();
+
+    public static bool CanBeLent(this IMaybeExpressionType type)
         => type switch
         {
             CapabilityType t => t.Capability.CanBeLent() || t.BareType.ArgumentsCanBeLent(),
@@ -48,7 +50,7 @@ public static partial class TypeOperations
     public static bool ArgumentsCanBeLent(this BareType type)
         => type.HasIndependentTypeArguments && type.GenericParameterArguments.Any(a => a.CanBeLent());
 
-    public static bool ArgumentsCanBeLent(this DataType type)
+    public static bool ArgumentsCanBeLent(this IMaybeExpressionType type)
         => type switch
         {
             CapabilityType t => t.BareType.ArgumentsCanBeLent(),

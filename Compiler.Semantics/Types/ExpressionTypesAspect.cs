@@ -18,7 +18,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
-using Type = Azoth.Tools.Bootstrap.Compiler.Types.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -30,10 +29,10 @@ internal static partial class ExpressionTypesAspect
             return;
 
         if (!expectedType.IsAssignableFrom(node.Type))
-            diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type.ToUpperBound(), (IMaybeNonVoidType)expectedType));
+            diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, (IMaybeNonVoidType)expectedType));
     }
 
-    public static partial DataType IdExpression_Type(IIdExpressionNode node)
+    public static partial IMaybeExpressionType IdExpression_Type(IIdExpressionNode node)
     {
         var referentType = node.Referent?.Type ?? IType.Unknown;
         if (referentType is CapabilityType capabilityType)
@@ -60,7 +59,7 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(TypeError.CannotIdNonReferenceType(node.File, node.Syntax.Span, referentType));
     }
 
-    public static partial DataType VariableNameExpression_Type(IVariableNameExpressionNode node)
+    public static partial IMaybeExpressionType VariableNameExpression_Type(IVariableNameExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
 
     public static partial IFlowState VariableNameExpression_FlowStateAfter(IVariableNameExpressionNode node)
@@ -72,14 +71,14 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState SelfParameter_FlowStateAfter(ISelfParameterNode node)
         => node.FlowStateBefore().Declare(node);
 
-    public static partial DataType UnsafeExpression_Type(IUnsafeExpressionNode node)
+    public static partial IMaybeExpressionType UnsafeExpression_Type(IUnsafeExpressionNode node)
         => node.Expression?.Type ?? IType.Unknown;
 
     public static partial IFlowState UnsafeExpression_FlowStateAfter(IUnsafeExpressionNode node)
         => node.Expression?.FlowStateAfter.Transform(node.Expression.ValueId, node.ValueId, node.Type)
            ?? IFlowState.Empty;
 
-    public static partial DataType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
+    public static partial IMaybeExpressionType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
         => node.Function.ReferencedDeclaration?.Type.Return ?? IMaybeType.Unknown;
 
     public static partial ContextualizedOverload? FunctionInvocationExpression_ContextualizedOverload(
@@ -120,7 +119,7 @@ internal static partial class ExpressionTypesAspect
     public static partial FunctionType FunctionReferenceInvocationExpression_FunctionType(IFunctionReferenceInvocationExpressionNode node)
         => (FunctionType)node.Expression.Type;
 
-    public static partial DataType FunctionReferenceInvocationExpression_Type(IFunctionReferenceInvocationExpressionNode node)
+    public static partial IMaybeExpressionType FunctionReferenceInvocationExpression_Type(IFunctionReferenceInvocationExpressionNode node)
         => node.FunctionType.Return;
 
     public static partial IFlowState FunctionReferenceInvocationExpression_FlowStateAfter(IFunctionReferenceInvocationExpressionNode node)
@@ -150,7 +149,7 @@ internal static partial class ExpressionTypesAspect
     public static partial OptionalType NoneLiteralExpression_Type(INoneLiteralExpressionNode node)
         => IType.None;
 
-    public static partial DataType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
+    public static partial IMaybeExpressionType StringLiteralExpression_Type(IStringLiteralExpressionNode node)
     {
         var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName).OfType<ITypeDeclarationNode>().TrySingle();
         return typeSymbolNode?.Symbol.GetDeclaredType()?.With(Capability.Constant, []) ?? IMaybeType.Unknown;
@@ -236,7 +235,7 @@ internal static partial class ExpressionTypesAspect
         return IPrepareToReturnExpressionNode.Create(node);
     }
 
-    public static partial DataType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
+    public static partial IMaybeExpressionType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
     {
         var selfType = node.Method.Context.Type;
         // TODO does this need to be modified by flow typing?
@@ -265,7 +264,7 @@ internal static partial class ExpressionTypesAspect
             ? ContextualizedOverload.Create(node.Context.Type, node.ReferencedDeclaration)
             : null;
 
-    public static partial DataType GetterInvocationExpression_Type(IGetterInvocationExpressionNode node)
+    public static partial IMaybeExpressionType GetterInvocationExpression_Type(IGetterInvocationExpressionNode node)
     {
         var selfType = node.Context.Type;
         var unboundType = node.ContextualizedOverload?.ReturnType;
@@ -292,7 +291,7 @@ internal static partial class ExpressionTypesAspect
             ? ContextualizedOverload.Create(node.Context.Type, node.ReferencedDeclaration)
             : null;
 
-    public static partial DataType SetterInvocationExpression_Type(ISetterInvocationExpressionNode node)
+    public static partial IMaybeExpressionType SetterInvocationExpression_Type(ISetterInvocationExpressionNode node)
     {
         var selfType = node.Context.Type;
         var unboundType = node.ContextualizedOverload?.ParameterTypes[0].Type;
@@ -338,13 +337,13 @@ internal static partial class ExpressionTypesAspect
                              .Select((p, a) => new ArgumentValueId(p.IsLent, a.ValueId));
     }
 
-    public static partial DataType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
+    public static partial IMaybeExpressionType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
     {
         var contextType = node.Context is ISelfExpressionNode selfNode
-            ? selfNode.Pseudotype : node.Context.Type;
+            ? selfNode.Pseudotype : node.Context.Type.AsType;
         var fieldType = node.ReferencedDeclaration.BindingType;
         // Access must be applied first, so it can account for independent generic parameters.
-        var type = fieldType.AccessedVia(contextType);
+        var type = fieldType.AccessedVia(contextType.AsType);
         // Then type parameters can be replaced now that they have the correct access
         if (contextType is NonEmptyType nonEmptyContext)
             // resolve generic type fields
@@ -367,16 +366,16 @@ internal static partial class ExpressionTypesAspect
         if (fieldHasMutableBinding
             && node.Context.Type is CapabilityType { Capability: var contextCapability }
             && contextCapability == Capability.Identity)
-            diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(node.File, node.Syntax, node.Context.Type));
+            diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(node.File, node.Syntax, node.Context.Type.AsType));
     }
 
     public static partial IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node)
         => node.FlowStateBefore().Alias(node.ReferencedDefinition, node.ValueId);
 
-    public static partial DataType SelfExpression_Type(ISelfExpressionNode node)
+    public static partial IMaybeExpressionType SelfExpression_Type(ISelfExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
 
-    public static partial Pseudotype SelfExpression_Pseudotype(ISelfExpressionNode node)
+    public static partial IMaybePseudotype SelfExpression_Pseudotype(ISelfExpressionNode node)
         => node.ReferencedDefinition?.BindingType ?? IType.Unknown;
 
     public static partial ContextualizedOverload? NewObjectExpression_ContextualizedOverload(
@@ -385,7 +384,7 @@ internal static partial class ExpressionTypesAspect
             ? ContextualizedOverload.Create(node.ConstructingType.NamedType, node.ReferencedConstructor)
             : null;
 
-    public static partial DataType NewObjectExpression_Type(INewObjectExpressionNode node)
+    public static partial IMaybeExpressionType NewObjectExpression_Type(INewObjectExpressionNode node)
         // TODO does this need to be modified by flow typing?
         => node.ContextualizedOverload?.ReturnType ?? IMaybeType.Unknown;
 
@@ -440,7 +439,7 @@ internal static partial class ExpressionTypesAspect
             ? ContextualizedOverload.Create(initializingType.With(Capability.Mutable), node.ReferencedDeclaration)
             : null;
 
-    public static partial DataType InitializerInvocationExpression_Type(IInitializerInvocationExpressionNode node)
+    public static partial IMaybeExpressionType InitializerInvocationExpression_Type(IInitializerInvocationExpressionNode node)
         // TODO does this need to be modified by flow typing?
         => node.ContextualizedOverload?.ReturnType ?? IMaybeType.Unknown;
 
@@ -460,7 +459,7 @@ internal static partial class ExpressionTypesAspect
         return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
-    public static partial DataType AssignmentExpression_Type(IAssignmentExpressionNode node)
+    public static partial IMaybeExpressionType AssignmentExpression_Type(IAssignmentExpressionNode node)
         => node.LeftOperand?.Type ?? IType.Unknown;
 
     public static partial IFlowState AssignmentExpression_FlowStateAfter(IAssignmentExpressionNode node)
@@ -500,7 +499,7 @@ internal static partial class ExpressionTypesAspect
         }
     }
 
-    public static partial DataType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
+    public static partial IMaybeExpressionType BinaryOperatorExpression_Type(IBinaryOperatorExpressionNode node)
     {
         if (node.Antetype is ISimpleOrConstValueAntetype simpleOrConstValueAntetype)
             return simpleOrConstValueAntetype.ToType();
@@ -526,10 +525,10 @@ internal static partial class ExpressionTypesAspect
         };
     }
 
-    private static DataType InferRangeOperatorType(
+    private static IMaybeExpressionType InferRangeOperatorType(
         LexicalScope containingLexicalScope,
-        DataType leftType,
-        DataType rightType)
+        IMaybeExpressionType leftType,
+        IMaybeExpressionType rightType)
     {
         // TODO the left and right types need to be compatible with the range type
         var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
@@ -553,7 +552,7 @@ internal static partial class ExpressionTypesAspect
                 node.Syntax.Span, node.Operator, node.LeftOperand!.Type, node.RightOperand!.Type));
     }
 
-    public static partial DataType IfExpression_Type(IIfExpressionNode node)
+    public static partial IMaybeExpressionType IfExpression_Type(IIfExpressionNode node)
     {
         if (node.ElseClause is null) return node.ThenBlock.Type.MakeOptional();
 
@@ -561,7 +560,7 @@ internal static partial class ExpressionTypesAspect
         return node.ThenBlock.Type;
     }
 
-    public static partial DataType ResultStatement_Type(IResultStatementNode node)
+    public static partial IMaybeExpressionType ResultStatement_Type(IResultStatementNode node)
         => node.Expression?.Type.ToNonConstValueType().AsType ?? IType.Unknown;
 
     public static partial IFlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
@@ -588,7 +587,7 @@ internal static partial class ExpressionTypesAspect
         }
     }
 
-    public static partial DataType BlockExpression_Type(IBlockExpressionNode node)
+    public static partial IMaybeExpressionType BlockExpression_Type(IBlockExpressionNode node)
     {
         // TODO what about blocks that contain a return etc. and never return?
         foreach (var statement in node.Statements)
@@ -610,7 +609,7 @@ internal static partial class ExpressionTypesAspect
         return flowState.Constant(node.ValueId);
     }
 
-    public static partial DataType WhileExpression_Type(IWhileExpressionNode node)
+    public static partial IMaybeExpressionType WhileExpression_Type(IWhileExpressionNode node)
         // TODO assign correct type to the expression
         => IType.Void;
 
@@ -621,7 +620,7 @@ internal static partial class ExpressionTypesAspect
             // TODO when the `while` has a type other than void, correctly handle the value id
             .Constant(node.ValueId);
 
-    public static partial DataType LoopExpression_Type(ILoopExpressionNode node)
+    public static partial IMaybeExpressionType LoopExpression_Type(ILoopExpressionNode node)
         // TODO assign correct type to the expression
         => IType.Void;
 
@@ -632,7 +631,7 @@ internal static partial class ExpressionTypesAspect
                // TODO when the `loop` has a type other than void, correctly handle the value id
                .Constant(node.ValueId);
 
-    public static partial DataType ConversionExpression_Type(IConversionExpressionNode node)
+    public static partial IMaybeExpressionType ConversionExpression_Type(IConversionExpressionNode node)
     {
         var convertToType = node.ConvertToType.NamedType;
         if (node.Operator == ConversionOperator.Optional)
@@ -657,20 +656,20 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(TypeError.CannotExplicitlyConvert(node.File, node.Referent.Syntax, convertFromType, (IMaybeType)convertToType));
     }
 
-    public static partial Type ImplicitConversionExpression_Type(IImplicitConversionExpressionNode node)
+    public static partial IMaybeType ImplicitConversionExpression_Type(IImplicitConversionExpressionNode node)
         => node.Antetype.ToType();
 
     public static partial IFlowState ImplicitConversionExpression_FlowStateAfter(IImplicitConversionExpressionNode node)
         => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
 
-    public static partial DataType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
+    public static partial IMaybeExpressionType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
         => Intrinsic.PromiseOf(node.Expression?.Type ?? IType.Unknown);
 
     public static partial IFlowState AsyncStartExpression_FlowStateAfter(IAsyncStartExpressionNode node)
         // TODO this isn't correct, async start can act like a delayed lambda. It is also a transform that wraps
         => node.Expression?.FlowStateAfter.Combine(node.Expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
 
-    public static partial DataType AwaitExpression_Type(IAwaitExpressionNode node)
+    public static partial IMaybeExpressionType AwaitExpression_Type(IAwaitExpressionNode node)
     {
         if (node.Expression?.Type is CapabilityType { DeclaredType: var declaredType } type
             && Intrinsic.PromiseType.Equals(declaredType))
@@ -683,7 +682,7 @@ internal static partial class ExpressionTypesAspect
         // TODO actually this is a transform that unwraps
         => node.Expression?.FlowStateAfter.Combine(node.Expression.ValueId, null, node.ValueId) ?? IFlowState.Empty;
 
-    public static partial DataType UnaryOperatorExpression_Type(IUnaryOperatorExpressionNode node)
+    public static partial IMaybeExpressionType UnaryOperatorExpression_Type(IUnaryOperatorExpressionNode node)
         => node.Antetype switch
         {
             ISimpleOrConstValueAntetype t => t.ToType(),
@@ -694,20 +693,20 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState UnaryOperatorExpression_FlowStateAfter(IUnaryOperatorExpressionNode node)
         => node.Operand?.FlowStateAfter.Transform(node.Operand.ValueId, node.ValueId, node.Type) ?? IFlowState.Empty;
 
-    public static partial DataType FunctionName_Type(IFunctionNameNode node)
+    public static partial IMaybeExpressionType FunctionName_Type(IFunctionNameNode node)
         => node.ReferencedDeclaration?.Type ?? IMaybeType.Unknown;
 
     public static partial IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node)
         => node.FlowStateBefore().Constant(node.ValueId);
 
-    public static partial DataType MethodName_Type(IMethodNameNode node)
+    public static partial IMaybeExpressionType MethodName_Type(IMethodNameNode node)
         => node.ReferencedDeclaration?.MethodGroupType ?? IMaybeType.Unknown;
 
     // TODO this is strange and maybe a hack
-    public static partial DataType? MethodName_Context_ExpectedType(IMethodNameNode node)
+    public static partial IMaybeExpressionType? MethodName_Context_ExpectedType(IMethodNameNode node)
         => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().AsType;
 
-    public static partial DataType FreezeExpression_Type(IFreezeExpressionNode node)
+    public static partial IMaybeExpressionType FreezeExpression_Type(IFreezeExpressionNode node)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
             return IType.Unknown;
@@ -759,7 +758,7 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(FlowTypingError.CannotFreezeValue(node.File, node.Syntax, node.Referent.Syntax));
     }
 
-    public static partial DataType MoveExpression_Type(IMoveExpressionNode node)
+    public static partial IMaybeExpressionType MoveExpression_Type(IMoveExpressionNode node)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
             return IType.Unknown;
@@ -804,7 +803,7 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(FlowTypingError.CannotMoveValue(node.File, node.Syntax, node.Referent.Syntax));
     }
 
-    public static partial DataType ImplicitTempMoveExpression_Type(IImplicitTempMoveExpressionNode node)
+    public static partial IMaybeExpressionType ImplicitTempMoveExpression_Type(IImplicitTempMoveExpressionNode node)
     {
         if (node.Referent.Type is not CapabilityType capabilityType)
             return IType.Unknown;

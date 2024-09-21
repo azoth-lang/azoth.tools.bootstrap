@@ -103,7 +103,7 @@ public abstract class BareType : IEquatable<BareType>
     public Type ReplaceTypeParametersIn(Type type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
-    public DataType ReplaceTypeParametersIn(DataType type)
+    public IMaybeExpressionType ReplaceTypeParametersIn(IMaybeExpressionType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
     public BareReferenceType ReplaceTypeParametersIn(BareReferenceType type)
@@ -164,7 +164,7 @@ public abstract class BareType : IEquatable<BareType>
     public string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
     public string ToILString() => ToString(t => t.ToILString());
 
-    private string ToString(Func<DataType, string> toString)
+    private string ToString(Func<IMaybeExpressionType, string> toString)
     {
         var builder = new StringBuilder();
         builder.Append(DeclaredType.ContainingNamespace);
