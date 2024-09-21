@@ -12,7 +12,7 @@ public sealed class GenericParameterTypeSymbol : TypeSymbol
     public GenericParameterType Type { get; }
     public override IdentifierName Name => (IdentifierName)base.Name;
 
-    public override DataType GetDataType() => Type;
+    public override IMaybeExpressionType GetDataType() => Type;
 
     public GenericParameterTypeSymbol(
         UserTypeSymbol containingSymbol,

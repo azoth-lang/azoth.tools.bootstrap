@@ -4,11 +4,9 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
-[Closed(typeof(IExpressionType), typeof(DataType), typeof(IMaybeType))]
+[Closed(typeof(IExpressionType), typeof(IMaybeType))]
 public interface IMaybeExpressionType : IMaybePseudotype
 {
-    public sealed DataType AsType => (DataType)this;
-
     bool AllowsVariance { get; }
 
     bool HasIndependentTypeArguments { get; }

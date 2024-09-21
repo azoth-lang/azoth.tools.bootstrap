@@ -19,7 +19,7 @@ public sealed class EmptyTypeSymbol : TypeSymbol
         Type = type;
     }
 
-    public override DataType GetDataType() => Type;
+    public override IMaybeExpressionType GetDataType() => Type;
 
     #region Equality
     public override bool Equals(Symbol? other)

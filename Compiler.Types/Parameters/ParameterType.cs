@@ -13,7 +13,7 @@ public readonly record struct ParameterType(bool IsLent, IMaybeExpressionType Ty
 {
     public static readonly ParameterType Int = new(false, IType.Int);
 
-    IMaybePseudotype IParameterType.Type => Type.AsType;
+    IMaybePseudotype IParameterType.Type => Type;
 
     public bool IsFullyKnown => Type.IsFullyKnown;
 

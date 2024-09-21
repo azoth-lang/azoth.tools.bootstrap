@@ -19,14 +19,12 @@ public static partial class TypeOperations
         => type switch
         {
             CapabilityTypeConstraint t => t.CanBeLent(),
-            DataType t => t.CanBeLent(),
+            IMaybeExpressionType t => t.CanBeLent(),
             _ => throw ExhaustiveMatch.Failed(type)
         };
 
     public static bool CanBeLent(this CapabilityTypeConstraint type)
         => type.Capability.CanBeLent() || type.BareType.ArgumentsCanBeLent();
-
-    public static bool CanBeLent(this DataType type) => (type as IMaybeExpressionType).CanBeLent();
 
     public static bool CanBeLent(this IMaybeExpressionType type)
         => type switch

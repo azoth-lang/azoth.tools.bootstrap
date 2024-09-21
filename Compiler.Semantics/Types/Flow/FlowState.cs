@@ -171,7 +171,7 @@ internal sealed class FlowState : IFlowState
     public IFlowState Declare(INamedBindingNode binding, ValueId? initializerValueId)
     {
         var builder = ToBuilder();
-        var bindingValuePairs = BindingValue.ForType(binding.BindingValueId, binding.BindingType.AsType);
+        var bindingValuePairs = BindingValue.ForType(binding.BindingValueId, binding.BindingType);
         builder.AddValueId(binding.BindingValueId, bindingValuePairs.Keys);
         foreach (var (value, flowCapability) in bindingValuePairs)
         {
@@ -252,7 +252,7 @@ internal sealed class FlowState : IFlowState
         if (binding is null) return IType.Unknown;
         if (!binding.SharingIsTracked())
             // Other types don't have capabilities and don't need to be tracked
-            return binding.BindingType.ToUpperBound().AsType;
+            return binding.BindingType.ToUpperBound();
 
         var bindingValue = BindingValue.CreateTopLevel(binding);
         var current = values[bindingValue].Current;
@@ -344,7 +344,7 @@ internal sealed class FlowState : IFlowState
         int? set = builder.Union(TrackedValues(argumentsList.Where(a => !a.IsLent)));
 
         // Add the return value(s) to the unioned set
-        var capabilityValuePairs = CapabilityValue.ForType(returnValueId, returnType.AsType);
+        var capabilityValuePairs = CapabilityValue.ForType(returnValueId, returnType);
         foreach (var (returnValue, flowCapability) in capabilityValuePairs)
         {
             if (flowCapability.Original.SharingIsTracked())
@@ -403,7 +403,7 @@ internal sealed class FlowState : IFlowState
         var containingDeclaredType = node.ReferencedDeclaration.Symbol.ContainingSymbol.DeclaresType.AsDeclaredType;
         var bindingType = node.ReferencedDeclaration.BindingType;
 
-        var newValueCapabilities = CapabilityValue.ForType(valueId, memberType.AsType);
+        var newValueCapabilities = CapabilityValue.ForType(valueId, memberType);
         var valueMap = AccessFieldValueMapping(contextValueId, contextType, containingDeclaredType,
             bindingType, valueId, newValueCapabilities.Keys);
         foreach (var (newValue, flowCapability) in newValueCapabilities)

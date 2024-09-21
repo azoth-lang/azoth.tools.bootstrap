@@ -93,7 +93,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
 
     public TypeName Name => DeclaredType.Name;
 
-    public IFixedList<DataType> TypeArguments => BareType.GenericTypeArguments;
+    public IFixedList<IMaybeExpressionType> TypeArguments => BareType.GenericTypeArguments;
 
     public sealed override bool AllowsVariance => BareType.AllowsVariance;
 

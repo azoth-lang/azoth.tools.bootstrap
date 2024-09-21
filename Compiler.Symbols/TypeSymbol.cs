@@ -23,5 +23,5 @@ public abstract class TypeSymbol : Symbol
 
     public virtual DeclaredType? GetDeclaredType() => null;
 
-    public virtual DataType? GetDataType() => null;
+    public virtual IMaybeExpressionType? GetDataType() => null;
 }

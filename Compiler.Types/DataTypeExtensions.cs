@@ -75,8 +75,8 @@ public static class DataTypeExtensions
     private static bool IsAssignableFrom(
         DeclaredType declaredType,
         bool targetAllowsWrite,
-        IFixedList<DataType> target,
-        IFixedList<DataType> source)
+        IFixedList<IMaybeExpressionType> target,
+        IFixedList<IMaybeExpressionType> source)
     {
         Requires.That(target.Count == declaredType.GenericParameters.Count, nameof(target), "count must match count of declaredType generic parameters");
         Requires.That(source.Count == target.Count, nameof(source), "count must match count of target");

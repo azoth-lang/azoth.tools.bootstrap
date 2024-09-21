@@ -57,7 +57,7 @@ internal static partial class NameBindingTypesAspect
         => node.FlowStateBefore().Declare(node, node.MatchReferentValueId);
 
     public static partial IMaybeExpressionType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node)
-        => node.Referent?.Type.ToNonConstValueType().AsType ?? IType.Unknown;
+        => node.Referent?.Type.ToNonConstValueType() ?? IType.Unknown;
 
     public static partial IMaybeExpressionType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node)
     {
@@ -198,7 +198,7 @@ internal static partial class NameBindingTypesAspect
     {
         var type = node.BindingType;
         if (node.IsLentBinding && !type.CanBeLent())
-            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, type.AsType));
+            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, type));
     }
 
     public static partial IMaybeExpressionType FieldDefinition_BindingType(IFieldDefinitionNode node) => node.TypeNode.NamedType;

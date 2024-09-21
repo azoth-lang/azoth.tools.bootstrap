@@ -13169,7 +13169,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().AsType;
+            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -13356,7 +13356,7 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().AsType;
+            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
         if (ReferenceEquals(descendant, Self.CurrentValue))
             return ContextualizedOverload?.ParameterTypes[0].Type;
         if (ReferenceEquals(child, descendant))

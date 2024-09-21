@@ -340,7 +340,7 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeExpressionType FieldAccessExpression_Type(IFieldAccessExpressionNode node)
     {
         var contextType = node.Context is ISelfExpressionNode selfNode
-            ? selfNode.Pseudotype : node.Context.Type.AsType;
+            ? selfNode.Pseudotype : node.Context.Type;
         var fieldType = node.ReferencedDeclaration.BindingType;
         // Access must be applied first, so it can account for independent generic parameters.
         var type = fieldType.AccessedVia(contextType);
@@ -366,7 +366,7 @@ internal static partial class ExpressionTypesAspect
         if (fieldHasMutableBinding
             && node.Context.Type is CapabilityType { Capability: var contextCapability }
             && contextCapability == Capability.Identity)
-            diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(node.File, node.Syntax, node.Context.Type.AsType));
+            diagnostics.Add(TypeError.CannotAccessMutableBindingFieldOfIdentityReference(node.File, node.Syntax, node.Context.Type));
     }
 
     public static partial IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node)
@@ -561,7 +561,7 @@ internal static partial class ExpressionTypesAspect
     }
 
     public static partial IMaybeExpressionType ResultStatement_Type(IResultStatementNode node)
-        => node.Expression?.Type.ToNonConstValueType().AsType ?? IType.Unknown;
+        => node.Expression?.Type.ToNonConstValueType() ?? IType.Unknown;
 
     public static partial IFlowState IfExpression_FlowStateAfter(IIfExpressionNode node)
     {
@@ -704,7 +704,7 @@ internal static partial class ExpressionTypesAspect
 
     // TODO this is strange and maybe a hack
     public static partial IMaybeExpressionType? MethodName_Context_ExpectedType(IMethodNameNode node)
-        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().AsType;
+        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
 
     public static partial IMaybeExpressionType FreezeExpression_Type(IFreezeExpressionNode node)
     {

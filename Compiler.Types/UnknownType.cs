@@ -1,5 +1,8 @@
 using System;
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
@@ -8,7 +11,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// was somehow invalid. The unknown type can't be directly used in code.
 /// No well typed program contains any expression with an unknown type.
 /// </summary>
-public sealed class UnknownType : DataType, IMaybeFunctionType
+[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
+public sealed class UnknownType : IMaybeFunctionType
 {
     #region Singleton
     internal static readonly UnknownType Instance = new();
@@ -16,23 +20,64 @@ public sealed class UnknownType : DataType, IMaybeFunctionType
     private UnknownType() { }
     #endregion
 
-    public override bool IsFullyKnown => false;
+    public bool IsFullyKnown => false;
+    public bool AllowsVariance => false;
+    public bool HasIndependentTypeArguments => false;
 
-    public override UnknownAntetype ToAntetype() => IAntetype.Unknown;
-    IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
+    public IMaybeAntetype ToAntetype() => IAntetype.Unknown;
+
+    public IMaybeExpressionType ToUpperBound() => this;
+
+    /// <summary>
+    /// Convert types for constant values to their corresponding types.
+    /// </summary>
+    public IMaybeType ToNonConstValueType() => this;
+
+    /// <summary>
+    /// The same type except with any mutability removed.
+    /// </summary>
+    public IMaybeExpressionType WithoutWrite() => this;
+
+    /// <summary>
+    /// Return the type for when a value of this type is accessed via a type of the given value.
+    /// </summary>
+    /// <remarks>This can restrict the ability to write to the value.</remarks>
+    public IMaybeExpressionType AccessedVia(IMaybePseudotype contextType)
+    {
+        if (contextType is CapabilityType capabilityType) return AccessedVia(capabilityType.Capability);
+        if (contextType is CapabilityTypeConstraint capabilityTypeConstraint)
+            return AccessedVia(capabilityTypeConstraint.Capability);
+        return this;
+    }
+
+    /// <summary>
+    /// Return the type for when a value of this type is accessed via a reference with the given capability.
+    /// </summary>
+    /// <remarks>This can restrict the ability to write to the value.</remarks>
+    public IMaybeExpressionType AccessedVia(ICapabilityConstraint capability) => this;
+
+    public bool Equals(IMaybePseudotype? other)
+        => ReferenceEquals(this, other)
+           || other is IMaybeExpressionType dataType && Equals((IMaybePseudotype?)dataType);
 
     #region Equals
-    public override bool Equals(IMaybeExpressionType? other)
+    public bool Equals(IMaybeExpressionType? other)
         // The unknown type is a singleton, so reference equality suffices
         => ReferenceEquals(this, other);
+
+    public sealed override bool Equals(object? obj)
+        // The unknown type is a singleton, so reference equality suffices
+        => ReferenceEquals(this, obj);
 
     public override int GetHashCode() => HashCode.Combine(typeof(UnknownType));
     #endregion
 
+    public override string ToString() => throw new NotSupportedException();
+
     /// <remarks><see cref="ToSourceCodeString"/> is used to format error messages. As such, it
     /// is necessary to provide some output for the unknown type in case it appears in an error
     /// message.</remarks>
-    public override string ToSourceCodeString() => "⧼unknown⧽";
+    public string ToSourceCodeString() => "⧼unknown⧽";
 
-    public override string ToILString() => "⧼unknown⧽";
+    public string ToILString() => "⧼unknown⧽";
 }

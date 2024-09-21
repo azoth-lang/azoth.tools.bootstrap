@@ -9,7 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 
 internal static class SymbolBuilder
 {
-    public static SelfParameterType SelfParam(DataType type) => new(false, type);
+    public static SelfParameterType SelfParam(IMaybeExpressionType type) => new(false, type);
 
     public static IFixedList<ParameterType> Params(params IMaybeExpressionType[] types)
         => types.Select(t => new ParameterType(false, t)).ToFixedList();

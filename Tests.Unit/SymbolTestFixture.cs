@@ -29,7 +29,7 @@ public abstract class SymbolTestFixture
     protected IFixedList<ParameterType> Params(int? count = null)
         => Enumerable.Range(1, count ?? ++unique).Select(_ => Compiler.Types.Parameters.ParameterType.Int).ToFixedList();
 
-    protected static IFixedList<ParameterType> Params(DataType param, params IMaybeExpressionType[] @params)
+    protected static IFixedList<ParameterType> Params(IMaybeExpressionType param, params IMaybeExpressionType[] @params)
         => @params.Prepend(param).Select(t => new ParameterType(false, t)).ToFixedList();
 
     protected static SelfParameterType SelfParam(IMaybePseudotype param) => new SelfParameterType(false, param);

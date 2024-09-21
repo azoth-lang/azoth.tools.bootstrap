@@ -26,7 +26,7 @@ internal static partial class ForeachExpressionTypesAspect
         if (node.IteratorType is not NonEmptyType nonEmptyIteratorType)
             return iteratedType;
 
-        return nonEmptyIteratorType.ReplaceTypeParametersIn((IType)iteratedType).ToNonConstValueType().AsType;
+        return nonEmptyIteratorType.ReplaceTypeParametersIn((IType)iteratedType).ToNonConstValueType();
     }
 
     public static partial IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)
