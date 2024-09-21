@@ -343,7 +343,7 @@ internal static partial class ExpressionTypesAspect
             ? selfNode.Pseudotype : node.Context.Type.AsType;
         var fieldType = node.ReferencedDeclaration.BindingType;
         // Access must be applied first, so it can account for independent generic parameters.
-        var type = fieldType.AccessedVia(contextType.AsType);
+        var type = fieldType.AccessedVia(contextType);
         // Then type parameters can be replaced now that they have the correct access
         if (contextType is NonEmptyType nonEmptyContext)
             // resolve generic type fields

@@ -109,7 +109,7 @@ public abstract class BareType : IEquatable<BareType>
     public BareReferenceType ReplaceTypeParametersIn(BareReferenceType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
-    public Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
+    public IMaybePseudotype ReplaceTypeParametersIn(IMaybePseudotype pseudotype)
         => typeReplacements.Value.ReplaceTypeParametersIn(pseudotype);
 
     public abstract BareType AccessedVia(Capability capability);

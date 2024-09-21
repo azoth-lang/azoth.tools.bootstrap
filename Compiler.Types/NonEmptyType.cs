@@ -39,7 +39,7 @@ public abstract class NonEmptyType : Type
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
-    public virtual Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype) => pseudotype;
+    public virtual IMaybePseudotype ReplaceTypeParametersIn(IMaybePseudotype pseudotype) => pseudotype;
 
     /// <summary>
     /// Replace any <see cref="GenericParameterType"/> from this type that appear in the given type

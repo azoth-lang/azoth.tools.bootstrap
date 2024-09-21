@@ -18,7 +18,7 @@ public interface ICapabilityValue : IValue
     ulong Value { get; }
     CapabilityIndex Index { get; }
 
-    protected static IReadOnlyDictionary<T, FlowCapability> ForType<T>(ValueId id, Pseudotype type, Func<ValueId, CapabilityIndex, T> create)
+    protected static IReadOnlyDictionary<T, FlowCapability> ForType<T>(ValueId id, IMaybePseudotype type, Func<ValueId, CapabilityIndex, T> create)
         where T : ICapabilityValue
     {
         var index = new Stack<int>();

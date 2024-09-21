@@ -32,7 +32,7 @@ public abstract class SymbolTestFixture
     protected static IFixedList<ParameterType> Params(DataType param, params IMaybeExpressionType[] @params)
         => @params.Prepend(param).Select(t => new ParameterType(false, t)).ToFixedList();
 
-    protected static SelfParameterType SelfParam(Pseudotype param) => new SelfParameterType(false, param);
+    protected static SelfParameterType SelfParam(IMaybePseudotype param) => new SelfParameterType(false, param);
 
     protected static ParameterType Param(IMaybeExpressionType param) => new ParameterType(false, param);
 

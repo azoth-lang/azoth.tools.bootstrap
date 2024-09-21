@@ -10,10 +10,10 @@ internal static class SharingIsTrackedExtensions
     {
         // Any lent parameter needs tracked to prevent sharing with it
         if (node.IsLentBinding) return true;
-        return SharingIsTracked(node.BindingType.AsType);
+        return SharingIsTracked(node.BindingType);
     }
 
-    public static bool SharingIsTracked(this Pseudotype pseudotype)
+    public static bool SharingIsTracked(this IMaybePseudotype pseudotype)
         => pseudotype.ToUpperBound().SharingIsTracked();
 
     public static bool SharingIsTracked(this DataType type)

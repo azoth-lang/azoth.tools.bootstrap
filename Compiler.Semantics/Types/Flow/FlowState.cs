@@ -143,7 +143,7 @@ internal sealed class FlowState : IFlowState
     private FlowState Declare(IParameterNode parameter, bool isLent)
     {
         var builder = ToBuilder();
-        var bindingValuePairs = BindingValue.ForType(parameter.BindingValueId, parameter.BindingType.AsType);
+        var bindingValuePairs = BindingValue.ForType(parameter.BindingValueId, parameter.BindingType);
         builder.AddValueId(parameter.BindingValueId, bindingValuePairs.Keys);
         foreach (var (value, flowCapability) in bindingValuePairs)
         {

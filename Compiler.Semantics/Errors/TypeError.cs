@@ -113,7 +113,7 @@ public static class TypeError
             3014, $"Constructor self parameter cannot have reference capability `{capability.ToSourceCodeString()}`. Only `mut` and read-only are allowed");
     }
 
-    public static Diagnostic TypeCannotBeLent(CodeFile file, TextSpan span, Pseudotype type)
+    public static Diagnostic TypeCannotBeLent(CodeFile file, TextSpan span, IMaybePseudotype type)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
             3015, $"Cannot apply `lent` to `{type.ToSourceCodeString()}` because it is a fully `const` or `id` type");
@@ -161,7 +161,7 @@ public static class TypeError
             3022, $"Self viewpoint not available `{typeSyntax.ToString()}`.");
     }
 
-    public static Diagnostic CannotAccessMutableBindingFieldOfIdentityReference(CodeFile file, IMemberAccessExpressionSyntax exp, Pseudotype contextType)
+    public static Diagnostic CannotAccessMutableBindingFieldOfIdentityReference(CodeFile file, IMemberAccessExpressionSyntax exp, IMaybePseudotype contextType)
     {
         return new(file, exp.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             3023, $"Cannot access `var` field `{exp.MemberName}` from type `{contextType.ToSourceCodeString()}`.");

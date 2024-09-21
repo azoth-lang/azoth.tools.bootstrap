@@ -8,7 +8,7 @@ public interface IParameterType
 {
     bool IsLent { get; }
 
-    Pseudotype Type { get; }
+    IMaybePseudotype Type { get; }
 
     string ToILString();
 }

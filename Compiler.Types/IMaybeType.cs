@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -16,5 +17,5 @@ public interface IMaybeType : IMaybeExpressionType
     #endregion
 
     public new IMaybeAntetype ToAntetype();
-    IMaybeExpressionAntetype IMaybeExpressionType.ToAntetype() => ToAntetype();
+    IMaybeExpressionAntetype IMaybePseudotype.ToAntetype() => ToAntetype();
 }

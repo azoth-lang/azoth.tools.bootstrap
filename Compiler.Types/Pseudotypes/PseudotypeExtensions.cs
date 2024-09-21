@@ -4,7 +4,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 public static class PseudotypeExtensions
 {
-    public static bool IsAssignableFrom(this Pseudotype target, Pseudotype source)
+    public static bool IsAssignableFrom(this IMaybePseudotype target, IMaybePseudotype source)
     {
         return (target, source) switch
         {
@@ -15,7 +15,7 @@ public static class PseudotypeExtensions
         };
     }
 
-    public static bool IsAssignableFrom(this CapabilityTypeConstraint target, Pseudotype source)
+    public static bool IsAssignableFrom(this CapabilityTypeConstraint target, IMaybePseudotype source)
     {
         return source switch
         {
@@ -34,7 +34,7 @@ public static class PseudotypeExtensions
         => target.BareType.IsAssignableFrom(target.Capability.AnyCapabilityAllowsWrite, source.BareType)
            && target.Capability.IsAssignableFrom(source.Capability);
 
-    public static bool IsAssignableFrom(this CapabilityType target, Pseudotype source)
+    public static bool IsAssignableFrom(this CapabilityType target, IMaybePseudotype source)
     {
         return source switch
         {

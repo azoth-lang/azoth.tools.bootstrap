@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using ExhaustiveMatching;
@@ -13,15 +14,25 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(Type),
     typeof(UnknownType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public abstract class DataType : Pseudotype, IMaybeExpressionType
+public abstract class DataType : IMaybeExpressionType
 {
     public virtual bool AllowsVariance => false;
 
     public virtual bool HasIndependentTypeArguments => false;
 
+    /// <summary>
+    /// A known type is one that has no unknown parts.
+    /// </summary>
+    public abstract bool IsFullyKnown { get; }
+
     private protected DataType() { }
 
-    public sealed override IMaybeExpressionType ToUpperBound() => this;
+    public IMaybeExpressionType ToUpperBound() => this;
+
+    /// <summary>
+    /// Convert this type to the equivalent antetype.
+    /// </summary>
+    public abstract IMaybeExpressionAntetype ToAntetype();
 
     /// <summary>
     /// Convert types for constant values to their corresponding types.
@@ -38,7 +49,7 @@ public abstract class DataType : Pseudotype, IMaybeExpressionType
     /// Return the type for when a value of this type is accessed via a type of the given value.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
-    public DataType AccessedVia(Pseudotype contextType)
+    public DataType AccessedVia(IMaybePseudotype contextType)
     {
         if (contextType is CapabilityType capabilityType)
             return AccessedVia(capabilityType.Capability);
@@ -46,7 +57,7 @@ public abstract class DataType : Pseudotype, IMaybeExpressionType
             return AccessedVia(capabilityTypeConstraint.Capability);
         return this;
     }
-    IMaybeExpressionType IMaybeExpressionType.AccessedVia(Pseudotype contextType) => AccessedVia(contextType);
+    IMaybeExpressionType IMaybeExpressionType.AccessedVia(IMaybePseudotype contextType) => AccessedVia(contextType);
 
     /// <summary>
     /// Return the type for when a value of this type is accessed via a reference with the given capability.
@@ -60,7 +71,7 @@ public abstract class DataType : Pseudotype, IMaybeExpressionType
 
     public abstract override int GetHashCode();
 
-    public override bool Equals(IMaybePseudotype? other)
+    public bool Equals(IMaybePseudotype? other)
         => ReferenceEquals(this, other) || other is IMaybeExpressionType dataType && Equals(dataType);
 
     public sealed override bool Equals(object? obj)
@@ -70,4 +81,14 @@ public abstract class DataType : Pseudotype, IMaybeExpressionType
         return obj.GetType() == GetType() && Equals((IMaybeExpressionType)obj);
     }
     #endregion
+
+    /// <summary>
+    /// How this type would be written in source code.
+    /// </summary>
+    public abstract string ToSourceCodeString();
+
+    /// <summary>
+    /// How this type would be written in IL.
+    /// </summary>
+    public abstract string ToILString();
 }

@@ -19,7 +19,7 @@ internal sealed class CapabilityValue : ICapabilityValue
     public static CapabilityValue CreateTopLevel(ValueId id)
         => TopLevelCache.GetOrAdd(id.Value, TopLevelFactory);
 
-    public static IReadOnlyDictionary<CapabilityValue, FlowCapability> ForType(ValueId id, Pseudotype type)
+    public static IReadOnlyDictionary<CapabilityValue, FlowCapability> ForType(ValueId id, IMaybePseudotype type)
         => ICapabilityValue.ForType(id, type, Create);
 
     public bool IsVariableOrParameter => false;

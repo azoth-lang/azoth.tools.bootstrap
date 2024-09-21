@@ -40,7 +40,7 @@ internal sealed class TypeReplacements
             }
     }
 
-    public Pseudotype ReplaceTypeParametersIn(Pseudotype pseudotype)
+    public IMaybePseudotype ReplaceTypeParametersIn(IMaybePseudotype pseudotype)
     {
         return pseudotype switch
         {

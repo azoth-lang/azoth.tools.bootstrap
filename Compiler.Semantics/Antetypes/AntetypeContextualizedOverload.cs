@@ -85,7 +85,7 @@ internal static class AntetypeContextualizedOverload
         IMaybeExpressionAntetype contextAntetype,
         TDeclaration declaration,
         InvocableSymbol symbol,
-        Pseudotype selfParameterType)
+        IMaybePseudotype selfParameterType)
         where TDeclaration : IInvocableDeclarationNode
     {
         var selfParameterAntetype = SelfParameterAntetype(contextAntetype, selfParameterType);
@@ -96,7 +96,7 @@ internal static class AntetypeContextualizedOverload
 
     private static IMaybeAntetype SelfParameterAntetype(
         IMaybeExpressionAntetype contextAntetype,
-        Pseudotype symbolSelfParameterType)
+        IMaybePseudotype symbolSelfParameterType)
         => contextAntetype.ReplaceTypeParametersIn(symbolSelfParameterType.ToAntetype())
                                .ToNonConstValueType();
 

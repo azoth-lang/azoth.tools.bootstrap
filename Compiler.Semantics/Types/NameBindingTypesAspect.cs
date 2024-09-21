@@ -98,7 +98,7 @@ internal static partial class NameBindingTypesAspect
         var isLent = node.IsLentBinding;
         var selfType = ((IParameterNode)node).BindingType;
         if (isLent && !selfType.CanBeLent())
-            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, selfType.AsType));
+            diagnostics.Add(TypeError.TypeCannotBeLent(node.File, node.Syntax.Span, selfType));
     }
 
     public static partial CapabilityType ConstructorSelfParameter_BindingType(IConstructorSelfParameterNode node)
@@ -146,7 +146,7 @@ internal static partial class NameBindingTypesAspect
     public static partial SelfParameterType SelfParameter_ParameterType(ISelfParameterNode node)
     {
         bool isLent = node.IsLentBinding && node.BindingType.CanBeLent();
-        return new(isLent, node.BindingType.AsType);
+        return new(isLent, node.BindingType);
     }
 
     public static partial void MethodSelfParameter_Contribute_Diagnostics(IMethodSelfParameterNode node, DiagnosticCollectionBuilder diagnostics)
