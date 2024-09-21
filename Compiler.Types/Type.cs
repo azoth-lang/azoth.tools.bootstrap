@@ -52,7 +52,7 @@ public abstract class Type : IExpressionType
     /// Return the type for when a value of this type is accessed via a reference with the given capability.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
-    public virtual Type AccessedVia(ICapabilityConstraint capability) => this;
+    public virtual IExpressionType AccessedVia(ICapabilityConstraint capability) => this;
     IMaybeExpressionType IMaybeExpressionType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 
     #region Equality

@@ -12,14 +12,14 @@ public abstract class BareReferenceType : BareType
 {
     public abstract override DeclaredReferenceType DeclaredType { get; }
 
-    private protected BareReferenceType(DeclaredReferenceType declaredType, IFixedList<Type> genericTypeArguments)
+    private protected BareReferenceType(DeclaredReferenceType declaredType, IFixedList<IType> genericTypeArguments)
         : base(declaredType, genericTypeArguments)
     {
     }
 
     public abstract override BareReferenceType AccessedVia(Capability capability);
 
-    public abstract override BareReferenceType With(IFixedList<Type> typeArguments);
+    public abstract override BareReferenceType With(IFixedList<IType> typeArguments);
 
     public abstract override CapabilityType With(Capability capability);
 }
@@ -29,7 +29,7 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
 {
     public override TDeclared DeclaredType { get; }
 
-    internal BareReferenceType(TDeclared declaredType, IFixedList<Type> genericTypeArguments)
+    internal BareReferenceType(TDeclared declaredType, IFixedList<IType> genericTypeArguments)
         : base(declaredType, genericTypeArguments)
     {
         if (typeof(TDeclared).IsAbstract)
@@ -45,7 +45,7 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
         return new(DeclaredType, newTypeArguments);
     }
 
-    public override BareReferenceType<TDeclared> With(IFixedList<Type> typeArguments)
+    public override BareReferenceType<TDeclared> With(IFixedList<IType> typeArguments)
         => new(DeclaredType, typeArguments);
 
     public override CapabilityType<TDeclared> With(Capability capability)

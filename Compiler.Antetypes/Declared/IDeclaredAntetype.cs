@@ -25,5 +25,12 @@ public interface IDeclaredAntetype : IEquatable<IDeclaredAntetype>
 
     IAntetype With(IEnumerable<IAntetype> typeArguments);
 
+    IMaybeAntetype With(IEnumerable<IMaybeAntetype> typeArguments)
+    {
+        var properTypeArguments = typeArguments.ToFixedList().As<IAntetype>();
+        if (properTypeArguments is null) return IAntetype.Unknown;
+        return With(properTypeArguments.AsEnumerable());
+    }
+
     string ToString();
 }

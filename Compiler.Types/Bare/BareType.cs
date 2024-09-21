@@ -41,7 +41,7 @@ public abstract class BareType : IEquatable<BareType>
     #endregion
 
     public abstract DeclaredType DeclaredType { get; }
-    public IFixedList<Type> GenericTypeArguments { get; }
+    public IFixedList<IType> GenericTypeArguments { get; }
     public IEnumerable<GenericParameterArgument> GenericParameterArguments
         => DeclaredType.GenericParameters.EquiZip(GenericTypeArguments, (p, a) => new GenericParameterArgument(p, a));
     public bool AllowsVariance { get; }
@@ -62,15 +62,15 @@ public abstract class BareType : IEquatable<BareType>
 
     public static BareReferenceType<ObjectType> Create(
         ObjectType declaredType,
-        IFixedList<Type> typeArguments)
+        IFixedList<IType> typeArguments)
         => new(declaredType, typeArguments);
 
     public static BareValueType<StructType> Create(
         StructType declaredType,
-        IFixedList<Type> typeArguments)
+        IFixedList<IType> typeArguments)
         => new(declaredType, typeArguments);
 
-    private protected BareType(DeclaredType declaredType, IFixedList<Type> genericTypeArguments)
+    private protected BareType(DeclaredType declaredType, IFixedList<IType> genericTypeArguments)
     {
         if (declaredType.GenericParameters.Count != genericTypeArguments.Count)
             throw new ArgumentException(
@@ -100,7 +100,10 @@ public abstract class BareType : IEquatable<BareType>
     private IFixedSet<BareReferenceType> GetSupertypes()
         => DeclaredType.Supertypes.Select(typeReplacements.Value.ReplaceTypeParametersIn).ToFixedSet();
 
-    public Type ReplaceTypeParametersIn(Type type)
+    public IType ReplaceTypeParametersIn(IType type)
+        => typeReplacements.Value.ReplaceTypeParametersIn(type);
+
+    public IExpressionType ReplaceTypeParametersIn(IExpressionType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
     public IMaybeExpressionType ReplaceTypeParametersIn(IMaybeExpressionType type)
@@ -114,9 +117,9 @@ public abstract class BareType : IEquatable<BareType>
 
     public abstract BareType AccessedVia(Capability capability);
 
-    protected IFixedList<Type> TypeArgumentsAccessedVia(Capability capability)
+    protected IFixedList<IType> TypeArgumentsAccessedVia(Capability capability)
     {
-        var newTypeArguments = new List<Type>(GenericTypeArguments.Count);
+        var newTypeArguments = new List<IType>(GenericTypeArguments.Count);
         var typesReplaced = false;
         foreach (var arg in GenericTypeArguments)
         {
@@ -127,7 +130,7 @@ public abstract class BareType : IEquatable<BareType>
         return typesReplaced ? newTypeArguments.ToFixedList() : GenericTypeArguments;
     }
 
-    public abstract BareType With(IFixedList<Type> typeArguments);
+    public abstract BareType With(IFixedList<IType> typeArguments);
 
     public abstract CapabilityType With(Capability capability);
 

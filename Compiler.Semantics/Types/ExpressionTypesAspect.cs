@@ -554,7 +554,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeExpressionType IfExpression_Type(IIfExpressionNode node)
     {
-        if (node.ElseClause is null) return node.ThenBlock.Type.MakeOptional();
+        if (node.ElseClause is null) return node.ThenBlock.Type.ToNonConstValueType().MakeOptional();
 
         // TODO unify with else clause
         return node.ThenBlock.Type;
@@ -663,7 +663,7 @@ internal static partial class ExpressionTypesAspect
         => node.Referent.FlowStateAfter.Transform(node.Referent.ValueId, node.ValueId, node.Type);
 
     public static partial IMaybeExpressionType AsyncStartExpression_Type(IAsyncStartExpressionNode node)
-        => Intrinsic.PromiseOf(node.Expression?.Type ?? IType.Unknown);
+        => Intrinsic.PromiseOf(node.Expression?.Type.ToNonConstValueType() ?? IType.Unknown);
 
     public static partial IFlowState AsyncStartExpression_FlowStateAfter(IAsyncStartExpressionNode node)
         // TODO this isn't correct, async start can act like a delayed lambda. It is also a transform that wraps

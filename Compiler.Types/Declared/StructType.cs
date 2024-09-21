@@ -111,13 +111,13 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     }
 
 
-    public override BareValueType<StructType> With(IFixedList<Type> typeArguments)
+    public override BareValueType<StructType> With(IFixedList<IType> typeArguments)
         => BareType.Create(this, typeArguments);
 
-    public override CapabilityType<StructType> With(Capability capability, IFixedList<Type> typeArguments)
+    public override CapabilityType<StructType> With(Capability capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<Type> typeArguments)
+    public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
     public override IDeclaredAntetype ToAntetype()

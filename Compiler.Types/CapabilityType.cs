@@ -45,7 +45,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
     public static CapabilityType<ObjectType> Create(
         Capability capability,
         ObjectType declaredType,
-        IFixedList<Type> typeArguments)
+        IFixedList<IType> typeArguments)
         => Create(capability, BareType.Create(declaredType, typeArguments));
 
     /// <summary>
@@ -117,7 +117,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
     public sealed override IMaybeAntetype ToAntetype() => BareType.ToAntetype();
 
     public override IType ReplaceTypeParametersIn(IType type)
-        => (IType)BareType.ReplaceTypeParametersIn((Type)type);
+        => BareType.ReplaceTypeParametersIn(type);
 
     public override IMaybeExpressionType ReplaceTypeParametersIn(IMaybeExpressionType type)
         => BareType.ReplaceTypeParametersIn(type);
@@ -131,7 +131,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
     /// the constructor.</remarks>
     public override CapabilityType WithoutWrite() => With(Capability.WithoutWrite());
 
-    public override Type AccessedVia(ICapabilityConstraint capability)
+    public override IType AccessedVia(ICapabilityConstraint capability)
     {
         switch (capability)
         {

@@ -1,6 +1,7 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -26,9 +27,7 @@ public abstract class EmptyType : Type, IType
     public abstract override EmptyAntetype ToAntetype();
     IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
 
-    public override string ToSourceCodeString() => Name.ToString();
-
-    public override string ToILString() => ToSourceCodeString();
+    public override IType AccessedVia(ICapabilityConstraint capability) => this;
 
     #region Equals
     public override bool Equals(IMaybeExpressionType? other)
@@ -37,4 +36,8 @@ public abstract class EmptyType : Type, IType
 
     public override int GetHashCode() => HashCode.Combine(Name);
     #endregion
+
+    public override string ToSourceCodeString() => Name.ToString();
+
+    public override string ToILString() => ToSourceCodeString();
 }

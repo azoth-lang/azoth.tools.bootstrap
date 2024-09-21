@@ -13,7 +13,7 @@ internal static partial class BareTypeAspect
         => BuildBareType(node.ReferencedSymbol, []);
 
     // TODO this should avoid using symbols and use referenced declarations instead
-    private static BareType? BuildBareType(TypeSymbol? symbol, IFixedList<IMaybeExpressionType> typeArguments)
+    private static BareType? BuildBareType(TypeSymbol? symbol, IFixedList<IMaybeType> typeArguments)
     {
         // Empty and generic parameter types don't have a declared or bare type. Note: the number
         // of arguments will match the type because name binding will only pick a matching type.
@@ -21,7 +21,7 @@ internal static partial class BareTypeAspect
         return declaredType is not null ? BuildBareType(declaredType, typeArguments) : null;
     }
 
-    private static BareType? BuildBareType(DeclaredType type, IFixedList<IMaybeExpressionType> typeArguments)
+    private static BareType? BuildBareType(DeclaredType type, IFixedList<IMaybeType> typeArguments)
         // The number of arguments will match the type because name binding will only pick a matching type
         => type.With(typeArguments);
 

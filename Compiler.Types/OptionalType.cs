@@ -1,5 +1,6 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -17,15 +18,15 @@ public sealed class OptionalType : NonEmptyType, INonVoidType
     public static IMaybeExpressionType Create(IMaybeExpressionType referent)
         => referent switch
         {
-            Type t => new OptionalType(t),
+            IExpressionType t => new OptionalType(t),
             UnknownType _ => IType.Unknown,
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
-    public static Type Create(Type referent)
+    public static OptionalType Create(IExpressionType referent)
         => new OptionalType(referent);
 
-    public Type Referent { get; }
+    public IExpressionType Referent { get; }
 
     public override bool AllowsVariance => true;
 
@@ -35,7 +36,7 @@ public sealed class OptionalType : NonEmptyType, INonVoidType
 
     private bool ReferentRequiresParens => Referent is FunctionType or ViewpointType;
 
-    public OptionalType(Type referent)
+    public OptionalType(IExpressionType referent)
     {
         if (referent is VoidType)
             throw new ArgumentException("Cannot create `void?` type", nameof(referent));
@@ -45,6 +46,8 @@ public sealed class OptionalType : NonEmptyType, INonVoidType
     public override IMaybeAntetype ToAntetype()
         => Referent.ToAntetype() is INonVoidAntetype referent
             ? new OptionalAntetype(referent) : IAntetype.Unknown;
+
+    public override IType AccessedVia(ICapabilityConstraint capability) => this;
 
     #region Equals
     public override bool Equals(IMaybeExpressionType? other)

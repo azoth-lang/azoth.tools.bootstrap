@@ -31,7 +31,7 @@ public abstract class DeclaredReferenceType : DeclaredType
         IsClass = isClass;
     }
 
-    public abstract override BareReferenceType With(IFixedList<Type> typeArguments);
+    public abstract override BareReferenceType With(IFixedList<IType> typeArguments);
 
-    public abstract override CapabilityType With(Capability capability, IFixedList<Type> typeArguments);
+    public abstract override CapabilityType With(Capability capability, IFixedList<IType> typeArguments);
 }

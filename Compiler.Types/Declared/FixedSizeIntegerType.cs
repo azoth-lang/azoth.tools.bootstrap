@@ -65,13 +65,13 @@ public sealed class FixedSizeIntegerType : IntegerType
         return Int;
     }
 
-    public override BareValueType<FixedSizeIntegerType> With(IFixedList<Type> typeArguments)
+    public override BareValueType<FixedSizeIntegerType> With(IFixedList<IType> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;
     }
 
-    public override CapabilityType<FixedSizeIntegerType> With(Capability capability, IFixedList<Type> typeArguments)
+    public override CapabilityType<FixedSizeIntegerType> With(Capability capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
     public override CapabilityType<FixedSizeIntegerType> With(Capability capability)

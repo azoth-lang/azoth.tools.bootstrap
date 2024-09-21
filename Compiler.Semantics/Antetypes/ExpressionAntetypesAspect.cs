@@ -249,7 +249,7 @@ internal static partial class ExpressionAntetypesAspect
         => IAntetype.None;
 
     public static partial IMaybeExpressionAntetype AsyncStartExpression_Antetype(IAsyncStartExpressionNode node)
-        => Intrinsic.PromiseOf(node.Expression?.Antetype ?? IAntetype.Unknown);
+        => Intrinsic.PromiseOf(node.Expression?.Antetype.ToNonConstValueType() ?? IAntetype.Unknown);
 
     public static partial IMaybeExpressionAntetype AwaitExpression_Antetype(IAwaitExpressionNode node)
     {

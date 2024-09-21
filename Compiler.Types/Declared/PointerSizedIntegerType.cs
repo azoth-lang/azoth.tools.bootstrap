@@ -41,13 +41,13 @@ public sealed class PointerSizedIntegerType : IntegerType
         throw new UnreachableException("All types should be covered");
     }
 
-    public override BareValueType<PointerSizedIntegerType> With(IFixedList<Type> typeArguments)
+    public override BareValueType<PointerSizedIntegerType> With(IFixedList<IType> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;
     }
 
-    public override CapabilityType<PointerSizedIntegerType> With(Capability capability, IFixedList<Type> typeArguments)
+    public override CapabilityType<PointerSizedIntegerType> With(Capability capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
 

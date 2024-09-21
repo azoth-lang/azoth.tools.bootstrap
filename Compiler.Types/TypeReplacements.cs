@@ -13,13 +13,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 internal sealed class TypeReplacements
 {
-    private readonly IDictionary<GenericParameterType, Type> replacements;
+    private readonly IDictionary<GenericParameterType, IType> replacements;
 
     /// <summary>
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
     /// supertypes can be replaced with type arguments of this type.
     /// </summary>
-    public TypeReplacements(DeclaredType declaredType, IFixedList<Type> typeArguments)
+    public TypeReplacements(DeclaredType declaredType, IFixedList<IType> typeArguments)
     {
         replacements = declaredType.GenericParameterTypes.EquiZip(typeArguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);
@@ -62,13 +62,21 @@ internal sealed class TypeReplacements
     {
         return type switch
         {
-            Type t => ReplaceTypeParametersIn(t),
+            IExpressionType t => ReplaceTypeParametersIn(t),
             UnknownType _ => type,
             _ => throw ExhaustiveMatch.Failed(type)
         };
     }
 
-    public Type ReplaceTypeParametersIn(Type type)
+    public IExpressionType ReplaceTypeParametersIn(IExpressionType type)
+        => type switch
+        {
+            IType t => ReplaceTypeParametersIn(t),
+            ConstValueType _ => type,
+            _ => throw ExhaustiveMatch.Failed(type)
+        };
+
+    public IType ReplaceTypeParametersIn(IType type)
     {
         switch (type)
         {
@@ -105,7 +113,6 @@ internal sealed class TypeReplacements
                         return CapabilityViewpointType.Create(capabilityViewpointType.Capability, genericParameterType);
                     else
                         return replacementType.AccessedVia(capabilityViewpointType.Capability);
-
                 break;
             }
             case SelfViewpointType selfViewpointType:
@@ -116,7 +123,6 @@ internal sealed class TypeReplacements
                 break;
             }
             case EmptyType _:
-            case ConstValueType _:
                 break;
             default:
                 throw ExhaustiveMatch.Failed(type);
@@ -125,7 +131,7 @@ internal sealed class TypeReplacements
         return type;
     }
 
-    public Type ReplaceTypeParametersIn(GenericParameterType type)
+    public IType ReplaceTypeParametersIn(GenericParameterType type)
     {
         if (replacements.TryGetValue(type, out var replacementType))
             return replacementType;
@@ -152,9 +158,9 @@ internal sealed class TypeReplacements
     public ParameterType ReplaceTypeParametersIn(ParameterType type)
         => type with { Type = ReplaceTypeParametersIn(type.Type) };
 
-    private IFixedList<Type> ReplaceTypeParametersIn(IFixedList<Type> types)
+    private IFixedList<IType> ReplaceTypeParametersIn(IFixedList<IType> types)
     {
-        var replacementTypes = new List<Type>();
+        var replacementTypes = new List<IType>();
         var typesReplaced = false;
         foreach (var type in types)
         {

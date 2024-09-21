@@ -246,7 +246,7 @@ public static class DataTypeExtensions
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
-    public static IMaybeExpressionType? NumericOperatorCommonType(this IMaybeExpressionType leftType, IMaybeExpressionType rightType)
+    public static IMaybeType? NumericOperatorCommonType(this IMaybeExpressionType leftType, IMaybeExpressionType rightType)
         => (leftType, rightType) switch
         {
             (_, NeverType) => IType.Never,
@@ -265,7 +265,7 @@ public static class DataTypeExtensions
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.
     /// </summary>
-    internal static IMaybeExpressionType? NumericOperatorCommonType(this INumericType? leftType, INumericType? rightType)
+    internal static IMaybeType? NumericOperatorCommonType(this INumericType? leftType, INumericType? rightType)
         => (leftType, rightType) switch
         {
             (BigIntegerType left, IntegerType right)
@@ -279,13 +279,15 @@ public static class DataTypeExtensions
             (PointerSizedIntegerType left, PointerSizedIntegerType right)
                 => left.IsSigned || right.IsSigned ? IType.Offset : IType.Size,
             (PointerSizedIntegerType { IsSigned: true }, IntegerConstValueType { IsInt16: true })
-                or (PointerSizedIntegerType { IsSigned: false }, IntegerConstValueType { IsUInt16: true })
-                => leftType.Type,
+                => IType.Offset,
+            (PointerSizedIntegerType { IsSigned: false }, IntegerConstValueType { IsUInt16: true })
+                => IType.Size,
             (PointerSizedIntegerType left, IntegerConstValueType right)
                 => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
             (IntegerConstValueType { IsInt16: true }, PointerSizedIntegerType { IsSigned: true })
-                or (IntegerConstValueType { IsUInt16: true }, PointerSizedIntegerType { IsSigned: false })
-                => rightType.Type,
+                => IType.Offset,
+            (IntegerConstValueType { IsUInt16: true }, PointerSizedIntegerType { IsSigned: false })
+                => IType.Size,
             (IntegerConstValueType left, PointerSizedIntegerType right)
                 => left.IsSigned || right.IsSigned ? IType.Int : IType.UInt,
             (FixedSizeIntegerType left, FixedSizeIntegerType right)

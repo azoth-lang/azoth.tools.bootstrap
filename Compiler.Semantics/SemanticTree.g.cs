@@ -1373,7 +1373,7 @@ public partial interface ITypeNode : ICodeNode
     new ITypeSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IMaybeExpressionType NamedType { get; }
+    IMaybeType NamedType { get; }
     IMaybeAntetype NamedAntetype { get; }
 }
 
@@ -7716,11 +7716,11 @@ file class IdentifierTypeNameNode : SemanticNode, IIdentifierTypeNameNode
                 BareTypeAspect.IdentifierTypeName_NamedBareType);
     private BareType? namedBareType;
     private bool namedBareTypeCached;
-    public IMaybeExpressionType NamedType
+    public IMaybeType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,
                 TypeExpressionsAspect.TypeName_NamedType);
-    private IMaybeExpressionType? namedType;
+    private IMaybeType? namedType;
     private bool namedTypeCached;
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
@@ -7780,11 +7780,11 @@ file class SpecialTypeNameNode : SemanticNode, ISpecialTypeNameNode
                 BareTypeAspect.SpecialTypeName_NamedBareType);
     private BareType? namedBareType;
     private bool namedBareTypeCached;
-    public IMaybeExpressionType NamedType
+    public IMaybeType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,
                 TypeExpressionsAspect.TypeName_NamedType);
-    private IMaybeExpressionType? namedType;
+    private IMaybeType? namedType;
     private bool namedTypeCached;
     public TypeSymbol ReferencedSymbol
         => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol!
@@ -7835,11 +7835,11 @@ file class GenericTypeNameNode : SemanticNode, IGenericTypeNameNode
                 BareTypeAspect.GenericTypeName_NamedBareType);
     private BareType? namedBareType;
     private bool namedBareTypeCached;
-    public IMaybeExpressionType NamedType
+    public IMaybeType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,
                 TypeExpressionsAspect.TypeName_NamedType);
-    private IMaybeExpressionType? namedType;
+    private IMaybeType? namedType;
     private bool namedTypeCached;
     public ITypeDeclarationNode? ReferencedDeclaration
         => GrammarAttribute.IsCached(in referencedDeclarationCached) ? referencedDeclaration
@@ -7892,11 +7892,11 @@ file class QualifiedTypeNameNode : SemanticNode, IQualifiedTypeNameNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
-    public IMaybeExpressionType NamedType
+    public IMaybeType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,
                 TypeExpressionsAspect.TypeName_NamedType);
-    private IMaybeExpressionType? namedType;
+    private IMaybeType? namedType;
     private bool namedTypeCached;
     public TypeSymbol? ReferencedSymbol
         => GrammarAttribute.IsCached(in referencedSymbolCached) ? referencedSymbol
@@ -7933,11 +7933,11 @@ file class OptionalTypeNode : SemanticNode, IOptionalTypeNode
                 TypeExpressionsAntetypesAspect.OptionalType_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
-    public IMaybeExpressionType NamedType
+    public IMaybeType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,
                 TypeExpressionsAspect.OptionalType_NamedType);
-    private IMaybeExpressionType? namedType;
+    private IMaybeType? namedType;
     private bool namedTypeCached;
 
     public OptionalTypeNode(
@@ -7967,11 +7967,11 @@ file class CapabilityTypeNode : SemanticNode, ICapabilityTypeNode
                 TypeExpressionsAntetypesAspect.CapabilityType_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
-    public IMaybeExpressionType NamedType
+    public IMaybeType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,
                 TypeExpressionsAspect.CapabilityType_NamedType);
-    private IMaybeExpressionType? namedType;
+    private IMaybeType? namedType;
     private bool namedTypeCached;
 
     public CapabilityTypeNode(
@@ -8014,11 +8014,11 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
                 TypeExpressionsAntetypesAspect.FunctionType_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
-    public IMaybeExpressionType NamedType
+    public IMaybeType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,
                 TypeExpressionsAspect.FunctionType_NamedType);
-    private IMaybeExpressionType? namedType;
+    private IMaybeType? namedType;
     private bool namedTypeCached;
 
     public FunctionTypeNode(
@@ -8078,11 +8078,11 @@ file class CapabilityViewpointTypeNode : SemanticNode, ICapabilityViewpointTypeN
                 TypeExpressionsAntetypesAspect.ViewpointType_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
-    public IMaybeExpressionType NamedType
+    public IMaybeType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,
                 TypeExpressionsAspect.CapabilityViewpointType_NamedType);
-    private IMaybeExpressionType? namedType;
+    private IMaybeType? namedType;
     private bool namedTypeCached;
 
     public CapabilityViewpointTypeNode(
@@ -8130,11 +8130,11 @@ file class SelfViewpointTypeNode : SemanticNode, ISelfViewpointTypeNode
                 TypeExpressionsAntetypesAspect.ViewpointType_NamedAntetype);
     private IMaybeAntetype? namedAntetype;
     private bool namedAntetypeCached;
-    public IMaybeExpressionType NamedType
+    public IMaybeType NamedType
         => GrammarAttribute.IsCached(in namedTypeCached) ? namedType!
             : this.Synthetic(ref namedTypeCached, ref namedType,
                 TypeExpressionsAspect.SelfViewpointType_NamedType);
-    private IMaybeExpressionType? namedType;
+    private IMaybeType? namedType;
     private bool namedTypeCached;
 
     public SelfViewpointTypeNode(

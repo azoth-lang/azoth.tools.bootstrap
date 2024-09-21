@@ -11,7 +11,7 @@
 = ConcreteMethodDefinition.*.**.MethodSelfType;
 
 // ---------- Types
-↑ Type.NamedType: `IMaybeExpressionType`;
+↑ Type.NamedType: `IMaybeType`;
 = TypeName.NamedType;
 ↑ ParameterType.Parameter: `ParameterType`;
 = CapabilityType.↑.Diagnostics;

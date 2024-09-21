@@ -10,5 +10,5 @@ public abstract class DeclaredValueType : DeclaredType
     private protected DeclaredValueType(bool isConstType, IFixedList<GenericParameter> genericParameters)
         : base(isConstType, genericParameters) { }
 
-    public abstract override BareValueType With(IFixedList<Type> typeArguments);
+    public abstract override BareValueType With(IFixedList<IType> typeArguments);
 }

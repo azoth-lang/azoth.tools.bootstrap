@@ -18,12 +18,12 @@ public static partial class TypeOperations
     /// <remarks>Unknown and empty types (i.e. `void` and `never`) are not changed.</remarks>
     // TODO give a better name, this isn't really a conversion
     [return: NotNullIfNotNull(nameof(type))]
-    public static IMaybeExpressionType? MakeOptional(this IMaybeExpressionType? type)
+    public static IMaybeType? MakeOptional(this IMaybeType? type)
         => type switch
         {
             null => null,
             UnknownType or NeverType or VoidType => type,
-            Type t => new OptionalType(t),
+            IType t => new OptionalType(t),
             _ => throw new UnreachableException(),
         };
 

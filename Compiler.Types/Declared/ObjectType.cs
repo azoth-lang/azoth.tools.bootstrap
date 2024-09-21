@@ -173,20 +173,20 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
         return With(Capability.Isolated, GenericParameterTypes);
     }
 
-    public override BareReferenceType<ObjectType> With(IFixedList<Type> typeArguments)
+    public override BareReferenceType<ObjectType> With(IFixedList<IType> typeArguments)
         => BareType.Create(this, typeArguments);
 
-    public override CapabilityType<ObjectType> With(Capability capability, IFixedList<Type> typeArguments)
+    public override CapabilityType<ObjectType> With(Capability capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<Type> typeArguments)
+    public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
     /// <summary>
     /// Make a version of this type that is the default mutate reference capability for the type.
     /// For constant types, that isn't allowed and a constant reference is returned.
     /// </summary>
-    public CapabilityType<ObjectType> WithMutate(IFixedList<Type> typeArguments)
+    public CapabilityType<ObjectType> WithMutate(IFixedList<IType> typeArguments)
         => With(IsDeclaredConst ? Capability.Constant : Capability.Mutable, typeArguments);
 
     public override IDeclaredAntetype ToAntetype()

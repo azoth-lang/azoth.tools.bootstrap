@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -13,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidType
 {
     public static IMaybeFunctionType Create(IEnumerable<ParameterType> parameters, IMaybeExpressionType @return)
-    => @return is Type returnType ? new FunctionType(parameters, returnType) : IType.Unknown;
+    => @return is IExpressionType returnType ? new FunctionType(parameters, returnType) : IType.Unknown;
 
     public FunctionType(IEnumerable<ParameterType> parameters, IMaybeExpressionType @return)
     {
@@ -27,6 +28,9 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
     public IMaybeExpressionType Return { get; }
 
     public override bool IsFullyKnown { get; }
+
+    public override IType AccessedVia(ICapabilityConstraint capability)
+        => this;
 
     #region Equality
     public override bool Equals(IMaybeExpressionType? other)

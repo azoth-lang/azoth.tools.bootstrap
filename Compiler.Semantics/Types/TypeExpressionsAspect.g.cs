@@ -16,7 +16,7 @@ internal static partial class TypeExpressionsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePseudotype? ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(IConcreteMethodDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeExpressionType TypeName_NamedType(ITypeNameNode node);
+    public static partial IMaybeType TypeName_NamedType(ITypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void CapabilityType_Contribute_Diagnostics(ICapabilityTypeNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -24,15 +24,15 @@ internal static partial class TypeExpressionsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void SelfViewpointType_Contribute_Diagnostics(ISelfViewpointTypeNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeExpressionType OptionalType_NamedType(IOptionalTypeNode node);
+    public static partial IMaybeType OptionalType_NamedType(IOptionalTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeExpressionType CapabilityType_NamedType(ICapabilityTypeNode node);
+    public static partial IMaybeType CapabilityType_NamedType(ICapabilityTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeExpressionType FunctionType_NamedType(IFunctionTypeNode node);
+    public static partial IMaybeType FunctionType_NamedType(IFunctionTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ParameterType ParameterType_Parameter(IParameterTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeExpressionType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node);
+    public static partial IMaybeType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeExpressionType SelfViewpointType_NamedType(ISelfViewpointTypeNode node);
+    public static partial IMaybeType SelfViewpointType_NamedType(ISelfViewpointTypeNode node);
 }

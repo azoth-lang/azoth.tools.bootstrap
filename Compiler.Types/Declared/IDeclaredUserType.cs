@@ -34,13 +34,13 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
 
     public DeclaredType AsDeclaredType { get; }
 
-    BareType With(IFixedList<Type> typeArguments);
-    CapabilityType With(Capability capability, IFixedList<Type> typeArguments);
-    CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<Type> typeArguments);
-    CapabilityType WithRead(IFixedList<Type> typeArguments);
-    public IMaybeExpressionType WithRead(IFixedList<IMaybeExpressionType> typeArguments)
+    BareType With(IFixedList<IType> typeArguments);
+    CapabilityType With(Capability capability, IFixedList<IType> typeArguments);
+    CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<IType> typeArguments);
+    CapabilityType WithRead(IFixedList<IType> typeArguments);
+    public IMaybeExpressionType WithRead(IFixedList<IMaybeType> typeArguments)
     {
-        var properTypeArguments = typeArguments.As<Type>();
+        var properTypeArguments = typeArguments.As<IType>();
         if (properTypeArguments is null) return IType.Unknown;
         return WithRead(properTypeArguments);
     }

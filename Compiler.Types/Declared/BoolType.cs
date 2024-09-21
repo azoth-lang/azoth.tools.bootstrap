@@ -24,13 +24,13 @@ public sealed class BoolType : SimpleType
 
     public override CapabilityType<BoolType> Type { get; }
 
-    public override BareValueType<BoolType> With(IFixedList<Type> typeArguments)
+    public override BareValueType<BoolType> With(IFixedList<IType> typeArguments)
     {
         RequiresEmpty(typeArguments);
         return BareType;
     }
 
-    public override CapabilityType With(Capability capability, IFixedList<Type> typeArguments)
+    public override CapabilityType With(Capability capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
     public override CapabilityType<BoolType> With(Capability capability)

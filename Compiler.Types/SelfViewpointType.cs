@@ -6,23 +6,31 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public sealed class SelfViewpointType : ViewpointType
 {
-    public static IMaybeExpressionType Create(CapabilitySet capability, IMaybeExpressionType referent)
+    public static IMaybeType Create(CapabilitySet capability, IMaybeType referent)
         => referent switch
         {
-            Type t => new SelfViewpointType(capability, t),
+            IType t => new SelfViewpointType(capability, t),
             UnknownType _ => IType.Unknown,
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
-    public static Type Create(CapabilitySet capability, Type referent)
+    public static IMaybeExpressionType Create(CapabilitySet capability, IMaybeExpressionType referent)
+        => referent switch
+        {
+            IExpressionType t => new SelfViewpointType(capability, t),
+            UnknownType _ => IType.Unknown,
+            _ => throw ExhaustiveMatch.Failed(referent),
+        };
+
+    public static IType Create(CapabilitySet capability, IExpressionType referent)
         => new SelfViewpointType(capability, referent);
 
     public override CapabilitySet Capability { get; }
 
-    public override Type Referent { get; }
+    public override IExpressionType Referent { get; }
 
     // TODO do not allow self viewpoint of constant value types
-    public SelfViewpointType(CapabilitySet capability, Type referent)
+    public SelfViewpointType(CapabilitySet capability, IExpressionType referent)
     {
         Capability = capability;
         Referent = referent;

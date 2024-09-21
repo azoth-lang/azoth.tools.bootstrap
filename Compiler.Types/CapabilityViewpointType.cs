@@ -11,7 +11,15 @@ public sealed class CapabilityViewpointType : ViewpointType
             GenericParameterType t => Create(capability, t),
             _ => referent,
         };
-    public static Type Create(Capability capability, GenericParameterType referent)
+
+    public static IMaybeType Create(Capability capability, IMaybeType referent)
+        => referent switch
+        {
+            GenericParameterType t => Create(capability, t),
+            _ => referent,
+        };
+
+    public static IType Create(Capability capability, GenericParameterType referent)
     {
         if (capability == Capability.Mutable || capability == Capability.InitMutable)
             return referent;

@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using ExhaustiveMatching;
@@ -35,4 +36,11 @@ public interface IType : IExpressionType, IMaybeType
     /// </summary>
     public static readonly OptionalType None = new(Never);
     #endregion
+
+    /// <summary>
+    /// Return the type for when a value of this type is accessed via a reference with the given capability.
+    /// </summary>
+    /// <remarks>This can restrict the ability to write to the value.</remarks>
+    new IType AccessedVia(ICapabilityConstraint capability);
+    IExpressionType IExpressionType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 }

@@ -12,10 +12,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 /// </summary>
 internal static partial class TypeExpressionsAspect
 {
-    public static partial IMaybeExpressionType TypeName_NamedType(ITypeNameNode node)
-        => (node.NamedBareType?.WithRead() ?? node.ReferencedSymbol?.GetDataType()) ?? IType.Unknown;
+    public static partial IMaybeType TypeName_NamedType(ITypeNameNode node)
+        => (node.NamedBareType?.WithRead() ?? node.ReferencedSymbol?.GetDataType()) ?? IMaybeType.Unknown;
 
-    public static partial IMaybeExpressionType CapabilityType_NamedType(ICapabilityTypeNode node)
+    public static partial IMaybeType CapabilityType_NamedType(ICapabilityTypeNode node)
         => (node.Referent as ITypeNameNode)?.NamedBareType?.With(node.Capability.Capability) ?? node.Referent.NamedType;
 
     public static partial void CapabilityType_Contribute_Diagnostics(ICapabilityTypeNode node, DiagnosticCollectionBuilder diagnostics)
@@ -31,16 +31,16 @@ internal static partial class TypeExpressionsAspect
         // TODO I think there are more errors that can happen
     }
 
-    public static partial IMaybeExpressionType OptionalType_NamedType(IOptionalTypeNode node)
+    public static partial IMaybeType OptionalType_NamedType(IOptionalTypeNode node)
         => node.Referent.NamedType.MakeOptional();
 
-    public static partial IMaybeExpressionType FunctionType_NamedType(IFunctionTypeNode node)
+    public static partial IMaybeType FunctionType_NamedType(IFunctionTypeNode node)
         => new FunctionType(node.Parameters.Select(p => p.Parameter), node.Return.NamedType);
 
     public static partial ParameterType ParameterType_Parameter(IParameterTypeNode node)
         => new(node.IsLent, node.Referent.NamedType);
 
-    public static partial IMaybeExpressionType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node)
+    public static partial IMaybeType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node)
         => CapabilityViewpointType.Create(node.Capability.Capability, node.Referent.NamedType);
 
     public static partial void CapabilityViewpointType_Contribute_Diagnostics(
@@ -54,7 +54,7 @@ internal static partial class TypeExpressionsAspect
     public static partial IMaybePseudotype? ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(IConcreteMethodDefinitionNode node)
         => node.SelfParameter.BindingType;
 
-    public static partial IMaybeExpressionType SelfViewpointType_NamedType(ISelfViewpointTypeNode node)
+    public static partial IMaybeType SelfViewpointType_NamedType(ISelfViewpointTypeNode node)
     {
         var selfType = node.MethodSelfType;
         var referentType = node.Referent.NamedType;

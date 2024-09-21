@@ -29,9 +29,9 @@ public abstract class SimpleType : DeclaredValueType
         Name = name;
     }
 
-    public abstract override BareValueType With(IFixedList<Type> typeArguments);
+    public abstract override BareValueType With(IFixedList<IType> typeArguments);
 
-    public abstract override CapabilityType With(Capability capability, IFixedList<Type> typeArguments);
+    public abstract override CapabilityType With(Capability capability, IFixedList<IType> typeArguments);
 
     public abstract CapabilityType With(Capability capability);
 

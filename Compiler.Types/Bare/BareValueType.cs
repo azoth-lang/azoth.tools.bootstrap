@@ -12,12 +12,12 @@ public abstract class BareValueType : BareType
 {
     public abstract override DeclaredValueType DeclaredType { get; }
 
-    private protected BareValueType(DeclaredType declaredType, IFixedList<Type> typeArguments)
+    private protected BareValueType(DeclaredType declaredType, IFixedList<IType> typeArguments)
         : base(declaredType, typeArguments) { }
 
     public abstract override BareValueType AccessedVia(Capability capability);
 
-    public abstract override BareValueType With(IFixedList<Type> typeArguments);
+    public abstract override BareValueType With(IFixedList<IType> typeArguments);
 
     public abstract override CapabilityType With(Capability capability);
 }
@@ -27,7 +27,7 @@ public sealed class BareValueType<TDeclared> : BareValueType
 {
     public override TDeclared DeclaredType { get; }
 
-    internal BareValueType(TDeclared declaredType, IFixedList<Type> typeArguments)
+    internal BareValueType(TDeclared declaredType, IFixedList<IType> typeArguments)
         : base(declaredType, typeArguments)
     {
         if (typeof(TDeclared).IsAbstract)
@@ -43,7 +43,7 @@ public sealed class BareValueType<TDeclared> : BareValueType
         return new(DeclaredType, newTypeArguments);
     }
 
-    public override BareValueType<TDeclared> With(IFixedList<Type> typeArguments)
+    public override BareValueType<TDeclared> With(IFixedList<IType> typeArguments)
         => new(DeclaredType, typeArguments);
 
     public override CapabilityType<TDeclared> With(Capability capability)
