@@ -38,7 +38,6 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using InlineMethod;
-using Type = Azoth.Tools.Bootstrap.Compiler.Types.Type;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics;
 

@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -13,31 +15,62 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 [Closed(
     typeof(VoidType),
     typeof(NeverType))]
-public abstract class EmptyType : Type, IType
+[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
+public abstract class EmptyType : IType
 {
     public SpecialTypeName Name { get; }
 
-    public override bool IsFullyKnown => true;
+    public bool IsFullyKnown => true;
+    public bool AllowsVariance => false;
+    public bool HasIndependentTypeArguments => false;
 
     private protected EmptyType(SpecialTypeName name)
     {
         Name = name;
     }
 
-    public abstract override EmptyAntetype ToAntetype();
+    public abstract EmptyAntetype ToAntetype();
     IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
 
-    public override IType AccessedVia(ICapabilityConstraint capability) => this;
+    public IMaybeExpressionType ToUpperBound() => this;
 
-    #region Equals
-    public override bool Equals(IMaybeExpressionType? other)
+    /// <summary>
+    /// Convert types for constant values to their corresponding types.
+    /// </summary>
+    public IMaybeType ToNonConstValueType() => this;
+
+    /// <summary>
+    /// The same type except with any mutability removed.
+    /// </summary>
+    public IMaybeExpressionType WithoutWrite() => this;
+
+    /// <summary>
+    /// Return the type for when a value of this type is accessed via a type of the given value.
+    /// </summary>
+    /// <remarks>This can restrict the ability to write to the value.</remarks>
+    public IMaybeExpressionType AccessedVia(IMaybePseudotype contextType) => this;
+
+    /// <summary>
+    /// Return the type for when a value of this type is accessed via a reference with the given capability.
+    /// </summary>
+    /// <remarks>This can restrict the ability to write to the value.</remarks>
+    public IType AccessedVia(ICapabilityConstraint capability) => this;
+
+    #region Eqauality
+    public bool Equals(IMaybePseudotype? other)
         // Empty types are all fixed instances, so a reference equality suffices
         => ReferenceEquals(this, other);
 
     public override int GetHashCode() => HashCode.Combine(Name);
+
+    public sealed override bool Equals(object? obj)
+        // Empty types are all fixed instances, so a reference equality suffices
+        => ReferenceEquals(this, obj);
     #endregion
 
-    public override string ToSourceCodeString() => Name.ToString();
+    public override string ToString() => throw new NotSupportedException();
 
-    public override string ToILString() => ToSourceCodeString();
+    public string ToSourceCodeString() => Name.ToString();
+
+    public string ToILString() => ToSourceCodeString();
 }

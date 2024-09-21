@@ -1,4 +1,8 @@
+using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
@@ -16,9 +20,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(FunctionType),
     typeof(OptionalType),
     typeof(ConstValueType))]
-public abstract class NonEmptyType : Type
+[DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
+public abstract class NonEmptyType : IExpressionType
 {
     private protected NonEmptyType() { }
+    public virtual bool AllowsVariance => false;
+    public virtual bool HasIndependentTypeArguments => false;
+
+    /// <summary>
+    /// A known type is one that has no unknown parts.
+    /// </summary>
+    public abstract bool IsFullyKnown { get; }
 
     /// <summary>
     /// Replace any <see cref="GenericParameterType"/> from this type that appear in the given type
@@ -82,4 +94,66 @@ public abstract class NonEmptyType : Type
             return ReplaceTypeParametersIn(parameterType);
         return null;
     }
+
+    public IMaybeExpressionType ToUpperBound() => this;
+
+    /// <summary>
+    /// Convert this type to the equivalent antetype.
+    /// </summary>
+    public abstract IMaybeExpressionAntetype ToAntetype();
+
+    /// <summary>
+    /// Convert types for constant values to their corresponding types.
+    /// </summary>
+    public virtual IMaybeType ToNonConstValueType() => (IMaybeType)this;
+
+    /// <summary>
+    /// The same type except with any mutability removed.
+    /// </summary>
+    public virtual IMaybeExpressionType WithoutWrite() => this;
+
+    /// <summary>
+    /// Return the type for when a value of this type is accessed via a type of the given value.
+    /// </summary>
+    /// <remarks>This can restrict the ability to write to the value.</remarks>
+    public IMaybeExpressionType AccessedVia(IMaybePseudotype contextType)
+    {
+        if (contextType is CapabilityType capabilityType)
+            return AccessedVia(capabilityType.Capability);
+        if (contextType is CapabilityTypeConstraint capabilityTypeConstraint)
+            return AccessedVia(capabilityTypeConstraint.Capability);
+        return this;
+    }
+
+    /// <summary>
+    /// Return the type for when a value of this type is accessed via a reference with the given capability.
+    /// </summary>
+    /// <remarks>This can restrict the ability to write to the value.</remarks>
+    public virtual IExpressionType AccessedVia(ICapabilityConstraint capability) => this;
+
+    IMaybeExpressionType IMaybeExpressionType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
+
+    #region Equality
+    public abstract bool Equals(IMaybeExpressionType? other);
+
+    public abstract override int GetHashCode();
+
+    public bool Equals(IMaybePseudotype? other)
+        => ReferenceEquals(this, other) || other is IMaybeExpressionType type && Equals((IMaybeExpressionType?)(IMaybePseudotype?)type);
+
+    public sealed override bool Equals(object? obj)
+        => ReferenceEquals(this, obj) || obj is IMaybeExpressionType type && Equals((IMaybeExpressionType?)(object?)type);
+    #endregion
+
+    public sealed override string ToString() => throw new NotSupportedException();
+
+    /// <summary>
+    /// How this type would be written in source code.
+    /// </summary>
+    public abstract string ToSourceCodeString();
+
+    /// <summary>
+    /// How this type would be written in IL.
+    /// </summary>
+    public abstract string ToILString();
 }
