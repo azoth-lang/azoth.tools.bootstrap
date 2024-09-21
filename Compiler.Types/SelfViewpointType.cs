@@ -35,7 +35,7 @@ public sealed class SelfViewpointType : ViewpointType
         if (ReferenceEquals(this, other)) return true;
         return other is SelfViewpointType otherType
                && Capability == otherType.Capability
-               && Referent == otherType.Referent;
+               && Referent.Equals(otherType.Referent);
     }
 
     public override int GetHashCode() => HashCode.Combine(Capability, Referent);

@@ -90,7 +90,7 @@ public static class DataTypeExtensions
                 default:
                     throw ExhaustiveMatch.Failed(genericParameter.Variance);
                 case TypeParameterVariance.Invariant:
-                    if (from != to)
+                    if (!from.Equals(to))
                     {
                         // When target allows write, acts invariant regardless of independence
                         if (targetAllowsWrite) return false;

@@ -70,14 +70,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
 
     public bool AllowsInit => Capability.AllowsInit;
 
-    public override bool AllowsWrite => Capability.AllowsWrite;
-
-    public override bool AllowsWriteAliases => Capability.AllowsWriteAliases;
-
-    /// <summary>
-    /// Does this reference allow it to be recovered to isolated if reference sharing permits.
-    /// </summary>
-    public bool AllowsRecoverIsolation => Capability.AllowsRecoverIsolation;
+    public virtual bool AllowsWrite => Capability.AllowsWrite;
 
     /// <summary>
     /// Does this capability allow a reference with it to be moved if reference sharing permits.

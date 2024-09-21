@@ -131,9 +131,9 @@ public class InterpreterProcess
             // Flush any buffered output
             await standardOutputWriter.FlushAsync().ConfigureAwait(false);
             var returnType = entryPoint.Symbol.Return;
-            if (returnType == IType.Void)
+            if (returnType.Equals(IType.Void))
                 exitCode = 0;
-            else if (returnType == IType.Byte)
+            else if (returnType.Equals(IType.Byte))
                 exitCode = returnValue.ByteValue;
             else
                 throw new InvalidOperationException($"Main function cannot have return type {returnType.ToILString()}");
@@ -929,7 +929,7 @@ public class InterpreterProcess
             var listType = constructor.ContainingSymbol.DeclaresType.GenericParameterTypes[0];
             nuint capacity = arguments[0].SizeValue;
             IRawBoundedList list;
-            if (listType == IType.Byte)
+            if (listType.Equals(IType.Byte))
                 list = new RawBoundedByteList(capacity);
             else
                 list = new RawBoundedList(capacity);
@@ -983,108 +983,108 @@ public class InterpreterProcess
 
     private async ValueTask<AzothValue> AddAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (leftExp.Type != rightExp.Type)
+        if (!leftExp.Type.Equals(rightExp.Type))
             throw new InvalidOperationException(
                 $"Can't add expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
         var type = leftExp.Type;
-        if (type == IType.Int) return AzothValue.Int(left.IntValue + right.IntValue);
-        if (type == IType.UInt) return AzothValue.Int(left.IntValue + right.IntValue);
-        if (type == IType.Int8) return AzothValue.I8((sbyte)(left.I8Value + right.I8Value));
-        if (type == IType.Byte) return AzothValue.Byte((byte)(left.ByteValue + right.ByteValue));
-        if (type == IType.Int16) return AzothValue.I16((short)(left.I16Value + right.I16Value));
-        if (type == IType.UInt16) return AzothValue.U16((ushort)(left.U16Value + right.U16Value));
-        if (type == IType.Int32) return AzothValue.I32(left.I32Value + right.I32Value);
-        if (type == IType.UInt32) return AzothValue.U32(left.U32Value + right.U32Value);
-        if (type == IType.Int64) return AzothValue.I64(left.I64Value + right.I64Value);
-        if (type == IType.UInt64) return AzothValue.U64(left.U64Value + right.U64Value);
-        if (type == IType.Offset) return AzothValue.Offset(left.OffsetValue + right.OffsetValue);
-        if (type == IType.Size) return AzothValue.Size(left.SizeValue + right.SizeValue);
-        if (type == IType.NInt) return AzothValue.NInt(left.NIntValue + right.NIntValue);
-        if (type == IType.NUInt) return AzothValue.NUInt(left.NUIntValue + right.NUIntValue);
+        if (type.Equals(IType.Int)) return AzothValue.Int(left.IntValue + right.IntValue);
+        if (type.Equals(IType.UInt)) return AzothValue.Int(left.IntValue + right.IntValue);
+        if (type.Equals(IType.Int8)) return AzothValue.I8((sbyte)(left.I8Value + right.I8Value));
+        if (type.Equals(IType.Byte)) return AzothValue.Byte((byte)(left.ByteValue + right.ByteValue));
+        if (type.Equals(IType.Int16)) return AzothValue.I16((short)(left.I16Value + right.I16Value));
+        if (type.Equals(IType.UInt16)) return AzothValue.U16((ushort)(left.U16Value + right.U16Value));
+        if (type.Equals(IType.Int32)) return AzothValue.I32(left.I32Value + right.I32Value);
+        if (type.Equals(IType.UInt32)) return AzothValue.U32(left.U32Value + right.U32Value);
+        if (type.Equals(IType.Int64)) return AzothValue.I64(left.I64Value + right.I64Value);
+        if (type.Equals(IType.UInt64)) return AzothValue.U64(left.U64Value + right.U64Value);
+        if (type.Equals(IType.Offset)) return AzothValue.Offset(left.OffsetValue + right.OffsetValue);
+        if (type.Equals(IType.Size)) return AzothValue.Size(left.SizeValue + right.SizeValue);
+        if (type.Equals(IType.NInt)) return AzothValue.NInt(left.NIntValue + right.NIntValue);
+        if (type.Equals(IType.NUInt)) return AzothValue.NUInt(left.NUIntValue + right.NUIntValue);
         throw new NotImplementedException($"Add {type.ToILString()}");
     }
 
     private async ValueTask<AzothValue> SubtractAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
         // TODO check for negative values when subtracting unsigned
-        if (leftExp.Type != rightExp.Type)
+        if (!leftExp.Type.Equals(rightExp.Type))
             throw new InvalidOperationException(
                 $"Can't subtract expressions of type {leftExp.Type} and {rightExp.Type}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
         var type = leftExp.Type;
-        if (type == IType.Int) return AzothValue.Int(left.IntValue - right.IntValue);
-        if (type == IType.UInt) return AzothValue.Int(left.IntValue - right.IntValue);
-        if (type == IType.Int8) return AzothValue.I8((sbyte)(left.I8Value - right.I8Value));
-        if (type == IType.Byte) return AzothValue.Byte((byte)(left.ByteValue - right.ByteValue));
-        if (type == IType.Int16) return AzothValue.I16((short)(left.I16Value - right.I16Value));
-        if (type == IType.UInt16) return AzothValue.U16((ushort)(left.U16Value - right.U16Value));
-        if (type == IType.Int32) return AzothValue.I32(left.I32Value - right.I32Value);
-        if (type == IType.UInt32) return AzothValue.U32(left.U32Value - right.U32Value);
-        if (type == IType.Int64) return AzothValue.I64(left.I64Value - right.I64Value);
-        if (type == IType.UInt64) return AzothValue.U64(left.U64Value - right.U64Value);
-        if (type == IType.Offset) return AzothValue.Offset(left.OffsetValue - right.OffsetValue);
-        if (type == IType.Size) return AzothValue.Size(left.SizeValue - right.SizeValue);
-        if (type == IType.NInt) return AzothValue.NInt(left.NIntValue - right.NIntValue);
-        if (type == IType.NUInt) return AzothValue.NUInt(left.NUIntValue - right.NUIntValue);
+        if (type.Equals(IType.Int)) return AzothValue.Int(left.IntValue - right.IntValue);
+        if (type.Equals(IType.UInt)) return AzothValue.Int(left.IntValue - right.IntValue);
+        if (type.Equals(IType.Int8)) return AzothValue.I8((sbyte)(left.I8Value - right.I8Value));
+        if (type.Equals(IType.Byte)) return AzothValue.Byte((byte)(left.ByteValue - right.ByteValue));
+        if (type.Equals(IType.Int16)) return AzothValue.I16((short)(left.I16Value - right.I16Value));
+        if (type.Equals(IType.UInt16)) return AzothValue.U16((ushort)(left.U16Value - right.U16Value));
+        if (type.Equals(IType.Int32)) return AzothValue.I32(left.I32Value - right.I32Value);
+        if (type.Equals(IType.UInt32)) return AzothValue.U32(left.U32Value - right.U32Value);
+        if (type.Equals(IType.Int64)) return AzothValue.I64(left.I64Value - right.I64Value);
+        if (type.Equals(IType.UInt64)) return AzothValue.U64(left.U64Value - right.U64Value);
+        if (type.Equals(IType.Offset)) return AzothValue.Offset(left.OffsetValue - right.OffsetValue);
+        if (type.Equals(IType.Size)) return AzothValue.Size(left.SizeValue - right.SizeValue);
+        if (type.Equals(IType.NInt)) return AzothValue.NInt(left.NIntValue - right.NIntValue);
+        if (type.Equals(IType.NUInt)) return AzothValue.NUInt(left.NUIntValue - right.NUIntValue);
         throw new NotImplementedException($"Subtract {type.ToILString()}");
     }
 
     private async ValueTask<AzothValue> MultiplyAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (leftExp.Type != rightExp.Type)
+        if (!leftExp.Type.Equals(rightExp.Type))
             throw new InvalidOperationException(
                 $"Can't multiply expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
         var type = leftExp.Type;
-        if (type == IType.Int) return AzothValue.Int(left.IntValue * right.IntValue);
-        if (type == IType.UInt) return AzothValue.Int(left.IntValue * right.IntValue);
-        if (type == IType.Int8) return AzothValue.I8((sbyte)(left.I8Value * right.I8Value));
-        if (type == IType.Byte) return AzothValue.Byte((byte)(left.ByteValue * right.ByteValue));
-        if (type == IType.Int16) return AzothValue.I16((short)(left.I16Value * right.I16Value));
-        if (type == IType.UInt16) return AzothValue.U16((ushort)(left.U16Value * right.U16Value));
-        if (type == IType.Int32) return AzothValue.I32(left.I32Value * right.I32Value);
-        if (type == IType.UInt32) return AzothValue.U32(left.U32Value * right.U32Value);
-        if (type == IType.Int64) return AzothValue.I64(left.I64Value * right.I64Value);
-        if (type == IType.UInt64) return AzothValue.U64(left.U64Value * right.U64Value);
-        if (type == IType.Offset) return AzothValue.Offset(left.OffsetValue * right.OffsetValue);
-        if (type == IType.Size) return AzothValue.Size(left.SizeValue * right.SizeValue);
-        if (type == IType.NInt) return AzothValue.NInt(left.NIntValue * right.NIntValue);
-        if (type == IType.NUInt) return AzothValue.NUInt(left.NUIntValue * right.NUIntValue);
+        if (type.Equals(IType.Int)) return AzothValue.Int(left.IntValue * right.IntValue);
+        if (type.Equals(IType.UInt)) return AzothValue.Int(left.IntValue * right.IntValue);
+        if (type.Equals(IType.Int8)) return AzothValue.I8((sbyte)(left.I8Value * right.I8Value));
+        if (type.Equals(IType.Byte)) return AzothValue.Byte((byte)(left.ByteValue * right.ByteValue));
+        if (type.Equals(IType.Int16)) return AzothValue.I16((short)(left.I16Value * right.I16Value));
+        if (type.Equals(IType.UInt16)) return AzothValue.U16((ushort)(left.U16Value * right.U16Value));
+        if (type.Equals(IType.Int32)) return AzothValue.I32(left.I32Value * right.I32Value);
+        if (type.Equals(IType.UInt32)) return AzothValue.U32(left.U32Value * right.U32Value);
+        if (type.Equals(IType.Int64)) return AzothValue.I64(left.I64Value * right.I64Value);
+        if (type.Equals(IType.UInt64)) return AzothValue.U64(left.U64Value * right.U64Value);
+        if (type.Equals(IType.Offset)) return AzothValue.Offset(left.OffsetValue * right.OffsetValue);
+        if (type.Equals(IType.Size)) return AzothValue.Size(left.SizeValue * right.SizeValue);
+        if (type.Equals(IType.NInt)) return AzothValue.NInt(left.NIntValue * right.NIntValue);
+        if (type.Equals(IType.NUInt)) return AzothValue.NUInt(left.NUIntValue * right.NUIntValue);
         throw new NotImplementedException($"Multiply {type.ToILString()}");
     }
 
     private async ValueTask<AzothValue> DivideAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (leftExp.Type != rightExp.Type)
+        if (!leftExp.Type.Equals(rightExp.Type))
             throw new InvalidOperationException(
                 $"Can't divide expressions of type {leftExp.Type} and {rightExp.Type}");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
         var type = leftExp.Type;
-        if (type == IType.Int) return AzothValue.Int(left.IntValue / right.IntValue);
-        if (type == IType.UInt) return AzothValue.Int(left.IntValue / right.IntValue);
-        if (type == IType.Int8) return AzothValue.I8((sbyte)(left.I8Value / right.I8Value));
-        if (type == IType.Byte) return AzothValue.Byte((byte)(left.ByteValue / right.ByteValue));
-        if (type == IType.Int16) return AzothValue.I16((short)(left.I16Value / right.I16Value));
-        if (type == IType.UInt16) return AzothValue.U16((ushort)(left.U16Value / right.U16Value));
-        if (type == IType.Int32) return AzothValue.I32(left.I32Value / right.I32Value);
-        if (type == IType.UInt32) return AzothValue.U32(left.U32Value / right.U32Value);
-        if (type == IType.Int64) return AzothValue.I64(left.I64Value / right.I64Value);
-        if (type == IType.UInt64) return AzothValue.U64(left.U64Value / right.U64Value);
-        if (type == IType.Offset) return AzothValue.Offset(left.OffsetValue / right.OffsetValue);
-        if (type == IType.Size) return AzothValue.Size(left.SizeValue / right.SizeValue);
-        if (type == IType.NInt) return AzothValue.NInt(left.NIntValue / right.NIntValue);
-        if (type == IType.NUInt) return AzothValue.NUInt(left.NUIntValue / right.NUIntValue);
+        if (type.Equals(IType.Int)) return AzothValue.Int(left.IntValue / right.IntValue);
+        if (type.Equals(IType.UInt)) return AzothValue.Int(left.IntValue / right.IntValue);
+        if (type.Equals(IType.Int8)) return AzothValue.I8((sbyte)(left.I8Value / right.I8Value));
+        if (type.Equals(IType.Byte)) return AzothValue.Byte((byte)(left.ByteValue / right.ByteValue));
+        if (type.Equals(IType.Int16)) return AzothValue.I16((short)(left.I16Value / right.I16Value));
+        if (type.Equals(IType.UInt16)) return AzothValue.U16((ushort)(left.U16Value / right.U16Value));
+        if (type.Equals(IType.Int32)) return AzothValue.I32(left.I32Value / right.I32Value);
+        if (type.Equals(IType.UInt32)) return AzothValue.U32(left.U32Value / right.U32Value);
+        if (type.Equals(IType.Int64)) return AzothValue.I64(left.I64Value / right.I64Value);
+        if (type.Equals(IType.UInt64)) return AzothValue.U64(left.U64Value / right.U64Value);
+        if (type.Equals(IType.Offset)) return AzothValue.Offset(left.OffsetValue / right.OffsetValue);
+        if (type.Equals(IType.Size)) return AzothValue.Size(left.SizeValue / right.SizeValue);
+        if (type.Equals(IType.NInt)) return AzothValue.NInt(left.NIntValue / right.NIntValue);
+        if (type.Equals(IType.NUInt)) return AzothValue.NUInt(left.NUIntValue / right.NUIntValue);
         throw new NotImplementedException($"Divide {type.ToILString()}");
     }
 
     private async ValueTask<bool> EqualsAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (leftExp.Type != rightExp.Type && leftExp.Type is not CapabilityType { IsIdentityReference: true })
+        if (!leftExp.Type.Equals(rightExp.Type) && leftExp.Type is not CapabilityType { IsIdentityReference: true })
             throw new InvalidOperationException(
                 $"Can't compare expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()} for equality.");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
@@ -1123,7 +1123,7 @@ public class InterpreterProcess
 
     private async ValueTask<int> CompareAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (leftExp.Type != rightExp.Type)
+        if (!leftExp.Type.Equals(rightExp.Type))
             throw new InvalidOperationException(
                 $"Can't compare expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()}.");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
@@ -1161,13 +1161,13 @@ public class InterpreterProcess
     {
         var value = await ExecuteAsync(expression, variables).ConfigureAwait(false);
         var dataType = expression.Type;
-        if (dataType == IType.Int) return AzothValue.Int(-value.IntValue);
-        if (dataType == IType.Int8) return AzothValue.I8((sbyte)-value.I8Value);
-        if (dataType == IType.Int16) return AzothValue.I16((short)-value.I16Value);
-        if (dataType == IType.Int32) return AzothValue.I32(-value.I32Value);
-        if (dataType == IType.Int64) return AzothValue.I64(-value.I64Value);
-        if (dataType == IType.Offset) return AzothValue.Offset(-value.OffsetValue);
-        if (dataType == IType.NInt) return AzothValue.NInt(-value.NIntValue);
+        if (dataType.Equals(IType.Int)) return AzothValue.Int(-value.IntValue);
+        if (dataType.Equals(IType.Int8)) return AzothValue.I8((sbyte)-value.I8Value);
+        if (dataType.Equals(IType.Int16)) return AzothValue.I16((short)-value.I16Value);
+        if (dataType.Equals(IType.Int32)) return AzothValue.I32(-value.I32Value);
+        if (dataType.Equals(IType.Int64)) return AzothValue.I64(-value.I64Value);
+        if (dataType.Equals(IType.Offset)) return AzothValue.Offset(-value.OffsetValue);
+        if (dataType.Equals(IType.NInt)) return AzothValue.NInt(-value.NIntValue);
         if (dataType is IntegerConstValueType) return AzothValue.Int(-value.IntValue);
         throw new NotImplementedException($"Negate {dataType.ToILString()}");
     }
@@ -1180,35 +1180,35 @@ public class InterpreterProcess
         AzothValue divisor,
         CapabilityType type)
     {
-        if (type == IType.Int) return AzothValue.Int(dividend.IntValue % divisor.IntValue);
-        if (type == IType.UInt) return AzothValue.Int(dividend.IntValue % divisor.IntValue);
-        if (type == IType.Int8) return AzothValue.I8((sbyte)(dividend.I8Value % divisor.I8Value));
-        if (type == IType.Byte) return AzothValue.Byte((byte)(dividend.ByteValue % divisor.ByteValue));
-        if (type == IType.Int16) return AzothValue.I16((short)(dividend.I16Value % divisor.I16Value));
-        if (type == IType.UInt16) return AzothValue.U16((ushort)(dividend.U16Value % divisor.U16Value));
-        if (type == IType.Int32) return AzothValue.I32(dividend.I32Value % divisor.I32Value);
-        if (type == IType.UInt32) return AzothValue.U32(dividend.U32Value % divisor.U32Value);
-        if (type == IType.Int64) return AzothValue.I64(dividend.I64Value % divisor.I64Value);
-        if (type == IType.UInt64) return AzothValue.U64(dividend.U64Value % divisor.U64Value);
-        if (type == IType.Offset) return AzothValue.Offset(dividend.OffsetValue % divisor.OffsetValue);
-        if (type == IType.Size) return AzothValue.Size(dividend.SizeValue % divisor.SizeValue);
-        if (type == IType.NInt) return AzothValue.Offset(dividend.NIntValue % divisor.NIntValue);
-        if (type == IType.NUInt) return AzothValue.Size(dividend.NUIntValue % divisor.NUIntValue);
+        if (type.Equals(IType.Int)) return AzothValue.Int(dividend.IntValue % divisor.IntValue);
+        if (type.Equals(IType.UInt)) return AzothValue.Int(dividend.IntValue % divisor.IntValue);
+        if (type.Equals(IType.Int8)) return AzothValue.I8((sbyte)(dividend.I8Value % divisor.I8Value));
+        if (type.Equals(IType.Byte)) return AzothValue.Byte((byte)(dividend.ByteValue % divisor.ByteValue));
+        if (type.Equals(IType.Int16)) return AzothValue.I16((short)(dividend.I16Value % divisor.I16Value));
+        if (type.Equals(IType.UInt16)) return AzothValue.U16((ushort)(dividend.U16Value % divisor.U16Value));
+        if (type.Equals(IType.Int32)) return AzothValue.I32(dividend.I32Value % divisor.I32Value);
+        if (type.Equals(IType.UInt32)) return AzothValue.U32(dividend.U32Value % divisor.U32Value);
+        if (type.Equals(IType.Int64)) return AzothValue.I64(dividend.I64Value % divisor.I64Value);
+        if (type.Equals(IType.UInt64)) return AzothValue.U64(dividend.U64Value % divisor.U64Value);
+        if (type.Equals(IType.Offset)) return AzothValue.Offset(dividend.OffsetValue % divisor.OffsetValue);
+        if (type.Equals(IType.Size)) return AzothValue.Size(dividend.SizeValue % divisor.SizeValue);
+        if (type.Equals(IType.NInt)) return AzothValue.Offset(dividend.NIntValue % divisor.NIntValue);
+        if (type.Equals(IType.NUInt)) return AzothValue.Size(dividend.NUIntValue % divisor.NUIntValue);
         throw new NotImplementedException($"Remainder {type.ToILString()}");
     }
 
     private async ValueTask<AzothValue> ToDisplayStringAsync(AzothValue value, CapabilityType type)
     {
         string displayString;
-        if (type == IType.Int) displayString = value.IntValue.ToString();
-        else if (type == IType.UInt) displayString = value.IntValue.ToString();
-        else if (type == IType.Byte) displayString = value.ByteValue.ToString();
-        else if (type == IType.Int32) displayString = value.I32Value.ToString();
-        else if (type == IType.UInt32) displayString = value.U32Value.ToString();
-        else if (type == IType.Offset) displayString = value.OffsetValue.ToString();
-        else if (type == IType.Size) displayString = value.SizeValue.ToString();
-        else if (type == IType.NInt) displayString = value.NIntValue.ToString();
-        else if (type == IType.NUInt) displayString = value.NUIntValue.ToString();
+        if (type.Equals(IType.Int)) displayString = value.IntValue.ToString();
+        else if (type.Equals(IType.UInt)) displayString = value.IntValue.ToString();
+        else if (type.Equals(IType.Byte)) displayString = value.ByteValue.ToString();
+        else if (type.Equals(IType.Int32)) displayString = value.I32Value.ToString();
+        else if (type.Equals(IType.UInt32)) displayString = value.U32Value.ToString();
+        else if (type.Equals(IType.Offset)) displayString = value.OffsetValue.ToString();
+        else if (type.Equals(IType.Size)) displayString = value.SizeValue.ToString();
+        else if (type.Equals(IType.NInt)) displayString = value.NIntValue.ToString();
+        else if (type.Equals(IType.NUInt)) displayString = value.NUIntValue.ToString();
         else throw new NotImplementedException($"to_display_string({type.ToILString()})");
 
         return await ConstructStringAsync(displayString).ConfigureAwait(false);

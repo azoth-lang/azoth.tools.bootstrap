@@ -35,7 +35,7 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
         if (ReferenceEquals(this, other)) return true;
         return other is FunctionType otherType
                && Parameters.Equals(otherType.Parameters)
-               && Return == otherType.Return;
+               && Return.Equals(otherType.Return);
     }
 
     public override int GetHashCode() => HashCode.Combine(Parameters, Return);

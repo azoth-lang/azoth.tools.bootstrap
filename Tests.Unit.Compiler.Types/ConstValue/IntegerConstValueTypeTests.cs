@@ -8,27 +8,11 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.ConstValue;
 public class IntegerConstValueTypeTests
 {
     [Fact]
-    public void Is_constant()
-    {
-        var type = new IntegerConstValueType(1);
-
-        Assert.True(type.IsTypeOfConstValue);
-    }
-
-    [Fact]
     public void Is_known_type()
     {
         var type = new IntegerConstValueType(1);
 
         Assert.True(type.IsFullyKnown);
-    }
-
-    [Fact]
-    public void Is_not_empty_type()
-    {
-        var type = new IntegerConstValueType(1);
-
-        Assert.False(type.IsEmpty);
     }
 
     [Theory]

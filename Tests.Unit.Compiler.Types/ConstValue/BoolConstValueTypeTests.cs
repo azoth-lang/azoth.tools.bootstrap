@@ -9,14 +9,6 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.ConstValue;
 public class BoolConstValueTypeTests
 {
     [Fact]
-    public void Is_constant()
-    {
-        var type = BoolConstValueType.True;
-
-        Assert.True(type.IsTypeOfConstValue);
-    }
-
-    [Fact]
     public void True_type_has_true_value()
     {
         var type = BoolConstValueType.True;

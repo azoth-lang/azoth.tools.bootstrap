@@ -35,7 +35,7 @@ public sealed class CapabilityViewpointType : ViewpointType
         if (ReferenceEquals(this, other)) return true;
         return other is CapabilityViewpointType otherType
                && Capability == otherType.Capability
-               && Referent == otherType.Referent;
+               && Referent.Equals(otherType.Referent);
     }
 
     public override int GetHashCode()

@@ -35,7 +35,7 @@ public sealed class FieldSymbol : Symbol
                && ContainingSymbol == otherField.ContainingSymbol
                && Name == otherField.Name
                && IsMutableBinding == otherField.IsMutableBinding
-               && Type == otherField.Type;
+               && Type.Equals(otherField.Type);
     }
 
     public override int GetHashCode()

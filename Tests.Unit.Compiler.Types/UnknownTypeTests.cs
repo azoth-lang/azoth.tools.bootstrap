@@ -15,14 +15,6 @@ public class UnknownTypeTests
     }
 
     [Fact]
-    public void Is_not_constant()
-    {
-        var type = UnknownType.Instance;
-
-        Assert.False(type.IsTypeOfConstValue);
-    }
-
-    [Fact]
     public void Equal_to_itself()
     {
         Assert.Equal(UnknownType.Instance, UnknownType.Instance);

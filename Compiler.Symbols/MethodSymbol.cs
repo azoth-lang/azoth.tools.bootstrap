@@ -51,7 +51,7 @@ public sealed class MethodSymbol : InvocableSymbol
                && Name == otherMethod.Name
                && SelfParameterType == otherMethod.SelfParameterType
                && Parameters.SequenceEqual(otherMethod.Parameters)
-               && Return == otherMethod.Return;
+               && Return.Equals(otherMethod.Return);
     }
 
     public override int GetHashCode()

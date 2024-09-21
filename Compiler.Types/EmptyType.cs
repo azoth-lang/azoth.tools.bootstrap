@@ -16,8 +16,6 @@ public abstract class EmptyType : Type, IType
 {
     public SpecialTypeName Name { get; }
 
-    public override bool IsEmpty => true;
-
     public override bool IsFullyKnown => true;
 
     private protected EmptyType(SpecialTypeName name)

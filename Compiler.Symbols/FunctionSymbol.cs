@@ -34,7 +34,7 @@ public sealed class FunctionSymbol : FunctionOrInitializerSymbol
                && ContainingSymbol == otherFunction.ContainingSymbol
                && Name == otherFunction.Name
                && Parameters.SequenceEqual(otherFunction.Parameters)
-               && Return == otherFunction.Return;
+               && Return.Equals(otherFunction.Return);
     }
 
     public override int GetHashCode()

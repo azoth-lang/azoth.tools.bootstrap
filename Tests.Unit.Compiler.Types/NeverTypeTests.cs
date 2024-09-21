@@ -24,14 +24,6 @@ public class NeverTypeTests
     }
 
     [Fact]
-    public void Is_empty_type()
-    {
-        var type = NeverType.Instance;
-
-        Assert.True(type.IsEmpty);
-    }
-
-    [Fact]
     public void Has_special_name_never()
     {
         var type = NeverType.Instance;

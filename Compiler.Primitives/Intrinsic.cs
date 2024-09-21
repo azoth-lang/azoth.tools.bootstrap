@@ -176,17 +176,17 @@ public static class Intrinsic
         // published /* unsafe */ fn set_at(mut self, index: size, T value)
         // TODO replace with at method returning a `ref var`
         var setAt = new MethodSymbol(classSymbol, "set_at", mutClassParamType,
-            Params(IType.Size, itemType), (DataType)IType.Void);
+            Params(IType.Size, itemType), IType.Void);
         tree.Add(setAt);
 
         // published fn add(mut self, value: T);
         var add = new MethodSymbol(classSymbol, "add", mutClassParamType,
-            Params(itemType), (DataType)IType.Void);
+            Params(itemType), IType.Void);
         tree.Add(add);
 
         // published fn shrink(mut self, count: size)
         var shrink = new MethodSymbol(classSymbol, "shrink", mutClassParamType,
-            Params(IType.Size), (DataType)IType.Void);
+            Params(IType.Size), IType.Void);
         tree.Add(shrink);
 
         return classType;

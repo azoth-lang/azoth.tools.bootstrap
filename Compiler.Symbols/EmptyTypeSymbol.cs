@@ -28,7 +28,7 @@ public sealed class EmptyTypeSymbol : TypeSymbol
         if (ReferenceEquals(this, other)) return true;
         return other is EmptyTypeSymbol otherType
                && Name == otherType.Name
-               && Type == otherType.Type;
+               && Type.Equals(otherType.Type);
     }
 
     public override int GetHashCode() => HashCode.Combine(Name, Type);
