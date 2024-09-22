@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -12,12 +13,20 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// No well typed program contains any expression with an unknown type.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public sealed class UnknownType : IMaybeFunctionType
+public sealed class UnknownType : IMaybeFunctionType, IMaybeParameterType, IMaybeSelfParameterType
 {
     #region Singleton
     internal static readonly UnknownType Instance = new();
 
     private UnknownType() { }
+    #endregion
+
+    #region Parmaeter Types
+    bool IMaybeSelfParameterType.IsLent => false;
+    bool IMaybeParameterType.IsLent => false;
+
+    IMaybePseudotype IMaybeSelfParameterType.Type => this;
+    IMaybeType IMaybeParameterType.Type => this;
     #endregion
 
     public bool IsFullyKnown => false;
@@ -38,7 +47,7 @@ public sealed class UnknownType : IMaybeFunctionType
     /// <summary>
     /// The same type except with any mutability removed.
     /// </summary>
-    public IMaybeExpressionType WithoutWrite() => this;
+    public IMaybeType WithoutWrite() => this;
 
     /// <summary>
     /// Return the type for when a value of this type is accessed via a type of the given value.

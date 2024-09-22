@@ -40,6 +40,16 @@ internal sealed class TypeReplacements
             }
     }
 
+    public IPseudotype ReplaceTypeParametersIn(IPseudotype pseudotype)
+    {
+        return pseudotype switch
+        {
+            IExpressionType type => ReplaceTypeParametersIn(type),
+            CapabilityTypeConstraint type => ReplaceTypeParametersIn(type),
+            _ => throw ExhaustiveMatch.Failed(pseudotype)
+        };
+    }
+
     public IMaybePseudotype ReplaceTypeParametersIn(IMaybePseudotype pseudotype)
     {
         return pseudotype switch

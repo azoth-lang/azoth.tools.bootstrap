@@ -1,10 +1,21 @@
 using System;
+using System.Collections.Generic;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public partial class TypeOperations
 {
+    public static IFixedList<ParameterType>? AsKnownFixedList(this IEnumerable<IMaybeParameterType> parameters)
+    {
+        if (parameters is IFixedList<ParameterType> knownParameters)
+            return knownParameters;
+
+        return parameters.ToFixedList().As<ParameterType>();
+    }
+
     public static IExpressionType Known(this IMaybeExpressionType type)
         => type switch
         {

@@ -12,7 +12,6 @@
 
 // ---------- Facets
 = PackageFacet.*.**.Facet => this;
-= PackageFacet.*.ContainingDeclaration => this;
 
 // ---------- Code Files
 ↓ computed Code.File: `CodeFile`;
@@ -23,24 +22,18 @@
 
 // ---------- Definitions
 ↓ Definition.Facet: PackageFacet;
-↓ computed Definition.ContainingDeclaration: SymbolDeclaration;
 
 // ---------- Namespace Definitions
 ↓ computed NamespaceBlockDefinition.ContainingDeclaration: NamespaceDefinition;
 = NamespaceBlockDefinition.*.ContainingDeclaration;
 
-// ---------- Function Definition
-↓ computed FunctionDefinition.ContainingDeclaration: NamespaceDeclaration;
+// ---------- Type Definitions
+= TypeDefinition.*.**.ContainingTypeDefinition => this;
 
 // ---------- Type Definition Parts
-= TypeDefinition.*.**.ContainingDeclaration => this;
-= TypeDefinition.*.**.ContainingTypeDefinition => this;
 ↓ computed GenericParameter.ContainingDeclaration: UserTypeDeclaration;
 
 // ---------- Type Member Definitions
-= ConcreteMethodDefinition.*.**.ContainingDeclaration => this;
-= SourceConstructorDefinition.*.**.ContainingDeclaration => this;
-= SourceInitializerDefinition.*.**.ContainingDeclaration => this;
 ↓ computed AlwaysTypeMemberDefinition.ContainingDeclaration: UserTypeDeclaration;
 
 // ---------- Parameters
@@ -54,11 +47,28 @@
 // Declarations
 // -------------------------------------------------------------------------------------------------
 
-// ---------- Packages
+// ---------- Package Declarations
 = PackageDeclaration.*.**.Package => this;
 
-// ---------- Facets
+// ---------- Facet Declarations
+= PackageFacetDeclaration.*.ContainingDeclaration => this;
 ↓ computed PackageFacetChildDeclaration.Facet: PackageFacetDeclaration;
+
+// ---------- Declarations
+↓ computed Declaration.ContainingDeclaration: SymbolDeclaration;
+
+// ---------- Function Declarations
+↓ computed FunctionDeclaration.ContainingDeclaration: NamespaceDeclaration;
+
+// ---------- Type Declarations
+= TypeDeclaration.*.**.ContainingDeclaration => this;
+
+// ---------- Type Member Definitions
+= MethodDeclaration.*.**.ContainingDeclaration => this;
+= ConstructorDeclaration.*.**.ContainingDeclaration => this;
+= InitializerDeclaration.*.**.ContainingDeclaration => this;
+↓ FieldDeclaration.ContainingDeclaration: TypeDeclaration;
+↓ computed AlwaysTypeMemberDeclaration.ContainingDeclaration: TypeDeclaration;
 
 // -------------------------------------------------------------------------------------------------
 // Symbol Nodes

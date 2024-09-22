@@ -127,13 +127,14 @@
 + GetterMethodSymbol.new.Validate;
 + SetterMethodSymbol.new.Validate;
 ↑ ConstructorSymbol.Name: `IdentifierName`? => Symbol.Name;
-= ConstructorSymbol.SelfParameterType => new(false, Symbol.SelfParameterType);
+= ConstructorSymbol.SelfParameterType => new SelfParameterType(false, Symbol.SelfParameterType);
 = ConstructorSymbol.ParameterTypes => Symbol.Parameters;
 = ConstructorSymbol.ReturnType => Symbol.ReturnType;
 ↑ InitializerSymbol.Name: `IdentifierName`? => Symbol.Name;
-= InitializerSymbol.SelfParameterType => new(false, Symbol.SelfParameterType);
+= InitializerSymbol.SelfParameterType => new SelfParameterType(false, Symbol.SelfParameterType);
 = InitializerSymbol.ParameterTypes => Symbol.Parameters;
 = InitializerSymbol.ReturnType => Symbol.ReturnType;
+= FieldSymbol.IsMutableBinding => Symbol.IsMutableBinding;
 ↑ FieldSymbol.Name: `IdentifierName` => Symbol.Name;
 = FieldSymbol.BindingType => Symbol.Type;
 = AssociatedFunctionSymbol.Type => Symbol.Type;

@@ -362,7 +362,7 @@ internal static partial class ExpressionTypesAspect
             // should not be reported.
             return;
 
-        var fieldHasMutableBinding = node.ReferencedDeclaration.Symbol.IsMutableBinding;
+        var fieldHasMutableBinding = node.ReferencedDeclaration.IsMutableBinding;
         if (fieldHasMutableBinding
             && node.Context.Type is CapabilityType { Capability: var contextCapability }
             && contextCapability == Capability.Identity)

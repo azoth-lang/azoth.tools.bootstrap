@@ -79,7 +79,7 @@ public class InterpreterProcess
                        .Select(c => (c, default(ISourceConstructorDefinitionNode)))
                        .Concat(allDefinitions
                                .OfType<ISourceConstructorDefinitionNode>()
-                               .Select(c => (c.Symbol, (ISourceConstructorDefinitionNode?)c)))
+                               .Select(c => (c.Symbol.Assigned(), (ISourceConstructorDefinitionNode?)c)))
                        .ToFixedDictionary();
 
         var defaultInitializerSymbols = allDefinitions
@@ -89,7 +89,7 @@ public class InterpreterProcess
                        .Select(c => (c, default(ISourceInitializerDefinitionNode)))
                        .Concat(allDefinitions
                                .OfType<ISourceInitializerDefinitionNode>()
-                               .Select(c => (c.Symbol, (ISourceInitializerDefinitionNode?)c)))
+                               .Select(c => (c.Symbol.Assigned(), (ISourceInitializerDefinitionNode?)c)))
                        .ToFixedDictionary();
 
         // TODO pointing both of these to a memory stream is probably wrong. Need something that acts like a pipe.
@@ -201,8 +201,8 @@ public class InterpreterProcess
         // TODO further restrict what can be passed to main
 
         var @class = userTypes.Values.OfType<IClassDefinitionNode>().Single(c => c.Symbol.DeclaresType.Equals(type.DeclaredType));
-        var constructorSymbol = @class.DefaultConstructor?.Symbol
-            ?? @class.Members.OfType<IConstructorDefinitionNode>().Select(c => c.Symbol)
+        var constructorSymbol = @class.DefaultConstructor?.Symbol.Assigned()
+            ?? @class.Members.OfType<IConstructorDefinitionNode>().Select(c => c.Symbol.Assigned())
                      .Single(c => c.Arity == 0);
         return await ConstructClass(@class, constructorSymbol, []);
     }
@@ -263,7 +263,7 @@ public class InterpreterProcess
                     default:
                         throw ExhaustiveMatch.Failed(parameter);
                     case IFieldParameterNode fieldParameter:
-                        self.ObjectValue[fieldParameter.ReferencedField!.Symbol.Name] = arg;
+                        self.ObjectValue[fieldParameter.ReferencedField!.Symbol.Assigned().Name] = arg;
                         break;
                     case INamedParameterNode p:
                         variables.Add(p, arg);
@@ -288,7 +288,7 @@ public class InterpreterProcess
         // Initialize fields to default values
         var fields = @class.Members.OfType<IFieldDefinitionNode>();
         foreach (var field in fields)
-            self.ObjectValue[field.Symbol.Name] = new AzothValue();
+            self.ObjectValue[field.Symbol.Assigned().Name] = new AzothValue();
 
         if (@class.BaseTypeName?.ReferencedSymbol is UserTypeSymbol baseClassSymbol)
         {
@@ -303,7 +303,7 @@ public class InterpreterProcess
     private static ConstructorSymbol NoArgConstructorSymbol(IClassDefinitionNode baseClass)
     {
         return baseClass.DefaultConstructor?.Symbol
-               ?? baseClass.Members.OfType<ISourceConstructorDefinitionNode>().Select(c => c.Symbol)
+               ?? baseClass.Members.OfType<ISourceConstructorDefinitionNode>().Select(c => c.Symbol.Assigned())
                            .Single(c => c.Arity == 0);
     }
 
@@ -344,7 +344,7 @@ public class InterpreterProcess
                     default:
                         throw ExhaustiveMatch.Failed(parameter);
                     case IFieldParameterNode fieldParameter:
-                        self.ObjectValue[fieldParameter.ReferencedField!.Symbol.Name] = arg;
+                        self.ObjectValue[fieldParameter.ReferencedField!.Symbol.Assigned().Name] = arg;
                         break;
                     case INamedParameterNode p:
                         variables.Add(p, arg);
@@ -369,7 +369,7 @@ public class InterpreterProcess
         // Initialize fields to default values
         var fields = @struct.Members.OfType<IFieldDefinitionNode>();
         foreach (var field in fields)
-            self.ObjectValue[field.Symbol.Name] = new AzothValue();
+            self.ObjectValue[field.Symbol.Assigned().Name] = new AzothValue();
 
         return ValueTask.FromResult(self);
     }
@@ -547,7 +547,7 @@ public class InterpreterProcess
             case IInitializerInvocationExpressionNode exp:
             {
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
-                var initializerSymbol = exp.ReferencedDeclaration!.Symbol;
+                var initializerSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
                 var @struct = (IStructDefinitionNode)userTypes[initializerSymbol.ContextTypeSymbol];
                 return await InitializeStruct(@struct, initializerSymbol, arguments).ConfigureAwait(false);
             }
@@ -744,7 +744,7 @@ public class InterpreterProcess
             case INewObjectExpressionNode exp:
             {
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
-                var constructorSymbol = exp.ReferencedConstructor!.Symbol;
+                var constructorSymbol = exp.ReferencedConstructor!.Symbol.Assigned();
                 var objectTypeSymbol = constructorSymbol.ContainingSymbol;
                 if (objectTypeSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(constructorSymbol, arguments).ConfigureAwait(false);

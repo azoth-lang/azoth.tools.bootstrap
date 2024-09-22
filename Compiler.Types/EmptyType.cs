@@ -32,17 +32,17 @@ public abstract class EmptyType : IType
     public abstract EmptyAntetype ToAntetype();
     IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
 
-    public IMaybeExpressionType ToUpperBound() => this;
+    public IExpressionType ToUpperBound() => this;
 
     /// <summary>
     /// Convert types for constant values to their corresponding types.
     /// </summary>
-    public IMaybeType ToNonConstValueType() => this;
+    public IType ToNonConstValueType() => this;
 
     /// <summary>
     /// The same type except with any mutability removed.
     /// </summary>
-    public IMaybeExpressionType WithoutWrite() => this;
+    public IMaybeType WithoutWrite() => this;
 
     /// <summary>
     /// Return the type for when a value of this type is accessed via a type of the given value.

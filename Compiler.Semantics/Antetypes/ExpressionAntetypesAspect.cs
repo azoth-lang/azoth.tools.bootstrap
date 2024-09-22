@@ -47,7 +47,7 @@ internal static partial class ExpressionAntetypesAspect
     public static partial IMaybeExpressionAntetype NewObjectExpression_Antetype(INewObjectExpressionNode node)
     {
         // TODO should probably use Antetype on the declaration
-        var unboundType = node.ReferencedConstructor?.Symbol.ReturnType.ToAntetype() ?? IAntetype.Unknown;
+        var unboundType = node.ReferencedConstructor?.ReturnType.ToAntetype() ?? IAntetype.Unknown;
         var boundType = node.ConstructingAntetype.ReplaceTypeParametersIn(unboundType);
         return boundType;
     }
@@ -345,7 +345,7 @@ internal static partial class ExpressionAntetypesAspect
 
     public static partial IMaybeExpressionAntetype InitializerInvocationExpression_Antetype(IInitializerInvocationExpressionNode node)
     {
-        var unboundAntetype = node.ReferencedDeclaration?.Symbol.Return.ToAntetype() ?? IAntetype.Unknown;
+        var unboundAntetype = node.ReferencedDeclaration?.ReturnType.ToAntetype() ?? IAntetype.Unknown;
         var boundAntetype = node.InitializerGroup.InitializingAntetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }

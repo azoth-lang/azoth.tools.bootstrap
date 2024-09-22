@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class DefinitionTypesAspect
 {
-    public static partial IFixedList<ParameterType> InvocableDefinition_ParameterTypes(IInvocableDefinitionNode node)
+    public static partial IFixedList<IMaybeParameterType> InvocableDefinition_ParameterTypes(IInvocableDefinitionNode node)
         => node.Parameters.Select(p => p.ParameterType).ToFixedList();
 
     public static partial IDeclaredUserType TypeDefinition_Children_Broadcast_ContainingDeclaredType(ITypeDefinitionNode node)

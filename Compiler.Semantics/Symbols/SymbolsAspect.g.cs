@@ -21,15 +21,15 @@ internal static partial class SymbolsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial MethodSymbol? MethodDefinition_Symbol(IMethodDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ConstructorSymbol DefaultConstructorDefinition_Symbol(IDefaultConstructorDefinitionNode node);
+    public static partial ConstructorSymbol? DefaultConstructorDefinition_Symbol(IDefaultConstructorDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ConstructorSymbol SourceConstructorDefinition_Symbol(ISourceConstructorDefinitionNode node);
+    public static partial ConstructorSymbol? SourceConstructorDefinition_Symbol(ISourceConstructorDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial InitializerSymbol DefaultInitializerDefinition_Symbol(IDefaultInitializerDefinitionNode node);
+    public static partial InitializerSymbol? DefaultInitializerDefinition_Symbol(IDefaultInitializerDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial InitializerSymbol SourceInitializerDefinition_Symbol(ISourceInitializerDefinitionNode node);
+    public static partial InitializerSymbol? SourceInitializerDefinition_Symbol(ISourceInitializerDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FieldSymbol FieldDefinition_Symbol(IFieldDefinitionNode node);
+    public static partial FieldSymbol? FieldDefinition_Symbol(IFieldDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FunctionSymbol? AssociatedFunctionDefinition_Symbol(IAssociatedFunctionDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

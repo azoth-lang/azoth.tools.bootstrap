@@ -26,11 +26,6 @@ public interface IMaybeExpressionType : IMaybePseudotype
     IMaybeType ToNonConstValueType();
 
     /// <summary>
-    /// The same type except with any mutability removed.
-    /// </summary>
-    IMaybeExpressionType WithoutWrite();
-
-    /// <summary>
     /// Return the type for when a value of this type is accessed via a type of the given value.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>

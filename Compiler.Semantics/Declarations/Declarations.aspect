@@ -21,7 +21,7 @@
 ↑ child PackageFacetDeclaration.GlobalNamespace: NamespaceDeclaration;
 
 // ---------- Declarations
-↑ InvocableDeclaration.ParameterTypes: `ParameterType`*;
+↑ InvocableDeclaration.ParameterTypes: `IMaybeParameterType`*;
 ↑ InvocableDeclaration.ReturnType: `IMaybeType`;
 ↑ InvocableDeclaration.Symbol: `InvocableSymbol`?;
 ↑ FunctionInvocableDeclaration.Symbol: `FunctionSymbol`?;
@@ -53,14 +53,15 @@
 ↑ GenericParameterDeclaration.Symbol: `GenericParameterTypeSymbol`;
 
 // ---------- Member Declarations
-↑ MethodDeclaration.SelfParameterType: `SelfParameterType`;
+↑ MethodDeclaration.SelfParameterType: `IMaybeSelfParameterType`;
 ↑ MethodDeclaration.Symbol: `MethodSymbol`?;
 ↑ StandardMethodDeclaration.Arity: `int`;
 ↑ StandardMethodDeclaration.MethodGroupType: `IMaybeFunctionType`;
-↑ ConstructorDeclaration.SelfParameterType: `SelfParameterType`;
-↑ ConstructorDeclaration.Symbol: `ConstructorSymbol`;
-↑ InitializerDeclaration.SelfParameterType: `SelfParameterType`;
-↑ InitializerDeclaration.Symbol: `InitializerSymbol`;
-↑ FieldDeclaration.BindingType: `IMaybeExpressionType`;
-↑ FieldDeclaration.Symbol: `FieldSymbol`;
+↑ ConstructorDeclaration.SelfParameterType: `IMaybeSelfParameterType`;
+↑ ConstructorDeclaration.Symbol: `ConstructorSymbol`?;
+↑ InitializerDeclaration.SelfParameterType: `IMaybeSelfParameterType`;
+↑ InitializerDeclaration.Symbol: `InitializerSymbol`?;
+↑ FieldDeclaration.IsMutableBinding: `bool`;
+↑ FieldDeclaration.BindingType: `IMaybeType`;
+↑ FieldDeclaration.Symbol: `FieldSymbol`?;
 ↑ AssociatedFunctionDeclaration.Symbol: `FunctionSymbol`?;

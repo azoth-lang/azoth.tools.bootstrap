@@ -21,7 +21,7 @@ public sealed class CapabilityTypeConstraint : IPseudotype
 
     public CapabilityType ToUpperBound()
         => BareType.With(Capability.UpperBound);
-    IMaybeExpressionType IMaybePseudotype.ToUpperBound() => ToUpperBound();
+    IExpressionType IPseudotype.ToUpperBound() => ToUpperBound();
 
     public IMaybeExpressionAntetype ToAntetype() => BareType.ToAntetype();
 

@@ -12,6 +12,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 public interface IExpressionType : IMaybeExpressionType, IPseudotype
 {
     /// <summary>
+    /// Convert types for constant values to their corresponding types.
+    /// </summary>
+    new IType ToNonConstValueType();
+    IMaybeType IMaybeExpressionType.ToNonConstValueType() => ToNonConstValueType();
+
+    /// <summary>
     /// Return the type for when a value of this type is accessed via a reference with the given capability.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>

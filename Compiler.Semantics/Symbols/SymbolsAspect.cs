@@ -4,6 +4,7 @@ using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
@@ -51,26 +52,38 @@ internal static partial class SymbolsAspect
     #region Member Definitions
     public static partial MethodSymbol? MethodDefinition_Symbol(IMethodDefinitionNode node)
     {
+        if (node.SelfParameterType is not SelfParameterType selfParameterType)
+            return null;
         if (node.ReturnType is not IType returnType)
             return null;
-        return new(node.ContainingSymbol, node.Kind, node.Name, node.SelfParameterType,
-            node.ParameterTypes, returnType);
+        if (node.ParameterTypes.AsKnownFixedList() is not { } parameters)
+            return null;
+        return new(node.ContainingSymbol, node.Kind, node.Name, selfParameterType, parameters, returnType);
     }
 
-    public static partial ConstructorSymbol SourceConstructorDefinition_Symbol(ISourceConstructorDefinitionNode node)
-        => new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType, node.ParameterTypes);
+    public static partial ConstructorSymbol? SourceConstructorDefinition_Symbol(ISourceConstructorDefinitionNode node)
+    {
+        if (node.ParameterTypes.AsKnownFixedList() is not { } parameters) return null;
+        return new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType, parameters);
+    }
 
-    public static partial ConstructorSymbol DefaultConstructorDefinition_Symbol(IDefaultConstructorDefinitionNode node)
+    public static partial ConstructorSymbol? DefaultConstructorDefinition_Symbol(IDefaultConstructorDefinitionNode node)
         => ConstructorSymbol.CreateDefault(node.ContainingSymbol);
 
-    public static partial InitializerSymbol SourceInitializerDefinition_Symbol(ISourceInitializerDefinitionNode node)
-        => new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType, node.ParameterTypes);
+    public static partial InitializerSymbol? SourceInitializerDefinition_Symbol(ISourceInitializerDefinitionNode node)
+    {
+        if (node.ParameterTypes.AsKnownFixedList() is not { } parameters) return null;
+        return new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType, parameters);
+    }
 
-    public static partial InitializerSymbol DefaultInitializerDefinition_Symbol(IDefaultInitializerDefinitionNode node)
+    public static partial InitializerSymbol? DefaultInitializerDefinition_Symbol(IDefaultInitializerDefinitionNode node)
         => InitializerSymbol.CreateDefault(node.ContainingSymbol);
 
-    public static partial FieldSymbol FieldDefinition_Symbol(IFieldDefinitionNode node)
-        => new(node.ContainingSymbol, node.Name, node.IsMutableBinding, node.BindingType);
+    public static partial FieldSymbol? FieldDefinition_Symbol(IFieldDefinitionNode node)
+    {
+        if (node.BindingType is not IType bindingType) return null;
+        return new(node.ContainingSymbol, node.Name, node.IsMutableBinding, bindingType);
+    }
 
     public static partial FunctionSymbol? AssociatedFunctionDefinition_Symbol(IAssociatedFunctionDefinitionNode node)
     {
@@ -88,8 +101,10 @@ internal static partial class SymbolsAspect
         if (referencedTypeSymbolNode is not IUserTypeDeclarationNode userTypeSymbolNode)
             return null;
 
-        return userTypeSymbolNode.Members.OfType<IConstructorDeclarationNode>().Select(c => c.Symbol)
-                                 .SingleOrDefault(s => s.Arity == 0);
+        return userTypeSymbolNode.Members.OfType<IConstructorDeclarationNode>()
+                                 .Where(c => c.ParameterTypes.IsEmpty)
+                                 .Select(c => c.Symbol)
+                                 .SingleOrDefault();
     }
     #endregion
 }

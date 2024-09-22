@@ -15,18 +15,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class OptionalType : NonEmptyType, INonVoidType
 {
-    public static IMaybeExpressionType Create(IMaybeExpressionType referent)
+    public static IMaybeExpressionType Create(IMaybeType referent)
         => referent switch
         {
-            IExpressionType t => new OptionalType(t),
+            IType t => new OptionalType(t),
             UnknownType _ => IType.Unknown,
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
-    public static OptionalType Create(IExpressionType referent)
+    public static OptionalType Create(IType referent)
         => new OptionalType(referent);
 
-    public IExpressionType Referent { get; }
+    public IType Referent { get; }
 
     public override bool AllowsVariance => true;
 
@@ -36,7 +36,7 @@ public sealed class OptionalType : NonEmptyType, INonVoidType
 
     private bool ReferentRequiresParens => Referent is FunctionType or ViewpointType;
 
-    public OptionalType(IExpressionType referent)
+    public OptionalType(IType referent)
     {
         if (referent is VoidType)
             throw new ArgumentException("Cannot create `void?` type", nameof(referent));

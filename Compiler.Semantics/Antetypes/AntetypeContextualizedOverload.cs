@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
-using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
@@ -59,30 +58,22 @@ internal static class AntetypeContextualizedOverload
     public static AntetypeContextualizedOverload<IConstructorDeclarationNode> Create(
         IMaybeAntetype constructingAntetype,
         IConstructorDeclarationNode constructor)
-    {
-        var symbol = constructor.Symbol;
-        return Create(constructingAntetype, constructor, symbol.SelfParameterType);
-    }
+        => Create(constructingAntetype, constructor, constructor.SelfParameterType);
 
     public static AntetypeContextualizedOverload<IInitializerDeclarationNode> Create(
-        IMaybeAntetype initializingAntetype, IInitializerDeclarationNode initializer)
-    {
-        var symbol = initializer.Symbol;
-        return Create(initializingAntetype, initializer, symbol.SelfParameterType);
-    }
+        IMaybeAntetype initializingAntetype,
+        IInitializerDeclarationNode initializer)
+        => Create(initializingAntetype, initializer, initializer.SelfParameterType);
 
     public static AntetypeContextualizedOverload<IStandardMethodDeclarationNode> Create(
         IMaybeExpressionAntetype contextAntetype,
         IStandardMethodDeclarationNode method)
-    {
-        var symbol = method.Symbol;
-        return Create(contextAntetype, method, method.SelfParameterType.Type);
-    }
+        => Create(contextAntetype, method, method.SelfParameterType);
 
     private static AntetypeContextualizedOverload<TDeclaration> Create<TDeclaration>(
         IMaybeExpressionAntetype contextAntetype,
         TDeclaration declaration,
-        IMaybePseudotype selfParameterType)
+        IMaybeSelfParameterType selfParameterType)
         where TDeclaration : IInvocableDeclarationNode
     {
         var selfParameterAntetype = SelfParameterAntetype(contextAntetype, selfParameterType);
@@ -93,8 +84,8 @@ internal static class AntetypeContextualizedOverload
 
     private static IMaybeAntetype SelfParameterAntetype(
         IMaybeExpressionAntetype contextAntetype,
-        IMaybePseudotype symbolSelfParameterType)
-        => contextAntetype.ReplaceTypeParametersIn(symbolSelfParameterType.ToAntetype())
+        IMaybeSelfParameterType selfParameterType)
+        => contextAntetype.ReplaceTypeParametersIn(selfParameterType.Type.ToAntetype())
                                .ToNonConstValueType();
 
     private static IFixedList<IMaybeNonVoidAntetype> ParameterAntetypes(
@@ -103,7 +94,7 @@ internal static class AntetypeContextualizedOverload
         => declaration.ParameterTypes.Select(p => ParameterAntetype(contextAntetype, p))
                       .OfType<IMaybeNonVoidAntetype>().ToFixedList();
 
-    private static IMaybeAntetype ParameterAntetype(IMaybeExpressionAntetype contextAntetype, ParameterType parameter)
+    private static IMaybeAntetype ParameterAntetype(IMaybeExpressionAntetype contextAntetype, IMaybeParameterType parameter)
         => contextAntetype.ReplaceTypeParametersIn(parameter.Type.ToAntetype()).ToNonConstValueType();
 
     private static IMaybeAntetype ReturnAntetype(IMaybeExpressionAntetype contextAntetype, IInvocableDeclarationNode declaration)

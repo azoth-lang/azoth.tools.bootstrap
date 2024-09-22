@@ -76,7 +76,7 @@
     => FixedList.Empty<IConstructorOrInitializerParameterNode>();
 ↑ DefaultInitializerDefinition.Body: Body? => null;
 = FieldDefinition.IsLentBinding => false;
-= FieldDefinition.IsMutableBinding => Syntax.IsMutableBinding;
+↑ FieldDefinition.IsMutableBinding: `bool` => Syntax.IsMutableBinding;
 ↑ FieldDefinition.Name: `IdentifierName` => Syntax.Name;
 ↑ AssociatedFunctionDefinition.Name:`IdentifierName` => Syntax.Name;
 

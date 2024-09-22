@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
@@ -38,7 +37,7 @@ public sealed class ContextualizedOverload
     private static ContextualizedOverload Create(
         IMaybeExpressionType contextType,
         IInvocableDeclarationNode node,
-        SelfParameterType selfParameterType)
+        IMaybeSelfParameterType selfParameterType)
     {
         if (contextType is NonEmptyType nonEmptyContextType)
         {
@@ -50,31 +49,31 @@ public sealed class ContextualizedOverload
         return new(selfParameterType, node.ParameterTypes, node.ReturnType);
     }
 
-    private static SelfParameterType CreateSelfParameterType(
+    private static IMaybeSelfParameterType CreateSelfParameterType(
         NonEmptyType contextType,
-        SelfParameterType symbolSelfParameterType)
+        IMaybeSelfParameterType symbolSelfParameterType)
         => contextType.ReplaceTypeParametersIn(symbolSelfParameterType);
 
-    private static IFixedList<ParameterType> CreateParameterTypes(
+    private static IFixedList<IMaybeParameterType> CreateParameterTypes(
         NonEmptyType contextType,
         IInvocableDeclarationNode node)
         => node.ParameterTypes.Select(p => CreateParameterType(contextType, p))
                .Where(p => p is not { Type: VoidType }).ToFixedList();
 
-    private static ParameterType CreateParameterType(NonEmptyType contextType, ParameterType parameter)
+    private static IMaybeParameterType CreateParameterType(NonEmptyType contextType, IMaybeParameterType parameter)
         => contextType.ReplaceTypeParametersIn(parameter);
 
     private static IMaybeType CreateReturnType(NonEmptyType contextType, IInvocableDeclarationNode node)
         => contextType.ReplaceTypeParametersIn(node.ReturnType);
 
-    public SelfParameterType? SelfParameterType { get; }
-    public IFixedList<ParameterType> ParameterTypes { get; }
+    public IMaybeSelfParameterType? SelfParameterType { get; }
+    public IFixedList<IMaybeParameterType> ParameterTypes { get; }
     public int Arity => ParameterTypes.Count;
     public IMaybeExpressionType ReturnType { get; }
 
     private ContextualizedOverload(
-        SelfParameterType? selfParameterType,
-        IEnumerable<ParameterType> parameterTypes,
+        IMaybeSelfParameterType? selfParameterType,
+        IFixedList<IMaybeParameterType> parameterTypes,
         IMaybeExpressionType returnType)
     {
         SelfParameterType = selfParameterType;

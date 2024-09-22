@@ -13,7 +13,7 @@
 // ---------- Types
 ↑ Type.NamedType: `IMaybeType`;
 = TypeName.NamedType;
-↑ ParameterType.Parameter: `ParameterType`;
+↑ ParameterType.Parameter: `IMaybeParameterType`;
 = CapabilityType.↑.Diagnostics;
 = CapabilityViewpointType.↑.Diagnostics;
 ↓ SelfViewpointType.MethodSelfType: `IMaybePseudotype`?;

@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 
@@ -9,11 +8,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 /// was declared `lent`. This type packages those to values.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public readonly record struct ParameterType(bool IsLent, IMaybeExpressionType Type) : IParameterType
+public record class ParameterType(bool IsLent, IType Type) : IMaybeParameterType
 {
+    public static IMaybeParameterType Create(bool isLent, IMaybeType type)
+    {
+        if (type is IType t)
+            return new ParameterType(isLent, t);
+        return IType.Unknown;
+    }
+
     public static readonly ParameterType Int = new(false, IType.Int);
 
-    IMaybePseudotype IParameterType.Type => Type;
+    IMaybeType IMaybeParameterType.Type => Type;
 
     public bool IsFullyKnown => Type.IsFullyKnown;
 

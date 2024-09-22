@@ -113,7 +113,7 @@ TypeMemberDefinition <: Definition, TypeMemberDeclaration = Syntax:`ITypeMemberD
 ClassMemberDefinition <: TypeMemberDefinition, ClassMemberDeclaration;
 TraitMemberDefinition <: TypeMemberDefinition, TraitMemberDeclaration;
 StructMemberDefinition <: TypeMemberDefinition, StructMemberDeclaration;
-AlwaysTypeMemberDefinition <: TypeMemberDefinition;
+AlwaysTypeMemberDefinition <: TypeMemberDefinition, AlwaysTypeMemberDeclaration;
 AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, NamedDeclaration
     = Name:`StandardName`;
 
@@ -438,23 +438,24 @@ TypeMemberDeclaration <: PackageFacetChildDeclaration, SymbolDeclaration;
 ClassMemberDeclaration <: TypeMemberDeclaration;
 TraitMemberDeclaration <: TypeMemberDeclaration;
 StructMemberDeclaration <: TypeMemberDeclaration;
+AlwaysTypeMemberDeclaration <: TypeMemberDeclaration;
 AssociatedMemberDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, SymbolDeclaration;
 InstanceMemberDeclaration <: TypeMemberDeclaration;
 
 // ---------- Member Declarations
-MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration, InvocableDeclaration
+MethodDeclaration <: ClassMemberDeclaration, TraitMemberDeclaration, StructMemberDeclaration, NamedDeclaration, InstanceMemberDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`;
 StandardMethodDeclaration <: MethodDeclaration;
 PropertyAccessorDeclaration <: MethodDeclaration;
 GetterMethodDeclaration <: PropertyAccessorDeclaration;
 SetterMethodDeclaration <: PropertyAccessorDeclaration;
-ConstructorDeclaration <: ClassMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration
+ConstructorDeclaration <: ClassMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`?;
-InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration
+InitializerDeclaration <: StructMemberDeclaration, AssociatedMemberDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`?;
-FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration, NamedBindingDeclaration
+FieldDeclaration <: NamedDeclaration, ClassMemberDeclaration, StructMemberDeclaration, InstanceMemberDeclaration, NamedBindingDeclaration, AlwaysTypeMemberDeclaration
     = Name:`IdentifierName`;
-AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableDeclaration, InvocableDeclaration
+AssociatedFunctionDeclaration <: AssociatedMemberDeclaration, FunctionInvocableDeclaration, InvocableDeclaration, AlwaysTypeMemberDeclaration
     = Name:`StandardName`;
 
 // -------------------------------------------------------------------------------------------------

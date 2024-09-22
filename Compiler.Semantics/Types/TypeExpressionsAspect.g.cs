@@ -30,7 +30,7 @@ internal static partial class TypeExpressionsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType FunctionType_NamedType(IFunctionTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ParameterType ParameterType_Parameter(IParameterTypeNode node);
+    public static partial IMaybeParameterType ParameterType_Parameter(IParameterTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -125,6 +125,9 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
     public override IMaybeExpressionType ReplaceTypeParametersIn(IMaybeExpressionType type)
         => BareType.ReplaceTypeParametersIn(type);
 
+    public override IPseudotype ReplaceTypeParametersIn(IPseudotype pseudotype)
+        => BareType.ReplaceTypeParametersIn(pseudotype);
+
     public override IMaybePseudotype ReplaceTypeParametersIn(IMaybePseudotype pseudotype)
         => BareType.ReplaceTypeParametersIn(pseudotype);
 

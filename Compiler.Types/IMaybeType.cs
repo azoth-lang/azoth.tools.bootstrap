@@ -18,4 +18,9 @@ public interface IMaybeType : IMaybeExpressionType
 
     public new IMaybeAntetype ToAntetype();
     IMaybeExpressionAntetype IMaybePseudotype.ToAntetype() => ToAntetype();
+
+    /// <summary>
+    /// The same type except with any mutability removed.
+    /// </summary>
+    IMaybeType WithoutWrite();
 }

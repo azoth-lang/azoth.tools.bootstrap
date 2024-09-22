@@ -59,6 +59,13 @@ public abstract class NonEmptyType : IExpressionType
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
+    public virtual IPseudotype ReplaceTypeParametersIn(IPseudotype pseudotype) => pseudotype;
+
+    /// <summary>
+    /// Replace any <see cref="GenericParameterType"/> from this type that appear in the given type
+    /// with the type arguments from this type (assuming it has them).
+    /// </summary>
+    /// <remarks>Has no effect if this is not a generic type.</remarks>
     public virtual IMaybePseudotype ReplaceTypeParametersIn(IMaybePseudotype pseudotype) => pseudotype;
 
     /// <summary>
@@ -75,11 +82,11 @@ public abstract class NonEmptyType : IExpressionType
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
     [return: NotNullIfNotNull(nameof(type))]
-    public ParameterType? ReplaceTypeParametersIn(ParameterType? type)
+    public IMaybeParameterType ReplaceTypeParametersIn(IMaybeParameterType type)
     {
         if (type is ParameterType parameterType)
             return ReplaceTypeParametersIn(parameterType);
-        return null;
+        return IType.Unknown;
     }
 
     /// <summary>
@@ -95,15 +102,14 @@ public abstract class NonEmptyType : IExpressionType
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
-    [return: NotNullIfNotNull(nameof(type))]
-    public SelfParameterType? ReplaceTypeParametersIn(SelfParameterType? type)
+    public IMaybeSelfParameterType ReplaceTypeParametersIn(IMaybeSelfParameterType type)
     {
-        if (type is SelfParameterType parameterType)
-            return ReplaceTypeParametersIn(parameterType);
-        return null;
+        if (type is SelfParameterType selfParameterType)
+            return ReplaceTypeParametersIn(selfParameterType);
+        return IType.Unknown;
     }
 
-    public IMaybeExpressionType ToUpperBound() => this;
+    public IExpressionType ToUpperBound() => this;
 
     /// <summary>
     /// Convert this type to the equivalent antetype.
@@ -113,12 +119,12 @@ public abstract class NonEmptyType : IExpressionType
     /// <summary>
     /// Convert types for constant values to their corresponding types.
     /// </summary>
-    public virtual IMaybeType ToNonConstValueType() => (IMaybeType)this;
+    public virtual IType ToNonConstValueType() => (IType)this;
 
     /// <summary>
     /// The same type except with any mutability removed.
     /// </summary>
-    public virtual IMaybeExpressionType WithoutWrite() => this;
+    public virtual IMaybeType WithoutWrite() => (IMaybeType)this;
 
     /// <summary>
     /// Return the type for when a value of this type is accessed via a type of the given value.

@@ -7,9 +7,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class ForeachExpressionTypesAspect
 {
-    public static partial IMaybeExpressionType ForeachExpression_IteratorType(IForeachExpressionNode node)
+    public static partial IMaybeType ForeachExpression_IteratorType(IForeachExpressionNode node)
     {
-        var iterableType = node.InExpression?.Type ?? IType.Unknown;
+        var iterableType = node.InExpression?.Type.ToNonConstValueType() ?? IType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
         var iteratorType = iterableType is NonEmptyType nonEmptyIterableType && iterateMethod is not null
             ? nonEmptyIterableType.ReplaceTypeParametersIn(iterateMethod.MethodGroupType.Return)
@@ -17,7 +17,7 @@ internal static partial class ForeachExpressionTypesAspect
         return iteratorType;
     }
 
-    public static partial IMaybeExpressionType ForeachExpression_IteratedType(IForeachExpressionNode node)
+    public static partial IMaybeType ForeachExpression_IteratedType(IForeachExpressionNode node)
     {
         var nextMethodReturnType = node.ReferencedNextMethod?.MethodGroupType.Return;
         if (nextMethodReturnType is not OptionalType { Referent: var iteratedType })

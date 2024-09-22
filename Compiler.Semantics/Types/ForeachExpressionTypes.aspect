@@ -7,8 +7,8 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Control Flow Expressions
-↑ ForeachExpression.IteratorType: `IMaybeExpressionType`;
-↑ ForeachExpression.IteratedType: `IMaybeExpressionType`;
+↑ ForeachExpression.IteratorType: `IMaybeType`;
+↑ ForeachExpression.IteratedType: `IMaybeType`;
 ↑ ForeachExpression.FlowStateBeforeBlock: `IFlowState`;
 = ForeachExpression.Type;
 = ForeachExpression.Block.**.FlowStateBefore => FlowStateBeforeBlock;

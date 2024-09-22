@@ -119,7 +119,7 @@ public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 public partial interface INamedBindingNode : IBindingNode, INamedBindingDeclarationNode
 {
     LexicalScope ContainingLexicalScope { get; }
-    new IMaybeExpressionType BindingType { get; }
+    new IMaybeType BindingType { get; }
     IMaybePseudotype IBindingNode.BindingType => BindingType;
     bool IsMutableBinding { get; }
 }
@@ -337,7 +337,6 @@ public partial interface IDefinitionNode : ICodeNode, IPackageFacetChildDeclarat
     LexicalScope LexicalScope { get; }
     new IPackageFacetNode Facet { get; }
     IPackageFacetDeclarationNode IPackageFacetChildDeclarationNode.Facet => Facet;
-    ISymbolDeclarationNode ContainingDeclaration { get; }
     Symbol? ContainingSymbol
         => ContainingDeclaration.Symbol;
 }
@@ -413,7 +412,7 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
     new NamespaceSearchScope LexicalScope { get; }
     LexicalScope IDefinitionNode.LexicalScope => LexicalScope;
     new INamespaceDefinitionNode ContainingDeclaration { get; }
-    ISymbolDeclarationNode IDefinitionNode.ContainingDeclaration => ContainingDeclaration;
+    ISymbolDeclarationNode IDeclarationNode.ContainingDeclaration => ContainingDeclaration;
     INamespaceDefinitionNode ContainingNamespace { get; }
     INamespaceDefinitionNode Definition { get; }
     NamespaceName DeclaredNames
@@ -481,8 +480,6 @@ public partial interface IFunctionDefinitionNode : IFacetMemberDefinitionNode, I
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new INamespaceDeclarationNode ContainingDeclaration { get; }
-    ISymbolDeclarationNode IDefinitionNode.ContainingDeclaration => ContainingDeclaration;
     new IdentifierName Name
         => Syntax.Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
@@ -641,7 +638,8 @@ public partial interface IGenericParameterNode : ICodeNode, IGenericParameterDec
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ICapabilityConstraintNode Constraint { get; }
-    IUserTypeDeclarationNode ContainingDeclaration { get; }
+    new IUserTypeDeclarationNode ContainingDeclaration { get; }
+    ISymbolDeclarationNode IDeclarationNode.ContainingDeclaration => ContainingDeclaration;
     new IdentifierName Name
         => Syntax.Name;
     IdentifierName IGenericParameterDeclarationNode.Name => Name;
@@ -721,10 +719,11 @@ public partial interface IStructMemberDefinitionNode : ITypeMemberDefinitionNode
     typeof(IFieldDefinitionNode),
     typeof(IAssociatedFunctionDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAlwaysTypeMemberDefinitionNode : ITypeMemberDefinitionNode
+public partial interface IAlwaysTypeMemberDefinitionNode : ITypeMemberDefinitionNode, IAlwaysTypeMemberDeclarationNode
 {
     new IUserTypeDeclarationNode ContainingDeclaration { get; }
-    ISymbolDeclarationNode IDefinitionNode.ContainingDeclaration => ContainingDeclaration;
+    ISymbolDeclarationNode IDeclarationNode.ContainingDeclaration => ContainingDeclaration;
+    ITypeDeclarationNode IAlwaysTypeMemberDeclarationNode.ContainingDeclaration => ContainingDeclaration;
     new UserTypeSymbol ContainingSymbol
         => ContainingDeclaration.Symbol;
     Symbol? IDefinitionNode.ContainingSymbol => ContainingSymbol;
@@ -762,7 +761,7 @@ public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode
     IdentifierName IMethodDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
     MethodKind Kind { get; }
-    SelfParameterType IMethodDeclarationNode.SelfParameterType
+    IMaybeSelfParameterType IMethodDeclarationNode.SelfParameterType
         => SelfParameter.ParameterType;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Return?.NamedType ?? IType.Void;
@@ -902,7 +901,7 @@ public partial interface IConstructorDefinitionNode : IConcreteInvocableDefiniti
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IConstructorDeclarationNode.Name => Name;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.ReturnType;
+        => Symbol?.ReturnType ?? IMaybeType.Unknown;
 }
 
 // [Closed(typeof(DefaultConstructorDefinitionNode))]
@@ -922,8 +921,8 @@ public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinit
     new IBodyNode? Body
         => null;
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
-    SelfParameterType IConstructorDeclarationNode.SelfParameterType
-        => new(false, Symbol.SelfParameterType);
+    IMaybeSelfParameterType IConstructorDeclarationNode.SelfParameterType
+        => new SelfParameterType(false, Symbol!.SelfParameterType);
 
     public static IDefaultConstructorDefinitionNode Create()
         => new DefaultConstructorDefinitionNode();
@@ -942,7 +941,7 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     IConstructorSelfParameterNode SelfParameter { get; }
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
-    SelfParameterType IConstructorDeclarationNode.SelfParameterType
+    IMaybeSelfParameterType IConstructorDeclarationNode.SelfParameterType
         => SelfParameter.ParameterType;
 
     public static ISourceConstructorDefinitionNode Create(
@@ -969,7 +968,7 @@ public partial interface IInitializerDefinitionNode : IConcreteInvocableDefiniti
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName? IInitializerDeclarationNode.Name => Name;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => Symbol.ReturnType;
+        => Symbol?.ReturnType ?? IMaybeType.Unknown;
 }
 
 // [Closed(typeof(DefaultInitializerDefinitionNode))]
@@ -989,8 +988,8 @@ public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinit
     new IBodyNode? Body
         => null;
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
-    SelfParameterType IInitializerDeclarationNode.SelfParameterType
-        => new(false, Symbol.SelfParameterType);
+    IMaybeSelfParameterType IInitializerDeclarationNode.SelfParameterType
+        => new SelfParameterType(false, Symbol!.SelfParameterType);
 
     public static IDefaultInitializerDefinitionNode Create()
         => new DefaultInitializerDefinitionNode();
@@ -1009,7 +1008,7 @@ public partial interface ISourceInitializerDefinitionNode : IInitializerDefiniti
     IInitializerSelfParameterNode SelfParameter { get; }
     new IBlockBodyNode Body { get; }
     IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
-    SelfParameterType IInitializerDeclarationNode.SelfParameterType
+    IMaybeSelfParameterType IInitializerDeclarationNode.SelfParameterType
         => SelfParameter.ParameterType;
 
     public static ISourceInitializerDefinitionNode Create(
@@ -1036,10 +1035,14 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IDefinitionNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
-    new IMaybeExpressionType BindingType { get; }
-    IMaybeExpressionType INamedBindingNode.BindingType => BindingType;
+    new IMaybeType BindingType { get; }
+    IMaybeType INamedBindingNode.BindingType => BindingType;
     IMaybePseudotype IBindingNode.BindingType => BindingType;
-    IMaybeExpressionType IFieldDeclarationNode.BindingType => BindingType;
+    IMaybeType IFieldDeclarationNode.BindingType => BindingType;
+    new bool IsMutableBinding
+        => Syntax.IsMutableBinding;
+    bool INamedBindingNode.IsMutableBinding => IsMutableBinding;
+    bool IFieldDeclarationNode.IsMutableBinding => IsMutableBinding;
     new IdentifierName Name
         => Syntax.Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
@@ -1050,8 +1053,6 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
         => ContainingLexicalScope;
     bool IBindingNode.IsLentBinding
         => false;
-    bool INamedBindingNode.IsMutableBinding
-        => Syntax.IsMutableBinding;
 
     public static IFieldDefinitionNode Create(
         IFieldDefinitionSyntax syntax,
@@ -1176,9 +1177,9 @@ public partial interface IConstructorOrInitializerParameterNode : IParameterNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new IMaybeExpressionType BindingType { get; }
+    new IMaybeType BindingType { get; }
     IMaybePseudotype IParameterNode.BindingType => BindingType;
-    ParameterType ParameterType { get; }
+    IMaybeParameterType ParameterType { get; }
     new IdentifierName Name { get; }
     IdentifierName? IParameterNode.Name => Name;
 }
@@ -1206,10 +1207,10 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     new IMaybeAntetype BindingAntetype { get; }
     IMaybeAntetype IParameterNode.BindingAntetype => BindingAntetype;
     IMaybeAntetype IBindingNode.BindingAntetype => BindingAntetype;
-    new IMaybeExpressionType BindingType { get; }
-    IMaybeExpressionType IConstructorOrInitializerParameterNode.BindingType => BindingType;
+    new IMaybeType BindingType { get; }
+    IMaybeType IConstructorOrInitializerParameterNode.BindingType => BindingType;
     IMaybePseudotype IParameterNode.BindingType => BindingType;
-    IMaybeExpressionType INamedBindingNode.BindingType => BindingType;
+    IMaybeType INamedBindingNode.BindingType => BindingType;
     IMaybePseudotype IBindingNode.BindingType => BindingType;
     bool IBindingNode.IsLentBinding
         => Syntax.IsLentBinding;
@@ -1233,7 +1234,7 @@ public partial interface ISelfParameterNode : IParameterNode, IBindingNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    SelfParameterType ParameterType { get; }
+    IMaybeSelfParameterType ParameterType { get; }
     ITypeDefinitionNode ContainingTypeDefinition { get; }
     IDeclaredUserType ContainingDeclaredType { get; }
     new ValueId BindingValueId { get; }
@@ -1593,7 +1594,7 @@ public partial interface IParameterTypeNode : ICodeNode
     ITypeNode Referent { get; }
     bool IsLent
         => Syntax.IsLent;
-    ParameterType Parameter { get; }
+    IMaybeParameterType Parameter { get; }
 
     public static IParameterTypeNode Create(
         IParameterTypeSyntax syntax,
@@ -1856,7 +1857,7 @@ public partial interface IPatternNode : IControlFlowNode
     ValueId? MatchReferentValueId { get; }
     IFlowState FlowStateAfter { get; }
     IMaybeAntetype ContextBindingAntetype();
-    IMaybeExpressionType ContextBindingType();
+    IMaybeType ContextBindingType();
 }
 
 // [Closed(typeof(BindingContextPatternNode))]
@@ -2448,8 +2449,8 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     LexicalScope LexicalScope { get; }
     IdentifierName VariableName
         => Syntax.VariableName;
-    IMaybeExpressionType IteratorType { get; }
-    IMaybeExpressionType IteratedType { get; }
+    IMaybeType IteratorType { get; }
+    IMaybeType IteratedType { get; }
     IFlowState FlowStateBeforeBlock { get; }
     ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
     IStandardMethodDeclarationNode? ReferencedIterateMethod { get; }
@@ -3604,6 +3605,7 @@ public partial interface IAwaitExpressionNode : IExpressionNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IDeclarationNode : ISemanticNode
 {
+    ISymbolDeclarationNode ContainingDeclaration { get; }
 }
 
 [Closed(
@@ -3715,7 +3717,7 @@ public partial interface IPackageFacetChildDeclarationNode : IChildDeclarationNo
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IInvocableDeclarationNode : ISymbolDeclarationNode, IChildDeclarationNode
 {
-    IFixedList<ParameterType> ParameterTypes { get; }
+    IFixedList<IMaybeParameterType> ParameterTypes { get; }
     IMaybeType ReturnType { get; }
     new InvocableSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
@@ -3777,6 +3779,8 @@ public partial interface INamespaceMemberDeclarationNode : IPackageFacetChildDec
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IFunctionDeclarationNode : INamespaceMemberDeclarationNode, IFunctionInvocableDeclarationNode
 {
+    new INamespaceDeclarationNode ContainingDeclaration { get; }
+    ISymbolDeclarationNode IDeclarationNode.ContainingDeclaration => ContainingDeclaration;
 }
 
 [Closed(
@@ -3900,6 +3904,7 @@ public partial interface IGenericParameterDeclarationNode : ITypeDeclarationNode
     typeof(IClassMemberDeclarationNode),
     typeof(ITraitMemberDeclarationNode),
     typeof(IStructMemberDeclarationNode),
+    typeof(IAlwaysTypeMemberDeclarationNode),
     typeof(IInstanceMemberDeclarationNode),
     typeof(ITypeMemberSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -3943,6 +3948,20 @@ public partial interface IStructMemberDeclarationNode : ITypeMemberDeclarationNo
 }
 
 [Closed(
+    typeof(IAlwaysTypeMemberDefinitionNode),
+    typeof(IMethodDeclarationNode),
+    typeof(IConstructorDeclarationNode),
+    typeof(IInitializerDeclarationNode),
+    typeof(IFieldDeclarationNode),
+    typeof(IAssociatedFunctionDeclarationNode))]
+[GeneratedCode("AzothCompilerCodeGen", null)]
+public partial interface IAlwaysTypeMemberDeclarationNode : ITypeMemberDeclarationNode
+{
+    new ITypeDeclarationNode ContainingDeclaration { get; }
+    ISymbolDeclarationNode IDeclarationNode.ContainingDeclaration => ContainingDeclaration;
+}
+
+[Closed(
     typeof(IGenericParameterDeclarationNode),
     typeof(IConstructorDeclarationNode),
     typeof(IInitializerDeclarationNode),
@@ -3967,12 +3986,12 @@ public partial interface IInstanceMemberDeclarationNode : ITypeMemberDeclaration
     typeof(IPropertyAccessorDeclarationNode),
     typeof(IMethodSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode, IInstanceMemberDeclarationNode, IInvocableDeclarationNode
+public partial interface IMethodDeclarationNode : IClassMemberDeclarationNode, ITraitMemberDeclarationNode, IStructMemberDeclarationNode, INamedDeclarationNode, IInstanceMemberDeclarationNode, IInvocableDeclarationNode, IAlwaysTypeMemberDeclarationNode
 {
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
-    SelfParameterType SelfParameterType { get; }
+    IMaybeSelfParameterType SelfParameterType { get; }
     new MethodSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
@@ -4017,12 +4036,12 @@ public partial interface ISetterMethodDeclarationNode : IPropertyAccessorDeclara
     typeof(IConstructorDefinitionNode),
     typeof(IConstructorSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConstructorDeclarationNode : IAssociatedMemberDeclarationNode, IInvocableDeclarationNode
+public partial interface IConstructorDeclarationNode : IAssociatedMemberDeclarationNode, IInvocableDeclarationNode, IAlwaysTypeMemberDeclarationNode
 {
     new IdentifierName? Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    SelfParameterType SelfParameterType { get; }
-    new ConstructorSymbol Symbol { get; }
+    IMaybeSelfParameterType SelfParameterType { get; }
+    new ConstructorSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
 }
@@ -4031,12 +4050,12 @@ public partial interface IConstructorDeclarationNode : IAssociatedMemberDeclarat
     typeof(IInitializerDefinitionNode),
     typeof(IInitializerSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInitializerDeclarationNode : IAssociatedMemberDeclarationNode, IInvocableDeclarationNode
+public partial interface IInitializerDeclarationNode : IAssociatedMemberDeclarationNode, IInvocableDeclarationNode, IAlwaysTypeMemberDeclarationNode
 {
     new IdentifierName? Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    SelfParameterType SelfParameterType { get; }
-    new InitializerSymbol Symbol { get; }
+    IMaybeSelfParameterType SelfParameterType { get; }
+    new InitializerSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
 }
@@ -4045,14 +4064,15 @@ public partial interface IInitializerDeclarationNode : IAssociatedMemberDeclarat
     typeof(IFieldDefinitionNode),
     typeof(IFieldSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFieldDeclarationNode : IClassMemberDeclarationNode, IStructMemberDeclarationNode, IInstanceMemberDeclarationNode, INamedBindingDeclarationNode
+public partial interface IFieldDeclarationNode : IClassMemberDeclarationNode, IStructMemberDeclarationNode, IInstanceMemberDeclarationNode, INamedBindingDeclarationNode, IAlwaysTypeMemberDeclarationNode
 {
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName INamedBindingDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
-    IMaybeExpressionType BindingType { get; }
-    new FieldSymbol Symbol { get; }
+    bool IsMutableBinding { get; }
+    IMaybeType BindingType { get; }
+    new FieldSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
 }
 
@@ -4060,7 +4080,7 @@ public partial interface IFieldDeclarationNode : IClassMemberDeclarationNode, IS
     typeof(IAssociatedFunctionDefinitionNode),
     typeof(IAssociatedFunctionSymbolNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAssociatedFunctionDeclarationNode : IAssociatedMemberDeclarationNode, IFunctionInvocableDeclarationNode
+public partial interface IAssociatedFunctionDeclarationNode : IAssociatedMemberDeclarationNode, IFunctionInvocableDeclarationNode, IAlwaysTypeMemberDeclarationNode
 {
     new StandardName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
@@ -4166,7 +4186,7 @@ public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamesp
     StandardName INamespaceMemberDeclarationNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
-    IFixedList<ParameterType> IInvocableDeclarationNode.ParameterTypes
+    IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Type.Parameters;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol.Type.Return;
@@ -4412,9 +4432,9 @@ public partial interface IMethodSymbolNode : IMethodDeclarationNode, IClassMembe
     IdentifierName IMethodDeclarationNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
-    SelfParameterType IMethodDeclarationNode.SelfParameterType
+    IMaybeSelfParameterType IMethodDeclarationNode.SelfParameterType
         => Symbol.SelfParameterType;
-    IFixedList<ParameterType> IInvocableDeclarationNode.ParameterTypes
+    IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.MethodGroupType.Parameters;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol.MethodGroupType.Return;
@@ -4456,7 +4476,7 @@ public partial interface ISetterMethodSymbolNode : ISetterMethodDeclarationNode,
 public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, IClassMemberSymbolNode
 {
     new ConstructorSymbol Symbol { get; }
-    ConstructorSymbol IConstructorDeclarationNode.Symbol => Symbol;
+    ConstructorSymbol? IConstructorDeclarationNode.Symbol => Symbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
     Symbol IChildSymbolNode.Symbol => Symbol;
@@ -4464,9 +4484,9 @@ public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, I
         => Symbol.Name;
     IdentifierName? IConstructorDeclarationNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    SelfParameterType IConstructorDeclarationNode.SelfParameterType
-        => new(false, Symbol.SelfParameterType);
-    IFixedList<ParameterType> IInvocableDeclarationNode.ParameterTypes
+    IMaybeSelfParameterType IConstructorDeclarationNode.SelfParameterType
+        => new SelfParameterType(false, Symbol.SelfParameterType);
+    IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Parameters;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol.ReturnType;
@@ -4480,7 +4500,7 @@ public partial interface IConstructorSymbolNode : IConstructorDeclarationNode, I
 public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, IStructMemberSymbolNode
 {
     new InitializerSymbol Symbol { get; }
-    InitializerSymbol IInitializerDeclarationNode.Symbol => Symbol;
+    InitializerSymbol? IInitializerDeclarationNode.Symbol => Symbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     InvocableSymbol? IInvocableDeclarationNode.Symbol => Symbol;
     Symbol IChildSymbolNode.Symbol => Symbol;
@@ -4488,9 +4508,9 @@ public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, I
         => Symbol.Name;
     IdentifierName? IInitializerDeclarationNode.Name => Name;
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
-    SelfParameterType IInitializerDeclarationNode.SelfParameterType
-        => new(false, Symbol.SelfParameterType);
-    IFixedList<ParameterType> IInvocableDeclarationNode.ParameterTypes
+    IMaybeSelfParameterType IInitializerDeclarationNode.SelfParameterType
+        => new SelfParameterType(false, Symbol.SelfParameterType);
+    IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Parameters;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol.ReturnType;
@@ -4504,7 +4524,7 @@ public partial interface IInitializerSymbolNode : IInitializerDeclarationNode, I
 public partial interface IFieldSymbolNode : IFieldDeclarationNode, IClassMemberSymbolNode, IStructMemberSymbolNode
 {
     new FieldSymbol Symbol { get; }
-    FieldSymbol IFieldDeclarationNode.Symbol => Symbol;
+    FieldSymbol? IFieldDeclarationNode.Symbol => Symbol;
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
     Symbol IChildSymbolNode.Symbol => Symbol;
     new IdentifierName Name
@@ -4513,7 +4533,9 @@ public partial interface IFieldSymbolNode : IFieldDeclarationNode, IClassMemberS
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
     IdentifierName INamedBindingDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
-    IMaybeExpressionType IFieldDeclarationNode.BindingType
+    bool IFieldDeclarationNode.IsMutableBinding
+        => Symbol.IsMutableBinding;
+    IMaybeType IFieldDeclarationNode.BindingType
         => Symbol.Type;
 
     public static IFieldSymbolNode Create(FieldSymbol symbol)
@@ -4531,7 +4553,7 @@ public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDecl
     Symbol IChildSymbolNode.Symbol => Symbol;
     IMaybeFunctionType IFunctionInvocableDeclarationNode.Type
         => Symbol.Type;
-    IFixedList<ParameterType> IInvocableDeclarationNode.ParameterTypes
+    IFixedList<IMaybeParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Type.Parameters;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Symbol.Type.Return;
@@ -4753,9 +4775,9 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected IMaybeAntetype Inherited_ContextBindingAntetype(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContextBindingAntetype(this, this, ctx);
 
-    internal virtual IMaybeExpressionType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal virtual IMaybeType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ContextBindingType", child, descendant)).Inherited_ContextBindingType(this, descendant, ctx);
-    protected IMaybeExpressionType Inherited_ContextBindingType(IInheritanceContext ctx)
+    protected IMaybeType Inherited_ContextBindingType(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContextBindingType(this, this, ctx);
 
     internal virtual IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -4813,6 +4835,8 @@ file class PackageNode : SemanticNode, IPackageNode
     public IFixedSet<IPackageReferenceNode> References { [DebuggerStepThrough] get; }
     public IPackageFacetNode MainFacet { [DebuggerStepThrough] get; }
     public IPackageFacetNode TestingFacet { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public DiagnosticCollection Diagnostics
         => GrammarAttribute.IsCached(in diagnosticsCached) ? diagnostics!
             : this.Aggregate(ref diagnosticsContributors, ref diagnosticsCached, ref diagnostics,
@@ -4930,6 +4954,8 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
 
     public IPackageSyntax Syntax { [DebuggerStepThrough] get; }
     public IFixedSet<ICompilationUnitNode> CompilationUnits { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public PackageNameScope PackageNameScope
@@ -4962,7 +4988,7 @@ file class PackageFacetNode : SemanticNode, IPackageFacetNode
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, descendant))
-            return Is.OfType<IPackageFacetNode>(this);
+            return this;
         return base.Inherited_ContainingDeclaration(child, descendant, ctx);
     }
 
@@ -5154,6 +5180,8 @@ file class NamespaceDefinitionNode : SemanticNode, INamespaceDefinitionNode
     public NamespaceSymbol Symbol { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceDefinitionNode> MemberNamespaces { [DebuggerStepThrough] get; }
     public IFixedList<IFacetMemberDefinitionNode> PackageMembers { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -5205,6 +5233,8 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public INamespaceDeclarationNode ContainingDeclaration
+        => (INamespaceDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -5217,8 +5247,6 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
-    public INamespaceDeclarationNode ContainingDeclaration
-        => (INamespaceDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -5233,11 +5261,11 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
                 LexicalScopingAspect.FunctionDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public IFixedList<ParameterType> ParameterTypes
+    public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
                 DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
-    private IFixedList<ParameterType>? parameterTypes;
+    private IFixedList<IMaybeParameterType>? parameterTypes;
     private bool parameterTypesCached;
     public FunctionSymbol? Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol
@@ -5370,6 +5398,8 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -5382,8 +5412,6 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
-    public ISymbolDeclarationNode ContainingDeclaration
-        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -5469,7 +5497,7 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return Is.OfType<IUserTypeDeclarationNode>(this);
+        return this;
     }
 
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5526,6 +5554,8 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -5538,8 +5568,6 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
-    public ISymbolDeclarationNode ContainingDeclaration
-        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -5623,7 +5651,7 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return Is.OfType<IUserTypeDeclarationNode>(this);
+        return this;
     }
 
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5679,6 +5707,8 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -5691,8 +5721,6 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
-    public ISymbolDeclarationNode ContainingDeclaration
-        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -5764,7 +5792,7 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return Is.OfType<IUserTypeDeclarationNode>(this);
+        return this;
     }
 
     internal override IDeclaredUserType Inherited_ContainingDeclaredType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5852,6 +5880,11 @@ file class GenericParameterNode : SemanticNode, IGenericParameterNode
         Syntax = syntax;
         Constraint = Child.Attach(this, constraint);
     }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5900,11 +5933,11 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
                 LexicalScopingAspect.MethodDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public IFixedList<ParameterType> ParameterTypes
+    public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
                 DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
-    private IFixedList<ParameterType>? parameterTypes;
+    private IFixedList<IMaybeParameterType>? parameterTypes;
     private bool parameterTypesCached;
     public MethodSymbol? Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol
@@ -5929,6 +5962,11 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -5990,11 +6028,11 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
                 LexicalScopingAspect.MethodDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public IFixedList<ParameterType> ParameterTypes
+    public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
                 DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
-    private IFixedList<ParameterType>? parameterTypes;
+    private IFixedList<IMaybeParameterType>? parameterTypes;
     private bool parameterTypesCached;
     public MethodSymbol? Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol
@@ -6033,7 +6071,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return Is.OfType<IExecutableDefinitionNode>(this);
+        return this;
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6166,11 +6204,11 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
                 LexicalScopingAspect.MethodDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public IFixedList<ParameterType> ParameterTypes
+    public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
                 DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
-    private IFixedList<ParameterType>? parameterTypes;
+    private IFixedList<IMaybeParameterType>? parameterTypes;
     private bool parameterTypesCached;
     public MethodSymbol? Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol
@@ -6209,7 +6247,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return Is.OfType<IExecutableDefinitionNode>(this);
+        return this;
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6328,11 +6366,11 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
                 LexicalScopingAspect.MethodDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public IFixedList<ParameterType> ParameterTypes
+    public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
                 DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
-    private IFixedList<ParameterType>? parameterTypes;
+    private IFixedList<IMaybeParameterType>? parameterTypes;
     private bool parameterTypesCached;
     public MethodSymbol? Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol
@@ -6371,7 +6409,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return Is.OfType<IExecutableDefinitionNode>(this);
+        return this;
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6457,6 +6495,8 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public IUserTypeDeclarationNode ContainingDeclaration
+        => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -6469,8 +6509,6 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
-    public IUserTypeDeclarationNode ContainingDeclaration
-        => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -6485,14 +6523,14 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
                 LexicalScopingAspect.ConstructorDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public IFixedList<ParameterType> ParameterTypes
+    public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
                 DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
-    private IFixedList<ParameterType>? parameterTypes;
+    private IFixedList<IMaybeParameterType>? parameterTypes;
     private bool parameterTypesCached;
-    public ConstructorSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+    public ConstructorSymbol? Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol
             : this.Synthetic(ref symbolCached, ref symbol,
                 SymbolsAspect.DefaultConstructorDefinition_Symbol);
     private ConstructorSymbol? symbol;
@@ -6514,6 +6552,11 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     {
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6567,6 +6610,8 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public IUserTypeDeclarationNode ContainingDeclaration
+        => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -6579,8 +6624,6 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
-    public IUserTypeDeclarationNode ContainingDeclaration
-        => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -6595,14 +6638,14 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
                 LexicalScopingAspect.ConstructorDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public IFixedList<ParameterType> ParameterTypes
+    public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
                 DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
-    private IFixedList<ParameterType>? parameterTypes;
+    private IFixedList<IMaybeParameterType>? parameterTypes;
     private bool parameterTypesCached;
-    public ConstructorSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+    public ConstructorSymbol? Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol
             : this.Synthetic(ref symbolCached, ref symbol,
                 SymbolsAspect.SourceConstructorDefinition_Symbol);
     private ConstructorSymbol? symbol;
@@ -6636,7 +6679,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return Is.OfType<IExecutableDefinitionNode>(this);
+        return this;
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6706,6 +6749,8 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public IUserTypeDeclarationNode ContainingDeclaration
+        => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -6718,8 +6763,6 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
-    public IUserTypeDeclarationNode ContainingDeclaration
-        => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -6734,14 +6777,14 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
                 LexicalScopingAspect.InitializerDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public IFixedList<ParameterType> ParameterTypes
+    public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
                 DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
-    private IFixedList<ParameterType>? parameterTypes;
+    private IFixedList<IMaybeParameterType>? parameterTypes;
     private bool parameterTypesCached;
-    public InitializerSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+    public InitializerSymbol? Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol
             : this.Synthetic(ref symbolCached, ref symbol,
                 SymbolsAspect.DefaultInitializerDefinition_Symbol);
     private InitializerSymbol? symbol;
@@ -6763,6 +6806,11 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     {
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6816,6 +6864,8 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public IUserTypeDeclarationNode ContainingDeclaration
+        => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -6828,8 +6878,6 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
-    public IUserTypeDeclarationNode ContainingDeclaration
-        => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -6844,14 +6892,14 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
                 LexicalScopingAspect.InitializerDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public IFixedList<ParameterType> ParameterTypes
+    public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
                 DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
-    private IFixedList<ParameterType>? parameterTypes;
+    private IFixedList<IMaybeParameterType>? parameterTypes;
     private bool parameterTypesCached;
-    public InitializerSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+    public InitializerSymbol? Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol
             : this.Synthetic(ref symbolCached, ref symbol,
                 SymbolsAspect.SourceInitializerDefinition_Symbol);
     private InitializerSymbol? symbol;
@@ -6885,7 +6933,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return Is.OfType<IExecutableDefinitionNode>(this);
+        return this;
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6990,11 +7038,11 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
                 DefinitionAntetypesAspect.FieldDefinition_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public IMaybeExpressionType BindingType
+    public IMaybeType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.FieldDefinition_BindingType);
-    private IMaybeExpressionType? bindingType;
+    private IMaybeType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
@@ -7004,8 +7052,8 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
     private bool bindingValueIdCached;
     public IEntryNode Entry { [DebuggerStepThrough] get; }
     public IExitNode Exit { [DebuggerStepThrough] get; }
-    public FieldSymbol Symbol
-        => GrammarAttribute.IsCached(in symbolCached) ? symbol!
+    public FieldSymbol? Symbol
+        => GrammarAttribute.IsCached(in symbolCached) ? symbol
             : this.Synthetic(ref symbolCached, ref symbol,
                 SymbolsAspect.FieldDefinition_Symbol);
     private FieldSymbol? symbol;
@@ -7094,6 +7142,8 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
+    public IUserTypeDeclarationNode ContainingDeclaration
+        => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -7106,8 +7156,6 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
                 (ctx) => (IPackageFacetNode)Inherited_Facet(ctx));
     private IPackageFacetNode? facet;
     private bool facetCached;
-    public IUserTypeDeclarationNode ContainingDeclaration
-        => (IUserTypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public AccessModifier AccessModifier
         => GrammarAttribute.IsCached(in accessModifierCached) ? accessModifier
             : this.Synthetic(ref accessModifierCached, ref accessModifier, ref syncLock,
@@ -7122,11 +7170,11 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
                 LexicalScopingAspect.AssociatedFunctionDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
-    public IFixedList<ParameterType> ParameterTypes
+    public IFixedList<IMaybeParameterType> ParameterTypes
         => GrammarAttribute.IsCached(in parameterTypesCached) ? parameterTypes!
             : this.Synthetic(ref parameterTypesCached, ref parameterTypes,
                 DefinitionTypesAspect.InvocableDefinition_ParameterTypes);
-    private IFixedList<ParameterType>? parameterTypes;
+    private IFixedList<IMaybeParameterType>? parameterTypes;
     private bool parameterTypesCached;
     public FunctionSymbol? Symbol
         => GrammarAttribute.IsCached(in symbolCached) ? symbol
@@ -7331,6 +7379,8 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -7343,11 +7393,11 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
                 NameBindingAntetypesAspect.NamedParameter_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public IMaybeExpressionType BindingType
+    public IMaybeType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.NamedParameter_BindingType);
-    private IMaybeExpressionType? bindingType;
+    private IMaybeType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
@@ -7361,11 +7411,11 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
                 ExpressionTypesAspect.NamedParameter_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public ParameterType ParameterType
-        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
-            : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
+    public IMaybeParameterType ParameterType
+        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType!
+            : this.Synthetic(ref parameterTypeCached, ref parameterType,
                 NameBindingTypesAspect.NamedParameter_ParameterType);
-    private ParameterType parameterType;
+    private IMaybeParameterType? parameterType;
     private bool parameterTypeCached;
 
     public NamedParameterNode(
@@ -7407,6 +7457,8 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public ITypeDefinitionNode ContainingTypeDefinition
         => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
             : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
@@ -7443,11 +7495,11 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
                 ExpressionTypesAspect.SelfParameter_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public SelfParameterType ParameterType
-        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
-            : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
+    public IMaybeSelfParameterType ParameterType
+        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType!
+            : this.Synthetic(ref parameterTypeCached, ref parameterType,
                 NameBindingTypesAspect.SelfParameter_ParameterType);
-    private SelfParameterType parameterType;
+    private IMaybeSelfParameterType? parameterType;
     private bool parameterTypeCached;
 
     public ConstructorSelfParameterNode(
@@ -7489,6 +7541,8 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public ITypeDefinitionNode ContainingTypeDefinition
         => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
             : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
@@ -7525,11 +7579,11 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
                 ExpressionTypesAspect.SelfParameter_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public SelfParameterType ParameterType
-        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
-            : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
+    public IMaybeSelfParameterType ParameterType
+        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType!
+            : this.Synthetic(ref parameterTypeCached, ref parameterType,
                 NameBindingTypesAspect.SelfParameter_ParameterType);
-    private SelfParameterType parameterType;
+    private IMaybeSelfParameterType? parameterType;
     private bool parameterTypeCached;
 
     public InitializerSelfParameterNode(
@@ -7571,6 +7625,8 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public ITypeDefinitionNode ContainingTypeDefinition
         => GrammarAttribute.IsCached(in containingTypeDefinitionCached) ? containingTypeDefinition!
             : this.Inherited(ref containingTypeDefinitionCached, ref containingTypeDefinition,
@@ -7607,11 +7663,11 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
                 ExpressionTypesAspect.SelfParameter_FlowStateAfter);
     private Circular<IFlowState> flowStateAfter = new(IFlowState.Empty);
     private bool flowStateAfterCached;
-    public SelfParameterType ParameterType
-        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
-            : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
+    public IMaybeSelfParameterType ParameterType
+        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType!
+            : this.Synthetic(ref parameterTypeCached, ref parameterType,
                 NameBindingTypesAspect.SelfParameter_ParameterType);
-    private SelfParameterType parameterType;
+    private IMaybeSelfParameterType? parameterType;
     private bool parameterTypeCached;
 
     public MethodSelfParameterNode(
@@ -7664,11 +7720,11 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
                 NameBindingAntetypesAspect.FieldParameter_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public IMaybeExpressionType BindingType
+    public IMaybeType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.FieldParameter_BindingType);
-    private IMaybeExpressionType? bindingType;
+    private IMaybeType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
@@ -7676,11 +7732,11 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
                 ValueIdsAspect.Parameter_BindingValueId);
     private ValueId bindingValueId;
     private bool bindingValueIdCached;
-    public ParameterType ParameterType
-        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType
-            : this.Synthetic(ref parameterTypeCached, ref parameterType, ref syncLock,
+    public IMaybeParameterType ParameterType
+        => GrammarAttribute.IsCached(in parameterTypeCached) ? parameterType!
+            : this.Synthetic(ref parameterTypeCached, ref parameterType,
                 NameBindingTypesAspect.FieldParameter_ParameterType);
-    private ParameterType parameterType;
+    private IMaybeParameterType? parameterType;
     private bool parameterTypeCached;
     public IFieldDefinitionNode? ReferencedField
         => GrammarAttribute.IsCached(in referencedFieldCached) ? referencedField
@@ -8169,7 +8225,6 @@ file class FunctionTypeNode : SemanticNode, IFunctionTypeNode
 file class ParameterTypeNode : SemanticNode, IParameterTypeNode
 {
     private IParameterTypeNode Self { [Inline] get => this; }
-    private AttributeLock syncLock;
 
     public IParameterTypeSyntax Syntax { [DebuggerStepThrough] get; }
     public ITypeNode Referent { [DebuggerStepThrough] get; }
@@ -8177,11 +8232,11 @@ file class ParameterTypeNode : SemanticNode, IParameterTypeNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public ParameterType Parameter
-        => GrammarAttribute.IsCached(in parameterCached) ? parameter
-            : this.Synthetic(ref parameterCached, ref parameter, ref syncLock,
+    public IMaybeParameterType Parameter
+        => GrammarAttribute.IsCached(in parameterCached) ? parameter!
+            : this.Synthetic(ref parameterCached, ref parameter,
                 TypeExpressionsAspect.ParameterType_Parameter);
-    private ParameterType parameter;
+    private IMaybeParameterType? parameter;
     private bool parameterCached;
 
     public ParameterTypeNode(
@@ -8553,6 +8608,8 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
     public IPreviousValueId PreviousValueId()
         => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -8567,11 +8624,11 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
                 NameBindingAntetypesAspect.VariableDeclarationStatement_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public IMaybeExpressionType BindingType
+    public IMaybeType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.VariableDeclarationStatement_BindingType);
-    private IMaybeExpressionType? bindingType;
+    private IMaybeType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
@@ -8814,7 +8871,7 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
     private bool matchReferentValueIdCached;
     public IMaybeAntetype ContextBindingAntetype()
         => Inherited_ContextBindingAntetype(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType ContextBindingType()
+    public IMaybeType ContextBindingType()
         => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -8840,7 +8897,7 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
         return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Pattern))
             return NameBindingTypesAspect.BindingContextPattern_Pattern_ContextBindingType(this);
@@ -8892,8 +8949,10 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     private bool matchReferentValueIdCached;
     public IMaybeAntetype ContextBindingAntetype()
         => Inherited_ContextBindingAntetype(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType ContextBindingType()
+    public IMaybeType ContextBindingType()
         => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -8908,11 +8967,11 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
                 NameBindingAntetypesAspect.BindingPattern_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public IMaybeExpressionType BindingType
+    public IMaybeType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.BindingPattern_BindingType);
-    private IMaybeExpressionType? bindingType;
+    private IMaybeType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
@@ -9018,7 +9077,7 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
     private bool matchReferentValueIdCached;
     public IMaybeAntetype ContextBindingAntetype()
         => Inherited_ContextBindingAntetype(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeExpressionType ContextBindingType()
+    public IMaybeType ContextBindingType()
         => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -9042,7 +9101,7 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
         return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Pattern))
             return NameBindingTypesAspect.OptionalPattern_Pattern_ContextBindingType(this);
@@ -11281,7 +11340,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
     }
 
-    internal override IMaybeExpressionType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Pattern))
             return NameBindingTypesAspect.PatternMatchExpression_Pattern_ContextBindingType(this);
@@ -11966,6 +12025,8 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 Inherited_ExpectedAntetype);
     private IMaybeAntetype? expectedAntetype;
     private bool expectedAntetypeCached;
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public PackageNameScope PackageNameScope()
         => Inherited_PackageNameScope(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
@@ -11986,11 +12047,11 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 NameBindingAntetypesAspect.ForeachExpression_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public IMaybeExpressionType BindingType
+    public IMaybeType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.ForeachExpression_BindingType);
-    private IMaybeExpressionType? bindingType;
+    private IMaybeType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
@@ -12042,11 +12103,11 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 ForeachExpressionAntetypesAspect.ForeachExpression_IteratedAntetype);
     private IMaybeAntetype? iteratedAntetype;
     private bool iteratedAntetypeCached;
-    public IMaybeExpressionType IteratedType
+    public IMaybeType IteratedType
         => GrammarAttribute.IsCached(in iteratedTypeCached) ? iteratedType!
             : this.Synthetic(ref iteratedTypeCached, ref iteratedType,
                 ForeachExpressionTypesAspect.ForeachExpression_IteratedType);
-    private IMaybeExpressionType? iteratedType;
+    private IMaybeType? iteratedType;
     private bool iteratedTypeCached;
     public IMaybeExpressionAntetype IteratorAntetype
         => GrammarAttribute.IsCached(in iteratorAntetypeCached) ? iteratorAntetype!
@@ -12054,11 +12115,11 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 ForeachExpressionAntetypesAspect.ForeachExpression_IteratorAntetype);
     private IMaybeExpressionAntetype? iteratorAntetype;
     private bool iteratorAntetypeCached;
-    public IMaybeExpressionType IteratorType
+    public IMaybeType IteratorType
         => GrammarAttribute.IsCached(in iteratorTypeCached) ? iteratorType!
             : this.Synthetic(ref iteratorTypeCached, ref iteratorType,
                 ForeachExpressionTypesAspect.ForeachExpression_IteratorType);
-    private IMaybeExpressionType? iteratorType;
+    private IMaybeType? iteratorType;
     private bool iteratorTypeCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
@@ -18156,6 +18217,8 @@ file class PackageSymbolNode : SemanticNode, IPackageSymbolNode
     private IPackageSymbolNode Self { [Inline] get => this; }
 
     public IPackageReferenceNode PackageReference { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
@@ -18182,6 +18245,8 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
     private IPackageFacetSymbolNode Self { [Inline] get => this; }
 
     public FixedSymbolTree SymbolTree { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public INamespaceSymbolNode GlobalNamespace { [DebuggerStepThrough] get; }
@@ -18190,6 +18255,13 @@ file class PackageFacetSymbolNode : SemanticNode, IPackageFacetSymbolNode
     {
         SymbolTree = symbolTree;
         GlobalNamespace = Child.Attach(this, SymbolNodeAspect.PackageFacetSymbol_GlobalNamespace(this));
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, descendant))
+            return this;
+        return base.Inherited_ContainingDeclaration(child, descendant, ctx);
     }
 
     internal override IPackageFacetDeclarationNode Inherited_Facet(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -18209,6 +18281,8 @@ file class NamespaceSymbolNode : SemanticNode, INamespaceSymbolNode
     private INamespaceSymbolNode Self { [Inline] get => this; }
 
     public NamespaceSymbol Symbol { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -18256,6 +18330,8 @@ file class FunctionSymbolNode : SemanticNode, IFunctionSymbolNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public INamespaceDeclarationNode ContainingDeclaration
+        => (INamespaceDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
@@ -18271,6 +18347,8 @@ file class EmptyTypeSymbolNode : SemanticNode, IEmptyTypeSymbolNode
     private IEmptyTypeSymbolNode Self { [Inline] get => this; }
 
     public EmptyTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
@@ -18296,6 +18374,11 @@ file class EmptyTypeSymbolNode : SemanticNode, IEmptyTypeSymbolNode
     {
         Symbol = symbol;
     }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -18304,6 +18387,8 @@ file class PrimitiveTypeSymbolNode : SemanticNode, IPrimitiveTypeSymbolNode
     private IPrimitiveTypeSymbolNode Self { [Inline] get => this; }
 
     public PrimitiveTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public FixedDictionary<StandardName, IFixedSet<IAssociatedMemberDeclarationNode>> AssociatedMembersByName
@@ -18329,6 +18414,11 @@ file class PrimitiveTypeSymbolNode : SemanticNode, IPrimitiveTypeSymbolNode
     {
         Symbol = symbol;
     }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -18337,6 +18427,8 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
     private IClassSymbolNode Self { [Inline] get => this; }
 
     public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -18373,6 +18465,11 @@ file class ClassSymbolNode : SemanticNode, IClassSymbolNode
         SymbolNodeAspect.Validate_ClassSymbolNode(symbol);
         Symbol = symbol;
     }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -18381,6 +18478,8 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
     private IStructSymbolNode Self { [Inline] get => this; }
 
     public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -18417,6 +18516,11 @@ file class StructSymbolNode : SemanticNode, IStructSymbolNode
         SymbolNodeAspect.Validate_StructSymbolNode(symbol);
         Symbol = symbol;
     }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -18425,6 +18529,8 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
     private ITraitSymbolNode Self { [Inline] get => this; }
 
     public UserTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -18461,6 +18567,11 @@ file class TraitSymbolNode : SemanticNode, ITraitSymbolNode
         SymbolNodeAspect.Validate_TraitSymbolNode(symbol);
         Symbol = symbol;
     }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -18469,6 +18580,8 @@ file class GenericParameterSymbolNode : SemanticNode, IGenericParameterSymbolNod
     private IGenericParameterSymbolNode Self { [Inline] get => this; }
 
     public GenericParameterTypeSymbol Symbol { [DebuggerStepThrough] get; }
+    public ISymbolDeclarationNode ContainingDeclaration
+        => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -18480,6 +18593,11 @@ file class GenericParameterSymbolNode : SemanticNode, IGenericParameterSymbolNod
     {
         Symbol = symbol;
     }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -18488,6 +18606,8 @@ file class StandardMethodSymbolNode : SemanticNode, IStandardMethodSymbolNode
     private IStandardMethodSymbolNode Self { [Inline] get => this; }
 
     public MethodSymbol Symbol { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode ContainingDeclaration
+        => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -18500,6 +18620,11 @@ file class StandardMethodSymbolNode : SemanticNode, IStandardMethodSymbolNode
         SymbolNodeAspect.Validate_StandardMethodSymbolNode(symbol);
         Symbol = symbol;
     }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -18508,6 +18633,8 @@ file class GetterMethodSymbolNode : SemanticNode, IGetterMethodSymbolNode
     private IGetterMethodSymbolNode Self { [Inline] get => this; }
 
     public MethodSymbol Symbol { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode ContainingDeclaration
+        => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -18520,6 +18647,11 @@ file class GetterMethodSymbolNode : SemanticNode, IGetterMethodSymbolNode
         SymbolNodeAspect.Validate_GetterMethodSymbolNode(symbol);
         Symbol = symbol;
     }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -18528,6 +18660,8 @@ file class SetterMethodSymbolNode : SemanticNode, ISetterMethodSymbolNode
     private ISetterMethodSymbolNode Self { [Inline] get => this; }
 
     public MethodSymbol Symbol { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode ContainingDeclaration
+        => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -18540,6 +18674,11 @@ file class SetterMethodSymbolNode : SemanticNode, ISetterMethodSymbolNode
         SymbolNodeAspect.Validate_SetterMethodSymbolNode(symbol);
         Symbol = symbol;
     }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -18548,6 +18687,8 @@ file class ConstructorSymbolNode : SemanticNode, IConstructorSymbolNode
     private IConstructorSymbolNode Self { [Inline] get => this; }
 
     public ConstructorSymbol Symbol { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode ContainingDeclaration
+        => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -18559,6 +18700,11 @@ file class ConstructorSymbolNode : SemanticNode, IConstructorSymbolNode
     {
         Symbol = symbol;
     }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
+    }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -18567,6 +18713,8 @@ file class InitializerSymbolNode : SemanticNode, IInitializerSymbolNode
     private IInitializerSymbolNode Self { [Inline] get => this; }
 
     public InitializerSymbol Symbol { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode ContainingDeclaration
+        => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
@@ -18577,6 +18725,11 @@ file class InitializerSymbolNode : SemanticNode, IInitializerSymbolNode
     public InitializerSymbolNode(InitializerSymbol symbol)
     {
         Symbol = symbol;
+    }
+
+    internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return this;
     }
 }
 
@@ -18590,6 +18743,8 @@ file class FieldSymbolNode : SemanticNode, IFieldSymbolNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
         => Inherited_Facet(GrammarAttribute.CurrentInheritanceContext());
+    public ITypeDeclarationNode ContainingDeclaration
+        => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolTree SymbolTree()
         => Inherited_SymbolTree(GrammarAttribute.CurrentInheritanceContext());
 
@@ -18606,6 +18761,8 @@ file class AssociatedFunctionSymbolNode : SemanticNode, IAssociatedFunctionSymbo
 
     public StandardName Name { [DebuggerStepThrough] get; }
     public FunctionSymbol Symbol { [DebuggerStepThrough] get; }
+    public ITypeDeclarationNode ContainingDeclaration
+        => (ITypeDeclarationNode)Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public IPackageFacetDeclarationNode Facet
