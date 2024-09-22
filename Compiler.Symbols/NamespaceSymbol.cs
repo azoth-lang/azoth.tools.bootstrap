@@ -9,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 [Closed(
     typeof(LocalNamespaceSymbol),
     typeof(PackageSymbol))]
+// TODO it is odd to have namespace symbols if packages don't really have namespaces declared in them
 public abstract class NamespaceSymbol : Symbol
 {
     public override PackageSymbol Package { get; }

@@ -57,7 +57,8 @@ internal sealed class PackageSymbolTreeBuilder
                 TypeDefinition(n);
                 break;
             case IFunctionDefinitionNode n:
-                tree.Add(n.Symbol);
+                if (n.Symbol is { } symbol)
+                    tree.Add(symbol);
                 break;
         }
     }
@@ -82,7 +83,8 @@ internal sealed class PackageSymbolTreeBuilder
                 TypeDefinition(n);
                 break;
             case ITypeMemberDefinitionNode n:
-                tree.Add(n.Symbol);
+                if (n.Symbol is { } symbol)
+                    tree.Add(symbol);
                 break;
         }
     }

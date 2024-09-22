@@ -13,13 +13,13 @@ internal static partial class SymbolsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial PackageSymbol Package_Symbol(IPackageNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FunctionSymbol FunctionDefinition_Symbol(IFunctionDefinitionNode node);
+    public static partial FunctionSymbol? FunctionDefinition_Symbol(IFunctionDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial UserTypeSymbol TypeDefinition_Symbol(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial GenericParameterTypeSymbol GenericParameter_Symbol(IGenericParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial MethodSymbol MethodDefinition_Symbol(IMethodDefinitionNode node);
+    public static partial MethodSymbol? MethodDefinition_Symbol(IMethodDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ConstructorSymbol DefaultConstructorDefinition_Symbol(IDefaultConstructorDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -31,7 +31,7 @@ internal static partial class SymbolsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial FieldSymbol FieldDefinition_Symbol(IFieldDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial FunctionSymbol AssociatedFunctionDefinition_Symbol(IAssociatedFunctionDefinitionNode node);
+    public static partial FunctionSymbol? AssociatedFunctionDefinition_Symbol(IAssociatedFunctionDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial TypeSymbol? StandardTypeName_ReferencedSymbol(IStandardTypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

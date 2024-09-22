@@ -40,7 +40,7 @@ public abstract class SymbolTestFixture
         string? name = null,
         NamespaceSymbol? ns = null,
         IFixedList<ParameterType>? @params = null,
-        IMaybeExpressionType? @return = null)
+        IExpressionType? @return = null)
     {
         return new FunctionSymbol(
             ns ?? Namespace(),
@@ -53,7 +53,7 @@ public abstract class SymbolTestFixture
         string? name = null,
         NamespaceSymbol? ns = null,
         IFixedList<ParameterType>? @params = null,
-        IMaybeExpressionType? @return = null)
+        IExpressionType? @return = null)
     {
         return new FunctionSymbol(
             ns ?? mother.ContainingSymbol,
@@ -66,7 +66,7 @@ public abstract class SymbolTestFixture
         UserTypeSymbol? containing = null,
         SelfParameterType? self = null,
         IFixedList<ParameterType>? @params = null,
-        IMaybeExpressionType? @return = null)
+        IExpressionType? @return = null)
     {
         containing ??= Type();
         return new MethodSymbol(
@@ -83,7 +83,7 @@ public abstract class SymbolTestFixture
         UserTypeSymbol? containing = null,
         SelfParameterType? self = null,
         IFixedList<ParameterType>? @params = null,
-        IMaybeExpressionType? @return = null)
+        IExpressionType? @return = null)
     {
         return new MethodSymbol(
             containing ?? mother.ContainingSymbol,

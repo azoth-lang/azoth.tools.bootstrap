@@ -103,6 +103,9 @@ public abstract class BareType : IEquatable<BareType>
     public IType ReplaceTypeParametersIn(IType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 
+    public IMaybeType ReplaceTypeParametersIn(IMaybeType type)
+        => typeReplacements.Value.ReplaceTypeParametersIn(type);
+
     public IExpressionType ReplaceTypeParametersIn(IExpressionType type)
         => typeReplacements.Value.ReplaceTypeParametersIn(type);
 

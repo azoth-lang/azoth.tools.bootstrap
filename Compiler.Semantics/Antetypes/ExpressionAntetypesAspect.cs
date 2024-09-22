@@ -323,14 +323,14 @@ internal static partial class ExpressionAntetypesAspect
 
     public static partial IMaybeExpressionAntetype GetterInvocationExpression_Antetype(IGetterInvocationExpressionNode node)
     {
-        var unboundAntetype = node.ReferencedDeclaration?.Symbol.Return.ToAntetype() ?? IAntetype.Unknown;
+        var unboundAntetype = node.ReferencedDeclaration?.ReturnType.ToAntetype() ?? IAntetype.Unknown;
         var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }
 
     public static partial IMaybeExpressionAntetype SetterInvocationExpression_Antetype(ISetterInvocationExpressionNode node)
     {
-        var unboundAntetype = node.ReferencedDeclaration?.Symbol.Parameters[0].Type.ToAntetype() ?? IAntetype.Unknown;
+        var unboundAntetype = node.ReferencedDeclaration?.ParameterTypes[0].Type.ToAntetype() ?? IAntetype.Unknown;
         var boundAntetype = node.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }

@@ -17,11 +17,11 @@ public abstract class InvocableSymbol : Symbol
     public abstract override IdentifierName? Name { get; }
     public IFixedList<ParameterType> Parameters { get; }
     public int Arity => Parameters.Count;
-    public IMaybeExpressionType Return { get; }
+    public IExpressionType Return { get; }
 
     private protected InvocableSymbol(
         IFixedList<ParameterType> parameters,
-        IMaybeExpressionType returnType)
+        IExpressionType returnType)
     {
         Parameters = parameters;
         Return = returnType;

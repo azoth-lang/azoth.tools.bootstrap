@@ -1,6 +1,8 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name DefinitionTypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+◊using Azoth.Tools.Bootstrap.Framework;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
@@ -9,7 +11,8 @@
 ↑ BlockOrResult.Type: `IMaybeExpressionType`;
 
 // ---------- Definitions
-↑ ConcreteFunctionInvocableDefinition.Type: `FunctionType`;
+= InvocableDefinition.ParameterTypes;
+= ConcreteFunctionInvocableDefinition.ReturnType => Return?.NamedType ?? IType.Void;
 
 // ---------- Function Definition
 = FunctionDefinition.Parameters[0].**.FlowStateBefore()

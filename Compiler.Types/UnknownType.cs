@@ -24,6 +24,8 @@ public sealed class UnknownType : IMaybeFunctionType
     public bool AllowsVariance => false;
     public bool HasIndependentTypeArguments => false;
 
+    IMaybeExpressionType IMaybeFunctionType.Return => IType.Unknown;
+
     public IMaybeAntetype ToAntetype() => IAntetype.Unknown;
 
     public IMaybeExpressionType ToUpperBound() => this;

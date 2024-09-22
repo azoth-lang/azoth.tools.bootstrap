@@ -59,12 +59,12 @@ public class InterpreterProcess
             runTests ? r => r.MainFacet.Definitions.Concat(r.TestingFacet.Definitions) : r => r.MainFacet.Definitions);
         functions = allDefinitions
                     .OfType<IConcreteFunctionInvocableDefinitionNode>()
-                    .ToFixedDictionary(f => f.Symbol);
+                    .ToFixedDictionary(f => f.Symbol.Assigned());
 
         structMethods = allDefinitions
                         .OfType<IMethodDefinitionNode>()
-                        .Where(m => m.Symbol.ContextTypeSymbol is UserTypeSymbol { DeclaresType: StructType })
-                        .ToFixedDictionary(m => m.Symbol);
+                        .Where(m => m.Symbol.Assigned().ContextTypeSymbol is UserTypeSymbol { DeclaresType: StructType })
+                        .ToFixedDictionary(m => m.Symbol.Assigned());
 
         userTypes = allDefinitions.OfType<ITypeDefinitionNode>()
                                  .ToFixedDictionary(c => c.Symbol);
@@ -124,13 +124,13 @@ public class InterpreterProcess
         {
             var entryPoint = package.EntryPoint!;
             var arguments = new List<AzothValue>();
-            foreach (var parameterType in entryPoint.Symbol.Parameters)
+            foreach (var parameterType in entryPoint.Symbol.Assigned().Parameters)
                 arguments.Add(await ConstructMainParameterAsync((IType)parameterType.Type));
 
             var returnValue = await CallFunctionAsync(entryPoint, arguments).ConfigureAwait(false);
             // Flush any buffered output
             await standardOutputWriter.FlushAsync().ConfigureAwait(false);
-            var returnType = entryPoint.Symbol.Return;
+            var returnType = entryPoint.Symbol.Assigned().Return;
             if (returnType.Equals(IType.Void))
                 exitCode = 0;
             else if (returnType.Equals(IType.Byte))
@@ -162,7 +162,7 @@ public class InterpreterProcess
             {
                 // TODO check that return type is void
                 var symbol = function.Symbol;
-                await standardOutputWriter.WriteLineAsync($"{symbol.ContainingSymbol.ToILString()}.{symbol.Name} ...");
+                await standardOutputWriter.WriteLineAsync($"{symbol.Assigned().ContainingSymbol.ToILString()}.{symbol.Assigned().Name} ...");
                 try
                 {
                     await CallFunctionAsync(function, []).ConfigureAwait(false);
@@ -533,7 +533,7 @@ public class InterpreterProcess
             case IFunctionInvocationExpressionNode exp:
             {
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
-                var functionSymbol = exp.Function.ReferencedDeclaration!.Symbol;
+                var functionSymbol = exp.Function.ReferencedDeclaration!.Symbol.Assigned();
                 if (functionSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(functionSymbol, arguments).ConfigureAwait(false);
                 return await CallFunctionAsync(functions[functionSymbol], arguments).ConfigureAwait(false);
@@ -565,7 +565,7 @@ public class InterpreterProcess
             case IVariableNameExpressionNode exp:
                 return variables[exp.ReferencedDefinition];
             case IFunctionNameNode exp:
-                return AzothValue.FunctionReference(new ConcreteFunctionReference(this, functions[exp.ReferencedDeclaration!.Symbol]));
+                return AzothValue.FunctionReference(new ConcreteFunctionReference(this, functions[exp.ReferencedDeclaration!.Symbol.Assigned()]));
             case IBlockExpressionNode block:
             {
                 var blockVariables = new LocalVariableScope(variables);
@@ -713,7 +713,7 @@ public class InterpreterProcess
             {
                 var self = await ExecuteAsync(exp.Method.Context, variables).ConfigureAwait(false);
                 var arguments = await ExecuteArgumentsAsync(exp.Arguments!, variables).ConfigureAwait(false);
-                var methodSymbol = exp.Method.ReferencedDeclaration!.Symbol;
+                var methodSymbol = exp.Method.ReferencedDeclaration!.Symbol.Assigned();
                 if (methodSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(methodSymbol, self, arguments);
                 if (methodSymbol == Primitive.IdentityHash)
@@ -725,7 +725,7 @@ public class InterpreterProcess
             case IGetterInvocationExpressionNode exp:
             {
                 var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
-                var getterSymbol = exp.ReferencedDeclaration!.Symbol;
+                var getterSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
                 if (getterSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(getterSymbol, self, []);
                 var selfType = exp.Context.Type.Known();
@@ -735,7 +735,7 @@ public class InterpreterProcess
             {
                 var self = await ExecuteAsync(exp.Context, variables).ConfigureAwait(false);
                 var value = await ExecuteAsync(exp.Value!, variables).ConfigureAwait(false);
-                var setterSymbol = exp.ReferencedDeclaration!.Symbol;
+                var setterSymbol = exp.ReferencedDeclaration!.Symbol.Assigned();
                 if (setterSymbol.Package == Intrinsic.SymbolTree.Package)
                     return await CallIntrinsicAsync(setterSymbol, self, [value]);
                 var selfType = exp.Context.Type.Known();
@@ -778,7 +778,7 @@ public class InterpreterProcess
                 if (exp.ReferencedIterateMethod is not null)
                 {
                     var selfType = (CapabilityType)exp.InExpression!.Type;
-                    var iterateMethod = exp.ReferencedIterateMethod!.Symbol;
+                    var iterateMethod = exp.ReferencedIterateMethod!.Symbol.Assigned();
                     iterator = await CallMethodAsync(iterateMethod, selfType, iterable, []).ConfigureAwait(false);
                     iteratorType = (CapabilityType)iterateMethod.Return;
                 }
@@ -790,7 +790,7 @@ public class InterpreterProcess
 
                 try
                 {
-                    var nextMethod = exp.ReferencedNextMethod!.Symbol;
+                    var nextMethod = exp.ReferencedNextMethod!.Symbol.Assigned();
                     while (true)
                     {
                         var value = await CallMethodAsync(nextMethod, iteratorType, iterator, []).ConfigureAwait(false);

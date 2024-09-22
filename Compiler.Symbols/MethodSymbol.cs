@@ -22,7 +22,7 @@ public sealed class MethodSymbol : InvocableSymbol
         IdentifierName name,
         SelfParameterType selfParameterType,
         IFixedList<ParameterType> parameters,
-        IMaybeExpressionType returnType)
+        IExpressionType returnType)
         : this(containingSymbol, MethodKind.Standard, name, selfParameterType, parameters, returnType)
     { }
 
@@ -32,7 +32,7 @@ public sealed class MethodSymbol : InvocableSymbol
         IdentifierName name,
         SelfParameterType selfParameterType,
         IFixedList<ParameterType> parameters,
-        IMaybeExpressionType returnType)
+        IExpressionType returnType)
         : base(parameters, returnType)
     {
         ContainingSymbol = containingSymbol;

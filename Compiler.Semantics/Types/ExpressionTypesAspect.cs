@@ -79,7 +79,7 @@ internal static partial class ExpressionTypesAspect
            ?? IFlowState.Empty;
 
     public static partial IMaybeExpressionType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
-        => node.Function.ReferencedDeclaration?.Type.Return ?? IMaybeType.Unknown;
+        => node.Function.ReferencedDeclaration?.Type.Return ?? IMaybeExpressionType.Unknown;
 
     public static partial ContextualizedOverload? FunctionInvocationExpression_ContextualizedOverload(
         IFunctionInvocationExpressionNode node)

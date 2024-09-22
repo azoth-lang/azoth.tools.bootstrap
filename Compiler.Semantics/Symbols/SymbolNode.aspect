@@ -54,13 +54,14 @@
 ↑ ChildSymbol.Syntax: `ISyntax`? => null;
 
 // ---------- Package Symbol Nodes
-= PackageSymbol.Symbol => PackageReference.PackageSymbols.PackageSymbol;
+↑ PackageSymbol.Symbol: `PackageSymbol` => PackageReference.PackageSymbols.PackageSymbol;
 ↑ PackageSymbol.Name: `IdentifierName` => Symbol.Name;
 ↑ PackageSymbol.AliasOrName: `IdentifierName` => PackageReference.AliasOrName;
 ↑ child eager PackageSymbol.MainFacet: PackageFacetSymbol;
 ↑ child eager PackageSymbol.TestingFacet: PackageFacetSymbol;
 
 // ---------- Facet Symbol Nodes
+↑ PackageFacetSymbol.Symbol: `PackageSymbol` => PackageSymbol;
 = PackageFacetSymbol.*.**.SymbolTree => SymbolTree;
 ↑ child PackageFacetSymbol.GlobalNamespace: NamespaceSymbol;
 = eager PackageFacetSymbol.GlobalNamespace;
@@ -70,6 +71,8 @@
 
 // ---------- Function Symbol Nodes
 ↑ FunctionSymbol.Name: `IdentifierName` => Symbol.Name;
+= FunctionSymbol.ParameterTypes => Symbol.Type.Parameters;
+= FunctionSymbol.ReturnType => (IType)Symbol.Type.Return;
 = FunctionSymbol.Type => Symbol.Type;
 
 // ---------- Type Symbol Nodes
@@ -115,13 +118,24 @@
 
 // ---------- Member Symbol Nodes
 ↑ MethodSymbol.Name: `IdentifierName` => Symbol.Name;
+= MethodSymbol.SelfParameterType => Symbol.SelfParameterType;
+= MethodSymbol.ParameterTypes => Symbol.MethodGroupType.Parameters;
+= MethodSymbol.ReturnType => (IType)Symbol.MethodGroupType.Return;
 + StandardMethodSymbol.new.Validate;
 = StandardMethodSymbol.Arity => Symbol.Arity;
 = StandardMethodSymbol.MethodGroupType => Symbol.MethodGroupType;
 + GetterMethodSymbol.new.Validate;
 + SetterMethodSymbol.new.Validate;
 ↑ ConstructorSymbol.Name: `IdentifierName`? => Symbol.Name;
+= ConstructorSymbol.SelfParameterType => new(false, Symbol.SelfParameterType);
+= ConstructorSymbol.ParameterTypes => Symbol.Parameters;
+= ConstructorSymbol.ReturnType => Symbol.ReturnType;
 ↑ InitializerSymbol.Name: `IdentifierName`? => Symbol.Name;
+= InitializerSymbol.SelfParameterType => new(false, Symbol.SelfParameterType);
+= InitializerSymbol.ParameterTypes => Symbol.Parameters;
+= InitializerSymbol.ReturnType => Symbol.ReturnType;
 ↑ FieldSymbol.Name: `IdentifierName` => Symbol.Name;
 = FieldSymbol.BindingType => Symbol.Type;
 = AssociatedFunctionSymbol.Type => Symbol.Type;
+= AssociatedFunctionSymbol.ParameterTypes => Symbol.Type.Parameters;
+= AssociatedFunctionSymbol.ReturnType => (IType)Symbol.Type.Return;

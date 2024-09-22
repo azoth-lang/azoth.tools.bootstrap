@@ -5,7 +5,7 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 ↑ NamedDeclaration.Name: `TypeName`;
-↑ SymbolDeclaration.Symbol: `Symbol`;
+↑ SymbolDeclaration.Symbol: `Symbol`?;
 
 // ---------- Bindings
 ↑ NamedBindingDeclaration.Name: `IdentifierName`;
@@ -21,9 +21,11 @@
 ↑ child PackageFacetDeclaration.GlobalNamespace: NamespaceDeclaration;
 
 // ---------- Declarations
-↑ InvocableDeclaration.Symbol: `InvocableSymbol`;
-↑ FunctionInvocableDeclaration.Symbol: `FunctionSymbol`;
-↑ FunctionInvocableDeclaration.Type: `FunctionType`;
+↑ InvocableDeclaration.ParameterTypes: `ParameterType`*;
+↑ InvocableDeclaration.ReturnType: `IMaybeType`;
+↑ InvocableDeclaration.Symbol: `InvocableSymbol`?;
+↑ FunctionInvocableDeclaration.Symbol: `FunctionSymbol`?;
+↑ FunctionInvocableDeclaration.Type: `IMaybeFunctionType`;
 
 // ---------- Namespace Declarations
 ↑ NamespaceDeclaration.Name: `IdentifierName` => Symbol.Name;
@@ -33,7 +35,7 @@
 = NamespaceDeclaration.NestedMembers;
 
 // ---------- Function Definition
-↑ FunctionDeclaration.Symbol: `FunctionSymbol`;
+↑ FunctionDeclaration.Symbol: `FunctionSymbol`?;
 
 // ---------- Type Declarations
 ↑ TypeDeclaration.Supertypes: {`BareReferenceType`};
@@ -51,11 +53,14 @@
 ↑ GenericParameterDeclaration.Symbol: `GenericParameterTypeSymbol`;
 
 // ---------- Member Declarations
-↑ MethodDeclaration.Symbol: `MethodSymbol`;
+↑ MethodDeclaration.SelfParameterType: `SelfParameterType`;
+↑ MethodDeclaration.Symbol: `MethodSymbol`?;
 ↑ StandardMethodDeclaration.Arity: `int`;
-↑ StandardMethodDeclaration.MethodGroupType: `FunctionType`;
+↑ StandardMethodDeclaration.MethodGroupType: `IMaybeFunctionType`;
+↑ ConstructorDeclaration.SelfParameterType: `SelfParameterType`;
 ↑ ConstructorDeclaration.Symbol: `ConstructorSymbol`;
+↑ InitializerDeclaration.SelfParameterType: `SelfParameterType`;
 ↑ InitializerDeclaration.Symbol: `InitializerSymbol`;
 ↑ FieldDeclaration.BindingType: `IMaybeExpressionType`;
 ↑ FieldDeclaration.Symbol: `FieldSymbol`;
-↑ AssociatedFunctionDeclaration.Symbol: `FunctionSymbol`;
+↑ AssociatedFunctionDeclaration.Symbol: `FunctionSymbol`?;

@@ -12,7 +12,7 @@
 ↑ CompilationUnit.ContainingSymbol: `PackageSymbol` => ContainingDeclaration.PackageSymbol;
 
 // ---------- Definitions
-↑ Definition.ContainingSymbol: `Symbol` => ContainingDeclaration.Symbol;
+↑ Definition.ContainingSymbol: `Symbol`? => ContainingDeclaration.Symbol;
 
 // ---------- Namespace Definitions
 ↑ NamespaceBlockDefinition.ContainingSymbol: `NamespaceSymbol` => ContainingDeclaration.Symbol;
@@ -23,6 +23,7 @@
 = FunctionDefinition.Symbol;
 
 // ---------- Type Definitions
+↑ TypeDefinition.ContainingSymbol: `Symbol` => ContainingDeclaration.Symbol!; // Never null because not a function/method
 = TypeDefinition.Symbol;
 
 // ---------- Type Member Definitions

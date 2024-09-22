@@ -41,26 +41,30 @@ internal static partial class SymbolsAspect
     public static partial TypeSymbol SpecialTypeName_ReferencedSymbol(ISpecialTypeNameNode node)
         => Primitive.SymbolTree.LookupSymbol(node.Name);
 
-    public static partial FunctionSymbol FunctionDefinition_Symbol(IFunctionDefinitionNode node)
-        => new(node.ContainingSymbol, node.Name, node.Type);
+    public static partial FunctionSymbol? FunctionDefinition_Symbol(IFunctionDefinitionNode node)
+    {
+        if (node.Type is not FunctionType type)
+            return null;
+        return new(node.ContainingSymbol, node.Name, type);
+    }
 
     #region Member Definitions
-    public static partial MethodSymbol MethodDefinition_Symbol(IMethodDefinitionNode node)
-        => new(node.ContainingSymbol, node.Kind, node.Name,
-            node.SelfParameter.ParameterType,
-            node.Parameters.Select(p => p.ParameterType).ToFixedList(),
-            node.Return?.NamedType ?? IType.Void);
+    public static partial MethodSymbol? MethodDefinition_Symbol(IMethodDefinitionNode node)
+    {
+        if (node.ReturnType is not IType returnType)
+            return null;
+        return new(node.ContainingSymbol, node.Kind, node.Name, node.SelfParameterType,
+            node.ParameterTypes, returnType);
+    }
 
     public static partial ConstructorSymbol SourceConstructorDefinition_Symbol(ISourceConstructorDefinitionNode node)
-        => new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType,
-            node.Parameters.Select(p => p.ParameterType).ToFixedList());
+        => new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType, node.ParameterTypes);
 
     public static partial ConstructorSymbol DefaultConstructorDefinition_Symbol(IDefaultConstructorDefinitionNode node)
         => ConstructorSymbol.CreateDefault(node.ContainingSymbol);
 
     public static partial InitializerSymbol SourceInitializerDefinition_Symbol(ISourceInitializerDefinitionNode node)
-        => new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType,
-            node.Parameters.Select(p => p.ParameterType).ToFixedList());
+        => new(node.ContainingSymbol, node.Name, node.SelfParameter.BindingType, node.ParameterTypes);
 
     public static partial InitializerSymbol DefaultInitializerDefinition_Symbol(IDefaultInitializerDefinitionNode node)
         => InitializerSymbol.CreateDefault(node.ContainingSymbol);
@@ -68,8 +72,13 @@ internal static partial class SymbolsAspect
     public static partial FieldSymbol FieldDefinition_Symbol(IFieldDefinitionNode node)
         => new(node.ContainingSymbol, node.Name, node.IsMutableBinding, node.BindingType);
 
-    public static partial FunctionSymbol AssociatedFunctionDefinition_Symbol(IAssociatedFunctionDefinitionNode node)
-        => new(node.ContainingSymbol, node.Name, node.Type);
+    public static partial FunctionSymbol? AssociatedFunctionDefinition_Symbol(IAssociatedFunctionDefinitionNode node)
+    {
+        if (node.Type is not FunctionType type)
+            return null;
+        return new(node.ContainingSymbol, node.Name, type);
+    }
+
     #endregion
 
     #region Attributes

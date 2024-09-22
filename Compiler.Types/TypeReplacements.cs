@@ -76,6 +76,16 @@ internal sealed class TypeReplacements
             _ => throw ExhaustiveMatch.Failed(type)
         };
 
+    public IMaybeType ReplaceTypeParametersIn(IMaybeType type)
+    {
+        return type switch
+        {
+            IType t => ReplaceTypeParametersIn(t),
+            UnknownType _ => type,
+            _ => throw ExhaustiveMatch.Failed(type)
+        };
+    }
+
     public IType ReplaceTypeParametersIn(IType type)
     {
         switch (type)

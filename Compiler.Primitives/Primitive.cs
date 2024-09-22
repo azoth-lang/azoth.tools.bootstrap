@@ -71,7 +71,7 @@ public static class Primitive
     private static void BuildIntegerTypeSymbol(
         SymbolTreeBuilder tree,
         IntegerType integerType,
-        IMaybeExpressionType stringType)
+        IType stringType)
     {
         var type = new PrimitiveTypeSymbol(integerType);
         tree.Add(type);

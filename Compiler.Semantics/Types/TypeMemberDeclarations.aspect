@@ -12,8 +12,10 @@
 = ConcreteFunctionInvocableDefinition.Type;
 
 // ---------- Member Definitions
+= MethodDefinition.SelfParameterType => SelfParameter.ParameterType;
+= MethodDefinition.ReturnType => Return?.NamedType ?? IType.Void;
 = MethodDefinition.↑.Diagnostics;
-= AbstractMethodDefinition.MethodGroupType => Symbol.MethodGroupType;
+= AbstractMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
 
 = ConcreteMethodDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
 = ConcreteMethodDefinition.Parameters[0].**.FlowStateBefore()
@@ -24,9 +26,12 @@
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
 = ConcreteMethodDefinition.Body.**.ExpectedReturnType => Return?.NamedType ?? IType.Void;
 
-= StandardMethodDefinition.MethodGroupType => Symbol.MethodGroupType;
-= StandardMethodDefinition.Body.**.ExpectedType => Self.MethodGroupType.Return;
+= StandardMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
+= StandardMethodDefinition.Body.**.ExpectedType => Self.ReturnType;
 
+= ConstructorDefinition.ReturnType => Symbol.ReturnType;
+= DefaultConstructorDefinition.SelfParameterType => new(false, Symbol.SelfParameterType);
+= SourceConstructorDefinition.SelfParameterType => SelfParameter.ParameterType;
 = SourceConstructorDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
 = SourceConstructorDefinition.Parameters[0].**.FlowStateBefore()
     => SelfParameter.FlowStateAfter;
@@ -36,6 +41,9 @@
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
 = SourceConstructorDefinition.Body.**.ExpectedReturnType => IType.Void;
 
+= InitializerDefinition.ReturnType => Symbol.ReturnType;
+= DefaultInitializerDefinition.SelfParameterType => new(false, Symbol.SelfParameterType);
+= SourceInitializerDefinition.SelfParameterType => SelfParameter.ParameterType;
 = SourceInitializerDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
 = SourceInitializerDefinition.Parameters[0].**.FlowStateBefore()
     => SelfParameter.FlowStateAfter;

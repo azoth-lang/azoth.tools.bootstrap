@@ -31,7 +31,7 @@ public sealed class InitializerSymbol : FunctionOrInitializerSymbol
         Name = initializerName;
         SelfParameterType = selfParameterType;
         ReturnType = (CapabilityType)Return;
-        InitializerGroupType = new FunctionType(parameterTypes, Return);
+        InitializerGroupType = new FunctionType(parameterTypes, ReturnType);
     }
 
     public static InitializerSymbol CreateDefault(UserTypeSymbol containingTypeSymbol)

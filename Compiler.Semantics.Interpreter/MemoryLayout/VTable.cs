@@ -37,7 +37,7 @@ internal class VTable
     private IMethodDefinitionNode? LookupMethod(ITypeDefinitionNode type, MethodSignature signature)
     {
         foreach (var method in type.Members.OfType<IMethodDefinitionNode>())
-            if (methodSignatures[method.Symbol].EqualsOrOverrides(signature))
+            if (methodSignatures[method.Symbol.Assigned()].EqualsOrOverrides(signature))
                 return method;
 
         foreach (var supertypeName in type.AllSupertypeNames)

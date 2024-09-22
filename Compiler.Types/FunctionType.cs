@@ -16,7 +16,7 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
     public static IMaybeFunctionType Create(IEnumerable<ParameterType> parameters, IMaybeExpressionType @return)
     => @return is IExpressionType returnType ? new FunctionType(parameters, returnType) : IType.Unknown;
 
-    public FunctionType(IEnumerable<ParameterType> parameters, IMaybeExpressionType @return)
+    public FunctionType(IEnumerable<ParameterType> parameters, IExpressionType @return)
     {
         Parameters = parameters.ToFixedList();
         Return = @return;
@@ -25,7 +25,8 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
 
     public int Arity => Parameters.Count;
     public IFixedList<ParameterType> Parameters { get; }
-    public IMaybeExpressionType Return { get; }
+    public IExpressionType Return { get; }
+    IMaybeExpressionType IMaybeFunctionType.Return => Return;
 
     public override bool IsFullyKnown { get; }
 

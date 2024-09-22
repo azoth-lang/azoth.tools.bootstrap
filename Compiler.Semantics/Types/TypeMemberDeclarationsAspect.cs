@@ -2,10 +2,8 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
-using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Syntax;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
@@ -13,23 +11,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class TypeMemberDeclarationsAspect
 {
     // TODO maybe this should be moved to definition types aspect?
-    public static partial FunctionType ConcreteFunctionInvocableDefinition_Type(IConcreteFunctionInvocableDefinitionNode node)
-    {
-        var parameterTypes = node.Parameters.Select(p => p.ParameterType).ToFixedList();
-        var returnType = node.Return?.NamedType ?? IType.Void;
-        return new FunctionType(parameterTypes, returnType);
-    }
+    public static partial IMaybeFunctionType ConcreteFunctionInvocableDefinition_Type(IConcreteFunctionInvocableDefinitionNode node)
+        => FunctionType.Create(node.ParameterTypes, node.ReturnType);
 
     public static partial void MethodDefinition_Contribute_Diagnostics(IMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
-        => CheckParameterAndReturnAreVarianceSafe(node, diagnostics);
-
-    private static void CheckParameterAndReturnAreVarianceSafe(IMethodDefinitionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         // TODO do generic methods and functions need to be checked?
 
-        var methodSymbol = node.Symbol;
         // Only methods declared in generic types need checked
-        if (methodSymbol.ContainingSymbol is not UserTypeSymbol { DeclaresType.IsGeneric: true }) return;
+        // TODO what about nesting inside of a generic type?
+        if (!node.ContainingDeclaration.GenericParameters.Any()) return;
 
         var nonwritableSelf = !node.SelfParameter.Capability.Constraint.AnyCapabilityAllowsWrite;
 
@@ -42,7 +33,7 @@ internal static partial class TypeMemberDeclarationsAspect
                 diagnostics.Add(TypeError.ParameterMustBeInputSafe(node.File, parameter.Syntax, (IMaybeType)type));
         }
 
-        var returnType = methodSymbol.Return;
+        var returnType = node.ReturnType;
         if (!returnType.IsOutputSafe(nonwritableSelf))
             diagnostics.Add(TypeError.ReturnTypeMustBeOutputSafe(node.File, node.Return!.Syntax, (IMaybeType)returnType));
     }

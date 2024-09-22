@@ -13,7 +13,7 @@ public interface IMaybeType : IMaybeExpressionType
     /// </summary>
     /// <remarks>There are places where the compiler cannot infer the expression type. This can be
     /// used to force the compiler to use <see cref="IMaybeType"/>.</remarks>
-    public static readonly IMaybeType Unknown = UnknownType.Instance;
+    public new static readonly IMaybeType Unknown = UnknownType.Instance;
     #endregion
 
     public new IMaybeAntetype ToAntetype();

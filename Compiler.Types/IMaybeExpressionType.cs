@@ -7,6 +7,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 [Closed(typeof(IExpressionType), typeof(IMaybeType))]
 public interface IMaybeExpressionType : IMaybePseudotype
 {
+    #region Standard Types
+    /// <summary>
+    /// The unknown type as <see cref="IMaybeExpressionType"/>.
+    /// </summary>
+    /// <remarks>There are places where the compiler cannot infer the expression type. This can be
+    /// used to force the compiler to use <see cref="IMaybeExpressionType"/>.</remarks>
+    public static readonly IMaybeExpressionType Unknown = UnknownType.Instance;
+    #endregion
+
     bool AllowsVariance { get; }
 
     bool HasIndependentTypeArguments { get; }

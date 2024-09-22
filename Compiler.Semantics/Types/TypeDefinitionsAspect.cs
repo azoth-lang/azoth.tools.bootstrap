@@ -68,7 +68,7 @@ internal static partial class TypeDefinitionsAspect
     private static NamespaceName GetContainingNamespaceName(ITypeMemberDefinitionNode node)
     {
         // TODO correctly deal with containing namespace
-        var containingSymbol = node.ContainingSymbol;
+        var containingSymbol = node.ContainingSymbol!; // Since it is a type or namespace, it will have a symbol
         while (containingSymbol is not NamespaceSymbol) containingSymbol = containingSymbol.ContainingSymbol!;
         var containingNamespaceName = ((NamespaceSymbol)containingSymbol).NamespaceName;
         return containingNamespaceName;
