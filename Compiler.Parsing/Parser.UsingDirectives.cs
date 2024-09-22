@@ -13,7 +13,7 @@ public partial class Parser
 
     public IUsingDirectiveSyntax? AcceptUsingDirective()
     {
-        var accept = Tokens.AcceptToken<IUsingKeywordToken>();
+        var accept = Tokens.AcceptToken<IImportKeywordToken>();
         if (accept is null)
             return null;
         var identifiers = ParseManySeparated<(IIdentifierToken?, TextSpan), IDotToken>(

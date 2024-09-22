@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -52,7 +51,7 @@ public static partial class TokenTypes
         where T : IToken
     {
         var spanParam = Expression.Parameter(typeof(TextSpan), "span");
-        var newExpression = Expression.New(tokenType.GetConstructor(new[] { typeof(TextSpan) })!, spanParam);
+        var newExpression = Expression.New(tokenType.GetConstructor([typeof(TextSpan)])!, spanParam);
         var factory =
             Expression.Lambda<Func<TextSpan, T>>(
                 newExpression, spanParam);

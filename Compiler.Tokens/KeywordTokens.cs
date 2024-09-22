@@ -41,7 +41,7 @@ public static partial class TokenTypes
         typeof(IdKeywordToken),
         typeof(LentKeywordToken),
         typeof(NamespaceKeywordToken),
-        typeof(UsingKeywordToken),
+        typeof(ImportKeywordToken),
         typeof(ForeachKeywordToken),
         typeof(InKeywordToken),
         typeof(IfKeywordToken),
@@ -187,8 +187,8 @@ public static partial class TokenFactory
     public static INamespaceKeywordToken NamespaceKeyword(TextSpan span)
         => new NamespaceKeywordToken(span);
 
-    public static IUsingKeywordToken UsingKeyword(TextSpan span)
-        => new UsingKeywordToken(span);
+    public static IImportKeywordToken ImportKeyword(TextSpan span)
+        => new ImportKeywordToken(span);
 
     public static IForeachKeywordToken ForeachKeyword(TextSpan span)
         => new ForeachKeywordToken(span);
@@ -357,7 +357,7 @@ public static partial class TokenFactory
     typeof(IIdKeywordToken),
     typeof(ILentKeywordToken),
     typeof(INamespaceKeywordToken),
-    typeof(IUsingKeywordToken),
+    typeof(IImportKeywordToken),
     typeof(IForeachKeywordToken),
     typeof(IInKeywordToken),
     typeof(IIfKeywordToken),
@@ -693,10 +693,10 @@ internal partial class NamespaceKeywordToken : Token, INamespaceKeywordToken
     }
 }
 
-public partial interface IUsingKeywordToken : IKeywordToken { }
-internal partial class UsingKeywordToken : Token, IUsingKeywordToken
+public partial interface IImportKeywordToken : IKeywordToken { }
+internal partial class ImportKeywordToken : Token, IImportKeywordToken
 {
-    public UsingKeywordToken(TextSpan span)
+    public ImportKeywordToken(TextSpan span)
         : base(span)
     {
     }

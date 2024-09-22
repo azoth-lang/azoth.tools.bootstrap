@@ -271,7 +271,7 @@ public static class Arbitrary
         { "init", typeof(IInitKeywordToken) },
         //{ "delete", typeof(IDeleteKeywordToken) },
         { "namespace", typeof(INamespaceKeywordToken) },
-        { "using", typeof(IUsingKeywordToken) },
+        { "import", typeof(IImportKeywordToken) },
         { "foreach", typeof(IForeachKeywordToken) },
         { "in", typeof(IInKeywordToken) },
         { "if", typeof(IIfKeywordToken) },

@@ -40,7 +40,7 @@
         "Id",
         "Lent",
         "Namespace",
-        "Using",
+        "Import",
         "Foreach",
         "In",
         "If",
