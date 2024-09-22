@@ -14,5 +14,5 @@ public interface IMaybeFunctionType : IMaybeNonVoidType
     public new static readonly IMaybeFunctionType Unknown = UnknownType.Instance;
     #endregion
 
-    IMaybeExpressionType Return { get; }
+    IMaybeType Return { get; }
 }

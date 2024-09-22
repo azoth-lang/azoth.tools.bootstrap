@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 [Closed(typeof(FunctionSymbol), typeof(InitializerSymbol))]
 public abstract class FunctionOrInitializerSymbol : InvocableSymbol
 {
-    private protected FunctionOrInitializerSymbol(IFixedList<ParameterType> parameters, IExpressionType returnType)
+    private protected FunctionOrInitializerSymbol(IFixedList<ParameterType> parameters, IType returnType)
         : base(parameters, returnType)
     {
     }

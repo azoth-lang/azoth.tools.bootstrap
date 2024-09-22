@@ -4169,7 +4169,7 @@ public partial interface IFunctionSymbolNode : IFunctionDeclarationNode, INamesp
     IFixedList<ParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Type.Parameters;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => (IType)Symbol.Type.Return;
+        => Symbol.Type.Return;
     IMaybeFunctionType IFunctionInvocableDeclarationNode.Type
         => Symbol.Type;
 
@@ -4417,7 +4417,7 @@ public partial interface IMethodSymbolNode : IMethodDeclarationNode, IClassMembe
     IFixedList<ParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.MethodGroupType.Parameters;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => (IType)Symbol.MethodGroupType.Return;
+        => Symbol.MethodGroupType.Return;
 }
 
 // [Closed(typeof(StandardMethodSymbolNode))]
@@ -4534,7 +4534,7 @@ public partial interface IAssociatedFunctionSymbolNode : IAssociatedFunctionDecl
     IFixedList<ParameterType> IInvocableDeclarationNode.ParameterTypes
         => Symbol.Type.Parameters;
     IMaybeType IInvocableDeclarationNode.ReturnType
-        => (IType)Symbol.Type.Return;
+        => Symbol.Type.Return;
 
     public static IAssociatedFunctionSymbolNode Create(
         StandardName name,

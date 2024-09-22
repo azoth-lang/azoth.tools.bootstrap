@@ -72,7 +72,7 @@
 // ---------- Function Symbol Nodes
 ↑ FunctionSymbol.Name: `IdentifierName` => Symbol.Name;
 = FunctionSymbol.ParameterTypes => Symbol.Type.Parameters;
-= FunctionSymbol.ReturnType => (IType)Symbol.Type.Return;
+= FunctionSymbol.ReturnType => Symbol.Type.Return;
 = FunctionSymbol.Type => Symbol.Type;
 
 // ---------- Type Symbol Nodes
@@ -120,7 +120,7 @@
 ↑ MethodSymbol.Name: `IdentifierName` => Symbol.Name;
 = MethodSymbol.SelfParameterType => Symbol.SelfParameterType;
 = MethodSymbol.ParameterTypes => Symbol.MethodGroupType.Parameters;
-= MethodSymbol.ReturnType => (IType)Symbol.MethodGroupType.Return;
+= MethodSymbol.ReturnType => Symbol.MethodGroupType.Return;
 + StandardMethodSymbol.new.Validate;
 = StandardMethodSymbol.Arity => Symbol.Arity;
 = StandardMethodSymbol.MethodGroupType => Symbol.MethodGroupType;
@@ -138,4 +138,4 @@
 = FieldSymbol.BindingType => Symbol.Type;
 = AssociatedFunctionSymbol.Type => Symbol.Type;
 = AssociatedFunctionSymbol.ParameterTypes => Symbol.Type.Parameters;
-= AssociatedFunctionSymbol.ReturnType => (IType)Symbol.Type.Return;
+= AssociatedFunctionSymbol.ReturnType => Symbol.Type.Return;
