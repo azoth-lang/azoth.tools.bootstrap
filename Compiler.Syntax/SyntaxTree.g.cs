@@ -1112,7 +1112,6 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
 }
 
 [Closed(
-    typeof(IAssignableExpressionSyntax),
     typeof(IBlockExpressionSyntax),
     typeof(INewObjectExpressionSyntax),
     typeof(IUnsafeExpressionSyntax),
@@ -1143,15 +1142,6 @@ public partial interface IExpressionSyntax : ICodeSyntax
     string ToGroupedString(OperatorPrecedence surroundingPrecedence)
         => surroundingPrecedence > ExpressionPrecedence ? $"({this})" : ToString();
     OperatorPrecedence ExpressionPrecedence { get; }
-}
-
-[Closed(
-    typeof(IIdentifierNameExpressionSyntax),
-    typeof(IMemberAccessExpressionSyntax),
-    typeof(IMissingNameSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAssignableExpressionSyntax : IExpressionSyntax
-{
 }
 
 // [Closed(typeof(BlockExpressionSyntax))]
@@ -1262,7 +1252,7 @@ public partial interface IStringLiteralExpressionSyntax : ILiteralExpressionSynt
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAssignmentExpressionSyntax : IExpressionSyntax
 {
-    IAssignableExpressionSyntax LeftOperand { get; }
+    IExpressionSyntax LeftOperand { get; }
     AssignmentOperator Operator { get; }
     IExpressionSyntax RightOperand { get; }
     OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
@@ -1270,7 +1260,7 @@ public partial interface IAssignmentExpressionSyntax : IExpressionSyntax
 
     public static IAssignmentExpressionSyntax Create(
         TextSpan span,
-        IAssignableExpressionSyntax leftOperand,
+        IExpressionSyntax leftOperand,
         AssignmentOperator @operator,
         IExpressionSyntax rightOperand)
         => new AssignmentExpressionSyntax(span, leftOperand, @operator, rightOperand);
@@ -1518,7 +1508,7 @@ public partial interface IStandardNameExpressionSyntax : INameExpressionSyntax
 
 // [Closed(typeof(IdentifierNameExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressionSyntax, ISimpleNameSyntax, IAssignableExpressionSyntax
+public partial interface IIdentifierNameExpressionSyntax : IStandardNameExpressionSyntax, ISimpleNameSyntax
 {
     new IdentifierName Name { get; }
     StandardName IStandardNameExpressionSyntax.Name => Name;
@@ -1577,7 +1567,7 @@ public partial interface ISelfExpressionSyntax : INameExpressionSyntax, IInstanc
 
 // [Closed(typeof(MemberAccessExpressionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, IAssignableExpressionSyntax
+public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax
 {
     IExpressionSyntax Context { get; }
     StandardName MemberName { get; }
@@ -1595,7 +1585,7 @@ public partial interface IMemberAccessExpressionSyntax : INameExpressionSyntax, 
 
 // [Closed(typeof(MissingNameSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMissingNameSyntax : ISimpleNameSyntax, IAssignableExpressionSyntax
+public partial interface IMissingNameSyntax : ISimpleNameSyntax
 {
 
     public static IMissingNameSyntax Create(TextSpan span)
@@ -3071,7 +3061,7 @@ file class AssignmentExpressionSyntax : IAssignmentExpressionSyntax
     private IAssignmentExpressionSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
-    public IAssignableExpressionSyntax LeftOperand { [DebuggerStepThrough] get; }
+    public IExpressionSyntax LeftOperand { [DebuggerStepThrough] get; }
     public AssignmentOperator Operator { [DebuggerStepThrough] get; }
     public IExpressionSyntax RightOperand { [DebuggerStepThrough] get; }
     public override string ToString()
@@ -3079,7 +3069,7 @@ file class AssignmentExpressionSyntax : IAssignmentExpressionSyntax
 
     public AssignmentExpressionSyntax(
         TextSpan span,
-        IAssignableExpressionSyntax leftOperand,
+        IExpressionSyntax leftOperand,
         AssignmentOperator @operator,
         IExpressionSyntax rightOperand)
     {

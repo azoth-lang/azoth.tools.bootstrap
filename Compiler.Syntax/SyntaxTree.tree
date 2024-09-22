@@ -164,7 +164,6 @@ OptionalPattern <: OptionalOrBindingPattern = Pattern:OptionalOrBindingPattern;
 
 // ---------- Expressions
 Expression <: Code;
-AssignableExpression <: Expression;
 
 /// A block expression. Not to be used to represent function or type bodies.
 BlockExpression <: Expression, BlockOrResult, BodyOrBlock = Statements:Statement*;
@@ -187,7 +186,7 @@ NoneLiteralExpression <: LiteralExpression;
 StringLiteralExpression <: LiteralExpression = Value:`string`;
 
 // ---------- Operator Expressions
-AssignmentExpression <: Expression = LeftOperand:AssignableExpression Operator:`AssignmentOperator` RightOperand:Expression;
+AssignmentExpression <: Expression = LeftOperand:Expression Operator:`AssignmentOperator` RightOperand:Expression;
 BinaryOperatorExpression <: Expression = LeftOperand:Expression Operator:`BinaryOperator` RightOperand:Expression;
 UnaryOperatorExpression <: Expression = Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:Expression;
 IdExpression <: Expression = Referent:Expression;
@@ -211,15 +210,15 @@ InvocationExpression <: Expression = Expression Arguments:Expression*;
 NameExpression <: Expression;
 SimpleName <: NameExpression;
 StandardNameExpression <: NameExpression = Name:`StandardName`;
-IdentifierNameExpression <: NameExpression, StandardNameExpression, SimpleName, AssignableExpression
+IdentifierNameExpression <: NameExpression, StandardNameExpression, SimpleName
     = Name:`IdentifierName`;
 SpecialTypeNameExpression <: NameExpression, Expression = Name:`SpecialTypeName`;
 GenericNameExpression <: NameExpression, StandardNameExpression = Name:`GenericName` TypeArguments:Type*;
 InstanceExpression <: SimpleName; // i.e. `self` or `base`
 SelfExpression <: NameExpression, InstanceExpression = IsImplicit:`bool`;
-MemberAccessExpression <: NameExpression, AssignableExpression
+MemberAccessExpression <: NameExpression
     = Context:Expression MemberName:`StandardName` TypeArguments:Type* MemberNameSpan:`TextSpan`;
-MissingName <: NameExpression, SimpleName, AssignableExpression;
+MissingName <: NameExpression, SimpleName;
 
 // ---------- Capability Expressions
 /// i.e. `move name`. A move takes ownership of something from a variable.

@@ -74,12 +74,6 @@ internal static class ParseError
             2009, "Self parameter must be the first parameter.");
     }
 
-    public static Diagnostic CantAssignIntoExpression(CodeFile file, in TextSpan span)
-    {
-        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,
-            2010, "Expression can not appear on the left hand side of an assignment.");
-    }
-
     public static Diagnostic MissingType(CodeFile file, in TextSpan span)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Parsing,

@@ -56,15 +56,9 @@ public partial class Parser
                     {
                         var assignmentOperator = BuildAssignmentOperator(Tokens.ConsumeToken<IAssignmentOperatorToken>());
                         var rightOperand = ParseExpression();
-                        if (expression is IAssignableExpressionSyntax assignableExpression)
-                        {
-                            var span = TextSpan.Covering(assignableExpression.Span, rightOperand.Span);
-                            expression = IAssignmentExpressionSyntax.Create(span, assignableExpression,
-                                assignmentOperator, rightOperand);
-                        }
-                        else
-                            // Can't assign expression, so it is just the right hand side of the assignment
-                            Add(ParseError.CantAssignIntoExpression(File, expression.Span));
+                        var span = TextSpan.Covering(expression.Span, rightOperand.Span);
+                        expression = IAssignmentExpressionSyntax.Create(span, expression,
+                            assignmentOperator, rightOperand);
                         continue;
                     }
                     break;

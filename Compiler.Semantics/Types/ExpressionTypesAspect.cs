@@ -473,16 +473,26 @@ internal static partial class ExpressionTypesAspect
 
     public static partial void AssignmentExpression_Contribute_Diagnostics(IAssignmentExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.LeftOperand is IFieldAccessExpressionNode fieldAccess)
+        switch (node.LeftOperand)
         {
-            var contextType = fieldAccess.Context.Type;
-            if (contextType is CapabilityType { AllowsWrite: false, AllowsInit: false } capabilityType)
-                diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(node.File, node.Syntax.Span, capabilityType));
+            case IFieldAccessExpressionNode fieldAccess:
+            {
+                var contextType = fieldAccess.Context.Type;
+                if (contextType is CapabilityType { AllowsWrite: false, AllowsInit: false } capabilityType)
+                    diagnostics.Add(TypeError.CannotAssignFieldOfReadOnly(node.File, node.Syntax.Span, capabilityType));
 
-            // Check for assigning into `let` fields (skip self fields in constructors and initializers)
-            if (contextType is not CapabilityType { AllowsInit: true } && fieldAccess.ReferencedDeclaration.Symbol is
-                { IsMutableBinding: false, Name: IdentifierName name })
-                diagnostics.Add(OtherSemanticError.CannotAssignImmutableField(node.File, node.Syntax.Span, name));
+                // Check for assigning into `let` fields (skip self fields in constructors and initializers)
+                if (contextType is not CapabilityType { AllowsInit: true } && fieldAccess.ReferencedDeclaration.Symbol is
+                    { IsMutableBinding: false, Name: IdentifierName name })
+                    diagnostics.Add(OtherSemanticError.CannotAssignImmutableField(node.File, node.Syntax.Span, name));
+                break;
+            }
+            case IVariableNameExpressionNode:
+                // TODO fix this condition. It is really about LValues
+                break;
+            default:
+                diagnostics.Add(OtherSemanticError.CantAssignIntoExpression(node.File, node.TempLeftOperand.Syntax.Span));
+                break;
         }
 
         if (node is { LeftOperand: { } leftOperand, RightOperand: { } rightOperand })

@@ -443,7 +443,9 @@ internal static class SyntaxBinder
         => syntax switch
         {
             null => null,
-            IAssignableExpressionSyntax syn => AssignableExpression(syn),
+            IIdentifierNameExpressionSyntax syn => IdentifierNameExpression(syn),
+            IMemberAccessExpressionSyntax syn => MemberAccessExpression(syn),
+            IMissingNameSyntax syn => MissingName(syn),
             IBlockExpressionSyntax syn => BlockExpression(syn),
             INewObjectExpressionSyntax syn => NewObjectExpression(syn),
             IUnsafeExpressionSyntax syn => UnsafeExpression(syn),
@@ -470,15 +472,6 @@ internal static class SyntaxBinder
             IAwaitExpressionSyntax syn => AwaitExpression(syn),
             ISpecialTypeNameExpressionSyntax syn => SpecialTypeNameExpression(syn),
             IGenericNameExpressionSyntax syn => GenericNameExpression(syn),
-            _ => throw ExhaustiveMatch.Failed(syntax)
-        };
-
-    private static IAmbiguousExpressionNode AssignableExpression(IAssignableExpressionSyntax syntax)
-        => syntax switch
-        {
-            IIdentifierNameExpressionSyntax syn => IdentifierNameExpression(syn),
-            IMemberAccessExpressionSyntax syn => MemberAccessExpression(syn),
-            IMissingNameSyntax syn => MissingName(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
@@ -518,7 +511,7 @@ internal static class SyntaxBinder
 
     #region Operator Expressions
     private static IAssignmentExpressionNode AssignmentExpression(IAssignmentExpressionSyntax syntax)
-        => IAssignmentExpressionNode.Create(syntax, AssignableExpression(syntax.LeftOperand), Expression(syntax.RightOperand));
+        => IAssignmentExpressionNode.Create(syntax, Expression(syntax.LeftOperand), Expression(syntax.RightOperand));
 
     private static IBinaryOperatorExpressionNode BinaryOperatorExpression(IBinaryOperatorExpressionSyntax syntax)
         => IBinaryOperatorExpressionNode.Create(syntax, Expression(syntax.LeftOperand), Expression(syntax.RightOperand));

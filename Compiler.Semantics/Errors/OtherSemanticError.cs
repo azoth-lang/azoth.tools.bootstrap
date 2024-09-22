@@ -124,4 +124,10 @@ public static class OtherSemanticError
         return new(file, returnExpression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
             6020, "Cannot return from a field initializer.");
     }
+
+    public static Diagnostic CantAssignIntoExpression(CodeFile file, in TextSpan span)
+    {
+        return new(file, span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,
+            6021, "Expression can not appear on the left hand side of an assignment.");
+    }
 }
