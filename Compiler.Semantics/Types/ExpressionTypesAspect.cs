@@ -554,7 +554,8 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeExpressionType IfExpression_Type(IIfExpressionNode node)
     {
-        if (node.ElseClause is null) return node.ThenBlock.Type.ToNonConstValueType().MakeOptional();
+        if (node.ElseClause is null)
+            return OptionalType.Create(node.ThenBlock.Type.ToNonConstValueType());
 
         // TODO unify with else clause
         return node.ThenBlock.Type;
@@ -635,7 +636,7 @@ internal static partial class ExpressionTypesAspect
     {
         var convertToType = node.ConvertToType.NamedType;
         if (node.Operator == ConversionOperator.Optional)
-            convertToType = convertToType.MakeOptional();
+            convertToType = OptionalType.Create(convertToType);
         return convertToType;
     }
 

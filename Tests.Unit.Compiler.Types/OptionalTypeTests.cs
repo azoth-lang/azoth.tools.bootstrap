@@ -16,12 +16,6 @@ public class OptionalTypeTests
     }
 
     [Fact]
-    public void Cannot_have_optional_void_type()
-    {
-        Assert.Throws<ArgumentException>(() => new OptionalType(IType.Void));
-    }
-
-    [Fact]
     public void With_equal_referent_are_equal()
     {
         var type1 = new OptionalType(CapabilityType.CreateClass(Mutable, "Package", Namespace("foo", "bar"), false, false, "Baz"));

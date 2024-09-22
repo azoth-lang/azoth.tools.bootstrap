@@ -87,14 +87,12 @@ internal sealed class TypeReplacements
         };
 
     public IMaybeType ReplaceTypeParametersIn(IMaybeType type)
-    {
-        return type switch
+        => type switch
         {
             IType t => ReplaceTypeParametersIn(t),
             UnknownType _ => type,
             _ => throw ExhaustiveMatch.Failed(type)
         };
-    }
 
     public IType ReplaceTypeParametersIn(IType type)
     {
@@ -111,7 +109,10 @@ internal sealed class TypeReplacements
             {
                 var replacementType = ReplaceTypeParametersIn(optionalType.Referent);
                 if (!ReferenceEquals(optionalType.Referent, replacementType))
-                    return OptionalType.Create(replacementType);
+                    return replacementType is INonVoidType nonVoidType
+                        ? OptionalType.Create(nonVoidType)
+                        // Optional of void is not allowed. Instead, just produce void.
+                        : IType.Void;
                 break;
             }
             case GenericParameterType genericParameterType:

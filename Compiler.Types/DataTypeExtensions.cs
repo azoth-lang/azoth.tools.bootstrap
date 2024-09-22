@@ -254,13 +254,19 @@ public static class DataTypeExtensions
             ({ IsFullyKnown: false }, _) => IType.Unknown,
             (_, { IsFullyKnown: false }) => IType.Unknown,
             (OptionalType { Referent: var left }, OptionalType { Referent: var right })
-                => left.NumericOperatorCommonType(right)?.MakeOptional(),
-            (OptionalType { Referent: var left }, _) => left.NumericOperatorCommonType(rightType)?.MakeOptional(),
-            (_, OptionalType { Referent: var right }) => leftType.NumericOperatorCommonType(right)?.MakeOptional(),
+                => left.OptionalNumericOperatorCommonType(right),
+            (OptionalType { Referent: var left }, _) => left.OptionalNumericOperatorCommonType(rightType),
+            (_, OptionalType { Referent: var right }) => leftType.OptionalNumericOperatorCommonType(right),
             (NonEmptyType left, NonEmptyType right)
                 => left.AsNumericType()?.NumericOperatorCommonType(right.AsNumericType()),
             _ => null,
         };
+
+    private static IMaybeType? OptionalNumericOperatorCommonType(this IMaybeExpressionType leftType, IMaybeExpressionType rightType)
+    {
+        var commonType = leftType.NumericOperatorCommonType(rightType);
+        return commonType is not null ? OptionalType.Create(commonType) : null;
+    }
 
     /// <summary>
     /// Determine what the common type for two numeric types for a numeric operator is.

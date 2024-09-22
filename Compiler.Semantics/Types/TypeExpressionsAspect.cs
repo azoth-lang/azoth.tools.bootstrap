@@ -32,7 +32,7 @@ internal static partial class TypeExpressionsAspect
     }
 
     public static partial IMaybeType OptionalType_NamedType(IOptionalTypeNode node)
-        => node.Referent.NamedType.MakeOptional();
+        => OptionalType.Create(node.Referent.NamedType);
 
     public static partial IMaybeType FunctionType_NamedType(IFunctionTypeNode node)
         => FunctionType.Create(node.Parameters.Select(p => p.Parameter), node.Return.NamedType);

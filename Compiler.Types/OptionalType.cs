@@ -15,18 +15,35 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// </summary>
 public sealed class OptionalType : NonEmptyType, INonVoidType
 {
-    public static IMaybeExpressionType Create(IMaybeType referent)
+    /// <summary>
+    /// Create an optional type for the given type (i.e. `T?` given `T`).
+    /// </summary>
+    /// <remarks>Unknown and void types are not changed.</remarks>
+    public static IMaybeType Create(IMaybeType referent)
         => referent switch
         {
-            IType t => new OptionalType(t),
+            INonVoidType t => new OptionalType(t),
+            UnknownType _ => IType.Unknown,
+            VoidType _ => IType.Void,
+            _ => throw ExhaustiveMatch.Failed(referent),
+        };
+
+    /// <summary>
+    /// Create an optional type for the given type (i.e. `T?` given `T`).
+    /// </summary>
+    /// <remarks>Unknown type produces unknown type.</remarks>
+    public static IMaybeNonVoidType Create(IMaybeNonVoidType referent)
+        => referent switch
+        {
+            INonVoidType t => new OptionalType(t),
             UnknownType _ => IType.Unknown,
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
-    public static OptionalType Create(IType referent)
+    public static OptionalType Create(INonVoidType referent)
         => new OptionalType(referent);
 
-    public IType Referent { get; }
+    public INonVoidType Referent { get; }
 
     public override bool AllowsVariance => true;
 
@@ -36,10 +53,8 @@ public sealed class OptionalType : NonEmptyType, INonVoidType
 
     private bool ReferentRequiresParens => Referent is FunctionType or ViewpointType;
 
-    public OptionalType(IType referent)
+    public OptionalType(INonVoidType referent)
     {
-        if (referent is VoidType)
-            throw new ArgumentException("Cannot create `void?` type", nameof(referent));
         Referent = referent;
     }
 
