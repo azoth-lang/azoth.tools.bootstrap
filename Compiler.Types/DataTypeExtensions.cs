@@ -251,8 +251,8 @@ public static class DataTypeExtensions
         {
             (_, NeverType) => IType.Never,
             (NeverType, _) => IType.Never,
-            ({ IsFullyKnown: false }, _) => IType.Unknown,
-            (_, { IsFullyKnown: false }) => IType.Unknown,
+            (UnknownType, _) => IType.Unknown,
+            (_, UnknownType) => IType.Unknown,
             (OptionalType { Referent: var left }, OptionalType { Referent: var right })
                 => left.OptionalNumericOperatorCommonType(right),
             (OptionalType { Referent: var left }, _) => left.OptionalNumericOperatorCommonType(rightType),

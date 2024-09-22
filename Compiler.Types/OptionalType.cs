@@ -49,8 +49,6 @@ public sealed class OptionalType : NonEmptyType, INonVoidType
 
     public override bool HasIndependentTypeArguments => Referent.HasIndependentTypeArguments;
 
-    public override bool IsFullyKnown => Referent.IsFullyKnown;
-
     private bool ReferentRequiresParens => Referent is FunctionType or ViewpointType;
 
     public OptionalType(INonVoidType referent)

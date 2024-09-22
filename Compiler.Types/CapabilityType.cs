@@ -101,8 +101,6 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
 
     public IFixedSet<BareReferenceType> Supertypes => BareType.Supertypes;
 
-    public sealed override bool IsFullyKnown => BareType.IsFullyKnown;
-
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as
     /// `const`.

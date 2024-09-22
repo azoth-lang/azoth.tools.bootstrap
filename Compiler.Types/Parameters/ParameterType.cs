@@ -21,8 +21,6 @@ public record class ParameterType(bool IsLent, IType Type) : IMaybeParameterType
 
     IMaybeType IMaybeParameterType.Type => Type;
 
-    public bool IsFullyKnown => Type.IsFullyKnown;
-
     public bool CanOverride(ParameterType baseParameter)
         => (!baseParameter.IsLent || IsLent) && Type.IsAssignableFrom(baseParameter.Type);
 

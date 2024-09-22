@@ -21,8 +21,6 @@ public sealed class GenericParameterType : NonEmptyType, INonVoidType
 
     public IdentifierName Name => Parameter.Name;
 
-    public override bool IsFullyKnown => true;
-
     internal GenericParameterType(IDeclaredUserType declaringType, GenericParameter parameter)
     {
         DeclaringType = declaringType;

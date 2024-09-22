@@ -50,8 +50,6 @@ public abstract class BareType : IEquatable<BareType>
     private readonly Lazy<IFixedSet<BareReferenceType>> supertypes;
     public IFixedSet<BareReferenceType> Supertypes => supertypes.Value;
 
-    public bool IsFullyKnown { [DebuggerStepThrough] get; }
-
     /// <summary>
     /// Whether this type was declared `const` meaning that most references should be treated as
     /// const.
@@ -81,7 +79,6 @@ public abstract class BareType : IEquatable<BareType>
             || GenericTypeArguments.Any(a => a.AllowsVariance);
         HasIndependentTypeArguments = declaredType.HasIndependentGenericParameters
                                       || GenericTypeArguments.Any(a => a.HasIndependentTypeArguments);
-        IsFullyKnown = genericTypeArguments.All(a => a.IsFullyKnown);
 
         typeReplacements = new(GetTypeReplacements);
         supertypes = new(GetSupertypes);

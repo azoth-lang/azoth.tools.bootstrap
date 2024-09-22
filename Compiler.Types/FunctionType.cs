@@ -26,15 +26,12 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
     {
         Parameters = parameters.ToFixedList();
         Return = @return;
-        IsFullyKnown = Parameters.All(p => p.IsFullyKnown) && @return.IsFullyKnown;
     }
 
     public int Arity => Parameters.Count;
     public IFixedList<ParameterType> Parameters { get; }
     public IType Return { get; }
     IMaybeType IMaybeFunctionType.Return => Return;
-
-    public override bool IsFullyKnown { get; }
 
     public override IType AccessedVia(ICapabilityConstraint capability)
         => this;

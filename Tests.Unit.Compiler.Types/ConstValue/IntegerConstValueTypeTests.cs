@@ -7,14 +7,6 @@ namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.ConstValue;
 [Trait("Category", "Types")]
 public class IntegerConstValueTypeTests
 {
-    [Fact]
-    public void Is_known_type()
-    {
-        var type = new IntegerConstValueType(1);
-
-        Assert.True(type.IsFullyKnown);
-    }
-
     [Theory]
     [InlineData(-23)]
     [InlineData(-1)]

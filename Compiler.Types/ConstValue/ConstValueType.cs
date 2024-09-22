@@ -16,8 +16,6 @@ public abstract class ConstValueType : NonEmptyType, IExpressionType
 
     public virtual bool IsTypeOfConstValue => true;
 
-    public override bool IsFullyKnown => true;
-
     private protected ConstValueType(SpecialTypeName name)
     {
         Name = name;

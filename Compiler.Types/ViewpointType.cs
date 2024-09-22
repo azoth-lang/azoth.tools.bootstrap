@@ -11,8 +11,6 @@ public abstract class ViewpointType : NonEmptyType, INonVoidType
 
     public abstract IExpressionType Referent { get; }
 
-    public override bool IsFullyKnown => Referent.IsFullyKnown;
-
     private protected ViewpointType() { }
 
     public sealed override IMaybeExpressionAntetype ToAntetype() => Referent.ToAntetype();

@@ -9,8 +9,6 @@ public sealed class CapabilityTypeConstraint : IPseudotype
 {
     public BareType BareType { get; }
 
-    public bool IsFullyKnown => BareType.IsFullyKnown;
-
     public CapabilitySet Capability { get; }
 
     public CapabilityTypeConstraint(CapabilitySet capability, BareType bareType)

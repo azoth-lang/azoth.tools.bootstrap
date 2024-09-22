@@ -8,11 +8,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 public interface IMaybePseudotype : IEquatable<IMaybePseudotype>
 {
     /// <summary>
-    /// A known type is one that has no unknown parts.
-    /// </summary>
-    bool IsFullyKnown { get; }
-
-    /// <summary>
     /// Convert this type to the equivalent antetype.
     /// </summary>
     IMaybeExpressionAntetype ToAntetype();

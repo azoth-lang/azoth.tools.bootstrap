@@ -29,11 +29,6 @@ public abstract class NonEmptyType : IExpressionType
     public virtual bool HasIndependentTypeArguments => false;
 
     /// <summary>
-    /// A known type is one that has no unknown parts.
-    /// </summary>
-    public abstract bool IsFullyKnown { get; }
-
-    /// <summary>
     /// Replace any <see cref="GenericParameterType"/> from this type that appear in the given type
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
