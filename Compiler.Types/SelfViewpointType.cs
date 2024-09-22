@@ -14,23 +14,15 @@ public sealed class SelfViewpointType : ViewpointType
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
-    public static IMaybeExpressionType Create(CapabilitySet capability, IMaybeExpressionType referent)
-        => referent switch
-        {
-            IExpressionType t => new SelfViewpointType(capability, t),
-            UnknownType _ => IType.Unknown,
-            _ => throw ExhaustiveMatch.Failed(referent),
-        };
-
-    public static IType Create(CapabilitySet capability, IExpressionType referent)
+    public static IType Create(CapabilitySet capability, IType referent)
         => new SelfViewpointType(capability, referent);
 
     public override CapabilitySet Capability { get; }
 
-    public override IExpressionType Referent { get; }
+    public override IType Referent { get; }
 
     // TODO do not allow self viewpoint of constant value types
-    public SelfViewpointType(CapabilitySet capability, IExpressionType referent)
+    public SelfViewpointType(CapabilitySet capability, IType referent)
     {
         Capability = capability;
         Referent = referent;
