@@ -6,18 +6,18 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 
 /// <summary>
-/// A scope created by a collection of using directives.
+/// A scope created by a collection of import directives.
 /// </summary>
-public sealed class UsingDirectivesScope : NamespaceSearchScope
+public sealed class ImportDirectivesScope : NamespaceSearchScope
 {
     private readonly NamespaceScope parent;
-    private readonly IFixedSet<NamespaceScope> usingScopes;
+    private readonly IFixedSet<NamespaceScope> importScopes;
     public override PackageNameScope PackageNames => parent.PackageNames;
 
-    internal UsingDirectivesScope(NamespaceScope parent, IEnumerable<NamespaceScope> usingScopes)
+    internal ImportDirectivesScope(NamespaceScope parent, IEnumerable<NamespaceScope> importScopes)
     {
         this.parent = parent;
-        this.usingScopes = usingScopes.ToFixedSet();
+        this.importScopes = importScopes.ToFixedSet();
     }
 
     public override NamespaceScope? GetChildNamespaceScope(IdentifierName namespaceName)
@@ -31,6 +31,6 @@ public sealed class UsingDirectivesScope : NamespaceSearchScope
     }
 
     public override IEnumerable<IDeclarationNode> Lookup(StandardName name)
-        => usingScopes.SelectMany(s => s.LookupInNamespaceOnly(name))
+        => importScopes.SelectMany(s => s.LookupInNamespaceOnly(name))
                       .FallbackIfEmpty(() => parent.Lookup(name));
 }

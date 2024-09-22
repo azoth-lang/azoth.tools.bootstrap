@@ -60,9 +60,9 @@ FacetMemberDefinition <: NamespaceBlockMemberDefinition, NamespaceMemberDefiniti
 Code <: Child = Syntax:`ICodeSyntax`?;
 
 CompilationUnit <: Code = Syntax:`ICompilationUnitSyntax`
-    UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*;
+    ImportDirectives:ImportDirective* Definitions:NamespaceBlockMemberDefinition*;
 
-UsingDirective <: Code = Syntax:`IImportDirectiveSyntax`;
+ImportDirective <: Code = Syntax:`IImportDirectiveSyntax`;
 
 // ---------- Definitions
 Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`?;
@@ -76,7 +76,7 @@ ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition, FunctionInvo
 
 // ---------- Namespace Definitions
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition = Syntax:`INamespaceBlockDefinitionSyntax`
-    UsingDirectives:UsingDirective* Members:NamespaceBlockMemberDefinition*;
+    ImportDirectives:ImportDirective* Members:NamespaceBlockMemberDefinition*;
 NamespaceBlockMemberDefinition <: Definition;
 NamespaceDefinition <: NamespaceMemberDefinition, NamespaceDeclaration
     = Symbol:`NamespaceSymbol` MemberNamespaces:NamespaceDefinition* PackageMembers:`IFacetMemberDefinitionNode`*;

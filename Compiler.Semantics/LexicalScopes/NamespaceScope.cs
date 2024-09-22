@@ -33,9 +33,9 @@ public sealed class NamespaceScope : NamespaceSearchScope
     }
 
     /// <summary>
-    /// Create a child namespace scope that is nested inside a scope with using directives.
+    /// Create a child namespace scope that is nested inside a scope with import directives.
     /// </summary>
-    internal NamespaceScope(UsingDirectivesScope parent, NamespaceScope copyFromScope)
+    internal NamespaceScope(ImportDirectivesScope parent, NamespaceScope copyFromScope)
     {
         this.parent = parent;
         PackageNames = parent.PackageNames;

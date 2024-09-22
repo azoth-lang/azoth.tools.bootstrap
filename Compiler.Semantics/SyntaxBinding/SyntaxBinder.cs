@@ -55,8 +55,8 @@ internal static class SyntaxBinder
         => syntax.Select(syn => ICompilationUnitNode.Create(syn, ImportDirectives(syn.ImportDirectives),
             NamespaceMemberDefinitions(syn.Definitions)));
 
-    private static IEnumerable<IUsingDirectiveNode> ImportDirectives(IEnumerable<IImportDirectiveSyntax> syntax)
-        => syntax.Select(IUsingDirectiveNode.Create);
+    private static IEnumerable<IImportDirectiveNode> ImportDirectives(IEnumerable<IImportDirectiveSyntax> syntax)
+        => syntax.Select(IImportDirectiveNode.Create);
     #endregion
 
     #region Namespace Declarations

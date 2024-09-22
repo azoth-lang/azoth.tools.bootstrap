@@ -20,15 +20,15 @@ internal static partial class LexicalScopingAspect
             node.PrimitivesDeclarations);
 
     public static partial NamespaceSearchScope CompilationUnit_LexicalScope(ICompilationUnitNode node)
-        => BuildNamespaceScope(node.ContainingLexicalScope, node.ImplicitNamespaceName, node.UsingDirectives);
+        => BuildNamespaceScope(node.ContainingLexicalScope, node.ImplicitNamespaceName, node.ImportDirectives);
 
     private static NamespaceSearchScope BuildNamespaceScope(
         NamespaceSearchScope containingLexicalScope,
         NamespaceName namespaceName,
-        IFixedList<IUsingDirectiveNode> usingDirectives)
+        IFixedList<IImportDirectiveNode> importDirectives)
     {
         var namespaceScope = GetNamespaceScope(containingLexicalScope, namespaceName);
-        var lexicalScope = BuildUsingDirectivesScope(namespaceScope, usingDirectives);
+        var lexicalScope = BuildImportDirectivesScope(namespaceScope, importDirectives);
         return lexicalScope;
     }
 
@@ -44,18 +44,18 @@ internal static partial class LexicalScopingAspect
         return (NamespaceScope)lexicalScope;
     }
 
-    private static NamespaceSearchScope BuildUsingDirectivesScope(
+    private static NamespaceSearchScope BuildImportDirectivesScope(
         NamespaceScope containingScope,
-        IFixedList<IUsingDirectiveNode> usingDirectives)
+        IFixedList<IImportDirectiveNode> importDirectives)
     {
-        if (!usingDirectives.Any()) return containingScope;
+        if (!importDirectives.Any()) return containingScope;
 
         var globalScope = containingScope.PackageNames.UsingGlobalScope;
         // TODO put a NamespaceScope attribute on the using directive node for this
-        // TODO report an error if the using directive refers to a namespace that doesn't exist
-        var namespaceScopes = usingDirectives.Select(d => GetNamespaceScope(globalScope, d.Name));
+        // TODO report an error if the import directive refers to a namespace that doesn't exist
+        var namespaceScopes = importDirectives.Select(d => GetNamespaceScope(globalScope, d.Name));
 
-        return new UsingDirectivesScope(containingScope, namespaceScopes);
+        return new ImportDirectivesScope(containingScope, namespaceScopes);
     }
 
     public static partial NamespaceSearchScope NamespaceBlockDefinition_LexicalScope(INamespaceBlockDefinitionNode node)
@@ -63,7 +63,7 @@ internal static partial class LexicalScopingAspect
         var containingLexicalScope = node.ContainingLexicalScope;
         if (node.IsGlobalQualified)
             containingLexicalScope = containingLexicalScope.PackageNames.PackageGlobalScope;
-        return BuildNamespaceScope(containingLexicalScope, node.DeclaredNames, node.UsingDirectives);
+        return BuildNamespaceScope(containingLexicalScope, node.DeclaredNames, node.ImportDirectives);
     }
 
     public static partial LexicalScope TypeDefinition_SupertypesLexicalScope(ITypeDefinitionNode node)

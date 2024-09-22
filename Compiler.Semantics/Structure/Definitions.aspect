@@ -34,7 +34,7 @@
 = CompilationUnit.↑.Diagnostics;
 ↑ CompilationUnit.ImplicitNamespaceName: `NamespaceName` => Syntax.ImplicitNamespaceName;
 ↑ CompilationUnit.ImplicitNamespaceSymbol: `NamespaceSymbol` => ImplicitNamespace.Symbol;
-↑ UsingDirective.Name:`NamespaceName` => Syntax.Name;
+↑ ImportDirective.Name:`NamespaceName` => Syntax.Name;
 
 // ---------- Namespace Definitions
 ↑ NamespaceBlockDefinition.DeclaredNames: `NamespaceName` => Syntax.DeclaredNames;

@@ -259,7 +259,7 @@ public partial interface IFacetMemberDefinitionNode : INamespaceBlockMemberDefin
     typeof(IBodyOrBlockNode),
     typeof(IBindingNode),
     typeof(ICompilationUnitNode),
-    typeof(IUsingDirectiveNode),
+    typeof(IImportDirectiveNode),
     typeof(IDefinitionNode),
     typeof(IGenericParameterNode),
     typeof(IAttributeNode),
@@ -284,7 +284,7 @@ public partial interface ICompilationUnitNode : ICodeNode
     new ICompilationUnitSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
+    IFixedList<IImportDirectiveNode> ImportDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { get; }
     NamespaceScope ContainingLexicalScope { get; }
     NamespaceSearchScope LexicalScope { get; }
@@ -303,14 +303,14 @@ public partial interface ICompilationUnitNode : ICodeNode
 
     public static ICompilationUnitNode Create(
         ICompilationUnitSyntax syntax,
-        IEnumerable<IUsingDirectiveNode> usingDirectives,
+        IEnumerable<IImportDirectiveNode> importDirectives,
         IEnumerable<INamespaceBlockMemberDefinitionNode> definitions)
-        => new CompilationUnitNode(syntax, usingDirectives, definitions);
+        => new CompilationUnitNode(syntax, importDirectives, definitions);
 }
 
-// [Closed(typeof(UsingDirectiveNode))]
+// [Closed(typeof(ImportDirectiveNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUsingDirectiveNode : ICodeNode
+public partial interface IImportDirectiveNode : ICodeNode
 {
     new IImportDirectiveSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
@@ -318,8 +318,8 @@ public partial interface IUsingDirectiveNode : ICodeNode
     NamespaceName Name
         => Syntax.Name;
 
-    public static IUsingDirectiveNode Create(IImportDirectiveSyntax syntax)
-        => new UsingDirectiveNode(syntax);
+    public static IImportDirectiveNode Create(IImportDirectiveSyntax syntax)
+        => new ImportDirectiveNode(syntax);
 }
 
 [Closed(
@@ -405,7 +405,7 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IFixedList<IUsingDirectiveNode> UsingDirectives { get; }
+    IFixedList<IImportDirectiveNode> ImportDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionNode> Members { get; }
     new NamespaceSearchScope ContainingLexicalScope { get; }
     LexicalScope IDefinitionNode.ContainingLexicalScope => ContainingLexicalScope;
@@ -429,9 +429,9 @@ public partial interface INamespaceBlockDefinitionNode : INamespaceBlockMemberDe
 
     public static INamespaceBlockDefinitionNode Create(
         INamespaceBlockDefinitionSyntax syntax,
-        IEnumerable<IUsingDirectiveNode> usingDirectives,
+        IEnumerable<IImportDirectiveNode> importDirectives,
         IEnumerable<INamespaceBlockMemberDefinitionNode> members)
-        => new NamespaceBlockDefinitionNode(syntax, usingDirectives, members);
+        => new NamespaceBlockDefinitionNode(syntax, importDirectives, members);
 }
 
 [Closed(
@@ -5016,7 +5016,7 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
     private ICompilationUnitNode Self { [Inline] get => this; }
 
     public ICompilationUnitSyntax Syntax { [DebuggerStepThrough] get; }
-    public IFixedList<IUsingDirectiveNode> UsingDirectives { [DebuggerStepThrough] get; }
+    public IFixedList<IImportDirectiveNode> ImportDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Definitions { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -5050,11 +5050,11 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
 
     public CompilationUnitNode(
         ICompilationUnitSyntax syntax,
-        IEnumerable<IUsingDirectiveNode> usingDirectives,
+        IEnumerable<IImportDirectiveNode> importDirectives,
         IEnumerable<INamespaceBlockMemberDefinitionNode> definitions)
     {
         Syntax = syntax;
-        UsingDirectives = ChildList.Attach(this, usingDirectives);
+        ImportDirectives = ChildList.Attach(this, importDirectives);
         Definitions = ChildList.Attach(this, definitions);
     }
 
@@ -5088,9 +5088,9 @@ file class CompilationUnitNode : SemanticNode, ICompilationUnitNode
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class UsingDirectiveNode : SemanticNode, IUsingDirectiveNode
+file class ImportDirectiveNode : SemanticNode, IImportDirectiveNode
 {
-    private IUsingDirectiveNode Self { [Inline] get => this; }
+    private IImportDirectiveNode Self { [Inline] get => this; }
 
     public IImportDirectiveSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
@@ -5098,7 +5098,7 @@ file class UsingDirectiveNode : SemanticNode, IUsingDirectiveNode
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public UsingDirectiveNode(IImportDirectiveSyntax syntax)
+    public ImportDirectiveNode(IImportDirectiveSyntax syntax)
     {
         Syntax = syntax;
     }
@@ -5110,7 +5110,7 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
     private INamespaceBlockDefinitionNode Self { [Inline] get => this; }
 
     public INamespaceBlockDefinitionSyntax Syntax { [DebuggerStepThrough] get; }
-    public IFixedList<IUsingDirectiveNode> UsingDirectives { [DebuggerStepThrough] get; }
+    public IFixedList<IImportDirectiveNode> ImportDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceBlockMemberDefinitionNode> Members { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -5151,11 +5151,11 @@ file class NamespaceBlockDefinitionNode : SemanticNode, INamespaceBlockDefinitio
 
     public NamespaceBlockDefinitionNode(
         INamespaceBlockDefinitionSyntax syntax,
-        IEnumerable<IUsingDirectiveNode> usingDirectives,
+        IEnumerable<IImportDirectiveNode> importDirectives,
         IEnumerable<INamespaceBlockMemberDefinitionNode> members)
     {
         Syntax = syntax;
-        UsingDirectives = ChildList.Attach(this, usingDirectives);
+        ImportDirectives = ChildList.Attach(this, importDirectives);
         Members = ChildList.Attach(this, members);
     }
 

@@ -35,15 +35,15 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield break;
             case ICompilationUnitNode n:
-                foreach (var child in n.UsingDirectives)
+                foreach (var child in n.ImportDirectives)
                     yield return child;
                 foreach (var child in n.Definitions)
                     yield return child;
                 yield break;
-            case IUsingDirectiveNode n:
+            case IImportDirectiveNode n:
                 yield break;
             case INamespaceBlockDefinitionNode n:
-                foreach (var child in n.UsingDirectives)
+                foreach (var child in n.ImportDirectives)
                     yield return child;
                 foreach (var child in n.Members)
                     yield return child;
