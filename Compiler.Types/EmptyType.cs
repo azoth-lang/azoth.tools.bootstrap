@@ -30,7 +30,7 @@ public abstract class EmptyType : IType
     }
 
     public abstract EmptyAntetype ToAntetype();
-    IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
+    IAntetype IType.ToAntetype() => ToAntetype();
 
     public IExpressionType ToUpperBound() => this;
 

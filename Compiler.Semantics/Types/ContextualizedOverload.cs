@@ -57,10 +57,9 @@ public sealed class ContextualizedOverload
     private static IFixedList<IMaybeParameterType> CreateParameterTypes(
         NonEmptyType contextType,
         IInvocableDeclarationNode node)
-        => node.ParameterTypes.Select(p => CreateParameterType(contextType, p))
-               .Where(p => p is not { Type: VoidType }).ToFixedList();
+        => node.ParameterTypes.Select(p => CreateParameterType(contextType, p)).WhereNotNull().ToFixedList();
 
-    private static IMaybeParameterType CreateParameterType(NonEmptyType contextType, IMaybeParameterType parameter)
+    private static IMaybeParameterType? CreateParameterType(NonEmptyType contextType, IMaybeParameterType parameter)
         => contextType.ReplaceTypeParametersIn(parameter);
 
     private static IMaybeType CreateReturnType(NonEmptyType contextType, IInvocableDeclarationNode node)

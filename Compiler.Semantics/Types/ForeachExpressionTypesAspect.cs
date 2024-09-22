@@ -7,17 +7,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class ForeachExpressionTypesAspect
 {
-    public static partial IMaybeType ForeachExpression_IteratorType(IForeachExpressionNode node)
+    public static partial IMaybeNonVoidType ForeachExpression_IteratorType(IForeachExpressionNode node)
     {
         var iterableType = node.InExpression?.Type.ToNonConstValueType() ?? IType.Unknown;
         var iterateMethod = node.ReferencedIterateMethod;
         var iteratorType = iterableType is NonEmptyType nonEmptyIterableType && iterateMethod is not null
             ? nonEmptyIterableType.ReplaceTypeParametersIn(iterateMethod.MethodGroupType.Return)
             : iterableType;
-        return iteratorType;
+        // TODO report an error for void type
+        return iteratorType.ToNonVoidType();
     }
 
-    public static partial IMaybeType ForeachExpression_IteratedType(IForeachExpressionNode node)
+    public static partial IMaybeNonVoidType ForeachExpression_IteratedType(IForeachExpressionNode node)
     {
         var nextMethodReturnType = node.ReferencedNextMethod?.MethodGroupType.Return;
         if (nextMethodReturnType is not OptionalType { Referent: var iteratedType })
@@ -26,7 +27,8 @@ internal static partial class ForeachExpressionTypesAspect
         if (node.IteratorType is not NonEmptyType nonEmptyIteratorType)
             return iteratedType;
 
-        return nonEmptyIteratorType.ReplaceTypeParametersIn(iteratedType).ToNonConstValueType();
+        // TODO report an error for void type
+        return nonEmptyIteratorType.ReplaceTypeParametersIn(iteratedType).ToNonConstValueType().ToNonVoidType();
     }
 
     public static partial IFlowState ForeachExpression_FlowStateBeforeBlock(IForeachExpressionNode node)

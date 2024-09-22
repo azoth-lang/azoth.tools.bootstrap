@@ -51,14 +51,15 @@ public sealed class OptionalType : NonEmptyType, INonVoidType
 
     private bool ReferentRequiresParens => Referent is FunctionType or ViewpointType;
 
+    IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => this;
+
     public OptionalType(INonVoidType referent)
     {
         Referent = referent;
     }
 
-    public override IMaybeAntetype ToAntetype()
-        => Referent.ToAntetype() is INonVoidAntetype referent
-            ? new OptionalAntetype(referent) : IAntetype.Unknown;
+    public override INonVoidAntetype ToAntetype()
+        => new OptionalAntetype(Referent.ToAntetype());
 
     public override IType AccessedVia(ICapabilityConstraint capability) => this;
 

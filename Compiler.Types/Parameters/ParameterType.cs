@@ -8,18 +8,18 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 /// was declared `lent`. This type packages those to values.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public record class ParameterType(bool IsLent, IType Type) : IMaybeParameterType
+public record class ParameterType(bool IsLent, INonVoidType Type) : IMaybeParameterType
 {
-    public static IMaybeParameterType Create(bool isLent, IMaybeType type)
+    public static IMaybeParameterType Create(bool isLent, IMaybeNonVoidType type)
     {
-        if (type is IType t)
+        if (type is INonVoidType t)
             return new ParameterType(isLent, t);
         return IType.Unknown;
     }
 
     public static readonly ParameterType Int = new(false, IType.Int);
 
-    IMaybeType IMaybeParameterType.Type => Type;
+    IMaybeNonVoidType IMaybeParameterType.Type => Type;
 
     public bool CanOverride(ParameterType baseParameter)
         => (!baseParameter.IsLent || IsLent) && Type.IsAssignableFrom(baseParameter.Type);

@@ -9,11 +9,13 @@ public abstract class ViewpointType : NonEmptyType, INonVoidType
 {
     public abstract ICapabilityConstraint Capability { get; }
 
-    public abstract IType Referent { get; }
+    public abstract INonVoidType Referent { get; }
 
     private protected ViewpointType() { }
 
-    public sealed override IMaybeAntetype ToAntetype() => Referent.ToAntetype();
+    IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => this;
+
+    public sealed override INonVoidAntetype ToAntetype() => Referent.ToAntetype();
 
     public sealed override IType AccessedVia(ICapabilityConstraint capability) => this;
 }

@@ -112,7 +112,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
         Capability = capability;
     }
 
-    public sealed override IMaybeAntetype ToAntetype() => BareType.ToAntetype();
+    public sealed override INonVoidAntetype ToAntetype() => BareType.ToAntetype();
 
     public override IType ReplaceTypeParametersIn(IType type)
         => BareType.ReplaceTypeParametersIn(type);
@@ -134,6 +134,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
     /// <remarks>For constant types, there can still be read only references. For example, inside
     /// the constructor.</remarks>
     public override CapabilityType WithoutWrite() => With(Capability.WithoutWrite());
+    IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => WithoutWrite();
 
     public override IType AccessedVia(ICapabilityConstraint capability)
     {

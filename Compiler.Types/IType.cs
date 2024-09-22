@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -36,6 +37,9 @@ public interface IType : IExpressionType, IMaybeType
     /// </summary>
     public static readonly OptionalType None = new(Never);
     #endregion
+
+    public new IAntetype ToAntetype();
+    IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
 
     /// <summary>
     /// Return the type for when a value of this type is accessed via a reference with the given capability.

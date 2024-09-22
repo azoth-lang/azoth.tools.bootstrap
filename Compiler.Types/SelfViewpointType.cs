@@ -9,20 +9,37 @@ public sealed class SelfViewpointType : ViewpointType
     public static IMaybeType Create(CapabilitySet capability, IMaybeType referent)
         => referent switch
         {
-            IType t => new SelfViewpointType(capability, t),
+            INonVoidType t => new SelfViewpointType(capability, t),
+            VoidType _ => IType.Void,
             UnknownType _ => IType.Unknown,
             _ => throw ExhaustiveMatch.Failed(referent),
         };
 
     public static IType Create(CapabilitySet capability, IType referent)
+        => referent switch
+        {
+            INonVoidType t => new SelfViewpointType(capability, t),
+            VoidType _ => IType.Void,
+            _ => throw ExhaustiveMatch.Failed(referent),
+        };
+
+    public static IMaybeNonVoidType Create(CapabilitySet capability, IMaybeNonVoidType referent)
+        => referent switch
+        {
+            INonVoidType t => new SelfViewpointType(capability, t),
+            UnknownType _ => IType.Unknown,
+            _ => throw ExhaustiveMatch.Failed(referent),
+        };
+
+    public static IType Create(CapabilitySet capability, INonVoidType referent)
         => new SelfViewpointType(capability, referent);
 
     public override CapabilitySet Capability { get; }
 
-    public override IType Referent { get; }
+    public override INonVoidType Referent { get; }
 
     // TODO do not allow self viewpoint of constant value types
-    public SelfViewpointType(CapabilitySet capability, IType referent)
+    public SelfViewpointType(CapabilitySet capability, INonVoidType referent)
     {
         Capability = capability;
         Referent = referent;

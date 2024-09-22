@@ -62,6 +62,6 @@
 ↑ InitializerDeclaration.SelfParameterType: `IMaybeSelfParameterType`;
 ↑ InitializerDeclaration.Symbol: `InitializerSymbol`?;
 ↑ FieldDeclaration.IsMutableBinding: `bool`;
-↑ FieldDeclaration.BindingType: `IMaybeType`;
+↑ FieldDeclaration.BindingType: `IMaybeNonVoidType`;
 ↑ FieldDeclaration.Symbol: `FieldSymbol`?;
 ↑ AssociatedFunctionDeclaration.Symbol: `FunctionSymbol`?;

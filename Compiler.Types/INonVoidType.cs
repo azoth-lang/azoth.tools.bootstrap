@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -11,4 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
     typeof(NeverType))]
 public interface INonVoidType : IType, IMaybeNonVoidType
 {
+    public new INonVoidAntetype ToAntetype();
+    IAntetype IType.ToAntetype() => ToAntetype();
+    IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
 }

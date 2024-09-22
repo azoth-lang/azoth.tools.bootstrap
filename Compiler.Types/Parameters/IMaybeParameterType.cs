@@ -7,7 +7,7 @@ public interface IMaybeParameterType
 {
     bool IsLent { get; }
 
-    IMaybeType Type { get; }
+    IMaybeNonVoidType Type { get; }
 
     string ToILString();
 

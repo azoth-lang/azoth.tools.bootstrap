@@ -18,10 +18,8 @@ public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAnte
     public sealed override IDeclaredAntetype DeclaredAntetype => this;
     public sealed override bool AllowsVariance => false;
     public abstract bool IsAbstract { get; }
-    IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters
-        => FixedList.Empty<AntetypeGenericParameter>();
-    IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes
-        => FixedList.Empty<GenericParameterAntetype>();
+    IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters => [];
+    IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes => [];
 
     public IAntetype With(IEnumerable<IAntetype> typeArguments)
     {

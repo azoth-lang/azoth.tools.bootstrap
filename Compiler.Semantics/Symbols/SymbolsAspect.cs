@@ -81,7 +81,7 @@ internal static partial class SymbolsAspect
 
     public static partial FieldSymbol? FieldDefinition_Symbol(IFieldDefinitionNode node)
     {
-        if (node.BindingType is not IType bindingType) return null;
+        if (node.BindingType is not INonVoidType bindingType) return null;
         return new(node.ContainingSymbol, node.Name, node.IsMutableBinding, bindingType);
     }
 

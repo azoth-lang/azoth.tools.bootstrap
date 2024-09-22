@@ -29,12 +29,12 @@ public abstract class SymbolTestFixture
     protected IFixedList<ParameterType> Params(int? count = null)
         => Enumerable.Range(1, count ?? ++unique).Select(_ => Compiler.Types.Parameters.ParameterType.Int).ToFixedList();
 
-    protected static IFixedList<ParameterType> Params(IType param, params IType[] @params)
+    protected static IFixedList<ParameterType> Params(INonVoidType param, params INonVoidType[] @params)
         => @params.Prepend(param).Select(t => new ParameterType(false, t)).ToFixedList();
 
     protected static SelfParameterType SelfParam(IPseudotype param) => new SelfParameterType(false, param);
 
-    protected static ParameterType Param(IType param) => new ParameterType(false, param);
+    protected static ParameterType Param(INonVoidType param) => new ParameterType(false, param);
 
     protected FunctionSymbol Func(
         string? name = null,

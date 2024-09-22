@@ -9,9 +9,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Primitives;
 
 internal static class SymbolBuilder
 {
-    public static SelfParameterType SelfParam(IType type) => new(false, type);
+    public static SelfParameterType SelfParam(INonVoidType type) => new(false, type);
 
-    public static IFixedList<ParameterType> Params(params IType[] types)
+    public static IFixedList<ParameterType> Params(params INonVoidType[] types)
         => types.Select(t => new ParameterType(false, t)).ToFixedList();
 
     public static IType Return(IType type) => type;

@@ -13,14 +13,14 @@ struct `SelfParameterType`;
 
 // ---------- Bindings
 ↑ Binding.BindingType: `IMaybePseudotype`;
-↑ NamedBinding.BindingType: `IMaybeType`;
+↑ NamedBinding.BindingType: `IMaybeNonVoidType`;
 
 // ---------- Member Definitions
-↑ FieldDefinition.BindingType: `IMaybeType`;
+↑ FieldDefinition.BindingType: `IMaybeNonVoidType`;
 
 // ---------- Parameters
 ↑ Parameter.BindingType: `IMaybePseudotype`;
-↑ ConstructorOrInitializerParameter.BindingType: `IMaybeType`;
+↑ ConstructorOrInitializerParameter.BindingType: `IMaybeNonVoidType`;
 ↑ ConstructorOrInitializerParameter.ParameterType: `IMaybeParameterType`;
 = NamedParameter.↑.Diagnostics;
 ↑ SelfParameter.ParameterType:`IMaybeSelfParameterType`;
@@ -35,7 +35,7 @@ struct `SelfParameterType`;
 = VariableDeclarationStatement.FlowStateAfter;
 
 // ---------- Patterns
-↓ Pattern.ContextBindingType(): `IMaybeType`;
+↓ Pattern.ContextBindingType(): `IMaybeNonVoidType`;
 = BindingContextPattern.Pattern.ContextBindingType();
 = BindingPattern.FlowStateAfter;
 = OptionalPattern.Pattern.ContextBindingType();

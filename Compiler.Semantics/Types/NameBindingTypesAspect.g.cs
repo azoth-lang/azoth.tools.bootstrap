@@ -27,19 +27,19 @@ internal static partial class NameBindingTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState VariableDeclarationStatement_FlowStateAfter(IVariableDeclarationStatementNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType BindingContextPattern_Pattern_ContextBindingType(IBindingContextPatternNode node);
+    public static partial IMaybeNonVoidType BindingContextPattern_Pattern_ContextBindingType(IBindingContextPatternNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState BindingPattern_FlowStateAfter(IBindingPatternNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node);
+    public static partial IMaybeNonVoidType OptionalPattern_Pattern_ContextBindingType(IOptionalPatternNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node);
+    public static partial IMaybeNonVoidType PatternMatchExpression_Pattern_ContextBindingType(IPatternMatchExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType FieldDefinition_BindingType(IFieldDefinitionNode node);
+    public static partial IMaybeNonVoidType FieldDefinition_BindingType(IFieldDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeParameterType NamedParameter_ParameterType(INamedParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType NamedParameter_BindingType(INamedParameterNode node);
+    public static partial IMaybeNonVoidType NamedParameter_BindingType(INamedParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial CapabilityType ConstructorSelfParameter_BindingType(IConstructorSelfParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -47,13 +47,13 @@ internal static partial class NameBindingTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybePseudotype MethodSelfParameter_BindingType(IMethodSelfParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType FieldParameter_BindingType(IFieldParameterNode node);
+    public static partial IMaybeNonVoidType FieldParameter_BindingType(IFieldParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeParameterType FieldParameter_ParameterType(IFieldParameterNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType VariableDeclarationStatement_BindingType(IVariableDeclarationStatementNode node);
+    public static partial IMaybeNonVoidType VariableDeclarationStatement_BindingType(IVariableDeclarationStatementNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType BindingPattern_BindingType(IBindingPatternNode node);
+    public static partial IMaybeNonVoidType BindingPattern_BindingType(IBindingPatternNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybeType ForeachExpression_BindingType(IForeachExpressionNode node);
+    public static partial IMaybeNonVoidType ForeachExpression_BindingType(IForeachExpressionNode node);
 }

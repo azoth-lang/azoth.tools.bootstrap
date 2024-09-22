@@ -38,7 +38,8 @@ internal static partial class TypeExpressionsAspect
         => FunctionType.Create(node.Parameters.Select(p => p.Parameter), node.Return.NamedType);
 
     public static partial IMaybeParameterType ParameterType_Parameter(IParameterTypeNode node)
-        => ParameterType.Create(node.IsLent, node.Referent.NamedType);
+        // TODO report an error for void type
+        => ParameterType.Create(node.IsLent, node.Referent.NamedType.ToNonVoidType());
 
     public static partial IMaybeType CapabilityViewpointType_NamedType(ICapabilityViewpointTypeNode node)
         => CapabilityViewpointType.Create(node.Capability.Capability, node.Referent.NamedType);

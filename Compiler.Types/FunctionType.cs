@@ -33,6 +33,8 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
     public IType Return { get; }
     IMaybeType IMaybeFunctionType.Return => Return;
 
+    IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => this;
+
     public override IType AccessedVia(ICapabilityConstraint capability)
         => this;
 
@@ -49,17 +51,10 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
     public override int GetHashCode() => HashCode.Combine(Parameters, Return);
     #endregion
 
-    public override IMaybeFunctionAntetype ToAntetype()
+    public override INonVoidAntetype ToAntetype()
     {
-        var parameters = Parameters.Select(p => p.Type.ToAntetype()).OfType<INonVoidAntetype>().ToFixedList();
-        if (parameters.Count != Parameters.Count)
-            // Not all parameters are known and non-void
-            return IAntetype.Unknown;
-
-        if (Return.ToAntetype() is not IAntetype returnAntetype)
-            return IAntetype.Unknown;
-
-        return new FunctionAntetype(parameters, returnAntetype);
+        var parameters = Parameters.Select(p => p.Type.ToAntetype()).ToFixedList();
+        return new FunctionAntetype(parameters, Return.ToAntetype());
     }
     IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
 

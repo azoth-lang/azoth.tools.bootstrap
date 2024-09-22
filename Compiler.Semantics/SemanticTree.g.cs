@@ -119,7 +119,7 @@ public partial interface IBindingNode : ICodeNode, IBindingDeclarationNode
 public partial interface INamedBindingNode : IBindingNode, INamedBindingDeclarationNode
 {
     LexicalScope ContainingLexicalScope { get; }
-    new IMaybeType BindingType { get; }
+    new IMaybeNonVoidType BindingType { get; }
     IMaybePseudotype IBindingNode.BindingType => BindingType;
     bool IsMutableBinding { get; }
 }
@@ -1035,10 +1035,10 @@ public partial interface IFieldDefinitionNode : IAlwaysTypeMemberDefinitionNode,
     new LexicalScope ContainingLexicalScope { get; }
     LexicalScope IDefinitionNode.ContainingLexicalScope => ContainingLexicalScope;
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
-    new IMaybeType BindingType { get; }
-    IMaybeType INamedBindingNode.BindingType => BindingType;
+    new IMaybeNonVoidType BindingType { get; }
+    IMaybeNonVoidType INamedBindingNode.BindingType => BindingType;
     IMaybePseudotype IBindingNode.BindingType => BindingType;
-    IMaybeType IFieldDeclarationNode.BindingType => BindingType;
+    IMaybeNonVoidType IFieldDeclarationNode.BindingType => BindingType;
     new bool IsMutableBinding
         => Syntax.IsMutableBinding;
     bool INamedBindingNode.IsMutableBinding => IsMutableBinding;
@@ -1177,7 +1177,7 @@ public partial interface IConstructorOrInitializerParameterNode : IParameterNode
     IParameterSyntax IParameterNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    new IMaybeType BindingType { get; }
+    new IMaybeNonVoidType BindingType { get; }
     IMaybePseudotype IParameterNode.BindingType => BindingType;
     IMaybeParameterType ParameterType { get; }
     new IdentifierName Name { get; }
@@ -1207,10 +1207,10 @@ public partial interface INamedParameterNode : IConstructorOrInitializerParamete
     new IMaybeAntetype BindingAntetype { get; }
     IMaybeAntetype IParameterNode.BindingAntetype => BindingAntetype;
     IMaybeAntetype IBindingNode.BindingAntetype => BindingAntetype;
-    new IMaybeType BindingType { get; }
-    IMaybeType IConstructorOrInitializerParameterNode.BindingType => BindingType;
+    new IMaybeNonVoidType BindingType { get; }
+    IMaybeNonVoidType IConstructorOrInitializerParameterNode.BindingType => BindingType;
     IMaybePseudotype IParameterNode.BindingType => BindingType;
-    IMaybeType INamedBindingNode.BindingType => BindingType;
+    IMaybeNonVoidType INamedBindingNode.BindingType => BindingType;
     IMaybePseudotype IBindingNode.BindingType => BindingType;
     bool IBindingNode.IsLentBinding
         => Syntax.IsLentBinding;
@@ -1857,7 +1857,7 @@ public partial interface IPatternNode : IControlFlowNode
     ValueId? MatchReferentValueId { get; }
     IFlowState FlowStateAfter { get; }
     IMaybeAntetype ContextBindingAntetype();
-    IMaybeType ContextBindingType();
+    IMaybeNonVoidType ContextBindingType();
 }
 
 // [Closed(typeof(BindingContextPatternNode))]
@@ -2449,8 +2449,8 @@ public partial interface IForeachExpressionNode : IExpressionNode, IVariableBind
     LexicalScope LexicalScope { get; }
     IdentifierName VariableName
         => Syntax.VariableName;
-    IMaybeType IteratorType { get; }
-    IMaybeType IteratedType { get; }
+    IMaybeNonVoidType IteratorType { get; }
+    IMaybeNonVoidType IteratedType { get; }
     IFlowState FlowStateBeforeBlock { get; }
     ITypeDeclarationNode? ReferencedIterableDeclaration { get; }
     IStandardMethodDeclarationNode? ReferencedIterateMethod { get; }
@@ -4071,7 +4071,7 @@ public partial interface IFieldDeclarationNode : IClassMemberDeclarationNode, IS
     IdentifierName INamedBindingDeclarationNode.Name => Name;
     TypeName INamedDeclarationNode.Name => Name;
     bool IsMutableBinding { get; }
-    IMaybeType BindingType { get; }
+    IMaybeNonVoidType BindingType { get; }
     new FieldSymbol? Symbol { get; }
     Symbol? ISymbolDeclarationNode.Symbol => Symbol;
 }
@@ -4535,7 +4535,7 @@ public partial interface IFieldSymbolNode : IFieldDeclarationNode, IClassMemberS
     TypeName INamedDeclarationNode.Name => Name;
     bool IFieldDeclarationNode.IsMutableBinding
         => Symbol.IsMutableBinding;
-    IMaybeType IFieldDeclarationNode.BindingType
+    IMaybeNonVoidType IFieldDeclarationNode.BindingType
         => Symbol.Type;
 
     public static IFieldSymbolNode Create(FieldSymbol symbol)
@@ -4775,9 +4775,9 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected IMaybeAntetype Inherited_ContextBindingAntetype(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContextBindingAntetype(this, this, ctx);
 
-    internal virtual IMaybeType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal virtual IMaybeNonVoidType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ContextBindingType", child, descendant)).Inherited_ContextBindingType(this, descendant, ctx);
-    protected IMaybeType Inherited_ContextBindingType(IInheritanceContext ctx)
+    protected IMaybeNonVoidType Inherited_ContextBindingType(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContextBindingType(this, this, ctx);
 
     internal virtual IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -7038,11 +7038,11 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
                 DefinitionAntetypesAspect.FieldDefinition_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public IMaybeType BindingType
+    public IMaybeNonVoidType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.FieldDefinition_BindingType);
-    private IMaybeType? bindingType;
+    private IMaybeNonVoidType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
@@ -7393,11 +7393,11 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
                 NameBindingAntetypesAspect.NamedParameter_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public IMaybeType BindingType
+    public IMaybeNonVoidType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.NamedParameter_BindingType);
-    private IMaybeType? bindingType;
+    private IMaybeNonVoidType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
@@ -7720,11 +7720,11 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
                 NameBindingAntetypesAspect.FieldParameter_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public IMaybeType BindingType
+    public IMaybeNonVoidType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.FieldParameter_BindingType);
-    private IMaybeType? bindingType;
+    private IMaybeNonVoidType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
@@ -8624,11 +8624,11 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
                 NameBindingAntetypesAspect.VariableDeclarationStatement_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public IMaybeType BindingType
+    public IMaybeNonVoidType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.VariableDeclarationStatement_BindingType);
-    private IMaybeType? bindingType;
+    private IMaybeNonVoidType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
@@ -8871,7 +8871,7 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
     private bool matchReferentValueIdCached;
     public IMaybeAntetype ContextBindingAntetype()
         => Inherited_ContextBindingAntetype(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeType ContextBindingType()
+    public IMaybeNonVoidType ContextBindingType()
         => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -8897,7 +8897,7 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
         return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
     }
 
-    internal override IMaybeType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeNonVoidType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Pattern))
             return NameBindingTypesAspect.BindingContextPattern_Pattern_ContextBindingType(this);
@@ -8949,7 +8949,7 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     private bool matchReferentValueIdCached;
     public IMaybeAntetype ContextBindingAntetype()
         => Inherited_ContextBindingAntetype(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeType ContextBindingType()
+    public IMaybeNonVoidType ContextBindingType()
         => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
@@ -8967,11 +8967,11 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
                 NameBindingAntetypesAspect.BindingPattern_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public IMaybeType BindingType
+    public IMaybeNonVoidType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.BindingPattern_BindingType);
-    private IMaybeType? bindingType;
+    private IMaybeNonVoidType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
@@ -9077,7 +9077,7 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
     private bool matchReferentValueIdCached;
     public IMaybeAntetype ContextBindingAntetype()
         => Inherited_ContextBindingAntetype(GrammarAttribute.CurrentInheritanceContext());
-    public IMaybeType ContextBindingType()
+    public IMaybeNonVoidType ContextBindingType()
         => Inherited_ContextBindingType(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
@@ -9101,7 +9101,7 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
         return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
     }
 
-    internal override IMaybeType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeNonVoidType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Pattern))
             return NameBindingTypesAspect.OptionalPattern_Pattern_ContextBindingType(this);
@@ -11340,7 +11340,7 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         return base.Inherited_ContextBindingAntetype(child, descendant, ctx);
     }
 
-    internal override IMaybeType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    internal override IMaybeNonVoidType Inherited_ContextBindingType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Pattern))
             return NameBindingTypesAspect.PatternMatchExpression_Pattern_ContextBindingType(this);
@@ -12047,11 +12047,11 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 NameBindingAntetypesAspect.ForeachExpression_BindingAntetype);
     private IMaybeAntetype? bindingAntetype;
     private bool bindingAntetypeCached;
-    public IMaybeType BindingType
+    public IMaybeNonVoidType BindingType
         => GrammarAttribute.IsCached(in bindingTypeCached) ? bindingType!
             : this.Synthetic(ref bindingTypeCached, ref bindingType,
                 NameBindingTypesAspect.ForeachExpression_BindingType);
-    private IMaybeType? bindingType;
+    private IMaybeNonVoidType? bindingType;
     private bool bindingTypeCached;
     public ValueId BindingValueId
         => GrammarAttribute.IsCached(in bindingValueIdCached) ? bindingValueId
@@ -12103,11 +12103,11 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 ForeachExpressionAntetypesAspect.ForeachExpression_IteratedAntetype);
     private IMaybeAntetype? iteratedAntetype;
     private bool iteratedAntetypeCached;
-    public IMaybeType IteratedType
+    public IMaybeNonVoidType IteratedType
         => GrammarAttribute.IsCached(in iteratedTypeCached) ? iteratedType!
             : this.Synthetic(ref iteratedTypeCached, ref iteratedType,
                 ForeachExpressionTypesAspect.ForeachExpression_IteratedType);
-    private IMaybeType? iteratedType;
+    private IMaybeNonVoidType? iteratedType;
     private bool iteratedTypeCached;
     public IMaybeExpressionAntetype IteratorAntetype
         => GrammarAttribute.IsCached(in iteratorAntetypeCached) ? iteratorAntetype!
@@ -12115,11 +12115,11 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
                 ForeachExpressionAntetypesAspect.ForeachExpression_IteratorAntetype);
     private IMaybeExpressionAntetype? iteratorAntetype;
     private bool iteratorAntetypeCached;
-    public IMaybeType IteratorType
+    public IMaybeNonVoidType IteratorType
         => GrammarAttribute.IsCached(in iteratorTypeCached) ? iteratorType!
             : this.Synthetic(ref iteratorTypeCached, ref iteratorType,
                 ForeachExpressionTypesAspect.ForeachExpression_IteratorType);
-    private IMaybeType? iteratorType;
+    private IMaybeNonVoidType? iteratorType;
     private bool iteratorTypeCached;
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!

@@ -26,14 +26,15 @@ public sealed class UnknownType : IMaybeFunctionType, IMaybeParameterType, IMayb
     bool IMaybeParameterType.IsLent => false;
 
     IMaybePseudotype IMaybeSelfParameterType.Type => this;
-    IMaybeType IMaybeParameterType.Type => this;
+    IMaybeNonVoidType IMaybeParameterType.Type => this;
     #endregion
 
-    public bool IsFullyKnown => false;
     public bool AllowsVariance => false;
     public bool HasIndependentTypeArguments => false;
 
     IMaybeType IMaybeFunctionType.Return => IType.Unknown;
+
+    IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => this;
 
     public IMaybeAntetype ToAntetype() => IAntetype.Unknown;
 

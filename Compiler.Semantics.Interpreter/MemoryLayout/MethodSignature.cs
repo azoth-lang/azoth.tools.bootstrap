@@ -42,7 +42,9 @@ internal class MethodSignature : IEquatable<MethodSignature>
     {
         if (ParameterTypes.Count != other.ParameterTypes.Count) return false;
         foreach (var (paramType, baseParamType) in ParameterTypes.EquiZip(other.ParameterTypes.Select(selfType.ReplaceTypeParametersIn)))
-            if (!paramType.CanOverride(baseParamType))
+            // A null baseParamType means that the parameter was replaced to `void` and dropped out
+            // of the parameter list.
+            if (baseParamType is null || !paramType.CanOverride(baseParamType))
                 return false;
 
         return true;

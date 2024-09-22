@@ -9,6 +9,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
 /// was declared `lent`. This type packages those to values.
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
+// TODO IPseudotype still allows for void and const types, which are not valid here.
 public record class SelfParameterType(bool IsLent, IPseudotype Type) : IMaybeSelfParameterType
 {
     public static IMaybeSelfParameterType Create(bool isLent, IMaybePseudotype type)
@@ -24,7 +25,7 @@ public record class SelfParameterType(bool IsLent, IPseudotype Type) : IMaybeSel
     public bool CanOverride(SelfParameterType baseParameterType)
         => (!baseParameterType.IsLent || IsLent) && baseParameterType.Type.IsAssignableFrom(Type);
 
-    public ParameterType ToUpperBound() => new(IsLent, Type.ToUpperBound().ToNonConstValueType());
+    public ParameterType ToUpperBound() => new(IsLent, (INonVoidType)Type.ToUpperBound().ToNonConstValueType());
 
     public override string ToString() => throw new NotSupportedException();
 

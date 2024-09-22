@@ -27,6 +27,8 @@ public sealed class GenericParameterType : NonEmptyType, INonVoidType
         Parameter = parameter;
     }
 
+    IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => this;
+
     public override IType AccessedVia(ICapabilityConstraint capability)
     {
         // Independent type parameters are not affected by the capability
@@ -58,7 +60,7 @@ public sealed class GenericParameterType : NonEmptyType, INonVoidType
         var declaringAntetype = DeclaringType.ToAntetype();
         return new GenericParameterAntetype((UserDeclaredGenericAntetype)declaringAntetype, declaringAntetype.GenericParameters.Single(p => p.Name == Name));
     }
-    IMaybeAntetype IMaybeType.ToAntetype() => ToAntetype();
+    INonVoidAntetype INonVoidType.ToAntetype() => ToAntetype();
 
     public override string ToSourceCodeString() => $"{DeclaringType}.{Parameter.Name}";
 

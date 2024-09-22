@@ -68,16 +68,19 @@ public abstract class NonEmptyType : IExpressionType
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
-    public ParameterType ReplaceTypeParametersIn(ParameterType type)
-        => type with { Type = ReplaceTypeParametersIn(type.Type) };
+    public ParameterType? ReplaceTypeParametersIn(ParameterType type)
+    {
+        if (ReplaceTypeParametersIn(type.Type) is not INonVoidType nonVoidType)
+            return null;
+        return type with { Type = nonVoidType };
+    }
 
     /// <summary>
     /// Replace any <see cref="GenericParameterType"/> from this type that appear in the given type
     /// with the type arguments from this type (assuming it has them).
     /// </summary>
     /// <remarks>Has no effect if this is not a generic type.</remarks>
-    [return: NotNullIfNotNull(nameof(type))]
-    public IMaybeParameterType ReplaceTypeParametersIn(IMaybeParameterType type)
+    public IMaybeParameterType? ReplaceTypeParametersIn(IMaybeParameterType type)
     {
         if (type is ParameterType parameterType)
             return ReplaceTypeParametersIn(parameterType);

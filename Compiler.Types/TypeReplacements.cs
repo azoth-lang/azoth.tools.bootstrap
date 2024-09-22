@@ -176,8 +176,12 @@ internal sealed class TypeReplacements
         return type.With(replacementTypes);
     }
 
-    public ParameterType ReplaceTypeParametersIn(ParameterType type)
-        => type with { Type = ReplaceTypeParametersIn(type.Type) };
+    public ParameterType? ReplaceTypeParametersIn(ParameterType type)
+    {
+        if (ReplaceTypeParametersIn(type.Type) is INonVoidType replacementType)
+            return type with { Type = replacementType };
+        return null;
+    }
 
     private IFixedList<IType> ReplaceTypeParametersIn(IFixedList<IType> types)
     {
@@ -200,6 +204,8 @@ internal sealed class TypeReplacements
         foreach (var type in types)
         {
             var replacementType = ReplaceTypeParametersIn(type);
+            if (replacementType is null)
+                continue;
             typesReplaced |= !type.ReferenceEquals(replacementType);
             replacementTypes.Add(replacementType);
         }

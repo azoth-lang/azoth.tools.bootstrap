@@ -17,4 +17,10 @@ public static partial class TypeOperations
             IntegerConstValueType t => t,
             _ => null,
         };
+
+    /// <summary>
+    /// Convert to a non-void type by replacing void with unknown.
+    /// </summary>
+    public static IMaybeNonVoidType ToNonVoidType(this IMaybeType type)
+        => type as IMaybeNonVoidType ?? IType.Unknown;
 }

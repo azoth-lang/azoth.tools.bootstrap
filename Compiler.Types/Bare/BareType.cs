@@ -84,12 +84,11 @@ public abstract class BareType : IEquatable<BareType>
         supertypes = new(GetSupertypes);
     }
 
-    public IMaybeAntetype ToAntetype()
+    public INonVoidAntetype ToAntetype()
     {
-        var typeArguments = GenericTypeArguments.Select(a => a.ToAntetype()).OfType<IAntetype>().ToFixedList();
-        if (typeArguments.Count != GenericTypeArguments.Count)
-            return IAntetype.Unknown;
-        return DeclaredType.ToAntetype().With(typeArguments);
+        var typeArguments = GenericTypeArguments.Select(a => a.ToAntetype()).ToFixedList();
+        // The ToAntetype() should never result in void since DeclaredType can't be void.
+        return (INonVoidAntetype)DeclaredType.ToAntetype().With(typeArguments);
     }
 
     private TypeReplacements GetTypeReplacements() => new(DeclaredType, GenericTypeArguments);
