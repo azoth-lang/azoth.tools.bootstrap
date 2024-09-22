@@ -87,13 +87,13 @@ public partial class Parser
         else
             nameSpan = globalQualifier.Span;
         Tokens.Expect<IOpenBraceToken>();
-        var usingDirectives = ParseUsingDirectives();
+        var importDirectives = ParseImportDirectives();
         var declarations = ParseNamespaceBlockMemberDefinitions<ICloseBraceToken>();
         var closeBrace = Tokens.Expect<ICloseBraceToken>();
         var span = TextSpan.Covering(ns, closeBrace);
         var isGlobalQualified = globalQualifier is not null;
         return INamespaceBlockDefinitionSyntax.Create(span, File, name.Segments.LastOrDefault(), nameSpan, isGlobalQualified, name,
-            usingDirectives, declarations);
+            importDirectives, declarations);
     }
 
     private (NamespaceName, TextSpan) ParseNamespaceName()

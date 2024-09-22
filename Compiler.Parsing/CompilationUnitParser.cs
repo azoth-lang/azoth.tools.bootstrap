@@ -16,13 +16,13 @@ public class CompilationUnitParser
     {
         var implicitNamespaceName = ParseImplicitNamespaceName(tokens);
         var parser = new Parser(tokens);
-        var usingDirectives = parser.ParseUsingDirectives();
+        var importDirectives = parser.ParseImportDirectives();
         var declarations = parser.ParseNamespaceBlockMemberDefinitions<IEndOfFileToken>();
         var eof = tokens.Required<IEndOfFileToken>();
         var span = TextSpan.FromStartEnd(0, eof.End);
         var diagnostics = tokens.Context.Diagnostics;
         var compilationUnit = ICompilationUnitSyntax.Create(span, tokens.Context.File,
-            implicitNamespaceName, DiagnosticCollection.Empty, usingDirectives, declarations);
+            implicitNamespaceName, DiagnosticCollection.Empty, importDirectives, declarations);
 
         CheckSyntax(compilationUnit, diagnostics);
         return compilationUnit.With(diagnostics.Build());

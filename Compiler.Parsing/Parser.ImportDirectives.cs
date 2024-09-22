@@ -8,10 +8,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
 public partial class Parser
 {
-    public IFixedList<IUsingDirectiveSyntax> ParseUsingDirectives()
-        => AcceptMany(AcceptUsingDirective);
+    public IFixedList<IUsingDirectiveSyntax> ParseImportDirectives()
+        => AcceptMany(AcceptImportDirective);
 
-    public IUsingDirectiveSyntax? AcceptUsingDirective()
+    public IUsingDirectiveSyntax? AcceptImportDirective()
     {
         var accept = Tokens.AcceptToken<IImportKeywordToken>();
         if (accept is null)
