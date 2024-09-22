@@ -34,7 +34,7 @@ public partial interface ISyntax
 
 [Closed(
     typeof(ICompilationUnitSyntax),
-    typeof(IUsingDirectiveSyntax),
+    typeof(IImportDirectiveSyntax),
     typeof(IBodyOrBlockSyntax),
     typeof(IElseClauseSyntax),
     typeof(IBindingSyntax),
@@ -63,7 +63,7 @@ public partial interface ICompilationUnitSyntax : ICodeSyntax
     CodeFile File { get; }
     NamespaceName ImplicitNamespaceName { get; }
     DiagnosticCollection Diagnostics { get; }
-    IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
+    IFixedList<IImportDirectiveSyntax> ImportDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionSyntax> Definitions { get; }
 
     public static ICompilationUnitSyntax Create(
@@ -71,21 +71,21 @@ public partial interface ICompilationUnitSyntax : ICodeSyntax
         CodeFile file,
         NamespaceName implicitNamespaceName,
         DiagnosticCollection diagnostics,
-        IEnumerable<IUsingDirectiveSyntax> usingDirectives,
+        IEnumerable<IImportDirectiveSyntax> importDirectives,
         IEnumerable<INamespaceBlockMemberDefinitionSyntax> definitions)
-        => new CompilationUnitSyntax(span, file, implicitNamespaceName, diagnostics, usingDirectives, definitions);
+        => new CompilationUnitSyntax(span, file, implicitNamespaceName, diagnostics, importDirectives, definitions);
 }
 
-// [Closed(typeof(UsingDirectiveSyntax))]
+// [Closed(typeof(ImportDirectiveSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IUsingDirectiveSyntax : ICodeSyntax
+public partial interface IImportDirectiveSyntax : ICodeSyntax
 {
     NamespaceName Name { get; }
 
-    public static IUsingDirectiveSyntax Create(
+    public static IImportDirectiveSyntax Create(
         TextSpan span,
         NamespaceName name)
-        => new UsingDirectiveSyntax(span, name);
+        => new ImportDirectiveSyntax(span, name);
 }
 
 [Closed(
@@ -213,7 +213,7 @@ public partial interface INamespaceBlockDefinitionSyntax : INamespaceBlockMember
 {
     bool IsGlobalQualified { get; }
     NamespaceName DeclaredNames { get; }
-    IFixedList<IUsingDirectiveSyntax> UsingDirectives { get; }
+    IFixedList<IImportDirectiveSyntax> ImportDirectives { get; }
     IFixedList<INamespaceBlockMemberDefinitionSyntax> Definitions { get; }
 
     public static INamespaceBlockDefinitionSyntax Create(
@@ -223,9 +223,9 @@ public partial interface INamespaceBlockDefinitionSyntax : INamespaceBlockMember
         TextSpan nameSpan,
         bool isGlobalQualified,
         NamespaceName declaredNames,
-        IEnumerable<IUsingDirectiveSyntax> usingDirectives,
+        IEnumerable<IImportDirectiveSyntax> importDirectives,
         IEnumerable<INamespaceBlockMemberDefinitionSyntax> definitions)
-        => new NamespaceBlockDefinitionSyntax(span, file, name, nameSpan, isGlobalQualified, declaredNames, usingDirectives, definitions);
+        => new NamespaceBlockDefinitionSyntax(span, file, name, nameSpan, isGlobalQualified, declaredNames, importDirectives, definitions);
 }
 
 [Closed(
@@ -1683,7 +1683,7 @@ file class CompilationUnitSyntax : ICompilationUnitSyntax
     public CodeFile File { [DebuggerStepThrough] get; }
     public NamespaceName ImplicitNamespaceName { [DebuggerStepThrough] get; }
     public DiagnosticCollection Diagnostics { [DebuggerStepThrough] get; }
-    public IFixedList<IUsingDirectiveSyntax> UsingDirectives { [DebuggerStepThrough] get; }
+    public IFixedList<IImportDirectiveSyntax> ImportDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceBlockMemberDefinitionSyntax> Definitions { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.CompilationUnit_ToString(this);
@@ -1693,29 +1693,29 @@ file class CompilationUnitSyntax : ICompilationUnitSyntax
         CodeFile file,
         NamespaceName implicitNamespaceName,
         DiagnosticCollection diagnostics,
-        IEnumerable<IUsingDirectiveSyntax> usingDirectives,
+        IEnumerable<IImportDirectiveSyntax> importDirectives,
         IEnumerable<INamespaceBlockMemberDefinitionSyntax> definitions)
     {
         Span = span;
         File = file;
         ImplicitNamespaceName = implicitNamespaceName;
         Diagnostics = diagnostics;
-        UsingDirectives = usingDirectives.ToFixedList();
+        ImportDirectives = importDirectives.ToFixedList();
         Definitions = definitions.ToFixedList();
     }
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
-file class UsingDirectiveSyntax : IUsingDirectiveSyntax
+file class ImportDirectiveSyntax : IImportDirectiveSyntax
 {
-    private IUsingDirectiveSyntax Self { [Inline] get => this; }
+    private IImportDirectiveSyntax Self { [Inline] get => this; }
 
     public TextSpan Span { [DebuggerStepThrough] get; }
     public NamespaceName Name { [DebuggerStepThrough] get; }
     public override string ToString()
-        => FormattingAspect.UsingDirective_ToString(this);
+        => FormattingAspect.ImportDirective_ToString(this);
 
-    public UsingDirectiveSyntax(
+    public ImportDirectiveSyntax(
         TextSpan span,
         NamespaceName name)
     {
@@ -1784,7 +1784,7 @@ file class NamespaceBlockDefinitionSyntax : INamespaceBlockDefinitionSyntax
     public TextSpan NameSpan { [DebuggerStepThrough] get; }
     public bool IsGlobalQualified { [DebuggerStepThrough] get; }
     public NamespaceName DeclaredNames { [DebuggerStepThrough] get; }
-    public IFixedList<IUsingDirectiveSyntax> UsingDirectives { [DebuggerStepThrough] get; }
+    public IFixedList<IImportDirectiveSyntax> ImportDirectives { [DebuggerStepThrough] get; }
     public IFixedList<INamespaceBlockMemberDefinitionSyntax> Definitions { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.NamespaceBlockDefinition_ToString(this);
@@ -1796,7 +1796,7 @@ file class NamespaceBlockDefinitionSyntax : INamespaceBlockDefinitionSyntax
         TextSpan nameSpan,
         bool isGlobalQualified,
         NamespaceName declaredNames,
-        IEnumerable<IUsingDirectiveSyntax> usingDirectives,
+        IEnumerable<IImportDirectiveSyntax> importDirectives,
         IEnumerable<INamespaceBlockMemberDefinitionSyntax> definitions)
     {
         Span = span;
@@ -1805,7 +1805,7 @@ file class NamespaceBlockDefinitionSyntax : INamespaceBlockDefinitionSyntax
         NameSpan = nameSpan;
         IsGlobalQualified = isGlobalQualified;
         DeclaredNames = declaredNames;
-        UsingDirectives = usingDirectives.ToFixedList();
+        ImportDirectives = importDirectives.ToFixedList();
         Definitions = definitions.ToFixedList();
     }
 }

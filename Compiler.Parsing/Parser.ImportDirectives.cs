@@ -8,10 +8,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Parsing;
 
 public partial class Parser
 {
-    public IFixedList<IUsingDirectiveSyntax> ParseImportDirectives()
+    public IFixedList<IImportDirectiveSyntax> ParseImportDirectives()
         => AcceptMany(AcceptImportDirective);
 
-    public IUsingDirectiveSyntax? AcceptImportDirective()
+    public IImportDirectiveSyntax? AcceptImportDirective()
     {
         var accept = Tokens.AcceptToken<IImportKeywordToken>();
         if (accept is null)
@@ -24,6 +24,6 @@ public partial class Parser
                 name = name.Qualify(identifier.Value);
         var semicolon = Tokens.Expect<ISemicolonToken>();
         var span = TextSpan.Covering(accept.Span, semicolon);
-        return IUsingDirectiveSyntax.Create(span, name);
+        return IImportDirectiveSyntax.Create(span, name);
     }
 }

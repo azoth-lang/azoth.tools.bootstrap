@@ -14,7 +14,7 @@ internal static partial class FormattingAspect
     public static partial string CompilationUnit_ToString(ICompilationUnitSyntax node)
         => node.File.Reference.ToString();
 
-    public static partial string UsingDirective_ToString(IUsingDirectiveSyntax node)
+    public static partial string ImportDirective_ToString(IImportDirectiveSyntax node)
         => $"using {node.Name};";
     #endregion
 

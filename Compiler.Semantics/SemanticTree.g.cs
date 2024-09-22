@@ -312,13 +312,13 @@ public partial interface ICompilationUnitNode : ICodeNode
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IUsingDirectiveNode : ICodeNode
 {
-    new IUsingDirectiveSyntax Syntax { get; }
+    new IImportDirectiveSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     NamespaceName Name
         => Syntax.Name;
 
-    public static IUsingDirectiveNode Create(IUsingDirectiveSyntax syntax)
+    public static IUsingDirectiveNode Create(IImportDirectiveSyntax syntax)
         => new UsingDirectiveNode(syntax);
 }
 
@@ -5092,13 +5092,13 @@ file class UsingDirectiveNode : SemanticNode, IUsingDirectiveNode
 {
     private IUsingDirectiveNode Self { [Inline] get => this; }
 
-    public IUsingDirectiveSyntax Syntax { [DebuggerStepThrough] get; }
+    public IImportDirectiveSyntax Syntax { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
 
-    public UsingDirectiveNode(IUsingDirectiveSyntax syntax)
+    public UsingDirectiveNode(IImportDirectiveSyntax syntax)
     {
         Syntax = syntax;
     }

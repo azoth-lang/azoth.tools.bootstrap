@@ -27,8 +27,8 @@
 /// Syntax that corresponds to Azoth code.
 Code = Span:`TextSpan`;
 CompilationUnit <: Code = File:`CodeFile` ImplicitNamespaceName:`NamespaceName` Diagnostics:`DiagnosticCollection`
-    UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*;
-UsingDirective <: Code = Name:`NamespaceName`;
+    ImportDirectives:ImportDirective* Definitions:NamespaceBlockMemberDefinition*;
+ImportDirective <: Code = Name:`NamespaceName`;
 
 // ---------- Special Parts
 BodyOrBlock <: Code = Statements:Statement*;
@@ -56,7 +56,7 @@ ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrIni
 
 // ---------- Namespace Definitions
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition
-    = IsGlobalQualified:`bool` DeclaredNames:`NamespaceName` UsingDirectives:UsingDirective* Definitions:NamespaceBlockMemberDefinition*;
+    = IsGlobalQualified:`bool` DeclaredNames:`NamespaceName` ImportDirectives:ImportDirective* Definitions:NamespaceBlockMemberDefinition*;
 /// Things that can be declared outside of a type (i.e. functions, types, and namespace blocks).
 NamespaceBlockMemberDefinition <: Definition;
 

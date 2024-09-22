@@ -14,7 +14,7 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string CompilationUnit_ToString(ICompilationUnitSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string UsingDirective_ToString(IUsingDirectiveSyntax node);
+    public static partial string ImportDirective_ToString(IImportDirectiveSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string Package_ToString(IPackageSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

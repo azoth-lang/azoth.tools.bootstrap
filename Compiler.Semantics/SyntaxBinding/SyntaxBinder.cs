@@ -52,16 +52,16 @@ internal static class SyntaxBinder
 
     #region Code Files
     private static IEnumerable<ICompilationUnitNode> CompilationUnits(IEnumerable<ICompilationUnitSyntax> syntax)
-        => syntax.Select(syn => ICompilationUnitNode.Create(syn, UsingDirectives(syn.UsingDirectives),
+        => syntax.Select(syn => ICompilationUnitNode.Create(syn, ImportDirectives(syn.ImportDirectives),
             NamespaceMemberDefinitions(syn.Definitions)));
 
-    private static IEnumerable<IUsingDirectiveNode> UsingDirectives(IEnumerable<IUsingDirectiveSyntax> syntax)
+    private static IEnumerable<IUsingDirectiveNode> ImportDirectives(IEnumerable<IImportDirectiveSyntax> syntax)
         => syntax.Select(IUsingDirectiveNode.Create);
     #endregion
 
     #region Namespace Declarations
     private static INamespaceBlockDefinitionNode NamespaceBlockDefinition(INamespaceBlockDefinitionSyntax syntax)
-        => INamespaceBlockDefinitionNode.Create(syntax, UsingDirectives(syntax.UsingDirectives),
+        => INamespaceBlockDefinitionNode.Create(syntax, ImportDirectives(syntax.ImportDirectives),
             NamespaceMemberDefinitions(syntax.Definitions));
 
     private static IEnumerable<INamespaceBlockMemberDefinitionNode> NamespaceMemberDefinitions(IEnumerable<INamespaceBlockMemberDefinitionSyntax> syntax)

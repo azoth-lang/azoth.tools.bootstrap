@@ -16,12 +16,12 @@ public static class ISyntaxExtensions
             default:
                 throw ExhaustiveMatch.Failed(node);
             case ICompilationUnitSyntax n:
-                foreach (var child in n.UsingDirectives)
+                foreach (var child in n.ImportDirectives)
                     yield return child;
                 foreach (var child in n.Definitions)
                     yield return child;
                 yield break;
-            case IUsingDirectiveSyntax n:
+            case IImportDirectiveSyntax n:
                 yield break;
             case IPackageSyntax n:
                 foreach (var child in n.CompilationUnits)
@@ -34,7 +34,7 @@ public static class ISyntaxExtensions
             case IPackageReferenceSyntax n:
                 yield break;
             case INamespaceBlockDefinitionSyntax n:
-                foreach (var child in n.UsingDirectives)
+                foreach (var child in n.ImportDirectives)
                     yield return child;
                 foreach (var child in n.Definitions)
                     yield return child;
