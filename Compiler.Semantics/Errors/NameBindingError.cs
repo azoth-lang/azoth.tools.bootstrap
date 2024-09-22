@@ -69,10 +69,10 @@ public static class NameBindingError
     }
 
     // TODO add check for this back
-    public static Diagnostic UsingNonExistentNamespace(CodeFile file, TextSpan span, NamespaceName ns)
+    public static Diagnostic ImportNonExistentNamespace(CodeFile file, TextSpan span, NamespaceName ns)
     {
         return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            5010, $"Using directive refers to namespace `{ns}` which does not exist");
+            5010, $"Import directive refers to namespace `{ns}` which does not exist");
     }
 
     public static Diagnostic CouldNotBindFunctionName(CodeFile file, INameExpressionSyntax groupName)

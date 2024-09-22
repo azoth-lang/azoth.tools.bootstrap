@@ -19,8 +19,8 @@ public sealed class PackageNameScope
     /// <summary>
     /// The global scope that spans all packages (current and referenced).
     /// </summary>
-    /// <remarks>This is the root scope used for using directives.</remarks>
-    public NamespaceScope UsingGlobalScope { get; }
+    /// <remarks>This is the root scope used for import directives.</remarks>
+    public NamespaceScope ImportGlobalScope { get; }
 
     /// <summary>
     /// The global scope for this package.
@@ -44,9 +44,9 @@ public sealed class PackageNameScope
         var packageGlobalNamespaces = packageFacets.Select(f => f.GlobalNamespace).ToFixedSet();
         var referencedGlobalNamespaces = referencedFacets.Select(f => f.GlobalNamespace).ToFixedSet();
 
-        UsingGlobalScope = new NamespaceScope(this, packageGlobalNamespaces.Concat(referencedGlobalNamespaces));
+        ImportGlobalScope = new NamespaceScope(this, packageGlobalNamespaces.Concat(referencedGlobalNamespaces));
 
-        // That parent scope is like the UsingGlobalScope, but includes only referenced packages
+        // That parent scope is like the ImportGlobalScope, but includes only referenced packages
         // since the current package will already be searched by the PackageGlobalScope.
         var parent = new NamespaceScope(this, referencedGlobalNamespaces);
         PackageGlobalScope = new NamespaceScope(parent, packageGlobalNamespaces);

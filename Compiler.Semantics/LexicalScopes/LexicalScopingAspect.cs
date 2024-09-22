@@ -50,7 +50,7 @@ internal static partial class LexicalScopingAspect
     {
         if (!importDirectives.Any()) return containingScope;
 
-        var globalScope = containingScope.PackageNames.UsingGlobalScope;
+        var globalScope = containingScope.PackageNames.ImportGlobalScope;
         // TODO put a NamespaceScope attribute on the using directive node for this
         // TODO report an error if the import directive refers to a namespace that doesn't exist
         var namespaceScopes = importDirectives.Select(d => GetNamespaceScope(globalScope, d.Name));
