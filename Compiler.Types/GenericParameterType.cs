@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -29,6 +30,8 @@ public sealed class GenericParameterType : NonEmptyType, INonVoidType
 
     IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => this;
 
+    IMaybeType IMaybeType.AccessedVia(IMaybePseudotype contextType) => (IMaybeType)AccessedVia(contextType);
+
     public override IType AccessedVia(ICapabilityConstraint capability)
     {
         // Independent type parameters are not affected by the capability
@@ -40,6 +43,7 @@ public sealed class GenericParameterType : NonEmptyType, INonVoidType
             _ => throw ExhaustiveMatch.Failed(capability),
         };
     }
+    IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 
     #region Equals
     public override bool Equals(IMaybeExpressionType? other)

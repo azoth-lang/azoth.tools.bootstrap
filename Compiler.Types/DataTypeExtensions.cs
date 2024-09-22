@@ -179,7 +179,7 @@ public static class DataTypeExtensions
     /// <summary>
     /// Replace self viewpoint types using the given type as self.
     /// </summary>
-    public static IMaybeExpressionType ReplaceSelfWith(this IMaybeExpressionType type, IMaybeExpressionType selfType)
+    public static IMaybeType ReplaceSelfWith(this IMaybeType type, IMaybeType selfType)
     {
         if (selfType is not CapabilityType selfReferenceType)
             return type;
@@ -189,7 +189,7 @@ public static class DataTypeExtensions
     /// <summary>
     /// Replace self viewpoint types using the given type as self.
     /// </summary>
-    public static IMaybeExpressionType ReplaceSelfWith(this IMaybeExpressionType type, Capability capability)
+    public static IMaybeType ReplaceSelfWith(this IMaybeType type, Capability capability)
     {
         return type switch
         {
@@ -200,34 +200,6 @@ public static class DataTypeExtensions
             _ => type,
         };
     }
-
-    //private static DataType ReplaceSelfWith(ReferenceType type, ReferenceCapability capability)
-    //{
-    //    var bareType = type.BareType.ReplaceSelfWith(capability);
-    //    return ReferenceEquals(type.BareType, bareType) ? type : bareType.With(type.Capability);
-    //}
-
-    //private static DataType ReplaceSelfWith(OptionalType type, ReferenceCapability capability)
-    //{
-    //    var referent = type.Referent.ReplaceSelfWith(capability);
-    //    return ReferenceEquals(type.Referent, referent) ? type : new OptionalType(type);
-    //}
-
-    //private static BareReferenceType ReplaceSelfWith(this BareReferenceType type, ReferenceCapability capability)
-    //{
-    //    // TODO data type visitor and replacement
-    //    var typeArguments = type.TypeArguments.ReplaceSelfWith(capability);
-    //    if (type is not SelfBareReferenceType selfType)
-    //        return type;
-
-    //    return selfType.With(capability);
-    //}
-
-    //private static BareReferenceType ReplaceSelfWith(this BareReferenceType type, ReferenceCapability capability)
-    //{
-
-    //}
-
 
     /// <summary>
     /// If this is a reference type or an optional reference type, the underlying reference type.

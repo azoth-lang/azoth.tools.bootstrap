@@ -48,7 +48,7 @@ public static partial class TypeOperations
     public static bool ArgumentsCanBeLent(this BareType type)
         => type.HasIndependentTypeArguments && type.GenericParameterArguments.Any(a => a.CanBeLent());
 
-    public static bool ArgumentsCanBeLent(this IMaybeExpressionType type)
+    public static bool ArgumentsCanBeLent(this IMaybeType type)
         => type switch
         {
             CapabilityType t => t.BareType.ArgumentsCanBeLent(),
@@ -59,7 +59,6 @@ public static partial class TypeOperations
             EmptyType _ => false,
             UnknownType _ => false,
             FunctionType _ => false,
-            ConstValueType _ => false,
             _ => throw ExhaustiveMatch.Failed(type),
         };
 }

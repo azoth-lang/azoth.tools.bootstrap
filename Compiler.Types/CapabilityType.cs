@@ -136,6 +136,8 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
     public override CapabilityType WithoutWrite() => With(Capability.WithoutWrite());
     IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => WithoutWrite();
 
+    IMaybeType IMaybeType.AccessedVia(IMaybePseudotype contextType) => (IMaybeType)AccessedVia(contextType);
+
     public override IType AccessedVia(ICapabilityConstraint capability)
     {
         switch (capability)
@@ -153,6 +155,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
                 throw ExhaustiveMatch.Failed(capability);
         }
     }
+    IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 
     public CapabilityType UpcastTo(DeclaredType target)
     {

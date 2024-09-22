@@ -4,6 +4,7 @@ using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -35,8 +36,11 @@ public sealed class FunctionType : NonEmptyType, IMaybeFunctionType, INonVoidTyp
 
     IMaybeNonVoidType IMaybeNonVoidType.WithoutWrite() => this;
 
+    IMaybeType IMaybeType.AccessedVia(IMaybePseudotype contextType) => (IMaybeType)AccessedVia(contextType);
+
     public override IType AccessedVia(ICapabilityConstraint capability)
         => this;
+    IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 
     #region Equality
     public override bool Equals(IMaybeExpressionType? other)

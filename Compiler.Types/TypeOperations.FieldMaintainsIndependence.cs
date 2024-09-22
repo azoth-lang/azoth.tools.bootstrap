@@ -2,7 +2,6 @@ using System;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -12,11 +11,11 @@ public static partial class TypeOperations
     /// <summary>
     /// Does this type (of a field) maintain the independence of independent type parameters?
     /// </summary>
-    public static bool FieldMaintainsIndependence(this IMaybeExpressionType type)
+    public static bool FieldMaintainsIndependence(this IMaybeNonVoidType type)
         // Independent types can be used directly as fields, so the top level is an independent context
         => type.FieldMaintainsIndependence(Independence.BothAllowed);
 
-    private static bool FieldMaintainsIndependence(this IMaybeExpressionType type, Independence context)
+    private static bool FieldMaintainsIndependence(this IMaybeType type, Independence context)
     {
         return type switch
         {
@@ -25,7 +24,6 @@ public static partial class TypeOperations
             ViewpointType t => t.Referent.FieldMaintainsIndependence(context),
             EmptyType _ => true,
             UnknownType _ => true,
-            ConstValueType _ => true,
             // The referent of an optional type is basically `out T` (covariant)
             OptionalType t => t.Referent.FieldMaintainsIndependence(context.Child(Independence.Disallowed)),
             FunctionType t => t.FieldMaintainsIndependence(),

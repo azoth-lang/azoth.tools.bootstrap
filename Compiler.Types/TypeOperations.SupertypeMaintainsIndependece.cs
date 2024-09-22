@@ -8,15 +8,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
 public static partial class TypeOperations
 {
-    private static bool SupertypeMaintainsIndependence(this IMaybeExpressionType type, bool exact, TypeParameterIndependence context)
+    private static bool SupertypeMaintainsIndependence(this IType type, bool exact, TypeParameterIndependence context)
         => type switch
         {
             GenericParameterType t => t.SupertypeMaintainsIndependence(exact, context),
             CapabilityType t => t.BareType.SupertypeMaintainsIndependence(exact),
             ViewpointType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
             EmptyType _ => true,
-            UnknownType _ => true,
-            ConstValueType _ => true,
             OptionalType t => t.Referent.SupertypeMaintainsIndependence(exact, context),
             FunctionType t => t.SupertypeMaintainsIndependence(),
             _ => throw ExhaustiveMatch.Failed(type),

@@ -237,7 +237,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeExpressionType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node)
     {
-        var selfType = node.Method.Context.Type;
+        var selfType = node.Method.Context.Type.ToNonConstValueType();
         // TODO does this need to be modified by flow typing?
         var unboundType = node.ContextualizedOverload?.ReturnType;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
@@ -266,7 +266,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeExpressionType GetterInvocationExpression_Type(IGetterInvocationExpressionNode node)
     {
-        var selfType = node.Context.Type;
+        var selfType = node.Context.Type.ToNonConstValueType();
         var unboundType = node.ContextualizedOverload?.ReturnType;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
         return boundType ?? IType.Unknown;
@@ -293,7 +293,7 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybeExpressionType SetterInvocationExpression_Type(ISetterInvocationExpressionNode node)
     {
-        var selfType = node.Context.Type;
+        var selfType = node.Context.Type.ToNonConstValueType();
         var unboundType = node.ContextualizedOverload?.ParameterTypes[0].Type;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
         return boundType ?? IType.Unknown;

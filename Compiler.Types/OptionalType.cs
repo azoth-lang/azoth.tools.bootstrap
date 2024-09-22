@@ -1,6 +1,7 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -61,7 +62,10 @@ public sealed class OptionalType : NonEmptyType, INonVoidType
     public override INonVoidAntetype ToAntetype()
         => new OptionalAntetype(Referent.ToAntetype());
 
+    IMaybeType IMaybeType.AccessedVia(IMaybePseudotype contextType) => (IMaybeType)AccessedVia(contextType);
+
     public override IType AccessedVia(ICapabilityConstraint capability) => this;
+    IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 
     #region Equals
     public override bool Equals(IMaybeExpressionType? other)

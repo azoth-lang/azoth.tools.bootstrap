@@ -169,7 +169,7 @@ public abstract class BareType : IEquatable<BareType>
     public string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
     public string ToILString() => ToString(t => t.ToILString());
 
-    private string ToString(Func<IMaybeExpressionType, string> toString)
+    private string ToString(Func<IType, string> toString)
     {
         var builder = new StringBuilder();
         builder.Append(DeclaredType.ContainingNamespace);

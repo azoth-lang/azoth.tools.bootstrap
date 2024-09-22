@@ -68,12 +68,12 @@ public sealed class ContextualizedOverload
     public IMaybeSelfParameterType? SelfParameterType { get; }
     public IFixedList<IMaybeParameterType> ParameterTypes { get; }
     public int Arity => ParameterTypes.Count;
-    public IMaybeExpressionType ReturnType { get; }
+    public IMaybeType ReturnType { get; }
 
     private ContextualizedOverload(
         IMaybeSelfParameterType? selfParameterType,
         IFixedList<IMaybeParameterType> parameterTypes,
-        IMaybeExpressionType returnType)
+        IMaybeType returnType)
     {
         SelfParameterType = selfParameterType;
         ParameterTypes = parameterTypes.ToFixedList();

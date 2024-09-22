@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using ExhaustiveMatching;
 
@@ -23,4 +24,20 @@ public interface IMaybeType : IMaybeExpressionType
     /// The same type except with any mutability removed.
     /// </summary>
     IMaybeType WithoutWrite();
+
+    /// <summary>
+    /// Return the type for when a value of this type is accessed via a type of the given value.
+    /// </summary>
+    /// <remarks>This can restrict the ability to write to the value.</remarks>
+    new IMaybeType AccessedVia(IMaybePseudotype contextType);
+    IMaybeExpressionType IMaybeExpressionType.AccessedVia(IMaybePseudotype contextType)
+        => AccessedVia(contextType);
+
+    /// <summary>
+    /// Return the type for when a value of this type is accessed via a reference with the given capability.
+    /// </summary>
+    /// <remarks>This can restrict the ability to write to the value.</remarks>
+    new IMaybeType AccessedVia(ICapabilityConstraint capability);
+    IMaybeExpressionType IMaybeExpressionType.AccessedVia(ICapabilityConstraint capability)
+        => AccessedVia(capability);
 }

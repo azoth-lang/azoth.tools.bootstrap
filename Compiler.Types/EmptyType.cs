@@ -48,13 +48,15 @@ public abstract class EmptyType : IType
     /// Return the type for when a value of this type is accessed via a type of the given value.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
-    public IMaybeExpressionType AccessedVia(IMaybePseudotype contextType) => this;
+    public IMaybeType AccessedVia(IMaybePseudotype contextType) => this;
 
     /// <summary>
     /// Return the type for when a value of this type is accessed via a reference with the given capability.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
     public IType AccessedVia(ICapabilityConstraint capability) => this;
+    IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
+    IMaybeExpressionType IMaybeExpressionType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 
     #region Eqauality
     public bool Equals(IMaybePseudotype? other)

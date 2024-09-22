@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
@@ -142,8 +141,8 @@ public abstract class NonEmptyType : IExpressionType
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
     public virtual IExpressionType AccessedVia(ICapabilityConstraint capability) => this;
-
-    IMaybeExpressionType IMaybeExpressionType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
+    IMaybeExpressionType IMaybeExpressionType.AccessedVia(ICapabilityConstraint capability)
+        => AccessedVia(capability);
 
     #region Equality
     public abstract bool Equals(IMaybeExpressionType? other);
@@ -151,10 +150,10 @@ public abstract class NonEmptyType : IExpressionType
     public abstract override int GetHashCode();
 
     public bool Equals(IMaybePseudotype? other)
-        => ReferenceEquals(this, other) || other is IMaybeExpressionType type && Equals((IMaybeExpressionType?)(IMaybePseudotype?)type);
+        => ReferenceEquals(this, other) || other is IMaybeExpressionType type && Equals(type);
 
     public sealed override bool Equals(object? obj)
-        => ReferenceEquals(this, obj) || obj is IMaybeExpressionType type && Equals((IMaybeExpressionType?)(object?)type);
+        => ReferenceEquals(this, obj) || obj is IMaybeExpressionType type && Equals(type);
     #endregion
 
     public sealed override string ToString() => throw new NotSupportedException();

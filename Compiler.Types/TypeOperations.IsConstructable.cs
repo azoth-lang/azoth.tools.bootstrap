@@ -13,7 +13,7 @@ public static partial class TypeOperations
 
         return Check(param, arg);
 
-        static bool Check(GenericParameter param, IMaybeExpressionType arg)
+        static bool Check(GenericParameter param, IType arg)
         {
             switch (arg)
             {
@@ -38,9 +38,7 @@ public static partial class TypeOperations
                         return false;
                     break;
                 case EmptyType _:
-                case UnknownType _:
                 case FunctionType _:
-                case ConstValueType _:
                     // ignore
                     break;
                 default:

@@ -1,5 +1,6 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
@@ -17,5 +18,8 @@ public abstract class ViewpointType : NonEmptyType, INonVoidType
 
     public sealed override INonVoidAntetype ToAntetype() => Referent.ToAntetype();
 
+    IMaybeType IMaybeType.AccessedVia(IMaybePseudotype contextType) => (IMaybeType)AccessedVia(contextType);
+
     public sealed override IType AccessedVia(ICapabilityConstraint capability) => this;
+    IMaybeType IMaybeType.AccessedVia(ICapabilityConstraint capability) => AccessedVia(capability);
 }

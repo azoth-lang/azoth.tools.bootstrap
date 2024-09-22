@@ -54,7 +54,7 @@ public sealed class UnknownType : IMaybeFunctionType, IMaybeParameterType, IMayb
     /// Return the type for when a value of this type is accessed via a type of the given value.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
-    public IMaybeExpressionType AccessedVia(IMaybePseudotype contextType)
+    public IMaybeType AccessedVia(IMaybePseudotype contextType)
     {
         if (contextType is CapabilityType capabilityType) return AccessedVia(capabilityType.Capability);
         if (contextType is CapabilityTypeConstraint capabilityTypeConstraint)
@@ -66,7 +66,7 @@ public sealed class UnknownType : IMaybeFunctionType, IMaybeParameterType, IMayb
     /// Return the type for when a value of this type is accessed via a reference with the given capability.
     /// </summary>
     /// <remarks>This can restrict the ability to write to the value.</remarks>
-    public IMaybeExpressionType AccessedVia(ICapabilityConstraint capability) => this;
+    public IMaybeType AccessedVia(ICapabilityConstraint capability) => this;
 
     public bool Equals(IMaybePseudotype? other)
         => ReferenceEquals(this, other)
