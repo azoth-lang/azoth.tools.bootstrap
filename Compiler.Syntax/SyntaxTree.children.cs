@@ -254,9 +254,6 @@ public static class ISyntaxExtensions
             case IUnaryOperatorExpressionSyntax n:
                 yield return n.Operand;
                 yield break;
-            case IIdExpressionSyntax n:
-                yield return n.Referent;
-                yield break;
             case IConversionExpressionSyntax n:
                 yield return n.Referent;
                 yield return n.ConvertToType;

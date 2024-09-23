@@ -121,10 +121,6 @@ internal class SemanticTreeValidator
             case ISelfExpressionNode n:
                 _ = n.ContainingDeclaration;
                 break;
-            case IIdExpressionNode n:
-                _ = n.TempReferent;
-                //_ = n.Type;
-                break;
             case IVariableDeclarationStatementNode n:
                 _ = n.BindingValueId;
                 break;

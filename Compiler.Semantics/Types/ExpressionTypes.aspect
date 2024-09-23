@@ -117,7 +117,6 @@
 = BinaryOperatorExpression.RightOperand.**.FlowStateBefore
     => LeftOperand?.FlowStateAfter ?? IFlowState.Empty;
 = BinaryOperatorExpression.↑.Diagnostics;
-= IdExpression.↑.Diagnostics;
 = ConversionExpression.↑.Diagnostics;
 ↑ eager ImplicitConversionExpression.Type: `IMaybeType`;
 // No expected type for the referent. If one were given, it could cause another implicit conversion.

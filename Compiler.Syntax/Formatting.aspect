@@ -22,7 +22,6 @@
 = AssignmentExpression.ExpressionPrecedence => OperatorPrecedence.Assignment;
 = BinaryOperatorExpression.ExpressionPrecedence => Operator.Precedence();
 = UnaryOperatorExpression.ExpressionPrecedence => OperatorPrecedence.Unary;
-= IdExpression.ExpressionPrecedence => OperatorPrecedence.Min;
 = ConversionExpression.ExpressionPrecedence => OperatorPrecedence.Conversion;
 = PatternMatchExpression.ExpressionPrecedence => OperatorPrecedence.Conversion;
 

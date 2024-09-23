@@ -88,12 +88,6 @@ public static class TypeError
             3010, $"Cannot assign into a field through a read only `{contextType.ToSourceCodeString()}`");
     }
 
-    public static Diagnostic CannotIdNonReferenceType(CodeFile file, in TextSpan span, IMaybeExpressionType type)
-    {
-        return new(file, span, DiagnosticLevel.CompilationError, DiagnosticPhase.Analysis,
-            3011, $"Taking the `id` of the type `{type.ToSourceCodeString()}` is not supported, because it is not a reference type");
-    }
-
     public static Diagnostic CannotExplicitlyConvert(CodeFile file, ICodeSyntax expression, IMaybeExpressionType ofType, IMaybeType toType)
     {
         return new(file, expression.Span, DiagnosticLevel.FatalCompilationError, DiagnosticPhase.Analysis,

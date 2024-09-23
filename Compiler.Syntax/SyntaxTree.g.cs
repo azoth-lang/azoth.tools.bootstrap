@@ -1119,7 +1119,6 @@ public partial interface IOptionalPatternSyntax : IOptionalOrBindingPatternSynta
     typeof(IAssignmentExpressionSyntax),
     typeof(IBinaryOperatorExpressionSyntax),
     typeof(IUnaryOperatorExpressionSyntax),
-    typeof(IIdExpressionSyntax),
     typeof(IConversionExpressionSyntax),
     typeof(IPatternMatchExpressionSyntax),
     typeof(IIfExpressionSyntax),
@@ -1300,20 +1299,6 @@ public partial interface IUnaryOperatorExpressionSyntax : IExpressionSyntax
         UnaryOperator @operator,
         IExpressionSyntax operand)
         => new UnaryOperatorExpressionSyntax(span, fixity, @operator, operand);
-}
-
-// [Closed(typeof(IdExpressionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IIdExpressionSyntax : IExpressionSyntax
-{
-    IExpressionSyntax Referent { get; }
-    OperatorPrecedence IExpressionSyntax.ExpressionPrecedence
-        => OperatorPrecedence.Min;
-
-    public static IIdExpressionSyntax Create(
-        TextSpan span,
-        IExpressionSyntax referent)
-        => new IdExpressionSyntax(span, referent);
 }
 
 // [Closed(typeof(ConversionExpressionSyntax))]
@@ -3127,25 +3112,6 @@ file class UnaryOperatorExpressionSyntax : IUnaryOperatorExpressionSyntax
         Fixity = fixity;
         Operator = @operator;
         Operand = operand;
-    }
-}
-
-[GeneratedCode("AzothCompilerCodeGen", null)]
-file class IdExpressionSyntax : IIdExpressionSyntax
-{
-    private IIdExpressionSyntax Self { [Inline] get => this; }
-
-    public TextSpan Span { [DebuggerStepThrough] get; }
-    public IExpressionSyntax Referent { [DebuggerStepThrough] get; }
-    public override string ToString()
-        => FormattingAspect.IdExpression_ToString(this);
-
-    public IdExpressionSyntax(
-        TextSpan span,
-        IExpressionSyntax referent)
-    {
-        Span = span;
-        Referent = referent;
     }
 }
 

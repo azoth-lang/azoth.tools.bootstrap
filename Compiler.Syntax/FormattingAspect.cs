@@ -291,9 +291,6 @@ internal static partial class FormattingAspect
             _ => throw ExhaustiveMatch.Failed(node.Fixity)
         };
 
-    public static partial string IdExpression_ToString(IIdExpressionSyntax node)
-        => $"id {node.Referent}";
-
     public static partial string ConversionExpression_ToString(IConversionExpressionSyntax node)
         => $"{node.Referent.ToGroupedString(node.ExpressionPrecedence)} {node.Operator.ToSymbolString()} {node.ConvertToType}";
 

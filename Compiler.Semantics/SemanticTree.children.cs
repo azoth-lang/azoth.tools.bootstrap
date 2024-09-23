@@ -299,9 +299,6 @@ public static class ISemanticNodeExtensions
             case IUnaryOperatorExpressionNode n:
                 yield return n.TempOperand;
                 yield break;
-            case IIdExpressionNode n:
-                yield return n.TempReferent;
-                yield break;
             case IConversionExpressionNode n:
                 yield return n.TempReferent;
                 yield return n.ConvertToType;

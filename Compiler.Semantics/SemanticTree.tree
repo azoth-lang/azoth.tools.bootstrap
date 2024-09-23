@@ -243,7 +243,6 @@ BinaryOperatorExpression <: Expression = Syntax:`IBinaryOperatorExpressionSyntax
     LeftOperand:AmbiguousExpression RightOperand:AmbiguousExpression;
 UnaryOperatorExpression <: Expression = Syntax:`IUnaryOperatorExpressionSyntax`
      Operand:AmbiguousExpression;
-IdExpression <: Expression = Syntax:`IIdExpressionSyntax` Referent:AmbiguousExpression;
 ConversionExpression <: Expression = Syntax:`IConversionExpressionSyntax`
     Referent:AmbiguousExpression ConvertToType:Type;
 ImplicitConversionExpression <: Expression = Referent:Expression Antetype:`SimpleAntetype`;

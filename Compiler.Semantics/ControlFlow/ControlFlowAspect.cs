@@ -130,9 +130,6 @@ internal static partial class ControlFlowAspect
     public static partial ControlFlowSet ImplicitTempMoveExpression_ControlFlowNext(IImplicitTempMoveExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Referent);
 
-    public static partial ControlFlowSet IdExpression_ControlFlowNext(IIdExpressionNode node)
-        => ControlFlowSet.CreateNormal(node.Referent);
-
     public static partial ControlFlowSet AwaitExpression_ControlFlowNext(IAwaitExpressionNode node)
         => ControlFlowSet.CreateNormal(node.Expression);
 

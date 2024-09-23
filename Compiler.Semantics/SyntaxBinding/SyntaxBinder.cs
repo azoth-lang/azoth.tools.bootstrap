@@ -453,7 +453,6 @@ internal static class SyntaxBinder
             IAssignmentExpressionSyntax syn => AssignmentExpression(syn),
             IBinaryOperatorExpressionSyntax syn => BinaryOperatorExpression(syn),
             IUnaryOperatorExpressionSyntax syn => UnaryOperatorExpression(syn),
-            IIdExpressionSyntax syn => IdExpression(syn),
             IConversionExpressionSyntax syn => ConversionExpression(syn),
             IPatternMatchExpressionSyntax syn => PatternMatchExpression(syn),
             IIfExpressionSyntax syn => IfExpression(syn),
@@ -518,9 +517,6 @@ internal static class SyntaxBinder
 
     private static IUnaryOperatorExpressionNode UnaryOperatorExpression(IUnaryOperatorExpressionSyntax syntax)
         => IUnaryOperatorExpressionNode.Create(syntax, Expression(syntax.Operand));
-
-    private static IIdExpressionNode IdExpression(IIdExpressionSyntax syntax)
-        => IIdExpressionNode.Create(syntax, Expression(syntax.Referent));
 
     private static IConversionExpressionNode ConversionExpression(IConversionExpressionSyntax syntax)
         => IConversionExpressionNode.Create(syntax, Expression(syntax.Referent), Type(syntax.ConvertToType));

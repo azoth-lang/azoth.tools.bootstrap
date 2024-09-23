@@ -350,14 +350,6 @@ public partial class Parser
                 // implicit self, don't consume the '.' it will be parsed next
                 return ISelfExpressionSyntax.Create(dot.Span.AtStart(), true);
             }
-            case IIdKeywordToken _:
-            {
-                var id = Tokens.Consume<IIdKeywordToken>();
-                // `id` is like a unary operator
-                var expression = ParseExpression(OperatorPrecedence.Unary);
-                var span = TextSpan.Covering(id, expression.Span);
-                return IIdExpressionSyntax.Create(span, expression);
-            }
             case IMoveKeywordToken _:
             {
                 var move = Tokens.Consume<IMoveKeywordToken>();

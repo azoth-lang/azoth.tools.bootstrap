@@ -67,7 +67,6 @@
 = BinaryOperatorExpression.LeftOperand.**.ControlFlowFollowing()
     => ControlFlowSet.CreateNormal(RightOperand);
 = UnaryOperatorExpression.ControlFlowNext;
-= IdExpression.ControlFlowNext;
 = ConversionExpression.ControlFlowNext;
 = ImplicitConversionExpression.ControlFlowNext;
 = PatternMatchExpression.Referent.**.ControlFlowFollowing()

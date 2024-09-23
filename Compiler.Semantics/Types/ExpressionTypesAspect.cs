@@ -32,33 +32,6 @@ internal static partial class ExpressionTypesAspect
             diagnostics.Add(TypeError.CannotImplicitlyConvert(node.File, node.Syntax, node.Type, (IMaybeNonVoidType)expectedType));
     }
 
-    public static partial IMaybeExpressionType IdExpression_Type(IIdExpressionNode node)
-    {
-        var referentType = node.Referent?.Type ?? IType.Unknown;
-        if (referentType is CapabilityType capabilityType)
-            return capabilityType.With(Capability.Identity);
-        return IType.Unknown;
-    }
-
-    public static partial IFlowState IdExpression_FlowStateAfter(IIdExpressionNode node)
-    {
-        var intermediateReferent = node.Referent;
-        if (intermediateReferent is null)
-            return IFlowState.Empty;
-        return intermediateReferent.FlowStateAfter.Transform(intermediateReferent.ValueId, node.ValueId, node.Type);
-    }
-
-    public static partial void IdExpression_Contribute_Diagnostics(IIdExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        if (node.Type is not UnknownType)
-            return;
-
-        var referentType = node.Referent?.Type
-                           ?? throw new UnreachableException("Final referent should already be assigned");
-        if (referentType is not CapabilityType)
-            diagnostics.Add(TypeError.CannotIdNonReferenceType(node.File, node.Syntax.Span, referentType));
-    }
-
     public static partial IMaybeExpressionType VariableNameExpression_Type(IVariableNameExpressionNode node)
         => node.FlowStateAfter.AliasType(node.ReferencedDefinition);
 

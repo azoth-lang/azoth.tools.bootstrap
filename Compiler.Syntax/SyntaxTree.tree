@@ -189,7 +189,6 @@ StringLiteralExpression <: LiteralExpression = Value:`string`;
 AssignmentExpression <: Expression = LeftOperand:Expression Operator:`AssignmentOperator` RightOperand:Expression;
 BinaryOperatorExpression <: Expression = LeftOperand:Expression Operator:`BinaryOperator` RightOperand:Expression;
 UnaryOperatorExpression <: Expression = Fixity:`UnaryOperatorFixity` Operator:`UnaryOperator` Operand:Expression;
-IdExpression <: Expression = Referent:Expression;
 ConversionExpression <: Expression = Referent:Expression Operator:`ConversionOperator` ConvertToType:Type;
 PatternMatchExpression <: Expression = Referent:Expression Pattern;
 

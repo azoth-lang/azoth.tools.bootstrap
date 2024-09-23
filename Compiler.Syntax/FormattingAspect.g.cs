@@ -118,8 +118,6 @@ internal static partial class FormattingAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string UnaryOperatorExpression_ToString(IUnaryOperatorExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial string IdExpression_ToString(IIdExpressionSyntax node);
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string ConversionExpression_ToString(IConversionExpressionSyntax node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial string PatternMatchExpression_ToString(IPatternMatchExpressionSyntax node);

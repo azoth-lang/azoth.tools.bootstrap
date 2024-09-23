@@ -96,7 +96,6 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 = BinaryOperatorExpression.RightOperand.**.ContainingLexicalScope;
 = BinaryOperatorExpression.FlowLexicalScope();
 = UnaryOperatorExpression.FlowLexicalScope();
-= IdExpression.FlowLexicalScope() => TempReferent.FlowLexicalScope();
 = ConversionExpression.FlowLexicalScope() => TempReferent.FlowLexicalScope();
 = ImplicitConversionExpression.FlowLexicalScope() => Referent.FlowLexicalScope();
 = PatternMatchExpression.Referent.**.ContainingLexicalScope => ContainingLexicalScope();

@@ -505,8 +505,6 @@ public class InterpreterProcess
         {
             default:
                 throw ExhaustiveMatch.Failed(expression);
-            case IIdExpressionNode exp:
-                return await ExecuteAsync(exp.Referent!, variables);
             case IMoveExpressionNode exp:
                 return await ExecuteAsync(exp.Referent, variables);
             case IImplicitTempMoveExpressionNode exp:
