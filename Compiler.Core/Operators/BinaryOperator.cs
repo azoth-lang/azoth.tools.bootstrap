@@ -8,6 +8,8 @@ public enum BinaryOperator
     Slash,
     EqualsEquals,
     NotEqual,
+    ReferenceEquals,
+    NotReferenceEqual,
     LessThan,
     LessThanOrEqual,
     GreaterThan,

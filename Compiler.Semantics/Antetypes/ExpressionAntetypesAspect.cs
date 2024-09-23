@@ -80,9 +80,8 @@ internal static partial class ExpressionAntetypesAspect
             (BoolConstValueAntetype, BinaryOperator.And, BoolConstValueAntetype) => null,
             (BoolConstValueAntetype, BinaryOperator.Or, BoolConstValueAntetype) => null,
 
-            // TODO this is the legacy reference equality operator that needs to be changed
-            (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.EqualsEquals, INonVoidAntetype { HasReferenceSemantics: true })
-                or (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.NotEqual, INonVoidAntetype { HasReferenceSemantics: true })
+            (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.ReferenceEquals, INonVoidAntetype { HasReferenceSemantics: true })
+                or (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.NotReferenceEqual, INonVoidAntetype { HasReferenceSemantics: true })
                 => null,
 
             (BoolAntetype, BinaryOperator.EqualsEquals, BoolAntetype)
@@ -138,9 +137,8 @@ internal static partial class ExpressionAntetypesAspect
             (BoolConstValueAntetype left, BinaryOperator.And, BoolConstValueAntetype right) => left.And(right),
             (BoolConstValueAntetype left, BinaryOperator.Or, BoolConstValueAntetype right) => left.Or(right),
 
-            // TODO this is the legacy reference equality operator that needs to be changed
-            (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.EqualsEquals, INonVoidAntetype { HasReferenceSemantics: true })
-                or (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.NotEqual, INonVoidAntetype { HasReferenceSemantics: true })
+            (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.ReferenceEquals, INonVoidAntetype { HasReferenceSemantics: true })
+                or (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.NotReferenceEqual, INonVoidAntetype { HasReferenceSemantics: true })
                 => IAntetype.Bool,
 
             (BoolAntetype, BinaryOperator.EqualsEquals, BoolAntetype)

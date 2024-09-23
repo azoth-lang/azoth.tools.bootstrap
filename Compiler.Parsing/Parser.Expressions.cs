@@ -91,10 +91,13 @@ public partial class Parser
                         @operator = Tokens.ConsumeToken<IBinaryOperatorToken>();
                     }
                     break;
+
                 case ILessThanToken _:
                 case ILessThanOrEqualToken _:
                 case IGreaterThanToken _:
                 case IGreaterThanOrEqualToken _:
+                case IReferenceEqualsToken _:
+                case INotReferenceEqualsToken _:
                 case ILessThanColonToken _: // Subtype operator
                     if (minPrecedence <= OperatorPrecedence.Relational)
                     {
@@ -242,6 +245,8 @@ public partial class Parser
             ISlashToken _ => BinaryOperator.Slash,
             IEqualsEqualsToken _ => BinaryOperator.EqualsEquals,
             INotEqualToken _ => BinaryOperator.NotEqual,
+            IReferenceEqualsToken _ => BinaryOperator.ReferenceEquals,
+            INotReferenceEqualsToken _ => BinaryOperator.NotReferenceEqual,
             ILessThanToken _ => BinaryOperator.LessThan,
             ILessThanOrEqualToken _ => BinaryOperator.LessThanOrEqual,
             IGreaterThanToken _ => BinaryOperator.GreaterThan,
@@ -293,6 +298,7 @@ public partial class Parser
             case IMinusToken _:
                 return ParsePrefixUnaryOperator(UnaryOperator.Minus);
             case INotKeywordToken _:
+                // TODO fix precedence to be LogicalNot
                 return ParsePrefixUnaryOperator(UnaryOperator.Not);
             case IBooleanLiteralToken _:
             {

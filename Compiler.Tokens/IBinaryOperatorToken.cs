@@ -13,6 +13,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Tokens;
     typeof(ISlashToken),
     typeof(IEqualsEqualsToken),
     typeof(INotEqualToken),
+    typeof(IReferenceEqualsToken),
+    typeof(INotReferenceEqualsToken),
     typeof(IGreaterThanToken),
     typeof(IGreaterThanOrEqualToken),
     typeof(ILessThanToken),
@@ -34,6 +36,8 @@ public partial interface IAsteriskToken : IBinaryOperatorToken { }
 public partial interface ISlashToken : IBinaryOperatorToken { }
 public partial interface IEqualsEqualsToken : IBinaryOperatorToken { }
 public partial interface INotEqualToken : IBinaryOperatorToken { }
+public partial interface IReferenceEqualsToken : IBinaryOperatorToken { }
+public partial interface INotReferenceEqualsToken : IBinaryOperatorToken { }
 public partial interface IGreaterThanToken : IBinaryOperatorToken { }
 public partial interface IGreaterThanOrEqualToken : IBinaryOperatorToken { }
 public partial interface ILessThanToken : IBinaryOperatorToken { }

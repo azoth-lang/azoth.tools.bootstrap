@@ -662,6 +662,12 @@ public class InterpreterProcess
                     case BinaryOperator.NotEqual:
                         return AzothValue.Bool(!await EqualsAsync(exp.LeftOperand!, exp.RightOperand!, variables)
                             .ConfigureAwait(false));
+                    case BinaryOperator.ReferenceEquals:
+                        return AzothValue.Bool(await ReferenceEqualsAsync(exp.LeftOperand!, exp.RightOperand!, variables)
+                            .ConfigureAwait(false));
+                    case BinaryOperator.NotReferenceEqual:
+                        return AzothValue.Bool(!await ReferenceEqualsAsync(exp.LeftOperand!, exp.RightOperand!, variables)
+                            .ConfigureAwait(false));
                     case BinaryOperator.LessThan:
                         return AzothValue.Bool(await CompareAsync(exp.LeftOperand!, exp.RightOperand!, variables)
                             .ConfigureAwait(false) < 0);
@@ -1084,12 +1090,12 @@ public class InterpreterProcess
 
     private async ValueTask<bool> EqualsAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
     {
-        if (!leftExp.Type.Equals(rightExp.Type) && leftExp.Type is not CapabilityType { IsIdentityReference: true })
+        if (!leftExp.Type.Equals(rightExp.Type))
             throw new InvalidOperationException(
                 $"Can't compare expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()} for equality.");
         var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
         var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
-        var type = (IType)leftExp.Type;
+        var type = leftExp.Type.Known();
         if (type is OptionalType optionalType)
         {
             if (left.IsNone && right.IsNone) return true;
@@ -1116,9 +1122,25 @@ public class InterpreterProcess
         if (type.Equals(IType.Size)) return left.SizeValue.Equals(right.SizeValue);
         if (type.Equals(IType.NInt)) return left.NIntValue.Equals(right.NIntValue);
         if (type.Equals(IType.NUInt)) return left.NUIntValue.Equals(right.NUIntValue);
-        if (type is CapabilityType { IsIdentityReference: true })
-            return ReferenceEquals(left.ObjectValue, right.ObjectValue);
         throw new NotImplementedException($"Compare equality of `{type.ToILString()}`.");
+    }
+
+    private async ValueTask<bool> ReferenceEqualsAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)
+    {
+        if (leftExp.Type is not CapabilityType { DeclaredType: DeclaredReferenceType }
+            || rightExp.Type is not CapabilityType { DeclaredType: DeclaredReferenceType })
+            throw new InvalidOperationException(
+                $"Can't compare expressions of type {leftExp.Type.ToILString()} and {rightExp.Type.ToILString()} for reference equality.");
+        var left = await ExecuteAsync(leftExp, variables).ConfigureAwait(false);
+        var right = await ExecuteAsync(rightExp, variables).ConfigureAwait(false);
+        var type = leftExp.Type.Known();
+        if (type is OptionalType)
+        {
+            if (left.IsNone && right.IsNone) return true;
+            if (left.IsNone || right.IsNone) return false;
+        }
+
+        return ReferenceEquals(left.ObjectValue, right.ObjectValue);
     }
 
     private async ValueTask<int> CompareAsync(IExpressionNode leftExp, IExpressionNode rightExp, LocalVariableScope variables)

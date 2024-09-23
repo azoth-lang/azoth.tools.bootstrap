@@ -14,6 +14,8 @@ public static class BinaryOperatorExtensions
             BinaryOperator.Slash => "/",
             BinaryOperator.EqualsEquals => "==",
             BinaryOperator.NotEqual => "=/=",
+            BinaryOperator.ReferenceEquals => "≡≡",
+            BinaryOperator.NotReferenceEqual => "≡/≡",
             BinaryOperator.LessThan => "<",
             BinaryOperator.LessThanOrEqual => "<=",
             BinaryOperator.GreaterThan => ">",
@@ -45,8 +47,11 @@ public static class BinaryOperatorExtensions
             BinaryOperator.LessThanDotDot => OperatorPrecedence.Range,
             BinaryOperator.LessThanDotDotLessThan => OperatorPrecedence.Range,
 
-            BinaryOperator.EqualsEquals => OperatorPrecedence.Relational,
-            BinaryOperator.NotEqual => OperatorPrecedence.Relational,
+            BinaryOperator.EqualsEquals => OperatorPrecedence.Equality,
+            BinaryOperator.NotEqual => OperatorPrecedence.Equality,
+
+            BinaryOperator.ReferenceEquals => OperatorPrecedence.Relational,
+            BinaryOperator.NotReferenceEqual => OperatorPrecedence.Relational,
             BinaryOperator.LessThan => OperatorPrecedence.Relational,
             BinaryOperator.LessThanOrEqual => OperatorPrecedence.Relational,
             BinaryOperator.GreaterThan => OperatorPrecedence.Relational,

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Core.Code;
 using Azoth.Tools.Bootstrap.Compiler.Lexing;
 using Azoth.Tools.Bootstrap.Compiler.Tokens;
@@ -304,8 +302,6 @@ public class LexerTests
     }
 
     [Property(MaxTest = 10_000)]
-    [SuppressMessage("Usage", "xUnit1028:Test method must have valid return type",
-        Justification = "Required by FsCheck")]
     public Property Tokens_concatenate_to_input()
     {
         return Prop.ForAll<NonNull<string>>(input =>
@@ -317,8 +313,6 @@ public class LexerTests
     }
 
     [Property(MaxTest = 1_000)]
-    [SuppressMessage("Usage", "xUnit1028:Test method must have valid return type",
-        Justification = "Required by FsCheck")]
     public Property Token_lexes()
     {
         return Prop.ForAll(Arbitrary.PsuedoToken(), token =>
@@ -334,8 +328,6 @@ public class LexerTests
     }
 
     [Property(MaxTest = 200)]
-    [SuppressMessage("Usage", "xUnit1028:Test method must have valid return type",
-        Justification = "Required by FsCheck")]
     public Property Valid_token_sequence_lexes_back_to_itself()
     {
         return Prop.ForAll(Arbitrary.PsuedoTokenList(), tokens =>

@@ -38,6 +38,8 @@
         "Equals", // `=` U+003D
         "EqualsEquals", // `==` U+003D", U+003D
         "NotEqual", // `≠` U+2260, `=/=` U+003D, U+002F, U+003D
+        "ReferenceEquals", // `≡≡` U+2261, U+2261
+        "NotReferenceEquals", // `≢` U+2262, `≡/≡` U+2261, U+002F, U+2261
         "GreaterThan", // `>` U+003E
         "GreaterThanOrEqual", // `≥` U+2265", `>=` U+003E", U+003D
         "LessThan", // `<` U+003C

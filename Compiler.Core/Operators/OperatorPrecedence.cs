@@ -8,12 +8,15 @@ public enum OperatorPrecedence
     Coalesce, // `??`
     LogicalOr, // `or`
     LogicalAnd, // `and`
-    Equality, // `==` `≠`
-    Relational, // `<` `<=` `>` `>=` `<:` `is`
+    LogicalNot, // `not`
+    Equality, // `==` `=/=` `≠`
+    // Note `≡≡` `≡/≡` `≢` are relational, not equality because they act more like immediate
+    // comparisons that you would then want to further compare the results of.
+    Relational, // `<` `<=` `>` `>=` `≡≡` `≡/≡` `≢` `<:` `is`
     Range, // `..` `..<` `<..` `<..<`
     Conversion, // `as` `as!` `as?`
     Additive, // `+` `-`
     Multiplicative, // `*` `/`
-    Unary, // `+` `-` `not` `await`
+    Unary, // `+` `-` `await`
     Primary // `f()` `.` `[]`
 }

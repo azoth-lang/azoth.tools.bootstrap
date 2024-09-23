@@ -83,6 +83,12 @@ public static partial class TokenFactory
     public static INotEqualToken NotEqual(TextSpan span)
         => new NotEqualToken(span);
 
+    public static IReferenceEqualsToken ReferenceEquals(TextSpan span)
+        => new ReferenceEqualsToken(span);
+
+    public static INotReferenceEqualsToken NotReferenceEquals(TextSpan span)
+        => new NotReferenceEqualsToken(span);
+
     public static IGreaterThanToken GreaterThan(TextSpan span)
         => new GreaterThanToken(span);
 
@@ -154,6 +160,8 @@ public static partial class TokenFactory
     typeof(IEqualsToken),
     typeof(IEqualsEqualsToken),
     typeof(INotEqualToken),
+    typeof(IReferenceEqualsToken),
+    typeof(INotReferenceEqualsToken),
     typeof(IGreaterThanToken),
     typeof(IGreaterThanOrEqualToken),
     typeof(ILessThanToken),
@@ -400,6 +408,24 @@ public partial interface INotEqualToken : IEssentialToken { }
 internal partial class NotEqualToken : Token, INotEqualToken
 {
     public NotEqualToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface IReferenceEqualsToken : IEssentialToken { }
+internal partial class ReferenceEqualsToken : Token, IReferenceEqualsToken
+{
+    public ReferenceEqualsToken(TextSpan span)
+        : base(span)
+    {
+    }
+}
+
+public partial interface INotReferenceEqualsToken : IEssentialToken { }
+internal partial class NotReferenceEqualsToken : Token, INotReferenceEqualsToken
+{
+    public NotReferenceEqualsToken(TextSpan span)
         : base(span)
     {
     }
