@@ -69,8 +69,8 @@ public sealed class UnknownType : IMaybeFunctionType, IMaybeParameterType, IMayb
     public IMaybeType AccessedVia(ICapabilityConstraint capability) => this;
 
     public bool Equals(IMaybePseudotype? other)
-        => ReferenceEquals(this, other)
-           || other is IMaybeExpressionType dataType && Equals((IMaybePseudotype?)dataType);
+        // The unknown type is a singleton, so reference equality suffices
+        => ReferenceEquals(this, other);
 
     #region Equals
     public bool Equals(IMaybeExpressionType? other)
