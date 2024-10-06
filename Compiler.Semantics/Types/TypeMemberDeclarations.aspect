@@ -25,9 +25,9 @@
 = ConcreteMethodDefinition.Body.**.FlowStateBefore()
     => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
 = ConcreteMethodDefinition.Body.**.ExpectedReturnType => Return?.NamedType ?? IType.Void;
+= ConcreteMethodDefinition.Body.ExpectedType => Self.ReturnType;
 
 = StandardMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
-= StandardMethodDefinition.Body.**.ExpectedType => Self.ReturnType;
 
 // TODO this can given unknown when the return type is known because a parameter type is known
 = ConstructorDefinition.ReturnType => Symbol?.ReturnType ?? IMaybeType.Unknown;

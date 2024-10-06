@@ -6080,7 +6080,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Body))
-            return Self.MethodGroupType.Return.ToAntetype().ToNonConstValueType();
+            return Self.ReturnType.ToAntetype();
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
     }
 
@@ -6093,7 +6093,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
 
     internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        if (ReferenceEquals(child, Self.Body))
+        if (ReferenceEquals(descendant, Self.Body))
             return Self.ReturnType;
         return base.Inherited_ExpectedType(child, descendant, ctx);
     }
@@ -6253,11 +6253,25 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
+    internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Self.ReturnType.ToAntetype();
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
             return Return?.NamedType ?? IType.Void;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Self.ReturnType;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6415,11 +6429,25 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
+    internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Self.ReturnType.ToAntetype();
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
     internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(child, Self.Body))
             return Return?.NamedType ?? IType.Void;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Self.ReturnType;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
     }
 
     internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
