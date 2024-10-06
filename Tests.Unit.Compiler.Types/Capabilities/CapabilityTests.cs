@@ -57,6 +57,15 @@ public class CapabilityTests
     [
         // Object ▷ Member = Effective
 
+        // TODO Currently not allowed, is that correct?
+        /*new(TemporarilyIsolated, Isolated, Isolated),
+        new(TemporarilyIsolated, TemporarilyIsolated, TemporarilyConstant),
+        new(TemporarilyIsolated, Mutable, Mutable),
+        new(TemporarilyIsolated, Read, Read),
+        new(TemporarilyIsolated, Constant, Constant),
+        new(TemporarilyIsolated, TemporarilyConstant, TemporarilyConstant),
+        new(TemporarilyIsolated, Identity, Identity),*/
+
         // TODO I am not sure of the correct effective capability here
         //new(Mutable, Isolated, Mutable),
         //new(Mutable, TemporarilyIsolated, Mutable),

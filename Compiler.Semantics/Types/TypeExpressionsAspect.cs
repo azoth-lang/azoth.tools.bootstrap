@@ -48,6 +48,7 @@ internal static partial class TypeExpressionsAspect
         ICapabilityViewpointTypeNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
+        // TODO move this condition into the Types project to remove logic duplication
         if (node.Referent.NamedType is not GenericParameterType)
             diagnostics.Add(TypeError.CapabilityViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
     }
@@ -76,6 +77,7 @@ internal static partial class TypeExpressionsAspect
         if (node.MethodSelfType is not (CapabilityType or CapabilityTypeConstraint))
             diagnostics.Add(TypeError.SelfViewpointNotAvailable(node.File, node.Syntax));
 
+        // TODO move this condition into the Types project to remove logic duplication
         if (node.Referent.NamedType is not GenericParameterType)
             diagnostics.Add(TypeError.SelfViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
     }

@@ -34,13 +34,12 @@ public sealed class CapabilityTypeConstraint : IPseudotype
     }
 
     public override bool Equals(object? obj)
-    => ReferenceEquals(this, obj) || obj is IMaybePseudotype other && Equals(other);
+        => ReferenceEquals(this, obj) || obj is IMaybePseudotype other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(Capability, BareType);
     #endregion
 
-    public override string ToString()
-        => throw new NotSupportedException();
+    public override string ToString() => throw new NotSupportedException();
 
     public string ToILString() => $"{Capability} {BareType.ToILString()}";
 
