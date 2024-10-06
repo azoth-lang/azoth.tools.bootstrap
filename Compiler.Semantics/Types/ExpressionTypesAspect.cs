@@ -532,6 +532,10 @@ internal static partial class ExpressionTypesAspect
 
     public static partial void BinaryOperatorExpression_Contribute_Diagnostics(IBinaryOperatorExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
+        if (node.LeftOperand!.Type is UnknownType || node.RightOperand!.Type is UnknownType)
+            // Previous errors mean no other error should be reported
+            return;
+
         if (node.Type is UnknownType)
             diagnostics.Add(TypeError.OperatorCannotBeAppliedToOperandsOfType(node.File,
                 node.Syntax.Span, node.Operator, node.LeftOperand!.Type, node.RightOperand!.Type));
