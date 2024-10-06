@@ -12967,7 +12967,6 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
         ExpressionTypesAspect.FunctionInvocationExpression_Contribute_Diagnostics(this, builder);
-        OverloadResolutionAspect.FunctionInvocationExpression_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)
@@ -14767,6 +14766,7 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     internal override void Contribute_Diagnostics(DiagnosticCollectionBuilder builder)
     {
         ExpressionTypesAspect.Expression_Contribute_Diagnostics(this, builder);
+        OverloadResolutionAspect.FunctionName_Contribute_Diagnostics(this, builder);
     }
 
     internal override void CollectContributors_ControlFlowPrevious(ContributorCollection<SemanticNode> contributors)

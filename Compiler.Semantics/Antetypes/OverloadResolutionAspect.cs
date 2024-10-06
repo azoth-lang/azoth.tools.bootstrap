@@ -179,13 +179,6 @@ internal static partial class OverloadResolutionAspect
         }
     }
 
-    public static partial void FunctionInvocationExpression_Contribute_Diagnostics(IFunctionInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
-    {
-        var function = node.Function;
-        ContributeFunctionBindingDiagnostics(function.ReferencedDeclaration,
-            function.CompatibleDeclarations, node.File, node.Syntax, diagnostics);
-    }
-
     public static partial void MethodInvocationExpression_Contribute_Diagnostics(IMethodInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var method = node.Method;
@@ -234,13 +227,20 @@ internal static partial class OverloadResolutionAspect
         => node.CompatibleDeclarations.TrySingle();
 
     public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
+        => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleDeclarations, node, diagnostics);
+
+    private static void ContributeFunctionNameBindingDiagnostics(
+        IFunctionInvocableDeclarationNode? referencedDeclaration,
+        IFixedSet<IFunctionInvocableDeclarationNode> compatibleDeclarations,
+        INameExpressionNode node,
+        DiagnosticCollectionBuilder diagnostics)
     {
-        if (node.ReferencedDeclaration is not null
+        if (referencedDeclaration is not null
             // errors will be reported by the parent in this case
             || node.Parent is IUnknownInvocationExpressionNode)
             return;
 
-        switch (node.CompatibleDeclarations.Count)
+        switch (compatibleDeclarations.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindFunctionName(node.File, node.Syntax));
@@ -252,6 +252,9 @@ internal static partial class OverloadResolutionAspect
                 break;
         }
     }
+
+    public static partial void FunctionName_Contribute_Diagnostics(IFunctionNameNode node, DiagnosticCollectionBuilder diagnostics)
+        => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleDeclarations, node, diagnostics);
 
     public static partial IFixedSet<IStandardMethodDeclarationNode> MethodGroupName_CompatibleDeclarations(IMethodGroupNameNode node)
     {

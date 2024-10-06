@@ -280,7 +280,7 @@ InitializerInvocationExpression <: InvocationExpression = Syntax:`IInvocationExp
 
 // ---------- Ambiguous Name Expressions
 // TODO consider renaming to `UnresolvedNameExpression` because the final tree could have a bound
-// name that is still ambigous (e.g. could not determine what it refers to). However, perhaps another
+// name that is still ambiguous (e.g. could not determine what it refers to). However, perhaps another
 // name is needed to distinguish between unresolved nodes and temp nodes.
 temp AmbiguousNameExpression <: AmbiguousExpression = Syntax:`INameExpressionSyntax`;
 temp AmbiguousName <: AmbiguousNameExpression;

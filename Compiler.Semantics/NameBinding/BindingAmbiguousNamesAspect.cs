@@ -115,6 +115,7 @@ internal static partial class BindingAmbiguousNamesAspect
             return null;
 
         var contextTypeDeclaration = node.PackageNameScope().Lookup(context.Antetype);
+        // TODO members needs to be filtered to visible accessible members
         var members = contextTypeDeclaration?.InclusiveInstanceMembersNamed(node.MemberName).ToFixedSet() ?? [];
         if (members.Count == 0)
             return null;
@@ -127,12 +128,10 @@ internal static partial class BindingAmbiguousNamesAspect
             // We don't really know that it is a getter, but if it isn't then it will be rewritten to a setter
             return IGetterInvocationExpressionNode.Create(node.Syntax, context, node.MemberName, referencedProperties);
 
-        if (members.TrySingle() is not null and var referencedDeclaration)
-            switch (referencedDeclaration)
-            {
-                case IFieldDeclarationNode fieldDeclaration:
-                    return IFieldAccessExpressionNode.Create(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
-            }
+        // TODO does this need to change for get vs set?
+        if (members.Where(m => m is not IPropertyAccessorDeclarationNode)
+                   .TrySingle() is IFieldDeclarationNode fieldDeclaration)
+            return IFieldAccessExpressionNode.Create(node.Syntax, context, fieldDeclaration.Name, fieldDeclaration);
 
         return IAmbiguousMemberAccessExpressionNode.Create(node.Syntax, context, node.TypeArguments, members);
     }

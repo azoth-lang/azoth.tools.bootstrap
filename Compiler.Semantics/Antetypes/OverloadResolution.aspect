@@ -20,8 +20,6 @@
 ✎ UnknownInvocationExpression FunctionReferenceExpression;
 = UnknownInvocationExpression.↑.Diagnostics;
 
-= FunctionInvocationExpression.↑.Diagnostics;
-
 = MethodInvocationExpression.↑.Diagnostics;
 
 ↑ InitializerInvocationExpression.CompatibleDeclarations: {InitializerDeclaration};
@@ -31,6 +29,7 @@
 ↑ FunctionGroupName.CompatibleDeclarations: {FunctionInvocableDeclaration};
 ↑ FunctionGroupName.ReferencedDeclaration: FunctionInvocableDeclaration?;
 = FunctionGroupName.↑.Diagnostics;
+= FunctionName.↑.Diagnostics;
 ↑ MethodGroupName.CompatibleDeclarations: {StandardMethodDeclaration};
 ↑ MethodGroupName.ReferencedDeclaration: StandardMethodDeclaration?;
 = MethodGroupName.↑.Diagnostics;
