@@ -76,9 +76,9 @@
     => ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
 
 // ---------- Ambiguous Name Expressions
-= UnresolvedMemberAccessExpression.*.ExpectedAntetype => null;
 
 // ---------- Name Expressions
+= UnresolvedMemberAccessExpression.*.ExpectedAntetype => null;
 = NamespaceName.Antetype => IAntetype.Unknown;
 = FunctionGroupName.Antetype => IAntetype.Unknown;
 = FunctionGroupName.*.ExpectedAntetype => null;

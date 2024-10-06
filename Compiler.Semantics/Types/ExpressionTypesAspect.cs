@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
@@ -350,6 +349,9 @@ internal static partial class ExpressionTypesAspect
 
     public static partial IMaybePseudotype SelfExpression_Pseudotype(ISelfExpressionNode node)
         => node.ReferencedDefinition?.BindingType ?? IType.Unknown;
+
+    public static partial IFlowState AmbiguousMemberAccessExpression_FlowStateAfter(IAmbiguousMemberAccessExpressionNode node)
+        => node.Context.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type);
 
     public static partial ContextualizedOverload? NewObjectExpression_ContextualizedOverload(
         INewObjectExpressionNode node)

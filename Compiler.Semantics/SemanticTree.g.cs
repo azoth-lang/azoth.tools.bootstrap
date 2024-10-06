@@ -3342,6 +3342,8 @@ public partial interface IAmbiguousMemberAccessExpressionNode : IUnknownNameExpr
     IFixedSet<IDeclarationNode> ReferencedMembers { get; }
     StandardName MemberName
         => Syntax.MemberName;
+    IFlowState INameExpressionNode.FlowStateAfter
+        => ExpressionTypesAspect.AmbiguousMemberAccessExpression_FlowStateAfter(this);
 
     public static IAmbiguousMemberAccessExpressionNode Create(
         IMemberAccessExpressionSyntax syntax,

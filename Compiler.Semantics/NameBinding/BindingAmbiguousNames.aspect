@@ -12,14 +12,14 @@
 ✎ AssignmentExpression PropertyNameLeftOperand;
 
 // ---------- Ambiguous Name Expressions
-✎ UnresolvedMemberAccessExpression NamespaceNameContext;
-✎ UnresolvedMemberAccessExpression TypeNameExpressionContext;
-✎ UnresolvedMemberAccessExpression ExpressionContext;
 ↑ StandardNameExpression.ReferencedDeclarations: Declaration*;
 = StandardNameExpression.ReferencedDeclarations;
 ✎ IdentifierNameExpression;
 
 // ---------- Name Expressions
+✎ UnresolvedMemberAccessExpression NamespaceNameContext;
+✎ UnresolvedMemberAccessExpression TypeNameExpressionContext;
+✎ UnresolvedMemberAccessExpression ExpressionContext;
 = UnresolvedMemberAccessExpression.↑.Diagnostics;
 + FunctionGroupName.new.Validate;
 ✎ FunctionGroupName ToFunctionName;

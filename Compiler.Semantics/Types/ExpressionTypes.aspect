@@ -197,6 +197,7 @@
 // TODO delete once all name expressions implement FlowStateAfter
 ↑ NameExpression.FlowStateAfter: `IFlowState`
     => throw new NotImplementedException($"{GetType().GetFriendlyName()}.{nameof(FlowStateAfter)} not implemented.");
+= UnresolvedMemberAccessExpression.FlowStateAfter;
 ↑ NamespaceName.Type: `UnknownType` => IType.Unknown;
 ↑ FunctionGroupName.Type: `UnknownType` => IType.Unknown;
 = FunctionGroupName.FlowStateAfter => FlowStateBefore();
@@ -219,7 +220,7 @@
 = SelfExpression.FlowStateAfter;
 ↑ MissingNameExpression.Type: `UnknownType` => IType.Unknown;
 ↑ UnknownNameExpression.Type: `UnknownType` => IType.Unknown;
-= UnresolvedMemberAccessExpression.FlowStateAfter;
+= AmbiguousMemberAccessExpression.FlowStateAfter;
 
 // ---------- Capability Expressions
 = MoveExpression.Type;

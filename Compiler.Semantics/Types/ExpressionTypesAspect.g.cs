@@ -49,6 +49,8 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void FunctionReferenceInvocationExpression_Contribute_Diagnostics(IFunctionReferenceInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFlowState UnresolvedMemberAccessExpression_FlowStateAfter(IUnresolvedMemberAccessExpressionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState FunctionName_FlowStateAfter(IFunctionNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeExpressionType? MethodName_Context_ExpectedType(IMethodNameNode node);
@@ -61,7 +63,7 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState SelfExpression_FlowStateAfter(ISelfExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFlowState UnresolvedMemberAccessExpression_FlowStateAfter(IUnresolvedMemberAccessExpressionNode node);
+    public static partial IFlowState AmbiguousMemberAccessExpression_FlowStateAfter(IAmbiguousMemberAccessExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeExpressionType MoveExpression_Type(IMoveExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
