@@ -17,10 +17,6 @@ public class SemanticAnalyzer
         // If there are errors from the lex and parse phase, don't continue on
         packageSyntax.Diagnostics.ThrowIfFatalErrors();
 
-        // Assign declaration numbers before building the semantic tree so that, for now, they can
-        // be used to build symbols for the old syntax tree approach.
-        //DeclarationNumberAssigner.AssignIn(packageSyntax.AllEntityDeclarations);
-
         // Build a semantic tree from the syntax tree
         var packageNode = SyntaxBinder.Bind(packageSyntax);
 
@@ -30,9 +26,6 @@ public class SemanticAnalyzer
 #endif
 
         // TODO use DataFlowAnalysis to check for unused variables and report use of variables starting with `_`
-
-        // If the semantic tree reports any fatal errors, don't continue on
-        packageNode.Diagnostics.ThrowIfFatalErrors();
 
         // If the semantic tree reports any fatal errors, don't continue on
         packageNode.Diagnostics.ThrowIfFatalErrors();
