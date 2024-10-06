@@ -360,7 +360,7 @@ internal static partial class ExpressionAntetypesAspect
     public static partial IMaybeAntetype? MethodName_Context_ExpectedAntetype(IMethodNameNode node)
         // TODO it would be better if this didn't depend on types, but only on antetypes
         => (node.Parent as IMethodInvocationExpressionNode)
-           ?.ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype().ToNonConstValueType();
+           ?.ContextualizedOverload?.SelfParameterType?.Type.ToAntetype().ToNonConstValueType();
 
     public static partial IExpressionNode? Expression_Rewrite_ImplicitConversion(IExpressionNode node)
     {

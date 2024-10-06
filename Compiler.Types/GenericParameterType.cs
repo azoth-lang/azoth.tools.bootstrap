@@ -39,7 +39,7 @@ public sealed class GenericParameterType : NonEmptyType, INonVoidType
         return capability switch
         {
             Capability c => CapabilityViewpointType.Create(c, this),
-            CapabilitySet c => new SelfViewpointType(c, this),
+            CapabilitySet c => SelfViewpointType.Create(c, this),
             _ => throw ExhaustiveMatch.Failed(capability),
         };
     }

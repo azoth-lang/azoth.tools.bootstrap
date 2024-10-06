@@ -150,7 +150,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
 
                 return newBareType.With(newCapability);
             case CapabilitySet c:
-                return new SelfViewpointType(c, this);
+                return SelfViewpointType.Create(c, this);
             default:
                 throw ExhaustiveMatch.Failed(capability);
         }

@@ -39,7 +39,7 @@ public sealed class SelfViewpointType : ViewpointType
 
     public override INonVoidType Referent { get; }
 
-    public SelfViewpointType(CapabilitySet capability, INonVoidType referent)
+    private SelfViewpointType(CapabilitySet capability, INonVoidType referent)
     {
         Capability = capability;
         Referent = referent;
@@ -59,7 +59,7 @@ public sealed class SelfViewpointType : ViewpointType
     #endregion
 
     public override string ToSourceCodeString()
-        => $"{Capability.ToSourceCodeString()} self|>{Referent.ToSourceCodeString()}";
+        => $"self|>{Referent.ToSourceCodeString()}";
 
     public override string ToILString()
         => $"{Capability.ToILString()} self|>{Referent.ToILString()}";

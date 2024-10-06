@@ -61,10 +61,10 @@
     => ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = GetterInvocationExpression.Context.ExpectedAntetype
-    => ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype().ToNonConstValueType();
+    => ContextualizedOverload?.SelfParameterType?.Type.ToAntetype().ToNonConstValueType();
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = SetterInvocationExpression.Context.ExpectedAntetype
-    => ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound().ToAntetype().ToNonConstValueType();
+    => ContextualizedOverload?.SelfParameterType?.Type.ToAntetype().ToNonConstValueType();
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = SetterInvocationExpression.Value.ExpectedAntetype
     => ContextualizedOverload?.ParameterTypes[0].Type.ToAntetype().ToNonConstValueType();
