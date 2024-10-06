@@ -3,12 +3,15 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
+// TODO should `iso|>T` be disallowed?
 public sealed class CapabilityViewpointType : ViewpointType
 {
     public static IMaybeType Create(Capability capability, IMaybeType referent)
         => referent switch
         {
             GenericParameterType t => Create(capability, t),
+            // In an error case, don't actually make a capability type.
+            // TODO doesn't this need to combine the capabilities? (th
             _ => referent,
         };
 

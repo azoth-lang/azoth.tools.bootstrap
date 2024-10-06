@@ -4,6 +4,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types;
 
+// TODO shouldn't a self viewpoint of a const class type just be that type?
 public sealed class SelfViewpointType : ViewpointType
 {
     public static IMaybeType Create(CapabilitySet capability, IMaybeType referent)
@@ -38,7 +39,6 @@ public sealed class SelfViewpointType : ViewpointType
 
     public override INonVoidType Referent { get; }
 
-    // TODO do not allow self viewpoint of constant value types
     public SelfViewpointType(CapabilitySet capability, INonVoidType referent)
     {
         Capability = capability;

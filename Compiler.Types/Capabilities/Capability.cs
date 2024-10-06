@@ -175,6 +175,12 @@ public sealed class Capability : ICapabilityConstraint
         return true;
     }
 
+    /// <summary>
+    /// Can a reference with this capability be assigned from a reference with the given capability
+    /// constraint ignoring lent.
+    /// </summary>
+    /// <remarks>This ignores `lent` because "swapping" means there are times where a lent reference
+    /// is passed to something expecting a non-lent reference. The rules are context dependent.</remarks>
     public bool IsAssignableFrom(ICapabilityConstraint from)
         => from switch
         {
@@ -196,15 +202,21 @@ public sealed class Capability : ICapabilityConstraint
         return Read;
     }
 
+    /// <summary>
+    /// The effective capability on a member with the current capability when it is accessed from a
+    /// value with the given capability.
+    /// </summary>
     public Capability AccessedVia(Capability capability)
     {
         if (AllowsInit)
             throw new InvalidOperationException("Fields cannot have the init capability.");
+
         if (capability == Identity)
             return this == Constant ? Constant : Identity;
+        if (this == Identity) return Identity;
 
         // Constant is contagious
-        if (capability == Constant) return Constant;
+        if (capability == Constant || this == Constant) return Constant;
         if (capability == TemporarilyConstant) return TemporarilyConstant;
 
         if (capability == Isolated || capability == TemporarilyIsolated)
@@ -221,19 +233,14 @@ public sealed class Capability : ICapabilityConstraint
     /// </summary>
     /// <remarks>Even though the behavior is the same as <see cref="OfAlias"/> the operation is
     /// logically distinct.</remarks>
-    public Capability WhenAliased()
-        => this == Isolated ? Mutable : this;
+    public Capability WhenAliased() => this == Isolated ? Mutable : this;
 
     /// <summary>
     /// The reference capability of an alias to this type.
     /// </summary>
     /// <remarks>Even though the behavior is the same as <see cref="WhenAliased"/> the operation is
     /// logically distinct.</remarks>
-    public Capability OfAlias()
-    {
-        if (this == Isolated) return Mutable;
-        return this;
-    }
+    public Capability OfAlias() => this == Isolated ? Mutable : this;
 
     /// <summary>
     /// The reference capability if the referenced object were frozen.

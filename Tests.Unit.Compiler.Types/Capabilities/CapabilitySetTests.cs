@@ -1,4 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.TestCases;
 using Xunit;
 
 namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.Capabilities;

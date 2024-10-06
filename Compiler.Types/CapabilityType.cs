@@ -144,7 +144,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
         {
             case Capability c:
                 var newCapability = Capability.AccessedVia(c);
-                var newBareType = BareType.AccessedVia(c);
+                var newBareType = BareType.AccessedVia(c); // Access can affect type arguments
                 if (ReferenceEquals(newBareType, BareType))
                     return ReferenceEquals(newCapability, Capability) ? this : With(newCapability);
 
