@@ -19,15 +19,6 @@ public sealed class MethodSymbol : InvocableSymbol
 
     public MethodSymbol(
         TypeSymbol containingSymbol,
-        IdentifierName name,
-        SelfParameterType selfParameterType,
-        IFixedList<ParameterType> parameters,
-        IType returnType)
-        : this(containingSymbol, MethodKind.Standard, name, selfParameterType, parameters, returnType)
-    { }
-
-    public MethodSymbol(
-        TypeSymbol containingSymbol,
         MethodKind kind,
         IdentifierName name,
         SelfParameterType selfParameterType,

@@ -78,10 +78,12 @@ public static class Primitive
 
         var integerParamType = SelfParam(integerType.Type);
 
-        var remainderMethod = new MethodSymbol(type, "remainder", integerParamType, Params(integerType.Type), Return(integerType.Type));
+        // published fn remainder(self, other: T) -> T
+        var remainderMethod = Method(type, "remainder", integerParamType, Params(integerType.Type), integerType.Type);
         tree.Add(remainderMethod);
 
-        var displayStringMethod = new MethodSymbol(type, "to_display_string", integerParamType, Params(), Return(stringType));
+        // published fn to_display_string(self) -> String
+        var displayStringMethod = Method(type, "to_display_string", integerParamType, Params(), stringType);
         tree.Add(displayStringMethod);
     }
 
@@ -97,8 +99,9 @@ public static class Primitive
         tree.Add(symbol);
 
         var idAnyType = DeclaredType.Any.With(Capability.Identity);
-        // fn identity_hash(value: Any) -> nuint
-        var identityHash = new MethodSymbol(symbol, "identity_hash", SelfParam(idAnyType), Params(), IType.NUInt);
+
+        // published fn identity_hash(id self) -> nuint
+        var identityHash = Method(symbol, "identity_hash", SelfParam(idAnyType), Params(), IType.NUInt);
         tree.Add(identityHash);
     }
 }

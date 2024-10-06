@@ -36,10 +36,10 @@ public static class Intrinsic
         = Find<ConstructorSymbol>(RawHybridBoundedList, null);
 
     public static readonly MethodSymbol GetRawBoundedListCapacity
-        = Find<MethodSymbol>(RawHybridBoundedList, "get_capacity");
+        = Find<MethodSymbol>(RawHybridBoundedList, "capacity");
 
     public static readonly MethodSymbol GetRawBoundedListCount
-        = Find<MethodSymbol>(RawHybridBoundedList, "get_count");
+        = Find<MethodSymbol>(RawHybridBoundedList, "count");
 
     public static readonly MethodSymbol RawBoundedListAdd
         = Find<MethodSymbol>(RawHybridBoundedList, "add");
@@ -147,42 +147,39 @@ public static class Intrinsic
         var constructor = new ConstructorSymbol(classSymbol, null, mutClassType, Params(fixedType, IType.Size));
         tree.Add(constructor);
 
-        // published fn get_fixed() -> F;
-        var getFixed = new MethodSymbol(classSymbol, "get_fixed", mutClassParamType, Params(), Return(fixedType));
+        // published get fixed(self) -> F;
+        var getFixed = Getter(classSymbol, "fixed", readClassParamType, fixedType);
         tree.Add(getFixed);
 
-        // published fn set_fixed(fixed: F);
-        var setFixed = new MethodSymbol(classSymbol, "set_fixed", mutClassParamType, Params(), IType.Void);
+        // published set fixed(mut self, fixed: F);
+        var setFixed = Setter(classSymbol, "fixed", mutClassParamType, Param(fixedType));
         tree.Add(setFixed);
 
-        // published fn get_capacity() -> size;
-        var capacity = new MethodSymbol(classSymbol, "get_capacity", readClassParamType, Params(), IType.Size);
+        // published get capacity(self) -> size;
+        var capacity = Getter(classSymbol, "capacity", readClassParamType, IType.Size);
         tree.Add(capacity);
 
-        // Given setters are not implemented, making this a function for now
-        // published fn get_count() -> size
-        var count = new MethodSymbol(classSymbol, "get_count", readClassParamType, Params(), IType.Size);
+        // published get count(self) -> size
+        var count = Getter(classSymbol, "count", readClassParamType, IType.Size);
         tree.Add(count);
 
         // published /* unsafe */ fn at(self, index: size) -> T
-        var at = new MethodSymbol(classSymbol, "at", readClassParamType,
-            Params(IType.Size), Return(itemType));
+        // TODO replace with at method returning a `ref var`
+        var at = Method(classSymbol, "at", readClassParamType,
+            Params(IType.Size), itemType);
         tree.Add(at);
 
         // published /* unsafe */ fn set_at(mut self, index: size, T value)
         // TODO replace with at method returning a `ref var`
-        var setAt = new MethodSymbol(classSymbol, "set_at", mutClassParamType,
-            Params(IType.Size, itemType), IType.Void);
+        var setAt = Method(classSymbol, "set_at", mutClassParamType, Params(IType.Size, itemType));
         tree.Add(setAt);
 
         // published fn add(mut self, value: T);
-        var add = new MethodSymbol(classSymbol, "add", mutClassParamType,
-            Params(itemType), IType.Void);
+        var add = Method(classSymbol, "add", mutClassParamType, Params(itemType));
         tree.Add(add);
 
         // published fn shrink(mut self, count: size)
-        var shrink = new MethodSymbol(classSymbol, "shrink", mutClassParamType,
-            Params(IType.Size), IType.Void);
+        var shrink = Method(classSymbol, "shrink", mutClassParamType, Params(IType.Size));
         tree.Add(shrink);
 
         return classType;

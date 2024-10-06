@@ -10,7 +10,7 @@ published class List_Iterator[T out]
 
     public fn \next(mut self) -> T?
     {
-        if .index >= .list.get_count() => return none;
+        if .index >= .list.count => return none;
         let value = .list.at(.index);
         .index += 1;
         return value;

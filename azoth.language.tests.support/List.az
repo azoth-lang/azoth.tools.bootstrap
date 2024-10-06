@@ -13,19 +13,19 @@ published class List[T ind]
         .items = new Raw_Hybrid_Bounded_List[void, T](capacity);
     }
 
-    published fn get_capacity(self) -> size
+    published get capacity(self) -> size
     {
-        return .items.get_capacity();
+        return .items.capacity;
     }
 
-    published fn get_count(self) -> size
+    published get count(self) -> size
     {
-        return .items.get_count();
+        return .items.count;
     }
 
     published fn at(self, index: size) -> T
     {
-        let count = .items.get_count();
+        let count = .items.count;
         if index < 0 or index >= count => ABORT("index out of bounds");
         return .items.at(index);
     }
@@ -33,24 +33,24 @@ published class List[T ind]
     // TODO replace with `at` returning `ref var`
     published fn set_at(mut self, index: size, value: T)
     {
-        let count = .items.get_count();
+        let count = .items.count;
         if index < 0 or index >= count => ABORT("index out of bounds");
         .items.set_at(index, value);
     }
 
     published fn add(mut self, value: T)
     {
-        let count = .items.get_count();
+        let count = .items.count;
         .ensure_capacity(count + 1);
         .items.add(value);
     }
 
     fn ensure_capacity(mut self, new_count: size)
     {
-        var capacity = .items.get_capacity();
+        var capacity = .items.capacity;
         if new_count <= capacity => return;
         while capacity < new_count { capacity *= 2; }
-        let count = .items.get_count();
+        let count = .items.count;
         let new_items: mut = new Raw_Hybrid_Bounded_List[void, T](capacity);
         foreach i in 0..<count { new_items.add(.items.at(i as! size)); }
         .items = new_items;

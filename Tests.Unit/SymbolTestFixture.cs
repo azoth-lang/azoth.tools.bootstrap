@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types;
@@ -71,6 +72,7 @@ public abstract class SymbolTestFixture
         containing ??= Type();
         return new MethodSymbol(
             containing,
+            MethodKind.Standard,
             Name(name) ?? DefaultName("method"),
             self ?? new SelfParameterType(false, containing.DeclaresType.With(Capability.Read, [])),
             @params ?? Params(),
@@ -87,6 +89,7 @@ public abstract class SymbolTestFixture
     {
         return new MethodSymbol(
             containing ?? mother.ContainingSymbol,
+            MethodKind.Standard,
             Name(name) ?? mother.Name,
             self ?? mother.SelfParameterType,
             @params ?? mother.Parameters,
