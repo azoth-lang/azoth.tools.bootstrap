@@ -15,7 +15,7 @@ internal static partial class ControlFlowAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IExitNode ExecutableDefinition_Exit(IExecutableDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ControlFlowSet ConcreteInvocableDefinition_Entry_ControlFlowFollowing(IConcreteInvocableDefinitionNode node);
+    public static partial ControlFlowSet InvocableDefinition_Entry_ControlFlowFollowing(IInvocableDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void ControlFlow_Contribute_ControlFlow_ControlFlowPrevious(IControlFlowNode node, IControlFlowNode target, Dictionary<IControlFlowNode, ControlFlowKind> controlFlowPrevious);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

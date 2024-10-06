@@ -7,7 +7,7 @@
 // ---------- Definitions
 ↑ ExecutableDefinition.VariableBindingsMap: `FixedDictionary<IVariableBindingNode, int>`;
 = ExecutableDefinition.Entry.VariableBindingsMap() => VariableBindingsMap;
-= ConcreteInvocableDefinition.VariableBindingsMap;
+= InvocableDefinition.VariableBindingsMap;
 
 // ---------- Member Definitions
 = FieldDefinition.VariableBindingsMap;

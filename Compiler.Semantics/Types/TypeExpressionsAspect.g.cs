@@ -14,7 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 internal static partial class TypeExpressionsAspect
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IMaybePseudotype? ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(IConcreteMethodDefinitionNode node);
+    public static partial IMaybePseudotype? MethodDefinition_Children_Broadcast_MethodSelfType(IMethodDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeType TypeName_NamedType(ITypeNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

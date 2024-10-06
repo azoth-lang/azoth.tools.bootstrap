@@ -21,7 +21,7 @@ internal static partial class BindingNamesAspect
     public static partial ISelfParameterNode? SelfExpression_ReferencedDefinition(ISelfExpressionNode node)
         => node.ContainingDeclaration switch
         {
-            IConcreteMethodDefinitionNode n => n.SelfParameter,
+            IMethodDefinitionNode n => n.SelfParameter,
             ISourceConstructorDefinitionNode n => n.SelfParameter,
             IDefaultConstructorDefinitionNode _
                 => throw new UnreachableException("A `self` expression cannot occur here because it has an empty body."),

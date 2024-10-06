@@ -187,24 +187,16 @@ public partial interface IEntityDefinitionSyntax : IDefinitionSyntax
 }
 
 [Closed(
-    typeof(IConcreteInvocableDefinitionSyntax),
-    typeof(IMethodDefinitionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInvocableDefinitionSyntax : IEntityDefinitionSyntax
-{
-    IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
-}
-
-[Closed(
     typeof(IFunctionDefinitionSyntax),
-    typeof(IConcreteMethodDefinitionSyntax),
+    typeof(IMethodDefinitionSyntax),
     typeof(IConstructorDefinitionSyntax),
     typeof(IInitializerDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConcreteInvocableDefinitionSyntax : IInvocableDefinitionSyntax
+public partial interface IInvocableDefinitionSyntax : IEntityDefinitionSyntax
 {
-    IBodySyntax Body { get; }
+    IFixedList<IConstructorOrInitializerParameterSyntax> Parameters { get; }
+    IBodySyntax? Body { get; }
 }
 
 // [Closed(typeof(NamespaceBlockDefinitionSyntax))]
@@ -239,7 +231,7 @@ public partial interface INamespaceBlockMemberDefinitionSyntax : IDefinitionSynt
 
 // [Closed(typeof(FunctionDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IFunctionDefinitionSyntax : IConcreteInvocableDefinitionSyntax, INamespaceBlockMemberDefinitionSyntax
+public partial interface IFunctionDefinitionSyntax : IInvocableDefinitionSyntax, INamespaceBlockMemberDefinitionSyntax
 {
     IFixedList<IAttributeSyntax> Attributes { get; }
     new IdentifierName Name { get; }
@@ -247,6 +239,8 @@ public partial interface IFunctionDefinitionSyntax : IConcreteInvocableDefinitio
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
+    new IBodySyntax Body { get; }
+    IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
 
     public static IFunctionDefinitionSyntax Create(
         TextSpan span,
@@ -393,7 +387,7 @@ public partial interface ITraitMemberDefinitionSyntax : ITypeMemberDefinitionSyn
 
 [Closed(
     typeof(ITypeDefinitionSyntax),
-    typeof(IConcreteMethodDefinitionSyntax),
+    typeof(IMethodDefinitionSyntax),
     typeof(IInitializerDefinitionSyntax),
     typeof(IFieldDefinitionSyntax),
     typeof(IAssociatedFunctionDefinitionSyntax))]
@@ -404,9 +398,11 @@ public partial interface IStructMemberDefinitionSyntax : ITypeMemberDefinitionSy
 
 [Closed(
     typeof(IAbstractMethodDefinitionSyntax),
-    typeof(IConcreteMethodDefinitionSyntax))]
+    typeof(IStandardMethodDefinitionSyntax),
+    typeof(IGetterMethodDefinitionSyntax),
+    typeof(ISetterMethodDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IInvocableDefinitionSyntax
+public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IInvocableDefinitionSyntax
 {
     new IdentifierName Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
@@ -420,6 +416,9 @@ public partial interface IMethodDefinitionSyntax : IClassMemberDefinitionSyntax,
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IAbstractMethodDefinitionSyntax : IMethodDefinitionSyntax
 {
+    new IBodySyntax? Body
+        => null;
+    IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
 
     public static IAbstractMethodDefinitionSyntax Create(
         TextSpan span,
@@ -433,19 +432,12 @@ public partial interface IAbstractMethodDefinitionSyntax : IMethodDefinitionSynt
         => new AbstractMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, parameters, @return);
 }
 
-[Closed(
-    typeof(IStandardMethodDefinitionSyntax),
-    typeof(IGetterMethodDefinitionSyntax),
-    typeof(ISetterMethodDefinitionSyntax))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConcreteMethodDefinitionSyntax : IMethodDefinitionSyntax, IStructMemberDefinitionSyntax, IConcreteInvocableDefinitionSyntax
-{
-}
-
 // [Closed(typeof(StandardMethodDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStandardMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
+public partial interface IStandardMethodDefinitionSyntax : IMethodDefinitionSyntax
 {
+    new IBodySyntax Body { get; }
+    IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
 
     public static IStandardMethodDefinitionSyntax Create(
         TextSpan span,
@@ -462,7 +454,7 @@ public partial interface IStandardMethodDefinitionSyntax : IConcreteMethodDefini
 
 // [Closed(typeof(GetterMethodDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
+public partial interface IGetterMethodDefinitionSyntax : IMethodDefinitionSyntax
 {
     new IReturnSyntax Return { get; }
     IReturnSyntax? IMethodDefinitionSyntax.Return => Return;
@@ -479,14 +471,16 @@ public partial interface IGetterMethodDefinitionSyntax : IConcreteMethodDefiniti
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IReturnSyntax @return,
-        IBodySyntax body)
+        IBodySyntax? body)
         => new GetterMethodDefinitionSyntax(span, file, nameSpan, accessModifier, name, selfParameter, @return, body);
 }
 
 // [Closed(typeof(SetterMethodDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISetterMethodDefinitionSyntax : IConcreteMethodDefinitionSyntax
+public partial interface ISetterMethodDefinitionSyntax : IMethodDefinitionSyntax
 {
+    new IBodySyntax Body { get; }
+    IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
     new IReturnSyntax? Return
         => null;
     IReturnSyntax? IMethodDefinitionSyntax.Return => Return;
@@ -505,13 +499,13 @@ public partial interface ISetterMethodDefinitionSyntax : IConcreteMethodDefiniti
 
 // [Closed(typeof(ConstructorDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IClassMemberDefinitionSyntax
+public partial interface IConstructorDefinitionSyntax : IInvocableDefinitionSyntax, IClassMemberDefinitionSyntax
 {
     new IdentifierName? Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     IConstructorSelfParameterSyntax SelfParameter { get; }
     new IBlockBodySyntax Body { get; }
-    IBodySyntax IConcreteInvocableDefinitionSyntax.Body => Body;
+    IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
 
     public static IConstructorDefinitionSyntax Create(
         TextSpan span,
@@ -527,13 +521,13 @@ public partial interface IConstructorDefinitionSyntax : IConcreteInvocableDefini
 
 // [Closed(typeof(InitializerDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInitializerDefinitionSyntax : IConcreteInvocableDefinitionSyntax, IStructMemberDefinitionSyntax
+public partial interface IInitializerDefinitionSyntax : IInvocableDefinitionSyntax, IStructMemberDefinitionSyntax
 {
     new IdentifierName? Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     IInitializerSelfParameterSyntax SelfParameter { get; }
     new IBlockBodySyntax Body { get; }
-    IBodySyntax IConcreteInvocableDefinitionSyntax.Body => Body;
+    IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
 
     public static IInitializerDefinitionSyntax Create(
         TextSpan span,
@@ -570,13 +564,15 @@ public partial interface IFieldDefinitionSyntax : IClassMemberDefinitionSyntax, 
 
 // [Closed(typeof(AssociatedFunctionDefinitionSyntax))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IConcreteInvocableDefinitionSyntax
+public partial interface IAssociatedFunctionDefinitionSyntax : IClassMemberDefinitionSyntax, ITraitMemberDefinitionSyntax, IStructMemberDefinitionSyntax, IInvocableDefinitionSyntax
 {
     new IdentifierName Name { get; }
     TypeName? IDefinitionSyntax.Name => Name;
     new IFixedList<INamedParameterSyntax> Parameters { get; }
     IFixedList<IConstructorOrInitializerParameterSyntax> IInvocableDefinitionSyntax.Parameters => Parameters;
     IReturnSyntax? Return { get; }
+    new IBodySyntax Body { get; }
+    IBodySyntax? IInvocableDefinitionSyntax.Body => Body;
 
     public static IAssociatedFunctionDefinitionSyntax Create(
         TextSpan span,
@@ -2077,7 +2073,7 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
     public IdentifierName Name { [DebuggerStepThrough] get; }
     public IMethodSelfParameterSyntax SelfParameter { [DebuggerStepThrough] get; }
     public IReturnSyntax Return { [DebuggerStepThrough] get; }
-    public IBodySyntax Body { [DebuggerStepThrough] get; }
+    public IBodySyntax? Body { [DebuggerStepThrough] get; }
     public override string ToString()
         => FormattingAspect.GetterMethodDefinition_ToString(this);
 
@@ -2089,7 +2085,7 @@ file class GetterMethodDefinitionSyntax : IGetterMethodDefinitionSyntax
         IdentifierName name,
         IMethodSelfParameterSyntax selfParameter,
         IReturnSyntax @return,
-        IBodySyntax body)
+        IBodySyntax? body)
     {
         Span = span;
         File = file;

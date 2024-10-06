@@ -441,7 +441,7 @@ public class InterpreterProcess
         AzothValue self,
         IEnumerable<AzothValue> arguments)
     {
-        if (method is not IConcreteMethodDefinitionNode concreteMethod)
+        if (method.Body is null)
             throw new InvalidOperationException($"Can't call abstract method {method}");
 
         try
@@ -451,7 +451,7 @@ public class InterpreterProcess
             foreach (var (arg, parameter) in arguments.EquiZip(method.Parameters))
                 variables.Add(parameter, arg);
 
-            return await ExecuteAsync(concreteMethod.Body.Statements, variables).ConfigureAwait(false);
+            return await ExecuteAsync(method.Body.Statements, variables).ConfigureAwait(false);
         }
         catch (Return @return)
         {

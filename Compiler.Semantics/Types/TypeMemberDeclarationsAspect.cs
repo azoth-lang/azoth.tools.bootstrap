@@ -46,7 +46,7 @@ internal static partial class TypeMemberDeclarationsAspect
     }
 
     // TODO maybe this should be initial flow state?
-    public static partial IFlowState ConcreteInvocableDefinition_FlowStateBefore(IConcreteInvocableDefinitionNode node)
+    public static partial IFlowState InvocableDefinition_FlowStateBefore(IInvocableDefinitionNode node)
         => IFlowState.Empty;
 
     private static void CheckFieldIsVarianceSafe(IFieldDefinitionNode node, DiagnosticCollectionBuilder diagnostics)

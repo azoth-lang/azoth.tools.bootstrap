@@ -278,9 +278,9 @@ public partial class Parser
             case IFunctionKeywordToken _:
                 return ParseClassMemberFunction(modifiers);
             case IGetKeywordToken _:
-                return ParseGetterMethod(modifiers);
+                return ParseGetterMethod(modifiers, inTrait: false);
             case ISetKeywordToken _:
-                return ParseSetterMethod(modifiers);
+                return ParseSetterMethod(modifiers, inTrait: false);
             case INewKeywordToken _:
                 return ParseConstructor(modifiers);
             case ILetKeywordToken _:
@@ -338,9 +338,9 @@ public partial class Parser
             case IFunctionKeywordToken _:
                 return ParseStructMemberFunction(modifiers);
             case IGetKeywordToken _:
-                return ParseGetterMethod(modifiers);
+                return ParseGetterMethod(modifiers, inTrait: false);
             case ISetKeywordToken _:
-                return ParseSetterMethod(modifiers);
+                return ParseSetterMethod(modifiers, inTrait: false);
             case IInitKeywordToken _:
                 return ParseInitializer(modifiers);
             case ILetKeywordToken _:
@@ -396,9 +396,9 @@ public partial class Parser
             case IFunctionKeywordToken _:
                 return ParseTraitMemberFunction(modifiers);
             case IGetKeywordToken _:
-                return ParseGetterMethod(modifiers);
+                return ParseGetterMethod(modifiers, inTrait: true);
             case ISetKeywordToken _:
-                return ParseSetterMethod(modifiers);
+                return ParseSetterMethod(modifiers, inTrait: true);
             default:
                 Tokens.UnexpectedToken();
                 throw new ParseFailedException();
@@ -489,6 +489,7 @@ public partial class Parser
     internal IClassMemberDefinitionSyntax ParseClassMemberFunction(ModifierParser modifiers)
     {
         var accessModifer = modifiers.ParseAccessModifier();
+        // TODO move checking for abstract modifier rules to semantic tree
         var abstractModifier = modifiers.ParseAbstractModifier();
         modifiers.ParseEndOfModifiers();
         var fn = Tokens.Consume<IFunctionKeywordToken>();
@@ -552,9 +553,11 @@ public partial class Parser
         }
     }
 
-    internal IGetterMethodDefinitionSyntax ParseGetterMethod(ModifierParser modifiers)
+    internal IGetterMethodDefinitionSyntax ParseGetterMethod(ModifierParser modifiers, bool inTrait)
     {
         var accessModifer = modifiers.ParseAccessModifier();
+        // TODO move checking for abstract modifier rules to semantic tree
+        var abstractModifier = modifiers.ParseAbstractModifier();
         modifiers.ParseEndOfModifiers();
         var get = Tokens.Consume<IGetKeywordToken>();
         var identifier = Tokens.RequiredToken<IIdentifierToken>();
@@ -564,7 +567,6 @@ public partial class Parser
         var parameters = ParseParameters(ParseMethodParameter);
         var expectedReturnLocation = Tokens.Current.Span.AtStart();
         var @return = ParseReturn();
-        var body = ParseBody();
 
         var selfParameter = parameters.OfType<IMethodSelfParameterSyntax>().FirstOrDefault();
         var namedParameters = parameters.Except(parameters.OfType<ISelfParameterSyntax>()).Cast<INamedParameterSyntax>()
@@ -590,12 +592,29 @@ public partial class Parser
             @return = IReturnSyntax.Create(expectedReturnLocation, ISpecialTypeNameSyntax.Create(expectedReturnLocation, SpecialTypeName.Void));
         }
 
-        var span = TextSpan.Covering(get, body.Span);
-        return IGetterMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
-            name, selfParameter, @return, body);
+        // It may or may not have a body
+        if (Tokens.Current is IOpenBraceToken or IRightDoubleArrowToken)
+        {
+            if (abstractModifier is not null)
+                Add(ParseError.ConcreteMethodDeclaredAbstract(File, abstractModifier.Span));
+            var body = ParseBody();
+            var span = TextSpan.Covering(get, body.Span);
+            return IGetterMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
+                name, selfParameter, @return, body);
+        }
+        else
+        {
+            // TODO if inTrait, cannot use abstract modifier
+            if (!inTrait && abstractModifier is null)
+                Add(ParseError.AbstractMethodMissingAbstractModifier(File, identifier.Span));
+            var semicolon = Tokens.Expect<ISemicolonToken>();
+            var span = TextSpan.Covering(get, semicolon);
+            return IGetterMethodDefinitionSyntax.Create(span, File, identifier.Span, accessModifer,
+                name, selfParameter, @return, null);
+        }
     }
 
-    internal ISetterMethodDefinitionSyntax ParseSetterMethod(ModifierParser modifiers)
+    internal ISetterMethodDefinitionSyntax ParseSetterMethod(ModifierParser modifiers, bool inTrait)
     {
         var accessModifer = modifiers.ParseAccessModifier();
         modifiers.ParseEndOfModifiers();

@@ -8,7 +8,7 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Member Definitions
-= ConcreteMethodDefinition.*.**.MethodSelfType;
+= MethodDefinition.*.**.MethodSelfType;
 
 // ---------- Types
 ↑ Type.NamedType: `IMaybeType`;

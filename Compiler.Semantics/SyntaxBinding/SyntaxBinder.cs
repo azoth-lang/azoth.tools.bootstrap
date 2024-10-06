@@ -143,7 +143,7 @@ internal static class SyntaxBinder
         => syntax switch
         {
             ITypeDefinitionSyntax syn => TypeDefinition(syn),
-            IConcreteMethodDefinitionSyntax syn => ConcreteMethodDefinition(syn),
+            IMethodDefinitionSyntax syn => MethodDefinition(syn),
             IInitializerDefinitionSyntax syn => InitializerDefinition(syn),
             IFieldDefinitionSyntax syn => FieldDefinition(syn),
             IAssociatedFunctionDefinitionSyntax syn => AssociatedFunctionDefinition(syn),
@@ -167,23 +167,16 @@ internal static class SyntaxBinder
     private static IMethodDefinitionNode MethodDefinition(IMethodDefinitionSyntax syntax)
         => syntax switch
         {
-            IConcreteMethodDefinitionSyntax syn => ConcreteMethodDefinition(syn),
             IAbstractMethodDefinitionSyntax syn => AbstractMethodDefinition(syn),
+            IStandardMethodDefinitionSyntax syn => StandardMethodDefinition(syn),
+            IGetterMethodDefinitionSyntax syn => GetterMethodDefinition(syn),
+            ISetterMethodDefinitionSyntax syn => SetterMethodDefinition(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)
         };
 
     private static IAbstractMethodDefinitionNode AbstractMethodDefinition(IAbstractMethodDefinitionSyntax syntax)
         => IAbstractMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
             NamedParameters(syntax.Parameters), Type(syntax.Return?.Type));
-
-    private static IConcreteMethodDefinitionNode ConcreteMethodDefinition(IConcreteMethodDefinitionSyntax syntax)
-        => syntax switch
-        {
-            IStandardMethodDefinitionSyntax syn => StandardMethodDefinition(syn),
-            IGetterMethodDefinitionSyntax syn => GetterMethodDefinition(syn),
-            ISetterMethodDefinitionSyntax syn => SetterMethodDefinition(syn),
-            _ => throw ExhaustiveMatch.Failed(syntax)
-        };
 
     private static IStandardMethodDefinitionNode StandardMethodDefinition(IStandardMethodDefinitionSyntax syntax)
         => IStandardMethodDefinitionNode.Create(syntax, MethodSelfParameter(syntax.SelfParameter),
@@ -271,9 +264,11 @@ internal static class SyntaxBinder
     #endregion
 
     #region Function Parts
-    private static IBodyNode Body(IBodySyntax syntax)
+    [return: NotNullIfNotNull(nameof(syntax))]
+    private static IBodyNode? Body(IBodySyntax? syntax)
         => syntax switch
         {
+            null => null,
             IBlockBodySyntax syn => BlockBody(syn),
             IExpressionBodySyntax syn => ExpressionBody(syn),
             _ => throw ExhaustiveMatch.Failed(syntax)

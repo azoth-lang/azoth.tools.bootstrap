@@ -66,12 +66,10 @@ ImportDirective <: Code = Syntax:`IImportDirectiveSyntax`;
 
 // ---------- Definitions
 Definition <: Code, PackageFacetChildDeclaration = Syntax:`IDefinitionSyntax`?;
-InvocableDefinition <: Definition, InvocableDeclaration
-    = Parameters:ConstructorOrInitializerParameter*;
 ExecutableDefinition <: Definition, SymbolDeclaration = /Entry/ /Exit/;
-ConcreteInvocableDefinition <: InvocableDefinition, ExecutableDefinition
-    = Parameters:ConstructorOrInitializerParameter* Body?;
-ConcreteFunctionInvocableDefinition <: ConcreteInvocableDefinition, FunctionInvocableDeclaration
+InvocableDefinition <: ExecutableDefinition, InvocableDeclaration
+    = Parameters:ConstructorOrInitializerParameter* /Entry/ Body? /Exit/;
+ConcreteFunctionInvocableDefinition <: InvocableDefinition, FunctionInvocableDeclaration
     = Name:`IdentifierName` Parameters:NamedParameter* Return:Type? Body;
 
 // ---------- Namespace Definitions
@@ -118,28 +116,26 @@ AssociatedMemberDefinition <: ClassMemberDefinition, TraitMemberDefinition, Stru
     = Name:`StandardName`;
 
 // ---------- Member Definitions
-MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition, MethodDeclaration
+MethodDefinition <: AlwaysTypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, InvocableDefinition, MethodDeclaration
     = Syntax:`IMethodDefinitionSyntax`
-    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return:Type?;
+    SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body? Return:Type?;
 // TODO getters and setters can be abstract too
 AbstractMethodDefinition <: MethodDefinition, StandardMethodDeclaration
     = Syntax:`IAbstractMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/;
-ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteInvocableDefinition
-    = Syntax:`IConcreteMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
-// TODO rename to Ordinary or Normal
-StandardMethodDefinition <: ConcreteMethodDefinition, StandardMethodDeclaration
+// TODO rename to OrdinaryMethodDefinition
+StandardMethodDefinition <: MethodDefinition, StandardMethodDeclaration
     = Syntax:`IStandardMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
-GetterMethodDefinition <: ConcreteMethodDefinition, GetterMethodDeclaration
-    = Syntax:`IGetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ Return:Type /Entry/ Body /Exit/;
-SetterMethodDefinition <: ConcreteMethodDefinition, SetterMethodDeclaration
+GetterMethodDefinition <: MethodDefinition, GetterMethodDeclaration
+    = Syntax:`IGetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ Return:Type /Entry/ Body? /Exit/;
+SetterMethodDefinition <: MethodDefinition, SetterMethodDeclaration
     = Syntax:`ISetterMethodDefinitionSyntax` /SelfParameter/ /Parameters/ /Return/ /Entry/ Body /Exit/;
-ConstructorDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, ConstructorDeclaration
+ConstructorDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, ClassMemberDefinition, ConstructorDeclaration
     = Syntax:`IConstructorDefinitionSyntax`? Parameters:ConstructorOrInitializerParameter*;
 DefaultConstructorDefinition <: ConstructorDefinition;
 SourceConstructorDefinition <: ConstructorDefinition
     = Syntax:`IConstructorDefinitionSyntax`
     SelfParameter:ConstructorSelfParameter /Parameters/ /Entry/ Body:BlockBody /Exit/;
-InitializerDefinition <: ConcreteInvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, InitializerDeclaration
+InitializerDefinition <: InvocableDefinition, AlwaysTypeMemberDefinition, StructMemberDefinition, InitializerDeclaration
     = Syntax:`IInitializerDefinitionSyntax`? Name:`IdentifierName`? Parameters:ConstructorOrInitializerParameter*;
 DefaultInitializerDefinition <: InitializerDefinition;
 SourceInitializerDefinition <: InitializerDefinition

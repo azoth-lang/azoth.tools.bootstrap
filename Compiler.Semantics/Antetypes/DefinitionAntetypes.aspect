@@ -10,7 +10,7 @@
 
 // ---------- Member Definitions
 // TODO it would be good to refactor to not depend on Type
-= ConcreteMethodDefinition.Body.ExpectedAntetype
+= MethodDefinition.Body.ExpectedAntetype
     => Self.ReturnType.ToAntetype();
 = FieldDefinition.BindingAntetype;
 // TODO it would be good to refactor to not depend on Type

@@ -95,7 +95,8 @@ public static class ISyntaxExtensions
             case IGetterMethodDefinitionSyntax n:
                 yield return n.SelfParameter;
                 yield return n.Return;
-                yield return n.Body;
+                if (n.Body is not null)
+                    yield return n.Body;
                 yield break;
             case ISetterMethodDefinitionSyntax n:
                 yield return n.SelfParameter;

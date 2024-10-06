@@ -61,6 +61,7 @@
 ↑ MethodDefinition.Kind: `MethodKind`;
 = AbstractMethodDefinition.Kind => MethodKind.Standard;
 = AbstractMethodDefinition.Arity => Parameters.Count;
+↑ AbstractMethodDefinition.Body: Body? => null;
 = StandardMethodDefinition.Kind => MethodKind.Standard;
 = StandardMethodDefinition.Arity => Parameters.Count;
 = GetterMethodDefinition.Kind => MethodKind.Getter;

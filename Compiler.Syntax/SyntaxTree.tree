@@ -51,8 +51,7 @@ Definition <: Code = File:`CodeFile` Name:`TypeName`? NameSpan:`TextSpan`;
 // TODO give a better name to this (the semantic tree has moved away from "entity")
 EntityDefinition <: Definition = AccessModifier:`IAccessModifierToken`?;
 /// Base type for any declaration that declares a callable thing (i.e. function, method, getter, setter, constructor, or initializer).
-InvocableDefinition <: EntityDefinition = Parameters:ConstructorOrInitializerParameter*;
-ConcreteInvocableDefinition <: InvocableDefinition = Parameters:ConstructorOrInitializerParameter* Body;
+InvocableDefinition <: EntityDefinition = Parameters:ConstructorOrInitializerParameter* Body?;
 
 // ---------- Namespace Definitions
 NamespaceBlockDefinition <: NamespaceBlockMemberDefinition
@@ -61,7 +60,7 @@ NamespaceBlockDefinition <: NamespaceBlockMemberDefinition
 NamespaceBlockMemberDefinition <: Definition;
 
 // ---------- Function Definition
-FunctionDefinition <: ConcreteInvocableDefinition, NamespaceBlockMemberDefinition
+FunctionDefinition <: InvocableDefinition, NamespaceBlockMemberDefinition
     = Attributes:Attribute* Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
 
 // ---------- Type Definitions
@@ -84,21 +83,20 @@ TraitMemberDefinition <: TypeMemberDefinition;
 StructMemberDefinition <: TypeMemberDefinition;
 
 // ---------- Member Definitions
-MethodDefinition <: TypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, InvocableDefinition
-    = Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return?;
-AbstractMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return?;
-ConcreteMethodDefinition <: MethodDefinition, StructMemberDefinition, ConcreteInvocableDefinition
-    = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
-StandardMethodDefinition <: ConcreteMethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
-GetterMethodDefinition <: ConcreteMethodDefinition = SelfParameter:MethodSelfParameter Return Body;
-SetterMethodDefinition <: ConcreteMethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body;
-ConstructorDefinition <: ConcreteInvocableDefinition, ClassMemberDefinition
+MethodDefinition <: TypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, InvocableDefinition
+    = Name:`IdentifierName` SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body?;
+AbstractMethodDefinition <: MethodDefinition = /SelfParameter/ /Parameters/ Return?;
+// TODO rename to OrdinaryMethodDefinition
+StandardMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Return? Body;
+GetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Return Body?;
+SetterMethodDefinition <: MethodDefinition = SelfParameter:MethodSelfParameter Parameters:NamedParameter* Body;
+ConstructorDefinition <: InvocableDefinition, ClassMemberDefinition
     = Name:`IdentifierName`? SelfParameter:ConstructorSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
-InitializerDefinition <: ConcreteInvocableDefinition, StructMemberDefinition
+InitializerDefinition <: InvocableDefinition, StructMemberDefinition
     = Name:`IdentifierName`? SelfParameter:InitializerSelfParameter Parameters:ConstructorOrInitializerParameter* Body:BlockBody;
 FieldDefinition <: TypeMemberDefinition, ClassMemberDefinition, StructMemberDefinition, Binding
     = Name:`IdentifierName` Type Initializer:Expression?;
-AssociatedFunctionDefinition <: TypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, ConcreteInvocableDefinition
+AssociatedFunctionDefinition <: TypeMemberDefinition, ClassMemberDefinition, TraitMemberDefinition, StructMemberDefinition, InvocableDefinition
     = Name:`IdentifierName` Parameters:NamedParameter* Return? Body;
 
 // ---------- Attributes

@@ -323,7 +323,6 @@ public partial interface IImportDirectiveNode : ICodeNode
 }
 
 [Closed(
-    typeof(IInvocableDefinitionNode),
     typeof(IExecutableDefinitionNode),
     typeof(INamespaceBlockMemberDefinitionNode),
     typeof(ITypeMemberDefinitionNode))]
@@ -342,17 +341,7 @@ public partial interface IDefinitionNode : ICodeNode, IPackageFacetChildDeclarat
 }
 
 [Closed(
-    typeof(IConcreteInvocableDefinitionNode),
-    typeof(IMethodDefinitionNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInvocableDefinitionNode : IDefinitionNode, IInvocableDeclarationNode
-{
-    IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
-    ValueIdScope ValueIdScope { get; }
-}
-
-[Closed(
-    typeof(IConcreteInvocableDefinitionNode),
+    typeof(IInvocableDefinitionNode),
     typeof(IFieldDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
 public partial interface IExecutableDefinitionNode : IDefinitionNode, ISymbolDeclarationNode
@@ -365,25 +354,23 @@ public partial interface IExecutableDefinitionNode : IDefinitionNode, ISymbolDec
 
 [Closed(
     typeof(IConcreteFunctionInvocableDefinitionNode),
-    typeof(IConcreteMethodDefinitionNode),
+    typeof(IMethodDefinitionNode),
     typeof(IConstructorDefinitionNode),
     typeof(IInitializerDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConcreteInvocableDefinitionNode : IInvocableDefinitionNode, IExecutableDefinitionNode
+public partial interface IInvocableDefinitionNode : IExecutableDefinitionNode, IInvocableDeclarationNode
 {
+    IFixedList<IConstructorOrInitializerParameterNode> Parameters { get; }
     IBodyNode? Body { get; }
     IFlowState FlowStateBefore()
-        => TypeMemberDeclarationsAspect.ConcreteInvocableDefinition_FlowStateBefore(this);
-    new ValueIdScope ValueIdScope { get; }
-    ValueIdScope IInvocableDefinitionNode.ValueIdScope => ValueIdScope;
-    ValueIdScope IExecutableDefinitionNode.ValueIdScope => ValueIdScope;
+        => TypeMemberDeclarationsAspect.InvocableDefinition_FlowStateBefore(this);
 }
 
 [Closed(
     typeof(IFunctionDefinitionNode),
     typeof(IAssociatedFunctionDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConcreteFunctionInvocableDefinitionNode : IConcreteInvocableDefinitionNode, IFunctionInvocableDeclarationNode
+public partial interface IConcreteFunctionInvocableDefinitionNode : IInvocableDefinitionNode, IFunctionInvocableDeclarationNode
 {
     new IdentifierName Name { get; }
     StandardName? IPackageFacetChildDeclarationNode.Name => Name;
@@ -392,7 +379,7 @@ public partial interface IConcreteFunctionInvocableDefinitionNode : IConcreteInv
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     ITypeNode? Return { get; }
     new IBodyNode Body { get; }
-    IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
+    IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeType IInvocableDeclarationNode.ReturnType
         => Return?.NamedType ?? IType.Void;
 }
@@ -704,7 +691,7 @@ public partial interface ITraitMemberDefinitionNode : ITypeMemberDefinitionNode,
 
 [Closed(
     typeof(IAssociatedMemberDefinitionNode),
-    typeof(IConcreteMethodDefinitionNode),
+    typeof(IMethodDefinitionNode),
     typeof(IInitializerDefinitionNode),
     typeof(IFieldDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -742,9 +729,11 @@ public partial interface IAssociatedMemberDefinitionNode : IClassMemberDefinitio
 
 [Closed(
     typeof(IAbstractMethodDefinitionNode),
-    typeof(IConcreteMethodDefinitionNode))]
+    typeof(IStandardMethodDefinitionNode),
+    typeof(IGetterMethodDefinitionNode),
+    typeof(ISetterMethodDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IInvocableDefinitionNode, IMethodDeclarationNode
+public partial interface IMethodDefinitionNode : IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, ITraitMemberDefinitionNode, IStructMemberDefinitionNode, IInvocableDefinitionNode, IMethodDeclarationNode
 {
     new IMethodDefinitionSyntax Syntax { get; }
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
@@ -777,6 +766,9 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    new IBodyNode? Body
+        => null;
+    IBodyNode? IInvocableDefinitionNode.Body => Body;
     IDeclaredUserType ContainingDeclaredType { get; }
     IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
         => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
@@ -793,34 +785,18 @@ public partial interface IAbstractMethodDefinitionNode : IMethodDefinitionNode, 
         => new AbstractMethodDefinitionNode(syntax, selfParameter, parameters, @return);
 }
 
-[Closed(
-    typeof(IStandardMethodDefinitionNode),
-    typeof(IGetterMethodDefinitionNode),
-    typeof(ISetterMethodDefinitionNode))]
+// [Closed(typeof(StandardMethodDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConcreteMethodDefinitionNode : IMethodDefinitionNode, IStructMemberDefinitionNode, IConcreteInvocableDefinitionNode
+public partial interface IStandardMethodDefinitionNode : IMethodDefinitionNode, IStandardMethodDeclarationNode
 {
-    new IConcreteMethodDefinitionSyntax Syntax { get; }
+    new IStandardMethodDefinitionSyntax Syntax { get; }
     IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     new IBodyNode Body { get; }
-    IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
-}
-
-// [Closed(typeof(StandardMethodDefinitionNode))]
-[GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefinitionNode, IStandardMethodDeclarationNode
-{
-    new IStandardMethodDefinitionSyntax Syntax { get; }
-    IConcreteMethodDefinitionSyntax IConcreteMethodDefinitionNode.Syntax => Syntax;
-    IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
-    ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
-    IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
-    ICodeSyntax? ICodeNode.Syntax => Syntax;
-    ISyntax? ISemanticNode.Syntax => Syntax;
+    IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeFunctionType IStandardMethodDeclarationNode.MethodGroupType
         => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
     MethodKind IMethodDefinitionNode.Kind
@@ -839,10 +815,9 @@ public partial interface IStandardMethodDefinitionNode : IConcreteMethodDefiniti
 
 // [Closed(typeof(GetterMethodDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinitionNode, IGetterMethodDeclarationNode
+public partial interface IGetterMethodDefinitionNode : IMethodDefinitionNode, IGetterMethodDeclarationNode
 {
     new IGetterMethodDefinitionSyntax Syntax { get; }
-    IConcreteMethodDefinitionSyntax IConcreteMethodDefinitionNode.Syntax => Syntax;
     IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
@@ -858,21 +833,22 @@ public partial interface IGetterMethodDefinitionNode : IConcreteMethodDefinition
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode @return,
-        IBodyNode body)
+        IBodyNode? body)
         => new GetterMethodDefinitionNode(syntax, selfParameter, parameters, @return, body);
 }
 
 // [Closed(typeof(SetterMethodDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinitionNode, ISetterMethodDeclarationNode
+public partial interface ISetterMethodDefinitionNode : IMethodDefinitionNode, ISetterMethodDeclarationNode
 {
     new ISetterMethodDefinitionSyntax Syntax { get; }
-    IConcreteMethodDefinitionSyntax IConcreteMethodDefinitionNode.Syntax => Syntax;
     IMethodDefinitionSyntax IMethodDefinitionNode.Syntax => Syntax;
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
+    new IBodyNode Body { get; }
+    IBodyNode? IInvocableDefinitionNode.Body => Body;
     MethodKind IMethodDefinitionNode.Kind
         => MethodKind.Setter;
 
@@ -889,7 +865,7 @@ public partial interface ISetterMethodDefinitionNode : IConcreteMethodDefinition
     typeof(IDefaultConstructorDefinitionNode),
     typeof(ISourceConstructorDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IConstructorDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IConstructorDeclarationNode
+public partial interface IConstructorDefinitionNode : IInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IClassMemberDefinitionNode, IConstructorDeclarationNode
 {
     new IConstructorDefinitionSyntax? Syntax { get; }
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
@@ -920,7 +896,7 @@ public partial interface IDefaultConstructorDefinitionNode : IConstructorDefinit
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     new IBodyNode? Body
         => null;
-    IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
+    IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeSelfParameterType IConstructorDeclarationNode.SelfParameterType
         => new SelfParameterType(false, Symbol!.SelfParameterType);
 
@@ -940,7 +916,7 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IConstructorSelfParameterNode SelfParameter { get; }
     new IBlockBodyNode Body { get; }
-    IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
+    IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeSelfParameterType IConstructorDeclarationNode.SelfParameterType
         => SelfParameter.ParameterType;
 
@@ -956,7 +932,7 @@ public partial interface ISourceConstructorDefinitionNode : IConstructorDefiniti
     typeof(IDefaultInitializerDefinitionNode),
     typeof(ISourceInitializerDefinitionNode))]
 [GeneratedCode("AzothCompilerCodeGen", null)]
-public partial interface IInitializerDefinitionNode : IConcreteInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IStructMemberDefinitionNode, IInitializerDeclarationNode
+public partial interface IInitializerDefinitionNode : IInvocableDefinitionNode, IAlwaysTypeMemberDefinitionNode, IStructMemberDefinitionNode, IInitializerDeclarationNode
 {
     new IInitializerDefinitionSyntax? Syntax { get; }
     IDefinitionSyntax? IDefinitionNode.Syntax => Syntax;
@@ -987,7 +963,7 @@ public partial interface IDefaultInitializerDefinitionNode : IInitializerDefinit
     IFixedList<IConstructorOrInitializerParameterNode> IInvocableDefinitionNode.Parameters => Parameters;
     new IBodyNode? Body
         => null;
-    IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
+    IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeSelfParameterType IInitializerDeclarationNode.SelfParameterType
         => new SelfParameterType(false, Symbol!.SelfParameterType);
 
@@ -1007,7 +983,7 @@ public partial interface ISourceInitializerDefinitionNode : IInitializerDefiniti
     ITypeMemberDefinitionSyntax? ITypeMemberDefinitionNode.Syntax => Syntax;
     IInitializerSelfParameterNode SelfParameter { get; }
     new IBlockBodyNode Body { get; }
-    IBodyNode? IConcreteInvocableDefinitionNode.Body => Body;
+    IBodyNode? IInvocableDefinitionNode.Body => Body;
     IMaybeSelfParameterType IInitializerDeclarationNode.SelfParameterType
         => SelfParameter.ParameterType;
 
@@ -5267,7 +5243,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                VariablesAspect.InvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
@@ -5307,7 +5283,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
-            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+            return ControlFlowAspect.InvocableDefinition_Entry_ControlFlowFollowing(this);
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
@@ -5906,6 +5882,8 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
                 TypeModifiersAspect.TypeMemberDefinition_AccessModifier);
     private AccessModifier accessModifier;
     private bool accessModifierCached;
+    public IEntryNode Entry { [DebuggerStepThrough] get; }
+    public IExitNode Exit { [DebuggerStepThrough] get; }
     public LexicalScope LexicalScope
         => GrammarAttribute.IsCached(in lexicalScopeCached) ? lexicalScope!
             : this.Synthetic(ref lexicalScopeCached, ref lexicalScope,
@@ -5930,6 +5908,12 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
                 ValueIdsAspect.InvocableDefinition_ValueIdScope);
     private ValueIdScope? valueIdScope;
     private bool valueIdScopeCached;
+    public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
+        => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
+            : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
+                VariablesAspect.InvocableDefinition_VariableBindingsMap);
+    private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
+    private bool variableBindingsMapCached;
 
     public AbstractMethodDefinitionNode(
         IAbstractMethodDefinitionSyntax syntax,
@@ -5941,11 +5925,85 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
         SelfParameter = Child.Attach(this, selfParameter);
         Parameters = ChildList.Attach(this, parameters);
         Return = Child.Attach(this, @return);
+        Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
+        Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         return this;
+    }
+
+    internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return LexicalScope;
+        return base.Inherited_ContainingLexicalScope(child, descendant, ctx);
+    }
+
+    internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Entry;
+    }
+
+    internal override IExitNode Inherited_ControlFlowExit(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return Exit;
+    }
+
+    internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return ControlFlowAspect.InvocableDefinition_Entry_ControlFlowFollowing(this);
+        if (ReferenceEquals(child, Self.Body))
+            return ControlFlowSet.CreateNormal(Exit);
+        return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
+    }
+
+    internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Self.ReturnType.ToAntetype();
+        return base.Inherited_ExpectedAntetype(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionType? Inherited_ExpectedReturnType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.Body))
+            return Return?.NamedType ?? IType.Void;
+        return base.Inherited_ExpectedReturnType(child, descendant, ctx);
+    }
+
+    internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Body))
+            return Self.ReturnType;
+        return base.Inherited_ExpectedType(child, descendant, ctx);
+    }
+
+    internal override IFlowState Inherited_FlowStateBefore(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(child, Self.SelfParameter))
+            return Self.FlowStateBefore();
+        if (0 < Self.Parameters.Count && ReferenceEquals(child, Self.Parameters[0]))
+            return SelfParameter.FlowStateAfter;
+        if (IndexOfNode(Self.Parameters, child) is { } index)
+            return Parameters[index - 1].FlowStateAfter;
+        if (ReferenceEquals(child, Self.Body))
+            return Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
+        return base.Inherited_FlowStateBefore(child, descendant, ctx);
+    }
+
+    internal override IMaybePseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return TypeExpressionsAspect.MethodDefinition_Children_Broadcast_MethodSelfType(this);
+    }
+
+    internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        if (ReferenceEquals(descendant, Self.Entry))
+            return VariableBindingsMap;
+        return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
 
     internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
@@ -6028,7 +6086,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                VariablesAspect.InvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
@@ -6073,7 +6131,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
-            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+            return ControlFlowAspect.InvocableDefinition_Entry_ControlFlowFollowing(this);
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
@@ -6115,7 +6173,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
 
     internal override IMaybePseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
+        return TypeExpressionsAspect.MethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
 
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6150,7 +6208,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     public IMethodSelfParameterNode SelfParameter { [DebuggerStepThrough] get; }
     public IFixedList<INamedParameterNode> Parameters { [DebuggerStepThrough] get; }
     public ITypeNode Return { [DebuggerStepThrough] get; }
-    public IBodyNode Body { [DebuggerStepThrough] get; }
+    public IBodyNode? Body { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
@@ -6204,7 +6262,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                VariablesAspect.InvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
@@ -6213,7 +6271,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         IMethodSelfParameterNode selfParameter,
         IEnumerable<INamedParameterNode> parameters,
         ITypeNode @return,
-        IBodyNode body)
+        IBodyNode? body)
     {
         Syntax = syntax;
         SelfParameter = Child.Attach(this, selfParameter);
@@ -6249,7 +6307,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
-            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+            return ControlFlowAspect.InvocableDefinition_Entry_ControlFlowFollowing(this);
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
@@ -6291,7 +6349,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
 
     internal override IMaybePseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
+        return TypeExpressionsAspect.MethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
 
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6380,7 +6438,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                VariablesAspect.InvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
@@ -6425,7 +6483,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
-            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+            return ControlFlowAspect.InvocableDefinition_Entry_ControlFlowFollowing(this);
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
@@ -6467,7 +6525,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
 
     internal override IMaybePseudotype? Inherited_MethodSelfType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
-        return TypeExpressionsAspect.ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(this);
+        return TypeExpressionsAspect.MethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
 
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6551,7 +6609,7 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                VariablesAspect.InvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
@@ -6586,7 +6644,7 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
-            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+            return ControlFlowAspect.InvocableDefinition_Entry_ControlFlowFollowing(this);
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
@@ -6666,7 +6724,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                VariablesAspect.InvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
@@ -6709,7 +6767,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
-            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+            return ControlFlowAspect.InvocableDefinition_Entry_ControlFlowFollowing(this);
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
@@ -6805,7 +6863,7 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                VariablesAspect.InvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
@@ -6840,7 +6898,7 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
-            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+            return ControlFlowAspect.InvocableDefinition_Entry_ControlFlowFollowing(this);
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
@@ -6920,7 +6978,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                VariablesAspect.InvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
@@ -6963,7 +7021,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
-            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+            return ControlFlowAspect.InvocableDefinition_Entry_ControlFlowFollowing(this);
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
@@ -7204,7 +7262,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
-                VariablesAspect.ConcreteInvocableDefinition_VariableBindingsMap);
+                VariablesAspect.InvocableDefinition_VariableBindingsMap);
     private FixedDictionary<IVariableBindingNode, int>? variableBindingsMap;
     private bool variableBindingsMapCached;
 
@@ -7242,7 +7300,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
     internal override ControlFlowSet Inherited_ControlFlowFollowing(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
-            return ControlFlowAspect.ConcreteInvocableDefinition_Entry_ControlFlowFollowing(this);
+            return ControlFlowAspect.InvocableDefinition_Entry_ControlFlowFollowing(this);
         if (ReferenceEquals(child, Self.Body))
             return ControlFlowSet.CreateNormal(Exit);
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);

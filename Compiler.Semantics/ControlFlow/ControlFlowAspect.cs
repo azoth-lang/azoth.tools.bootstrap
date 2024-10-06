@@ -23,7 +23,7 @@ internal static partial class ControlFlowAspect
     public static partial IExitNode ExecutableDefinition_Exit(IExecutableDefinitionNode node)
         => IExitNode.Create();
 
-    public static partial ControlFlowSet ConcreteInvocableDefinition_Entry_ControlFlowFollowing(IConcreteInvocableDefinitionNode node)
+    public static partial ControlFlowSet InvocableDefinition_Entry_ControlFlowFollowing(IInvocableDefinitionNode node)
         => ControlFlowSet.CreateNormal(node.Body?.Statements.FirstOrDefault() ?? (IControlFlowNode)node.Exit);
 
     public static partial ControlFlowSet Entry_ControlFlowNext(IEntryNode node)

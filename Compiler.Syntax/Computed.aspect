@@ -11,6 +11,7 @@
 ↑ eager Package.Diagnostics: `DiagnosticCollection`;
 
 // ---------- Member Definitions
+↑ AbstractMethodDefinition.Body: Body? => null;
 ↑ GetterMethodDefinition.Parameters: NamedParameter* => FixedList.Empty<INamedParameterSyntax>();
 ↑ SetterMethodDefinition.Return: Return? => null;
 

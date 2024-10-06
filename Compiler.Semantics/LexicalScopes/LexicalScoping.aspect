@@ -33,7 +33,7 @@ type `NamespaceSearchScope` <: `LexicalScope`;
 // ---------- Definitions
 ↓ Definition.ContainingLexicalScope: `LexicalScope`;
 ↑ Definition.LexicalScope:`LexicalScope`;
-= ConcreteInvocableDefinition.Body.**.ContainingLexicalScope => LexicalScope;
+= InvocableDefinition.Body.**.ContainingLexicalScope => LexicalScope;
 
 // ---------- Namespace Definitions
 ↓ NamespaceBlockDefinition.ContainingLexicalScope: `NamespaceSearchScope`;

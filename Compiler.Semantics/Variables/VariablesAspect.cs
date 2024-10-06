@@ -5,7 +5,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Variables;
 
 internal static partial class VariablesAspect
 {
-    public static partial FixedDictionary<IVariableBindingNode, int> ConcreteInvocableDefinition_VariableBindingsMap(IConcreteInvocableDefinitionNode node)
+    public static partial FixedDictionary<IVariableBindingNode, int> InvocableDefinition_VariableBindingsMap(IInvocableDefinitionNode node)
         => VariableBindings(node.Body);
 
     public static partial FixedDictionary<IVariableBindingNode, int> FieldDefinition_VariableBindingsMap(IFieldDefinitionNode node)

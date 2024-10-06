@@ -53,7 +53,7 @@ internal static partial class TypeExpressionsAspect
             diagnostics.Add(TypeError.CapabilityViewpointNotAppliedToTypeParameter(node.File, node.Syntax));
     }
 
-    public static partial IMaybePseudotype? ConcreteMethodDefinition_Children_Broadcast_MethodSelfType(IConcreteMethodDefinitionNode node)
+    public static partial IMaybePseudotype? MethodDefinition_Children_Broadcast_MethodSelfType(IMethodDefinitionNode node)
         => node.SelfParameter.BindingType;
 
     public static partial IMaybeType SelfViewpointType_NamedType(ISelfViewpointTypeNode node)

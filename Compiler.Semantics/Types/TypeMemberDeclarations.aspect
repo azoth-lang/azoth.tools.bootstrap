@@ -7,25 +7,25 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Definitions
-↑ ConcreteInvocableDefinition.FlowStateBefore(): `IFlowState`;
-= ConcreteInvocableDefinition.FlowStateBefore();
+↑ InvocableDefinition.FlowStateBefore(): `IFlowState`;
+= InvocableDefinition.FlowStateBefore();
 = ConcreteFunctionInvocableDefinition.Type;
 
 // ---------- Member Definitions
 = MethodDefinition.SelfParameterType => SelfParameter.ParameterType;
+= MethodDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
+= MethodDefinition.Parameters[0].**.FlowStateBefore()
+    => SelfParameter.FlowStateAfter;
+= MethodDefinition.Parameters[index].**.FlowStateBefore()
+    => Parameters[index - 1].FlowStateAfter;
+= MethodDefinition.Body.**.FlowStateBefore()
+    => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
+= MethodDefinition.Body.**.ExpectedReturnType => Return?.NamedType ?? IType.Void;
+= MethodDefinition.Body.ExpectedType => Self.ReturnType;
 = MethodDefinition.ReturnType => Return?.NamedType ?? IType.Void;
 = MethodDefinition.↑.Diagnostics;
-= AbstractMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
 
-= ConcreteMethodDefinition.SelfParameter.**.FlowStateBefore() => Self.FlowStateBefore();
-= ConcreteMethodDefinition.Parameters[0].**.FlowStateBefore()
-    => SelfParameter.FlowStateAfter;
-= ConcreteMethodDefinition.Parameters[index].**.FlowStateBefore()
-    => Parameters[index - 1].FlowStateAfter;
-= ConcreteMethodDefinition.Body.**.FlowStateBefore()
-    => Parameters.LastOrDefault()?.FlowStateAfter ?? SelfParameter.FlowStateAfter;
-= ConcreteMethodDefinition.Body.**.ExpectedReturnType => Return?.NamedType ?? IType.Void;
-= ConcreteMethodDefinition.Body.ExpectedType => Self.ReturnType;
+= AbstractMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
 
 = StandardMethodDefinition.MethodGroupType => Symbol?.MethodGroupType ?? IMaybeFunctionType.Unknown;
 

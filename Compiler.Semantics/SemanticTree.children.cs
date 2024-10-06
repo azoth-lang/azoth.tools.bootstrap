@@ -103,6 +103,8 @@ public static class ISemanticNodeExtensions
                 yield return n.Constraint;
                 yield break;
             case IAbstractMethodDefinitionNode n:
+                yield return n.Entry;
+                yield return n.Exit;
                 yield return n.SelfParameter;
                 foreach (var child in n.Parameters)
                     yield return child;
@@ -125,7 +127,8 @@ public static class ISemanticNodeExtensions
                     yield return child;
                 yield return n.Return;
                 yield return n.Entry;
-                yield return n.Body;
+                if (n.Body is not null)
+                    yield return n.Body;
                 yield return n.Exit;
                 yield break;
             case ISetterMethodDefinitionNode n:
