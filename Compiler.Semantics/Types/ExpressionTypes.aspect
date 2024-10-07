@@ -95,8 +95,8 @@
 = NewObjectExpression.Arguments[index].**.FlowStateBefore()
     => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
 = NewObjectExpression.Arguments[index].ExpectedType
-    => ContextualizedOverload?.ParameterTypes[index].Type;
-↑ NewObjectExpression.ContextualizedOverload:`ContextualizedOverload`?;
+    => ContextualizedCall?.ParameterTypes[index].Type;
+↑ NewObjectExpression.ContextualizedCall:`ContextualizedCall`?;
 = NewObjectExpression.↑.Diagnostics;
 
 ↑ NeverTypedExpression.Type: `NeverType` => IType.Never;
@@ -147,27 +147,27 @@
     => base.Inherited_FlowStateBefore(child, descendant, ctx);
 = FunctionInvocationExpression.Arguments[index].**.FlowStateBefore()
     => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
-↑ FunctionInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+↑ FunctionInvocationExpression.ContextualizedCall: `ContextualizedCall`?;
 = FunctionInvocationExpression.Arguments[index].ExpectedType
-    => ContextualizedOverload?.ParameterTypes[index].Type;
+    => ContextualizedCall?.ParameterTypes[index].Type;
 = FunctionInvocationExpression.↑.Diagnostics;
 = MethodInvocationExpression.Arguments[0].**.FlowStateBefore()
     => Method.FlowStateAfter;
 = MethodInvocationExpression.Arguments[index].**.FlowStateBefore()
     => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
-↑ MethodInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+↑ MethodInvocationExpression.ContextualizedCall: `ContextualizedCall`?;
 = MethodInvocationExpression.↑.Diagnostics;
-↑ GetterInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+↑ GetterInvocationExpression.ContextualizedCall: `ContextualizedCall`?;
 = GetterInvocationExpression.Context.ExpectedType
-    => ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
+    => ContextualizedCall?.SelfParameterType?.Type.ToUpperBound();
 = GetterInvocationExpression.FlowStateAfter;
 = GetterInvocationExpression.↑.Diagnostics;
 = SetterInvocationExpression.Value.**.FlowStateBefore() => Context.FlowStateAfter;
 = SetterInvocationExpression.Context.ExpectedType
-    => ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
+    => ContextualizedCall?.SelfParameterType?.Type.ToUpperBound();
 = SetterInvocationExpression.Value.ExpectedType
-    => ContextualizedOverload?.ParameterTypes[0].Type;
-↑ SetterInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+    => ContextualizedCall?.ParameterTypes[0].Type;
+↑ SetterInvocationExpression.ContextualizedCall: `ContextualizedCall`?;
 = SetterInvocationExpression.↑.Diagnostics;
 = FunctionReferenceInvocationExpression.Arguments[0].**.FlowStateBefore()
     => base.Inherited_FlowStateBefore(child, descendant, ctx);
@@ -182,9 +182,9 @@
     => base.Inherited_FlowStateBefore(child, descendant, ctx);
 = InitializerInvocationExpression.Arguments[index].**.FlowStateBefore()
     => Arguments[index - 1]?.FlowStateAfter ?? IFlowState.Empty;
-↑ InitializerInvocationExpression.ContextualizedOverload: `ContextualizedOverload`?;
+↑ InitializerInvocationExpression.ContextualizedCall: `ContextualizedCall`?;
 = InitializerInvocationExpression.Arguments[index].ExpectedType
-    => ContextualizedOverload?.ParameterTypes[index].Type;
+    => ContextualizedCall?.ParameterTypes[index].Type;
 ↓ UnknownInvocationExpression.FlowStateBefore(): `IFlowState`;
 = UnknownInvocationExpression.Arguments[0].**.FlowStateBefore()
     => Expression?.FlowStateAfter ?? base.Inherited_FlowStateBefore(child, descendant, ctx);

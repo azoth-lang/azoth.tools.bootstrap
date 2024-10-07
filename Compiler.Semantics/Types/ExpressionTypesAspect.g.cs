@@ -89,7 +89,7 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState NewObjectExpression_FlowStateAfter(INewObjectExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ContextualizedOverload? NewObjectExpression_ContextualizedOverload(INewObjectExpressionNode node);
+    public static partial ContextualizedCall? NewObjectExpression_ContextualizedCall(INewObjectExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeExpressionType UnsafeExpression_Type(IUnsafeExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -149,23 +149,23 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState FunctionInvocationExpression_FlowStateAfter(IFunctionInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ContextualizedOverload? FunctionInvocationExpression_ContextualizedOverload(IFunctionInvocationExpressionNode node);
+    public static partial ContextualizedCall? FunctionInvocationExpression_ContextualizedCall(IFunctionInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeExpressionType MethodInvocationExpression_Type(IMethodInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState MethodInvocationExpression_FlowStateAfter(IMethodInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ContextualizedOverload? MethodInvocationExpression_ContextualizedOverload(IMethodInvocationExpressionNode node);
+    public static partial ContextualizedCall? MethodInvocationExpression_ContextualizedCall(IMethodInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeExpressionType GetterInvocationExpression_Type(IGetterInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ContextualizedOverload? GetterInvocationExpression_ContextualizedOverload(IGetterInvocationExpressionNode node);
+    public static partial ContextualizedCall? GetterInvocationExpression_ContextualizedCall(IGetterInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeExpressionType SetterInvocationExpression_Type(ISetterInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState SetterInvocationExpression_FlowStateAfter(ISetterInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ContextualizedOverload? SetterInvocationExpression_ContextualizedOverload(ISetterInvocationExpressionNode node);
+    public static partial ContextualizedCall? SetterInvocationExpression_ContextualizedCall(ISetterInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeExpressionType FunctionReferenceInvocationExpression_Type(IFunctionReferenceInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -177,7 +177,7 @@ internal static partial class ExpressionTypesAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFlowState InitializerInvocationExpression_FlowStateAfter(IInitializerInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial ContextualizedOverload? InitializerInvocationExpression_ContextualizedOverload(IInitializerInvocationExpressionNode node);
+    public static partial ContextualizedCall? InitializerInvocationExpression_ContextualizedCall(IInitializerInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IMaybeExpressionType FunctionName_Type(IFunctionNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

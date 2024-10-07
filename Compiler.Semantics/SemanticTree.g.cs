@@ -2020,7 +2020,7 @@ public partial interface INewObjectExpressionNode : IInvocationExpressionNode
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     PackageNameScope PackageNameScope();
     IFlowState FlowStateBefore();
-    ContextualizedOverload? ContextualizedOverload { get; }
+    ContextualizedCall? ContextualizedCall { get; }
     IMaybeAntetype ConstructingAntetype { get; }
     IFixedSet<IConstructorDeclarationNode> CompatibleConstructors { get; }
     IConstructorDeclarationNode? ReferencedConstructor { get; }
@@ -2538,7 +2538,7 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     IFlowState FlowStateBefore();
-    ContextualizedOverload? ContextualizedOverload { get; }
+    ContextualizedCall? ContextualizedCall { get; }
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
         => TempArguments;
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
@@ -2564,7 +2564,7 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
     IFixedList<IAmbiguousExpressionNode> TempArguments { get; }
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
-    ContextualizedOverload? ContextualizedOverload { get; }
+    ContextualizedCall? ContextualizedCall { get; }
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
         => TempArguments.Prepend(Method.Context);
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
@@ -2590,7 +2590,7 @@ public partial interface IGetterInvocationExpressionNode : IInvocationExpression
     IExpressionNode CurrentContext { get; }
     StandardName PropertyName { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
-    ContextualizedOverload? ContextualizedOverload { get; }
+    ContextualizedCall? ContextualizedCall { get; }
     IGetterMethodDeclarationNode? ReferencedDeclaration { get; }
     IFlowState INameExpressionNode.FlowStateAfter
         => ExpressionTypesAspect.GetterInvocationExpression_FlowStateAfter(this);
@@ -2622,7 +2622,7 @@ public partial interface ISetterInvocationExpressionNode : IInvocationExpression
     IExpressionNode? Value { get; }
     IAmbiguousExpressionNode CurrentValue { get; }
     IFixedSet<IPropertyAccessorDeclarationNode> ReferencedPropertyAccessors { get; }
-    ContextualizedOverload? ContextualizedOverload { get; }
+    ContextualizedCall? ContextualizedCall { get; }
     ISetterMethodDeclarationNode? ReferencedDeclaration { get; }
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
         => [Context, TempValue];
@@ -2679,7 +2679,7 @@ public partial interface IInitializerInvocationExpressionNode : IInvocationExpre
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     IFlowState FlowStateBefore();
-    ContextualizedOverload? ContextualizedOverload { get; }
+    ContextualizedCall? ContextualizedCall { get; }
     IFixedSet<IInitializerDeclarationNode> CompatibleDeclarations { get; }
     IInitializerDeclarationNode? ReferencedDeclaration { get; }
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
@@ -9438,12 +9438,12 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
                 NameBindingAntetypesAspect.NewObjectExpression_ConstructingAntetype);
     private IMaybeAntetype? constructingAntetype;
     private bool constructingAntetypeCached;
-    public ContextualizedOverload? ContextualizedOverload
-        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
-            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
-                ExpressionTypesAspect.NewObjectExpression_ContextualizedOverload);
-    private ContextualizedOverload? contextualizedOverload;
-    private bool contextualizedOverloadCached;
+    public ContextualizedCall? ContextualizedCall
+        => GrammarAttribute.IsCached(in contextualizedCallCached) ? contextualizedCall
+            : this.Synthetic(ref contextualizedCallCached, ref contextualizedCall,
+                ExpressionTypesAspect.NewObjectExpression_ContextualizedCall);
+    private ContextualizedCall? contextualizedCall;
+    private bool contextualizedCallCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -9512,7 +9512,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
+            return ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -9521,7 +9521,7 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
     internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedOverload?.ParameterTypes[index].Type;
+            return ContextualizedCall?.ParameterTypes[index].Type;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -12854,12 +12854,12 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
                 ExpressionAntetypesAspect.FunctionInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public ContextualizedOverload? ContextualizedOverload
-        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
-            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
-                ExpressionTypesAspect.FunctionInvocationExpression_ContextualizedOverload);
-    private ContextualizedOverload? contextualizedOverload;
-    private bool contextualizedOverloadCached;
+    public ContextualizedCall? ContextualizedCall
+        => GrammarAttribute.IsCached(in contextualizedCallCached) ? contextualizedCall
+            : this.Synthetic(ref contextualizedCallCached, ref contextualizedCall,
+                ExpressionTypesAspect.FunctionInvocationExpression_ContextualizedCall);
+    private ContextualizedCall? contextualizedCall;
+    private bool contextualizedCallCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -12916,7 +12916,7 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
+            return ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -12925,7 +12925,7 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedOverload?.ParameterTypes[index].Type;
+            return ContextualizedCall?.ParameterTypes[index].Type;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -13048,12 +13048,12 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
                 ExpressionAntetypesAspect.MethodInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public ContextualizedOverload? ContextualizedOverload
-        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
-            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
-                ExpressionTypesAspect.MethodInvocationExpression_ContextualizedOverload);
-    private ContextualizedOverload? contextualizedOverload;
-    private bool contextualizedOverloadCached;
+    public ContextualizedCall? ContextualizedCall
+        => GrammarAttribute.IsCached(in contextualizedCallCached) ? contextualizedCall
+            : this.Synthetic(ref contextualizedCallCached, ref contextualizedCall,
+                ExpressionTypesAspect.MethodInvocationExpression_ContextualizedCall);
+    private ContextualizedCall? contextualizedCall;
+    private bool contextualizedCallCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -13230,12 +13230,12 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
                 ExpressionAntetypesAspect.GetterInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public ContextualizedOverload? ContextualizedOverload
-        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
-            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
-                ExpressionTypesAspect.GetterInvocationExpression_ContextualizedOverload);
-    private ContextualizedOverload? contextualizedOverload;
-    private bool contextualizedOverloadCached;
+    public ContextualizedCall? ContextualizedCall
+        => GrammarAttribute.IsCached(in contextualizedCallCached) ? contextualizedCall
+            : this.Synthetic(ref contextualizedCallCached, ref contextualizedCall,
+                ExpressionTypesAspect.GetterInvocationExpression_ContextualizedCall);
+    private ContextualizedCall? contextualizedCall;
+    private bool contextualizedCallCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -13272,7 +13272,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedOverload?.SelfParameterType?.Type.ToAntetype().ToNonConstValueType();
+            return ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonConstValueType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -13281,7 +13281,7 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
     internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
+            return ContextualizedCall?.SelfParameterType?.Type.ToUpperBound();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -13400,12 +13400,12 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
                 ExpressionAntetypesAspect.SetterInvocationExpression_Antetype);
     private IMaybeExpressionAntetype? antetype;
     private bool antetypeCached;
-    public ContextualizedOverload? ContextualizedOverload
-        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
-            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
-                ExpressionTypesAspect.SetterInvocationExpression_ContextualizedOverload);
-    private ContextualizedOverload? contextualizedOverload;
-    private bool contextualizedOverloadCached;
+    public ContextualizedCall? ContextualizedCall
+        => GrammarAttribute.IsCached(in contextualizedCallCached) ? contextualizedCall
+            : this.Synthetic(ref contextualizedCallCached, ref contextualizedCall,
+                ExpressionTypesAspect.SetterInvocationExpression_ContextualizedCall);
+    private ContextualizedCall? contextualizedCall;
+    private bool contextualizedCallCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -13457,9 +13457,9 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedOverload?.SelfParameterType?.Type.ToAntetype().ToNonConstValueType();
+            return ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonConstValueType();
         if (ReferenceEquals(descendant, Self.CurrentValue))
-            return ContextualizedOverload?.ParameterTypes[0].Type.ToAntetype().ToNonConstValueType();
+            return ContextualizedCall?.ParameterTypes[0].Type.ToAntetype().ToNonConstValueType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -13468,9 +13468,9 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
     internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.CurrentContext))
-            return ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
+            return ContextualizedCall?.SelfParameterType?.Type.ToUpperBound();
         if (ReferenceEquals(descendant, Self.CurrentValue))
-            return ContextualizedOverload?.ParameterTypes[0].Type;
+            return ContextualizedCall?.ParameterTypes[0].Type;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);
@@ -13788,12 +13788,12 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
                 OverloadResolutionAspect.InitializerInvocationExpression_CompatibleDeclarations);
     private IFixedSet<IInitializerDeclarationNode>? compatibleDeclarations;
     private bool compatibleDeclarationsCached;
-    public ContextualizedOverload? ContextualizedOverload
-        => GrammarAttribute.IsCached(in contextualizedOverloadCached) ? contextualizedOverload
-            : this.Synthetic(ref contextualizedOverloadCached, ref contextualizedOverload,
-                ExpressionTypesAspect.InitializerInvocationExpression_ContextualizedOverload);
-    private ContextualizedOverload? contextualizedOverload;
-    private bool contextualizedOverloadCached;
+    public ContextualizedCall? ContextualizedCall
+        => GrammarAttribute.IsCached(in contextualizedCallCached) ? contextualizedCall
+            : this.Synthetic(ref contextualizedCallCached, ref contextualizedCall,
+                ExpressionTypesAspect.InitializerInvocationExpression_ContextualizedCall);
+    private ContextualizedCall? contextualizedCall;
+    private bool contextualizedCallCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -13838,7 +13838,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedOverload?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
+            return ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -13847,7 +13847,7 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
     internal override IMaybeExpressionType? Inherited_ExpectedType(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedOverload?.ParameterTypes[index].Type;
+            return ContextualizedCall?.ParameterTypes[index].Type;
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedType(child, descendant, ctx);

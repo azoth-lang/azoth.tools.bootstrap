@@ -5,36 +5,36 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
-public sealed class ContextualizedOverload
+public sealed class ContextualizedCall
 {
-    public static ContextualizedOverload Create(IFunctionInvocableDeclarationNode function)
+    public static ContextualizedCall Create(IFunctionInvocableDeclarationNode function)
         => new(null, function.ParameterTypes, function.ReturnType);
 
-    public static ContextualizedOverload Create(
+    public static ContextualizedCall Create(
         IMaybeExpressionType constructingType,
         IConstructorDeclarationNode constructor)
         => Create(constructingType, constructor, constructor.SelfParameterType);
 
-    public static ContextualizedOverload Create(
+    public static ContextualizedCall Create(
         IMaybeExpressionType initializingAntetype,
         IInitializerDeclarationNode initializer)
         => Create(initializingAntetype, initializer, initializer.SelfParameterType);
 
-    public static ContextualizedOverload Create(
+    public static ContextualizedCall Create(
         IMaybeExpressionType contextType,
         IStandardMethodDeclarationNode method)
         => Create(contextType, method, method.SelfParameterType);
 
-    public static ContextualizedOverload Create<T>(
+    public static ContextualizedCall Create<T>(
         IMaybeExpressionType contextType,
         T propertyAccessor)
         where T : IPropertyAccessorDeclarationNode
         => Create(contextType, propertyAccessor, propertyAccessor.SelfParameterType);
 
-    public static ContextualizedOverload Create(FunctionType functionType)
+    public static ContextualizedCall Create(FunctionType functionType)
         => new(null, functionType.Parameters, functionType.Return);
 
-    private static ContextualizedOverload Create(
+    private static ContextualizedCall Create(
         IMaybeExpressionType contextType,
         IInvocableDeclarationNode node,
         IMaybeSelfParameterType selfParameterType)
@@ -70,7 +70,7 @@ public sealed class ContextualizedOverload
     public int Arity => ParameterTypes.Count;
     public IMaybeType ReturnType { get; }
 
-    private ContextualizedOverload(
+    private ContextualizedCall(
         IMaybeSelfParameterType? selfParameterType,
         IFixedList<IMaybeParameterType> parameterTypes,
         IMaybeType returnType)

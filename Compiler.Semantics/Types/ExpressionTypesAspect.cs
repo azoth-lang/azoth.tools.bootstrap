@@ -53,24 +53,24 @@ internal static partial class ExpressionTypesAspect
     public static partial IMaybeExpressionType FunctionInvocationExpression_Type(IFunctionInvocationExpressionNode node)
         => node.Function.ReferencedDeclaration?.Type.Return ?? IMaybeExpressionType.Unknown;
 
-    public static partial ContextualizedOverload? FunctionInvocationExpression_ContextualizedOverload(
+    public static partial ContextualizedCall? FunctionInvocationExpression_ContextualizedCall(
         IFunctionInvocationExpressionNode node)
         => node.Function.ReferencedDeclaration is not null
-            ? ContextualizedOverload.Create(node.Function.ReferencedDeclaration)
+            ? ContextualizedCall.Create(node.Function.ReferencedDeclaration)
             : null;
 
     public static partial IFlowState FunctionInvocationExpression_FlowStateAfter(IFunctionInvocationExpressionNode node)
     {
         // The flow state just before the function is called is the state after all arguments have evaluated
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.Arguments);
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
     public static partial void FunctionInvocationExpression_Contribute_Diagnostics(IFunctionInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.Arguments);
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
@@ -99,7 +99,7 @@ internal static partial class ExpressionTypesAspect
         // The flow state just before the function is called is the state after all arguments have evaluated
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Expression.FlowStateAfter;
         // TODO handle the fact that the function reference itself must be combined too
-        var contextualizedOverload = ContextualizedOverload.Create(node.FunctionType);
+        var contextualizedOverload = ContextualizedCall.Create(node.FunctionType);
         var argumentValueIds = ArgumentValueIds(contextualizedOverload, null, node.Arguments);
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
@@ -107,7 +107,7 @@ internal static partial class ExpressionTypesAspect
     public static partial void FunctionReferenceInvocationExpression_Contribute_Diagnostics(IFunctionReferenceInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Expression.FlowStateAfter;
-        var contextualizedOverload = ContextualizedOverload.Create(node.FunctionType);
+        var contextualizedOverload = ContextualizedCall.Create(node.FunctionType);
         var argumentValueIds = ArgumentValueIds(contextualizedOverload, null, node.Arguments);
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
@@ -140,10 +140,10 @@ internal static partial class ExpressionTypesAspect
 
     private static readonly IdentifierName StringTypeName = "String";
 
-    public static partial ContextualizedOverload? MethodInvocationExpression_ContextualizedOverload(
+    public static partial ContextualizedCall? MethodInvocationExpression_ContextualizedCall(
         IMethodInvocationExpressionNode node)
         => node.Method.ReferencedDeclaration is not null
-            ? ContextualizedOverload.Create(node.Method.Context.Type, node.Method.ReferencedDeclaration)
+            ? ContextualizedCall.Create(node.Method.Context.Type, node.Method.ReferencedDeclaration)
             : null;
 
     public static partial IExpressionNode? Expression_Rewrite_ImplicitMove(IExpressionNode node)
@@ -211,7 +211,7 @@ internal static partial class ExpressionTypesAspect
     {
         var selfType = node.Method.Context.Type.ToNonConstValueType();
         // TODO does this need to be modified by flow typing?
-        var unboundType = node.ContextualizedOverload?.ReturnType;
+        var unboundType = node.ContextualizedCall?.ReturnType;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
         return boundType ?? IType.Unknown;
     }
@@ -220,26 +220,26 @@ internal static partial class ExpressionTypesAspect
     {
         // The flow state just before the method is called is the state after all arguments have evaluated
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Method.Context.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Method.Context, node.Arguments);
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Method.Context, node.Arguments);
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
     public static partial void MethodInvocationExpression_Contribute_Diagnostics(IMethodInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.Method.Context.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Method.Context, node.Arguments);
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Method.Context, node.Arguments);
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
-    public static partial ContextualizedOverload? GetterInvocationExpression_ContextualizedOverload(IGetterInvocationExpressionNode node)
+    public static partial ContextualizedCall? GetterInvocationExpression_ContextualizedCall(IGetterInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
-            ? ContextualizedOverload.Create(node.Context.Type, node.ReferencedDeclaration)
+            ? ContextualizedCall.Create(node.Context.Type, node.ReferencedDeclaration)
             : null;
 
     public static partial IMaybeExpressionType GetterInvocationExpression_Type(IGetterInvocationExpressionNode node)
     {
         var selfType = node.Context.Type.ToNonConstValueType();
-        var unboundType = node.ContextualizedOverload?.ReturnType;
+        var unboundType = node.ContextualizedCall?.ReturnType;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
         return boundType ?? IType.Unknown;
     }
@@ -247,26 +247,26 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState GetterInvocationExpression_FlowStateAfter(IGetterInvocationExpressionNode node)
     {
         var flowStateBefore = node.Context.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Context, []);
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, []);
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
     public static partial void GetterInvocationExpression_Contribute_Diagnostics(IGetterInvocationExpressionNode node, DiagnosticCollectionBuilder diagnostics)
     {
         var flowStateBefore = node.Context.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Context, []);
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, []);
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
-    public static partial ContextualizedOverload? SetterInvocationExpression_ContextualizedOverload(ISetterInvocationExpressionNode node)
+    public static partial ContextualizedCall? SetterInvocationExpression_ContextualizedCall(ISetterInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
-            ? ContextualizedOverload.Create(node.Context.Type, node.ReferencedDeclaration)
+            ? ContextualizedCall.Create(node.Context.Type, node.ReferencedDeclaration)
             : null;
 
     public static partial IMaybeExpressionType SetterInvocationExpression_Type(ISetterInvocationExpressionNode node)
     {
         var selfType = node.Context.Type.ToNonConstValueType();
-        var unboundType = node.ContextualizedOverload?.ParameterTypes[0].Type;
+        var unboundType = node.ContextualizedCall?.ParameterTypes[0].Type;
         var boundType = unboundType?.ReplaceSelfWith(selfType);
         return boundType ?? IType.Unknown;
     }
@@ -277,7 +277,7 @@ internal static partial class ExpressionTypesAspect
             return IFlowState.Empty;
         // The flow state just before the setter is called is the state after the argument has been evaluated
         var flowStateBefore = value.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Context, [value]);
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, [value]);
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
@@ -285,12 +285,12 @@ internal static partial class ExpressionTypesAspect
     {
         var value = node.Value!;
         var flowStateBefore = value.FlowStateAfter;
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, node.Context, [value]);
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, node.Context, [value]);
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
     private static IEnumerable<ArgumentValueId> ArgumentValueIds(
-        ContextualizedOverload? overload,
+        ContextualizedCall? overload,
         IExpressionNode? selfArgument,
         IEnumerable<IExpressionNode?> arguments)
     {
@@ -353,21 +353,21 @@ internal static partial class ExpressionTypesAspect
     public static partial IFlowState AmbiguousMemberAccessExpression_FlowStateAfter(IAmbiguousMemberAccessExpressionNode node)
         => node.Context.FlowStateAfter.Transform(node.Context.ValueId, node.ValueId, node.Type);
 
-    public static partial ContextualizedOverload? NewObjectExpression_ContextualizedOverload(
+    public static partial ContextualizedCall? NewObjectExpression_ContextualizedCall(
         INewObjectExpressionNode node)
         => node.ReferencedConstructor is not null
-            ? ContextualizedOverload.Create(node.ConstructingType.NamedType, node.ReferencedConstructor)
+            ? ContextualizedCall.Create(node.ConstructingType.NamedType, node.ReferencedConstructor)
             : null;
 
     public static partial IMaybeExpressionType NewObjectExpression_Type(INewObjectExpressionNode node)
         // TODO does this need to be modified by flow typing?
-        => node.ContextualizedOverload?.ReturnType ?? IMaybeType.Unknown;
+        => node.ContextualizedCall?.ReturnType ?? IMaybeType.Unknown;
 
     public static partial IFlowState NewObjectExpression_FlowStateAfter(INewObjectExpressionNode node)
     {
         // The flow state just before the constructor is called is the state after all arguments have evaluated
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.Arguments);
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
         return flowStateBefore.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
@@ -376,7 +376,7 @@ internal static partial class ExpressionTypesAspect
         CheckConstructingType(node.ConstructingType, diagnostics);
 
         var flowStateBefore = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.Arguments);
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
         ContributeCannotUnionDiagnostics(node, flowStateBefore, argumentValueIds, diagnostics);
     }
 
@@ -408,21 +408,21 @@ internal static partial class ExpressionTypesAspect
                 diagnostics.Add(TypeError.CapabilityNotCompatibleWithConstraint(node.File, node.Syntax, arg.Parameter, (IType)arg.Argument));
     }
 
-    public static partial ContextualizedOverload? InitializerInvocationExpression_ContextualizedOverload(IInitializerInvocationExpressionNode node)
+    public static partial ContextualizedCall? InitializerInvocationExpression_ContextualizedCall(IInitializerInvocationExpressionNode node)
         => node.ReferencedDeclaration is not null
            && node.InitializerGroup.Context.NamedBareType is not null and var initializingType
-            ? ContextualizedOverload.Create(initializingType.With(Capability.Mutable), node.ReferencedDeclaration)
+            ? ContextualizedCall.Create(initializingType.With(Capability.Mutable), node.ReferencedDeclaration)
             : null;
 
     public static partial IMaybeExpressionType InitializerInvocationExpression_Type(IInitializerInvocationExpressionNode node)
         // TODO does this need to be modified by flow typing?
-        => node.ContextualizedOverload?.ReturnType ?? IMaybeType.Unknown;
+        => node.ContextualizedCall?.ReturnType ?? IMaybeType.Unknown;
 
     public static partial IFlowState InitializerInvocationExpression_FlowStateAfter(IInitializerInvocationExpressionNode node)
     {
         // The flow state just before the initializer is called is the state after all arguments have evaluated
         var flowState = node.Arguments.LastOrDefault()?.FlowStateAfter ?? node.FlowStateBefore();
-        var argumentValueIds = ArgumentValueIds(node.ContextualizedOverload, null, node.Arguments);
+        var argumentValueIds = ArgumentValueIds(node.ContextualizedCall, null, node.Arguments);
         return flowState.CombineArguments(argumentValueIds, node.ValueId, node.Type);
     }
 
@@ -694,7 +694,7 @@ internal static partial class ExpressionTypesAspect
 
     // TODO this is strange and maybe a hack
     public static partial IMaybeExpressionType? MethodName_Context_ExpectedType(IMethodNameNode node)
-        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedOverload?.SelfParameterType?.Type.ToUpperBound();
+        => (node.Parent as IMethodInvocationExpressionNode)?.ContextualizedCall?.SelfParameterType?.Type.ToUpperBound();
 
     public static partial IMaybeExpressionType FreezeExpression_Type(IFreezeExpressionNode node)
     {
