@@ -185,14 +185,15 @@ internal static partial class BindingAmbiguousNamesAspect
 
     public static partial INameExpressionNode? MethodGroupName_Rewrite_ToMethodName(IMethodGroupNameNode node)
     {
-        if (node.CompatibleDeclarations.Count > 1)
+        if (node.CompatibleCallCandidates.Count > 1)
             // TODO should this be used instead?
             //if (node.ReferencedDeclaration is not null)
             return null;
 
         // if there is only one declaration, then it isn't ambiguous
         return IMethodNameNode.Create(node.Syntax, node.Context, node.MethodName, node.TypeArguments,
-            node.ReferencedDeclarations, node.CompatibleDeclarations, node.ReferencedDeclaration);
+            node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates,
+            node.SelectedCallCandidate, node.ReferencedDeclaration);
     }
 
     public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
@@ -200,9 +201,9 @@ internal static partial class BindingAmbiguousNamesAspect
         // TODO develop a better check that this node is ambiguous
         if (node.Parent is IUnknownInvocationExpressionNode) return;
 
-        if (node.CompatibleDeclarations.Count == 0)
+        if (node.CompatibleCallCandidates.Count == 0)
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
-        else if (node.CompatibleDeclarations.Count > 1)
+        else if (node.CompatibleCallCandidates.Count > 1)
             // TODO provide the expected method type that didn't match
             diagnostics.Add(TypeError.AmbiguousMethodGroup(node.File, node.Syntax, IType.Unknown));
     }

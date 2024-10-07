@@ -322,7 +322,9 @@ MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
 MethodName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IStandardMethodDeclarationNode`}
-    CompatibleDeclarations:{`IStandardMethodDeclarationNode`}
+    CallCandidates:{`CallCandidate<IStandardMethodDeclarationNode>`}
+    CompatibleCallCandidates:{`CallCandidate<IStandardMethodDeclarationNode>`}
+    SelectedCallCandidate:`CallCandidate<IStandardMethodDeclarationNode>`?
     ReferencedDeclaration:`IStandardMethodDeclarationNode`?;
 FieldAccessExpression <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression FieldName:`IdentifierName` ReferencedDeclaration:`IFieldDeclarationNode`;

@@ -32,6 +32,8 @@
 ↑ FunctionGroupName.ReferencedDeclaration: FunctionInvocableDeclaration?;
 = FunctionGroupName.↑.Diagnostics;
 = FunctionName.↑.Diagnostics;
-↑ MethodGroupName.CompatibleDeclarations: {StandardMethodDeclaration};
+↑ MethodGroupName.CallCandidates: {`CallCandidate<IStandardMethodDeclarationNode>`};
+↑ MethodGroupName.CompatibleCallCandidates: {`CallCandidate<IStandardMethodDeclarationNode>`};
+↑ MethodGroupName.SelectedCallCandidate: `CallCandidate<IStandardMethodDeclarationNode>`?;
 ↑ MethodGroupName.ReferencedDeclaration: StandardMethodDeclaration?;
 = MethodGroupName.↑.Diagnostics;

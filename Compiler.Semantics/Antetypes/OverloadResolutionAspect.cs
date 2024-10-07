@@ -185,7 +185,7 @@ internal static partial class OverloadResolutionAspect
         if (method.ReferencedDeclaration is not null)
             return;
 
-        switch (method.CompatibleDeclarations.Count)
+        switch (method.CompatibleCallCandidates.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindMethod(node.File, node.Syntax));
@@ -261,18 +261,23 @@ internal static partial class OverloadResolutionAspect
     public static partial void FunctionName_Contribute_Diagnostics(IFunctionNameNode node, DiagnosticCollectionBuilder diagnostics)
         => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
 
-    public static partial IFixedSet<IStandardMethodDeclarationNode> MethodGroupName_CompatibleDeclarations(IMethodGroupNameNode node)
+    public static partial IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> MethodGroupName_CallCandidates(IMethodGroupNameNode node)
+        => node.ReferencedDeclarations.Select(m => CallCandidate.Create(node.Context.Antetype, m)).ToFixedSet();
+
+    public static partial IFixedSet<CallCandidate<IStandardMethodDeclarationNode>> MethodGroupName_CompatibleCallCandidates(IMethodGroupNameNode node)
     {
         if (node.ExpectedAntetype is not FunctionAntetype expectedAntetype) return [];
 
         var contextAntetype = node.Context.Antetype;
         var argumentAntetypes = ArgumentAntetypes.ForMethod(contextAntetype, expectedAntetype.Parameters);
-        return node.ReferencedDeclarations.Select(m => CallCandidate.Create(contextAntetype, m))
-                   .Where(o => o.CompatibleWith(argumentAntetypes)).Select(o => o.Declaration).ToFixedSet();
+        return node.CallCandidates.Where(o => o.CompatibleWith(argumentAntetypes)).ToFixedSet();
     }
 
+    public static partial CallCandidate<IStandardMethodDeclarationNode>? MethodGroupName_SelectedCallCandidate(IMethodGroupNameNode node)
+        => node.CompatibleCallCandidates.TrySingle();
+
     public static partial IStandardMethodDeclarationNode? MethodGroupName_ReferencedDeclaration(IMethodGroupNameNode node)
-        => node.CompatibleDeclarations.TrySingle();
+        => node.SelectedCallCandidate?.Declaration;
 
     public static partial void MethodGroupName_Contribute_Diagnostics(IMethodGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
     {
@@ -281,7 +286,7 @@ internal static partial class OverloadResolutionAspect
             || node.Parent is IUnknownInvocationExpressionNode)
             return;
 
-        switch (node.CompatibleDeclarations.Count)
+        switch (node.CompatibleCallCandidates.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindMethodName(node.File, node.Syntax));
