@@ -19,13 +19,11 @@ internal static partial class ExpressionAntetypesAspect
         => node.Expression?.Antetype ?? IAntetype.Unknown;
 
     public static partial IMaybeExpressionAntetype FunctionInvocationExpression_Antetype(IFunctionInvocationExpressionNode node)
-        // TODO should probably use Antetype on the declaration
-        => node.Function.ReferencedDeclaration?.Type.Return.ToAntetype() ?? IAntetype.Unknown;
+        => node.Function.SelectedCallCandidate?.ReturnAntetype ?? IAntetype.Unknown;
 
     public static partial IMaybeExpressionAntetype MethodInvocationExpression_Antetype(IMethodInvocationExpressionNode node)
     {
-        // TODO should probably use Antetype on the declaration
-        var unboundAntetype = node.Method.ReferencedDeclaration?.MethodGroupType.Return.ToAntetype() ?? IAntetype.Unknown;
+        var unboundAntetype = node.Method.SelectedCallCandidate?.ReturnAntetype ?? IAntetype.Unknown;
         var boundAntetype = node.Method.Context.Antetype.ReplaceTypeParametersIn(unboundAntetype);
         return boundAntetype;
     }

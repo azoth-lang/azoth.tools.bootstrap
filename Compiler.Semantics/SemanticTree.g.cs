@@ -2539,6 +2539,8 @@ public partial interface IFunctionInvocationExpressionNode : IInvocationExpressi
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     IFlowState FlowStateBefore();
     ContextualizedCall? ContextualizedCall { get; }
+    CallCandidate<IFunctionInvocableDeclarationNode>? SelectedCallCandidate
+        => Function.SelectedCallCandidate;
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
         => TempArguments;
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
@@ -2565,6 +2567,8 @@ public partial interface IMethodInvocationExpressionNode : IInvocationExpression
     IFixedList<IExpressionNode?> Arguments { get; }
     IFixedList<IAmbiguousExpressionNode> CurrentArguments { get; }
     ContextualizedCall? ContextualizedCall { get; }
+    CallCandidate<IStandardMethodDeclarationNode>? SelectedCallCandidate
+        => Method.SelectedCallCandidate;
     IEnumerable<IAmbiguousExpressionNode> IInvocationExpressionNode.TempAllArguments
         => TempArguments.Prepend(Method.Context);
     IEnumerable<IExpressionNode?> IInvocationExpressionNode.AllArguments
@@ -12928,7 +12932,7 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
-            return ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
+            return Self.SelectedCallCandidate?.ParameterAntetypes[index];
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);
@@ -13112,6 +13116,8 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
 
     internal override IMaybeAntetype? Inherited_ExpectedAntetype(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
+        if (IndexOfNode(Self.CurrentArguments, descendant) is { } index)
+            return Self.SelectedCallCandidate?.ParameterAntetypes[index];
         if (ReferenceEquals(child, descendant))
             return null;
         return base.Inherited_ExpectedAntetype(child, descendant, ctx);

@@ -56,9 +56,10 @@
 
 // ---------- Invocation Expressions
 = UnknownInvocationExpression.Antetype => IAntetype.Unknown;
-// TODO it would be better if this didn't depend on types, but only on antetypes
 = FunctionInvocationExpression.Arguments[index].ExpectedAntetype
-    => ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();
+    => Self.SelectedCallCandidate?.ParameterAntetypes[index];
+= MethodInvocationExpression.Arguments[index].ExpectedAntetype
+    => Self.SelectedCallCandidate?.ParameterAntetypes[index];
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = GetterInvocationExpression.Context.ExpectedAntetype
     => ContextualizedCall?.SelfParameterType?.Type.ToAntetype().ToNonConstValueType();
@@ -69,8 +70,6 @@
 = SetterInvocationExpression.Value.ExpectedAntetype
     => ContextualizedCall?.ParameterTypes[0].Type.ToAntetype().ToNonConstValueType();
 ↑ FunctionReferenceInvocationExpression.FunctionAntetype: `FunctionAntetype`;
-= FunctionInvocationExpression.Arguments[index].ExpectedAntetype
-    => FunctionAntetype.Parameters[index];
 // TODO it would be better if this didn't depend on types, but only on antetypes
 = InitializerInvocationExpression.Arguments[index].ExpectedAntetype
     => ContextualizedCall?.ParameterTypes[index].Type.ToAntetype().ToNonConstValueType();

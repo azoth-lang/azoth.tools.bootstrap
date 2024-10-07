@@ -20,6 +20,11 @@
 ✎ UnknownInvocationExpression FunctionReferenceExpression;
 = UnknownInvocationExpression.↑.Diagnostics;
 
+↑ FunctionInvocationExpression.SelectedCallCandidate: `CallCandidate<IFunctionInvocableDeclarationNode>`?
+    => Function.SelectedCallCandidate;
+
+↑ MethodInvocationExpression.SelectedCallCandidate: `CallCandidate<IStandardMethodDeclarationNode>`?
+    => Method.SelectedCallCandidate;
 = MethodInvocationExpression.↑.Diagnostics;
 
 ↑ InitializerInvocationExpression.CompatibleDeclarations: {InitializerDeclaration};
