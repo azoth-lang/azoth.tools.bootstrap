@@ -159,14 +159,15 @@ internal static partial class BindingAmbiguousNamesAspect
 
     public static partial INameExpressionNode? FunctionGroupName_Rewrite_ToFunctionName(IFunctionGroupNameNode node)
     {
-        if (node.CompatibleDeclarations.Count > 1)
+        if (node.CompatibleCallCandidates.Count > 1)
             // TODO should this be used instead?
             //if (node.ReferencedDeclaration is not null)
             return null;
 
         // if there is only one declaration, then it isn't ambiguous
         return IFunctionNameNode.Create(node.Syntax, node.Context, node.FunctionName, node.TypeArguments,
-            node.ReferencedDeclarations, node.CompatibleDeclarations, node.ReferencedDeclaration);
+            node.ReferencedDeclarations, node.CallCandidates, node.CompatibleCallCandidates,
+            node.SelectedCallCandidate, node.ReferencedDeclaration);
     }
 
     public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
@@ -175,9 +176,9 @@ internal static partial class BindingAmbiguousNamesAspect
         if (node.Parent is IUnknownInvocationExpressionNode)
             return;
 
-        if (node.CompatibleDeclarations.Count == 0)
+        if (node.CompatibleCallCandidates.Count == 0)
             diagnostics.Add(NameBindingError.CouldNotBindName(node.File, node.Syntax.Span));
-        else if (node.CompatibleDeclarations.Count > 1)
+        else if (node.CompatibleCallCandidates.Count > 1)
             // TODO provide the expected function type that didn't match
             diagnostics.Add(TypeError.AmbiguousFunctionGroup(node.File, node.Syntax, IType.Unknown));
     }

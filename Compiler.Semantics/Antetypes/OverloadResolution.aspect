@@ -26,7 +26,9 @@
 ↑ InitializerInvocationExpression.ReferencedDeclaration: InitializerDeclaration?;
 
 // ---------- Name Expressions
-↑ FunctionGroupName.CompatibleDeclarations: {FunctionInvocableDeclaration};
+↑ FunctionGroupName.CallCandidates: {`CallCandidate<IFunctionInvocableDeclarationNode>`};
+↑ FunctionGroupName.CompatibleCallCandidates: {`CallCandidate<IFunctionInvocableDeclarationNode>`};
+↑ FunctionGroupName.SelectedCallCandidate: `CallCandidate<IFunctionInvocableDeclarationNode>`?;
 ↑ FunctionGroupName.ReferencedDeclaration: FunctionInvocableDeclaration?;
 = FunctionGroupName.↑.Diagnostics;
 = FunctionName.↑.Diagnostics;

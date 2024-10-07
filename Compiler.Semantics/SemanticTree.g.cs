@@ -2934,7 +2934,9 @@ public partial interface IFunctionGroupNameNode : INameExpressionNode
     new UnknownType Type
         => IType.Unknown;
     IMaybeExpressionType IExpressionNode.Type => Type;
-    IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations { get; }
+    IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> CallCandidates { get; }
+    IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> CompatibleCallCandidates { get; }
+    CallCandidate<IFunctionInvocableDeclarationNode>? SelectedCallCandidate { get; }
     IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
     IFlowState INameExpressionNode.FlowStateAfter
         => FlowStateBefore();
@@ -2959,7 +2961,9 @@ public partial interface IFunctionNameNode : INameExpressionNode
     StandardName FunctionName { get; }
     IFixedList<ITypeNode> TypeArguments { get; }
     IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { get; }
-    IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations { get; }
+    IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> CallCandidates { get; }
+    IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> CompatibleCallCandidates { get; }
+    CallCandidate<IFunctionInvocableDeclarationNode>? SelectedCallCandidate { get; }
     IFunctionInvocableDeclarationNode? ReferencedDeclaration { get; }
     IFlowState INameExpressionNode.FlowStateAfter
         => ExpressionTypesAspect.FunctionName_FlowStateAfter(this);
@@ -2970,9 +2974,11 @@ public partial interface IFunctionNameNode : INameExpressionNode
         StandardName functionName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations,
-        IEnumerable<IFunctionInvocableDeclarationNode> compatibleDeclarations,
+        IEnumerable<CallCandidate<IFunctionInvocableDeclarationNode>> callCandidates,
+        IEnumerable<CallCandidate<IFunctionInvocableDeclarationNode>> compatibleCallCandidates,
+        CallCandidate<IFunctionInvocableDeclarationNode>? selectedCallCandidate,
         IFunctionInvocableDeclarationNode? referencedDeclaration)
-        => new FunctionNameNode(syntax, context, functionName, typeArguments, referencedDeclarations, compatibleDeclarations, referencedDeclaration);
+        => new FunctionNameNode(syntax, context, functionName, typeArguments, referencedDeclarations, callCandidates, compatibleCallCandidates, selectedCallCandidate, referencedDeclaration);
 }
 
 // [Closed(typeof(MethodGroupNameNode))]
@@ -14522,12 +14528,18 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
     private bool expectedAntetypeCached;
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
-    public IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations
-        => GrammarAttribute.IsCached(in compatibleDeclarationsCached) ? compatibleDeclarations!
-            : this.Synthetic(ref compatibleDeclarationsCached, ref compatibleDeclarations,
-                OverloadResolutionAspect.FunctionGroupName_CompatibleDeclarations);
-    private IFixedSet<IFunctionInvocableDeclarationNode>? compatibleDeclarations;
-    private bool compatibleDeclarationsCached;
+    public IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> CallCandidates
+        => GrammarAttribute.IsCached(in callCandidatesCached) ? callCandidates!
+            : this.Synthetic(ref callCandidatesCached, ref callCandidates,
+                OverloadResolutionAspect.FunctionGroupName_CallCandidates);
+    private IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>>? callCandidates;
+    private bool callCandidatesCached;
+    public IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> CompatibleCallCandidates
+        => GrammarAttribute.IsCached(in compatibleCallCandidatesCached) ? compatibleCallCandidates!
+            : this.Synthetic(ref compatibleCallCandidatesCached, ref compatibleCallCandidates,
+                OverloadResolutionAspect.FunctionGroupName_CompatibleCallCandidates);
+    private IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>>? compatibleCallCandidates;
+    private bool compatibleCallCandidatesCached;
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -14540,6 +14552,12 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
                 OverloadResolutionAspect.FunctionGroupName_ReferencedDeclaration);
     private IFunctionInvocableDeclarationNode? referencedDeclaration;
     private bool referencedDeclarationCached;
+    public CallCandidate<IFunctionInvocableDeclarationNode>? SelectedCallCandidate
+        => GrammarAttribute.IsCached(in selectedCallCandidateCached) ? selectedCallCandidate
+            : this.Synthetic(ref selectedCallCandidateCached, ref selectedCallCandidate,
+                OverloadResolutionAspect.FunctionGroupName_SelectedCallCandidate);
+    private CallCandidate<IFunctionInvocableDeclarationNode>? selectedCallCandidate;
+    private bool selectedCallCandidateCached;
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -14644,7 +14662,9 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
     public StandardName FunctionName { [DebuggerStepThrough] get; }
     public IFixedList<ITypeNode> TypeArguments { [DebuggerStepThrough] get; }
     public IFixedSet<IFunctionInvocableDeclarationNode> ReferencedDeclarations { [DebuggerStepThrough] get; }
-    public IFixedSet<IFunctionInvocableDeclarationNode> CompatibleDeclarations { [DebuggerStepThrough] get; }
+    public IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> CallCandidates { [DebuggerStepThrough] get; }
+    public IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> CompatibleCallCandidates { [DebuggerStepThrough] get; }
+    public CallCandidate<IFunctionInvocableDeclarationNode>? SelectedCallCandidate { [DebuggerStepThrough] get; }
     public IFunctionInvocableDeclarationNode? ReferencedDeclaration { [DebuggerStepThrough] get; }
     public IPackageDeclarationNode Package
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
@@ -14714,7 +14734,9 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
         StandardName functionName,
         IEnumerable<ITypeNode> typeArguments,
         IEnumerable<IFunctionInvocableDeclarationNode> referencedDeclarations,
-        IEnumerable<IFunctionInvocableDeclarationNode> compatibleDeclarations,
+        IEnumerable<CallCandidate<IFunctionInvocableDeclarationNode>> callCandidates,
+        IEnumerable<CallCandidate<IFunctionInvocableDeclarationNode>> compatibleCallCandidates,
+        CallCandidate<IFunctionInvocableDeclarationNode>? selectedCallCandidate,
         IFunctionInvocableDeclarationNode? referencedDeclaration)
     {
         Syntax = syntax;
@@ -14722,7 +14744,9 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
         FunctionName = functionName;
         TypeArguments = ChildList.Attach(this, typeArguments);
         ReferencedDeclarations = referencedDeclarations.ToFixedSet();
-        CompatibleDeclarations = compatibleDeclarations.ToFixedSet();
+        CallCandidates = callCandidates.ToFixedSet();
+        CompatibleCallCandidates = compatibleCallCandidates.ToFixedSet();
+        SelectedCallCandidate = selectedCallCandidate;
         ReferencedDeclaration = referencedDeclaration;
     }
 

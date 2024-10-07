@@ -312,7 +312,9 @@ FunctionGroupName <: NameExpression
 FunctionName <: NameExpression
     = Syntax:`INameExpressionSyntax` Context:NameExpression?  FunctionName:`StandardName` TypeArguments:Type*
     ReferencedDeclarations:{`IFunctionInvocableDeclarationNode`}
-    CompatibleDeclarations:{`IFunctionInvocableDeclarationNode`}
+    CallCandidates:{`CallCandidate<IFunctionInvocableDeclarationNode>`}
+    CompatibleCallCandidates:{`CallCandidate<IFunctionInvocableDeclarationNode>`}
+    SelectedCallCandidate:`CallCandidate<IFunctionInvocableDeclarationNode>`?
     ReferencedDeclaration:`IFunctionInvocableDeclarationNode`?;
 MethodGroupName <: NameExpression = Syntax:`IMemberAccessExpressionSyntax`
     Context:Expression MethodName:`StandardName` TypeArguments:Type*

@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
-internal sealed class CallCandidate<TDeclaration>
+public sealed class CallCandidate<TDeclaration>
     where TDeclaration : IInvocableDeclarationNode
 {
     public TDeclaration Declaration { get; }

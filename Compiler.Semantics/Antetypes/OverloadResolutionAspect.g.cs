@@ -35,7 +35,11 @@ internal static partial class OverloadResolutionAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IInitializerDeclarationNode? InitializerInvocationExpression_ReferencedDeclaration(IInitializerInvocationExpressionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static partial IFixedSet<IFunctionInvocableDeclarationNode> FunctionGroupName_CompatibleDeclarations(IFunctionGroupNameNode node);
+    public static partial IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> FunctionGroupName_CallCandidates(IFunctionGroupNameNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> FunctionGroupName_CompatibleCallCandidates(IFunctionGroupNameNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial CallCandidate<IFunctionInvocableDeclarationNode>? FunctionGroupName_SelectedCallCandidate(IFunctionGroupNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IFunctionInvocableDeclarationNode? FunctionGroupName_ReferencedDeclaration(IFunctionGroupNameNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

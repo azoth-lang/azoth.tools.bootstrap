@@ -139,11 +139,11 @@ internal static partial class OverloadResolutionAspect
         {
             case IFunctionGroupNameNode functionGroup:
                 ContributeFunctionBindingDiagnostics(functionGroup.ReferencedDeclaration,
-                    functionGroup.CompatibleDeclarations, node.File, node.Syntax, diagnostics);
+                    functionGroup.CompatibleCallCandidates, node.File, node.Syntax, diagnostics);
                 break;
             case IFunctionNameNode function:
                 ContributeFunctionBindingDiagnostics(function.ReferencedDeclaration,
-                    function.CompatibleDeclarations, node.File, node.Syntax, diagnostics);
+                    function.CompatibleCallCandidates, node.File, node.Syntax, diagnostics);
                 break;
             case IUnknownNameExpressionNode:
             case IUnknownInvocationExpressionNode:
@@ -159,14 +159,14 @@ internal static partial class OverloadResolutionAspect
 
     private static void ContributeFunctionBindingDiagnostics(
         IFunctionInvocableDeclarationNode? referencedDeclaration,
-        IFixedSet<IFunctionInvocableDeclarationNode> compatibleDeclarations,
+        IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> compatibleCallCandidates,
         CodeFile file,
         IInvocationExpressionSyntax syntax,
         DiagnosticCollectionBuilder diagnostics)
     {
         if (referencedDeclaration is not null) return;
 
-        switch (compatibleDeclarations.Count)
+        switch (compatibleCallCandidates.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindFunction(file, syntax));
@@ -214,24 +214,29 @@ internal static partial class OverloadResolutionAspect
     #endregion
 
     #region Name Expressions
-    public static partial IFixedSet<IFunctionInvocableDeclarationNode> FunctionGroupName_CompatibleDeclarations(IFunctionGroupNameNode node)
+    public static partial IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> FunctionGroupName_CallCandidates(IFunctionGroupNameNode node)
+        => node.ReferencedDeclarations.Select(CallCandidate.Create).ToFixedSet();
+
+    public static partial IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> FunctionGroupName_CompatibleCallCandidates(IFunctionGroupNameNode node)
     {
         if (node.ExpectedAntetype is not FunctionAntetype expectedAntetype) return [];
 
         var argumentAntetypes = ArgumentAntetypes.ForFunction(expectedAntetype.Parameters);
-        return node.ReferencedDeclarations.Select(CallCandidate.Create)
-                   .Where(o => o.CompatibleWith(argumentAntetypes)).Select(o => o.Declaration).ToFixedSet();
+        return node.CallCandidates.Where(o => o.CompatibleWith(argumentAntetypes)).ToFixedSet();
     }
 
+    public static partial CallCandidate<IFunctionInvocableDeclarationNode>? FunctionGroupName_SelectedCallCandidate(IFunctionGroupNameNode node)
+        => node.CompatibleCallCandidates.TrySingle();
+
     public static partial IFunctionInvocableDeclarationNode? FunctionGroupName_ReferencedDeclaration(IFunctionGroupNameNode node)
-        => node.CompatibleDeclarations.TrySingle();
+        => node.SelectedCallCandidate?.Declaration;
 
     public static partial void FunctionGroupName_Contribute_Diagnostics(IFunctionGroupNameNode node, DiagnosticCollectionBuilder diagnostics)
-        => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleDeclarations, node, diagnostics);
+        => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
 
     private static void ContributeFunctionNameBindingDiagnostics(
         IFunctionInvocableDeclarationNode? referencedDeclaration,
-        IFixedSet<IFunctionInvocableDeclarationNode> compatibleDeclarations,
+        IFixedSet<CallCandidate<IFunctionInvocableDeclarationNode>> compatibleCallCandidates,
         INameExpressionNode node,
         DiagnosticCollectionBuilder diagnostics)
     {
@@ -240,7 +245,7 @@ internal static partial class OverloadResolutionAspect
             || node.Parent is IUnknownInvocationExpressionNode)
             return;
 
-        switch (compatibleDeclarations.Count)
+        switch (compatibleCallCandidates.Count)
         {
             case 0:
                 diagnostics.Add(NameBindingError.CouldNotBindFunctionName(node.File, node.Syntax));
@@ -254,7 +259,7 @@ internal static partial class OverloadResolutionAspect
     }
 
     public static partial void FunctionName_Contribute_Diagnostics(IFunctionNameNode node, DiagnosticCollectionBuilder diagnostics)
-        => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleDeclarations, node, diagnostics);
+        => ContributeFunctionNameBindingDiagnostics(node.ReferencedDeclaration, node.CompatibleCallCandidates, node, diagnostics);
 
     public static partial IFixedSet<IStandardMethodDeclarationNode> MethodGroupName_CompatibleDeclarations(IMethodGroupNameNode node)
     {

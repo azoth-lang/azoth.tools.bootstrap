@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
-internal readonly record struct ArgumentAntetypes
+public readonly record struct ArgumentAntetypes
 {
     public static ArgumentAntetypes ForFunction(IEnumerable<IMaybeExpressionAntetype> arguments)
         => new(null, arguments);
