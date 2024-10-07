@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 
-internal sealed class AntetypeContextualizedOverload<TDeclaration>
+internal sealed class CallCandidate<TDeclaration>
     where TDeclaration : IInvocableDeclarationNode
 {
     public TDeclaration Declaration { get; }
@@ -15,7 +15,7 @@ internal sealed class AntetypeContextualizedOverload<TDeclaration>
     public int Arity => ParameterAntetypes.Count;
     public IMaybeAntetype ReturnAntetype { get; }
 
-    internal AntetypeContextualizedOverload(
+    internal CallCandidate(
         TDeclaration declaration,
         IMaybeAntetype? selfParameterAntetype,
         IEnumerable<IMaybeNonVoidAntetype> parameterAntetypes,
@@ -44,9 +44,9 @@ internal sealed class AntetypeContextualizedOverload<TDeclaration>
     }
 }
 
-internal static class AntetypeContextualizedOverload
+internal static class CallCandidate
 {
-    public static AntetypeContextualizedOverload<IFunctionInvocableDeclarationNode> Create(
+    public static CallCandidate<IFunctionInvocableDeclarationNode> Create(
         IFunctionInvocableDeclarationNode function)
     {
         var parameterAntetypes = function.ParameterTypes.Select(p => p.Type.ToAntetype().ToNonConstValueType())
@@ -55,22 +55,22 @@ internal static class AntetypeContextualizedOverload
         return new(function, null, parameterAntetypes, returnAntetype);
     }
 
-    public static AntetypeContextualizedOverload<IConstructorDeclarationNode> Create(
+    public static CallCandidate<IConstructorDeclarationNode> Create(
         IMaybeAntetype constructingAntetype,
         IConstructorDeclarationNode constructor)
         => Create(constructingAntetype, constructor, constructor.SelfParameterType);
 
-    public static AntetypeContextualizedOverload<IInitializerDeclarationNode> Create(
+    public static CallCandidate<IInitializerDeclarationNode> Create(
         IMaybeAntetype initializingAntetype,
         IInitializerDeclarationNode initializer)
         => Create(initializingAntetype, initializer, initializer.SelfParameterType);
 
-    public static AntetypeContextualizedOverload<IStandardMethodDeclarationNode> Create(
+    public static CallCandidate<IStandardMethodDeclarationNode> Create(
         IMaybeExpressionAntetype contextAntetype,
         IStandardMethodDeclarationNode method)
         => Create(contextAntetype, method, method.SelfParameterType);
 
-    private static AntetypeContextualizedOverload<TDeclaration> Create<TDeclaration>(
+    private static CallCandidate<TDeclaration> Create<TDeclaration>(
         IMaybeExpressionAntetype contextAntetype,
         TDeclaration declaration,
         IMaybeSelfParameterType selfParameterType)

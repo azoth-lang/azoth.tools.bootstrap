@@ -26,7 +26,7 @@ internal static partial class OverloadResolutionAspect
         var arguments = node.Arguments.Select(AntetypeIfKnown);
         var argumentAntetypes = ArgumentAntetypes.ForConstructor(arguments);
         return node.ReferencedConstructors
-                   .Select(d => AntetypeContextualizedOverload.Create(constructingAntetype, d))
+                   .Select(d => CallCandidate.Create(constructingAntetype, d))
                    .Where(o => o.CompatibleWith(argumentAntetypes))
                    .Select(o => o.Declaration).ToFixedSet();
     }
@@ -204,7 +204,7 @@ internal static partial class OverloadResolutionAspect
         var arguments = node.Arguments.Select(AntetypeIfKnown);
         var argumentAntetypes = ArgumentAntetypes.ForInitializer(arguments);
         return node.InitializerGroup.ReferencedDeclarations
-                   .Select(d => AntetypeContextualizedOverload.Create(initializingAntetype, d))
+                   .Select(d => CallCandidate.Create(initializingAntetype, d))
                    .Where(o => o.CompatibleWith(argumentAntetypes))
                    .Select(o => o.Declaration).ToFixedSet();
     }
@@ -219,7 +219,7 @@ internal static partial class OverloadResolutionAspect
         if (node.ExpectedAntetype is not FunctionAntetype expectedAntetype) return [];
 
         var argumentAntetypes = ArgumentAntetypes.ForFunction(expectedAntetype.Parameters);
-        return node.ReferencedDeclarations.Select(AntetypeContextualizedOverload.Create)
+        return node.ReferencedDeclarations.Select(CallCandidate.Create)
                    .Where(o => o.CompatibleWith(argumentAntetypes)).Select(o => o.Declaration).ToFixedSet();
     }
 
@@ -262,7 +262,7 @@ internal static partial class OverloadResolutionAspect
 
         var contextAntetype = node.Context.Antetype;
         var argumentAntetypes = ArgumentAntetypes.ForMethod(contextAntetype, expectedAntetype.Parameters);
-        return node.ReferencedDeclarations.Select(m => AntetypeContextualizedOverload.Create(contextAntetype, m))
+        return node.ReferencedDeclarations.Select(m => CallCandidate.Create(contextAntetype, m))
                    .Where(o => o.CompatibleWith(argumentAntetypes)).Select(o => o.Declaration).ToFixedSet();
     }
 
