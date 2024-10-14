@@ -1132,7 +1132,7 @@ public partial interface IParameterNode : ICodeNode
     new IParameterSyntax Syntax { get; }
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
-    IPreviousValueId PreviousValueId();
+    ValueIdScope ValueIdScope { get; }
     ValueId BindingValueId { get; }
     IFlowState FlowStateBefore();
     IFlowState FlowStateAfter { get; }
@@ -1704,7 +1704,6 @@ public partial interface IStatementNode : IControlFlowNode
     LexicalScope ContainingLexicalScope();
     LexicalScope LexicalScope()
         => ContainingLexicalScope();
-    IPreviousValueId PreviousValueId();
     ValueId? ResultValueId { get; }
     IMaybeExpressionType? ResultType
         => null;
@@ -1780,6 +1779,7 @@ public partial interface IVariableDeclarationStatementNode : IBodyStatementNode,
     LexicalScope INamedBindingNode.ContainingLexicalScope => ContainingLexicalScope;
     new LexicalScope LexicalScope { get; }
     LexicalScope IStatementNode.LexicalScope() => LexicalScope;
+    ValueIdScope ValueIdScope { get; }
     IFlowState FlowStateBefore();
     ValueId? IStatementNode.ResultValueId
         => null;
@@ -1829,7 +1829,6 @@ public partial interface IPatternNode : IControlFlowNode
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ConditionalLexicalScope FlowLexicalScope();
-    IPreviousValueId PreviousValueId();
     ValueId? MatchReferentValueId { get; }
     IFlowState FlowStateAfter { get; }
     IMaybeAntetype ContextBindingAntetype();
@@ -1883,6 +1882,7 @@ public partial interface IBindingPatternNode : IOptionalOrBindingPatternNode, IV
     ICodeSyntax? ICodeNode.Syntax => Syntax;
     ISyntax? ISemanticNode.Syntax => Syntax;
     ILocalBindingSyntax ILocalBindingNode.Syntax => Syntax;
+    ValueIdScope ValueIdScope { get; }
     IFlowState FlowStateBefore();
     ConditionalLexicalScope IPatternNode.FlowLexicalScope()
         => LexicalScopingAspect.BindingPattern_FlowLexicalScope(this);
@@ -1933,7 +1933,7 @@ public partial interface IAmbiguousExpressionNode : ICodeNode
     ConditionalLexicalScope FlowLexicalScope()
         => LexicalScopingAspect.AmbiguousExpression_FlowLexicalScope(this);
     LexicalScope ContainingLexicalScope();
-    IPreviousValueId PreviousValueId();
+    ValueIdScope ValueIdScope { get; }
     ValueId ValueId { get; }
 }
 
@@ -4623,10 +4623,10 @@ internal abstract partial class SemanticNode : TreeNode, IChildTreeNode<ISemanti
     protected LexicalScope Inherited_ContainingLexicalScope(IInheritanceContext ctx)
         => GetParent(ctx)!.Inherited_ContainingLexicalScope(this, this, ctx);
 
-    internal virtual IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => (Previous(ctx) ?? throw Child.PreviousFailed("PreviousValueId", before)).Next_PreviousValueId(this, ctx);
-    protected IPreviousValueId Previous_PreviousValueId(IInheritanceContext ctx)
-        => Previous(ctx)!.Next_PreviousValueId(this, ctx);
+    internal virtual ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+        => (PeekParent() ?? throw Child.InheritFailed("ValueIdScope", child, descendant)).Inherited_ValueIdScope(this, descendant, ctx);
+    protected ValueIdScope Inherited_ValueIdScope(IInheritanceContext ctx)
+        => PeekParent()!.Inherited_ValueIdScope(this, this, ctx);
 
     internal virtual ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
         => (GetParent(ctx) ?? throw Child.InheritFailed("ContainingDeclaration", child, descendant)).Inherited_ContainingDeclaration(this, descendant, ctx);
@@ -5250,12 +5250,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
                 TypeMemberDeclarationsAspect.ConcreteFunctionInvocableDefinition_Type);
     private IMaybeFunctionType? type;
     private bool typeCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
+    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
@@ -5277,6 +5272,7 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -5342,15 +5338,17 @@ file class FunctionDefinitionNode : SemanticNode, IFunctionDefinitionNode
         return false;
     }
 
+    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ValueIdScope;
+    }
+
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
-
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -5918,12 +5916,7 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
                 SymbolsAspect.MethodDefinition_Symbol);
     private MethodSymbol? symbol;
     private bool symbolCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
+    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
@@ -5943,6 +5936,7 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
         Return = Child.Attach(this, @return);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6015,15 +6009,17 @@ file class AbstractMethodDefinitionNode : SemanticNode, IAbstractMethodDefinitio
         return TypeExpressionsAspect.MethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
 
+    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ValueIdScope;
+    }
+
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
-
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -6093,12 +6089,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
                 SymbolsAspect.MethodDefinition_Symbol);
     private MethodSymbol? symbol;
     private bool symbolCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
+    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
@@ -6120,6 +6111,7 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6192,15 +6184,17 @@ file class StandardMethodDefinitionNode : SemanticNode, IStandardMethodDefinitio
         return TypeExpressionsAspect.MethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
 
+    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ValueIdScope;
+    }
+
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
-
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -6269,12 +6263,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
                 SymbolsAspect.MethodDefinition_Symbol);
     private MethodSymbol? symbol;
     private bool symbolCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
+    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
@@ -6296,6 +6285,7 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6368,15 +6358,17 @@ file class GetterMethodDefinitionNode : SemanticNode, IGetterMethodDefinitionNod
         return TypeExpressionsAspect.MethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
 
+    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ValueIdScope;
+    }
+
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
-
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -6445,12 +6437,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
                 SymbolsAspect.MethodDefinition_Symbol);
     private MethodSymbol? symbol;
     private bool symbolCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
+    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
@@ -6472,6 +6459,7 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6544,15 +6532,17 @@ file class SetterMethodDefinitionNode : SemanticNode, ISetterMethodDefinitionNod
         return TypeExpressionsAspect.MethodDefinition_Children_Broadcast_MethodSelfType(this);
     }
 
+    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ValueIdScope;
+    }
+
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
-
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
@@ -6616,12 +6606,7 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
                 SymbolsAspect.DefaultConstructorDefinition_Symbol);
     private ConstructorSymbol? symbol;
     private bool symbolCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
+    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
@@ -6633,6 +6618,7 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
     {
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6666,15 +6652,17 @@ file class DefaultConstructorDefinitionNode : SemanticNode, IDefaultConstructorD
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
+    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ValueIdScope;
+    }
+
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
-
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -6731,12 +6719,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
                 SymbolsAspect.SourceConstructorDefinition_Symbol);
     private ConstructorSymbol? symbol;
     private bool symbolCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
+    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
@@ -6756,6 +6739,7 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6809,15 +6793,17 @@ file class SourceConstructorDefinitionNode : SemanticNode, ISourceConstructorDef
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
+    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ValueIdScope;
+    }
+
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
-
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -6870,12 +6856,7 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
                 SymbolsAspect.DefaultInitializerDefinition_Symbol);
     private InitializerSymbol? symbol;
     private bool symbolCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
+    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
@@ -6887,6 +6868,7 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
     {
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -6920,15 +6902,17 @@ file class DefaultInitializerDefinitionNode : SemanticNode, IDefaultInitializerD
         return base.Inherited_ControlFlowFollowing(child, descendant, ctx);
     }
 
+    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ValueIdScope;
+    }
+
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
-
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -6985,12 +6969,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
                 SymbolsAspect.SourceInitializerDefinition_Symbol);
     private InitializerSymbol? symbol;
     private bool symbolCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
+    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
@@ -7010,6 +6989,7 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
     }
 
     internal override ISymbolDeclarationNode Inherited_ContainingDeclaration(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -7063,15 +7043,17 @@ file class SourceInitializerDefinitionNode : SemanticNode, ISourceInitializerDef
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
+    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ValueIdScope;
+    }
+
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
-
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -7139,12 +7121,7 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
                 SymbolsAspect.FieldDefinition_Symbol);
     private FieldSymbol? symbol;
     private bool symbolCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.FieldDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
+    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
@@ -7162,6 +7139,7 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
         this.initializer = Child.Create(this, initializer);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
     }
 
     internal override IEntryNode Inherited_ControlFlowEntry(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -7188,6 +7166,11 @@ file class FieldDefinitionNode : SemanticNode, IFieldDefinitionNode
         if (ReferenceEquals(child, Self.CurrentInitializer))
             return null;
         return base.Inherited_ExpectedReturnType(child, descendant, ctx);
+    }
+
+    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ValueIdScope;
     }
 
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -7269,12 +7252,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
                 TypeMemberDeclarationsAspect.ConcreteFunctionInvocableDefinition_Type);
     private IMaybeFunctionType? type;
     private bool typeCached;
-    public ValueIdScope ValueIdScope
-        => GrammarAttribute.IsCached(in valueIdScopeCached) ? valueIdScope!
-            : this.Synthetic(ref valueIdScopeCached, ref valueIdScope,
-                ValueIdsAspect.InvocableDefinition_ValueIdScope);
-    private ValueIdScope? valueIdScope;
-    private bool valueIdScopeCached;
+    public ValueIdScope ValueIdScope { [DebuggerStepThrough] get; }
     public FixedDictionary<IVariableBindingNode, int> VariableBindingsMap
         => GrammarAttribute.IsCached(in variableBindingsMapCached) ? variableBindingsMap!
             : this.Synthetic(ref variableBindingsMapCached, ref variableBindingsMap,
@@ -7294,6 +7272,7 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         Body = Child.Attach(this, body);
         Entry = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Entry(this));
         Exit = Child.Attach(this, ControlFlowAspect.ExecutableDefinition_Exit(this));
+        ValueIdScope = ValueIdsAspect.ExecutableDefinition_ValueIdScope(this);
     }
 
     internal override LexicalScope Inherited_ContainingLexicalScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
@@ -7354,15 +7333,17 @@ file class AssociatedFunctionDefinitionNode : SemanticNode, IAssociatedFunctionD
         return base.Inherited_FlowStateBefore(child, descendant, ctx);
     }
 
+    internal override ValueIdScope Inherited_ValueIdScope(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
+    {
+        return ValueIdScope;
+    }
+
     internal override FixedDictionary<IVariableBindingNode, int> Inherited_VariableBindingsMap(SemanticNode child, SemanticNode descendant, IInheritanceContext ctx)
     {
         if (ReferenceEquals(descendant, Self.Entry))
             return VariableBindingsMap;
         return base.Inherited_VariableBindingsMap(child, descendant, ctx);
     }
-
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueIdsAspect.InvocableDefinition_Next_PreviousValueId(this);
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -7456,8 +7437,8 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolDeclarationNode ContainingDeclaration
@@ -7507,9 +7488,6 @@ file class NamedParameterNode : SemanticNode, INamedParameterNode
         TypeNode = Child.Attach(this, typeNode);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => BindingValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -7534,8 +7512,8 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolDeclarationNode ContainingDeclaration
@@ -7591,9 +7569,6 @@ file class ConstructorSelfParameterNode : SemanticNode, IConstructorSelfParamete
         Capability = Child.Attach(this, capability);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => BindingValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -7618,8 +7593,8 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolDeclarationNode ContainingDeclaration
@@ -7675,9 +7650,6 @@ file class InitializerSelfParameterNode : SemanticNode, IInitializerSelfParamete
         Capability = Child.Attach(this, capability);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => BindingValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -7702,8 +7674,8 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolDeclarationNode ContainingDeclaration
@@ -7759,9 +7731,6 @@ file class MethodSelfParameterNode : SemanticNode, IMethodSelfParameterNode
         Capability = Child.Attach(this, capability);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => BindingValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -7785,8 +7754,8 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public ITypeDefinitionNode ContainingTypeDefinition
@@ -7830,9 +7799,6 @@ file class FieldParameterNode : SemanticNode, IFieldParameterNode
     {
         Syntax = syntax;
     }
-
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => BindingValueId;
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -8570,8 +8536,6 @@ file class ResultStatementNode : SemanticNode, IResultStatementNode
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public bool ImplicitRecoveryAllowed()
         => Inherited_ImplicitRecoveryAllowed(GrammarAttribute.CurrentInheritanceContext());
     public bool ShouldPrepareToReturn()
@@ -8687,8 +8651,6 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public ISymbolDeclarationNode ContainingDeclaration
         => Inherited_ContainingDeclaration(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
@@ -8697,6 +8659,8 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public IMaybeAntetype BindingAntetype
@@ -8796,9 +8760,6 @@ file class VariableDeclarationStatementNode : SemanticNode, IVariableDeclaration
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => BindingValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -8854,8 +8815,6 @@ file class ExpressionStatementNode : SemanticNode, IExpressionStatementNode
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowNext
         => GrammarAttribute.IsCached(in controlFlowNextCached) ? controlFlowNext!
             : this.Synthetic(ref controlFlowNextCached, ref controlFlowNext,
@@ -8942,8 +8901,6 @@ file class BindingContextPatternNode : SemanticNode, IBindingContextPatternNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public ValueId? MatchReferentValueId
         => GrammarAttribute.IsCached(in matchReferentValueIdCached) ? matchReferentValueId
             : this.Inherited(ref matchReferentValueIdCached, ref matchReferentValueId, ref syncLock,
@@ -9020,8 +8977,6 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public ValueId? MatchReferentValueId
         => GrammarAttribute.IsCached(in matchReferentValueIdCached) ? matchReferentValueId
             : this.Inherited(ref matchReferentValueIdCached, ref matchReferentValueId, ref syncLock,
@@ -9040,6 +8995,8 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
                 Inherited_ContainingLexicalScope);
     private LexicalScope? containingLexicalScope;
     private bool containingLexicalScopeCached;
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IFlowState FlowStateBefore()
         => Inherited_FlowStateBefore(GrammarAttribute.CurrentInheritanceContext());
     public IMaybeAntetype BindingAntetype
@@ -9098,9 +9055,6 @@ file class BindingPatternNode : SemanticNode, IBindingPatternNode
         Syntax = syntax;
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => BindingValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -9148,8 +9102,6 @@ file class OptionalPatternNode : SemanticNode, IOptionalPatternNode
     private IFixedSet<SemanticNode>? controlFlowPreviousContributors;
     public ControlFlowSet ControlFlowFollowing()
         => Inherited_ControlFlowFollowing(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
     public ValueId? MatchReferentValueId
         => GrammarAttribute.IsCached(in matchReferentValueIdCached) ? matchReferentValueId
             : this.Inherited(ref matchReferentValueIdCached, ref matchReferentValueId, ref syncLock,
@@ -9226,8 +9178,8 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -9349,9 +9301,6 @@ file class BlockExpressionNode : SemanticNode, IBlockExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -9403,8 +9352,8 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -9566,9 +9515,6 @@ file class NewObjectExpressionNode : SemanticNode, INewObjectExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -9623,8 +9569,8 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -9719,9 +9665,6 @@ file class UnsafeExpressionNode : SemanticNode, IUnsafeExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -9767,8 +9710,8 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -9862,9 +9805,6 @@ file class BoolLiteralExpressionNode : SemanticNode, IBoolLiteralExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -9910,8 +9850,8 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -10005,9 +9945,6 @@ file class IntegerLiteralExpressionNode : SemanticNode, IIntegerLiteralExpressio
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10053,8 +9990,8 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -10148,9 +10085,6 @@ file class NoneLiteralExpressionNode : SemanticNode, INoneLiteralExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10194,8 +10128,8 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -10295,9 +10229,6 @@ file class StringLiteralExpressionNode : SemanticNode, IStringLiteralExpressionN
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10358,8 +10289,8 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -10494,9 +10425,6 @@ file class AssignmentExpressionNode : SemanticNode, IAssignmentExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10556,8 +10484,8 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -10693,9 +10621,6 @@ file class BinaryOperatorExpressionNode : SemanticNode, IBinaryOperatorExpressio
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10749,8 +10674,8 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -10845,9 +10770,6 @@ file class UnaryOperatorExpressionNode : SemanticNode, IUnaryOperatorExpressionN
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -10902,8 +10824,8 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -11000,9 +10922,6 @@ file class ConversionExpressionNode : SemanticNode, IConversionExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11055,8 +10974,8 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -11145,9 +11064,6 @@ file class ImplicitConversionExpressionNode : SemanticNode, IImplicitConversionE
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11201,8 +11117,8 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -11331,9 +11247,6 @@ file class PatternMatchExpressionNode : SemanticNode, IPatternMatchExpressionNod
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11398,8 +11311,8 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -11527,9 +11440,6 @@ file class IfExpressionNode : SemanticNode, IIfExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11582,8 +11492,8 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -11685,9 +11595,6 @@ file class LoopExpressionNode : SemanticNode, ILoopExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11746,8 +11653,8 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -11871,9 +11778,6 @@ file class WhileExpressionNode : SemanticNode, IWhileExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -11931,8 +11835,8 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -12164,9 +12068,6 @@ file class ForeachExpressionNode : SemanticNode, IForeachExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => BindingValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -12221,8 +12122,8 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -12305,9 +12206,6 @@ file class BreakExpressionNode : SemanticNode, IBreakExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -12353,8 +12251,8 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -12434,9 +12332,6 @@ file class NextExpressionNode : SemanticNode, INextExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -12489,8 +12384,8 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -12596,9 +12491,6 @@ file class ReturnExpressionNode : SemanticNode, IReturnExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -12657,8 +12549,8 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -12769,9 +12661,6 @@ file class UnknownInvocationExpressionNode : SemanticNode, IUnknownInvocationExp
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -12833,8 +12722,8 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -12970,9 +12859,6 @@ file class FunctionInvocationExpressionNode : SemanticNode, IFunctionInvocationE
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13029,8 +12915,8 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -13153,9 +13039,6 @@ file class MethodInvocationExpressionNode : SemanticNode, IMethodInvocationExpre
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13211,8 +13094,8 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -13319,9 +13202,6 @@ file class GetterInvocationExpressionNode : SemanticNode, IGetterInvocationExpre
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13383,8 +13263,8 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -13515,9 +13395,6 @@ file class SetterInvocationExpressionNode : SemanticNode, ISetterInvocationExpre
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13574,8 +13451,8 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -13704,9 +13581,6 @@ file class FunctionReferenceInvocationExpressionNode : SemanticNode, IFunctionRe
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13763,8 +13637,8 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -13894,9 +13768,6 @@ file class InitializerInvocationExpressionNode : SemanticNode, IInitializerInvoc
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -13940,8 +13811,8 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -13994,9 +13865,6 @@ file class IdentifierNameExpressionNode : SemanticNode, IIdentifierNameExpressio
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     protected override IChildTreeNode Rewrite()
         => BindingAmbiguousNamesAspect.IdentifierNameExpression_Rewrite(this)
         ?? base.Rewrite();
@@ -14015,8 +13883,8 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
         => Inherited_Package(GrammarAttribute.CurrentInheritanceContext());
     public CodeFile File
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope
         => GrammarAttribute.IsCached(in containingLexicalScopeCached) ? containingLexicalScope!
             : this.Inherited(ref containingLexicalScopeCached, ref containingLexicalScope,
@@ -14071,9 +13939,6 @@ file class GenericNameExpressionNode : SemanticNode, IGenericNameExpressionNode
             return false;
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
-
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
 }
 
 [GeneratedCode("AzothCompilerCodeGen", null)]
@@ -14098,8 +13963,8 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -14182,9 +14047,6 @@ file class UnresolvedMemberAccessExpressionNode : SemanticNode, IUnresolvedMembe
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14235,8 +14097,8 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -14315,9 +14177,6 @@ file class UnqualifiedNamespaceNameNode : SemanticNode, IUnqualifiedNamespaceNam
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14370,8 +14229,8 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -14452,9 +14311,6 @@ file class QualifiedNamespaceNameNode : SemanticNode, IQualifiedNamespaceNameNod
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14509,8 +14365,8 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -14620,9 +14476,6 @@ file class FunctionGroupNameNode : SemanticNode, IFunctionGroupNameNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14684,8 +14537,8 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -14790,9 +14643,6 @@ file class FunctionNameNode : SemanticNode, IFunctionNameNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -14848,8 +14698,8 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -14958,9 +14808,6 @@ file class MethodGroupNameNode : SemanticNode, IMethodGroupNameNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -15022,8 +14869,8 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -15134,9 +14981,6 @@ file class MethodNameNode : SemanticNode, IMethodNameNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -15190,8 +15034,8 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -15286,9 +15130,6 @@ file class FieldAccessExpressionNode : SemanticNode, IFieldAccessExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -15336,8 +15177,8 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -15434,9 +15275,6 @@ file class VariableNameExpressionNode : SemanticNode, IVariableNameExpressionNod
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -15487,8 +15325,8 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -15581,9 +15419,6 @@ file class StandardTypeNameExpressionNode : SemanticNode, IStandardTypeNameExpre
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -15637,8 +15472,8 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -15733,9 +15568,6 @@ file class QualifiedTypeNameExpressionNode : SemanticNode, IQualifiedTypeNameExp
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -15789,8 +15621,8 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -15873,9 +15705,6 @@ file class InitializerGroupNameNode : SemanticNode, IInitializerGroupNameNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -15921,8 +15750,8 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -15998,9 +15827,6 @@ file class SpecialTypeNameExpressionNode : SemanticNode, ISpecialTypeNameExpress
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -16046,8 +15872,8 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -16153,9 +15979,6 @@ file class SelfExpressionNode : SemanticNode, ISelfExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -16202,8 +16025,8 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -16279,9 +16102,6 @@ file class MissingNameExpressionNode : SemanticNode, IMissingNameExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -16328,8 +16148,8 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -16408,9 +16228,6 @@ file class UnknownIdentifierNameExpressionNode : SemanticNode, IUnknownIdentifie
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -16460,8 +16277,8 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -16544,9 +16361,6 @@ file class UnknownGenericNameExpressionNode : SemanticNode, IUnknownGenericNameE
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -16600,8 +16414,8 @@ file class AmbiguousMemberAccessExpressionNode : SemanticNode, IAmbiguousMemberA
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -16684,9 +16498,6 @@ file class AmbiguousMemberAccessExpressionNode : SemanticNode, IAmbiguousMemberA
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -16740,8 +16551,8 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -16785,9 +16596,6 @@ file class AmbiguousMoveExpressionNode : SemanticNode, IAmbiguousMoveExpressionN
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     protected override IChildTreeNode Rewrite()
         => CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Variable(this)
         ?? CapabilityExpressionsAspect.AmbiguousMoveExpression_Rewrite_Value(this)
@@ -16815,8 +16623,8 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -16907,9 +16715,6 @@ file class MoveVariableExpressionNode : SemanticNode, IMoveVariableExpressionNod
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -16963,8 +16768,8 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -17057,9 +16862,6 @@ file class MoveValueExpressionNode : SemanticNode, IMoveValueExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -17112,8 +16914,8 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -17202,9 +17004,6 @@ file class ImplicitTempMoveExpressionNode : SemanticNode, IImplicitTempMoveExpre
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -17257,8 +17056,8 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public ValueId ValueId
         => GrammarAttribute.IsCached(in valueIdCached) ? valueId
             : this.Synthetic(ref valueIdCached, ref valueId, ref syncLock,
@@ -17302,9 +17101,6 @@ file class AmbiguousFreezeExpressionNode : SemanticNode, IAmbiguousFreezeExpress
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     protected override IChildTreeNode Rewrite()
         => CapabilityExpressionsAspect.AmbiguousFreezeExpression_Rewrite_Variable(this)
         ?? CapabilityExpressionsAspect.AmbiguousFreezeExpression_Rewrite_Value(this)
@@ -17333,8 +17129,8 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -17427,9 +17223,6 @@ file class FreezeVariableExpressionNode : SemanticNode, IFreezeVariableExpressio
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -17484,8 +17277,8 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -17580,9 +17373,6 @@ file class FreezeValueExpressionNode : SemanticNode, IFreezeValueExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -17634,8 +17424,8 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -17715,9 +17505,6 @@ file class PrepareToReturnExpressionNode : SemanticNode, IPrepareToReturnExpress
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -17769,8 +17556,8 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -17847,9 +17634,6 @@ file class AsyncBlockExpressionNode : SemanticNode, IAsyncBlockExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -17902,8 +17686,8 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -17998,9 +17782,6 @@ file class AsyncStartExpressionNode : SemanticNode, IAsyncStartExpressionNode
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
 
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
-
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {
         contributors.Add(this);
@@ -18053,8 +17834,8 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
         => Inherited_File(GrammarAttribute.CurrentInheritanceContext());
     public LexicalScope ContainingLexicalScope()
         => Inherited_ContainingLexicalScope(GrammarAttribute.CurrentInheritanceContext());
-    public IPreviousValueId PreviousValueId()
-        => Previous_PreviousValueId(GrammarAttribute.CurrentInheritanceContext());
+    public ValueIdScope ValueIdScope
+        => Inherited_ValueIdScope(GrammarAttribute.CurrentInheritanceContext());
     public IEntryNode ControlFlowEntry()
         => Inherited_ControlFlowEntry(GrammarAttribute.CurrentInheritanceContext());
     public ControlFlowSet ControlFlowPrevious
@@ -18148,9 +17929,6 @@ file class AwaitExpressionNode : SemanticNode, IAwaitExpressionNode
             return false;
         return base.Inherited_ShouldPrepareToReturn(child, descendant, ctx);
     }
-
-    internal override IPreviousValueId Next_PreviousValueId(SemanticNode before, IInheritanceContext ctx)
-        => ValueId;
 
     internal override void CollectContributors_Diagnostics(List<SemanticNode> contributors)
     {

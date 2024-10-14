@@ -92,6 +92,12 @@ A `type` declaration is used to provide that.
 
 ### Inherited Attributes
 
+The `stable` modifier on the attribute family is dangerous and should be used with caution. In most
+cases, it is an optimization. However, sometimes it is required for proper behavior. The `stable`
+modifier indicates that even if nodes get rewritten, this inherited attribute will not change. Thus,
+it is safe to cache it or attributes that depend on it even though they are underneath an in
+progress rewrite.
+
 | Declaration                                                        | Meaning                                                         |
 | ------------------------------------------------------------------ | --------------------------------------------------------------- |
 | `↓` (`lazy`\|`computed`)? `child`? *Node*.*Attribute*`:` *Type*`;` | Inherited attribute, defaults to lazy                           |
@@ -100,9 +106,9 @@ A `type` declaration is used to provide that.
 | `↓` *Node*`.`*Attribute*`():` *Type*`;`                            | Inherited attribute method, always computed                     |
 | `=` *Node*`.`*Selector*`.`*Attribute*`();`                         | Inherited method equation                                       |
 | `=` *Node*`.`*Selector*`.`*Attribute*`()` `=>` *Expression*`;`     | Inherited method equation with inline expression                |
-| `↓` `*.`*Attribute* `<:` *Type*`;`<sup>1</sup>                     | An inherited attribute family that specifies a common supertype |
+| `↓` `stable`? `*.`*Attribute* `<:` *Type*`;`<sup>1</sup>           | An inherited attribute family that specifies a common supertype |
 
-1. Only necessary when code generation is not able to determine the type and gives an error.
+1. Only necessary when in two situations. First, when code generation is not able to determine the type and gives an error. Second, when specifying the `stable` option.
 
 | Selector                       | Meaning                                                                    |
 | ------------------------------ | -------------------------------------------------------------------------- |

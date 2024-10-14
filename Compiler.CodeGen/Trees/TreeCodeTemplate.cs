@@ -738,7 +738,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             #line hidden
             
             #line 155 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
-              case InheritedAttributeFamilyModel: 
+              case InheritedAttributeFamilyModel inherited: 
             
             #line default
             #line hidden
@@ -770,8 +770,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             
             #line default
             #line hidden
-            this.Write(" descendant, IInheritanceContext ctx)\r\n        => (GetParent(ctx) ?? throw Child." +
-                    "InheritFailed(\"");
+            this.Write(" descendant, IInheritanceContext ctx)\r\n        => (");
+            
+            #line 157 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.GetParent(inherited)));
+            
+            #line default
+            #line hidden
+            this.Write(" ?? throw Child.InheritFailed(\"");
             
             #line 157 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));
@@ -799,7 +805,14 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Trees
             
             #line default
             #line hidden
-            this.Write("(IInheritanceContext ctx)\r\n        => GetParent(ctx)!.Inherited_");
+            this.Write("(IInheritanceContext ctx)\r\n        => ");
+            
+            #line 159 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Emit.GetParent(inherited)));
+            
+            #line default
+            #line hidden
+            this.Write("!.Inherited_");
             
             #line 159 "C:\dataFast\azoth-lang\azoth.tools.bootstrap\Compiler.CodeGen\Trees\TreeCodeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(attr.Name));

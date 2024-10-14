@@ -343,6 +343,9 @@ internal static class Emit
     #endregion
 
     #region Attribute Families
+    public static string GetParent(InheritedAttributeFamilyModel family)
+        => family.IsStable ? "PeekParent()" : "GetParent(ctx)";
+
     public static string ContributeMethodName(AggregateAttributeFamilyModel family, TreeNodeModel node)
     {
         var contributesToThis = node.ActualAttributes.OfType<AggregateAttributeModel>()

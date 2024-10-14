@@ -7,7 +7,8 @@
 // Type Declarations
 struct `ValueId`;
 
-⮡ *.PreviousValueId: `IPreviousValueId`;
+// Necessary for "stable" because otherwise new ValueIds will be generated repeatedly beneath rewrites
+↓ stable *.ValueIdScope <: `ValueIdScope`;
 
 // ---------- Special Parts
 ↑ ElseClause.ValueId: `ValueId`;
@@ -16,40 +17,35 @@ struct `ValueId`;
 ↑ Binding.BindingValueId: `ValueId`;
 
 // ---------- Definitions
-↑ InvocableDefinition.ValueIdScope: `ValueIdScope`;
-= InvocableDefinition.ValueIdScope;
-= InvocableDefinition.⮡.PreviousValueId;
-↑ ExecutableDefinition.ValueIdScope: `ValueIdScope`;
+↑ eager ExecutableDefinition.ValueIdScope: `ValueIdScope`;
+= ExecutableDefinition.ValueIdScope;
+= ExecutableDefinition.*.**.ValueIdScope => ValueIdScope;
 
 // ---------- Parameters
-⮡ Parameter.PreviousValueId();
-= Parameter.⮡.PreviousValueId => BindingValueId;
+// TODO inheriting this doesn't need to cause cycle with rewritten parent
+↓ computed Parameter.ValueIdScope: `ValueIdScope`;
 ↑ Parameter.BindingValueId: `ValueId`;
 = Parameter.BindingValueId;
 
 // ---------- Statements
-⮡ Statement.PreviousValueId();
 ↑ Statement.ResultValueId: `ValueId`?;
 = ResultStatement.ResultValueId => ValueId;
 = ResultStatement.ValueId => Expression?.ValueId ?? default;
+// TODO inheriting this doesn't need to cause cycle with rewritten parent
+↓ computed VariableDeclarationStatement.ValueIdScope: `ValueIdScope`;
 = VariableDeclarationStatement.ResultValueId => null;
-= VariableDeclarationStatement.⮡.PreviousValueId => BindingValueId;
 = ExpressionStatement.ResultValueId => null;
 
 // ---------- Patterns
-⮡ Pattern.PreviousValueId();
 ↓ Pattern.MatchReferentValueId: `ValueId`?;
-= BindingPattern.⮡.PreviousValueId => BindingValueId;
+// TODO inheriting this doesn't need to cause cycle with rewritten parent
+↓ computed BindingPattern.ValueIdScope: `ValueIdScope`;
 
 // ---------- Expressions
-⮡ AmbiguousExpression.PreviousValueId();
+// TODO inheriting this doesn't need to cause cycle with rewritten parent
+↓ computed AmbiguousExpression.ValueIdScope: `ValueIdScope`;
 ↑ AmbiguousExpression.ValueId: `ValueId`;
 = AmbiguousExpression.ValueId;
-= AmbiguousExpression.⮡.PreviousValueId => ValueId;
 
 // ---------- Operator Expressions
 = PatternMatchExpression.Pattern.**.MatchReferentValueId => Referent?.ValueId;
-
-// ---------- Control Flow Expressions
-// Include the BindingValueId in the value id flow
-= ForeachExpression.⮡.PreviousValueId => BindingValueId;

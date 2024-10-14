@@ -4,10 +4,17 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Syntax.AttributeFamilies;
 
 public sealed class InheritedAttributeFamilySyntax : AttributeFamilySyntax
 {
-    public InheritedAttributeFamilySyntax(string name, TypeSyntax type)
+    public bool IsStable { get; }
+
+    public InheritedAttributeFamilySyntax(bool isStable, string name, TypeSyntax type)
         : base(name, type)
     {
+        IsStable = isStable;
     }
 
-    public override string ToString() => $"↓ *.{Name} <: {Type}";
+    public override string ToString()
+    {
+        var stable = IsStable ? "stable " : "";
+        return $"↓ {stable}*.{Name} <: {Type}";
+    }
 }

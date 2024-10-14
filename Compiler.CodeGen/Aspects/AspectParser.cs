@@ -92,9 +92,23 @@ public static class AspectParser
             throw new ArgumentException("Not an inherited attribute family statement.", nameof(statement));
 
         var (definition, type) = Bisect(statement, "<:", "Should be exactly one `<:` in: '{0}'");
+        (var modifier, definition) = OptionalSplitOffStart(definition);
+        bool isStable;
+        switch (modifier)
+        {
+            case "stable":
+                isStable = true;
+                break;
+            case null:
+                isStable = false;
+                break;
+            default:
+                throw new FormatException(
+                    $"Unexpected modifier '{modifier}' on inherited attribute family '{definition}'.");
+        }
         string name = ParseAttributeFamily(definition);
         var typeSyntax = ParseType(type);
-        return new(name, typeSyntax);
+        return new(isStable, name, typeSyntax);
     }
 
     private static PreviousAttributeFamilySyntax ParsePreviousAttributeFamily(string statement)

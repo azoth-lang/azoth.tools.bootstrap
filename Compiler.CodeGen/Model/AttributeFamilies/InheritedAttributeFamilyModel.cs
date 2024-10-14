@@ -14,6 +14,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.CodeGen.Model.AttributeFamilies;
 /// <remarks>Also acts as a collection of all instances of the attribute.</remarks>
 public sealed class InheritedAttributeFamilyModel : ContextAttributeFamilyModel
 {
+    public bool IsStable { get; }
     public override string Name { get; }
     public override TypeModel Type => type.Value;
     private readonly Lazy<TypeModel> type;
@@ -26,6 +27,7 @@ public sealed class InheritedAttributeFamilyModel : ContextAttributeFamilyModel
         this.instances = new(instances.ToFixedSet());
         if (Instances.IsEmpty)
             throw new ArgumentException("At least one instance is required.", nameof(instances));
+        IsStable = false;
         var representativeAttribute = Instances.First();
         Name = representativeAttribute.Name;
         if (Instances.Any(a => a.Name != Name))
@@ -36,6 +38,7 @@ public sealed class InheritedAttributeFamilyModel : ContextAttributeFamilyModel
     public InheritedAttributeFamilyModel(TreeModel tree, InheritedAttributeFamilySyntax syntax)
         : base(tree)
     {
+        IsStable = syntax.IsStable;
         Name = syntax.Name;
         type = new(TypeModel.CreateFromSyntax(tree, syntax.Type));
         instances = new(ComputeInstances);
@@ -59,5 +62,9 @@ public sealed class InheritedAttributeFamilyModel : ContextAttributeFamilyModel
         => Tree.Aspects.SelectMany(a => a.DeclaredAttributes).OfType<InheritedAttributeModel>()
                .Where(a => a.Name == Name).ToFixedSet();
 
-    public override string ToString() => $"↓ *.{Name} <: {Type}";
+    public override string ToString()
+    {
+        var stable = IsStable ? "stable " : "";
+        return $"↓ {stable}*.{Name} <: {Type}";
+    }
 }

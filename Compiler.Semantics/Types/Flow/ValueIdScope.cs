@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 
@@ -9,11 +11,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow;
 /// own scope. Two <see cref="ValueId"/>s with the same number in a different scope are not equal.</remarks>
 public sealed class ValueIdScope : IEquatable<ValueIdScope>
 {
-    public ValueId First { get; }
+    private ulong current;
 
-    public ValueIdScope()
+    public ValueId CreateNext()
     {
-        First = ValueId.CreateFirst(this);
+        // Increment returns the new value, but we want the previous value, so subtract 1.
+        var newId = Interlocked.Increment(ref current) - 1;
+        return new ValueId(this, newId);
     }
 
     #region Equality
@@ -25,7 +29,7 @@ public sealed class ValueIdScope : IEquatable<ValueIdScope>
         // Equality is based on reference equality.
         => ReferenceEquals(this, obj);
 
-    public override int GetHashCode() => base.GetHashCode();
+    public override int GetHashCode() => RuntimeHelpers.GetHashCode(this);
 
     public static bool operator ==(ValueIdScope? left, ValueIdScope? right) => Equals(left, right);
 

@@ -5,6 +5,8 @@
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // Attribute supertype needed because of the conflict between types of inherited attributes
+// TODO exposing the containing declaration to child nodes risks coupling. Maybe instead it should
+// inherit specific properties as needed.
 ↓ *.ContainingDeclaration <: SymbolDeclaration;
 
 // ---------- Parent

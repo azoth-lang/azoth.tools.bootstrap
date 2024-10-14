@@ -152,11 +152,11 @@ internal abstract partial class <#= Emit.BaseClassName(tree) #> : TreeNode, IChi
 <#      foreach (var attr in tree.AllAttributeFamilies) { #>
 
 <#          switch (attr) { #>
-<#              case InheritedAttributeFamilyModel: #>
+<#              case InheritedAttributeFamilyModel inherited: #>
     internal virtual <#= Emit.Type(attr.Type) #> Inherited_<#= attr.Name #>(<#= Emit.BaseClassName(tree) #> child, <#= Emit.BaseClassName(tree) #> descendant, IInheritanceContext ctx)
-        => (GetParent(ctx) ?? throw Child.InheritFailed("<#= attr.Name #>", child, descendant)).Inherited_<#= attr.Name #>(this, descendant, ctx);
+        => (<#= Emit.GetParent(inherited) #> ?? throw Child.InheritFailed("<#= attr.Name #>", child, descendant)).Inherited_<#= attr.Name #>(this, descendant, ctx);
     protected <#= Emit.Type(attr.Type) #> Inherited_<#= attr.Name #>(IInheritanceContext ctx)
-        => GetParent(ctx)!.Inherited_<#= attr.Name #>(this, this, ctx);
+        => <#= Emit.GetParent(inherited) #>!.Inherited_<#= attr.Name #>(this, this, ctx);
 <#                  break;#>
 <#              case PreviousAttributeFamilyModel: #>
     internal virtual <#= Emit.Type(attr.Type) #> Next_<#= attr.Name #>(<#= Emit.BaseClassName(tree) #> before, IInheritanceContext ctx)
