@@ -6,7 +6,7 @@ using Azoth.Tools.Bootstrap.Framework;
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
 /// <summary>
-/// An reference type without a reference capability.
+/// A reference type without a reference capability.
 /// </summary>
 public abstract class BareReferenceType : BareType
 {
