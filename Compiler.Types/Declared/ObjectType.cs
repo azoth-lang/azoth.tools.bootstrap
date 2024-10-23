@@ -13,6 +13,9 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
+/// <summary>
+/// The type declared by a class or trait declaration.
+/// </summary>
 public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
 {
     private static readonly IFixedSet<BareReferenceType> AnyTypeSet
