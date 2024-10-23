@@ -63,9 +63,9 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
         AllowsVariance = GenericParameters.Any(p => p.Variance != TypeParameterVariance.Invariant);
     }
 
-    public abstract BareType With(IFixedList<IType> typeArguments);
+    public abstract BareNonVariableType With(IFixedList<IType> typeArguments);
 
-    public BareType? With(IFixedList<IMaybeType> typeArguments)
+    public BareNonVariableType? With(IFixedList<IMaybeType> typeArguments)
     {
         var properTypeArguments = typeArguments.As<IType>();
         if (properTypeArguments is null) return null;

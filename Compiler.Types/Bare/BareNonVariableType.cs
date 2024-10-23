@@ -19,7 +19,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// </summary>
 [Closed(typeof(BareReferenceType), typeof(BareValueType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public abstract class BareType : IEquatable<BareType>
+public abstract class BareNonVariableType : BareType, IEquatable<BareNonVariableType>
 {
     #region Standard Types
     public static readonly BareValueType<BoolType> Bool = DeclaredType.Bool.BareType;
@@ -40,9 +40,9 @@ public abstract class BareType : IEquatable<BareType>
     public static readonly BareReferenceType<AnyType> Any = DeclaredType.Any.BareType;
     #endregion
 
-    public abstract DeclaredType DeclaredType { get; }
-    public IFixedList<IType> GenericTypeArguments { get; }
-    public IEnumerable<GenericParameterArgument> GenericParameterArguments
+    public abstract override DeclaredType DeclaredType { get; }
+    public sealed override IFixedList<IType> GenericTypeArguments { get; }
+    public sealed override IEnumerable<GenericParameterArgument> GenericParameterArguments
         => DeclaredType.GenericParameters.EquiZip(GenericTypeArguments, (p, a) => new GenericParameterArgument(p, a));
     public bool AllowsVariance { get; }
     public bool HasIndependentTypeArguments { get; }
@@ -68,7 +68,7 @@ public abstract class BareType : IEquatable<BareType>
         IFixedList<IType> typeArguments)
         => new(declaredType, typeArguments);
 
-    private protected BareType(DeclaredType declaredType, IFixedList<IType> genericTypeArguments)
+    private protected BareNonVariableType(DeclaredType declaredType, IFixedList<IType> genericTypeArguments)
     {
         if (declaredType.GenericParameters.Count != genericTypeArguments.Count)
             throw new ArgumentException(
@@ -117,7 +117,7 @@ public abstract class BareType : IEquatable<BareType>
     public IMaybePseudotype ReplaceTypeParametersIn(IMaybePseudotype pseudotype)
         => typeReplacements.Value.ReplaceTypeParametersIn(pseudotype);
 
-    public abstract BareType AccessedVia(Capability capability);
+    public abstract BareNonVariableType AccessedVia(Capability capability);
 
     protected IFixedList<IType> TypeArgumentsAccessedVia(Capability capability)
     {
@@ -132,18 +132,12 @@ public abstract class BareType : IEquatable<BareType>
         return typesReplaced ? newTypeArguments.ToFixedList() : GenericTypeArguments;
     }
 
-    public abstract BareType With(IFixedList<IType> typeArguments);
-
-    public abstract CapabilityType With(Capability capability);
+    public abstract BareNonVariableType With(IFixedList<IType> typeArguments);
 
     public CapabilityTypeConstraint With(CapabilitySet capability)
         => new(capability, this);
 
-    /// <summary>
-    /// Make a version of this type that is the default read reference capability for the type. That
-    /// is either read-only or constant.
-    /// </summary>
-    public CapabilityType WithRead()
+    public sealed override CapabilityType WithRead()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Read);
 
     #region Equality
@@ -151,16 +145,16 @@ public abstract class BareType : IEquatable<BareType>
     {
         if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;
-        return obj is BareType other && Equals(other);
+        return obj is BareNonVariableType other && Equals(other);
     }
 
-    public abstract bool Equals(BareType? other);
+    public abstract bool Equals(BareNonVariableType? other);
 
     public abstract override int GetHashCode();
 
-    public static bool operator ==(BareType? left, BareType? right) => Equals(left, right);
+    public static bool operator ==(BareNonVariableType? left, BareNonVariableType? right) => Equals(left, right);
 
-    public static bool operator !=(BareType? left, BareType? right) => !Equals(left, right);
+    public static bool operator !=(BareNonVariableType? left, BareNonVariableType? right) => !Equals(left, right);
     #endregion
 
     public sealed override string ToString()

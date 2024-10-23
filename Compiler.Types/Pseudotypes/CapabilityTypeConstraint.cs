@@ -7,11 +7,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
 
 public sealed class CapabilityTypeConstraint : IPseudotype
 {
-    public BareType BareType { get; }
+    public BareNonVariableType BareType { get; }
 
     public CapabilitySet Capability { get; }
 
-    public CapabilityTypeConstraint(CapabilitySet capability, BareType bareType)
+    public CapabilityTypeConstraint(CapabilitySet capability, BareNonVariableType bareType)
     {
         Capability = capability;
         BareType = bareType;

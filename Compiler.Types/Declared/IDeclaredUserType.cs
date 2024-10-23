@@ -34,7 +34,7 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
 
     public DeclaredType AsDeclaredType { get; }
 
-    BareType With(IFixedList<IType> typeArguments);
+    BareNonVariableType With(IFixedList<IType> typeArguments);
     CapabilityType With(Capability capability, IFixedList<IType> typeArguments);
     CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<IType> typeArguments);
     CapabilityType WithRead(IFixedList<IType> typeArguments);

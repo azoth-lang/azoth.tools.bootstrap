@@ -101,7 +101,7 @@ internal static partial class TypeDefinitionsAspect
                    // But the real check is on the declared type
                    || !t.DeclaredType.Equals(declaredType ??= node.DeclaredType))
                // Everything has `Any` as a supertype (added after filter to avoid loading declared type)
-               .Append(BareType.Any)
+               .Append(BareNonVariableType.Any)
                .ToFixedSet();
 
         IEnumerable<BareReferenceType> Build()

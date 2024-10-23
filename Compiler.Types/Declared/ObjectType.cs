@@ -177,7 +177,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     }
 
     public override BareReferenceType<ObjectType> With(IFixedList<IType> typeArguments)
-        => BareType.Create(this, typeArguments);
+        => BareNonVariableType.Create(this, typeArguments);
 
     public override CapabilityType<ObjectType> With(Capability capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);

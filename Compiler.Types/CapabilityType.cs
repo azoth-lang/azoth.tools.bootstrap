@@ -46,7 +46,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
         Capability capability,
         ObjectType declaredType,
         IFixedList<IType> typeArguments)
-        => Create(capability, BareType.Create(declaredType, typeArguments));
+        => Create(capability, BareNonVariableType.Create(declaredType, typeArguments));
 
     /// <summary>
     /// Create a object type for a given bare type.
@@ -83,7 +83,7 @@ public abstract class CapabilityType : NonEmptyType, INonVoidType
     /// </summary>
     public bool AllowsFreeze => Capability.AllowsFreeze;
 
-    public abstract BareType BareType { get; }
+    public abstract BareNonVariableType BareType { get; }
 
     public virtual DeclaredType DeclaredType => BareType.DeclaredType;
 
@@ -212,11 +212,11 @@ public sealed class CapabilityType<TDeclared> : CapabilityType
         where TDeclaredValueType : DeclaredValueType, TDeclared
         => new(capability, bareType);
 
-    public override BareType BareType { get; }
+    public override BareNonVariableType BareType { get; }
 
     public override TDeclared DeclaredType => (TDeclared)BareType.DeclaredType;
 
-    private CapabilityType(Capability capability, BareType bareType)
+    private CapabilityType(Capability capability, BareNonVariableType bareType)
         : base(capability)
     {
         if (typeof(TDeclared).IsAbstract)

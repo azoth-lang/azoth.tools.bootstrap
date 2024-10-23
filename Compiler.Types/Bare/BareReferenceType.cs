@@ -8,7 +8,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// <summary>
 /// A reference type without a reference capability.
 /// </summary>
-public abstract class BareReferenceType : BareType
+public abstract class BareReferenceType : BareNonVariableType
 {
     public abstract override DeclaredReferenceType DeclaredType { get; }
 
@@ -52,7 +52,7 @@ public sealed class BareReferenceType<TDeclared> : BareReferenceType
         => CapabilityType<TDeclared>.Create(capability, this);
 
     #region Equality
-    public override bool Equals(BareType? other)
+    public override bool Equals(BareNonVariableType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

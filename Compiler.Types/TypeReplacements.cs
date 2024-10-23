@@ -99,50 +99,50 @@ internal sealed class TypeReplacements
         switch (type)
         {
             case CapabilityType t:
-            {
-                var replacementType = ReplaceTypeParametersIn(t.BareType);
-                if (!ReferenceEquals(t.BareType, replacementType))
-                    return replacementType.With(t.Capability);
-                break;
-            }
+                {
+                    var replacementType = ReplaceTypeParametersIn(t.BareType);
+                    if (!ReferenceEquals(t.BareType, replacementType))
+                        return replacementType.With(t.Capability);
+                    break;
+                }
             case OptionalType optionalType:
-            {
-                var replacementType = ReplaceTypeParametersIn(optionalType.Referent);
-                if (!ReferenceEquals(optionalType.Referent, replacementType))
-                    return replacementType is INonVoidType nonVoidType
-                        ? OptionalType.Create(nonVoidType)
-                        // Optional of void is not allowed. Instead, just produce void.
-                        : IType.Void;
-                break;
-            }
+                {
+                    var replacementType = ReplaceTypeParametersIn(optionalType.Referent);
+                    if (!ReferenceEquals(optionalType.Referent, replacementType))
+                        return replacementType is INonVoidType nonVoidType
+                            ? OptionalType.Create(nonVoidType)
+                            // Optional of void is not allowed. Instead, just produce void.
+                            : IType.Void;
+                    break;
+                }
             case GenericParameterType genericParameterType:
                 return ReplaceTypeParametersIn(genericParameterType);
             case FunctionType functionType:
-            {
-                var replacementParameterTypes = ReplaceTypeParametersIn(functionType.Parameters);
-                var replacementReturnType = ReplaceTypeParametersIn(functionType.Return);
-                if (!ReferenceEquals(functionType.Parameters, replacementParameterTypes)
-                    || !ReferenceEquals(functionType.Return, replacementReturnType))
-                    return new FunctionType(replacementParameterTypes, replacementReturnType);
-                break;
-            }
+                {
+                    var replacementParameterTypes = ReplaceTypeParametersIn(functionType.Parameters);
+                    var replacementReturnType = ReplaceTypeParametersIn(functionType.Return);
+                    if (!ReferenceEquals(functionType.Parameters, replacementParameterTypes)
+                        || !ReferenceEquals(functionType.Return, replacementReturnType))
+                        return new FunctionType(replacementParameterTypes, replacementReturnType);
+                    break;
+                }
             case CapabilityViewpointType capabilityViewpointType:
-            {
-                var replacementType = ReplaceTypeParametersIn(capabilityViewpointType.Referent);
-                if (!ReferenceEquals(capabilityViewpointType.Referent, replacementType))
-                    if (replacementType is GenericParameterType genericParameterType)
-                        return CapabilityViewpointType.Create(capabilityViewpointType.Capability, genericParameterType);
-                    else
-                        return replacementType.AccessedVia(capabilityViewpointType.Capability);
-                break;
-            }
+                {
+                    var replacementType = ReplaceTypeParametersIn(capabilityViewpointType.Referent);
+                    if (!ReferenceEquals(capabilityViewpointType.Referent, replacementType))
+                        if (replacementType is GenericParameterType genericParameterType)
+                            return CapabilityViewpointType.Create(capabilityViewpointType.Capability, genericParameterType);
+                        else
+                            return replacementType.AccessedVia(capabilityViewpointType.Capability);
+                    break;
+                }
             case SelfViewpointType selfViewpointType:
-            {
-                var replacementType = ReplaceTypeParametersIn(selfViewpointType.Referent);
-                if (!ReferenceEquals(selfViewpointType.Referent, replacementType))
-                    return SelfViewpointType.Create(selfViewpointType.Capability, replacementType);
-                break;
-            }
+                {
+                    var replacementType = ReplaceTypeParametersIn(selfViewpointType.Referent);
+                    if (!ReferenceEquals(selfViewpointType.Referent, replacementType))
+                        return SelfViewpointType.Create(selfViewpointType.Capability, replacementType);
+                    break;
+                }
             case EmptyType _:
                 break;
             default:
@@ -159,7 +159,7 @@ internal sealed class TypeReplacements
         return type;
     }
 
-    public BareType ReplaceTypeParametersIn(BareType type)
+    public BareNonVariableType ReplaceTypeParametersIn(BareNonVariableType type)
     {
         var replacementTypes = ReplaceTypeParametersIn(type.GenericTypeArguments);
         if (ReferenceEquals(type.GenericTypeArguments, replacementTypes)) return type;

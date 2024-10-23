@@ -53,9 +53,9 @@ public static class DataTypeExtensions
     /// <remarks>We currently support implicit boxing, so any bare type with the correct supertype
     /// is assignable.</remarks>
     public static bool IsAssignableFrom(
-        this BareType target,
+        this BareNonVariableType target,
         bool targetAllowsWrite,
-        BareType source)
+        BareNonVariableType source)
     {
         if (source.Equals(target) || source.Supertypes.Contains(target))
             return true;

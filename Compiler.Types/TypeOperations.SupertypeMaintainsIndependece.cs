@@ -1,6 +1,5 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using ExhaustiveMatching;
 
@@ -38,8 +37,7 @@ public static partial class TypeOperations
     public static bool SupertypeMaintainsIndependence(this BareType type, bool exact)
     {
         // Once the supertype is a trait exact independence is not required
-        exact &= type.DeclaredType is DeclaredReferenceType { IsClass: true }
-        or DeclaredValueType;
+        exact &= type.DeclaredType is DeclaredReferenceType { IsClass: true } or DeclaredValueType;
         foreach (var (parameter, argument) in type.GenericParameterArguments)
             if (!argument.SupertypeMaintainsIndependence(exact, parameter.Independence))
                 return false;
