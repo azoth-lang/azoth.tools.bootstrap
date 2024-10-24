@@ -6,7 +6,7 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 
-[Closed(typeof(BareNonVariableType))]
+[Closed(typeof(BareNonVariableType), typeof(BareTypeVariableType))]
 public abstract class BareType
 {
     public abstract DeclaredType? DeclaredType { get; }
