@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -20,4 +21,9 @@ public abstract class BareType
     /// is either read-only or constant.
     /// </summary>
     public abstract CapabilityType WithRead();
+
+    public sealed override string ToString() => throw new NotSupportedException();
+
+    public abstract string ToSourceCodeString();
+    public abstract string ToILString();
 }

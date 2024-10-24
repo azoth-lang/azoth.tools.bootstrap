@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
@@ -16,6 +15,4 @@ public abstract class BareTypeVariableType : BareType
     public sealed override DeclaredType? DeclaredType => null;
     public sealed override IFixedList<IType> GenericTypeArguments => [];
     public sealed override IEnumerable<GenericParameterArgument> GenericParameterArguments => [];
-
-    public sealed override CapabilityType WithRead() => With(Capability.Read);
 }

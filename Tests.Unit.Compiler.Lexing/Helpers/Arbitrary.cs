@@ -288,7 +288,7 @@ public static class Arbitrary
         { "safe", typeof(ISafeKeywordToken) },
         //{ "base", typeof(IBaseKeywordToken) },
         { "fn", typeof(IFunctionKeywordToken) },
-        //{ "Self", typeof(ISelfTypeKeywordToken) },
+        { "Self", typeof(ISelfTypeKeywordToken) },
         { "iso", typeof(IIsolatedKeywordToken) },
         { "read", typeof(IReadKeywordToken) },
         { "const", typeof(IConstKeywordToken) },

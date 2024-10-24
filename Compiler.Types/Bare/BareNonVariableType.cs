@@ -157,11 +157,8 @@ public abstract class BareNonVariableType : BareType, IEquatable<BareNonVariable
     public static bool operator !=(BareNonVariableType? left, BareNonVariableType? right) => !Equals(left, right);
     #endregion
 
-    public sealed override string ToString()
-        => throw new NotSupportedException();
-
-    public string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
-    public string ToILString() => ToString(t => t.ToILString());
+    public sealed override string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
+    public sealed override string ToILString() => ToString(t => t.ToILString());
 
     private string ToString(Func<IType, string> toString)
     {

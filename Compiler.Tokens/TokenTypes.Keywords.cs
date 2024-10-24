@@ -29,7 +29,7 @@ public static partial class TokenTypes
             {
                 // Some exceptions to the normal rule
                 nameof(FunctionKeywordToken) => "fn",
-                //nameof(SelfTypeKeywordToken) => "Self",
+                nameof(SelfTypeKeywordToken) => "Self",
                 nameof(IsolatedKeywordToken) => "iso",
                 nameof(MutableKeywordToken) => "mut",
                 nameof(AnyTypeKeywordToken) => "Any",

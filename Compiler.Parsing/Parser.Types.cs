@@ -14,7 +14,7 @@ public partial class Parser
         return Tokens.Current switch
         {
             ICapabilityToken or IIdentifierToken or IPrimitiveTypeToken or IOpenParenToken
-                or ISelfKeywordToken => ParseType(),
+                or ISelfKeywordToken or ISelfTypeKeywordToken => ParseType(),
             _ => null
         };
     }
@@ -123,6 +123,7 @@ public partial class Parser
         {
             IPrimitiveTypeToken _ => ParsePrimitiveType(),
             IOpenParenToken _ => ParseFunctionType(),
+            ISelfTypeKeywordToken => ParseSelfType(),
             // otherwise we want a type name
             _ => ParseStandardTypeName()
         };
@@ -152,7 +153,7 @@ public partial class Parser
         return (arguments, TextSpan.Covering(openBracket.Span, closeBracketSpan));
     }
 
-    private ISimpleTypeNameSyntax ParsePrimitiveType()
+    private ISpecialTypeNameSyntax ParsePrimitiveType()
     {
         var keyword = Tokens.ConsumeToken<IPrimitiveTypeToken>();
         SpecialTypeName name = keyword switch
@@ -183,6 +184,12 @@ public partial class Parser
         };
 
         return ISpecialTypeNameSyntax.Create(keyword.Span, name);
+    }
+
+    private ISpecialTypeNameSyntax ParseSelfType()
+    {
+        var keyword = Tokens.ConsumeToken<ISelfTypeKeywordToken>();
+        return ISpecialTypeNameSyntax.Create(keyword.Span, SpecialTypeName.Self);
     }
 
     private IFunctionTypeSyntax ParseFunctionType()

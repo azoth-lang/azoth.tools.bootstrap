@@ -14,6 +14,7 @@ public sealed class SpecialTypeName : TypeName
     public static readonly SpecialTypeName Never = new("never");
     public static readonly SpecialTypeName Bool = new("bool");
     public static readonly SpecialTypeName Any = new("Any");
+    public static readonly SpecialTypeName Self = new("Self");
     public static readonly SpecialTypeName Int = new("int");
     public static readonly SpecialTypeName UInt = new("uint");
     public static readonly SpecialTypeName Int8 = new("int8");
