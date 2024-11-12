@@ -127,7 +127,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     public override IFixedSet<BareReferenceType> Supertypes { get; }
     public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
 
-    private IDeclaredAntetype? antetype;
+    private IUserDeclaredAntetype? antetype;
 
     DeclaredType IDeclaredUserType.AsDeclaredType => this;
 
@@ -192,7 +192,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     public CapabilityType<ObjectType> WithMutate(IFixedList<IType> typeArguments)
         => With(IsDeclaredConst ? Capability.Constant : Capability.Mutable, typeArguments);
 
-    public override IDeclaredAntetype ToAntetype()
+    public override IUserDeclaredAntetype ToAntetype()
         // Lazy initialize to prevent evaluation of lazy supertypes when constructing ObjectType
         => LazyInitializer.EnsureInitialized(ref antetype, this.ConstructDeclaredAntetype);
 

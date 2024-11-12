@@ -45,7 +45,7 @@ public interface IDeclaredUserType : IEquatable<IDeclaredUserType>
         return WithRead(properTypeArguments);
     }
 
-    IDeclaredAntetype ToAntetype();
+    IUserDeclaredAntetype ToAntetype();
 }
 
 internal static class DeclaredUserTypeExtensions
@@ -53,7 +53,7 @@ internal static class DeclaredUserTypeExtensions
     /// <remarks>Used inside of instances of <see cref="IDeclaredUserType"/> to construct the
     /// equivalent <see cref="IDeclaredAntetype"/>. Do not use directly. Use
     /// <see cref="IDeclaredUserType.ToAntetype"/> instead.</remarks>
-    internal static IDeclaredAntetype ConstructDeclaredAntetype(this IDeclaredUserType declaredType)
+    internal static IUserDeclaredAntetype ConstructDeclaredAntetype(this IDeclaredUserType declaredType)
     {
         var isAbstract = declaredType.IsAbstract;
         var antetypeGenericParameters = declaredType.GenericParameters

@@ -61,7 +61,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     public override IFixedSet<BareReferenceType> Supertypes { get; }
     public override IFixedList<GenericParameterType> GenericParameterTypes { get; }
 
-    private IDeclaredAntetype? antetype;
+    private IUserDeclaredAntetype? antetype;
 
     DeclaredType IDeclaredUserType.AsDeclaredType => this;
 
@@ -120,7 +120,7 @@ public sealed class StructType : DeclaredValueType, IDeclaredUserType
     public CapabilityTypeConstraint With(CapabilitySet capability, IFixedList<IType> typeArguments)
         => With(typeArguments).With(capability);
 
-    public override IDeclaredAntetype ToAntetype()
+    public override IUserDeclaredAntetype ToAntetype()
         // Lazy initialize to prevent evaluation of lazy supertypes when constructing StructType
         => LazyInitializer.EnsureInitialized(ref antetype, this.ConstructDeclaredAntetype);
 

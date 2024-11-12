@@ -1,5 +1,6 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 ◊name TypeDefinitionsAspect;
+◊using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
@@ -12,6 +13,8 @@
 ⟳ TypeDefinition.Supertypes: {`BareReferenceType`} initial => [];
 = TypeDefinition.Supertypes;
 = TypeDefinition.↑.Diagnostics;
+↑ TypeDefinition.DeclaredAntetype:`IUserDeclaredAntetype`;
+= TypeDefinition.DeclaredAntetype;
 ↑ TypeDefinition.DeclaredType:`IDeclaredUserType`;
 ↑ ClassDefinition.DeclaredType: `ObjectType`;
 ↑ StructDefinition.DeclaredType: `StructType`;

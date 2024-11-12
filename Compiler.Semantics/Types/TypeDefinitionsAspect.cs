@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Core.Diagnostics;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
@@ -13,6 +14,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 
 internal static partial class TypeDefinitionsAspect
 {
+    public static partial IUserDeclaredAntetype TypeDefinition_DeclaredAntetype(ITypeDefinitionNode node)
+        // Types at the definition level do not depend on flow typing so it is fine to derive the
+        // antetype from the type.
+        => node.DeclaredType.ToAntetype();
+
     public static partial ObjectType ClassDefinition_DeclaredType(IClassDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type

@@ -7,7 +7,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 internal static partial class TypeExpressionsAntetypesAspect
 {
     public static partial IMaybeAntetype ViewpointType_NamedAntetype(IViewpointTypeNode node)
-        // Viewpoint has not affect on the antetype
+        // Viewpoint has no effect on the antetype
         => node.Referent.NamedAntetype;
 
     public static partial IMaybeAntetype OptionalType_NamedAntetype(IOptionalTypeNode node)
@@ -20,9 +20,11 @@ internal static partial class TypeExpressionsAntetypesAspect
         => node.Referent.NamedAntetype;
 
     public static partial IMaybeAntetype SpecialTypeName_NamedAntetype(ISpecialTypeNameNode node)
-        => (IMaybeAntetype?)node.ReferencedSymbol.GetDataType()?.ToAntetype()
-           ?? (IMaybeAntetype?)node.ReferencedSymbol.GetDeclaredType()?.ToAntetype()
-           ?? IAntetype.Unknown;
+    {
+        // TODO do not use symbols at this stage of the compiler
+        return (IMaybeAntetype?)node.ReferencedSymbol.GetDataType()?.ToAntetype()
+               ?? (IMaybeAntetype?)node.ReferencedSymbol.GetDeclaredType()?.ToAntetype() ?? IAntetype.Unknown;
+    }
 
     public static partial IMaybeAntetype FunctionType_NamedAntetype(IFunctionTypeNode node)
     {
@@ -38,6 +40,7 @@ internal static partial class TypeExpressionsAntetypesAspect
 
     public static partial IMaybeAntetype IdentifierTypeName_NamedAntetype(IIdentifierTypeNameNode node)
     {
+        // TODO do not use symbols at this stage of the compiler
         var referencedSymbol = node.ReferencedDeclaration?.Symbol;
         return (IMaybeAntetype?)referencedSymbol?.GetDataType()?.ToAntetype()
                ?? (IMaybeAntetype?)referencedSymbol?.GetDeclaredType()?.ToAntetype()
@@ -46,6 +49,7 @@ internal static partial class TypeExpressionsAntetypesAspect
 
     public static partial IMaybeAntetype GenericTypeName_NamedAntetype(IGenericTypeNameNode node)
     {
+        // TODO do not use symbols at this stage of the compiler
         var referencedSymbol = node.ReferencedDeclaration?.Symbol;
         var declaredAntetype = referencedSymbol?.GetDeclaredType()?.ToAntetype();
         if (declaredAntetype is null)
@@ -58,6 +62,7 @@ internal static partial class TypeExpressionsAntetypesAspect
 
     public static partial IMaybeAntetype TypeNameExpression_NamedAntetype(ITypeNameExpressionNode node)
     {
+        // TODO do not use symbols at this stage of the compiler
         var referencedSymbol = node.ReferencedDeclaration.Symbol;
         var declaredAntetype = referencedSymbol.GetDeclaredType()?.ToAntetype();
         if (declaredAntetype is null)
