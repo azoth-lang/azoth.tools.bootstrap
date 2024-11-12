@@ -19,7 +19,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
 /// </summary>
 [Closed(typeof(BareReferenceType), typeof(BareValueType))]
 [DebuggerDisplay("{" + nameof(ToILString) + "(),nq}")]
-public abstract class BareNonVariableType : BareType, IEquatable<BareNonVariableType>
+public abstract class BareNonVariableType : BareType
 {
     #region Standard Types
     public static readonly BareValueType<BoolType> Bool = DeclaredType.Bool.BareType;
@@ -41,6 +41,7 @@ public abstract class BareNonVariableType : BareType, IEquatable<BareNonVariable
     #endregion
 
     public abstract override DeclaredType DeclaredType { get; }
+    public sealed override TypeName Name => DeclaredType.Name;
     public sealed override IFixedList<IType> GenericTypeArguments { get; }
     public sealed override IEnumerable<GenericParameterArgument> GenericParameterArguments
         => DeclaredType.GenericParameters.EquiZip(GenericTypeArguments, (p, a) => new GenericParameterArgument(p, a));
@@ -139,23 +140,6 @@ public abstract class BareNonVariableType : BareType, IEquatable<BareNonVariable
 
     public sealed override CapabilityType WithRead()
         => With(IsDeclaredConst ? Capability.Constant : Capability.Read);
-
-    #region Equality
-    public sealed override bool Equals(object? obj)
-    {
-        if (obj is null) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        return obj is BareNonVariableType other && Equals(other);
-    }
-
-    public abstract bool Equals(BareNonVariableType? other);
-
-    public abstract override int GetHashCode();
-
-    public static bool operator ==(BareNonVariableType? left, BareNonVariableType? right) => Equals(left, right);
-
-    public static bool operator !=(BareNonVariableType? left, BareNonVariableType? right) => !Equals(left, right);
-    #endregion
 
     public sealed override string ToSourceCodeString() => ToString(t => t.ToSourceCodeString());
     public sealed override string ToILString() => ToString(t => t.ToILString());

@@ -56,14 +56,14 @@ public class SymbolTreeBuilder : ISymbolTreeBuilder
 
     private ISet<Symbol> GetOrAdd(Symbol symbol)
     {
-        if (!symbolChildren.TryGetValue(symbol, out var children))
-        {
-            // Add to parent's children
-            if (symbol.ContainingSymbol is not null)
-                GetOrAdd(symbol.ContainingSymbol).Add(symbol);
-            children = new HashSet<Symbol>();
-            symbolChildren.Add(symbol, children);
-        }
+        if (symbolChildren.TryGetValue(symbol, out var children))
+            return children;
+
+        // Add to parent's children
+        if (symbol.ContainingSymbol is not null)
+            GetOrAdd(symbol.ContainingSymbol).Add(symbol);
+        children = new HashSet<Symbol>();
+        symbolChildren.Add(symbol, children);
         return children;
     }
 

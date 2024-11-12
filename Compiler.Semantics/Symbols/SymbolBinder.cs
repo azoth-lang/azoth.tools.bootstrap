@@ -1,3 +1,4 @@
+using System;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
@@ -5,6 +6,11 @@ using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Symbols;
 
+/// <summary>
+/// A factory to create symbol nodes from symbols.
+/// </summary>
+/// <remarks>This allows the semantic analysis to treat symbols loaded from referenced packages as
+/// declarations in the semantic tree.</remarks>
 internal static class SymbolBinder
 {
     public static IChildDeclarationNode Symbol(Symbol symbol)
@@ -25,6 +31,7 @@ internal static class SymbolBinder
             GenericParameterTypeSymbol sym => GenericParameterTypeSymbol(sym),
             EmptyTypeSymbol sym => EmptyTypeSymbol(sym),
             PrimitiveTypeSymbol sym => PrimitiveTypeSymbol(sym),
+            AssociatedTypeSymbol sym => throw new NotImplementedException(),
             _ => throw ExhaustiveMatch.Failed(symbol),
         };
 

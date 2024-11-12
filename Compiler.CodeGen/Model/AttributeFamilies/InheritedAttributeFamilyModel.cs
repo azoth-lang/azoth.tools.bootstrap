@@ -51,7 +51,7 @@ public sealed class InheritedAttributeFamilyModel : ContextAttributeFamilyModel
             if (attribute.Node.InheritedAttributes.Any(a => a.Name == Name))
                 supertypeAttributes.Remove(attribute);
 
-        var types = supertypeAttributes.Select(a => a.Type).ToFixedSet();
+        var types = supertypeAttributes.Select(a => a.Type).MostGeneralTypes().ToFixedSet();
         if (types.Count > 1)
             throw new FormatException($"Could not determine base type for inherited attribute {Name}."
                                       + $" Candidates are {string.Join(",", types.Select(t => $"'{t}'"))}");

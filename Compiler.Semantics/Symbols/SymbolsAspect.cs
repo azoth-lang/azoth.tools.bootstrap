@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Symbols;
 using Azoth.Tools.Bootstrap.Compiler.Symbols.Trees;
@@ -40,7 +41,11 @@ internal static partial class SymbolsAspect
         => throw new NotImplementedException();
 
     public static partial TypeSymbol SpecialTypeName_ReferencedSymbol(ISpecialTypeNameNode node)
-        => Primitive.SymbolTree.LookupSymbol(node.Name);
+    {
+        if (node.Name == SpecialTypeName.Self)
+            throw new NotImplementedException();
+        return Primitive.SymbolTree.LookupSymbol(node.Name);
+    }
 
     public static partial FunctionSymbol? FunctionDefinition_Symbol(IFunctionDefinitionNode node)
     {

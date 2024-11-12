@@ -50,7 +50,7 @@ public sealed class BareValueType<TDeclared> : BareValueType
         => CapabilityType<TDeclared>.Create(capability, this);
 
     #region Equality
-    public override bool Equals(BareNonVariableType? other)
+    public override bool Equals(BareType? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;

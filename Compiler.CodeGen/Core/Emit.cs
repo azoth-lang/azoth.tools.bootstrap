@@ -276,10 +276,7 @@ internal static class Emit
                 // Remove any optional type that might be on it and then ensure there is one optional type
                 var fieldType = !isValueType ? attribute.Type.ToOptional() : attribute.Type;
                 var syncLock = isValueType ? " ref syncLock," : "";
-                var supertype = attribute.AttributeFamily.Type;
-                var castRequired = attribute.Type != supertype;
-                var castStart = castRequired ? $"(ctx) => ({Type(attribute.Type)})" : "";
-                var castEnd = castRequired ? "(ctx)" : "";
+                (string castStart, string castEnd) = CastParts(attribute);
                 builder.AppendLine($"        => GrammarAttribute.IsCached(in {cached}) ? {value}{notNull}");
                 builder.AppendLine($"            : this.Inherited(ref {cached}, ref {value},{syncLock}");
                 builder.AppendLine($"                {castStart}{attribute.MethodPrefix}_{attribute.Name}{castEnd});");
@@ -295,6 +292,19 @@ internal static class Emit
                 return $"{Environment.NewLine}        "
                        + $"=> {cast}{attribute.MethodPrefix}_{attribute.Name}(GrammarAttribute.CurrentInheritanceContext());";
             }
+        }
+
+        static (string castStart, string castEnd) CastParts(ContextAttributeModel attribute)
+        {
+            var supertype = attribute.AttributeFamily.Type;
+            var castRequired = attribute.Type != supertype;
+            if (!castRequired) return ("", "");
+
+            if (supertype is OptionalTypeModel optional && optional.UnderlyingType == attribute.Type)
+                return ("(ctx) => ", "(ctx)!");
+
+            var castStart = $"(ctx) => ({Type(attribute.Type)})";
+            return (castStart, "(ctx)");
         }
     }
 
