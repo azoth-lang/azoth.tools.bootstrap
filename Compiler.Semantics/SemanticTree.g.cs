@@ -520,6 +520,7 @@ public partial interface ITypeDefinitionNode : IFacetMemberDefinitionNode, IAsso
     IFixedSet<BareReferenceType> ITypeDeclarationNode.Supertypes => Supertypes;
     IUserDeclaredAntetype DeclaredAntetype { get; }
     IDeclaredUserType DeclaredType { get; }
+    SelfType SelfType { get; }
     new IFixedSet<ITypeMemberDefinitionNode> Members { get; }
     IFixedSet<ITypeMemberDeclarationNode> IUserTypeDeclarationNode.Members => Members;
     IFixedSet<ITypeMemberDeclarationNode> ITypeDeclarationNode.Members => Members;
@@ -5437,6 +5438,12 @@ file class ClassDefinitionNode : SemanticNode, IClassDefinitionNode
                 DefaultMembersAspect.ClassDefinition_Members);
     private IFixedSet<IClassMemberDefinitionNode>? members;
     private bool membersCached;
+    public SelfType SelfType
+        => GrammarAttribute.IsCached(in selfTypeCached) ? selfType!
+            : this.Synthetic(ref selfTypeCached, ref selfType,
+                TypeDefinitionsAspect.TypeDefinition_SelfType);
+    private SelfType? selfType;
+    private bool selfTypeCached;
     public IFixedSet<BareReferenceType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
@@ -5599,6 +5606,12 @@ file class StructDefinitionNode : SemanticNode, IStructDefinitionNode
                 DefaultMembersAspect.StructDefinition_Members);
     private IFixedSet<IStructMemberDefinitionNode>? members;
     private bool membersCached;
+    public SelfType SelfType
+        => GrammarAttribute.IsCached(in selfTypeCached) ? selfType!
+            : this.Synthetic(ref selfTypeCached, ref selfType,
+                TypeDefinitionsAspect.TypeDefinition_SelfType);
+    private SelfType? selfType;
+    private bool selfTypeCached;
     public IFixedSet<BareReferenceType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,
@@ -5746,6 +5759,12 @@ file class TraitDefinitionNode : SemanticNode, ITraitDefinitionNode
                 LexicalScopingAspect.TypeDefinition_LexicalScope);
     private LexicalScope? lexicalScope;
     private bool lexicalScopeCached;
+    public SelfType SelfType
+        => GrammarAttribute.IsCached(in selfTypeCached) ? selfType!
+            : this.Synthetic(ref selfTypeCached, ref selfType,
+                TypeDefinitionsAspect.TypeDefinition_SelfType);
+    private SelfType? selfType;
+    private bool selfTypeCached;
     public IFixedSet<BareReferenceType> Supertypes
         => GrammarAttribute.IsCached(in supertypesCached) ? supertypes.UnsafeValue
             : this.Circular(ref supertypesCached, ref supertypes,

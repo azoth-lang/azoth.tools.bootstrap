@@ -22,6 +22,8 @@ internal static partial class TypeDefinitionsAspect
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial IUserDeclaredAntetype TypeDefinition_DeclaredAntetype(ITypeDefinitionNode node);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static partial SelfType TypeDefinition_SelfType(ITypeDefinitionNode node);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial void ClassDefinition_Contribute_Diagnostics(IClassDefinitionNode node, DiagnosticCollectionBuilder diagnostics);
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static partial ObjectType ClassDefinition_DeclaredType(IClassDefinitionNode node);

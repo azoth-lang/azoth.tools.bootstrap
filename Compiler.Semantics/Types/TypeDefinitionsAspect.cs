@@ -19,6 +19,9 @@ internal static partial class TypeDefinitionsAspect
         // antetype from the type.
         => node.DeclaredType.ToAntetype();
 
+    public static partial SelfType TypeDefinition_SelfType(ITypeDefinitionNode node)
+        => new SelfType(node.DeclaredType.AsDeclaredType);
+
     public static partial ObjectType ClassDefinition_DeclaredType(IClassDefinitionNode node)
     {
         // TODO use ContainingDeclaredType in case this is a nested type
