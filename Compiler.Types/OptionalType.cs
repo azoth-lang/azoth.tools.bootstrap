@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types;
 /// The type `T?` is an optional type. Optional types either have the value
 /// `none` or a value of their referent type. The referent type may be a value
 /// type or a reference type. Optional types themselves are always immutable.
-/// However ,the referent type may be mutable or immutable. Effectively, optional
+/// However, the referent type may be mutable or immutable. Effectively, optional
 /// types are like an immutable struct type `Optional[T]`. However, the value
 /// semantics are strange. They depend on the referent type.
 /// </summary>

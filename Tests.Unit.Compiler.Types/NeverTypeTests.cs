@@ -16,14 +16,6 @@ public class NeverTypeTests
     }
 
     [Fact]
-    public void Is_known_type()
-    {
-        var type = NeverType.Instance;
-
-        Assert.True(type.IsFullyKnown);
-    }
-
-    [Fact]
     public void Has_special_name_never()
     {
         var type = NeverType.Instance;

@@ -20,7 +20,6 @@ public abstract class EmptyType : IType
 {
     public SpecialTypeName Name { get; }
 
-    public bool IsFullyKnown => true;
     public bool AllowsVariance => false;
     public bool HasIndependentTypeArguments => false;
 
