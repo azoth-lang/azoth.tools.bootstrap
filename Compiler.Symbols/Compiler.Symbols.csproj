@@ -21,6 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Compiler.Names\Compiler.Names.csproj" />
-    <ProjectReference Include="..\Compiler.Types\Compiler.Types.Legacy.csproj" />
+    <ProjectReference Include="..\Compiler.Types.Legacy\Compiler.Types.Legacy.csproj" />
   </ItemGroup>
 </Project>

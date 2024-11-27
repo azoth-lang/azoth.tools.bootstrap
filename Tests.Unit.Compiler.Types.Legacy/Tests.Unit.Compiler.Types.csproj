@@ -31,6 +31,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Tests.Asserts\Tests.Asserts.csproj" />
-    <ProjectReference Include="..\Compiler.Types\Compiler.Types.Legacy.csproj" />
+    <ProjectReference Include="..\Compiler.Types.Legacy\Compiler.Types.Legacy.csproj" />
   </ItemGroup>
 </Project>
