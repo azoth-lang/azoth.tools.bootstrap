@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
-public sealed class UserGenericNominalAntetype : NominalAntetype, INonVoidAntetype
+public sealed class UserGenericNominalAntetype : NominalAntetype, IUserNominalAntetype
 {
     public override UserDeclaredGenericAntetype DeclaredAntetype { get; }
     public override bool AllowsVariance => DeclaredAntetype.AllowsVariance;
@@ -13,6 +13,7 @@ public sealed class UserGenericNominalAntetype : NominalAntetype, INonVoidAntety
     public bool HasReferenceSemantics => DeclaredAntetype.HasReferenceSemantics;
     public override IFixedList<IAntetype> TypeArguments { get; }
     public override IFixedSet<NominalAntetype> Supertypes { get; }
+    NominalAntetype IUserNominalAntetype.AsNominalAntetype => this;
     private readonly AntetypeReplacements antetypeReplacements;
 
     public UserGenericNominalAntetype(UserDeclaredGenericAntetype declaredAnteType, IEnumerable<IAntetype> typeArguments)

@@ -43,7 +43,8 @@ internal static partial class OverloadResolutionAspect
             case UnknownAntetype:
                 // Error should be reported elsewhere
                 return;
-            case NominalAntetype { DeclaredAntetype.IsAbstract: true }:
+            case NominalAntetype { DeclaredAntetype.CanBeConstructed: false }:
+                // TODO type variables also cannot be constructed. Report proper error message in that case
                 diagnostics.Add(
                     OtherSemanticError.CannotConstructAbstractType(node.File, node.ConstructingType.Syntax));
                 return;

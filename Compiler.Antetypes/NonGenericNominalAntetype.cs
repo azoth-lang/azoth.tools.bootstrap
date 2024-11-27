@@ -12,12 +12,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
     typeof(EmptyAntetype),
     typeof(AnyAntetype),
     typeof(GenericParameterAntetype),
+    typeof(SelfAntetype),
     typeof(UserNonGenericNominalAntetype))]
 public abstract class NonGenericNominalAntetype : NominalAntetype, IDeclaredAntetype
 {
     public sealed override IDeclaredAntetype DeclaredAntetype => this;
     public sealed override bool AllowsVariance => false;
-    public abstract bool IsAbstract { get; }
+    public abstract bool CanBeConstructed { get; }
     IFixedList<AntetypeGenericParameter> IDeclaredAntetype.GenericParameters => [];
     IFixedList<GenericParameterAntetype> IDeclaredAntetype.GenericParameterAntetypes => [];
 

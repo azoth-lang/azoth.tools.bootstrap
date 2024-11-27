@@ -4,12 +4,19 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
+/// <summary>
+/// The type introduced by a generic parameter.
+/// </summary>
 public sealed class GenericParameterAntetype : NonGenericNominalAntetype, INonVoidAntetype
 {
     public UserDeclaredGenericAntetype DeclaringAntetype { get; }
     public AntetypeGenericParameter Parameter { get; }
     public override IdentifierName Name => Parameter.Name;
-    public override bool IsAbstract => true;
+    /// <summary>
+    /// As a type variable, a generic parameter cannot be constructed.
+    /// </summary>
+    public override bool CanBeConstructed => false;
+
     // TODO this should be based on generic constraints
     public override IFixedSet<NominalAntetype> Supertypes => FixedSet.Empty<NominalAntetype>();
 

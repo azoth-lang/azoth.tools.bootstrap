@@ -15,7 +15,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
     typeof(SimpleAntetype))]
 public interface IDeclaredAntetype : IEquatable<IDeclaredAntetype>
 {
-    bool IsAbstract { get; }
+    /// <summary>
+    /// Whether this type can be constructed. Abstract types and type variables cannot be constructed.
+    /// </summary>
+    bool CanBeConstructed { get; }
 
     IFixedList<AntetypeGenericParameter> GenericParameters { get; }
 

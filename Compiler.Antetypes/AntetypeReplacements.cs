@@ -72,6 +72,7 @@ internal sealed class AntetypeReplacements
             AnyAntetype a => a,
             SimpleAntetype a => a,
             NeverAntetype a => a,
+            SelfAntetype a => a,
             UserNonGenericNominalAntetype a => a,
             UserGenericNominalAntetype a => ReplaceTypeParametersIn(a),
             GenericParameterAntetype a => ReplaceTypeParametersIn(a),

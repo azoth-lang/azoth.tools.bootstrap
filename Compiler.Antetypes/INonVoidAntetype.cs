@@ -5,12 +5,12 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 [Closed(
     typeof(OptionalAntetype),
     typeof(FunctionAntetype),
-    typeof(UserNonGenericNominalAntetype),
+    typeof(IUserNominalAntetype),
     typeof(AnyAntetype),
     typeof(NeverAntetype),
-    typeof(UserGenericNominalAntetype),
     typeof(SimpleAntetype),
-    typeof(GenericParameterAntetype))]
+    typeof(GenericParameterAntetype),
+    typeof(SelfAntetype))]
 public interface INonVoidAntetype : IAntetype, IMaybeNonVoidAntetype
 {
     // TODO this seems like the wrong way to do this and was introduced only for the legacy reference equality operator

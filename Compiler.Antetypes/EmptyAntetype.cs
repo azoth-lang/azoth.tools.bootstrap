@@ -6,7 +6,11 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 [Closed(typeof(NeverAntetype), typeof(VoidAntetype))]
 public abstract class EmptyAntetype : NonGenericNominalAntetype, IAntetype
 {
-    public override bool IsAbstract => false;
+    /// <summary>
+    /// Empty types aren't abstract, but they still can't be constructed.
+    /// </summary>
+    public override bool CanBeConstructed => false;
+
     public override SpecialTypeName Name { get; }
 
     private protected EmptyAntetype(SpecialTypeName name)

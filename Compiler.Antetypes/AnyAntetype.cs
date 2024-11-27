@@ -14,7 +14,10 @@ public class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype, IDeclare
     }
     #endregion
 
-    public override bool IsAbstract => true;
+    /// <summary>
+    /// The `Any` type cannot be constructed because it is abstract.
+    /// </summary>
+    public override bool CanBeConstructed => false;
 
     public override SpecialTypeName Name => SpecialTypeName.Any;
 

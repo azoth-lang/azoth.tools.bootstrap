@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class SimpleAntetype : INonVoidAntetype, IDeclaredAntetype, ISimpleOrConstValueAntetype
 {
-    public bool IsAbstract => false;
+    public bool CanBeConstructed => true;
 
     public SpecialTypeName Name { get; }
 

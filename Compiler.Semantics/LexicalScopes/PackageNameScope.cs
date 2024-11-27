@@ -138,6 +138,7 @@ public sealed class PackageNameScope
             AnyAntetype t => Lookup(t),
             SimpleAntetype t => Lookup(t),
             GenericParameterAntetype t => Lookup(t),
+            SelfAntetype _ => null,
             IUserDeclaredAntetype t => Lookup(t),
             _ => throw ExhaustiveMatch.Failed(antetype),
         };

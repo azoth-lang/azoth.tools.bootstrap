@@ -10,6 +10,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
     public IdentifierName ContainingPackage { get; }
     public NamespaceName ContainingNamespace { get; }
     public bool IsAbstract { get; }
+    public bool CanBeConstructed => !IsAbstract;
     public GenericName Name { get; }
     StandardName IUserDeclaredAntetype.Name => Name;
     public IFixedList<AntetypeGenericParameter> GenericParameters { get; }
