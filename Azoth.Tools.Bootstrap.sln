@@ -61,7 +61,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Asserts", "Tests.Asse
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.CodeGen", "Compiler.CodeGen\Compiler.CodeGen.csproj", "{4D709360-03ED-4A76-8EBB-18B89462A9DB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.Types", "Compiler.Types\Compiler.Types.csproj", "{FAEB3A90-FD3D-416D-8443-31E245033560}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.Types.Legacy", "Compiler.Types\Compiler.Types.Legacy.csproj", "{FAEB3A90-FD3D-416D-8443-31E245033560}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Unit.Compiler.Types", "Tests.Unit.Compiler.Types\Tests.Unit.Compiler.Types.csproj", "{342F648A-6AEF-4755-B98C-62C6E5BBCFF2}"
 EndProject
