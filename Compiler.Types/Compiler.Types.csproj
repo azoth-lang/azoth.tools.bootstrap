@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <AssemblyName>Azoth.Tools.Bootstrap.Compiler.Antetypes</AssemblyName>
-    <RootNamespace>Azoth.Tools.Bootstrap.Compiler.Antetypes</RootNamespace>
+    <AssemblyName>Azoth.Tools.Bootstrap.Compiler.Types</AssemblyName>
+    <RootNamespace>Azoth.Tools.Bootstrap.Compiler.Types</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,7 +1,8 @@
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 /// <summary>
 /// An antetype as it is declared.

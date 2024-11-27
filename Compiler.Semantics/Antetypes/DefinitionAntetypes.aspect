@@ -1,7 +1,7 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 ◊name DefinitionAntetypesAspect;
-◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
-◊using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 

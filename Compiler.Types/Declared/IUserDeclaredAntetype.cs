@@ -1,8 +1,9 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 [Closed(typeof(UserDeclaredGenericAntetype), typeof(UserNonGenericNominalAntetype))]
 public interface IUserDeclaredAntetype : IDeclaredAntetype

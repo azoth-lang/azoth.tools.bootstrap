@@ -5,7 +5,6 @@
 ◊class-suffix Node;
 ◊using System.Collections.Generic;
 ◊using System.Numerics;
-◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Attributes;
 ◊using Azoth.Tools.Bootstrap.Compiler.Core.Code;
@@ -25,6 +24,7 @@
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 ◊using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+◊using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 ◊using Azoth.Tools.Bootstrap.Framework;
 
 // ---------- Parent

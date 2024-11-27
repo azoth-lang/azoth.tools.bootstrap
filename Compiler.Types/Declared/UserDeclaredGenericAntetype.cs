@@ -1,9 +1,10 @@
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
 
 public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
 {
