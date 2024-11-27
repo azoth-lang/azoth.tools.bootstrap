@@ -1,6 +1,6 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
-using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types;
 

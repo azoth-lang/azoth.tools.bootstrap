@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
 public partial class TypeOperations
 {

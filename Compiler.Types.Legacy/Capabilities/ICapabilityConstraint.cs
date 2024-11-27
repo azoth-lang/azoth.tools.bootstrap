@@ -1,6 +1,6 @@
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
 
 [Closed(typeof(Capability), typeof(CapabilitySet))]
 public interface ICapabilityConstraint

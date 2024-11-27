@@ -1,9 +1,9 @@
-using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
 /// <summary>
 /// A reference type as it is declared without any capability or type arguments

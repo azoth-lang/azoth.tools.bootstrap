@@ -1,7 +1,7 @@
-using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 
 [Closed(typeof(SelfParameterType), typeof(UnknownType))]
 public interface IMaybeSelfParameterType

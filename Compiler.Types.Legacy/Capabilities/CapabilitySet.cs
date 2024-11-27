@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using ExhaustiveMatching;
-using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.Capability;
+using static Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities.Capability;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
 
 [DebuggerDisplay("{ToILString()}")]
 public sealed class CapabilitySet : ICapabilityConstraint

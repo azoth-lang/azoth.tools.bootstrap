@@ -1,8 +1,8 @@
-using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 using Xunit;
 
-namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.ConstValue;
+namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.Legacy.ConstValue;
 
 [Trait("Category", "Types")]
 public class IntegerConstValueTypeTests

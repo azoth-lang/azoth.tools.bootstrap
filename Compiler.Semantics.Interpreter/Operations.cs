@@ -2,8 +2,9 @@ using System;
 using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter.MemoryLayout;
 using Azoth.Tools.Bootstrap.Compiler.Types;
-using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Interpreter;
 

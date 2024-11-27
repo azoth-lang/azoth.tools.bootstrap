@@ -1,10 +1,10 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Xunit;
-using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.Capability;
+using static Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities.Capability;
 
-namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.Legacy;
 
 [Trait("Category", "Types")]
 public class OptionalTypeTests

@@ -1,7 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
 [Closed(
     typeof(CapabilityType),

@@ -1,6 +1,6 @@
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 
 public static class PseudotypeExtensions
 {

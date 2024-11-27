@@ -1,6 +1,6 @@
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 
 [Closed(typeof(ParameterType), typeof(UnknownType))]
 public interface IMaybeParameterType

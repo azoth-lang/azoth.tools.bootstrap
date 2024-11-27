@@ -8,6 +8,7 @@ using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
 using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -407,20 +408,20 @@ internal static partial class ExpressionAntetypesAspect
                     return to;
                 return null;
             case (FixedSizeIntegerAntetype to, IntegerConstValueAntetype from):
-            {
-                // TODO make a method on antetypes for this check
-                var requireSigned = from.Value < 0;
-                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
-                return to.Bits >= bits && (!requireSigned || to.IsSigned) ? to : null;
-            }
+                {
+                    // TODO make a method on antetypes for this check
+                    var requireSigned = from.Value < 0;
+                    var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
+                    return to.Bits >= bits && (!requireSigned || to.IsSigned) ? to : null;
+                }
             case (PointerSizedIntegerAntetype to, IntegerConstValueAntetype from):
-            {
-                // TODO make a method on antetypes for this check
-                var requireSigned = from.Value < 0;
-                var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
-                // Must fit in 32 bits so that it will fit on all platforms
-                return bits <= 32 && (!requireSigned || to.IsSigned) ? to : null;
-            }
+                {
+                    // TODO make a method on antetypes for this check
+                    var requireSigned = from.Value < 0;
+                    var bits = from.Value.GetByteCount(!to.IsSigned) * 8;
+                    // Must fit in 32 bits so that it will fit on all platforms
+                    return bits <= 32 && (!requireSigned || to.IsSigned) ? to : null;
+                }
             // Note: Both signed BigIntegerAntetype has already been covered
             case (BigIntegerAntetype { IsSigned: true }, IntegerAntetype):
             case (BigIntegerAntetype { IsSigned: true }, IntegerConstValueAntetype):

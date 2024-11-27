@@ -1,6 +1,6 @@
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
 [Closed(typeof(FunctionType), typeof(UnknownType))]
 public interface IMaybeFunctionType : IMaybeNonVoidType

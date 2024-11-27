@@ -3,9 +3,9 @@ using System.Numerics;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes.ConstValue;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 
 /// <summary>
 /// This is the type of an integer constant value, it isn't possible to declare a

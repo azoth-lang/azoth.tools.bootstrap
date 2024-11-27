@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Types.Flow.Sharing;
 

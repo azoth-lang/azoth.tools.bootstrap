@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
-using Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 using MoreLinq.Extensions;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 
 /// <summary>
 /// A type that could have a reference capability applied, but without a reference capability.

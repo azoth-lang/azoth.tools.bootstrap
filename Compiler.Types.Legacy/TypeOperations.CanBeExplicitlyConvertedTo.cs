@@ -1,7 +1,7 @@
-using Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
 public static partial class TypeOperations
 {

@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Parameters;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 
 /// <summary>
 /// For function types it is necessary to know not only the type of each parameter, but whether it

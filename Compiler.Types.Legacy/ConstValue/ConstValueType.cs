@@ -2,7 +2,7 @@ using System;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 
 /// <summary>
 /// The type of a constant value.

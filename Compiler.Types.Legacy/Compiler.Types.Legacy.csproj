@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <AssemblyName>Azoth.Tools.Bootstrap.Compiler.Types</AssemblyName>
-    <RootNamespace>Azoth.Tools.Bootstrap.Compiler.Types</RootNamespace>
+    <AssemblyName>Azoth.Tools.Bootstrap.Compiler.Types.Legacy</AssemblyName>
+    <RootNamespace>Azoth.Tools.Bootstrap.Compiler.Types.Legacy</RootNamespace>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

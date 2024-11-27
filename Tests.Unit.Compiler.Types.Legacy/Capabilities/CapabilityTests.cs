@@ -1,8 +1,8 @@
-using Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.TestCases;
+using Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.Legacy.TestCases;
 using Xunit;
-using static Azoth.Tools.Bootstrap.Compiler.Types.Capabilities.Capability;
+using static Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities.Capability;
 
-namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.Capabilities;
+namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.Legacy.Capabilities;
 
 [Trait("Category", "Types")]
 public class CapabilityTests

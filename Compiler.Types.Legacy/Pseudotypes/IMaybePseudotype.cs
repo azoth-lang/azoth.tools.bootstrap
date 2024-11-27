@@ -2,7 +2,7 @@ using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Pseudotypes;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
 
 [Closed(typeof(IPseudotype), typeof(IMaybeExpressionType))]
 public interface IMaybePseudotype : IEquatable<IMaybePseudotype>

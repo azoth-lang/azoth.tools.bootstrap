@@ -1,9 +1,9 @@
 using System;
 using Azoth.Tools.Bootstrap.Compiler.Antetypes;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.ConstValue;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
 
 /// <summary>
 /// This is the type of a boolean constant value, it isn't possible to declare a variable of this

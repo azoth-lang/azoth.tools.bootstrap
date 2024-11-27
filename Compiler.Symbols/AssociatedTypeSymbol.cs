@@ -1,5 +1,5 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Symbols;
 

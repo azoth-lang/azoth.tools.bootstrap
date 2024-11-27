@@ -1,7 +1,7 @@
 using System;
-using Azoth.Tools.Bootstrap.Compiler.Types.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
 // TODO should `iso|>T` be disallowed?
 public sealed class CapabilityViewpointType : ViewpointType

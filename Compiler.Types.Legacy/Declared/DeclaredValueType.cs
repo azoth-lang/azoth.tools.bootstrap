@@ -1,8 +1,8 @@
-using Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
 [Closed(typeof(SimpleType), typeof(StructType))]
 public abstract class DeclaredValueType : DeclaredType

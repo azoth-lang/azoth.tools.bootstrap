@@ -1,7 +1,7 @@
 using Azoth.Tools.Bootstrap.Compiler.Core;
-using Azoth.Tools.Bootstrap.Compiler.Types.Declared;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Bare;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 
 public readonly record struct GenericParameterArgument(GenericParameter Parameter, IType Argument)
 {

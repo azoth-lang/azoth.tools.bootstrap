@@ -1,4 +1,4 @@
-namespace Azoth.Tools.Bootstrap.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 
 /// <summary>
 /// As in Swift, the metatype is the type of a type. That is the type of the

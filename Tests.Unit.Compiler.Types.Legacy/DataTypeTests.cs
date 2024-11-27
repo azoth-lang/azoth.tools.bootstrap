@@ -1,7 +1,7 @@
-using Azoth.Tools.Bootstrap.Compiler.Types;
+using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Xunit;
 
-namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types;
+namespace Azoth.Tools.Bootstrap.Tests.Unit.Compiler.Types.Legacy;
 
 [Trait("Category", "Types")]
 public class DataTypeTests
