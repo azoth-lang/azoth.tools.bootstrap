@@ -1,3 +1,4 @@
+using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Framework;
 
@@ -12,15 +13,15 @@ public sealed class SelfAntetype : NonGenericNominalAntetype, INonVoidAntetype
     /// As a type variable, a `Self` type cannot be constructed.
     /// </summary>
     public override bool CanBeConstructed => false;
-    public IUserNominalAntetype ContainingType { get; }
+    public IUserDeclaredAntetype ContainingType { get; }
     public override TypeName Name => SpecialTypeName.Self;
     public bool HasReferenceSemantics => ContainingType.HasReferenceSemantics;
     public override IFixedSet<NominalAntetype> Supertypes { get; }
 
-    public SelfAntetype(IUserNominalAntetype containingType)
+    public SelfAntetype(IUserDeclaredAntetype containingType)
     {
         ContainingType = containingType;
-        Supertypes = containingType.Supertypes.Append(containingType.AsNominalAntetype).ToFixedSet();
+        Supertypes = containingType.Supertypes.Append(containingType.WithGenericParameterAntetypes()).ToFixedSet();
     }
 
     #region Equality

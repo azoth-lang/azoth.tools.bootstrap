@@ -5,7 +5,8 @@ namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 [Closed(
     typeof(OptionalAntetype),
     typeof(FunctionAntetype),
-    typeof(IUserNominalAntetype),
+    typeof(UserNonGenericNominalAntetype),
+    typeof(UserGenericNominalAntetype),
     typeof(AnyAntetype),
     typeof(NeverAntetype),
     typeof(SimpleAntetype),

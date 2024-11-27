@@ -13,9 +13,6 @@
 ⟳ TypeDefinition.Supertypes: {`BareReferenceType`} initial => [];
 = TypeDefinition.Supertypes;
 = TypeDefinition.↑.Diagnostics;
-↑ TypeDefinition.DeclaredAntetype:`IUserDeclaredAntetype`;
-= TypeDefinition.DeclaredAntetype;
-//↑ TypeDefinition.SelfAntetype:
 ↑ TypeDefinition.DeclaredType:`IDeclaredUserType`;
 ↑ TypeDefinition.SelfType:`SelfType`;
 = TypeDefinition.SelfType;

@@ -1,12 +1,19 @@
 ◊namespace Azoth.Tools.Bootstrap.Compiler.Semantics.Antetypes;
 ◊name DefinitionAntetypesAspect;
 ◊using Azoth.Tools.Bootstrap.Compiler.Antetypes;
+◊using Azoth.Tools.Bootstrap.Compiler.Antetypes.Declared;
 
 // ↓ ⟳ ↑ ⮡ ↗↖ →*← ✎
 
 // ---------- Function Definition
 // TODO it would be good to refactor to not depend on Type
 = FunctionDefinition.Body.ExpectedAntetype => Type.Return.ToAntetype().ToNonConstValueType();
+
+// ---------- Type Definitions
+↑ TypeDefinition.DeclaredAntetype:`IUserDeclaredAntetype`;
+= TypeDefinition.DeclaredAntetype;
+↑ TypeDefinition.SelfAntetype: `SelfAntetype`;
+= TypeDefinition.SelfAntetype;
 
 // ---------- Member Definitions
 // TODO it would be good to refactor to not depend on Type

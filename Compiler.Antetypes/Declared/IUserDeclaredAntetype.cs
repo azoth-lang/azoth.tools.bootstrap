@@ -14,4 +14,10 @@ public interface IUserDeclaredAntetype : IDeclaredAntetype
 
     // TODO this seems like the wrong way to do this and was introduced only for the legacy reference equality operator
     bool HasReferenceSemantics { get; }
+
+    new NominalAntetype With(IEnumerable<IAntetype> typeArguments);
+    IAntetype IDeclaredAntetype.With(IEnumerable<IAntetype> typeArguments) => With(typeArguments);
+
+    new NominalAntetype WithGenericParameterAntetypes() => With(GenericParameterAntetypes);
+    IAntetype IDeclaredAntetype.WithGenericParameterAntetypes() => WithGenericParameterAntetypes();
 }

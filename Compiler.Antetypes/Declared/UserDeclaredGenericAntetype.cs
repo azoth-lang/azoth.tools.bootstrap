@@ -42,7 +42,7 @@ public sealed class UserDeclaredGenericAntetype : IUserDeclaredAntetype
                                                      .ToFixedList();
     }
 
-    public IAntetype With(IEnumerable<IAntetype> typeArguments)
+    public NominalAntetype With(IEnumerable<IAntetype> typeArguments)
     {
         var args = typeArguments.ToFixedList();
         if (args.Count != GenericParameters.Count)

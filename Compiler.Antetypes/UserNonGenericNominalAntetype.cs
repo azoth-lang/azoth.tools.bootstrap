@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Antetypes;
 
-public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, IUserDeclaredAntetype, IUserNominalAntetype
+public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, IUserDeclaredAntetype, INonVoidAntetype
 {
     public IdentifierName ContainingPackage { get; }
     public NamespaceName ContainingNamespace { get; }
@@ -14,7 +14,6 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
     public override IdentifierName Name { get; }
     StandardName IUserDeclaredAntetype.Name => Name;
     public override IFixedSet<NominalAntetype> Supertypes { get; }
-    NominalAntetype IUserNominalAntetype.AsNominalAntetype => this;
     private readonly AntetypeReplacements antetypeReplacements;
     public bool HasReferenceSemantics { get; }
 
@@ -38,6 +37,13 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
     public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
         // A non-generic antetype can have replacements if it inherits from a generic antetype.
         => antetypeReplacements.ReplaceTypeParametersIn(antetype);
+
+    public override NominalAntetype With(IEnumerable<IAntetype> typeArguments)
+    {
+        if (typeArguments.Any())
+            throw new ArgumentException("Non-generic type cannot have type arguments", nameof(typeArguments));
+        return this;
+    }
 
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)

@@ -28,6 +28,8 @@ public interface IDeclaredAntetype : IEquatable<IDeclaredAntetype>
 
     IAntetype With(IEnumerable<IAntetype> typeArguments);
 
+    IAntetype WithGenericParameterAntetypes() => With(GenericParameterAntetypes);
+
     IMaybeAntetype With(IEnumerable<IMaybeAntetype> typeArguments)
     {
         var properTypeArguments = typeArguments.ToFixedList().As<IAntetype>();
