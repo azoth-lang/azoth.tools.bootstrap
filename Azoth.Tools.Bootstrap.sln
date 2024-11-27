@@ -79,7 +79,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "azm", "azm\azm.csproj", "{6
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.Benchmarks", "Compiler.Benchmarks\Compiler.Benchmarks.csproj", "{DE1E73AD-2CBF-4484-B2C6-D9D5E6C36447}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.Types", "Compiler.Antetypes\Compiler.Types.csproj", "{4B86B15A-F9DF-42A9-A891-F089219D954B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.Types", "Compiler.Types\Compiler.Types.csproj", "{4B86B15A-F9DF-42A9-A891-F089219D954B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compiler.Semantics.Interpreter", "Compiler.Semantics.Interpreter\Compiler.Semantics.Interpreter.csproj", "{D0DA5828-C8B6-4A24-AF73-34230AFCFA0A}"
 EndProject
