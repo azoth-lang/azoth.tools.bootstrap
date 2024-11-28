@@ -4,7 +4,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype, IDeclaredAntetype
+public sealed class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype, IDeclaredAntetype
 {
     #region Singleton
     internal static readonly AnyAntetype Instance = new();

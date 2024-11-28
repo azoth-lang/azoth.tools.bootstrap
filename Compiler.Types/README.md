@@ -1,7 +1,15 @@
-# Antetypes
+# Azoth.Tools.Bootstrap.Compiler.Types
 
-Antetypes are types as they would exist in Azoth before reference capabilities. They are similar to
-how types work in C# or Java. Antetypes were introduced because of a circular dependency where
+## Type Constructors
+
+In type theory terms, a *type constructor* is a construct that builds new types from old one. For
+example, a generic type definition constructs a family of related types (e.g. `List[T]` constructs
+`List[int]`, `List[Shape]`, etc.). Basic types are constructed using *nullary* type constructors.
+
+## Plain Types
+
+Plain types are types as they would exist in Azoth before reference capabilities. They are similar
+to how types work in C# or Java. Plain types were introduced because of a circular dependency where
 overload resolution depended on reference capability flow types, but that flow typing depended on
 which method overload was selected. Since reference capabilities are flow typed, where the type and
 validity of each expression depends on the one before and in the case of loops can even depend on
@@ -9,9 +17,12 @@ subsequent ones, it would have been necessary to consider the resolution of mult
 simultaneously. That is `a(...) + b(...)` would, in some cases, require evaluation every possible
 pair of overloads for both `a` and `b` to determine which worked together. Instead, overloading on
 reference capability has been removed from the language and overload resolution is determined by the
-antetypes. Once overload resolution and name binding are fixed by antetypes, then the normal
+plain type. Once overload resolution and name binding are fixed by plain types, then the normal
 reference capability based types can be determined and any errors resulting from capability
 violation reported.
+
+Note: plain types used to be called antetypes and that term is still being cleaned up in the
+codebase.
 
 ## Definitions
 
