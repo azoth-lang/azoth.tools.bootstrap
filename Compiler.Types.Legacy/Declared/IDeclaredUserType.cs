@@ -59,10 +59,10 @@ internal static class DeclaredUserTypeExtensions
         var antetypeGenericParameters = declaredType.GenericParameters
             // Treat self as non-writeable because antetypes should permit anything that could possibly be allowed by the types
             .Select(p => new TypeConstructorParameter(p.Name, p.Variance.ToTypeVariance(true)));
-        var hasReferenceSemantics = declaredType is ObjectType;
+        var semantics = declaredType is ObjectType ? TypeSemantics.Reference : TypeSemantics.Value;
         var supertypes = declaredType.AntetypeSupertypes();
         return new OrdinaryTypeConstructor(declaredType.ContainingPackage, declaredType.ContainingNamespace,
-            isAbstract, declaredType.Name, antetypeGenericParameters, supertypes, hasReferenceSemantics);
+            isAbstract, declaredType.Name, antetypeGenericParameters, supertypes, semantics);
     }
 
     private static IFixedSet<NominalAntetype> AntetypeSupertypes(this IDeclaredUserType declaredType)

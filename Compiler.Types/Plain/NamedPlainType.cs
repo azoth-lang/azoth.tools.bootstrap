@@ -9,9 +9,9 @@ public sealed class NamedPlainType : NominalAntetype, INonVoidAntetype
 {
     public override OrdinaryTypeConstructor TypeConstructor { get; }
     public NamespaceName? ContainingNamespace => TypeConstructor.ContainingNamespace;
-    public override bool AllowsVariance => TypeConstructor.AllowsVariance;
+    public TypeSemantics Semantics => TypeConstructor.Semantics;
     public override StandardName Name => TypeConstructor.Name;
-    public bool HasReferenceSemantics => TypeConstructor.HasReferenceSemantics;
+    public override bool AllowsVariance => TypeConstructor.AllowsVariance;
     public override IFixedList<IAntetype> TypeArguments { get; }
     public override IFixedSet<NominalAntetype> Supertypes { get; }
     private readonly PlainTypeReplacements plainTypeReplacements;

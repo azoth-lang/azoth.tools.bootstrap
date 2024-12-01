@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Primitives;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.Errors;
 using Azoth.Tools.Bootstrap.Compiler.Semantics.LexicalScopes;
+using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -78,8 +79,8 @@ internal static partial class ExpressionAntetypesAspect
             (BoolLiteralTypeConstructor, BinaryOperator.And, BoolLiteralTypeConstructor) => null,
             (BoolLiteralTypeConstructor, BinaryOperator.Or, BoolLiteralTypeConstructor) => null,
 
-            (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.ReferenceEquals, INonVoidAntetype { HasReferenceSemantics: true })
-                or (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.NotReferenceEqual, INonVoidAntetype { HasReferenceSemantics: true })
+            (INonVoidAntetype { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, INonVoidAntetype { Semantics: TypeSemantics.Reference })
+                or (INonVoidAntetype { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, INonVoidAntetype { Semantics: TypeSemantics.Reference })
                 => null,
 
             (BoolTypeConstructor, BinaryOperator.EqualsEquals, BoolTypeConstructor)
@@ -135,8 +136,8 @@ internal static partial class ExpressionAntetypesAspect
             (BoolLiteralTypeConstructor left, BinaryOperator.And, BoolLiteralTypeConstructor right) => left.And(right),
             (BoolLiteralTypeConstructor left, BinaryOperator.Or, BoolLiteralTypeConstructor right) => left.Or(right),
 
-            (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.ReferenceEquals, INonVoidAntetype { HasReferenceSemantics: true })
-                or (INonVoidAntetype { HasReferenceSemantics: true }, BinaryOperator.NotReferenceEqual, INonVoidAntetype { HasReferenceSemantics: true })
+            (INonVoidAntetype { Semantics: TypeSemantics.Reference }, BinaryOperator.ReferenceEquals, INonVoidAntetype { Semantics: TypeSemantics.Reference })
+                or (INonVoidAntetype { Semantics: TypeSemantics.Reference }, BinaryOperator.NotReferenceEqual, INonVoidAntetype { Semantics: TypeSemantics.Reference })
                 => IAntetype.Bool,
 
             (BoolTypeConstructor, BinaryOperator.EqualsEquals, BoolTypeConstructor)

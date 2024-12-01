@@ -4,9 +4,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 public sealed class FunctionAntetype : INonVoidAntetype, IMaybeFunctionAntetype
 {
+    public TypeSemantics Semantics => TypeSemantics.Reference;
     public IFixedList<INonVoidAntetype> Parameters { get; }
     public IAntetype Return { get; }
-    public bool HasReferenceSemantics => true;
 
     public FunctionAntetype(IEnumerable<INonVoidAntetype> parameters, IAntetype returnAntetype)
     {

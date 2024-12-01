@@ -21,6 +21,8 @@ public interface ITypeConstructor : IEquatable<ITypeConstructor>
     /// </summary>
     bool CanBeInstantiated { get; }
 
+    TypeSemantics Semantics { get; }
+
     IFixedList<TypeConstructorParameter> Parameters { get; }
 
     bool AllowsVariance { get; }

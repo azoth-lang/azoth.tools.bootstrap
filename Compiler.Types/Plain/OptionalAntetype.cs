@@ -2,8 +2,10 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 public sealed class OptionalAntetype : INonVoidAntetype
 {
+    /// <remarks>The optional type acts as a value type that may contain a reference and as such
+    /// always has value semantics.</remarks>
+    public TypeSemantics Semantics => TypeSemantics.Value;
     public INonVoidAntetype Referent { get; }
-    public bool HasReferenceSemantics => Referent.HasReferenceSemantics;
 
     public OptionalAntetype(INonVoidAntetype referent)
     {

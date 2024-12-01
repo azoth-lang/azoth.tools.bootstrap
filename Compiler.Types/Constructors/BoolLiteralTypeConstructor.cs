@@ -40,5 +40,5 @@ public sealed class BoolLiteralTypeConstructor : LiteralTypeConstructor
     public override int GetHashCode() => HashCode.Combine(Value);
     #endregion
 
-    public override string ToString() => $"Value[{(Value ? "true" : "false")}]";
+    public override string ToString() => $"bool[{(Value ? "true" : "false")}]";
 }

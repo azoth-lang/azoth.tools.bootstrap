@@ -16,8 +16,9 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 public abstract class NonGenericNominalAntetype : NominalAntetype, ITypeConstructor
 {
     public sealed override ITypeConstructor TypeConstructor => this;
-    public sealed override bool AllowsVariance => false;
+    public TypeSemantics Semantics => TypeConstructor.Semantics;
     public abstract bool CanBeInstantiated { get; }
+    public sealed override bool AllowsVariance => false;
     IFixedList<TypeConstructorParameter> ITypeConstructor.Parameters => [];
     IFixedList<GenericParameterPlainType> ITypeConstructor.GenericParameterPlainTypes => [];
 

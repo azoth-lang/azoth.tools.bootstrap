@@ -87,5 +87,5 @@ public sealed class IntegerLiteralTypeConstructor : LiteralTypeConstructor, INum
     public override int GetHashCode() => HashCode.Combine(Value);
     #endregion
 
-    public override string ToString() => $"Value[{Value}]";
+    public override string ToString() => $"int[{Value}]";
 }

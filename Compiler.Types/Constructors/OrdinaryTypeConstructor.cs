@@ -27,6 +27,7 @@ public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
     /// that instances compatible with the type exist.
     /// </summary>
     public bool CanBeInstantiated => !IsAbstract;
+
     public StandardName Name { get; }
     /// <summary>
     /// The parameters to this type constructor. Commonly referred to as "generic parameters".
@@ -39,7 +40,7 @@ public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
     /// </summary>
     public IFixedList<GenericParameterPlainType> GenericParameterPlainTypes { get; }
     public IFixedSet<NominalAntetype> Supertypes { get; }
-    public bool HasReferenceSemantics { get; }
+    public TypeSemantics Semantics { get; }
 
     public OrdinaryTypeConstructor(
         IdentifierName containingPackage,
@@ -48,7 +49,7 @@ public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
         StandardName name,
         IEnumerable<TypeConstructorParameter> genericParameters,
         IFixedSet<NominalAntetype> supertypes,
-        bool hasReferenceSemantics)
+        TypeSemantics semantics)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
@@ -57,7 +58,7 @@ public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
         Requires.That(Name.GenericParameterCount == Parameters.Count, nameof(genericParameters),
             "Count must match name count");
         AllowsVariance = Parameters.Any(p => p.Variance != TypeVariance.Invariant);
-        HasReferenceSemantics = hasReferenceSemantics;
+        Semantics = semantics;
         IsAbstract = isAbstract;
         Supertypes = supertypes;
         GenericParameterPlainTypes = Parameters.Select(p => new GenericParameterPlainType(this, p))
