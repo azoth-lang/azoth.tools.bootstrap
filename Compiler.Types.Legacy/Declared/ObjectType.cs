@@ -9,6 +9,7 @@ using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Parameters;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Pseudotypes;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Declared;
@@ -195,6 +196,7 @@ public sealed class ObjectType : DeclaredReferenceType, IDeclaredUserType
     public override OrdinaryTypeConstructor ToTypeConstructor()
         // Lazy initialize to prevent evaluation of lazy supertypes when constructing ObjectType
         => LazyInitializer.EnsureInitialized(ref typeConstructor, this.ConstructTypeConstructor);
+    public override IAntetype? TryToAntetype() => ToTypeConstructor().TryConstructNullary();
 
     #region Equals
     public override bool Equals(DeclaredType? other)

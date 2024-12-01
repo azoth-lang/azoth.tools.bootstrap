@@ -20,9 +20,6 @@ public sealed class GenericParameterPlainType : NonGenericNominalAntetype, INonV
     // TODO this should be based on generic constraints
     public override IFixedSet<NamedPlainType> Supertypes => FixedSet.Empty<NamedPlainType>();
 
-    // TODO is this right?
-    public bool HasReferenceSemantics => true;
-
     public GenericParameterPlainType(OrdinaryTypeConstructor declaringAntetype, TypeConstructorParameter parameter)
     {
         DeclaringAntetype = declaringAntetype;

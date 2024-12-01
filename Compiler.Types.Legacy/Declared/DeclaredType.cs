@@ -5,6 +5,7 @@ using Azoth.Tools.Bootstrap.Compiler.Names;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Bare;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.Capabilities;
+using Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
@@ -50,7 +51,7 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public bool AllowsVariance { get; }
     public virtual IFixedList<GenericParameterType> GenericParameterTypes
         => FixedList.Empty<GenericParameterType>();
-    public bool IsGeneric => GenericParameters.Any();
+    public bool IsGeneric => !GenericParameters.IsEmpty;
     public abstract IFixedSet<BareReferenceType> Supertypes { get; }
 
     private protected DeclaredType(
@@ -81,7 +82,9 @@ public abstract class DeclaredType : IEquatable<DeclaredType>
     public CapabilityType WithRead(IFixedList<IType> typeArguments)
         => With(typeArguments).WithRead();
 
-    public abstract ITypeConstructor ToTypeConstructor();
+    public abstract ITypeConstructor? ToTypeConstructor();
+
+    public abstract IAntetype? TryToAntetype();
 
     #region Equality
     public abstract bool Equals(DeclaredType? other);

@@ -33,12 +33,12 @@ public sealed class PackageNameScope
     /// </summary>
     private readonly FixedDictionary<IdentifierName, NamespaceScope> packageGlobalScopes;
 
-    private readonly FixedDictionary<TypeName, ITypeDeclarationNode> primitives;
+    private readonly FixedDictionary<TypeName, ITypeDeclarationNode> builtIns;
 
     internal PackageNameScope(
         IEnumerable<IPackageFacetNode> packageFacets,
         IEnumerable<IPackageFacetDeclarationNode> referencedFacets,
-        IFixedSet<ITypeDeclarationNode> primitivesDeclarations)
+        IFixedSet<ITypeDeclarationNode> builtInDeclarations)
     {
         var packageGlobalNamespaces = packageFacets.Select(f => f.GlobalNamespace).ToFixedSet();
         var referencedGlobalNamespaces = referencedFacets.Select(f => f.GlobalNamespace).ToFixedSet();
@@ -54,7 +54,7 @@ public sealed class PackageNameScope
             .GroupBy(ns => ns.Package.Name)
             .ToFixedDictionary(g => g.Key, g => new NamespaceScope(this, g));
 
-        primitives = primitivesDeclarations.ToFixedDictionary(p => p.Name);
+        builtIns = builtInDeclarations.ToFixedDictionary(p => p.Name);
     }
 
     /// <summary>
@@ -98,10 +98,10 @@ public sealed class PackageNameScope
         };
 
     private ITypeDeclarationNode Lookup(AnyType declaredType)
-        => primitives[declaredType.Name];
+        => builtIns[declaredType.Name];
 
     private ITypeDeclarationNode Lookup(SimpleType declaredType)
-        => primitives[declaredType.Name];
+        => builtIns[declaredType.Name];
 
     private ITypeDeclarationNode Lookup(IDeclaredUserType declaredType)
     {
@@ -123,7 +123,10 @@ public sealed class PackageNameScope
             EmptyAntetype _ => null,
             FunctionAntetype _ => null,
             OptionalAntetype _ => throw new NotImplementedException(),
-            NamedPlainType t => Lookup(t.TypeConstructor),
+            AnyAntetype t => Lookup(t),
+            GenericParameterPlainType t => Lookup(t),
+            SelfAntetype _ => null,
+            OrdinaryNamedPlainType t => Lookup(t.TypeConstructor),
             SimpleTypeConstructor t => Lookup(t),
             // TODO There are no declarations for const value type, but perhaps there should be?
             LiteralTypeConstructor _ => null,
@@ -133,11 +136,7 @@ public sealed class PackageNameScope
     private ITypeDeclarationNode? Lookup(ITypeConstructor antetype)
         => antetype switch
         {
-            EmptyAntetype _ => null,
-            AnyAntetype t => Lookup(t),
             SimpleTypeConstructor t => Lookup(t),
-            GenericParameterPlainType t => Lookup(t),
-            SelfAntetype _ => null,
             OrdinaryTypeConstructor t => Lookup(t),
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
@@ -153,11 +152,11 @@ public sealed class PackageNameScope
         return ns.Lookup(antetype.Name).OfType<ITypeDeclarationNode>().Single();
     }
 
-    private ITypeDeclarationNode Lookup(SimpleTypeConstructor antetype)
-        => primitives[antetype.Name];
+    private ITypeDeclarationNode Lookup(SimpleTypeConstructor typeConstructor)
+        => builtIns[typeConstructor.Name];
 
     private ITypeDeclarationNode Lookup(AnyAntetype antetype)
-        => primitives[antetype.Name];
+        => builtIns[antetype.Name];
 
     public ITypeDeclarationNode Lookup(GenericParameterPlainType plainType)
     {

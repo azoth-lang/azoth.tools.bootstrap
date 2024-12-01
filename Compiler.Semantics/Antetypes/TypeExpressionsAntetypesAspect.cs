@@ -22,8 +22,9 @@ internal static partial class TypeExpressionsAntetypesAspect
     public static partial IMaybeAntetype SpecialTypeName_NamedAntetype(ISpecialTypeNameNode node)
     {
         // TODO do not use symbols at this stage of the compiler
-        return (IMaybeAntetype?)node.ReferencedSymbol.TryGetType()?.ToAntetype()
-               ?? (IMaybeAntetype?)node.ReferencedSymbol.TryGetDeclaredType()?.ToTypeConstructor() ?? IAntetype.Unknown;
+        return node.ReferencedSymbol.TryGetType()?.ToAntetype()
+               ?? node.ReferencedSymbol.TryGetDeclaredType()?.TryToAntetype()
+               ?? IMaybeAntetype.Unknown;
     }
 
     public static partial IMaybeAntetype FunctionType_NamedAntetype(IFunctionTypeNode node)
@@ -42,9 +43,9 @@ internal static partial class TypeExpressionsAntetypesAspect
     {
         // TODO do not use symbols at this stage of the compiler
         var referencedSymbol = node.ReferencedDeclaration?.Symbol;
-        return (IMaybeAntetype?)referencedSymbol?.TryGetType()?.ToAntetype()
-               ?? (IMaybeAntetype?)referencedSymbol?.TryGetDeclaredType()?.ToTypeConstructor().TryConstructNullary()
-               ?? IAntetype.Unknown;
+        return referencedSymbol?.TryGetType()?.ToAntetype()
+               ?? referencedSymbol?.TryGetDeclaredType()?.TryToAntetype()
+               ?? IMaybeAntetype.Unknown;
     }
 
     public static partial IMaybeAntetype GenericTypeName_NamedAntetype(IGenericTypeNameNode node)

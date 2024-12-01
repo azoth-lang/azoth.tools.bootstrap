@@ -25,9 +25,6 @@ public sealed class NeverAntetype : EmptyAntetype, INonVoidAntetype
     /// returns an empty set because it is not declared with any supertypes.</remarks>
     public override IFixedSet<NamedPlainType> Supertypes => FixedSet.Empty<NamedPlainType>();
 
-    // TODO this is especially strange because it is a subtype of reference types
-    public bool HasReferenceSemantics => false;
-
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)
         // NeverAntetype is a singleton, so we can use reference equality.

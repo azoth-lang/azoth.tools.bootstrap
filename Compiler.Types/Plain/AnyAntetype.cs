@@ -1,10 +1,10 @@
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public sealed class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype, ITypeConstructor
+// TODO should `Any` be a plain type or a type constructor? It seems it could just be listed as a supertype
+public sealed class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype
 {
     #region Singleton
     internal static readonly AnyAntetype Instance = new();
@@ -21,15 +21,7 @@ public sealed class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype, I
 
     public override SpecialTypeName Name => SpecialTypeName.Any;
 
-    IFixedList<TypeConstructorParameter> ITypeConstructor.Parameters
-        => FixedList.Empty<TypeConstructorParameter>();
-
-    IFixedList<GenericParameterPlainType> ITypeConstructor.GenericParameterPlainTypes
-        => FixedList.Empty<GenericParameterPlainType>();
-
     public override IFixedSet<NamedPlainType> Supertypes => FixedSet.Empty<NamedPlainType>();
-
-    public bool HasReferenceSemantics => true;
 
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)

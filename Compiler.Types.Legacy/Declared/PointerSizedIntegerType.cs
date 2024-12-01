@@ -54,7 +54,8 @@ public sealed class PointerSizedIntegerType : IntegerType
     public override CapabilityType<PointerSizedIntegerType> With(Capability capability)
         => BareType.With(capability);
 
-    public override ITypeConstructor ToTypeConstructor()
+    public override ITypeConstructor? ToTypeConstructor() => null;
+    public override IAntetype TryToAntetype()
     {
         if (this == Size) return IAntetype.Size;
         if (this == Offset) return IAntetype.Offset;

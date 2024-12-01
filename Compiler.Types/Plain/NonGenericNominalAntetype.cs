@@ -1,5 +1,4 @@
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
-using Azoth.Tools.Bootstrap.Framework;
 using ExhaustiveMatching;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
@@ -13,23 +12,13 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(AnyAntetype),
     typeof(GenericParameterPlainType),
     typeof(SelfAntetype))]
-public abstract class NonGenericNominalAntetype : NamedPlainType, ITypeConstructor
+// TODO maybe this class should be eliminated all together
+public abstract class NonGenericNominalAntetype : NamedPlainType
 {
-    public sealed override ITypeConstructor TypeConstructor => this;
+    public sealed override ITypeConstructor? TypeConstructor => null;
     public TypeSemantics Semantics => TypeConstructor.Semantics;
     public abstract bool CanBeInstantiated { get; }
     public sealed override bool AllowsVariance => false;
-    IFixedList<TypeConstructorParameter> ITypeConstructor.Parameters => [];
-    IFixedList<GenericParameterPlainType> ITypeConstructor.GenericParameterPlainTypes => [];
-
-    public virtual IAntetype Construct(IEnumerable<IAntetype> typeArguments)
-    {
-        if (typeArguments.Any())
-            throw new ArgumentException("Non-generic type cannot have type arguments", nameof(typeArguments));
-        return this;
-    }
-
-    public IAntetype TryConstructNullary() => this;
 
     public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)
         => antetype;

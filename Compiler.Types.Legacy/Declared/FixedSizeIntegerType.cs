@@ -77,7 +77,8 @@ public sealed class FixedSizeIntegerType : IntegerType
     public override CapabilityType<FixedSizeIntegerType> With(Capability capability)
         => BareType.With(capability);
 
-    public override ITypeConstructor ToTypeConstructor()
+    public override ITypeConstructor? ToTypeConstructor() => null;
+    public override IAntetype TryToAntetype()
         => Bits switch
         {
             8 => IsSigned ? IAntetype.Int8 : IAntetype.Byte,

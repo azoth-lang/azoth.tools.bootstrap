@@ -10,8 +10,6 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 /// <remarks>For generic types, a declared type is not a type, but rather a template or kind for
 /// creating types.</remarks>
 [Closed(
-    typeof(AnyAntetype),
-    typeof(NonGenericNominalAntetype),
     typeof(OrdinaryTypeConstructor),
     typeof(SimpleTypeConstructor))]
 public interface ITypeConstructor : IEquatable<ITypeConstructor>

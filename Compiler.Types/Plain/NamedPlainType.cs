@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [Closed(typeof(NonGenericNominalAntetype), typeof(OrdinaryNamedPlainType))]
 public abstract class NamedPlainType : IAntetype
 {
-    public abstract ITypeConstructor TypeConstructor { get; }
+    public abstract ITypeConstructor? TypeConstructor { get; }
     public abstract bool AllowsVariance { get; }
     public abstract TypeName Name { get; }
     public virtual IFixedList<IAntetype> TypeArguments => FixedList.Empty<IAntetype>();

@@ -190,7 +190,7 @@ internal static partial class ExpressionAntetypesAspect
         var rangeTypeDeclaration = containingLexicalScope.Lookup("azoth")
             .OfType<INamespaceDeclarationNode>().SelectMany(ns => ns.MembersNamed("range"))
             .OfType<ITypeDeclarationNode>().TrySingle();
-        var rangeAntetype = rangeTypeDeclaration?.Symbol.TryGetDeclaredType()?.ToTypeConstructor().TryConstructNullary()
+        var rangeAntetype = rangeTypeDeclaration?.Symbol.TryGetDeclaredType()?.TryToAntetype()
                             ?? IMaybeAntetype.Unknown;
         return rangeAntetype;
     }
@@ -199,7 +199,7 @@ internal static partial class ExpressionAntetypesAspect
     {
         var typeSymbolNode = node.ContainingLexicalScope.Lookup(StringTypeName)
                                  .OfType<ITypeDeclarationNode>().TrySingle();
-        return (IMaybeExpressionAntetype?)typeSymbolNode?.Symbol.TryGetDeclaredType()?.ToTypeConstructor().TryConstructNullary() ?? IAntetype.Unknown;
+        return (IMaybeExpressionAntetype?)typeSymbolNode?.Symbol.TryGetDeclaredType()?.TryToAntetype() ?? IAntetype.Unknown;
     }
 
     private static readonly IdentifierName StringTypeName = "String";

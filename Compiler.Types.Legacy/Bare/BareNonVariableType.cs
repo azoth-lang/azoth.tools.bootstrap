@@ -89,7 +89,8 @@ public abstract class BareNonVariableType : BareType
     {
         var typeArguments = GenericTypeArguments.Select(a => a.ToAntetype()).ToFixedList();
         // The ToTypeConstructor() should never result in void since DeclaredType can't be void.
-        return (INonVoidAntetype)DeclaredType.ToTypeConstructor().Construct(typeArguments);
+        return (INonVoidAntetype)(DeclaredType.TryToAntetype()
+                                  ?? DeclaredType.ToTypeConstructor()?.Construct(typeArguments))!;
     }
 
     private TypeReplacements GetTypeReplacements() => new(DeclaredType, GenericTypeArguments);
@@ -150,7 +151,7 @@ public abstract class BareNonVariableType : BareType
         builder.Append(DeclaredType.ContainingNamespace);
         if (DeclaredType.ContainingNamespace != NamespaceName.Global) builder.Append('.');
         builder.Append(DeclaredType.Name.ToBareString());
-        if (GenericTypeArguments.Any())
+        if (!GenericTypeArguments.IsEmpty)
         {
             builder.Append('[');
             builder.AppendJoin(", ", GenericTypeArguments.Select(toString));
