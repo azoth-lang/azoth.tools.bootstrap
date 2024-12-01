@@ -36,15 +36,15 @@ public static partial class AntetypeOperations
             (INonVoidAntetype and not OptionalAntetype, AnyAntetype)
                 // Optional types are not subtypes of `Any`. But because of boxing, any non-void type is a subtype of `Any`.
                 => true,
-            (NominalAntetype s, NominalAntetype t) => s.IsSubtypeOf(t),
+            (NamedPlainType s, NamedPlainType t) => s.IsSubtypeOf(t),
             (FunctionAntetype s, FunctionAntetype o) => s.IsSubtypeOf(o),
             _ => false
         };
     }
 
     public static bool IsSubtypeOf(
-        this NominalAntetype self,
-        NominalAntetype other)
+        this NamedPlainType self,
+        NamedPlainType other)
     {
         if (self.Equals(other) || self.Supertypes.Contains(other))
             return true;

@@ -39,7 +39,7 @@ public sealed class OrdinaryTypeConstructor : ITypeConstructor
     /// variables. These are the types of those variables.
     /// </summary>
     public IFixedList<GenericParameterPlainType> GenericParameterPlainTypes { get; }
-    public IFixedSet<NominalAntetype> Supertypes { get; }
+    public IFixedSet<NamedPlainType> Supertypes { get; }
     public TypeSemantics Semantics { get; }
 
     public OrdinaryTypeConstructor(
@@ -48,7 +48,7 @@ public sealed class OrdinaryTypeConstructor : ITypeConstructor
         bool isAbstract,
         StandardName name,
         IEnumerable<TypeConstructorParameter> genericParameters,
-        IFixedSet<NominalAntetype> supertypes,
+        IFixedSet<NamedPlainType> supertypes,
         TypeSemantics semantics)
     {
         ContainingPackage = containingPackage;
@@ -65,7 +65,7 @@ public sealed class OrdinaryTypeConstructor : ITypeConstructor
                                                      .ToFixedList();
     }
 
-    public NominalAntetype Construct(IEnumerable<IAntetype> typeArguments)
+    public NamedPlainType Construct(IEnumerable<IAntetype> typeArguments)
     {
         var args = typeArguments.ToFixedList();
         if (args.Count != Parameters.Count)
@@ -75,7 +75,7 @@ public sealed class OrdinaryTypeConstructor : ITypeConstructor
     IAntetype ITypeConstructor.Construct(IEnumerable<IAntetype> typeArguments)
         => Construct(typeArguments);
 
-    public NominalAntetype ConstructWithGenericParameterPlayTypes()
+    public NamedPlainType ConstructWithGenericParameterPlayTypes()
         => Construct(GenericParameterPlainTypes);
     IAntetype ITypeConstructor.ConstructWithGenericParameterPlainTypes()
         => ConstructWithGenericParameterPlayTypes();

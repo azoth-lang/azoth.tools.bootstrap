@@ -18,7 +18,7 @@ public sealed class GenericParameterPlainType : NonGenericNominalAntetype, INonV
     public override bool CanBeInstantiated => false;
 
     // TODO this should be based on generic constraints
-    public override IFixedSet<NominalAntetype> Supertypes => FixedSet.Empty<NominalAntetype>();
+    public override IFixedSet<NamedPlainType> Supertypes => FixedSet.Empty<NamedPlainType>();
 
     // TODO is this right?
     public bool HasReferenceSemantics => true;

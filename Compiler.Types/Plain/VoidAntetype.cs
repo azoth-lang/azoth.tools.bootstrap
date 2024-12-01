@@ -17,7 +17,7 @@ public sealed class VoidAntetype : EmptyAntetype
         : base(SpecialTypeName.Void) { }
     #endregion
 
-    public override IFixedSet<NominalAntetype> Supertypes => FixedSet.Empty<NominalAntetype>();
+    public override IFixedSet<NamedPlainType> Supertypes => FixedSet.Empty<NamedPlainType>();
 
     #region Equality
     public override bool Equals(IMaybeExpressionAntetype? other)

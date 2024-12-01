@@ -27,7 +27,7 @@ public sealed class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype, I
     IFixedList<GenericParameterPlainType> ITypeConstructor.GenericParameterPlainTypes
         => FixedList.Empty<GenericParameterPlainType>();
 
-    public override IFixedSet<NominalAntetype> Supertypes => FixedSet.Empty<NominalAntetype>();
+    public override IFixedSet<NamedPlainType> Supertypes => FixedSet.Empty<NamedPlainType>();
 
     public bool HasReferenceSemantics => true;
 

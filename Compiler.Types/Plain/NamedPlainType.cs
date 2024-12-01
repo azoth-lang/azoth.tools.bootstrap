@@ -10,15 +10,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// </summary>
 // TODO but shouldn't simple antetypes be nominal by this definition?
 [Closed(typeof(NonGenericNominalAntetype), typeof(OrdinaryNamedPlainType))]
-public abstract class NominalAntetype : IAntetype
+public abstract class NamedPlainType : IAntetype
 {
     public abstract ITypeConstructor TypeConstructor { get; }
     public abstract bool AllowsVariance { get; }
     public abstract TypeName Name { get; }
     public virtual IFixedList<IAntetype> TypeArguments => FixedList.Empty<IAntetype>();
-    public abstract IFixedSet<NominalAntetype> Supertypes { get; }
+    public abstract IFixedSet<NamedPlainType> Supertypes { get; }
 
-    private protected NominalAntetype() { }
+    private protected NamedPlainType() { }
 
     public abstract IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype);
 

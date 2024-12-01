@@ -13,7 +13,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(AnyAntetype),
     typeof(GenericParameterPlainType),
     typeof(SelfAntetype))]
-public abstract class NonGenericNominalAntetype : NominalAntetype, ITypeConstructor
+public abstract class NonGenericNominalAntetype : NamedPlainType, ITypeConstructor
 {
     public sealed override ITypeConstructor TypeConstructor => this;
     public TypeSemantics Semantics => TypeConstructor.Semantics;

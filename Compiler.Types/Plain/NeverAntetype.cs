@@ -23,7 +23,7 @@ public sealed class NeverAntetype : EmptyAntetype, INonVoidAntetype
 
     /// <remarks>Even though <see cref="NeverAntetype"/> is a subtype of all types, this property
     /// returns an empty set because it is not declared with any supertypes.</remarks>
-    public override IFixedSet<NominalAntetype> Supertypes => FixedSet.Empty<NominalAntetype>();
+    public override IFixedSet<NamedPlainType> Supertypes => FixedSet.Empty<NamedPlainType>();
 
     // TODO this is especially strange because it is a subtype of reference types
     public bool HasReferenceSemantics => false;

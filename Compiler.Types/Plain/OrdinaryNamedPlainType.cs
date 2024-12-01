@@ -5,7 +5,7 @@ using Azoth.Tools.Bootstrap.Framework;
 
 namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
-public sealed class OrdinaryNamedPlainType : NominalAntetype, INonVoidAntetype
+public sealed class OrdinaryNamedPlainType : NamedPlainType, INonVoidAntetype
 {
     public override OrdinaryTypeConstructor TypeConstructor { get; }
     public NamespaceName? ContainingNamespace => TypeConstructor.ContainingNamespace;
@@ -13,7 +13,7 @@ public sealed class OrdinaryNamedPlainType : NominalAntetype, INonVoidAntetype
     public override StandardName Name => TypeConstructor.Name;
     public override bool AllowsVariance => TypeConstructor.AllowsVariance;
     public override IFixedList<IAntetype> TypeArguments { get; }
-    public override IFixedSet<NominalAntetype> Supertypes { get; }
+    public override IFixedSet<NamedPlainType> Supertypes { get; }
     private readonly PlainTypeReplacements plainTypeReplacements;
 
     public OrdinaryNamedPlainType(OrdinaryTypeConstructor typeConstructor, IEnumerable<IAntetype> typeArguments)
@@ -28,7 +28,7 @@ public sealed class OrdinaryNamedPlainType : NominalAntetype, INonVoidAntetype
 
         plainTypeReplacements = new(TypeConstructor, TypeArguments);
 
-        Supertypes = typeConstructor.Supertypes.Select(s => (NominalAntetype)ReplaceTypeParametersIn(s)).ToFixedSet();
+        Supertypes = typeConstructor.Supertypes.Select(s => (NamedPlainType)ReplaceTypeParametersIn(s)).ToFixedSet();
     }
 
     public override IMaybeExpressionAntetype ReplaceTypeParametersIn(IMaybeExpressionAntetype antetype)

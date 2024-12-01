@@ -15,7 +15,7 @@ public sealed class SelfAntetype : NonGenericNominalAntetype, INonVoidAntetype
     public override bool CanBeInstantiated => false;
     public OrdinaryTypeConstructor ContainingType { get; }
     public override TypeName Name => SpecialTypeName.Self;
-    public override IFixedSet<NominalAntetype> Supertypes { get; }
+    public override IFixedSet<NamedPlainType> Supertypes { get; }
 
     public SelfAntetype(OrdinaryTypeConstructor containingType)
     {

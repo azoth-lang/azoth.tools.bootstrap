@@ -10,7 +10,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// anywhere (e.g. <c>Foo[Bar]</c>). Antetypes are the types that would exist in Azoth if the language
 /// had no reference capabilities. They are so named because they are the types that come before or
 /// precede the calculation of the regular types with reference capabilities.</para></remarks>
-[Closed(typeof(INonVoidAntetype), typeof(NominalAntetype))]
+[Closed(typeof(INonVoidAntetype), typeof(NamedPlainType))]
 public interface IAntetype : IExpressionAntetype, IMaybeAntetype
 {
     #region Standard Types
