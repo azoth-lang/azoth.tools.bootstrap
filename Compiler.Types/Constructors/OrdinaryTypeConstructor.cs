@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 /// <see cref="SimpleTypeConstructor"/>s). That is, it was declared with a <c>class</c>,
 /// <c>struct</c>,  or <c>trait</c> declaration.
 /// </summary>
-public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
+public sealed class OrdinaryTypeConstructor : ITypeConstructor
 {
     public IdentifierName ContainingPackage { get; }
     public NamespaceName ContainingNamespace { get; }
@@ -72,6 +72,13 @@ public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
             throw new ArgumentException("Incorrect number of type arguments.");
         return new NamedPlainType(this, args);
     }
+    IAntetype ITypeConstructor.Construct(IEnumerable<IAntetype> typeArguments)
+        => Construct(typeArguments);
+
+    public NominalAntetype ConstructWithGenericParameterPlayTypes()
+        => Construct(GenericParameterPlainTypes);
+    IAntetype ITypeConstructor.ConstructWithGenericParameterPlainTypes()
+        => ConstructWithGenericParameterPlayTypes();
 
     public IAntetype? TryConstructNullary()
         => Parameters.IsEmpty ? new NamedPlainType(this, []) : null;
@@ -92,7 +99,6 @@ public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
     public override int GetHashCode()
         => HashCode.Combine(ContainingPackage, ContainingNamespace, Name, Parameters);
     #endregion
-
 
     public override string ToString()
     {

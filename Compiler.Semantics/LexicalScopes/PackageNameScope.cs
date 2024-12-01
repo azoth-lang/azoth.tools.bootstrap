@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Azoth.Tools.Bootstrap.Compiler.Names;
-using Azoth.Tools.Bootstrap.Compiler.Types;
 using Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy;
 using Azoth.Tools.Bootstrap.Compiler.Types.Legacy.ConstValue;
@@ -139,11 +138,11 @@ public sealed class PackageNameScope
             SimpleTypeConstructor t => Lookup(t),
             GenericParameterPlainType t => Lookup(t),
             SelfAntetype _ => null,
-            IOrdinaryTypeConstructor t => Lookup(t),
+            OrdinaryTypeConstructor t => Lookup(t),
             _ => throw ExhaustiveMatch.Failed(antetype),
         };
 
-    private ITypeDeclarationNode Lookup(IOrdinaryTypeConstructor antetype)
+    private ITypeDeclarationNode Lookup(OrdinaryTypeConstructor antetype)
     {
         // TODO is there a problem with types using package names and this using package aliases?
         var globalNamespace = GlobalScopeForPackage(antetype.ContainingPackage);

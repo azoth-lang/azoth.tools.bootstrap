@@ -10,7 +10,7 @@
 = FunctionDefinition.Body.ExpectedAntetype => Type.Return.ToAntetype().ToNonConstValueType();
 
 // ---------- Type Definitions
-↑ TypeDefinition.DeclaredAntetype:`IOrdinaryTypeConstructor`;
+↑ TypeDefinition.DeclaredAntetype:`OrdinaryTypeConstructor`;
 = TypeDefinition.DeclaredAntetype;
 ↑ TypeDefinition.SelfAntetype: `SelfAntetype`;
 = TypeDefinition.SelfAntetype;

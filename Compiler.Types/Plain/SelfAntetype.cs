@@ -13,11 +13,11 @@ public sealed class SelfAntetype : NonGenericNominalAntetype, INonVoidAntetype
     /// As a type variable, a `Self` type cannot be constructed.
     /// </summary>
     public override bool CanBeInstantiated => false;
-    public IOrdinaryTypeConstructor ContainingType { get; }
+    public OrdinaryTypeConstructor ContainingType { get; }
     public override TypeName Name => SpecialTypeName.Self;
     public override IFixedSet<NominalAntetype> Supertypes { get; }
 
-    public SelfAntetype(IOrdinaryTypeConstructor containingType)
+    public SelfAntetype(OrdinaryTypeConstructor containingType)
     {
         ContainingType = containingType;
         Supertypes = containingType.Supertypes.Append(containingType.ConstructWithGenericParameterPlayTypes()).ToFixedSet();

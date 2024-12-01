@@ -12,7 +12,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [Closed(
     typeof(AnyAntetype),
     typeof(NonGenericNominalAntetype),
-    typeof(IOrdinaryTypeConstructor),
+    typeof(OrdinaryTypeConstructor),
     typeof(SimpleTypeConstructor))]
 public interface ITypeConstructor : IEquatable<ITypeConstructor>
 {
