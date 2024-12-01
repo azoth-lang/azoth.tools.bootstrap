@@ -19,6 +19,6 @@ public interface IOrdinaryTypeConstructor : ITypeConstructor
     new NominalAntetype With(IEnumerable<IAntetype> typeArguments);
     IAntetype ITypeConstructor.With(IEnumerable<IAntetype> typeArguments) => With(typeArguments);
 
-    new NominalAntetype WithGenericParameterAntetypes() => With(GenericParameterAntetypes);
+    new NominalAntetype WithGenericParameterAntetypes() => With(GenericParameterPlainTypes);
     IAntetype ITypeConstructor.WithGenericParameterAntetypes() => WithGenericParameterAntetypes();
 }

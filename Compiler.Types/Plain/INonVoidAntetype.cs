@@ -11,7 +11,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
     typeof(AnyAntetype),
     typeof(NeverAntetype),
     typeof(SimpleTypeConstructor),
-    typeof(GenericParameterAntetype),
+    typeof(GenericParameterPlainType),
     typeof(SelfAntetype))]
 public interface INonVoidAntetype : IAntetype, IMaybeNonVoidAntetype
 {

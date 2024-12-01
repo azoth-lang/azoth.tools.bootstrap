@@ -19,17 +19,17 @@ public interface ITypeConstructor : IEquatable<ITypeConstructor>
     /// <summary>
     /// Whether this type can be constructed. Abstract types and type variables cannot be constructed.
     /// </summary>
-    bool CanBeConstructed { get; }
+    bool CanBeInstantiated { get; }
 
-    IFixedList<AntetypeGenericParameter> GenericParameters { get; }
+    IFixedList<TypeConstructorParameter> Parameters { get; }
 
     bool AllowsVariance { get; }
 
-    IFixedList<GenericParameterAntetype> GenericParameterAntetypes { get; }
+    IFixedList<GenericParameterPlainType> GenericParameterPlainTypes { get; }
 
     IAntetype With(IEnumerable<IAntetype> typeArguments);
 
-    IAntetype WithGenericParameterAntetypes() => With(GenericParameterAntetypes);
+    IAntetype WithGenericParameterAntetypes() => With(GenericParameterPlainTypes);
 
     IMaybeAntetype With(IEnumerable<IMaybeAntetype> typeArguments)
     {

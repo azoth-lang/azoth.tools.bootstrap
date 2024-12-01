@@ -8,19 +8,36 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 /// <summary>
 /// An ordinary type constructor is one that is declared in source code (as opposed to
-/// <see cref="SimpleTypeConstructor"/>s).
+/// <see cref="SimpleTypeConstructor"/>s). That is, it was declared with a <c>class</c>,
+/// <c>struct</c>,  or <c>trait</c> declaration.
 /// </summary>
 public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
 {
     public IdentifierName ContainingPackage { get; }
     public NamespaceName ContainingNamespace { get; }
+    /// <summary>
+    /// Whether the declaration for this type constructor is abstract.
+    /// </summary>
+    /// <remarks>Classes can be declared abstract with the <c>abstract</c> keyword. Traits are
+    /// always abstract. Structs are never abstract.</remarks>
     public bool IsAbstract { get; }
-    public bool CanBeConstructed => !IsAbstract;
-    public GenericName Name { get; }
-    StandardName IOrdinaryTypeConstructor.Name => Name;
-    public IFixedList<AntetypeGenericParameter> GenericParameters { get; }
+    /// <summary>
+    /// Whether types constructed with this type constructor can be instantiated directly. Even if
+    /// a type cannot be instantiated, it may be the case that a subtype can. So it is still possible
+    /// that instances compatible with the type exist.
+    /// </summary>
+    public bool CanBeInstantiated => !IsAbstract;
+    public StandardName Name { get; }
+    /// <summary>
+    /// The parameters to this type constructor. Commonly referred to as "generic parameters".
+    /// </summary>
+    public IFixedList<TypeConstructorParameter> Parameters { get; }
     public bool AllowsVariance { get; }
-    public IFixedList<GenericParameterAntetype> GenericParameterAntetypes { get; }
+    /// <summary>
+    /// Within the type constructor declaration, any generic parameters will appear as type
+    /// variables. These are the types of those variables.
+    /// </summary>
+    public IFixedList<GenericParameterPlainType> GenericParameterPlainTypes { get; }
     public IFixedSet<NominalAntetype> Supertypes { get; }
     public bool HasReferenceSemantics { get; }
 
@@ -28,29 +45,29 @@ public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
         IdentifierName containingPackage,
         NamespaceName containingNamespace,
         bool isAbstract,
-        GenericName name,
-        IEnumerable<AntetypeGenericParameter> genericParameters,
+        StandardName name,
+        IEnumerable<TypeConstructorParameter> genericParameters,
         IFixedSet<NominalAntetype> supertypes,
         bool hasReferenceSemantics)
     {
         ContainingPackage = containingPackage;
         ContainingNamespace = containingNamespace;
         Name = name;
-        GenericParameters = genericParameters.ToFixedList();
-        Requires.That(Name.GenericParameterCount == GenericParameters.Count, nameof(genericParameters),
+        Parameters = genericParameters.ToFixedList();
+        Requires.That(Name.GenericParameterCount == Parameters.Count, nameof(genericParameters),
             "Count must match name count");
-        AllowsVariance = GenericParameters.Any(p => p.Variance != TypeVariance.Invariant);
+        AllowsVariance = Parameters.Any(p => p.Variance != TypeVariance.Invariant);
         HasReferenceSemantics = hasReferenceSemantics;
         IsAbstract = isAbstract;
         Supertypes = supertypes;
-        GenericParameterAntetypes = GenericParameters.Select(p => new GenericParameterAntetype(this, p))
+        GenericParameterPlainTypes = Parameters.Select(p => new GenericParameterPlainType(this, p))
                                                      .ToFixedList();
     }
 
     public NominalAntetype With(IEnumerable<IAntetype> typeArguments)
     {
         var args = typeArguments.ToFixedList();
-        if (args.Count != GenericParameters.Count)
+        if (args.Count != Parameters.Count)
             throw new ArgumentException("Incorrect number of type arguments.");
         return new UserGenericNominalAntetype(this, args);
     }
@@ -64,12 +81,12 @@ public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
                && ContainingPackage.Equals(that.ContainingPackage)
                && ContainingNamespace.Equals(that.ContainingNamespace)
                && Name.Equals(that.Name)
-               && GenericParameters.Equals(that.GenericParameters);
-        // GenericParameterAntetypes is derived from GenericParameters and doesn't need to be compared
+               && Parameters.Equals(that.Parameters);
+        // GenericParameterPlainTypes is derived from GenericParameters and doesn't need to be compared
     }
 
     public override int GetHashCode()
-        => HashCode.Combine(ContainingPackage, ContainingNamespace, Name, GenericParameters);
+        => HashCode.Combine(ContainingPackage, ContainingNamespace, Name, Parameters);
     #endregion
 
     public override string ToString()
@@ -86,10 +103,10 @@ public sealed class OrdinaryTypeConstructor : IOrdinaryTypeConstructor
         builder.Append(ContainingNamespace);
         if (ContainingNamespace != NamespaceName.Global) builder.Append('.');
         builder.Append(Name.ToBareString());
-        if (GenericParameters.IsEmpty) return;
+        if (Parameters.IsEmpty) return;
 
         builder.Append('[');
-        builder.AppendJoin(", ", GenericParameters);
+        builder.AppendJoin(", ", Parameters);
         builder.Append(']');
     }
 }

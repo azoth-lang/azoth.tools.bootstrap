@@ -58,7 +58,7 @@ internal static class DeclaredUserTypeExtensions
         var isAbstract = declaredType.IsAbstract;
         var antetypeGenericParameters = declaredType.GenericParameters
             // Treat self as non-writeable because antetypes should permit anything that could possibly be allowed by the types
-            .Select(p => new AntetypeGenericParameter(p.Name, p.Variance.ToTypeVariance(true)));
+            .Select(p => new TypeConstructorParameter(p.Name, p.Variance.ToTypeVariance(true)));
         var hasReferenceSemantics = declaredType is ObjectType;
         var supertypes = declaredType.AntetypeSupertypes();
         return declaredType.Name switch

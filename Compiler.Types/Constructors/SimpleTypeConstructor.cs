@@ -12,19 +12,19 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 public abstract class SimpleTypeConstructor : INonVoidAntetype, ITypeConstructor, ISimpleOrConstValueAntetype
 {
-    public bool CanBeConstructed => true;
+    public bool CanBeInstantiated => true;
 
     public SpecialTypeName Name { get; }
 
     public bool HasReferenceSemantics => false;
 
-    IFixedList<AntetypeGenericParameter> ITypeConstructor.GenericParameters
-        => FixedList.Empty<AntetypeGenericParameter>();
+    IFixedList<TypeConstructorParameter> ITypeConstructor.Parameters
+        => FixedList.Empty<TypeConstructorParameter>();
 
     public bool AllowsVariance => false;
 
-    IFixedList<GenericParameterAntetype> ITypeConstructor.GenericParameterAntetypes
-        => FixedList.Empty<GenericParameterAntetype>();
+    IFixedList<GenericParameterPlainType> ITypeConstructor.GenericParameterPlainTypes
+        => FixedList.Empty<GenericParameterPlainType>();
 
     private protected SimpleTypeConstructor(SpecialTypeName name)
     {

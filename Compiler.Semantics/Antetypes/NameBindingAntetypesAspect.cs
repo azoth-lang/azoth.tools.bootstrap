@@ -13,7 +13,7 @@ internal static partial class NameBindingAntetypesAspect
     public static partial IMaybeAntetype SelfParameter_BindingAntetype(ISelfParameterNode node)
     {
         var containingDeclaredAntetype = node.ContainingTypeDefinition.DeclaredAntetype;
-        return containingDeclaredAntetype.With(containingDeclaredAntetype.GenericParameterAntetypes);
+        return containingDeclaredAntetype.With(containingDeclaredAntetype.GenericParameterPlainTypes);
     }
 
     public static partial IMaybeAntetype PatternMatchExpression_Pattern_ContextBindingAntetype(IPatternMatchExpressionNode node)

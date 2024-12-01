@@ -10,7 +10,7 @@ public sealed class UserNonGenericNominalAntetype : NonGenericNominalAntetype, I
     public IdentifierName ContainingPackage { get; }
     public NamespaceName ContainingNamespace { get; }
     public bool IsAbstract { get; }
-    public override bool CanBeConstructed => !IsAbstract;
+    public override bool CanBeInstantiated => !IsAbstract;
     public override IdentifierName Name { get; }
     StandardName IOrdinaryTypeConstructor.Name => Name;
     public override IFixedSet<NominalAntetype> Supertypes { get; }

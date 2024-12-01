@@ -19,7 +19,7 @@ public sealed class UserGenericNominalAntetype : NominalAntetype, INonVoidAntety
     {
         DeclaredAntetype = declaredAnteType;
         TypeArguments = typeArguments.ToFixedList();
-        if (DeclaredAntetype.GenericParameters.Count != TypeArguments.Count)
+        if (DeclaredAntetype.Parameters.Count != TypeArguments.Count)
             throw new ArgumentException(
                 $"Number of type arguments must match. Given `[{string.Join(", ", TypeArguments)}]` for `{declaredAnteType}`.",
                 nameof(typeArguments));

@@ -137,7 +137,7 @@ public sealed class PackageNameScope
             EmptyAntetype _ => null,
             AnyAntetype t => Lookup(t),
             SimpleTypeConstructor t => Lookup(t),
-            GenericParameterAntetype t => Lookup(t),
+            GenericParameterPlainType t => Lookup(t),
             SelfAntetype _ => null,
             IOrdinaryTypeConstructor t => Lookup(t),
             _ => throw ExhaustiveMatch.Failed(antetype),
@@ -160,10 +160,10 @@ public sealed class PackageNameScope
     private ITypeDeclarationNode Lookup(AnyAntetype antetype)
         => primitives[antetype.Name];
 
-    public ITypeDeclarationNode Lookup(GenericParameterAntetype antetype)
+    public ITypeDeclarationNode Lookup(GenericParameterPlainType plainType)
     {
-        var declaringTypeNode = (IUserTypeDeclarationNode)Lookup(antetype.DeclaringAntetype);
-        return declaringTypeNode.GenericParameters.Single(p => p.Name == antetype.Name);
+        var declaringTypeNode = (IUserTypeDeclarationNode)Lookup(plainType.DeclaringAntetype);
+        return declaringTypeNode.GenericParameters.Single(p => p.Name == plainType.Name);
     }
     #endregion
 }

@@ -7,15 +7,15 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 /// <summary>
 /// The type introduced by a generic parameter.
 /// </summary>
-public sealed class GenericParameterAntetype : NonGenericNominalAntetype, INonVoidAntetype
+public sealed class GenericParameterPlainType : NonGenericNominalAntetype, INonVoidAntetype
 {
     public OrdinaryTypeConstructor DeclaringAntetype { get; }
-    public AntetypeGenericParameter Parameter { get; }
+    public TypeConstructorParameter Parameter { get; }
     public override IdentifierName Name => Parameter.Name;
     /// <summary>
     /// As a type variable, a generic parameter cannot be constructed.
     /// </summary>
-    public override bool CanBeConstructed => false;
+    public override bool CanBeInstantiated => false;
 
     // TODO this should be based on generic constraints
     public override IFixedSet<NominalAntetype> Supertypes => FixedSet.Empty<NominalAntetype>();
@@ -23,7 +23,7 @@ public sealed class GenericParameterAntetype : NonGenericNominalAntetype, INonVo
     // TODO is this right?
     public bool HasReferenceSemantics => true;
 
-    public GenericParameterAntetype(OrdinaryTypeConstructor declaringAntetype, AntetypeGenericParameter parameter)
+    public GenericParameterPlainType(OrdinaryTypeConstructor declaringAntetype, TypeConstructorParameter parameter)
     {
         DeclaringAntetype = declaringAntetype;
         Parameter = parameter;
@@ -34,7 +34,7 @@ public sealed class GenericParameterAntetype : NonGenericNominalAntetype, INonVo
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return other is GenericParameterAntetype that
+        return other is GenericParameterPlainType that
                && DeclaringAntetype.Equals(that.DeclaringAntetype)
                && Name.Equals(that.Name);
     }

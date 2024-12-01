@@ -2,18 +2,18 @@ using System.Text;
 using Azoth.Tools.Bootstrap.Compiler.Core;
 using Azoth.Tools.Bootstrap.Compiler.Names;
 
-namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
+namespace Azoth.Tools.Bootstrap.Compiler.Types.Constructors;
 
 /// <summary>
 /// A generic parameter definition for an antetype.
 /// </summary>
-public sealed class AntetypeGenericParameter : IEquatable<AntetypeGenericParameter>
+public sealed class TypeConstructorParameter : IEquatable<TypeConstructorParameter>
 {
     public IdentifierName Name { get; }
 
     public TypeVariance Variance { get; }
 
-    public AntetypeGenericParameter(
+    public TypeConstructorParameter(
         IdentifierName name,
         TypeVariance variance)
     {
@@ -22,7 +22,7 @@ public sealed class AntetypeGenericParameter : IEquatable<AntetypeGenericParamet
     }
 
     #region Equality
-    public bool Equals(AntetypeGenericParameter? other)
+    public bool Equals(TypeConstructorParameter? other)
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -30,7 +30,7 @@ public sealed class AntetypeGenericParameter : IEquatable<AntetypeGenericParamet
     }
 
     public override bool Equals(object? obj)
-        => obj is AntetypeGenericParameter other && Equals(other);
+        => obj is TypeConstructorParameter other && Equals(other);
 
     public override int GetHashCode() => HashCode.Combine(Name, Variance);
     #endregion

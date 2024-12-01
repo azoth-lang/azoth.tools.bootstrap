@@ -17,15 +17,15 @@ public sealed class AnyAntetype : NonGenericNominalAntetype, INonVoidAntetype, I
     /// <summary>
     /// The `Any` type cannot be constructed because it is abstract.
     /// </summary>
-    public override bool CanBeConstructed => false;
+    public override bool CanBeInstantiated => false;
 
     public override SpecialTypeName Name => SpecialTypeName.Any;
 
-    IFixedList<AntetypeGenericParameter> ITypeConstructor.GenericParameters
-        => FixedList.Empty<AntetypeGenericParameter>();
+    IFixedList<TypeConstructorParameter> ITypeConstructor.Parameters
+        => FixedList.Empty<TypeConstructorParameter>();
 
-    IFixedList<GenericParameterAntetype> ITypeConstructor.GenericParameterAntetypes
-        => FixedList.Empty<GenericParameterAntetype>();
+    IFixedList<GenericParameterPlainType> ITypeConstructor.GenericParameterPlainTypes
+        => FixedList.Empty<GenericParameterPlainType>();
 
     public override IFixedSet<NominalAntetype> Supertypes => FixedSet.Empty<NominalAntetype>();
 

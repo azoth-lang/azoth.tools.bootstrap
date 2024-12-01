@@ -9,7 +9,7 @@ public abstract class EmptyAntetype : NonGenericNominalAntetype, IAntetype
     /// <summary>
     /// Empty types aren't abstract, but they still can't be constructed.
     /// </summary>
-    public override bool CanBeConstructed => false;
+    public override bool CanBeInstantiated => false;
 
     public override SpecialTypeName Name { get; }
 

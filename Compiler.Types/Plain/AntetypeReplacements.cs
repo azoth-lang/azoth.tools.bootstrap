@@ -6,7 +6,7 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 
 internal sealed class AntetypeReplacements
 {
-    private readonly IDictionary<GenericParameterAntetype, IAntetype> replacements;
+    private readonly IDictionary<GenericParameterPlainType, IAntetype> replacements;
 
     /// <summary>
     /// Build a dictionary of type replacements. Generic parameter types of both this type and the
@@ -14,13 +14,13 @@ internal sealed class AntetypeReplacements
     /// </summary>
     public AntetypeReplacements(IOrdinaryTypeConstructor declaredType, IFixedList<IAntetype> typeArguments)
     {
-        replacements = declaredType.GenericParameterAntetypes.EquiZip(typeArguments)
+        replacements = declaredType.GenericParameterPlainTypes.EquiZip(typeArguments)
                                    .ToDictionary(t => t.Item1, t => t.Item2);
         foreach (var supertype in declaredType.Supertypes)
             foreach (var (antetypeArg, i) in supertype.TypeArguments.Enumerate())
             {
-                var genericParameterAnteype = supertype.DeclaredAntetype.GenericParameterAntetypes[i];
-                if (antetypeArg is GenericParameterAntetype genericAntetypeArg)
+                var genericParameterAnteype = supertype.DeclaredAntetype.GenericParameterPlainTypes[i];
+                if (antetypeArg is GenericParameterPlainType genericAntetypeArg)
                 {
                     if (replacements.TryGetValue(genericAntetypeArg, out var replacement))
                         replacements.Add(genericParameterAnteype, replacement);
@@ -74,7 +74,7 @@ internal sealed class AntetypeReplacements
             SelfAntetype a => a,
             UserNonGenericNominalAntetype a => a,
             UserGenericNominalAntetype a => ReplaceTypeParametersIn(a),
-            GenericParameterAntetype a => ReplaceTypeParametersIn(a),
+            GenericParameterPlainType a => ReplaceTypeParametersIn(a),
             FunctionAntetype a => ReplaceTypeParametersIn(a),
             OptionalAntetype a => ReplaceTypeParametersIn(a),
             _ => throw ExhaustiveMatch.Failed(antetype)
@@ -103,11 +103,11 @@ internal sealed class AntetypeReplacements
         return typesReplaced ? replacementAntetypes.ToFixedList() : antetypes;
     }
 
-    private IAntetype ReplaceTypeParametersIn(GenericParameterAntetype antetype)
+    private IAntetype ReplaceTypeParametersIn(GenericParameterPlainType plainType)
     {
-        if (replacements.TryGetValue(antetype, out var replacementType))
+        if (replacements.TryGetValue(plainType, out var replacementType))
             return replacementType;
-        return antetype;
+        return plainType;
     }
 
     private FunctionAntetype ReplaceTypeParametersIn(FunctionAntetype antetype)

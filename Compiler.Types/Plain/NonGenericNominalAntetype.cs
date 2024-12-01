@@ -11,16 +11,16 @@ namespace Azoth.Tools.Bootstrap.Compiler.Types.Plain;
 [Closed(
     typeof(EmptyAntetype),
     typeof(AnyAntetype),
-    typeof(GenericParameterAntetype),
+    typeof(GenericParameterPlainType),
     typeof(SelfAntetype),
     typeof(UserNonGenericNominalAntetype))]
 public abstract class NonGenericNominalAntetype : NominalAntetype, ITypeConstructor
 {
     public sealed override ITypeConstructor DeclaredAntetype => this;
     public sealed override bool AllowsVariance => false;
-    public abstract bool CanBeConstructed { get; }
-    IFixedList<AntetypeGenericParameter> ITypeConstructor.GenericParameters => [];
-    IFixedList<GenericParameterAntetype> ITypeConstructor.GenericParameterAntetypes => [];
+    public abstract bool CanBeInstantiated { get; }
+    IFixedList<TypeConstructorParameter> ITypeConstructor.Parameters => [];
+    IFixedList<GenericParameterPlainType> ITypeConstructor.GenericParameterPlainTypes => [];
 
     public virtual IAntetype With(IEnumerable<IAntetype> typeArguments)
     {
